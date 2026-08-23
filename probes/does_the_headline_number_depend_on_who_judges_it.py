@@ -39,6 +39,17 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, ".."))
 
+# A reader who clicks the link in the post downloads THIS file and nothing else, and used to
+# get a bare ModuleNotFoundError here -- before ever reaching the OPENAI_API_KEY check further
+# down, so the "set OPENAI_API_KEY" message this file already prints was unreachable for them.
+if not os.path.exists(os.path.join(HERE, "integrity_bench_revert.py")):
+    sys.stderr.write(
+        "\n"
+        "This probe needs integrity_bench_revert.py beside it, and it is not here.\n"
+        "  expected: " + os.path.join(HERE, "integrity_bench_revert.py") + "\n"
+        "  get it:   curl -O https://raw.githubusercontent.com/DanceNitra/inspeximus/main/probes/integrity_bench_revert.py\n"
+        "Then run this file again from the same directory. It also needs OPENAI_API_KEY.\n\n")
+    raise SystemExit(2)
 import integrity_bench_revert as rev  # noqa: E402
 from inspeximus import Inspeximus     # noqa: E402
 
