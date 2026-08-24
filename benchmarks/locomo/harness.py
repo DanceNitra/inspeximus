@@ -484,7 +484,12 @@ class LLM:
         string.
         """
         nonce = random.Random(time.time_ns()).randint(10 ** 9, 10 ** 10)
-        raw = self(model, f"[request {nonce}] What colour is a clear daytime sky? Answer in one word.", 24)
+        # 512, not 24. At 24 every model released in the last six months returns EMPTY with
+        # finish_reason=length -- measured 2026-08-24: qwen3.8:27b needs 30 completion tokens to
+        # emit "Blue", gemma4:12b needs 80, ornith-1.5:9b needs 37, because the budget goes on
+        # hidden reasoning first. Only qwen2.5:7b (2 tokens) passed, so this probe was reporting
+        # every current model as dead. A liveness check must never be the thing that kills it.
+        raw = self(model, f"[request {nonce}] What colour is a clear daytime sky? Answer in one word.", 512)
         t = self.by_model.get(model, {})
         return {"model": model, "prompt_nonce": nonce, "expected_substring": "blue",
                 "answer": raw[:60], "answer_correct": "blue" in raw.lower(),
