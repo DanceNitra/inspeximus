@@ -52,7 +52,13 @@ mcp = ["mcp[cli]>=1.28,<2"]
 langchain = ["langchain-core"]
 langgraph = ["langgraph"]
 llamaindex = ["llama-index-core"]
-autogen = ["autogen-agentchat", "autogen-core"]
+# `>=0.4` is a FLOOR for the same reason as google-adk below, but the failure it prevents is
+# nastier: declared unbounded, the nine-extra solve on 2026-08-24 backtracked from 0.7.5 all the
+# way down and settled on `autogen-core-0.0.2` -- a placeholder release that satisfies the NAME
+# and ships no `autogen_core` module. pip printed "Successfully installed", exit 0, and the only
+# thing that noticed was ci.yml's `import autogen_core` line. A resolver that can reach a stub
+# will reach it, so a floor here turns a silent no-op install into a loud resolution error.
+autogen = ["autogen-agentchat>=0.4", "autogen-core>=0.4"]
 # `>=2` is a FLOOR, not a cap, and it is measured: integrations/google_adk.py's register() imports
 # google.adk.cli.service_registry, which exists in 2.5.0 and does NOT in 1.14.1. Declared unbounded, the
 # mcp<2 cap changed pip's search order enough that a nine-extra install resolved to 1.14.1 and the

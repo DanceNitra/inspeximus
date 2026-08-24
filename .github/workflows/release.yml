@@ -80,6 +80,12 @@ jobs:
           pip install pytest pytest-xdist cryptography numpy pyyaml
           pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]"
           pip install haystack-ai
+          # A release path with no import check will ship whatever pip called a success. On
+          # 2026-08-24 the nine-extra solve settled on `autogen-core-0.0.2`, a placeholder that
+          # satisfies the name and ships no module; ci.yml caught it here and this file had
+          # nothing to catch it with. The pyproject floor is the real fix -- one source, every
+          # install site -- and this line is what makes the next stub loud instead of silent.
+          python -c "import autogen_core, agents; print('autogen_core and agents both import')"
       - run: python -m pytest tests/ -q
       # The mutation set is deselected from the default (it edits source in place). A release must
       # not ship without it: run it serially and explicitly.
