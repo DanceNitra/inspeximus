@@ -51,6 +51,7 @@ answerer and the judge, downstream of memory.
 from __future__ import annotations
 
 import hashlib
+import concurrent.futures as _cf
 import json
 import os
 import random
@@ -439,6 +440,7 @@ class LLM:
         self.timeout = qa["request_timeout_s"]
         self.retries = qa["retries"]
         self.cache_hit_threshold_s = cfg.get("gpu", {}).get("cache_hit_threshold_s", 0.05)
+        self._lock = __import__("threading").Lock()
         self.calls = 0
         self.errors = 0
         self.latencies: list = []
@@ -459,18 +461,20 @@ class LLM:
                     payload = json.load(r)
                 dt = time.time() - t0
                 content = (((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or "")
-                self.calls += 1
-                self.latencies.append(dt)
-                m = self.by_model.setdefault(model, {"calls": 0, "total_s": 0.0})
-                m["calls"] += 1
-                m["total_s"] += dt
-                if dt < self.cache_hit_threshold_s:
-                    self.suspected_cache_hits += 1
+                with self._lock:            # workers share this object; the accounting is
+                    self.calls += 1             # what proves no call came from a cache, so it
+                    self.latencies.append(dt)   # must not be raced even though results are not
+                    m = self.by_model.setdefault(model, {"calls": 0, "total_s": 0.0})
+                    m["calls"] += 1
+                    m["total_s"] += dt
+                    if dt < self.cache_hit_threshold_s:
+                        self.suspected_cache_hits += 1
                 return content.strip()
             except Exception as e:                                  # noqa: BLE001  transport/timeout
                 last = f"{type(e).__name__}: {str(e)[:100]}"
                 time.sleep(1 + 2 * attempt)
-        self.errors += 1
+        with self._lock:
+            self.errors += 1
         return f"__ERR__{last}"
 
     def probe(self, model: str) -> dict:
@@ -748,11 +752,45 @@ def score_arm(llm, cfg: dict, questions, contexts, arm: str, on_item=None) -> di
     resident at a time. It changes the wall clock, never the measurement — each answer is still graded
     by the same judge from the same prompt.
     """
-    preds = []
-    for i, q in enumerate(questions):
-        preds.append(answer_question(llm, cfg, contexts[i], q["question"]))
-        if on_item:
-            on_item(f"{arm}/answer", i + 1, len(questions), None)
+    # PARALLEL within the phase. Every call here is independent -- nothing reads another's output,
+    # temperature is 0, and executor.map preserves order so preds[i] still belongs to questions[i].
+    # Serial cost measured 2026-08-24: qwen3.8:27b 0.279 calls/s, so a full run is 18.4 h; at 4
+    # workers 0.693 calls/s = 7.4 h. The two-PHASE split above is what makes this safe -- one model
+    # stays resident, so the workers are not fighting an evict/reload cycle.
+    workers = int(cfg["qa"].get("workers", 4))
+    n = len(questions)
+
+    def _phased(label, fn):
+        """Run fn over every index at `workers`, reporting progress AS EACH ONE LANDS.
+
+        The progress call has to live INSIDE the worker. An earlier version of this function
+        collected the whole phase and then looped `on_item` over the finished list, which prints
+        1..N in one burst after the phase is already over -- so a four-hour phase emitted nothing
+        at all and there was no way to tell "working" from "wedged". That is the exact failure
+        this repo has a written rule about, reintroduced by parallelising around it.
+
+        `ex.map` still supplies the ordering, so out[i] belongs to questions[i]; only the
+        REPORTING is out of order, which is what a heartbeat is for.
+        """
+        done = [0]
+        lock = __import__("threading").Lock()
+
+        def one(i):
+            r = fn(i)
+            if on_item:
+                with lock:
+                    done[0] += 1
+                    on_item(f"{arm}/{label}", done[0], n, None)
+            return r
+
+        with _cf.ThreadPoolExecutor(workers) as ex:
+            return list(ex.map(one, range(n)))
+
+    preds = _phased("answer",
+                    lambda i: answer_question(llm, cfg, contexts[i], questions[i]["question"]))
+    verdicts = _phased("judge",
+                       lambda i: judge_answer(llm, cfg, questions[i]["question"],
+                                              str(questions[i].get("answer", "")).strip(), preds[i]))
 
     correct = parse_fail = 0
     by_cat: dict = {}
@@ -761,7 +799,7 @@ def score_arm(llm, cfg: dict, questions, contexts, arm: str, on_item=None) -> di
     for i, q in enumerate(questions):
         gold = str(q.get("answer", "")).strip()
         pred = preds[i]
-        verdict, raw = judge_answer(llm, cfg, q["question"], gold, pred)
+        verdict, raw = verdicts[i]
         ok = verdict is True
         if verdict is None:
             parse_fail += 1
