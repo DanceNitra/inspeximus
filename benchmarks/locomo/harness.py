@@ -812,8 +812,11 @@ def score_arm(llm, cfg: dict, questions, contexts, arm: str, on_item=None) -> di
         rows.append({"arm": arm, "category": q.get("category"), "question": q["question"],
                      "gold": gold, "pred": pred[:400], "judge_raw": raw[:80], "correct": bool(ok),
                      "context_chars": len(contexts[i])})
-        if on_item:
-            on_item(f"{arm}/judge", i + 1, len(questions), ok)
+        # NO on_item here. This loop runs AFTER both phases have finished, so a heartbeat from it
+        # reports nothing about progress -- it replays 1..N in one burst once the work is over,
+        # which is the exact defect the parallel rewrite was meant to remove. It survived the
+        # rewrite and printed the judge sequence a second time in the 2026-08-24 regression, which
+        # is how it was found: the display, not the cost. The live heartbeat lives in _phased.
     n = len(questions)
     return {"arm": arm, "n": n, "correct": correct, "parse_fail": parse_fail,
             "accuracy": round(correct / n, 4) if n else None,

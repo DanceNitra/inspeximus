@@ -57,8 +57,9 @@
  },
  "qa": {
   "endpoint": "http://localhost:11434/v1",
-  "answerer_model": "llama3.1:8b",
-  "judge_model": "qwen2.5:7b",
+  "answerer_model": "qwen3.8:27b",
+  "judge_model": "gemma4:12b",
+  "_model_note": "NEVER PIN A BENCHMARK TO A STALE MODEL. The previous pair was llama3.1:8b answering and qwen2.5:7b judging, both chosen when our caps were 80/8 tokens and therefore chosen BY the caps: qwen2.5:7b was the only model that could emit a word inside them. Measured 2026-08-24: llama3.1:8b FAILS the judge gate (GOLD 12/12, WRONG 9/12, REFUSAL 4/12), so the one Meta-family candidate cannot grade. And ornith-1.5:9b reports architecture qwen35 from ollama's /api/show -- it is a Qwen 3.5 model despite the unrelated name -- so it and qwen3.8:27b are ONE family, leaving gemma4:12b as the only judge that is cross-family to both answerers. Never infer a model family from its name; read details.family.",
   "_judge_note": "The judge is deliberately a different model family from the answerer (Meta vs Alibaba) so an answer is never graded by its own author. ONE judge grades every arm, so the arms are comparable even where the absolute number is judge-dependent. It must clear judge_calibration.py before any number is trusted.",
   "temperature": 0.0,
   "answer_max_tokens": 512,
