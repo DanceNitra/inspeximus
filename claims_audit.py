@@ -442,6 +442,12 @@ NUMBER_CLAIMS = [
     # ONE ROW PER LINE. The audit requires a claim's pin to be on the same source line as each token
     # it owns, which is correct: a number is claimed by the sentence it appears in. A four-row table
     # therefore needs four rows here, not one pinned to its first line.
+    # ---- README.md "Check us without trusting us" ----
+    # No rows here on purpose. The section quotes ONE line of this audit's output and no counts:
+    # quoting the totals inside a file the audit reads is a fixed point that moves on every doc
+    # edit, and the first draft of that section published stale figures because of it. The command
+    # is the claim; the numbers belong to the run, not to the README.
+
     # ---- index.html: the 2.5.0 section and the corrected echo caveat ----
     # One row per LINE again: the audit requires the pin on the same source line as each token, which
     # is why a five-line caveat needs five pins and not one.
@@ -978,6 +984,8 @@ NON_CLAIM_TOKENS = {
         # Declared, with the reason, because a token nobody claims is not the same as a token nobody
         # looked at -- and this file was briefly outside SURFACE, where the audit passed by not reading it.
         "30": (1, "the rhetorical heading 'The 30 seconds that matter', not a quantity"),
+        "5": (1, "the --n 5 argument in the offered local-judge command: a CLI parameter a "
+              "reader may change, not a result we are claiming"),
         "0": (2, "Python list indices [0] in the code example, not measurements"),
         "12": (1, "EU AI Act ARTICLE number in the docs table, not a quantity"),
         "73,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "

@@ -149,6 +149,39 @@ break is.
 **Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**, with the exact command
 that recomputes it. If one disagrees with your run, that is a bug report we want.
 
+### Check us without trusting us
+
+Two commands. Neither needs an API key, a service, or any data of ours.
+
+```bash
+python claims_audit.py
+```
+
+Forty seconds. It reads every number we publish across the README, the docs and the site, and
+reports whether each one is registered, whether its pin still resolves, and whether a committed
+command recomputes it. It ends either with a list of problems or with one line:
+
+```
+every published number is registered, every pin resolves, every command names a real file
+```
+
+The counts are deliberately not quoted here. Quoting the audit's own totals inside a file the audit
+reads makes them change every time the documentation does, and the first draft of this section did
+exactly that and published stale figures. Run it and read the current ones.
+
+What the run will show you: a handful of rows marked **WITHDRAWN**. Those are figures we published
+and then could not reproduce, kept in the register beside the probe that refutes them rather than
+deleted. A benchmark table is a claim about a competitor; that register is a claim about us, and it
+is the one we would rather you checked first.
+
+```bash
+python probes/integrity_bench_revert.py --systems inspeximus --judge local --n 5
+```
+
+Free, offline, deterministic, and it prints its own caveat that a local judge is **not** comparable
+with the OpenAI-judged figures in the table above. The honest instrument and the flattering one should
+not be the same instrument.
+
 ---
 
 ## Documentation
