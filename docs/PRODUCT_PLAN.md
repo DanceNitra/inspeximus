@@ -1,152 +1,162 @@
 # inspeximus product plan — why anyone downloads this
 
-Written 2026-08-25. Every number below was measured the night it was written; the commands are in
-the text so the plan can be re-run rather than believed. Replaces nothing: it is the first plan in
-this repo. The strategy memory it supersedes had been stale for 35 days across 426 commits, and
-during that time it still named "get a LOCOMO number" as gap #1, which is how the same retired
-experiment got started three times.
+Written 2026-08-25, overnight. Every number was measured that night and the command or URL that
+produced it is in the text, so this can be re-run rather than believed. It is the first plan in this
+repo; the strategy memory it replaces had gone 35 days and 426 commits without an update while still
+naming "get a LOCOMO number" as gap #1, which is how the same retired experiment got started three
+times.
+
+Two of my own first-pass conclusions are corrected below rather than quietly dropped. That is the
+point of writing the evidence beside the claim.
+
+---
 
 ## 1. Where we actually are
 
-**The product works.** The README's headline demo, run verbatim in a clean directory against a fresh
-store:
+**The product works.** The README's headline demo, run verbatim in a clean directory:
 
 ```
-import time             : 181 ms
-after correction        : 'The staging database is db-7.internal'   (expected, matches)
-after revert            : 'The staging database is db-3.internal'   (expected, matches)
-total wall time         : 192 ms
-store on disk           : 1403 B
+import time      : 181 ms      after correction : 'db-7.internal'   (matches)
+total wall time  : 192 ms      after revert     : 'db-3.internal'   (matches)
 ```
 
-Zero core dependencies, Python 3.8+, no LLM, no network, no service. The one capability we lead on
-does what the front page says it does, in under a fifth of a second.
+Zero core dependencies, Python 3.8+, no key, no service, no network, no LLM.
 
-**Distribution is the whole problem.** PyPI, last 30 days:
+**We are the only one of five a stranger can run with nothing.** Checked against each vendor's own
+quickstart:
 
-| package | downloads / month | vs us |
-|---|---:|---:|
-| mem0ai | 4,050,473 | 287× |
-| langmem | 707,978 | 50× |
-| zep-cloud | 353,166 | 25× |
-| cognee | 210,802 | 15× |
-| letta | 204,800 | 15× |
-| **inspeximus** | **14,117** | — |
+| | what the first snippet needs |
+|---|---|
+| mem0 | cloud signup + API key (OSS path needs `OPENAI_API_KEY`, spawns Qdrant) |
+| Zep | account + `ZEP_API_KEY`; community edition discontinued |
+| Letta | Node 22.19+, your own provider key; Python server archived 2026-08-16 |
+| Cognee | `LLM_API_KEY` required, OpenAI by default |
+| **inspeximus** | **nothing** |
 
-**CORRECTION, same night, and it kills my own reading of that table.** I first wrote that we are
-shrinking, citing weekly downloads 6,495 / 2,595 / 2,355 / 2,847 / 2,469 and a 0.58x ratio. That was
-an invention laid on a real number. **The package's first upload to PyPI was 2026-07-21**, so week 30
-is week one and there is no earlier baseline to decline from. The "decay" is our own release cadence:
-113 versions in five weeks, 40 uploads on 2026-07-25 alone, and downloads track upload days at
-r = 0.96.
+**But the download number is not what I first said it was.** I wrote that we are shrinking, citing
+weekly 6,495 / 2,595 / 2,355 / 2,847 / 2,469 and a 0.58x ratio. That was an invention on top of a
+real number: **the first upload to PyPI was 2026-07-21**, so week 30 is week one. The "decay" is our
+own release cadence — 113 versions in five weeks, 40 uploads on 2026-07-25 alone, downloads tracking
+upload days at r = 0.96.
 
-**Worse, the downloads are mostly not people.** 75.0% of them report no Python version and no OS.
-The peer rate is 2.7% for mem0ai and 0.6% for letta, so we are ~28x above it:
+**And most of those downloads are not people.** 75.0% report no Python version, against 2.7% for
+mem0ai and 0.6% for letta. Pip-shaped traffic is ~120/day, 69% of it one Python minor version, which
+is a CI image. **Zero packages depend on us** anywhere on GitHub. Repo traffic over 14 days: 37 views,
+28 unique visitors, against roughly 10,000 "downloads".
 
-| package | downloads with no Python version reported |
-|---|---:|
-| letta | 0.6% |
-| mem0ai | 2.7% |
-| **inspeximus** | **75.0%** |
+The honest state is **pre-adoption**. Three people outside this project have ever engaged: one filed
+a bug, one posted to HN (2 points), one curator looked and declined.
 
-Pip-shaped traffic is about 4,195 over 35 days, ~120/day, and 69% of that is a single Python minor
-version, which is a CI-image signature rather than a user base. **Zero packages depend on us**: no
-`inspeximus` in any requirements.txt, uv.lock or poetry.lock on GitHub outside our own repos. Repo
-traffic over 14 days was 37 views from 28 unique visitors against roughly 10,000 "downloads".
+## 2. The finding the plan turns on
 
-**The honest state is pre-adoption, not early traction.** Three people outside this project have ever
-engaged with it: one filed a bug, one posted it to HN (2 points, 0 comments), and one curator looked
-and declined.
+We built the answer to every objection a sceptic could raise, then linked it from nowhere.
 
-## 2. What we are not going to do, and why
+| asset | what it is | in README | on the site |
+|---|---|---|---|
+| `claims_audit.py` | audits our own published numbers: 361 tokens, 199 quantitative claims, 105 registry rows, 80 reproducible by a committed command. **40 s, no key** | **no** | **no** |
+| `docs/INTEGRATIONS.md` | 11 framework adapters with an honest "10 of 13 verified" ledger | **no** | **no** |
+| `examples/` | 15 runnable files | **no** | **no** |
 
-**Not another benchmark number.** Two of our own adversarial passes settled this: clean-LOCOMO recall
-is a tie and the wrong battle, and the defensible edge is determinism, write-path reliability, cost
-and auditability rather than capability-accuracy. mem0 does not have 4M downloads because of its
-LOCOMO score; langmem has 708K because LangChain ships it. Distribution follows integration and
-discovery, not leaderboards. A number we publish changes nothing about either.
+And `index.html`, our own front page, contains **zero occurrences of `remember(`**. There is no code
+on it. Both hero calls to action say "Star on GitHub" and the docs link goes to the GitHub README.
+Every competitor is one click from runnable code; we are infinitely many.
 
-**Not a rewrite, a rebrand, or a new repo.** Everything below lands on the package that already
-exists.
+A curator wrote down why he passed: `Snseam/awesome-agent-memory` issue #19, 2026-08-03, lists
+inspeximus among entries deliberately not promoted, reason attached — *"GitHub-only or vendor/
+self-claimed benchmark signals"*. From where he stands he is right, and the refutation was in the
+repo the whole time, unlinked.
 
-## 3. The one sentence the plan has to make true
+## 3. What we are not going to do
 
-Someone with a corrected fact that keeps coming back should find inspeximus within one search, and
-understand in thirty seconds that it is the only thing that fixes it deterministically.
+**Not another benchmark number.** Two of our own adversarial passes retired that axis, and the
+download table is the argument: mem0 does not have 4M installs because of its LOCOMO score. To a
+curator, a number we publish is one more self-claimed signal.
 
-Today they will not, for three measurable reasons.
+**Not a rewrite.** Everything below lands on what already exists.
 
-## 4. The five things to fix, reordered by evidence
+## 4. The work, ordered by evidence
 
-The first ordering in this document was reasoned from first principles and two of its five items were
-wrong. What follows is ordered by what outsiders actually did.
+### #1 — Make the claims checkable by someone who does not trust us (~1 day)
 
-### #1 — A curator evaluated us and said no, in writing
+Not more numbers. One command a stranger runs that verifies *our own honesty*, with no key and none
+of our data.
 
-`Snseam/awesome-agent-memory` issue #19, 2026-08-03, lists inspeximus among entries deliberately not
-promoted, with the reason attached: *"GitHub-only or vendor/self-claimed benchmark signals"*.
+`python claims_audit.py` already does it in 40 seconds: every published number, whether it is
+registered, whether its pin resolves, whether a committed command reproduces it — including 2 rows
+marked WITHDRAWN. A register that admits withdrawals is the opposite of a marketing signal, and
+nobody outside has seen it.
 
-That is the single most valuable sentence anyone outside this project has ever written about us, and
-it names two separate defects. **GitHub-only**: nothing about the project exists anywhere a curator
-counts as independent. **Self-claimed benchmark signals**: every number we publish was produced by
-us, measured by us, on a harness we wrote. We have been treating that as rigour. A curator reads it
-as marketing, and he is not wrong to, because there is no way for him to tell the two apart from
-outside.
+Ship it as the visible answer: the command and its output in the README and on the site, above the
+benchmark table. Same for `probes/integrity_bench_revert.py --judge local`, which runs free and
+offline and prints its own caveat that it is not comparable with the openai-judged figures. Verified
+tonight from a clean directory: `revert_success_rate 1.0`, no key, no network.
 
-The fix is not more benchmarks. It is making our numbers checkable by someone who does not trust us:
-a third party able to re-run the claim without our machine, our data or our judge, and a result that
-does not depend on any of the three. We already have one honest instrument for this and shipped it
-without noticing what it was for. `probes/integrity_bench_revert.py --judge local` runs free, offline,
-deterministically, and prints its own caveat that it is not comparable with the openai-judged figures.
-That is the shape the whole benchmark surface should take.
+### #2 — Answer the one person who ever tried it (30 minutes, 41 days late)
 
-### #2 — The one outsider who tried it hit a wall, and we never told him it was gone
+`DanceNitra/inspeximus` issue #1, opened 2026-07-15 by @mioimotoai-lgtm: our documented benchmark
+command died with `FileNotFoundError: server/.env` on a clean clone, before argparse ran, and
+overwrote a real `OPENAI_API_KEY` if one was set. He wrote a precise report with a proposed fix.
 
-`DanceNitra/inspeximus` issue #1, opened 2026-07-15 by @mioimotoai-lgtm: the benchmark command in our
-own docs died with `FileNotFoundError: server/.env` on a clean clone, before argparse ran, because the
-loader opened a path relative to the current directory that has never been in the repository. It also
-overwrote a real `OPENAI_API_KEY` already in the environment.
+**The code is fixed** and credits him by name in its docstring; `--judge local` is the second contract
+he proposed. **The issue is still open and he has never been told.** That is the entire population of
+people who tried this hard enough to find a fault.
 
-**The code is fixed** and the fix credits him by name in its docstring. Verified tonight from a clean
-directory: `--help` works, and `--systems inspeximus --judge local --n 3` completes free and offline
-with `revert_success_rate 1.0` and an explicit non-comparability notice. **The issue is still open and
-he has never been answered**, 41 days later. He wrote a careful, correct, reproducible report with a
-proposed fix, and got silence. That is the entire population of people who have ever tried this
-product hard enough to find something wrong.
+### #3 — One click to runnable code (~half a day)
 
-### #3 — Nothing compounds after a release
+A quickstart page with the five-line correction demo, `pip install inspeximus`, the line "no API key,
+no service, 192 ms", and the MCP install. Move the hero from "Star on GitHub" to it. Then link
+`examples/`, `docs/INTEGRATIONS.md` and `claims_audit.py` from README and site — half an hour that
+turns three invisible assets into visible ones.
 
-Downloads track our own upload days at r = 0.96. We have no surface that keeps working once we stop
-publishing. In order of likely payoff: being what an assistant answers when asked for memory that
-handles corrections; being findable by the problem rather than by our name, which requires writing the
-problem in the words people use when it happens to them; and the MCP server, which reaches Claude Code
-and Cursor users without anyone making a `pip install` decision.
+### #4 — Define the second minute (~half a day)
 
-### #4 — The second minute is undefined
+After `revert()` the README changes subject. Add what comes next: putting it under a real agent, the
+MCP install, behaviour at ten thousand records. With 28 unique visitors a fortnight, every one who
+leaves with nowhere to go is a measurable loss.
 
-The first thirty seconds are excellent and end at `revert()`. What to do next is documented nowhere:
-putting it under a real agent, the MCP install, behaviour at ten thousand records. 28 unique visitors
-in fourteen days is a small enough number that every one of them who left with nowhere to go matters.
+### #5 — Sharpen the pitch against Cognee, who arrived on our ground (~1 day)
 
-### #5 — core.py is 963 KB, and splitting it is NOT the priority I said it was
+In the last five weeks Cognee shipped deterministic no-LLM supersession (PR #4084, 07-28) and an
+append-only SHA-256-chained audit ledger with `verify_chain()` (PR #4476, 08-14), and renamed its API
+to `remember` / `recall` / `improve` / `forget` — our verbs. The generic "determinism" pitch is gone.
 
-I had this first. An audit of the file refuted the premise: **56% of it is explanatory prose**, 296 KB
-of comments and 244 KB of docstrings against 423 KB of executable code. The megabyte is not opacity, it
-is the audit trail, and the problem is navigation. A full split is 14 to 20 hours, touches 56 names
-imported from `inspeximus.core` across 70 test files (28 of them private), and carries one specific
-trap: `perf/gate.py` patches `core._dump_store`, so if `_save` moves modules the patch silently stops
-matching and the perf gate reports PASS over an unmeasured target. That is our own oldest failure
-class, waiting inside a refactor nobody asked for.
+What survives is specific, and their own source shows it.
+`cognee/modules/graph/utils/temporal_conflict_resolver.py:76`, fetched and read:
 
-Do the cheap 5% instead, about two hours: extract only the non-class 116 KB into `_crypto.py`,
-`_extract.py` and `_constants.py`, which has no method fan-out, and generate `docs/CORE_MAP.md` from
-the AST — every subsystem with its line range, size and public methods, regenerated in CI so it cannot
-drift. That delivers the auditability claim as a map rather than an apology, and leaves the working
-product alone.
+```python
+winners[key] = max(members, key=lambda i: _recency_key(i, edges[i][3]))
+```
 
-## 5. What this plan is still missing
+Recency wins. A restatement of a value a correction retired arrives later, becomes most recent, and
+takes the key back. Their own open issue #4030 is that behaviour in the wild. Both new features also
+default OFF (`provenance_tracking`, `contradiction_detection`), and supersession only fires on
+relationships the caller declares.
 
-The competitive picture is being refreshed as this is written; the 2026-07-20 scan is five weeks old
-and section 2's claim that mem0 keeps an LLM on the write path needs re-checking before it is repeated
-anywhere public. Everything else above is measured, and each measurement names the command or the URL
-that produced it.
+So the claim is not "we are deterministic" but **value-keyed supersession that survives a restatement,
+on by default, with nothing for the caller to declare** — testable in one command, which makes it the
+same work as #1.
+
+### #6 — core.py is 963 KB, and splitting it is NOT the priority I said it was
+
+I had this first; an audit refuted the premise. **56% of the file is explanatory prose** — 296 KB of
+comments and 244 KB of docstrings against 423 KB of executable code. The megabyte is the audit trail,
+not opacity; the problem is navigation. A full split is 14 to 20 hours across 56 names imported from
+`inspeximus.core` in 70 test files (28 of them private), and carries one specific trap: `perf/gate.py`
+patches `core._dump_store`, so moving `_save` would make the patch silently stop matching and **the
+perf gate would report PASS over a target it no longer sees** — our oldest failure class, waiting
+inside a refactor nobody asked for.
+
+Do the cheap 5% instead, about two hours: extract the non-class 116 KB into `_crypto.py`,
+`_extract.py`, `_constants.py`, which has no method fan-out, and generate `docs/CORE_MAP.md` from the
+AST — every subsystem with its line range, size and public methods, regenerated in CI so it cannot
+drift. Auditability as a map rather than an apology.
+
+## 5. Corrected here, and one thing that was not
+
+- "We are shrinking" (§1) — **false**. The package was four days old.
+- "Split core.py first" (§4 #6) — **refuted by measurement**, dropped to last.
+- A competitor scan reported that our published "Zep LongMemEval 71.2%" was really the full-context
+  baseline. **I read the source before changing anything: the table is `GPT-4o [Zep 71.2, Full-context
+  60.2] | GPT-4o-mini [Zep 63.8, Full-context 55.4]`.** 71.2% is Zep. Our citation, in five places
+  including `docs/CLAIMS.md` row 35, is correct and stays. Checking before correcting is the only
+  reason a right number did not become a wrong one.
