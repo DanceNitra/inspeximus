@@ -242,10 +242,16 @@ def main() -> int:
                "results": merged}, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 
     print("\n=== WHO RESOLVES IT ===")
+    # A READER RUNNING ONE ARM SEES ALL OF THEM, because results are merged and the shipped
+    # receipt carries competitor rows they did not measure. Mark what came from THIS run, or
+    # the table reads as though their laptop produced numbers that took twelve minutes and an
+    # API key. Measured on a fresh clone: `--systems inspeximus` printed a hindsight row.
     for k, v in merged.items():
+        _mine = k in out
+        tag = "" if _mine else "   [from the shipped receipt, not this run]"
         print(f"  {k:11s} store-resolved={v['store_resolution_rate']:.2f}  "
               f"(resolved={v['resolved_at_store']} both={v['both_returned']} "
-              f"stale={v['only_stale']} neither={v['neither']}, n={v['n']})")
+              f"stale={v['only_stale']} neither={v['neither']}, n={v['n']}){tag}")
     print(f"\nwrote {p}")
     return 0
 

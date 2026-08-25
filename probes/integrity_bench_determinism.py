@@ -187,13 +187,19 @@ def main() -> int:
                "results": merged}, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 
     print("\n=== REPRODUCIBLE STATE ===")
+    # A READER RUNNING ONE ARM SEES ALL OF THEM, because results are merged and the shipped
+    # receipt carries competitor rows they did not measure. Mark what came from THIS run, or
+    # the table reads as though their laptop produced numbers that took twelve minutes and an
+    # API key. Measured on a fresh clone: `--systems inspeximus` printed a hindsight row.
     for k, v in merged.items():
+        _mine = k in out
+        tag = "" if _mine else "   [from the shipped receipt, not this run]"
         if "error" in v:
             print(f"  {k:11s} ERROR {v['error'][:60]}")
             continue
         print(f"  {k:11s} byte-identical={v['byte_identical']}  differing={v['cases_that_differ']}"
               f"/{v['n']}  model-calls/run={v['model_calls_per_run']}  "
-              f"{v['seconds_run1']}s + {v['seconds_run2']}s")
+              f"{v['seconds_run1']}s + {v['seconds_run2']}s{tag}")
     print(f"\nwrote {p}")
     return 0
 
