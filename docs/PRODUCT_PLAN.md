@@ -72,6 +72,24 @@ repo the whole time, unlinked.
 download table is the argument: mem0 does not have 4M installs because of its LOCOMO score. To a
 curator, a number we publish is one more self-claimed signal.
 
+**And the mechanism is not what I assumed.** I wrote that langmem has 708K downloads "because
+LangChain ships it". Checked against PyPI `requires_dist`: **langchain 1.3.17 and langgraph 1.2.11 do
+not depend on langmem** — the edge runs the other way, langmem depends on them. No framework depends
+on any of these packages, mem0 included. Installs come from being the **named default in the scaffold
+people copy**: tutorials, an org namespace (`langchain-ai/` buys langmem 447 downloads per star
+against mem0ai's 64), and academic benchmark harnesses that pin it — then multiplied 50-450x per real
+adopter by Linux CI and container rebuilds. claude-mem shows a second channel invisible to package
+stats entirely: 91,739 stars but only 66k npm downloads, because it installs via
+`/plugin marketplace add`, and it is vendored into 25+ third-party plugin bundles.
+
+Distribution is won at the template and marketplace layer, not in the dependency graph. That makes
+our MCP server and the Claude Code plugin path more important than any adapter, and it is why #3
+below is about being one click from runnable code rather than about integrations.
+
+**A caution on our own number.** Ours is **67.4% mirrors** (51,530 with, 16,810 without over 180
+days) against langmem's **0.3%**. Any raw comparison flatters us, and the 75% null-user-agent share
+above is the same problem seen from the other side.
+
 **Not a rewrite.** Everything below lands on what already exists.
 
 ## 4. The work, ordered by evidence
@@ -114,7 +132,22 @@ After `revert()` the README changes subject. Add what comes next: putting it und
 MCP install, behaviour at ten thousand records. With 28 unique visitors a fortnight, every one who
 leaves with nowhere to go is a measurable loss.
 
-### #5 — Sharpen the pitch against Cognee, who arrived on our ground (~1 day)
+### #5 — Re-aim: two competitors arrived on our ground in five weeks (~1 day)
+
+**mem0 shipped supersession on 2026-08-04.** "Dream" flags a contradicted fact and links it to its
+replacement, always-on, non-destructive, with `latest_only=true`. Four things keep our position, each
+checked in their source and docs: it is **"Not available" in OSS** (`supersede` / `latest_only` absent
+from `mem0/memory/main.py`, control: `vector_store` 96 hits); the decision mechanism is undisclosed
+and no determinism is claimed; the underlying chain shipped 2026-05-27, before the window; and their
+docs gate it to Pro at $249 while the blog says all plans.
+
+More useful than any of that: **Dream created an erasure gap and they documented it rather than
+closing it.** mem0's own 2026-08-12 governance post states `delete()` does not remove what Dream
+superseded unless you pass `delete_linked=True`. Non-destructive supersession plus non-cascading
+delete is our thesis, written by them. Their conflict-loss issue #4896 is also closed `not_planned`,
+and their README still says *"Memories accumulate; nothing is overwritten."*
+
+**And Cognee went further.**
 
 In the last five weeks Cognee shipped deterministic no-LLM supersession (PR #4084, 07-28) and an
 append-only SHA-256-chained audit ledger with `verify_chain()` (PR #4476, 08-14), and renamed its API
@@ -155,6 +188,8 @@ drift. Auditability as a map rather than an apology.
 
 - "We are shrinking" (§1) — **false**. The package was four days old.
 - "Split core.py first" (§4 #6) — **refuted by measurement**, dropped to last.
+- "langmem is big because LangChain ships it" (§3) — **false**, verified against PyPI metadata.
+  No framework depends on any of these packages.
 - A competitor scan reported that our published "Zep LongMemEval 71.2%" was really the full-context
   baseline. **I read the source before changing anything: the table is `GPT-4o [Zep 71.2, Full-context
   60.2] | GPT-4o-mini [Zep 63.8, Full-context 55.4]`.** 71.2% is Zep. Our citation, in five places
