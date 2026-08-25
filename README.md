@@ -200,6 +200,8 @@ not be the same instrument.
 | [EU AI Act evidence](docs/AI_ACT.md) | Article 12 logging, mapped to what the store already keeps |
 | [MCP tools](MCP_LISTINGS.md) | all 73, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |
+| [Runnable examples](examples/) | working scripts rather than snippets |
+| [Framework adapters](docs/INTEGRATIONS.md) | which are verified against a live install, and which are recorded broken |
 | [Changelog](CHANGELOG.md) | what changed and why, including what we got wrong |
 
 ---
