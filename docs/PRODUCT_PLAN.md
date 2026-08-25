@@ -33,12 +33,30 @@ does what the front page says it does, in under a fifth of a second.
 | letta | 204,800 | 15× |
 | **inspeximus** | **14,117** | — |
 
-**And we are shrinking, not growing.** Weekly, most recent last: 6,495 / 2,595 / 2,355 / 2,847 /
-2,469. The first two weeks average 4,545; the last two average 2,658. That is **0.58×**. Week 30 was
-a spike that decayed to baseline in about two weeks, and the baseline has been flat since.
+**CORRECTION, same night, and it kills my own reading of that table.** I first wrote that we are
+shrinking, citing weekly downloads 6,495 / 2,595 / 2,355 / 2,847 / 2,469 and a 0.58x ratio. That was
+an invention laid on a real number. **The package's first upload to PyPI was 2026-07-21**, so week 30
+is week one and there is no earlier baseline to decline from. The "decay" is our own release cadence:
+113 versions in five weeks, 40 uploads on 2026-07-25 alone, and downloads track upload days at
+r = 0.96.
 
-The lesson in that table is the plan's foundation: **a post buys a spike that decays in two weeks.**
-Whatever we do next has to compound instead.
+**Worse, the downloads are mostly not people.** 75.0% of them report no Python version and no OS.
+The peer rate is 2.7% for mem0ai and 0.6% for letta, so we are ~28x above it:
+
+| package | downloads with no Python version reported |
+|---|---:|
+| letta | 0.6% |
+| mem0ai | 2.7% |
+| **inspeximus** | **75.0%** |
+
+Pip-shaped traffic is about 4,195 over 35 days, ~120/day, and 69% of that is a single Python minor
+version, which is a CI-image signature rather than a user base. **Zero packages depend on us**: no
+`inspeximus` in any requirements.txt, uv.lock or poetry.lock on GitHub outside our own repos. Repo
+traffic over 14 days was 37 views from 28 unique visitors against roughly 10,000 "downloads".
+
+**The honest state is pre-adoption, not early traction.** Three people outside this project have ever
+engaged with it: one filed a bug, one posted it to HN (2 points, 0 comments), and one curator looked
+and declined.
 
 ## 2. What we are not going to do, and why
 
@@ -58,58 +76,77 @@ understand in thirty seconds that it is the only thing that fixes it determinist
 
 Today they will not, for three measurable reasons.
 
-## 4. The four things to fix, in order
+## 4. The five things to fix, reordered by evidence
 
-### #1 — We sell auditability and ship a 963 KB core
+The first ordering in this document was reasoned from first principles and two of its five items were
+wrong. What follows is ordered by what outsiders actually did.
 
-`inspeximus/core.py` is **963,295 bytes**; `cli.py` 89 KB, `audit_bundle.py` 72 KB, 22,205 lines
-across the package. The pitch is *auditable, reproducible, zero-dependency*, and the first thing a
-careful buyer does is open the file. Nobody audits a megabyte.
+### #1 — A curator evaluated us and said no, in writing
 
-This is the highest-leverage fix because it is the only one that attacks the claim itself. Split the
-core along the seams the API already implies (store/recall, supersession, erasure, compliance,
-crypto) with the public surface unchanged, so `from inspeximus import Inspeximus` keeps working
-byte-for-byte. Success is measured, not asserted: no public name moves, the full suite passes, and
-the largest single file drops below 100 KB.
+`Snseam/awesome-agent-memory` issue #19, 2026-08-03, lists inspeximus among entries deliberately not
+promoted, with the reason attached: *"GitHub-only or vendor/self-claimed benchmark signals"*.
 
-### #2 — Nothing compounds after the spike
+That is the single most valuable sentence anyone outside this project has ever written about us, and
+it names two separate defects. **GitHub-only**: nothing about the project exists anywhere a curator
+counts as independent. **Self-claimed benchmark signals**: every number we publish was produced by
+us, measured by us, on a harness we wrote. We have been treating that as rigour. A curator reads it
+as marketing, and he is not wrong to, because there is no way for him to tell the two apart from
+outside.
 
-We have no mechanism that keeps producing discovery once a post falls off the front page. The
-adapters exist (11 framework extras) but an adapter is not a default; being installed is not being
-reached for. The compounding surfaces, in the order they pay:
+The fix is not more benchmarks. It is making our numbers checkable by someone who does not trust us:
+a third party able to re-run the claim without our machine, our data or our judge, and a result that
+does not depend on any of the three. We already have one honest instrument for this and shipped it
+without noticing what it was for. `probes/integrity_bench_revert.py --judge local` runs free, offline,
+deterministically, and prints its own caveat that it is not comparable with the openai-judged figures.
+That is the shape the whole benchmark surface should take.
 
-- **Being what an assistant answers with.** People now ask a model "python agent memory that handles
-  corrections" more often than they search. That answer is shaped by what is written where models
-  read: the README's first screen, the PyPI description, and the docs pages that name the problem in
-  the user's words rather than ours.
-- **Being findable by the problem, not the product name.** We have no page that says "a corrected
-  fact keeps coming back" in the words someone types when it happens to them.
-- **The MCP surface.** `pip install` is a Python decision; MCP reaches every Claude Code and Cursor
-  user without one. We already ship the server. It is under-exploited relative to its cost.
+### #2 — The one outsider who tried it hit a wall, and we never told him it was gone
 
-### #3 — The second minute is undefined
+`DanceNitra/inspeximus` issue #1, opened 2026-07-15 by @mioimotoai-lgtm: the benchmark command in our
+own docs died with `FileNotFoundError: server/.env` on a clean clone, before argparse ran, because the
+loader opened a path relative to the current directory that has never been in the repository. It also
+overwrote a real `OPENAI_API_KEY` already in the environment.
 
-The first thirty seconds are excellent and end at `revert()`. What the visitor should do in the next
-five minutes is not laid out anywhere: how to put this under a real agent, what the MCP install is,
-what happens at ten thousand records. A visitor who is convinced and then has nowhere to go leaves
-convinced and empty-handed.
+**The code is fixed** and the fix credits him by name in its docstring. Verified tonight from a clean
+directory: `--help` works, and `--systems inspeximus --judge local --n 3` completes free and offline
+with `revert_success_rate 1.0` and an explicit non-comparability notice. **The issue is still open and
+he has never been answered**, 41 days later. He wrote a careful, correct, reproducible report with a
+proposed fix, and got silence. That is the entire population of people who have ever tried this
+product hard enough to find something wrong.
 
-### #4 — We do not know why the ones who came, came
+### #3 — Nothing compounds after a release
 
-14,117 downloads a month is small but it is not zero, and we have never asked what those people
-wanted. The W30 spike had a cause we can name; the 2,500/week baseline does not. Until we know which
-half of the pitch pulled them, every other decision is a guess dressed as a plan.
+Downloads track our own upload days at r = 0.96. We have no surface that keeps working once we stop
+publishing. In order of likely payoff: being what an assistant answers when asked for memory that
+handles corrections; being findable by the problem rather than by our name, which requires writing the
+problem in the words people use when it happens to them; and the MCP server, which reaches Claude Code
+and Cursor users without anyone making a `pip install` decision.
 
-## 5. What is still missing from this plan, stated rather than hidden
+### #4 — The second minute is undefined
 
-Two inputs are guesses right now, and both need evidence before section 4's ordering is trustworthy:
+The first thirty seconds are excellent and end at `revert()`. What to do next is documented nowhere:
+putting it under a real agent, the MCP install, behaviour at ten thousand records. 28 unique visitors
+in fourteen days is a small enough number that every one of them who left with nowhere to go matters.
 
-1. **What competitors shipped in the last 35 days.** The competitive scan behind our positioning is
-   from 2026-07-20. Five weeks is a long time in this category.
-2. **What actually makes a developer install a memory library.** Section 4 asserts an ordering from
-   first principles. The honest version of it reads issue threads, first-run docs and the places
-   people ask, and lets the evidence order the list.
+### #5 — core.py is 963 KB, and splitting it is NOT the priority I said it was
 
-Neither is expensive, but both cost model calls, so they are named here rather than assumed. The
-plan above is the version buildable from what could be measured locally tonight, and the section-4
-ordering is the part most likely to move once those two land.
+I had this first. An audit of the file refuted the premise: **56% of it is explanatory prose**, 296 KB
+of comments and 244 KB of docstrings against 423 KB of executable code. The megabyte is not opacity, it
+is the audit trail, and the problem is navigation. A full split is 14 to 20 hours, touches 56 names
+imported from `inspeximus.core` across 70 test files (28 of them private), and carries one specific
+trap: `perf/gate.py` patches `core._dump_store`, so if `_save` moves modules the patch silently stops
+matching and the perf gate reports PASS over an unmeasured target. That is our own oldest failure
+class, waiting inside a refactor nobody asked for.
+
+Do the cheap 5% instead, about two hours: extract only the non-class 116 KB into `_crypto.py`,
+`_extract.py` and `_constants.py`, which has no method fan-out, and generate `docs/CORE_MAP.md` from
+the AST — every subsystem with its line range, size and public methods, regenerated in CI so it cannot
+drift. That delivers the auditability claim as a map rather than an apology, and leaves the working
+product alone.
+
+## 5. What this plan is still missing
+
+The competitive picture is being refreshed as this is written; the 2026-07-20 scan is five weeks old
+and section 2's claim that mem0 keeps an LLM on the write path needs re-checking before it is repeated
+anywhere public. Everything else above is measured, and each measurement names the command or the URL
+that produced it.
