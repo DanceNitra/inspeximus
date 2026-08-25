@@ -50,7 +50,7 @@ def _subproc(value):
     env.pop("INSPEXIMUS_ECHO_GUARD", None)
     if value is not None:
         env["INSPEXIMUS_ECHO_GUARD"] = value
-    out = subprocess.run([sys.executable, "-c", _PROG], capture_output=True, text=True, env=env)
+    out = subprocess.run([sys.executable, "-c", _PROG], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     assert out.returncode == 0, out.stderr[-400:]
     return out.stdout.strip()
 

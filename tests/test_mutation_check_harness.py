@@ -119,7 +119,7 @@ def test_the_cli_exits_non_zero_when_a_mutation_was_skipped():
                      "old": "this string is not in the file", "new": "x",
                      "tests": ["tests/test_mutation_check_harness.py::test_a_failure_counts_as_a_kill"]}], fh)
     r = subprocess.run([sys.executable, os.path.join("tools", "mutation_check.py"), p],
-                       cwd=ROOT, capture_output=True, text=True,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        env={**os.environ, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode != 0, r.stdout + r.stderr
     assert "skipped" in r.stdout, r.stdout
@@ -174,7 +174,7 @@ def test_the_cli_refuses_an_empty_spec():
     with open(p, "w", encoding="utf-8") as fh:
         fh.write("[]")
     r = subprocess.run([sys.executable, os.path.join("tools", "mutation_check.py"), p],
-                       cwd=ROOT, capture_output=True, text=True,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        env={**os.environ, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode != 0, "a run over zero mutations must not exit green"
 
@@ -193,7 +193,7 @@ def test_a_mutation_run_leaves_no_tracked_file_dirty():
 
     def dirty():
         return subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
-                              cwd=ROOT, capture_output=True, text=True).stdout
+                              cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
 
     before = dirty()
     mutation_check.run([{

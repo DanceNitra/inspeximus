@@ -27,7 +27,7 @@ def _cli(store_path, *args):
     env = {**os.environ, "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", ""),
            "PYTHONIOENCODING": "utf-8"}
     r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", str(store_path), *args],
-                       cwd=ROOT, capture_output=True, text=True, env=env, timeout=300)
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, timeout=300)
     assert r.returncode == 0, r.stderr[-600:]
     return r.stdout
 

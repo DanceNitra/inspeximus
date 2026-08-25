@@ -193,7 +193,7 @@ def test_the_cli_does_not_report_a_write_it_could_not_persist():
     open(blocker, "w", encoding="utf-8").write("i am a file")
     out = subprocess.run([sys.executable, "-m", "inspeximus.cli",
                           "--path", os.path.join(blocker, "m.json"),
-                          "remember", "critical fact"], capture_output=True, text=True)
+                          "remember", "critical fact"], capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert out.returncode != 0
     assert "NOT PERSISTED" in out.stderr
 
@@ -202,5 +202,5 @@ def test_the_cli_still_succeeds_on_a_writable_store():
     import subprocess
     p = _path()
     out = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p, "remember", "fine"],
-                         capture_output=True, text=True)
+                         capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert out.returncode == 0 and os.path.exists(p)

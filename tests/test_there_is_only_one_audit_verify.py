@@ -75,7 +75,7 @@ def bundle_file():
 
 def _alias(*argv):
     return subprocess.run([sys.executable, "-m", "inspeximus.audit_bundle", *argv],
-                          capture_output=True, text=True, env=ENV)
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", env=ENV)
 
 
 def test_the_alias_now_offers_the_pin_it_used_to_lack(bundle_file):

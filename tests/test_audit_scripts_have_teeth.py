@@ -29,7 +29,7 @@ sys.path.insert(0, ROOT)
 
 def _run(script, *args, env=None):
     return subprocess.run([sys.executable, script, "--local", *args], cwd=ROOT, capture_output=True,
-                          text=True, timeout=900,
+                          text=True, encoding="utf-8", errors="replace", timeout=900,
                           env={**os.environ, "PYTHONIOENCODING": "utf-8", **(env or {})})
 
 

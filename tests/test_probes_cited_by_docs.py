@@ -350,7 +350,7 @@ def test_a_standalone_cited_probe_still_runs(probe):
     green whenever an optional dependency is in reach -- a lesson this repository had already written
     down and I repeated anyway. The skip below is therefore narrow and declared."""
     r = subprocess.run([sys.executable, os.path.join("probes", probe)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=_budget(probe),
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=_budget(probe),
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
                             + os.environ.get("PYTHONPATH", "")})
@@ -487,7 +487,7 @@ def test_an_uncited_probe_still_runs(probe):
     anything else is a defect. An uncited probe that fails is either rot or -- as it turned out twice --
     a live product bug wearing a rotten probe's clothes."""
     r = subprocess.run([sys.executable, os.path.join("probes", probe)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=_budget(probe),
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=_budget(probe),
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
                             + os.environ.get("PYTHONPATH", "")})

@@ -35,7 +35,7 @@ ENV = {**os.environ, "PYTHONPATH": ROOT, "PYTHONIOENCODING": "utf-8"}
 
 def _install(tmp_path):
     subprocess.run([sys.executable, "-m", "inspeximus.claude_code", "--install"],
-                   cwd=str(tmp_path), capture_output=True, text=True, timeout=180,
+                   cwd=str(tmp_path), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,
                    env=ENV, check=True)
     with open(os.path.join(str(tmp_path), ".claude", "settings.json"), encoding="utf-8") as fh:
         return json.load(fh)
@@ -45,7 +45,7 @@ def _fire(command):
     ev = {"hook_event_name": "PreToolUse", "tool_name": "Bash",
           "tool_input": {"command": command}}
     return subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(ev),
-                          capture_output=True, text=True, timeout=180, env=ENV)
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180, env=ENV)
 
 
 def _delivered(r):

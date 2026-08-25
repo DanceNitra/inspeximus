@@ -54,7 +54,7 @@ def _run(cwd, *args, key=None):
         env["OPENAI_API_KEY"] = key
     env["PYTHONIOENCODING"] = "utf-8"
     return subprocess.run([sys.executable, ENTRY, *args], cwd=cwd, env=env,
-                          capture_output=True, text=True, timeout=600)
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
 
 
 @pytest.fixture(scope="module")
@@ -141,11 +141,11 @@ def test_the_echo_cell_inherited_the_same_defect_and_the_same_fix(tree):
     env.pop("OPENAI_API_KEY", None)
     env["PYTHONIOENCODING"] = "utf-8"
     refuse = subprocess.run([sys.executable, entry, "--systems", "inspeximus"], cwd=tree, env=env,
-                            capture_output=True, text=True, timeout=600)
+                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
     assert "FileNotFoundError" not in refuse.stdout + refuse.stderr
     assert refuse.returncode == 2, (refuse.stdout + refuse.stderr)[-800:]
     free = subprocess.run([sys.executable, entry, "--systems", "inspeximus",
                            "--judge", "local", "--n", "20"], cwd=tree, env=env,
-                          capture_output=True, text=True, timeout=600)
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
     assert free.returncode == 0, (free.stdout + free.stderr)[-1200:]
     assert "resurrection" in free.stdout, free.stdout[-600:]

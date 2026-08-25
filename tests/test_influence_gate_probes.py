@@ -51,7 +51,7 @@ def test_the_mechanism_arm_needs_no_torch(gate):
         "sys.meta_path.insert(0, Block())\n"
         "import agentpoison_influence_gate as G\n"
         "print(G.main([]))\n")
-    r = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True,
+    r = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        timeout=300, env={**os.environ, "PYTHONIOENCODING": "utf-8",
                                          "PYTHONPATH": ROOT + os.pathsep + PROBES})
     assert r.returncode == 0, f"the mechanism arm imported torch:\n{r.stderr[-1500:]}"
@@ -140,7 +140,7 @@ def test_the_shared_corpus_module_imports_without_torch():
             "import agentpoison_multiretriever_check as M\n"
             "assert len(M.CORPUS) > 20 and M.POISON_PAYLOAD and len(M.TEST_CARRIERS) > 4\n"
             "print('ok')\n")
-    r = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, timeout=300,
+    r = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + PROBES})
     assert r.returncode == 0, r.stderr[-1200:]

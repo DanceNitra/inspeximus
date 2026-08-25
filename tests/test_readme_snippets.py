@@ -53,7 +53,7 @@ def test_snippet_1_cli_residue_exits_nonzero_and_names_the_kinds():
     con.close()
 
     r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "residue", "--root", d,
-                        "--value", SECRET], capture_output=True, text=True)
+                        "--value", SECRET], capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert r.returncode == 1, f"the README promises a non-zero exit on residue: {r.stdout}"
     assert "PLAIN" in r.stdout and "LIVE" in r.stdout, r.stdout
     assert SECRET not in r.stdout, "and it must not print the value it was asked to hunt"
@@ -63,7 +63,7 @@ def test_snippet_1_exits_zero_when_clean():
     """The other half: a gate that always fails is not a gate."""
     r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "residue",
                         "--root", tempfile.mkdtemp(), "--value", SECRET],
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert r.returncode == 0, r.stdout
 
 

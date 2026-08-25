@@ -75,7 +75,7 @@ def test_the_cli_writes_to_a_nested_path_too():
     d = tempfile.mkdtemp()
     p = os.path.join(d, "nested", "deep", "m.json")
     out = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p, "remember", "a fact"],
-                         capture_output=True, text=True)
+                         capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert out.returncode == 0, out.stdout + out.stderr
     assert os.path.exists(p)
 

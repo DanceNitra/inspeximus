@@ -34,7 +34,7 @@ pytestmark = pytest.mark.xdist_group("echo_policy_panel")
 @pytest.fixture(scope="module")
 def panel():
     r = subprocess.run([sys.executable, os.path.join("probes", "echo_policy_panel.py")],
-                       cwd=ROOT, capture_output=True, text=True, timeout=180,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", "")})
     assert r.returncode == 0, f"the panel reports a mismatch with the docstring:\n{r.stdout[-1200:]}"

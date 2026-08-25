@@ -55,6 +55,9 @@ FOREIGN_API = {
     "invoke": "LangChain -- `.invoke()` on a runnable, called on our adapter, not defined by us",
     "save": "CrewAI storage protocol -- the method name their interface requires",
     "register": "framework registry calls shown in the integration snippets",
+    "verify_chain": "Cognee -- the tamper check on the SHA-256 audit ledger it shipped in PR #4476 "
+                    "(2026-08-14), named in docs/PRODUCT_PLAN.md where we compare their supersession "
+                    "to ours",
 }
 
 #: Names that are types, decorators or documented constructor-level things rather than capabilities.

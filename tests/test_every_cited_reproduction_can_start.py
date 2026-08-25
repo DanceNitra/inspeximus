@@ -80,7 +80,7 @@ def test_cited_script_survives_import_from_a_foreign_directory(script, tmp_path)
     code = "import runpy;runpy.run_path(%r, run_name='__not_main__')" % path
     try:
         p = subprocess.run([sys.executable, "-c", code], cwd=str(tmp_path), env=env,
-                           capture_output=True, text=True, timeout=300)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300)
     except subprocess.TimeoutExpired:
         pytest.fail(f"{script} did not finish its module level in 300s from a foreign cwd. "
                     f"If the machine is otherwise busy this is the harness, not the script -- "

@@ -289,7 +289,7 @@ def test_the_cli_runs_both_phases(tmp_path):
         env = {**os.environ, "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", ""),
                "PYTHONIOENCODING": "utf-8"}
         r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", str(s), *args],
-                           cwd=ROOT, capture_output=True, text=True, env=env, timeout=300)
+                           cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, timeout=300)
         assert r.returncode == 0, f"CLI {args} failed: {r.stderr[-500:]}"
         return r.stdout
 
@@ -318,7 +318,7 @@ def test_the_cli_emits_ONE_json_envelope_for_all_three_modes(tmp_path):
         env = {**os.environ, "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", ""),
                "PYTHONIOENCODING": "utf-8"}
         r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", str(s), *args],
-                           cwd=ROOT, capture_output=True, text=True, env=env, timeout=300)
+                           cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, timeout=300)
         assert r.returncode == expect, f"{args} -> {r.returncode}: {r.stderr[-400:]}"
         return r
 
@@ -344,7 +344,7 @@ def test_the_cli_refuses_a_negative_followup_cap(tmp_path):
            "PYTHONIOENCODING": "utf-8"}
     r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", str(s),
                         "recall-iterative", "q", "--max-followups", "-5"],
-                       cwd=ROOT, capture_output=True, text=True, env=env, timeout=300)
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, timeout=300)
     assert r.returncode == 2 and "must be >= 0" in r.stderr, (r.returncode, r.stderr[-300:])
 
 

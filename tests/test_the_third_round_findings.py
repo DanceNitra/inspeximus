@@ -43,7 +43,7 @@ def _store(d, sub, n=3, **kw):
 
 def _help(*argv):
     return subprocess.run([sys.executable, "-m", "inspeximus.cli", *argv, "--help"],
-                          capture_output=True, text=True,
+                          capture_output=True, text=True, encoding="utf-8", errors="replace",
                           env={**os.environ, "PYTHONUTF8": "1"}).stdout
 
 

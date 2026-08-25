@@ -137,7 +137,7 @@ def run_doc(workdir: Path) -> list[tuple]:
             raise AssertionError(f"{step!r}: the harness cannot run this command")
 
         argv = [idmap.get(a, a) for a in argv]      # `--derived-from <documented id>` -> this run's id
-        proc = subprocess.run(argv, capture_output=True, text=True, env=env, cwd=str(workdir))
+        proc = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, cwd=str(workdir))
         out = (proc.stdout or "") + (proc.stderr or "")
         # Learn the mapping from the ids the documentation printed to the ones just produced, in order.
         for doc_id, run_id in zip(_ID.findall("\n".join(step.expected)), _ID.findall(out)):
@@ -264,7 +264,7 @@ def test_the_doc_harness_can_fail(tmp_path):
     env["PYTHONPATH"] = str(REPO) + os.pathsep + env.get("PYTHONPATH", "")
     env.pop("INSPEXIMUS_PATH", None)
     proc = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", "./s.json", "stats"],
-                          capture_output=True, text=True, env=env, cwd=str(tmp_path))
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, cwd=str(tmp_path))
     out = (proc.stdout or "") + (proc.stderr or "")
     assert not any(to_pattern(steps[0].expected[0]).search(line) for line in out.splitlines()), out
 
@@ -297,7 +297,7 @@ def test_the_example_script_runs_and_checks_both_halves():
     env = dict(os.environ)
     env["PYTHONPATH"] = str(REPO) + os.pathsep + env.get("PYTHONPATH", "")
     env.pop("INSPEXIMUS_PATH", None)
-    proc = subprocess.run([sys.executable, str(EXAMPLE)], capture_output=True, text=True, env=env)
+    proc = subprocess.run([sys.executable, str(EXAMPLE)], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     out = (proc.stdout or "") + (proc.stderr or "")
     assert proc.returncode == 0, out
     # The script's own check() prefix, not a bare "FAIL": the transcripts it prints legitimately contain
@@ -327,7 +327,7 @@ def test_an_unsigned_certificate_says_so_instead_of_reporting_valid_signatures(t
 
     def cli(*args):
         p = subprocess.run([sys.executable, "-m", "inspeximus.cli", *args],
-                           capture_output=True, text=True, env=env, cwd=str(tmp_path))
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, cwd=str(tmp_path))
         return p.returncode, (p.stdout or "") + (p.stderr or "")
 
     # No --receipt-key-file anywhere: the tombstones are written unsigned.

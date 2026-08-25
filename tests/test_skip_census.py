@@ -161,7 +161,7 @@ def test_ci_installs_the_optional_dependencies_somewhere():
 
 def test_the_census_tool_runs_and_exits_clean():
     r = subprocess.run([sys.executable, os.path.join("tools", "skip_census.py"), "--json"],
-                       cwd=ROOT, capture_output=True, text=True,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        env={**os.environ, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode == 0, r.stderr[-800:]
     import json

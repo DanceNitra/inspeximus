@@ -195,7 +195,7 @@ def test_one_answer_over_120_runs_x_6_hash_seeds_in_every_mode():
     code = _SEED_CHILD % {"root": ROOT, "texts": TEXTS, "query": QUERY, "runs": SEED_RUNS}
     union = collections.defaultdict(set)
     for seed in SEEDS:
-        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=900,
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,
                            env={**os.environ, "PYTHONHASHSEED": seed, "PYTHONIOENCODING": "utf-8"})
         assert r.returncode == 0, r.stderr[-800:]
         lines = [ln for ln in r.stdout.splitlines() if ln.strip()]
@@ -237,7 +237,7 @@ def test_bm25_sums_its_terms_in_a_fixed_order():
     ])
     seen = set()
     for seed in ("0", "1", "2", "3", "4"):
-        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=300,
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
                            env={**os.environ, "PYTHONHASHSEED": seed, "PYTHONIOENCODING": "utf-8"})
         assert r.returncode == 0, r.stderr[-600:]
         seen.add(r.stdout.strip())
@@ -321,7 +321,7 @@ def test_the_declared_tie_order_survives_a_different_hash_seed():
             "print('|'.join(h['text'] for h in m.recall('alpha bravo charlie', k=8)))\n" % ROOT)
     want = "|".join(f"alpha bravo charlie item {i}" for i in range(7, -1, -1))
     for seed in ("0", "1", "2", "3"):
-        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=300,
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
                            env={**os.environ, "PYTHONHASHSEED": seed, "PYTHONIOENCODING": "utf-8"})
         assert r.returncode == 0, r.stderr[-600:]
         assert r.stdout.strip() == want, f"seed {seed}: {r.stdout.strip()[:120]}"

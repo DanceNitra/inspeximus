@@ -283,7 +283,7 @@ def test_the_cli_runs_and_honours_its_documented_exit_codes(tmp_path):
     r = subprocess.run([sys.executable, os.path.join("probes", "dogfood_cross_session.py"),
                         "--distractors", "120", "--siblings", "3", "--in-process",
                         "--out", str(out)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=900,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,
                        env={**os.environ, "PYTHONIOENCODING": "utf-8",
                             "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", "")})
     assert r.returncode in (0, 1), \

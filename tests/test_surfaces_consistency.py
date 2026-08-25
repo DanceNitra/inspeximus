@@ -58,7 +58,7 @@ def test_a_cli_write_does_not_resurrect_a_retired_value():
 
     subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p,
                     "remember", "region is tokyo", "--key", "region", "--object", "tokyo"],
-                   capture_output=True, text=True)
+                   capture_output=True, text=True, encoding="utf-8", errors="replace")
 
     reopened = Inspeximus(path=p)
     current = [r["object"] for r in reopened.items if r.get("key") == "region" and r["status"] == "active"]
@@ -71,10 +71,10 @@ def test_the_cli_can_write_an_attributable_record():
     `remember` had no `--source`, so nothing the CLI wrote could ever be erased by subject."""
     p = _path()
     subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p,
-                    "remember", "alice ssn 123", "--source", "alice"], capture_output=True, text=True)
+                    "remember", "alice ssn 123", "--source", "alice"], capture_output=True, text=True, encoding="utf-8", errors="replace")
     out = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p,
                           "forget-subject", "alice", "--request-id", "DSAR-1"],
-                         capture_output=True, text=True)
+                         capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert "erased 1" in out.stdout, out.stdout + out.stderr
 
 

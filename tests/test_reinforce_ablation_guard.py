@@ -118,7 +118,7 @@ def test_the_cli_exits_non_zero_when_the_guard_fires():
             "except RA.BaselineGuardError as e:\n"
             "    print('ABORTED'); sys.exit(2)\n"
             "sys.exit(0)\n" % (ROOT, os.path.join(ROOT, "probes")))
-    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=600,
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600,
                        env={**os.environ, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode == 2, "expected a non-zero exit, got %d\n%s" % (r.returncode, r.stderr[-800:])
     assert "ABORTED" in r.stdout

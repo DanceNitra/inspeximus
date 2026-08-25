@@ -222,12 +222,12 @@ def test_the_project_flag_appears_in_help_and_an_unknown_flag_is_refused():
     """The flag must be DISCOVERABLE, and a typo must not start an unscoped server that looks scoped."""
     _mcp()
     out = subprocess.run([sys.executable, "-m", "inspeximus.mcp_server", "--help"],
-                         capture_output=True, text=True)
+                         capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert out.returncode == 0, out.stderr
     assert "--project" in out.stdout
 
     typo = subprocess.run([sys.executable, "-m", "inspeximus.mcp_server", "--porject", "web"],
-                          capture_output=True, text=True)
+                          capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert typo.returncode != 0, "a mistyped scope flag must fail at launch, not start an unscoped server"
 
 

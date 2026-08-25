@@ -15,19 +15,19 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **361** numeric tokens are published across the 6 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html.
-- **199** of those are quantitative claims, in **105** registry rows below.
-- **80** rows (80/105) are reproducible by a command committed to this repository
+- **381** numeric tokens are published across the 7 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html.
+- **201** of those are quantitative claims, in **106** registry rows below.
+- **81** rows (81/106) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 25 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 162 tokens are declared non-claims — citation years,
+- The other 180 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 
 Counts by status:
 
-- `REPRODUCIBLE` — 26
+- `REPRODUCIBLE` — 27
 - `REPRODUCIBLE-WITH-DEPS` — 54
 - `PENDING-HARNESS` — 2
 - `EXTERNAL` — 21
@@ -134,14 +134,15 @@ Counts by status:
 | 95 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 96 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 97 | `index.html` | `10` `13` `3` | 10 of 13 framework adapters verified against current upstream; 3 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
-| 98 | `index.html` | `73` `0` | Homepage counter: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 99 | `index.html` | `73` | Homepage heading: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 98 | `index.html` | `73` `0` | Homepage counter: 73 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 99 | `index.html` | `73` | Homepage heading: 73 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 100 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
 | 101 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
 | 102 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
 | 103 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 104 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 105 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
+| 106 | `quickstart.html` | `187` `190` `193` | Cold start to a corrected-and-reverted fact, from a clean directory: three consecutive runs, import included, no network and no model. Quoted as three runs rather than one number because the first draft of this page said '192 ms', which was one sample presented as a constant. | **REPRODUCIBLE** | `python -c "import time;t=time.time();from inspeximus import Inspeximus;m=Inspeximus('m.json');m.remember('a',key='k');m.remember('b',key='k');m.recall('a');m.revert('k');print(int((time.time()-t)*1000),'ms')"` |
 
 ## Notes
 
@@ -192,7 +193,7 @@ Counts by status:
 
 ## Known unenforced numbers
 
-These are outside the 6 token-enforced files, so the guard above does **not** cover them.
+These are outside the 7 token-enforced files, so the guard above does **not** cover them.
 They are listed because "absent from the table" and "not a problem" are different statements,
 and here only the first one is true. None may be promoted onto the reader-facing surface while it
 still says `PENDING-HARNESS`.

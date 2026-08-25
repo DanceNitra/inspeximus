@@ -225,7 +225,7 @@ def test_the_cli_entrypoint_exits_non_zero_on_a_problem(sandbox):
 
     def gate(root):
         return subprocess.run([sys.executable, str(ROOT / "claims_audit.py"), "--numbers", "--root", str(root)],
-                              cwd=str(ROOT), capture_output=True, text=True, env=env)
+                              cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
 
     clean = gate(sandbox)
     assert clean.returncode == 0, "the untouched sandbox already fails:\n" + clean.stdout + clean.stderr

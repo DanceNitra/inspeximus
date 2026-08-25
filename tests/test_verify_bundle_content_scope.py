@@ -120,7 +120,7 @@ def test_the_cli_store_flag_catches_the_forgery(store_and_bundle):
 def _inspeximus(*args, **kw):
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return subprocess.run([sys.executable, "-m", "inspeximus.cli", *args],
-                          capture_output=True, text=True, cwd=root,
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root,
                           env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": root}, **kw)
 
 

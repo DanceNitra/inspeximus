@@ -207,7 +207,7 @@ def test_the_import_blocker_really_blocks(tmp_path):
     third-party -- but only if the blocker blocks. Aimed at a module verified to import normally
     first, so "nothing was blocked" cannot be confused with "nothing was importable"."""
     normal = subprocess.run([sys.executable, "-c", "import pytest"], cwd=ROOT,
-                            capture_output=True, text=True)
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert normal.returncode == 0, "pytest must import normally for this control to mean anything"
     blocked = release_check._blocked_run(ROOT, "import pytest")
     assert blocked.returncode != 0 and "THIRD_PARTY_BLOCKED" in blocked.stderr
@@ -270,14 +270,14 @@ def test_the_run_leaves_no_probe_churn_in_the_working_tree():
     original = receipt.read_bytes()
     try:
         assert subprocess.run([sys.executable, str(probe)], cwd=ROOT,
-                              capture_output=True, text=True).returncode == 0
+                              capture_output=True, text=True, encoding="utf-8", errors="replace").returncode == 0
         assert receipt.read_bytes() != original, \
             "the probe no longer rewrites its receipt; this fixture has nothing to restore and the " \
             "guarantee below is measuring nothing"
         receipt.write_bytes(original)
 
         snapshot = release_check._probe_snapshot(root)
-        subprocess.run([sys.executable, str(probe)], cwd=ROOT, capture_output=True, text=True)
+        subprocess.run([sys.executable, str(probe)], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
         assert receipt.name in release_check.restore_probe_snapshot(snapshot)
         assert receipt.read_bytes() == original, "the snapshot did not restore the receipt"
     finally:
@@ -519,7 +519,7 @@ def test_release_notes_check_exits_non_zero_on_a_defect(tmp_path):
     tmpl.write_text(tmpl.read_text(encoding="utf-8").replace("## What breaks", "## Nothing breaks"),
                     encoding="utf-8")
     proc = subprocess.run([sys.executable, str(root / "tools" / "release_notes.py"),
-                           "--check", "--root", str(root)], capture_output=True, text=True)
+                           "--check", "--root", str(root)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert proc.returncode != 0, proc.stdout
     assert "missing section" in proc.stdout
 
@@ -554,7 +554,7 @@ def _init_repo(tmp_path):
     env = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
            "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
     for a in (("init", "-q"), ("add", "-A"), ("commit", "-qm", "base")):
-        subprocess.run(("git",) + a, cwd=str(d), env=env, capture_output=True, text=True)
+        subprocess.run(("git",) + a, cwd=str(d), env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
     return d
 
 

@@ -277,7 +277,7 @@ def seeded_probe_run():
 
     r = subprocess.run([sys.executable, os.path.join(ROOT, "probes",
                                                      "identity_gate_supersession_probe.py")],
-                       cwd=ROOT, capture_output=True, text=True, timeout=600,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600,
                        env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
     assert r.returncode == 0, f"the probe does not run: {r.stderr[-1200:]}"
     return r

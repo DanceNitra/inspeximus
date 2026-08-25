@@ -137,7 +137,7 @@ def test_the_cli_can_pin_the_key_at_verify_time():
         # exits 2 with an empty stdout, and json.loads("") then reports a JSON error rather than the
         # usage error that actually happened.
         return subprocess.run([sys.executable, "-m", "inspeximus.cli", "--json", "audit-verify", bp,
-                               *extra], capture_output=True, text=True,
+                               *extra], capture_output=True, text=True, encoding="utf-8", errors="replace",
                               env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"})
 
     good = json.loads(run("--expected-pubkey", PK).stdout)

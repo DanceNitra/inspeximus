@@ -94,7 +94,7 @@ def transcript(tmp_path_factory):
     out = []
     for cmd, expected, want_exit in steps:
         # stderr is merged: the REFUSED verdict is a diagnostic and the page shows it inline.
-        r = subprocess.run(_argv(cmd), cwd=cwd, env=env, capture_output=True, text=True, timeout=120,
+        r = subprocess.run(_argv(cmd), cwd=cwd, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
                            stdin=subprocess.DEVNULL)
         out.append({"cmd": cmd, "expected": expected, "want_exit": want_exit,
                     "got": (r.stdout + r.stderr).strip(), "exit": r.returncode})
@@ -320,7 +320,7 @@ def test_the_cli_refuses_the_two_configurations_that_read_as_success(tmp_path):
 
     def run(*args):
         return subprocess.run([sys.executable, "-m", "inspeximus.cli", *args], cwd=d, env=env,
-                              capture_output=True, text=True, timeout=120, stdin=subprocess.DEVNULL)
+                              capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120, stdin=subprocess.DEVNULL)
 
     assert run("--receipts", "--path", "s.json", "remember", "x", "--key", "k", "--object", "1").returncode == 0
     assert run("--path", "s.json", "anchor", "--out", "head.json").returncode == 0
@@ -347,9 +347,9 @@ def test_overwriting_a_witness_secret_is_refused(tmp_path):
     env = {**os.environ, "PYTHONPATH": ROOT, "PYTHONIOENCODING": "utf-8"}
     d = str(tmp_path)
     args = [sys.executable, "-m", "inspeximus.cli", "witness", "keygen", "--out", "w.key"]
-    assert subprocess.run(args, cwd=d, env=env, capture_output=True, text=True).returncode == 0
+    assert subprocess.run(args, cwd=d, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace").returncode == 0
     before = open(os.path.join(d, "w.key"), encoding="utf-8").read()
-    again = subprocess.run(args, cwd=d, env=env, capture_output=True, text=True)
+    again = subprocess.run(args, cwd=d, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert again.returncode == 2, again.stdout + again.stderr
     assert open(os.path.join(d, "w.key"), encoding="utf-8").read() == before, "the secret was overwritten"
 
@@ -358,7 +358,7 @@ def test_the_example_script_runs_end_to_end():
     """examples/12_split_view_detection.py asserts every control itself; a non-zero exit is a failed
     control, not a crash."""
     r = subprocess.run([sys.executable, os.path.join(ROOT, "examples", "12_split_view_detection.py")],
-                       cwd=ROOT, capture_output=True, text=True, timeout=300,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
                        env={**os.environ, "PYTHONPATH": ROOT, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode == 0, r.stdout + r.stderr
     for marker in ("3-of-3 co-signed: ok=True", "tampered anchor", "refused: 3",

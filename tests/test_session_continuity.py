@@ -207,7 +207,7 @@ def _read_json(path):
 def _child(body):
     """Run `body` in a GENUINE separate process against this repo. Returns CompletedProcess."""
     src = f"import sys\nsys.path.insert(0, {REPO!r})\n" + body
-    return subprocess.run([sys.executable, "-c", src], capture_output=True, text=True,
+    return subprocess.run([sys.executable, "-c", src], capture_output=True, text=True, encoding="utf-8", errors="replace",
                           env={**os.environ, "INSPEXIMUS_NO_UPDATE_CHECK": "1", "PYTHONIOENCODING": "utf-8"})
 
 
@@ -1099,7 +1099,7 @@ def test_a_strict_run_on_this_commit_reports_the_broken_properties():
     """
     r = subprocess.run([sys.executable, "-m", "pytest", os.path.abspath(__file__), "-q",
                         "-p", "no:cacheprovider"],
-                       capture_output=True, text=True, cwd=REPO,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=REPO,
                        env={**os.environ, "INSPEXIMUS_CONFORMANCE_STRICT": "1", _CHILD_FLAG: "1",
                             "INSPEXIMUS_NO_UPDATE_CHECK": "1", "PYTHONIOENCODING": "utf-8"})
     assert r.returncode != 0, \

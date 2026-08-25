@@ -325,7 +325,7 @@ def _run_child(body: str, seeds=None, repeats: int = 0) -> dict:
             env.pop("PYTHONHASHSEED", None)      # let the child randomise; that is the point of P3
         else:
             env["PYTHONHASHSEED"] = seed
-        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8", errors="replace",
                            timeout=600, env=env, cwd=ROOT)
         assert r.returncode == 0, f"{label}: child failed\n{r.stderr[-1500:]}"
         out[label] = r.stdout.strip()

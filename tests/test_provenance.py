@@ -151,7 +151,7 @@ def test_cli_provenance_human_and_json():
 
     def cli(*args):
         return subprocess.run([sys.executable, "-m", "inspeximus.cli", *args],
-                              capture_output=True, text=True, env=env)
+                              capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
 
     cli("remember", "billing uses api keys", "--key", "billing::auth")
     cli("remember", "billing uses oauth2", "--key", "billing::auth")
@@ -179,7 +179,7 @@ def test_cli_reads_an_existing_receipt_chain():
     env = dict(os.environ, INSPEXIMUS_PATH=path, PYTHONPATH=os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))
     out = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--json", "provenance", "billing::auth"],
-                         capture_output=True, text=True, env=env)
+                         capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     integrity = json.loads(out.stdout)["integrity"]
     assert integrity["receipted"] is True
     assert integrity["content_matches_receipt"] is True

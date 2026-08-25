@@ -146,7 +146,7 @@ def test_the_cli_can_perform_a_subject_erasure():
     m.remember("alice ssn 123", source={"doc": "alice"})
     out = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p,
                           "forget-subject", "alice", "--request-id", "DSAR-1"],
-                         capture_output=True, text=True)
+                         capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert "erased 1" in out.stdout, out.stdout + out.stderr
     assert Inspeximus(path=p).items == []
 

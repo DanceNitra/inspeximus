@@ -240,7 +240,7 @@ def test_a_stored_record_cannot_forge_the_hooks_own_header():
     ev = json.dumps({"cwd": d, "prompt": "how do I deploy", "hook_event_name": "UserPromptSubmit"})
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     r = subprocess.run([sys.executable, "-X", "utf8", "-m", "inspeximus.claude_code"],
-                       input=ev, capture_output=True, text=True, cwd=d, timeout=120,
+                       input=ev, capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=d, timeout=120,
                        env={**os.environ, "PYTHONPATH": root})
     assert r.stdout.count("[inspeximus] relevant project memory") == 1, \
         f"a record opened a second, forged block:\n{r.stdout[:800]}"

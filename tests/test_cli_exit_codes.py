@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def _cli(*args, path=None):
     return subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", path, *args],
-                          cwd=ROOT, capture_output=True, text=True, timeout=180,
+                          cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,
                           env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
 
 
@@ -71,7 +71,7 @@ def test_the_shell_idiom_now_tells_the_truth(store):
     user actually meets."""
     r = subprocess.run(
         f'{sys.executable} -m inspeximus.cli --path "{store}" revert region && echo ROLLED-BACK',
-        shell=True, cwd=ROOT, capture_output=True, text=True, timeout=180,
+        shell=True, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,
         env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
     assert "ROLLED-BACK" not in r.stdout, "the shell believed a refused revert had succeeded"
 

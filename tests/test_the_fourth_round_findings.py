@@ -38,7 +38,7 @@ ENV = {**os.environ, "PYTHONUTF8": "1"}
 
 def _cli(*argv):
     return subprocess.run([sys.executable, "-m", "inspeximus.cli", *argv],
-                          capture_output=True, text=True, env=ENV)
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", env=ENV)
 
 
 @pytest.fixture

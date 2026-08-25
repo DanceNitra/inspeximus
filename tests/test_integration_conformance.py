@@ -238,7 +238,7 @@ def test_importing_inspeximus_needs_no_framework():
         "s.remember('zero dependency', key='k', object='v')\n"
         "assert s.recall('zero dependency')\n"
         "print('ok')\n")
-    r = subprocess.run([sys.executable, "-c", blocker], cwd=ROOT, capture_output=True, text=True,
+    r = subprocess.run([sys.executable, "-c", blocker], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        env={**os.environ, "PYTHONPATH": ROOT, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode == 0, r.stderr[-800:]
     assert "ok" in r.stdout
@@ -248,7 +248,7 @@ def test_the_runner_itself_imports_with_no_framework_installed():
     """It has to be runnable on a bare install, or the summary that reports the skips never prints."""
     import subprocess
     r = subprocess.run([sys.executable, "tools/integration_conformance.py", "--only", "governance"],
-                       cwd=ROOT, capture_output=True, text=True,
+                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        env={**os.environ, "PYTHONIOENCODING": "utf-8"})
     assert r.returncode == 0, r.stdout[-800:] + r.stderr[-800:]
     assert "VERIFIED 1" in r.stdout, r.stdout[-600:]

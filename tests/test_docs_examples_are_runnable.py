@@ -41,7 +41,7 @@ def bundle_and_store(tmp_path):
 
 
 def _run(argv):
-    return subprocess.run([sys.executable, *argv], cwd=ROOT, capture_output=True, text=True, timeout=300,
+    return subprocess.run([sys.executable, *argv], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
                           env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
 
 
@@ -140,7 +140,7 @@ def test_every_documented_inspeximus_command_block_runs():
             # to work for someone who has none of our variables set, which is what this now measures.
             reader_env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
             r = subprocess.run([sys.executable, "-m", "inspeximus.cli", *argv], cwd=work,
-                               capture_output=True, text=True, timeout=300,
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
                                env={**reader_env, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
             total += 1
             assert r.returncode == 0, (
@@ -211,7 +211,7 @@ def test_the_readme_python_example_produces_the_output_it_documents():
         with open(path, "w", encoding="utf-8") as fh:
             fh.write("\n".join(out))
         r = subprocess.run([sys.executable, "-X", "utf8", path], cwd=work, capture_output=True,
-                           text=True, timeout=300,
+                           text=True, encoding="utf-8", errors="replace", timeout=300,
                            env={**os.environ, "PYTHONPATH": ROOT, "PYTHONIOENCODING": "utf-8"})
         assert r.returncode == 0, f"the README example does not do what it says:\n{r.stdout}\n{r.stderr}"
 

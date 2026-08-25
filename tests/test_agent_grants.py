@@ -798,7 +798,7 @@ def test_the_cli_grants_reads_and_revokes():
 
     def run(*args, expect=0):
         r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p, *args],
-                           capture_output=True, text=True, env=env)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
         assert r.returncode == expect, f"{args} -> rc={r.returncode}: {r.stderr}"
         return r.stdout
 

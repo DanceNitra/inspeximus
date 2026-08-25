@@ -168,7 +168,7 @@ def test_cli_erasure_audit_exit_codes():
 
     def cli(*args):
         return subprocess.run([sys.executable, "-m", "inspeximus.cli", *args],
-                              capture_output=True, text=True, env=env)
+                              capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
 
     m.forget(ids=[parent], request_id="REQ-9", basis="art17")
     bad = cli("erasure-audit", "--subject", "user-42")
@@ -195,7 +195,7 @@ def test_cli_write_extends_an_existing_receipt_chain():
     env = dict(os.environ, INSPEXIMUS_PATH=path, PYTHONPATH=os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))
     subprocess.run([sys.executable, "-m", "inspeximus.cli", "remember", "second fact, from the shell",
-                    "--key", "k::2"], capture_output=True, text=True, env=env, check=True)
+                    "--key", "k::2"], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, check=True)
 
     reopened = Inspeximus(path=path, receipts=True)
     assert len(reopened._receipts) == 2, "the CLI write must extend the chain, not skip it"
