@@ -320,7 +320,7 @@ NOT_TESTABLE_HERE = [
 SURFACE = ("README.md", "docs/DEEP_DIVE.md", "MCP_LISTINGS.md", "index.html",
            # New pages join the SURFACE in the same commit that creates them. A published
            # page outside the audit is exactly the hole the tests badge sat in.
-           "compare.html", "claude-code.html")
+           "compare.html", "claude-code.html", "quickstart.html")
 
 #: statuses a quantitative claim can carry.
 STATUSES = (
@@ -405,6 +405,7 @@ def _prose_number_agrees():
         ("readme-time-gap-movement", "80"): "questions per conversation; the claim is 64-83 of 320",
         ("readme-session-digest-cost", "2,606"): "the fixture size; the claim is the 7 ms",
         ("readme-supersession-8of8-withdrawn", "24"): "the denominator of a WITHDRAWN figure",
+        ("quickstart-cold-start-ms", "192"): "the single sample the first draft published as a constant; named in the description so the correction is legible, not a current claim",
     }
     out = []
     skip = {"95", "2024", "2025", "2026", "2027", "12", "17"}
@@ -447,6 +448,18 @@ NUMBER_CLAIMS = [
     # quoting the totals inside a file the audit reads is a fixed point that moves on every doc
     # edit, and the first draft of that section published stale figures because of it. The command
     # is the claim; the numbers belong to the run, not to the README.
+
+    # ---- quickstart.html ----
+    _c("quickstart-cold-start-ms", "quickstart.html", ["187", "190", "193"],
+       "three runs: <b>187, 190 and 193&nbsp;ms</b> end to end",
+       "Cold start to a corrected-and-reverted fact, from a clean directory: three consecutive "
+       "runs, import included, no network and no model. Quoted as three runs rather than one "
+       "number because the first draft of this page said '192 ms', which was one sample presented "
+       "as a constant.",
+       "REPRODUCIBLE",
+       "python -c \"import time;t=time.time();from inspeximus import Inspeximus;"
+       "m=Inspeximus('m.json');m.remember('a',key='k');m.remember('b',key='k');"
+       "m.recall('a');m.revert('k');print(int((time.time()-t)*1000),'ms')\""),
 
     # ---- index.html: the 2.5.0 section and the corrected echo caveat ----
     # One row per LINE again: the audit requires the pin on the same source line as each token, which
@@ -980,6 +993,18 @@ NUMBER_CLAIMS = [
 #: total moved. Nothing here may be a measurement -- if a row needs the word "measured", it belongs
 #: in NUMBER_CLAIMS with a command instead.
 NON_CLAIM_TOKENS = {
+    "quickstart.html": {
+        # Step numbers, a Python floor and the two fixture hostnames. None is a measurement.
+        "1": (1, "step number '1. Install'"),
+        "2": (1, "step number '2. Correct a fact'"),
+        "3": (1, "step number '3. Say the old value again'"),
+        "4": (1, "step number '4. Or skip Python entirely'"),
+        "5": (2, "step number '5. Check us without trusting us', and --n 5 in the command it offers"),
+        "187,": (1, "the first of the three timings followed by a comma in prose; the claim "
+                 "itself is '187'"),
+        "3.8": (1, "the minimum Python version, a floor rather than a quantity we measured"),
+        "0": (3, "the db-3/db-7 fixture hostnames and 'zero dependencies' as a word"),
+    },
     "README.md": {
         # Declared, with the reason, because a token nobody claims is not the same as a token nobody
         # looked at -- and this file was briefly outside SURFACE, where the audit passed by not reading it.

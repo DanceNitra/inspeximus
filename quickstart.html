@@ -3,56 +3,21 @@
 <head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Does your agent memory keep a correction? mem0 vs Graphiti vs inspeximus</title>
-  <meta name="description" content="Measured: after a stored fact is corrected, how often does the old value come back? inspeximus 0%, Graphiti 13.3%, mem0 46.7% (n=30 each, native configs). Open harness, with a control." />
-  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/compare.html" />
-  <meta property="og:title" content="When you correct a fact, does your agent memory keep it corrected?" />
-  <meta property="og:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <title>Quickstart &mdash; agent memory that does not serve stale facts | inspeximus</title>
+  <meta name="description" content="Install inspeximus and see a corrected fact stay corrected, in under a minute. No API key, no service, no LLM. Then two commands that check our published numbers for you." />
+  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/quickstart.html" />
+  <meta property="og:title" content="inspeximus quickstart &mdash; running in under a minute, no API key" />
+  <meta property="og:description" content="Install inspeximus and see a corrected fact stay corrected, in under a minute. No API key, no service, no LLM. Then two commands that check our published numbers for you." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/compare.html" />
+  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/quickstart.html" />
   <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="When you correct a fact, does your agent memory keep it corrected?" />
-  <meta name="twitter:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <meta name="twitter:title" content="inspeximus quickstart &mdash; running in under a minute, no API key" />
+  <meta name="twitter:description" content="Install inspeximus and see a corrected fact stay corrected, in under a minute. No API key, no service, no LLM. Then two commands that check our published numbers for you." />
   <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta name="theme-color" content="#0d7d84" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "TechArticle",
-        "headline": "When you correct a fact, does your agent memory keep it corrected?",
-        "description": "A measured comparison of inspeximus, Graphiti and mem0 on one question: after a stored fact is corrected, how often does the old value come back? n=30 per system, each on its own native configuration.",
-        "url": "https://dancenitra.github.io/inspeximus/compare.html",
-        "author": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" },
-        "publisher": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" }
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Why measure resurrection instead of recall accuracy?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Recall accuracy is widely benchmarked and we are not the best at it. What almost nobody publishes is what happens after a stored fact turns out to be wrong. An agent that recalls well and re-serves a corrected value confidently is the failure that costs you, and it does not show up in a recall score." }
-          },
-          {
-            "@type": "Question",
-            "name": "Is this a general memory-quality comparison?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. It is one narrow adversarial cut. On plain retrieval benchmarks other systems can and do beat us. Treat this page as the answer to a single question, not a ranking." }
-          },
-          {
-            "@type": "Question",
-            "name": "Which versions were measured, and when?",
-            "acceptedAnswer": { "@type": "Answer", "text": "mem0 was measured at 2.0.11 in 2026-07 and has not been re-run since; mem0 is on 2.0.18 now. Graphiti was run on its native Neo4j and OpenAI configuration. The version is stamped rather than the claim being restated as current." }
-          }
-        ]
-      }
-    ]
-  }
-  </script>
 </head>
 <body>
 <style>
@@ -226,166 +191,108 @@
   a:focus-visible,.btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:6px}
 </style>
 <style>
-  /* page-local additions, in the same tokens as the sheet above */
   .prose{max-width:68ch}
   .prose p{color:var(--ink-2)}
+  pre.cmd{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    overflow-x:auto;font-family:var(--mono);font-size:.88rem;color:var(--ink);margin:18px 0}
   .callout{border:1px solid var(--line);border-left:3px solid var(--teal);background:var(--panel);
     border-radius:0 10px 10px 0;padding:18px 20px;margin:26px 0;max-width:72ch}
   .callout b{color:var(--ink)}
-  pre.cmd{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
-    overflow-x:auto;font-family:var(--mono);font-size:.88rem;color:var(--ink);margin:20px 0}
-  .faq{margin-top:14px}
-  .faq details{border-top:1px solid var(--line);padding:16px 0}
-  .faq summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:1.02rem}
-  .faq p{margin:12px 0 0;color:var(--ink-2);max-width:70ch}
-  .steps{counter-reset:s;list-style:none;padding:0;margin:24px 0;max-width:72ch}
-  .steps li{counter-increment:s;position:relative;padding:0 0 0 44px;margin:0 0 20px;color:var(--ink-2)}
-  .steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:28px;height:28px;
-    display:grid;place-items:center;border-radius:50%;background:var(--teal-wash);color:var(--teal-deep);
-    font-family:var(--mono);font-size:.8rem;font-weight:600;border:1px solid var(--line)}
-  .steps li b{color:var(--ink)}
-  footer{border-top:1px solid var(--line);padding:40px 0 60px;margin-top:20px}
-  footer .wrap>div:first-child{color:var(--ink-2)}
-  footer .src{color:var(--muted);font-size:.84rem;margin-top:14px;max-width:80ch}
+  .step{margin:34px 0}
+  .step h2{margin:0 0 6px}
+  .step .why{color:var(--muted);font-size:.94rem;margin:0 0 10px}
 </style>
 <header class="bar">
   <div class="wrap">
     <a class="brand" href="./" style="text-decoration:none;color:var(--ink)">inspeximus<small>we have inspected</small></a>
     <nav>
       <a class="btn" href="./">Overview</a>
-        <a class="btn" href="./quickstart.html">Quickstart</a>
       <a class="btn" href="https://pypi.org/project/inspeximus/">PyPI</a>
       <a class="btn solid" href="https://github.com/DanceNitra/inspeximus">GitHub</a>
     </nav>
   </div>
 </header>
-<section class="hero">
-  <div class="wrap prose">
-    <p class="eyebrow">the measurement</p>
-    <h1 class="head">When you correct a fact, does your agent memory
-      <em>keep it corrected?</em></h1>
-    <p class="lede">Every memory library can store and retrieve. Far fewer publish what happens after a
-      stored fact turns out to be <b>wrong</b> &mdash; so we measured it, on three systems, each on its
-      own native configuration.</p>
-    <div class="hero-cta">
-      <a class="btn solid" href="https://github.com/DanceNitra/ramr">The harness is open</a>
-      <a class="btn" href="./">What inspeximus is</a>
-    </div>
+
+<main class="wrap prose">
+
+  <h1>Running in under a minute</h1>
+  <p>No API key, no account, no service, no LLM. Python 3.8 or newer and nothing else &mdash;
+     inspeximus has zero required dependencies.</p>
+
+  <div class="step">
+    <h2>1. Install</h2>
+    <pre class="cmd">pip install inspeximus</pre>
   </div>
-</section>
 
-<hr class="rule" />
+  <div class="step">
+    <h2>2. Correct a fact, and watch the correction hold</h2>
+    <p class="why">Every memory library can store and retrieve. This is about the fact that turns out
+       to be wrong, or that was true on Monday and outdated by Friday.</p>
+    <pre class="cmd">from inspeximus import Inspeximus
 
-<section>
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">n = 30 per system</p>
-      <h2>How often the old value comes back</h2>
-      <p class="sec-sub">A fact is stored, then corrected. We then ask for it again and count how often
-        the superseded value is what comes back.</p>
-    </div>
-    <div class="tablecard">
-      <div class="tscroll">
-        <table>
-          <thead><tr><th>system</th><th>keeps the correction</th><th>resurrects the old value</th></tr></thead>
-          <tbody>
-            <tr class="us"><td>inspeximus</td><td><span class="mk yes">100%</span></td><td><span class="mk yes">0%</span></td></tr>
-            <tr><td>Graphiti 0.x <span class="mono" style="font-weight:400;color:var(--muted)">(Neo4j + OpenAI)</span></td><td>86.7%</td><td>13.3% <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [3.3, 26.7]</span></td></tr>
-            <tr><td>mem0 2.0.11 <span class="mono" style="font-weight:400;color:var(--muted)">(OpenAI native)</span></td><td>53.3%</td><td><b>46.7%</b> <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [30.0, 63.3]</span></td></tr>
-            <tr><td>inspeximus <span class="mono" style="font-weight:400;color:var(--muted)">&mdash; guard disabled</span></td><td><span class="mk no">0%</span></td><td>&mdash; the control</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+m = Inspeximus("memory.json")
 
+m.remember("The staging database is db-3.internal", key="staging-db")
+m.remember("The staging database is db-7.internal", key="staging-db")   # a correction
+
+m.recall("which staging database")[0]["text"]
+# 'The staging database is db-7.internal'          &lt;- the correction wins
+
+m.revert("staging-db")                              # and it is reversible
+m.recall("which staging database")[0]["text"]
+# 'The staging database is db-3.internal'</pre>
+    <p>Measured from a clean directory, three runs: <b>187, 190 and 193&nbsp;ms</b> end to end, including the import. No network, no model, no service.</p>
+  </div>
+
+  <div class="step">
+    <h2>3. Say the old value again. It still does not come back.</h2>
+    <p class="why">This is the part a most-recent-wins rule cannot do.</p>
+    <pre class="cmd">m.remember("The staging database is db-3.internal", key="staging-db")
+m.recall("which staging database")[0]["text"]
+# 'The staging database is db-7.internal'          &lt;- still the correction
+
+m.remember("The staging database is db-3.internal", key="staging-db", reaffirm=True)
+# going back is a decision you make on purpose</pre>
     <div class="callout">
-      <b>The bottom row is the point.</b> Turn our own guard off and we score zero. That is what tells
-      you the number is the mechanism doing work, and not the benchmark being kind to us. A comparison
-      without a control on the author&rsquo;s own system is a marketing table.
+      <b>The limit, because the guard is keyed.</b> A statement written with <em>no</em> key is a new
+      fact rather than a correction, and it sits outside the guard. If your pipeline re-ingests a
+      stale document without keys, that text competes on its own merits. Both behaviours are measured
+      in <a href="https://github.com/DanceNitra/inspeximus/blob/main/probes/does_a_restatement_take_the_key_back.py">
+      does_a_restatement_take_the_key_back.py</a>, which runs offline in a second.
     </div>
   </div>
-</section>
 
-<hr class="rule" />
-
-<section>
-  <div class="wrap prose">
-    <div class="sec-head">
-      <p class="eyebrow">what this is not</p>
-      <h2>The honest scope</h2>
-    </div>
-    <p>This is <b>one narrow adversarial cut</b>, not a general memory-quality score. On plain retrieval
-      benchmarks other systems can and do beat us, and we publish those results too rather than only the
-      cut we win. Read this page as the answer to a single question.</p>
-    <p>mem0 was measured at <b>2.0.11</b> (2026-07) and has <b>not</b> been re-run since; mem0 is on
-      2.0.18 now. The version is stamped rather than the claim being quietly restated as current &mdash;
-      if they have fixed it, this page is out of date and we would rather you could tell.</p>
-    <p>Confidence intervals are given because a 30-trial proportion is not a point. Ours is 0% with the
-      guard on and 100% with it off, which is a mechanism, not a sample.</p>
+  <div class="step">
+    <h2>4. Or skip Python entirely</h2>
+    <p class="why">One line wires an MCP server and three hooks into your editor.</p>
+    <pre class="cmd">inspeximus install --ide claude     # also: cursor, windsurf, codex, cline</pre>
+    <p>From the next session on, your agent starts knowing what the last one decided.
+       <a href="./claude-code.html">What each hook does</a>.</p>
   </div>
-</section>
 
-<hr class="rule" />
-
-<section>
-  <div class="wrap prose">
-    <div class="sec-head">
-      <p class="eyebrow">reproduce it</p>
-      <h2>Run it against your own store</h2>
-    </div>
-    <ol class="steps">
-      <li><b>Clone the harness.</b> It is a separate public repository so that the benchmark is not
-        maintained by the thing it measures.
-        <pre class="cmd">git clone https://github.com/DanceNitra/ramr</pre></li>
-      <li><b>Bring your own keys.</b> The inspeximus column runs locally and free; the mem0 and Graphiti
-        columns need an OpenAI key and, for Graphiti, a live Neo4j.</li>
-      <li><b>Run the backend comparison.</b> Raw per-trial arrays land in
-        <span class="mono">echo_resistance_backends_result.json</span> &mdash; not a summary, the arrays.
-        <pre class="cmd">python ramr_echo_resistance_backends.py</pre></li>
-    </ol>
-    <p>If your run disagrees with this table, that is a bug report we want, and it goes on the
-      <a href="https://dancenitra.github.io/agora/public/crucible/">public replication ledger</a>
-      whichever way it lands.</p>
+  <div class="step">
+    <h2>5. Check us without trusting us</h2>
+    <p class="why">Neither command needs a key, a service, or any data of ours.</p>
+    <pre class="cmd">python claims_audit.py</pre>
+    <p>Forty seconds. It reads every number we publish and reports whether each is registered,
+       whether its pin still resolves, and whether a committed command recomputes it &mdash;
+       including the rows marked <b>WITHDRAWN</b>, which are figures we published and then could not
+       reproduce, kept beside the probe that refutes them rather than deleted.</p>
+    <pre class="cmd">python probes/integrity_bench_revert.py --systems inspeximus --judge local --n 5</pre>
+    <p>Free, offline, deterministic, and it prints its own caveat that a local judge is not
+       comparable with the OpenAI-judged figures on <a href="./compare.html">the measurement page</a>.
+       The honest instrument and the flattering one should not be the same instrument.</p>
   </div>
-</section>
 
-<hr class="rule" />
-
-<section>
-  <div class="wrap prose">
-    <div class="sec-head">
-      <p class="eyebrow">questions</p>
-      <h2>Reasonable objections</h2>
-    </div>
-    <div class="faq">
-      <details open>
-        <summary>Why measure resurrection instead of recall accuracy?</summary>
-        <p>Recall accuracy is widely benchmarked, and we are not the best at it. What almost nobody
-          publishes is what a system does after a stored fact turns out to be wrong. An agent that
-          recalls well and confidently re-serves a value you already corrected is the failure that
-          costs you, and it does not appear in a recall score at all.</p>
-      </details>
-      <details>
-        <summary>Isn&rsquo;t 100% just a benchmark you designed to win?</summary>
-        <p>That is the right suspicion, and it is why the control row exists. With the same harness,
-          the same task and our guard switched off, we resurrect the old value every time. The delta is
-          attributable to one mechanism rather than to the benchmark&rsquo;s shape.</p>
-      </details>
-      <details>
-        <summary>How does inspeximus actually do it?</summary>
-        <p>A correction is a first-class write: <span class="mono">remember(key=...)</span> retires the
-          previous value for that key, deterministically, with no model in the loop deciding which is
-          newer. The retirement is a record you can audit, revert with
-          <span class="mono">revert(key)</span>, and prove.</p>
-      </details>
-      <details>
-        <summary>Does this need a vector database?</summary>
-        <p>No. inspeximus is one zero-dependency file. Semantic recall is optional; the lexical
-          fallback needs nothing installed.</p>
-      </details>
-    </div>
+  <div class="step">
+    <h2>Where to go next</h2>
+    <p><a href="https://github.com/DanceNitra/inspeximus/tree/main/examples">Runnable examples</a>
+       &middot; <a href="https://github.com/DanceNitra/inspeximus/blob/main/docs/INTEGRATIONS.md">Framework adapters</a>
+       &middot; <a href="https://github.com/DanceNitra/inspeximus/blob/main/docs/CORE_MAP.md">Every public method, and where it lives</a>
+       &middot; <a href="./compare.html">How it compares, with the control</a></p>
   </div>
-</section>
+
+</main>
 <footer>
   <div class="wrap">
     <div>inspeximus &mdash; long-term memory for AI agents that stays correct.
