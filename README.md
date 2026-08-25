@@ -1,8 +1,11 @@
-# inspeximus — long-term memory for AI agents that stays correct
+# inspeximus — agent memory that does not serve stale facts
 
 **Python agent memory in one zero-dependency file, plus an MCP server for Claude Code and Cursor.**
-When a fact is corrected, inspeximus serves the new value and stops the old one from resurfacing —
+When a fact is corrected, inspeximus serves the new value and stops the stale one from coming back —
 deterministically, with no LLM in the loop.
+
+This is about the fact that turned out to be **wrong, or true on Monday and outdated by Friday**,
+and what your agent keeps doing with it afterwards.
 
 [![PyPI](https://img.shields.io/pypi/v/inspeximus?color=2563eb&label=pypi)](https://pypi.org/project/inspeximus/)
 [![Downloads](https://img.shields.io/pypi/dm/inspeximus?color=2563eb)](https://pypistats.org/packages/inspeximus)
