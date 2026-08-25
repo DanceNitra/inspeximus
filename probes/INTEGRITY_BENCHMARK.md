@@ -88,6 +88,7 @@ Measured under the same symmetric instrument as Cell 1 (n=20):
 | **inspeximus** (echo_guard) | **0.00** | [0.00, 0.16] | 0.90 |
 | mem0 2.0.11 (native) | **0.05** | [0.01, 0.24] | 0.80 |
 | Graphiti (native, live) | **0.00** | [0.00, 0.16] | 0.55 |
+| Hindsight 0.9.2 (native, embedded) | **0.00** | [0.00, 0.16] | 0.95 |
 
 The real finding: **no system systematically resurrects the stale value** — resurrection is at or near zero
 across the board (inspeximus 0/20, Graphiti 0/20, mem0 1/20 = 0.05; within noise, not a systematic failure). An
@@ -102,8 +103,50 @@ ambiguity can bite.
 This cell is the honest counterweight to the revert cell: on the attack that actually matters (resurrection),
 inspeximus does **not** win — every system lands at or near zero. Publishing that is the whole point.
 
+## Cell 3 — who resolves the correction, the store or the reader  (`integrity_bench_store_resolves.py`)
+
+Cell 2 ends by noting that Graphiti returns the invalidated old edge alongside the valid new one, and that a
+naive reader then sees ambiguity. This cell turns that observation into the measurement, because it decides
+something the other two cells cannot see: **cells 1 and 2 read every system through an LLM judge, for fairness,
+and a judge cannot tell a store that settled the conflict from a store that returned both and was read well.**
+
+So this one removes the judge entirely and classifies the RAW recall payload:
+
+    resolved_at_store : the payload carries the corrected value and NOT the retired one
+    both_returned     : it carries both — the caller has to decide
+    only_stale        : it carries the retired value only
+    neither           : retrieval missed
+
+No model is involved on our side, so the inspeximus arm is free, deterministic, and reproducible in seconds.
+
+| system | store-resolution rate | 95% CI | resolved / both / stale / neither (n=20) |
+|---|---|---|---|
+| **inspeximus 2.20.1** (from PyPI) | **1.00** | [0.84, 1.00] | 20 / 0 / 0 / 0 |
+| mem0 (native) | 0.05 | [0.01, 0.24] | 1 / 18 / 0 / 1 |
+| Hindsight 0.9.2 (native, embedded) | 0.00 | [0.00, 0.16] | 0 / 19 / 0 / 1 |
+| Graphiti | — | — | not run — the arm REFUSES when neo4j is unreachable rather than scoring an empty graph |
+
+Hindsight's 0/20 is a replication: two independent runs returned the identical split. The intervals do not
+come close to touching.
+
+**This is why Cell 2 was a tie.** Hindsight scores 0.95 clean-current-truth there, better than ours, and it
+earns that honestly — but not because its store settled the correction. Its recall returns both values and the
+judge picks the right one. Remove the judge and 19 of 20 callers receive the stale value beside the current
+one. Our arm reached the same place with zero model calls; theirs ran an embedded Postgres, downloaded an
+embedding model, and called an extractor on every write.
+
+**Returning both is not automatically worse, and this cell does not grade it.** A bitemporal store handing
+back old and new with validity markers is being honest, and a caller that reads the markers is fine. What the
+number establishes is *whose job* disambiguation is — which is a different product promise, not a defect. If
+your consumer resolves validity itself, 'both' is the contract you want. If it reads the top facts and acts,
+it is the contract that bites.
+
+Run it: `python probes/integrity_bench_store_resolves.py --systems inspeximus` is free and needs
+nothing but the package. Adding `,mem0` or `,hindsight` costs their native extractor calls.
+
 ## Planned cells (harness shape is the same)
 
+- **graphiti on cell 3** — the one arm that refused; needs a live neo4j.
 - **conflict-consolidation** — the MemoryAgentBench-style task where every system is weak (best ~54% single-hop);
   a shared harness to compare on the same fixture.
 
