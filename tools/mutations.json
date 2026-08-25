@@ -488,8 +488,8 @@
   {
     "name": "examples run in the repo again (residue returns)",
     "file": "tests/test_examples_run.py",
-    "old": "        cwd=tempfile.mkdtemp(prefix=\"inspeximus_example_\"), capture_output=True, text=True, timeout=180,",
-    "new": "        cwd=ROOT, capture_output=True, text=True, timeout=180,",
+    "old": "        cwd=tempfile.mkdtemp(prefix=\"inspeximus_example_\"), capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=180,",
+    "new": "        cwd=ROOT, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=180,",
     "tests": [
       "tests/test_examples_run.py"
     ]
