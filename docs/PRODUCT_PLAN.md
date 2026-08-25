@@ -109,15 +109,23 @@ benchmark table. Same for `probes/integrity_bench_revert.py --judge local`, whic
 offline and prints its own caveat that it is not comparable with the openai-judged figures. Verified
 tonight from a clean directory: `revert_success_rate 1.0`, no key, no network.
 
-### #2 — Answer the one person who ever tried it (30 minutes, 41 days late)
+### #2 — DONE, and my description of it was wrong (corrected 2026-08-25)
 
-`DanceNitra/inspeximus` issue #1, opened 2026-07-15 by @mioimotoai-lgtm: our documented benchmark
-command died with `FileNotFoundError: server/.env` on a clean clone, before argparse ran, and
-overwrote a real `OPENAI_API_KEY` if one was set. He wrote a precise report with a proposed fix.
+I wrote that @mioimotoai-lgtm's issue #1 was "still open and he has never been told", 41 days late.
+**False.** He was answered on 2026-08-22, twice: a long reply reproducing his report from a fresh
+clone, taking both of the contracts he proposed rather than choosing, and then a second comment
+correcting three numbers in the first one. The fix credits him in its docstring and shipped with a
+test that runs the published command from outside the repo root with no key, plus a control that
+restores his original loader and asserts the suite catches it.
 
-**The code is fixed** and credits him by name in its docstring; `--judge local` is the second contract
-he proposed. **The issue is still open and he has never been told.** That is the entire population of
-people who tried this hard enough to find a fault.
+I read `state: open` and inferred `never answered` without opening the comments. A real fact with an
+invented reading on top, which is the same class as §1's "we are shrinking" and the langmem claim in
+§3 — three of them in one plan.
+
+What is actually outstanding is smaller and is his call, not ours: the reply ends by asking him
+whether the refusal message reads as actionable from a cold start, which is the one thing we cannot
+judge from inside the repo. The issue stays open until he answers. Closing it ourselves would be
+taking his question off the table to tidy our own tracker.
 
 ### #3 — One click to runnable code (~half a day)
 
@@ -190,6 +198,10 @@ drift. Auditability as a map rather than an apology.
 - "Split core.py first" (§4 #6) — **refuted by measurement**, dropped to last.
 - "langmem is big because LangChain ships it" (§3) — **false**, verified against PyPI metadata.
   No framework depends on any of these packages.
+- "@mioimotoai-lgtm has never been told" (§4 #2) — **false**. He was answered twice on
+  2026-08-22. I read `state: open` and inferred it, without opening the comments.
+- "Split core.py first" is now done the cheap way: `docs/CORE_MAP.md`, generated from the AST
+  and checked in CI. Measured while building it: 33% comments, 25% docstrings, 42% code.
 - A competitor scan reported that our published "Zep LongMemEval 71.2%" was really the full-context
   baseline. **I read the source before changing anything: the table is `GPT-4o [Zep 71.2, Full-context
   60.2] | GPT-4o-mini [Zep 63.8, Full-context 55.4]`.** 71.2% is Zep. Our citation, in five places
