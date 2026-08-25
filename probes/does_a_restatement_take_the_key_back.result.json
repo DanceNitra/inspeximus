@@ -1,0 +1,14 @@
+{
+  "probe": "does_a_restatement_take_the_key_back.py",
+  "verdicts": {
+    "a_correction_wins": true,
+    "a_keyed_restatement_does_NOT_revive_it": true,
+    "reaffirm_True_IS_the_way_back": true,
+    "DOCUMENTED_LIMIT_an_unkeyed_echo_is_not_guarded": true,
+    "CONTROL_the_store_can_still_change_its_mind": true,
+    "CONTROL_keyed_and_unkeyed_differ": true
+  },
+  "after_restatement": "The staging database is db-7.internal",
+  "after_reaffirm": "The staging database is db-3.internal",
+  "after_unkeyed_echo": "The staging database is db-3.internal"
+}

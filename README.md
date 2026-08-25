@@ -52,6 +52,17 @@ m.recall("which staging database")[0]["text"]
 No embedding drift, no "the LLM usually picks the newer one". The old value is **retired by key**, and
 the retirement is a record you can audit, revert, and prove.
 
+**Say the old value again and it still does not come back.** That is the part a recency rule cannot
+do, and it is where most stores differ from this one: writing `db-3` a third time, under the same
+key, leaves `db-7` current. Going back is a decision you make on purpose, with
+`remember(..., reaffirm=True)` — the guard cannot un-supersede on its own.
+
+**The limit, because it is keyed:** a statement written with *no* key is a new fact, not a
+correction, and it is outside the guard. If your pipeline re-ingests a stale document without keys,
+that text competes on its own merits. Both behaviours are measured in
+[`probes/does_a_restatement_take_the_key_back.py`](probes/does_a_restatement_take_the_key_back.py),
+which runs offline in a second.
+
 ---
 
 ## The next five minutes
