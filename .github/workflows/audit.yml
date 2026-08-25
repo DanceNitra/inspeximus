@@ -38,6 +38,12 @@ jobs:
       # two more import the first.
       - name: every REPRODUCIBLE status is earned by a run, not asserted
         run: python claims_audit.py --local --numbers --verify-commands
+      # The core map is generated from the AST, so it can only be wrong by going stale. Checking it
+      # here means the map fails the build the moment it stops describing core.py, rather than
+      # quietly becoming fiction -- which is the whole reason it exists instead of a hand-written
+      # architecture doc nobody updates.
+      - name: docs/CORE_MAP.md still describes core.py
+        run: python tools/gen_core_map.py --check
       - name: governance_audit
         run: python governance_audit.py --local
 
