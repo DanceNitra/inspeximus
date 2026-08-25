@@ -135,6 +135,33 @@ raw arrays and the re-runnable harness:
 > That is the real finding here: what separates these systems is whether the link is recorded, not who
 > recorded it.
 
+### Two numbers you can check in three seconds, with no API key
+
+Measured 2026-08-25 against **Hindsight 0.9.2** (vectorize-io, 21k stars) and mem0, each in its own native
+config, n=20. These two need no judge at all — they read the raw recall payload, so nothing depends on a
+model reading well:
+
+| | inspeximus 2.20.1 | Hindsight 0.9.2 | mem0 |
+|---|---|---|---|
+| after a correction, recall returns the new value and **not** the old one | **20 / 20** | 0 / 20 | 1 / 20 |
+| identical writes twice — same stored state? | **byte-identical** | 20 / 20 differ | — |
+| model calls to do it | **0** | 60 | 60 |
+
+Both competitors return the corrected value *and* the retired one, and leave the choice to the caller. That is
+a defensible design — a bitemporal store handing back old and new with validity markers is being honest — but it
+is a different promise from ours, and the difference is whose job disambiguation is.
+
+The first row is free to verify. No key, no server, no network:
+
+```bash
+git clone https://github.com/DanceNitra/inspeximus && cd inspeximus
+python probes/integrity_bench_store_resolves.py --systems inspeximus
+```
+
+It finishes in milliseconds and prints `store-resolved=1.00 (resolved=20 both=0 stale=0 neither=0, n=20)`.
+Adding `,mem0` or `,hindsight` reproduces their columns and costs their own extractor calls.
+[Method, caveats and the cells where we do **not** win](probes/INTEGRITY_BENCHMARK.md).
+
 The bottom row is the point. Turn our guard off and we score **zero** — so the number is the mechanism,
 not the benchmark being kind to us.
 

@@ -144,6 +144,40 @@ it is the contract that bites.
 Run it: `python probes/integrity_bench_store_resolves.py --systems inspeximus` is free and needs
 nothing but the package. Adding `,mem0` or `,hindsight` costs their native extractor calls.
 
+## Cell 4 — is the resulting state reproducible?  (`integrity_bench_determinism.py`)
+
+Cells 1-3 ask what a store returns. This asks whether it returns the **same thing twice**. Run the identical
+corrections against a fresh store, twice, and compare what recall holds.
+
+| system | reproducible state | cases differing (n=20) | model calls per run | wall clock |
+|---|---|---|---|---|
+| **inspeximus 2.20.1** | **byte-identical** | **0 / 20** | **0** | **0.002s + 0.001s** |
+| Hindsight 0.9.2 (native) | no | 20 / 20 | 60 | 727s + 576s |
+
+18 of Hindsight's 20 differ in wording alone, 2 also in how many facts were extracted. Both passes are full
+and well-formed, so this is extraction variance, not an error:
+
+    run 1: Cache region changed to Malmo. | Correction/update to previous cache region information
+    run 2: Cache region was Osaka; corrected to malmo; later restated as Osaka ...
+
+Same three sentences in, a different stored state out.
+
+**A confound this cell had, and lost.** The first pass counted 20/20 differing while comparing timestamps
+too — Hindsight stamps every extracted fact with a wall clock, so two runs minutes apart differ for a reason
+that has nothing to do with a model, and our own payload carries no timestamp at all. Any system that records
+time would have "failed". Timestamps are normalised before hashing now, with a control asserting identical
+text at different times compares EQUAL. The 20/20 above is what survives that fix. Ordering is normalised too,
+so returning the same facts in a different sequence is never scored as non-determinism.
+
+**Non-determinism is the price of extraction, not a defect, and this cell does not grade it.** Extraction buys
+Hindsight and mem0 something inspeximus does not have: they absorb a fact from prose with no key, where we
+need one. What it costs is the ability to answer *what did the store hold on Tuesday* by re-running Tuesday's
+writes. If you never re-derive state, this cell is not about you. If you ship an audit trail, it is the whole
+question — a trail you cannot re-derive is a log, not evidence.
+
+Run it: `python probes/integrity_bench_determinism.py --systems inspeximus` needs no key, no server and no
+network, and finishes in milliseconds. Adding `,hindsight` costs their native extractor twice over.
+
 ## Planned cells (harness shape is the same)
 
 - **graphiti on cell 3** — the one arm that refused; needs a live neo4j.

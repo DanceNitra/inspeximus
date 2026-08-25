@@ -1,0 +1,92 @@
+{
+  "task": "is the resulting state reproducible across identical runs",
+  "metric": "byte_identical recall payloads across two passes on a fresh store",
+  "caveat": "non-determinism is the price of LLM extraction, not a defect. Extraction buys absorbing a fact from prose without a key. What it costs is the ability to re-derive a past state by re-running its writes.",
+  "results": {
+    "inspeximus": {
+      "system": "inspeximus",
+      "n": 20,
+      "run1_sha256": "360ee80dbb7d903da42f7c7fb70e7237",
+      "run2_sha256": "360ee80dbb7d903da42f7c7fb70e7237",
+      "byte_identical": true,
+      "cases_that_differ": 0,
+      "differing_indexes": [],
+      "model_calls_per_run": 0,
+      "seconds_run1": 0.002,
+      "seconds_run2": 0.001,
+      "payloads_run1": [
+        "correction: the cache region is now malmo",
+        "correction: the primary shard is now sigma2",
+        "correction: the build target is now riscv",
+        "correction: the default currency is now guarani",
+        "correction: the route profile is now inland",
+        "correction: the api tier is now platinum",
+        "correction: the index locale is now cusco",
+        "correction: the worker pool is now cobalt",
+        "correction: the log sink is now harbor8",
+        "correction: the retry policy is now jitter",
+        "correction: the color theme is now slate",
+        "correction: the scheduler is now weighted",
+        "correction: the session store is now pooled",
+        "correction: the cdn provider is now bunny",
+        "correction: the rate limiter is now flat",
+        "correction: the search engine is now sonic",
+        "correction: the email sender is now sendy",
+        "correction: the backup window is now 0400utc",
+        "correction: the queue driver is now nats",
+        "correction: the feature flag is now stable"
+      ],
+      "payloads_run2": [
+        "correction: the cache region is now malmo",
+        "correction: the primary shard is now sigma2",
+        "correction: the build target is now riscv",
+        "correction: the default currency is now guarani",
+        "correction: the route profile is now inland",
+        "correction: the api tier is now platinum",
+        "correction: the index locale is now cusco",
+        "correction: the worker pool is now cobalt",
+        "correction: the log sink is now harbor8",
+        "correction: the retry policy is now jitter",
+        "correction: the color theme is now slate",
+        "correction: the scheduler is now weighted",
+        "correction: the session store is now pooled",
+        "correction: the cdn provider is now bunny",
+        "correction: the rate limiter is now flat",
+        "correction: the search engine is now sonic",
+        "correction: the email sender is now sendy",
+        "correction: the backup window is now 0400utc",
+        "correction: the queue driver is now nats",
+        "correction: the feature flag is now stable"
+      ],
+      "example_diff": null,
+      "measured_utc": "2026-08-25T19:06Z"
+    },
+    "hindsight": {
+      "system": "hindsight",
+      "n": 20,
+      "run1_sha256": "0843cb2874b7f4406387feacf103dfa0",
+      "run2_sha256": "2eab9fb51f10e51ef8332e75731609d2",
+      "byte_identical": false,
+      "cases_that_differ": 20,
+      "differing_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "model_calls_per_run": 60,
+      "seconds_run1": 726.995,
+      "seconds_run2": 575.629,
+      "example_diff": {
+        "case": "cache region",
+        "run1": "Cache region changed to Malmo. | When: 2026-08-25 | Involving: user | Correction/update to previous cache region information.\nCache region is Osaka.\nCache region is Osaka.\nCache region is Osaka.\nInitial statements said the cache region is Osaka; it was corrected to Malmo on 2026-08-25T18:14:22.65734",
+        "run2": "Cache region is Osaka.\nCache region is Osaka.\nCache region is Osaka.\nCache region is Osaka. | When: 2026-08-25\nCache region was Osaka; corrected to malmo on 2026-08-25T18:27:04.700506+00:00; later restated as Osaka on 2026-08-25T18:27:19.031575+00:00 and again restated as Osaka on 2026-08-25T18:53:1"
+      },
+      "measured_utc": "2026-08-25T19:02Z"
+    }
+  }
+}

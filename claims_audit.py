@@ -449,6 +449,45 @@ NUMBER_CLAIMS = [
     # edit, and the first draft of that section published stale figures because of it. The command
     # is the claim; the numbers belong to the run, not to the README.
 
+    # ---- README.md "Two numbers you can check in three seconds" (added 2026-08-25) ----
+    # ONE ROW PER LINE, as the header above says: the audit pins a claim to the source line its
+    # tokens appear on, so a three-row table needs three rows here.
+    _c("readme-store-resolution", "README.md", ["20", "0", "1"],
+       "| after a correction, recall returns the new value and **not** the old one | **20 / 20** | 0 / 20 | 1 / 20 |",
+       "Cell 3 of the integrity benchmark, no judge involved: the raw recall payload is classified "
+       "for whether it carries the corrected value and not the retired one. inspeximus 20 of 20, "
+       "Hindsight 0.9.2 zero of 20, mem0 one of 20. Both competitors return both values.",
+       "REPRODUCIBLE",
+       "python probes/integrity_bench_store_resolves.py --systems inspeximus"),
+    _c("readme-determinism", "README.md", ["20"],
+       "| identical writes twice — same stored state? | **byte-identical** | 20 / 20 differ | — |",
+       "Cell 4: the same fixture run twice against a fresh store, timestamps and ordering "
+       "normalised out. inspeximus byte-identical; Hindsight differs on all 20.",
+       "REPRODUCIBLE",
+       "python probes/integrity_bench_determinism.py --systems inspeximus"),
+    _c("readme-model-calls", "README.md", ["0", "60"],
+       "| model calls to do it | **0** | 60 | 60 |",
+       "Model calls per run on the write path. inspeximus has none; Hindsight extracts on every "
+       "retain, three retains per case over 20 cases.",
+       "REPRODUCIBLE",
+       "python probes/integrity_bench_determinism.py --systems inspeximus"),
+    _c("readme-hindsight-version", "README.md", ["2026", "0.9", "2", "21"],
+       "Measured 2026-08-25 against **Hindsight 0.9.2** (vectorize-io, 21k stars) and mem0, each in its own native",
+       "The competitor version measured and its star count on the day of measurement, stamped "
+       "rather than restated as current.",
+       "EXTERNAL",
+       "gh api repos/vectorize-io/hindsight --jq '.stargazers_count'"),
+    _c("readme-bench-n", "README.md", ["20"],
+       "config, n=20. These two need no judge at all",
+       "Sample size for cells 3 and 4.", "REPRODUCIBLE",
+       "python probes/integrity_bench_store_resolves.py --systems inspeximus"),
+    _c("readme-printed-line", "README.md", ["1.00", "20", "0", "0,"],
+       "It finishes in milliseconds and prints `store-resolved=1.00 (resolved=20 both=0 stale=0 neither=0, n=20)`.",
+       "The literal line the free command prints, quoted so a reader can compare what they see "
+       "against what we published.",
+       "REPRODUCIBLE",
+       "python probes/integrity_bench_store_resolves.py --systems inspeximus"),
+
     # ---- quickstart.html ----
     _c("quickstart-cold-start-ms", "quickstart.html", ["187", "190", "193"],
        "three runs: <b>187, 190 and 193&nbsp;ms</b> end to end",
