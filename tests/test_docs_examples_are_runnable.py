@@ -24,7 +24,8 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from inspeximus import Inspeximus  # noqa: E402
-from inspeximus.audit_bundle import build_bundle, load_store_items  # noqa: E402
+from inspeximus.audit_bundle import (build_bundle, load_store_items,  # noqa: E402
+                                     load_store_receipts)
 
 
 @pytest.fixture
@@ -65,12 +66,26 @@ def test_both_entry_points_still_verify_a_real_store(entry, bundle_and_store):
     assert _run([*entry, b, "--store", store]).returncode == 0
 
 
-def test_one_implementation_of_the_guard(bundle_and_store):
-    """Asserted at the function, not only through behaviour: two copies drift, and this one already did."""
+@pytest.mark.parametrize("loader", [load_store_items, load_store_receipts],
+                         ids=["items", "receipts"])
+def test_one_implementation_of_the_guard(loader, bundle_and_store):
+    """Asserted at the function, not only through behaviour: two copies drift, and this one already did.
+
+    PARAMETRISED over BOTH loaders as of 2.20.1, because it was not. A mutation run flagged
+    `the shared store guard stops refusing a missing path` as SURVIVING: deleting the existence
+    check from `load_store_receipts` broke no test, while the identical mutation on
+    `load_store_items` was killed here. The test named the class in its own docstring -- "two
+    copies drift" -- and then covered one copy. That is the same fix-the-instance shape the
+    docstring was written to warn about, one function lower.
+
+    The `not os.path.exists` assertion is the one with teeth, and it is the property the source
+    docstring names: opening a store CREATES it, so an unguarded read of a mistyped path hands the
+    auditor a clean verdict over an empty store they just made.
+    """
     _, store, missing = bundle_and_store
-    assert load_store_items(missing) is None
-    assert not os.path.exists(missing)
-    assert load_store_items(store), "a real store must still load"
+    assert loader(missing) is None
+    assert not os.path.exists(missing), "reading a missing store must not create it"
+    assert loader(store), "a real store must still load"
 
     with open(os.path.join(ROOT, "inspeximus", "cli.py"), encoding="utf-8") as fh:
         assert "load_store_items" in fh.read(), "cli.py must call the shared guard, not its own copy"
