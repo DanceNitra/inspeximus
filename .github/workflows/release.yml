@@ -253,3 +253,59 @@ jobs:
           done
           echo "::error::published, but the registry does not list $VERSION"
           exit 1
+
+  github-release:
+    name: create the GitHub Release for this tag
+    # `needs: publish`, for the same reason mcp-registry does it: a Release page that points at a
+    # version PyPI is not serving is an advertisement for something nobody can install.
+    #
+    # WHY THIS JOB EXISTS AT ALL, measured 2026-08-25. The repository had 125 tags and 7 Releases,
+    # and the newest Release object was `mnemo 1.5.0` from 2026-07-14 -- six weeks stale, under a
+    # product name we had retired. So the single most prominent version signal on the repository
+    # page advertised a dead project while PyPI served that day's build. Nothing was broken; the
+    # workflow simply never created one, and 118 versions went by without anyone noticing, because
+    # the thing that was wrong was a page none of us opens.
+    needs: publish
+    if: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+      && needs.publish.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # the only job here that needs it
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # release_notes.py reads the CHANGELOG and the tag history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: the tag and the package must be the same version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(python -c "import re;print(re.search(r'version\s*=\s*\"([^\"]+)\"',open('pyproject.toml').read()).group(1))")"
+          test "$TAG" = "$PKG" || { echo "::error::tag $TAG but pyproject says $PKG"; exit 1; }
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+        id: v
+      - name: build the notes, and refuse an empty one
+        run: |
+          python tools/release_notes.py > NOTES.md
+          # A Release whose body is a stub is worse than none: it looks maintained and says nothing.
+          test "$(wc -c < NOTES.md)" -ge 500 || { echo "::error::notes are $(wc -c < NOTES.md) bytes"; exit 1; }
+          grep -q "${{ steps.v.outputs.version }}" NOTES.md || { echo "::error::notes do not name this version"; exit 1; }
+      - name: create it, unless it is already there
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "release already exists; leaving it alone"; exit 0
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            --title "inspeximus ${{ steps.v.outputs.version }}" \
+            --notes-file NOTES.md --verify-tag
+      - name: and it must actually be the latest the API reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST="$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)"
+          test "$LATEST" = "$GITHUB_REF_NAME" || {
+            echo "::error::created $GITHUB_REF_NAME but the API still calls $LATEST latest"; exit 1; }
+          echo "latest is now $LATEST"
