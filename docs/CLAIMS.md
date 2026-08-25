@@ -38,7 +38,7 @@ Counts by status:
 | # | file | figure(s) | claim | status | command that reproduces it |
 |---|---|---|---|---|---|
 | 1 | `MCP_LISTINGS.md` | `30` `26` `2026` | WITHDRAWN: the previous '30 tools' figure, kept as the record of the correction | **WITHDRAWN** | `python claims_audit.py --numbers` |
-| 2 | `MCP_LISTINGS.md` | `73` | The MCP server exposes 71 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 2 | `MCP_LISTINGS.md` | `73` | The MCP server exposes 73 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 3 | `MCP_LISTINGS.md` | `73` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 4 | `README.md` | `10` `13` `3` | Framework adapters: 10 of 13 verified against current upstream, 3 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 5 | `README.md` | `0` | The control: with the guard off we score zero, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
@@ -87,7 +87,7 @@ Counts by status:
 | 48 | `docs/DEEP_DIVE.md` | `25` `0.83` `0.70` | LOCOMO retrieval-recall@25 = 0.83 (any evidence turn) / 0.70 (all), n=1536, reinforce=False | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
 | 49 | `docs/DEEP_DIVE.md` | `1536,` | The LoCoMo config size behind recall_any@1 | **PENDING-HARNESS** | `python probes/retrieval_recall_locomo.py --k 25` |
 | 50 | `docs/DEEP_DIVE.md` | `0.7839` `0.6484` `0.783` `0.648` `1536` | The OLD published pair reproduces exactly at its own operating point (reinforce=True) | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 51 | `docs/DEEP_DIVE.md` | `73` | The MCP server exposes 71 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
+| 51 | `docs/DEEP_DIVE.md` | `73` | The MCP server exposes 73 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
 | 52 | `docs/DEEP_DIVE.md` | `0.592` `0.544` `2` | MemOps answer accuracy: keep-all 0.592, mem0 0.544; ~2% of mem0 extractions failed to parse | **EXTERNAL** | — |
 | 53 | `docs/DEEP_DIVE.md` | `0.593` | MemOps answer accuracy: inspeximus 0.593 | **EXTERNAL** | — |
 | 54 | `docs/DEEP_DIVE.md` | `519` `917` `606` `24` | mem0's default pipeline spends 519-917 s (median 606) of LLM extraction per MemOps scenario | **EXTERNAL** | — |

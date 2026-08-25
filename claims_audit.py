@@ -378,6 +378,52 @@ UNENFORCED_NOTES = [
 ]
 
 
+def _prose_number_agrees():
+    """A registry row's DESCRIPTION must not contradict the tokens it registers.
+
+    Found 2026-08-25, and it had been true for weeks. This gate reads numeric TOKENS out of the
+    published files and checks each one is registered. It never read the registry's own English.
+    So a row could pin `73` and describe it as "The MCP server exposes 73 tools", and pass -- twice,
+    in two different rows -- while README's documentation table said "all 68" and BOTH the
+    og:description and twitter:description of claude-code.html said "68 tools". That is the text a
+    search engine and a link preview show, and it was wrong in the one place nobody re-reads.
+
+    The server has 73 tool defs. Three different wrong numbers were sitting beside the right one.
+
+    The rule: every integer in a row's `claim` text that looks like a quantity must appear among that
+    row's registered tokens. Years, section numbers and small ordinals are excluded, because a
+    description legitimately says "Article 12" or "2026" without registering it.
+    """
+    # Excluded on purpose: confidence levels, years, article/section numbers, and the
+    # two-digit fragments that fall out of dates and semver ("2026-08-01" -> 08, 01; "2.0.11" -> 2.0).
+    # A description legitimately says "Article 12" or "mem0 2.0.11" without registering either.
+    # Reviewed once, each with the reason it is context rather than a claim. An allowlist keyed by
+    # (row id, number) rather than a blanket rule, so a NEW disagreement still fails and these four
+    # cannot quietly cover it.
+    CONTEXT_OK = {
+        ("readme-locomo-headline", "1536"): "the sample size behind the recall figure, not a claim",
+        ("readme-time-gap-movement", "80"): "questions per conversation; the claim is 64-83 of 320",
+        ("readme-session-digest-cost", "2,606"): "the fixture size; the claim is the 7 ms",
+        ("readme-supersession-8of8-withdrawn", "24"): "the denominator of a WITHDRAWN figure",
+    }
+    out = []
+    skip = {"95", "2024", "2025", "2026", "2027", "12", "17"}
+    VERSIONISH = re.compile(r"\d+\.\d+\.\d+|\d{4}-\d{2}-\d{2}|v?\d+\.\d+")
+    for c in NUMBER_CLAIMS:
+        toks = {t.replace(",", "").rstrip(".") for t in c["tokens"]}
+        masked = VERSIONISH.sub(" ", c["claim"])
+        for n in re.findall(r"(?<![\w.])(\d[\d,]*(?:\.\d+)?)(?![\w%])", masked):
+            bare = n.replace(",", "").rstrip(".")
+            if bare in skip or len(bare) < 2:
+                continue
+            if (c["id"], n) in CONTEXT_OK or (c["id"], bare) in CONTEXT_OK:
+                continue
+            if bare not in toks and not any(bare in t or t in bare for t in toks):
+                out.append(("PROSE-DISAGREES", c["file"],
+                            f"claim {c['id']!r} describes {n!r} but registers {sorted(toks)}"))
+    return out
+
+
 def _c(id, file, tokens, pin, claim, status, command="", note=""):
     assert status in STATUSES, status
     return {"id": id, "file": file, "tokens": tuple(tokens), "pin": pin,
@@ -827,7 +873,7 @@ NUMBER_CLAIMS = [
        "labels itself 'a synthesis over those cases, not a proof'."),
     _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["73"],
        "`inspeximus-mcp`, 73 tools",
-       "The MCP server exposes 71 tools", "REPRODUCIBLE",
+       "The MCP server exposes 73 tools", "REPRODUCIBLE",
        'python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'
        "'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))\"",
        "Checked against the live @mcp.tool() count by _live_consistency(), not by reading it here."),
@@ -835,7 +881,7 @@ NUMBER_CLAIMS = [
     # ---------------------------------------------------------- MCP_LISTINGS.md
     _c("mcp-tool-count", "MCP_LISTINGS.md", ["73"],
        "`inspeximus-mcp`, 73 tools",
-       "The MCP server exposes 71 tools", "REPRODUCIBLE",
+       "The MCP server exposes 73 tools", "REPRODUCIBLE",
        "python claims_audit.py --numbers",
        "Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 "
        "in another. Three surfaces, one server, no error anywhere. Now read from the code."),
@@ -851,12 +897,12 @@ NUMBER_CLAIMS = [
     # -------------------------------------------------------------- index.html
     _c("site-mcp-tools-counter", "index.html", ["73", "0"],
        'data-count="73">0</b><span>MCP tools',
-       "Homepage counter: 68 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+       "Homepage counter: 73 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- "
        "which is why the scanner hoists data-count out of the tag before stripping tags."),
     _c("site-mcp-tools-heading", "index.html", ["73"],
        "73 tools any MCP host can call",
-       "Homepage heading: 68 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
+       "Homepage heading: 73 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
     _c("site-adapters", "index.html", ["9", "0"],
        'data-count="9">0</b><span>framework adapters',
        "Homepage counter: 9 framework adapters", "REPRODUCIBLE",
@@ -934,7 +980,12 @@ NON_CLAIM_TOKENS = {
         "30": (1, "the rhetorical heading 'The 30 seconds that matter', not a quantity"),
         "0": (2, "Python list indices [0] in the code example, not measurements"),
         "12": (1, "EU AI Act ARTICLE number in the docs table, not a quantity"),
-        "68,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '68'"),
+        "73,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
+                "Was '68,' until 2026-08-25, when three places still said 68 or 71 while the server "
+                "had 73 tool defs: README's documentation table, two CLAIMS descriptions, and BOTH "
+                "og:description and twitter:description in claude-code.html -- the text search engines "
+                "and link previews show. This gate reads numeric TOKENS, so a wrong number inside a "
+                "correct sentence passes; see _prose_number_agrees below."),
         # The DOI. `10.5281` is the Zenodo registrant prefix and the rest is a record id -- an ADDRESS,
         # not a measurement. Declared with a count so that adding a second DOI has to be declared too,
         # rather than being absorbed silently by a bare name.
@@ -1198,6 +1249,8 @@ def audit_numbers(root=None, verify_commands=False):
             if not (root / tok).exists():
                 problems.append(("BROKEN-COMMAND", c["file"],
                                  f"claim {c['id']!r} names {tok!r}, which does not exist"))
+
+    problems.extend(_prose_number_agrees())
 
     if verify_commands:
         problems.extend(_unearned_statuses(root, stats))

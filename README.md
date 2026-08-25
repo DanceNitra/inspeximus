@@ -162,7 +162,7 @@ that recomputes it. If one disagrees with your run, that is a bug report we want
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
 | [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts |
 | [EU AI Act evidence](docs/AI_ACT.md) | Article 12 logging, mapped to what the store already keeps |
-| [MCP tools](MCP_LISTINGS.md) | all 68, and what each is for |
+| [MCP tools](MCP_LISTINGS.md) | all 73, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |
 | [Changelog](CHANGELOG.md) | what changed and why, including what we got wrong |
 
