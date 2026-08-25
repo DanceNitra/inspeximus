@@ -1016,7 +1016,7 @@ NON_CLAIM_TOKENS = {
         "5": (2, "twice, both parameters a reader changes rather than results we claim: the --n 5 "
               "argument in the offered local-judge command, and k=5 in the next-five-minutes recall "
               "snippet"),
-        "0": (2, "Python list indices [0] in the code example, not measurements"),
+        "0": (3, "Python list indices [0] in the code examples, not measurements"),
         "12": (1, "EU AI Act ARTICLE number in the docs table, not a quantity"),
         "73,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
                 "Was '68,' until 2026-08-25, when three places still said 68 or 71 while the server "

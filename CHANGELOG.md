@@ -1,3 +1,53 @@
+## 2.20.1 - AFFECTS NOBODY'S CODE. Nothing in the library changed; upgrade only for the PyPI metadata, since keywords and the package description reach anyone only through a release
+
+No code path in `inspeximus/` moved. If you are running 2.20.0 and reading this for a reason to
+upgrade, there is not one. The version exists because PyPI keywords and the package description only
+reach anyone through a release, and both were wrong in a way worth fixing.
+
+**The keywords were four words nobody types.** Measured over 837 agent-memory documents from 2026,
+counting how developers describe this problem rather than how we describe it:
+
+```
+stale 24.1%  ·  forget 14.2%  ·  conflict 12.5%  ·  delete 10.8%
+contradict 9.7%  ·  outdated 8.7%  ·  supersede 4.4%
+```
+
+Not one of those was in our keywords. Four that were -- `rag`, `embeddings`, `consolidation`,
+`second-brain` -- are terms nobody reaches for when a corrected fact comes back. `stale` alone is five
+times more common than `supersede` and appeared nowhere in our metadata, our repo description, or the
+title of the post we own on exactly this problem. Two phrasings we had proposed turned out to match
+nobody: "keeps bringing up" appears ONCE in 837 documents, and "hallucinating old info" appears zero
+times as a phrase, because developers reserve "hallucination" for invented facts and never apply it to
+stale-but-once-true ones.
+
+**A claim we were about to publish was backwards about our own mechanism.** Writing the sharper pitch,
+we asserted that a deliberate keyed re-statement of a retired value should win. It does not:
+
+```
+after a keyed restatement of the retired value : 'db-7.internal'   <- the correction still holds
+after remember(..., reaffirm=True)             : 'db-3.internal'   <- the deliberate way back
+after an UNKEYED echo                          : 'db-3.internal'   <- the limit, and it is real
+```
+
+`probes/does_a_restatement_take_the_key_back.py` measures all three offline in a second. The third row
+is now stated next to the claim rather than left for a user to hit: **the guard is keyed**, so the same
+sentence written with no key is a new fact outside it, which is exactly the shape of re-ingesting a
+stale document.
+
+**Five published tool counts were wrong.** The MCP server has 73 tool definitions; the README's
+documentation table said 68, two claims rows said 71, and both `og:description` and
+`twitter:description` on the Claude Code page said 68 -- the text a search engine and a link preview
+show. `claims_audit.py` passed every time, because it checked that each published NUMBER was
+registered and never read the registry's own English. `_prose_number_agrees()` closes that: an integer
+in a row's description must appear among that row's registered tokens.
+
+**Also in the repo, not in the package:** `docs/CORE_MAP.md`, generated from the AST and re-checked in
+CI, listing every public method and the line it starts on -- 33% of `core.py` is comments and 25% is
+docstrings, so the megabyte is the audit trail and what it lacked was a table of contents. A
+`quickstart.html` that is one click from runnable code, which every competitor had and we did not. And
+a README section with two commands that check our published numbers without an API key, including the
+rows we marked WITHDRAWN.
+
 ## 2.20.0 - UPGRADE IF YOU HAVE EVER QUOTED YOUR OWN `source` COVERAGE: it can read 100% over a constant
 
 `check_sources()` gains `distinct_sources` and `distinct_source_ratio`, reported beside coverage.

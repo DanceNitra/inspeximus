@@ -74,9 +74,16 @@ The point is the key, because that is what makes a later correction land on the 
 becoming a second one.
 
 ```python
+from inspeximus import Inspeximus
+
+m = Inspeximus("memory.json")
+user_id, choice, user_question = "u-1", "dark mode", "what does this user prefer"
+
 m.remember(f"user prefers {choice}", key=f"pref::{user_id}")      # correcting later needs the key
-for hit in m.recall(user_question, k=5):
-    context.append(hit["text"])
+
+context = [hit["text"] for hit in m.recall(user_question, k=5)]
+print(context[0])
+# user prefers dark mode
 ```
 
 If you use a framework, there are adapters for LangChain, LangGraph, LlamaIndex, CrewAI, AutoGen,

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "inspeximus"
-version = "2.20.0"
+version = "2.20.1"
 description = "Agent memory that does not serve stale facts: when a value is corrected, Inspeximus serves the new one and stops the outdated one coming back. Zero-dependency single file + MCP server — value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
 requires-python = ">=3.8"
