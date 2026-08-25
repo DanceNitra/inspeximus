@@ -984,8 +984,13 @@ NON_CLAIM_TOKENS = {
         # Declared, with the reason, because a token nobody claims is not the same as a token nobody
         # looked at -- and this file was briefly outside SURFACE, where the audit passed by not reading it.
         "30": (1, "the rhetorical heading 'The 30 seconds that matter', not a quantity"),
-        "5": (1, "the --n 5 argument in the offered local-judge command: a CLI parameter a "
-              "reader may change, not a result we are claiming"),
+        "01": (1, "example FILENAME 01_basics.py, not a quantity"),
+        "02": (1, "example FILENAME 02_correction_and_erasure.py, not a quantity"),
+        "03": (1, "example FILENAME 03_semantic_recall.py, not a quantity"),
+        "06": (1, "example FILENAME 06_gdpr_erasure_receipt.py, not a quantity"),
+        "5": (2, "twice, both parameters a reader changes rather than results we claim: the --n 5 "
+              "argument in the offered local-judge command, and k=5 in the next-five-minutes recall "
+              "snippet"),
         "0": (2, "Python list indices [0] in the code example, not measurements"),
         "12": (1, "EU AI Act ARTICLE number in the docs table, not a quantity"),
         "73,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "

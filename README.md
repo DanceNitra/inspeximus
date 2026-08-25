@@ -54,6 +54,42 @@ the retirement is a record you can audit, revert, and prove.
 
 ---
 
+## The next five minutes
+
+The demo above ends at `revert()`. Here is what to do with it.
+
+**Put it under a real agent.** Nothing to wire: `remember` on the way in, `recall` on the way out.
+The point is the key, because that is what makes a later correction land on the same fact instead of
+becoming a second one.
+
+```python
+m.remember(f"user prefers {choice}", key=f"pref::{user_id}")      # correcting later needs the key
+for hit in m.recall(user_question, k=5):
+    context.append(hit["text"])
+```
+
+If you use a framework, there are adapters for LangChain, LangGraph, LlamaIndex, CrewAI, AutoGen,
+Haystack, Google ADK, OpenAI Agents and Pydantic-AI — with a ledger recording which are verified
+against a live install and which are recorded broken, rather than a wall of logos:
+[docs/INTEGRATIONS.md](docs/INTEGRATIONS.md).
+
+**Work through the examples in order.** They run offline with no key, each one printing what it did:
+
+| | |
+|---|---|
+| [`01_basics.py`](examples/01_basics.py) | remember, recall, correct, and read the history of a key |
+| [`02_correction_and_erasure.py`](examples/02_correction_and_erasure.py) | correction and erasure as separate channels, which they are |
+| [`03_semantic_recall.py`](examples/03_semantic_recall.py) | bring your own embedder |
+| [`06_gdpr_erasure_receipt.py`](examples/06_gdpr_erasure_receipt.py) | prove a deletion happened, to someone who does not trust you |
+
+**Find your way around the code.** [docs/CORE_MAP.md](docs/CORE_MAP.md) lists every public method and
+the line it starts on, generated from the AST and re-checked in CI.
+
+**Then decide whether to believe any of it**, using the two commands under
+[Check us without trusting us](#check-us-without-trusting-us).
+
+---
+
 ## Why another memory library
 
 Because we measured the one thing the others do not publish: **how often a corrected fact comes back.**
