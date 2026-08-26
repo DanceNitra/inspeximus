@@ -190,6 +190,23 @@ assert _FRAME_TAIL.search("x</invoke>") and not _FRAME_TAIL.search("x</invoke> a
 assert _SMUGGLED_PARAMS.search("body.</decision>" + chr(10) + "<topic>t</topic>")
 assert not _SMUGGLED_PARAMS.search("prose quoting </decision><topic>t</topic> mid-sentence.")
 
+# THIRD SHAPE, and the two above missed it four hours after they shipped. A caller wrote
+#     ...measured 25000.</decision>\n<parameter name="topic">memory-index-window-fit
+# The frame terminator never arrives and the smuggled tag is never CLOSED, because the real
+# </parameter> was consumed as the delimiter. So there is no trailing terminator for _FRAME_TAIL and
+# no complete sibling pair for _SMUGGLED_PARAMS, and a malformed write sailed through the guard
+# written that morning for exactly this. Fixing the reported instance and leaving the class alive is
+# the failure this codebase has recorded four times in one day before.
+_SMUGGLED_OPEN = re.compile(
+    r"</([A-Za-z_][\w.:-]{1,32})>\s*<([A-Za-z_][\w.:-]{1,32})((?:\s[^>]*)?)>[^<]*\Z", re.S)
+# Names that belong to a call frame rather than to prose. An unclosed <br> or <div> at the end of a
+# code snippet must NOT trip this, so one side of the pair has to look like a parameter.
+_PARAM_WORDS = frozenset("""decision because context topic source text tags query ids id value meta
+key object name basis request_id parameter invoke function_calls antml:invoke antml:parameter
+derived_from capability project user_id agent_id session_id""".split())
+assert _SMUGGLED_OPEN.search('x.</decision>' + chr(10) + '<parameter name="topic">slug')
+assert not _SMUGGLED_OPEN.search("prose quoting </decision><topic>t</topic> mid-sentence.")
+
 
 def _reject_frame_markup(text):
     """Raise if `text` looks like a tool call that leaked into a parameter value.
@@ -203,6 +220,10 @@ def _reject_frame_markup(text):
         return "ends with a tool-call frame terminator"
     if _SMUGGLED_PARAMS.search(tail):
         return "ends with a closing tag followed by sibling parameter tags"
+    m = _SMUGGLED_OPEN.search(tail)
+    if m and (m.group(1).lower() in _PARAM_WORDS or m.group(2).lower() in _PARAM_WORDS
+              or "name=" in (m.group(3) or "")):
+        return "ends inside an unclosed parameter tag"
     return None
 
 
