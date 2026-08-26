@@ -167,6 +167,45 @@ _RECALLABLE = frozenset({"active", "superseded", "hub"})
 _WITHHELD = frozenset({"provisional", "discarded", "candidate"})
 
 
+# A write whose text ends in tool-call frame markup is a MALFORMED CALL, not a memory. Measured
+# 2026-08-26: an agent serialised `topic` and `source` INSIDE the `decision` string, so three
+# records landed carrying a literal "</decision><topic>...</topic><source>...</source></invoke>"
+# tail. Every one returned a normal id. Every one reported topic=None and attributable=False in the
+# result, and the caller read the nulls as a server fault rather than as its own defect. The store
+# did exactly the right thing with what it was handed; the problem is that being handed garbage and
+# saying "ok" is indistinguishable from working, and keyed supersession -- the thing that makes a
+# decision correctable later -- was silently off for all three.
+#
+# The rule is narrow ON PURPOSE. A memory ABOUT this bug has to quote the markup, and quoting it is
+# legitimate: the test suite asserts that such a memory is accepted. What is rejected is text that
+# ENDS in a frame terminator, or ends in a closing tag followed by sibling tag pairs, because a
+# stored value has no reason to close a tag it never opened.
+_FRAME_TAIL = re.compile(r"</(?:antml:)?(?:invoke|parameter|function_calls)>\s*\Z")
+_SMUGGLED_PARAMS = re.compile(
+    r"</([A-Za-z_][\w.:-]{1,32})>\s*(?:<([A-Za-z_][\w.:-]{1,32})>.*?</\2>\s*)+\Z", re.S)
+# The backreference above was written as a literal chr(2) once, by a heredoc that ate the
+# backslash, and the pattern then silently matched nothing: the guard reported every smuggled
+# write as clean. Assert the patterns BEHAVE at import, because a dead regex fails open.
+assert _FRAME_TAIL.search("x</invoke>") and not _FRAME_TAIL.search("x</invoke> and more text")
+assert _SMUGGLED_PARAMS.search("body.</decision>" + chr(10) + "<topic>t</topic>")
+assert not _SMUGGLED_PARAMS.search("prose quoting </decision><topic>t</topic> mid-sentence.")
+
+
+def _reject_frame_markup(text):
+    """Raise if `text` looks like a tool call that leaked into a parameter value.
+
+    Returns the reason string it matched on (for tests), or None when the text is a real memory.
+    """
+    if not isinstance(text, str) or not text.strip():
+        return None
+    tail = text.rstrip()
+    if _FRAME_TAIL.search(tail):
+        return "ends with a tool-call frame terminator"
+    if _SMUGGLED_PARAMS.search(tail):
+        return "ends with a closing tag followed by sibling parameter tags"
+    return None
+
+
 def _serving_class(rec: dict) -> str:
     """`withheld` or `served`: will this record ever reach a reader?
 
@@ -2141,6 +2180,18 @@ class Inspeximus:
         # rewrite. If no recent recall exists, an explicit derived=True falls through to the orphan rule (fail-closed).
         # This is the store-side inference the storm/verify pass found to be the ONLY form with measured defense
         # value (signature-only 6/6 attacks -> 0/6 once lineage propagates); a caller-supplied source string is not.
+        # Refuse a malformed call before anything is stored. See _reject_frame_markup: a value that
+        # ends in call-frame markup means the caller's OTHER parameters are sitting inside this one,
+        # so `key`, `source` and the rest never arrived and the record would land un-keyed and
+        # unattributable while the call reported success.
+        _frame = _reject_frame_markup(text)
+        if _frame is not None:
+            raise ValueError(
+                f"refusing to store this text: it {_frame}, which means the tool call was malformed "
+                f"and the other parameters (topic/key/source/...) were serialised INSIDE this one. "
+                f"Re-issue the call with one parameter block per argument; do not close a tag inside "
+                f"a value. To store text that legitimately QUOTES such markup, keep the quotation "
+                f"inline rather than at the very end of the text.")
         if derived and derived_from is None:
             derived_from = list(getattr(self, "_last_recall", []) or [])
         # ...and the same stamp WITHOUT the flag, when the store can see the derivation itself. See the
