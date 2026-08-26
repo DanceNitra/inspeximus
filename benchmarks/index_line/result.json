@@ -1,0 +1,63 @@
+{
+ "benchmark": "run.py",
+ "corpus": {
+  "name": "LongMemEval-S",
+  "sha256": "08d8dad4be43ee2049a22ff5674eb86725d0ce5ff434cde2627e5e8e7e117894",
+  "licence": "CC-BY-NC 4.0 -- research figures only, NOT a product benchmark",
+  "questions_used": 50,
+  "questions_available": 500,
+  "candidates_median": 51
+ },
+ "scorer": {
+  "model": "nomic-embed-text",
+  "local": true,
+  "endpoint": "http://localhost:11434/api/embed",
+  "chunk_chars": 6000,
+  "pooling": "max over chunks",
+  "sessions_needing_more_than_one_chunk": 1810,
+  "chunks_embedded": 5443,
+  "empty_index_lines": 117,
+  "why_chunked": "/api/embed silently drops the tail past ~12-16k chars: two texts differing only after 16k embed to cosine 1.000000"
+ },
+ "recall": {
+  "ceiling": {
+   "1": 0.78,
+   "3": 0.88,
+   "5": 0.92
+  },
+  "default_line": {
+   "1": 0.48,
+   "3": 0.7,
+   "5": 0.72
+  },
+  "first_user": {
+   "1": 0.48,
+   "3": 0.64,
+   "5": 0.74
+  },
+  "idf_terms": {
+   "1": 0.46,
+   "3": 0.7,
+   "5": 0.7
+  },
+  "CONTROL_shuffled_line": {
+   "1": 0.0,
+   "3": 0.02,
+   "5": 0.14
+  }
+ },
+ "chance_at_3": 0.05868544600938967,
+ "verdicts": {
+  "CONTROL_the_embedder_reads_to_the_END_of_a_chunk": true,
+  "CONTROL_the_corpus_was_actually_ranked": true,
+  "CONTROL_the_gold_session_is_in_every_haystack_scored": true,
+  "CONTROL_every_arm_ranked_the_same_candidates": true,
+  "CONTROL_a_shuffled_line_collapses_to_chance": true,
+  "CONTROL_the_ceiling_is_high_enough_to_show_anything": true,
+  "THE_CEILING_BEATS_THE_SHIPPED_DEFAULT": true,
+  "A_DETERMINISTIC_LINE_DOES_NOT_CLOSE_THE_GAP": true
+ },
+ "not_run": "the written-line arm. 50 questions is 2,493 distinct sessions and ~6.1M input tokens; it is only worth spending once the free arms show a gap for a written line to close.",
+ "seed": 20260826,
+ "elapsed_s": 2087.0
+}
