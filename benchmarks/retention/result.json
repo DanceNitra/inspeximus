@@ -1,0 +1,647 @@
+{
+ "benchmark": "run.py",
+ "fixture": {
+  "url": "https://raw.githubusercontent.com/UMkuce/context-cost-auditor/main/examples/coding_debug_case.json",
+  "sha256": "6eeb5b12e905662a144a184c4a5de430e11acea55749d692641424b241ad6273",
+  "vendored": false,
+  "licence": "NOASSERTION upstream; fetched at run time, never copied here"
+ },
+ "records": 52,
+ "context_tokens_est": 2902,
+ "required_groups": [
+  "original runtime error",
+  "buggy dereference",
+  "null customer trigger",
+  "400 response behavior",
+  "avoid saveCustomerEmail when missing",
+  "target file path",
+  "target function name",
+  "do-not-edit helper path"
+ ],
+ "full_context_keeps": 8,
+ "grid": {
+  "section": {
+   "task_instruction": {
+    "recall": {
+     "3": {
+      "groups_kept": 0,
+      "labels": [],
+      "tokens": 92,
+      "saving_vs_full": 0.968
+     },
+     "5": {
+      "groups_kept": 0,
+      "labels": [],
+      "tokens": 153,
+      "saving_vs_full": 0.947
+     },
+     "8": {
+      "groups_kept": 0,
+      "labels": [],
+      "tokens": 245,
+      "saving_vs_full": 0.916
+     },
+     "12": {
+      "groups_kept": 5,
+      "labels": [
+       "null customer trigger",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 623,
+      "saving_vs_full": 0.785
+     }
+    },
+    "recency": {
+     "3": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 88,
+      "saving_vs_full": 0.97
+     },
+     "5": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 142,
+      "saving_vs_full": 0.951
+     },
+     "8": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 230,
+      "saving_vs_full": 0.921
+     },
+     "12": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 347,
+      "saving_vs_full": 0.88
+     }
+    },
+    "random": {
+     "3": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 82,
+      "saving_vs_full": 0.972
+     },
+     "5": {
+      "groups_kept": 4,
+      "labels": [
+       "null customer trigger",
+       "400 response behavior",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 1347,
+      "saving_vs_full": 0.536
+     },
+     "8": {
+      "groups_kept": 5,
+      "labels": [
+       "null customer trigger",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 455,
+      "saving_vs_full": 0.843
+     },
+     "12": {
+      "groups_kept": 6,
+      "labels": [
+       "original runtime error",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 1531,
+      "saving_vs_full": 0.472
+     }
+    }
+   },
+   "task_plus_error": {
+    "recall": {
+     "3": {
+      "groups_kept": 6,
+      "labels": [
+       "original runtime error",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 209,
+      "saving_vs_full": 0.928
+     },
+     "5": {
+      "groups_kept": 6,
+      "labels": [
+       "original runtime error",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 270,
+      "saving_vs_full": 0.907
+     },
+     "8": {
+      "groups_kept": 6,
+      "labels": [
+       "original runtime error",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 362,
+      "saving_vs_full": 0.875
+     },
+     "12": {
+      "groups_kept": 6,
+      "labels": [
+       "original runtime error",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 526,
+      "saving_vs_full": 0.819
+     }
+    },
+    "recency": {
+     "3": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 88,
+      "saving_vs_full": 0.97
+     },
+     "5": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 142,
+      "saving_vs_full": 0.951
+     },
+     "8": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 230,
+      "saving_vs_full": 0.921
+     },
+     "12": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 347,
+      "saving_vs_full": 0.88
+     }
+    },
+    "random": {
+     "3": {
+      "groups_kept": 0,
+      "labels": [],
+      "tokens": 83,
+      "saving_vs_full": 0.971
+     },
+     "5": {
+      "groups_kept": 3,
+      "labels": [
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "do-not-edit helper path"
+      ],
+      "tokens": 221,
+      "saving_vs_full": 0.924
+     },
+     "8": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 233,
+      "saving_vs_full": 0.92
+     },
+     "12": {
+      "groups_kept": 4,
+      "labels": [
+       "null customer trigger",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "do-not-edit helper path"
+      ],
+      "tokens": 1458,
+      "saving_vs_full": 0.498
+     }
+    }
+   }
+  },
+  "block": {
+   "task_instruction": {
+    "recall": {
+     "3": {
+      "groups_kept": 2,
+      "labels": [
+       "target file path",
+       "do-not-edit helper path"
+      ],
+      "tokens": 20,
+      "saving_vs_full": 0.993
+     },
+     "5": {
+      "groups_kept": 2,
+      "labels": [
+       "target file path",
+       "do-not-edit helper path"
+      ],
+      "tokens": 81,
+      "saving_vs_full": 0.972
+     },
+     "8": {
+      "groups_kept": 2,
+      "labels": [
+       "target file path",
+       "do-not-edit helper path"
+      ],
+      "tokens": 173,
+      "saving_vs_full": 0.94
+     },
+     "12": {
+      "groups_kept": 4,
+      "labels": [
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "do-not-edit helper path"
+      ],
+      "tokens": 374,
+      "saving_vs_full": 0.871
+     }
+    },
+    "recency": {
+     "3": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 88,
+      "saving_vs_full": 0.97
+     },
+     "5": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 142,
+      "saving_vs_full": 0.951
+     },
+     "8": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 230,
+      "saving_vs_full": 0.921
+     },
+     "12": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 347,
+      "saving_vs_full": 0.88
+     }
+    },
+    "random": {
+     "3": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 85,
+      "saving_vs_full": 0.971
+     },
+     "5": {
+      "groups_kept": 3,
+      "labels": [
+       "original runtime error",
+       "target file path",
+       "target function name"
+      ],
+      "tokens": 148,
+      "saving_vs_full": 0.949
+     },
+     "8": {
+      "groups_kept": 3,
+      "labels": [
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "do-not-edit helper path"
+      ],
+      "tokens": 288,
+      "saving_vs_full": 0.901
+     },
+     "12": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 275,
+      "saving_vs_full": 0.905
+     }
+    }
+   },
+   "task_plus_error": {
+    "recall": {
+     "3": {
+      "groups_kept": 4,
+      "labels": [
+       "original runtime error",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 72,
+      "saving_vs_full": 0.975
+     },
+     "5": {
+      "groups_kept": 4,
+      "labels": [
+       "original runtime error",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 88,
+      "saving_vs_full": 0.97
+     },
+     "8": {
+      "groups_kept": 6,
+      "labels": [
+       "original runtime error",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 257,
+      "saving_vs_full": 0.911
+     },
+     "12": {
+      "groups_kept": 6,
+      "labels": [
+       "original runtime error",
+       "400 response behavior",
+       "avoid saveCustomerEmail when missing",
+       "target file path",
+       "target function name",
+       "do-not-edit helper path"
+      ],
+      "tokens": 380,
+      "saving_vs_full": 0.869
+     }
+    },
+    "recency": {
+     "3": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 88,
+      "saving_vs_full": 0.97
+     },
+     "5": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 142,
+      "saving_vs_full": 0.951
+     },
+     "8": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 230,
+      "saving_vs_full": 0.921
+     },
+     "12": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 347,
+      "saving_vs_full": 0.88
+     }
+    },
+    "random": {
+     "3": {
+      "groups_kept": 1,
+      "labels": [
+       "target function name"
+      ],
+      "tokens": 129,
+      "saving_vs_full": 0.956
+     },
+     "5": {
+      "groups_kept": 1,
+      "labels": [
+       "do-not-edit helper path"
+      ],
+      "tokens": 123,
+      "saving_vs_full": 0.958
+     },
+     "8": {
+      "groups_kept": 2,
+      "labels": [
+       "target file path",
+       "do-not-edit helper path"
+      ],
+      "tokens": 214,
+      "saving_vs_full": 0.926
+     },
+     "12": {
+      "groups_kept": 0,
+      "labels": [],
+      "tokens": 1276,
+      "saving_vs_full": 0.56
+     }
+    }
+   }
+  }
+ },
+ "matched_token_cap": 400,
+ "results_section_task_plus_error": {
+  "recall": {
+   "3": {
+    "groups_kept": 6,
+    "labels": [
+     "original runtime error",
+     "400 response behavior",
+     "avoid saveCustomerEmail when missing",
+     "target file path",
+     "target function name",
+     "do-not-edit helper path"
+    ],
+    "tokens": 209,
+    "saving_vs_full": 0.928
+   },
+   "5": {
+    "groups_kept": 6,
+    "labels": [
+     "original runtime error",
+     "400 response behavior",
+     "avoid saveCustomerEmail when missing",
+     "target file path",
+     "target function name",
+     "do-not-edit helper path"
+    ],
+    "tokens": 270,
+    "saving_vs_full": 0.907
+   },
+   "8": {
+    "groups_kept": 6,
+    "labels": [
+     "original runtime error",
+     "400 response behavior",
+     "avoid saveCustomerEmail when missing",
+     "target file path",
+     "target function name",
+     "do-not-edit helper path"
+    ],
+    "tokens": 362,
+    "saving_vs_full": 0.875
+   },
+   "12": {
+    "groups_kept": 6,
+    "labels": [
+     "original runtime error",
+     "400 response behavior",
+     "avoid saveCustomerEmail when missing",
+     "target file path",
+     "target function name",
+     "do-not-edit helper path"
+    ],
+    "tokens": 526,
+    "saving_vs_full": 0.819
+   }
+  },
+  "recency": {
+   "3": {
+    "groups_kept": 1,
+    "labels": [
+     "do-not-edit helper path"
+    ],
+    "tokens": 88,
+    "saving_vs_full": 0.97
+   },
+   "5": {
+    "groups_kept": 1,
+    "labels": [
+     "do-not-edit helper path"
+    ],
+    "tokens": 142,
+    "saving_vs_full": 0.951
+   },
+   "8": {
+    "groups_kept": 1,
+    "labels": [
+     "do-not-edit helper path"
+    ],
+    "tokens": 230,
+    "saving_vs_full": 0.921
+   },
+   "12": {
+    "groups_kept": 1,
+    "labels": [
+     "do-not-edit helper path"
+    ],
+    "tokens": 347,
+    "saving_vs_full": 0.88
+   }
+  },
+  "random": {
+   "3": {
+    "groups_kept": 0,
+    "labels": [],
+    "tokens": 83,
+    "saving_vs_full": 0.971
+   },
+   "5": {
+    "groups_kept": 3,
+    "labels": [
+     "400 response behavior",
+     "avoid saveCustomerEmail when missing",
+     "do-not-edit helper path"
+    ],
+    "tokens": 221,
+    "saving_vs_full": 0.924
+   },
+   "8": {
+    "groups_kept": 1,
+    "labels": [
+     "do-not-edit helper path"
+    ],
+    "tokens": 233,
+    "saving_vs_full": 0.92
+   },
+   "12": {
+    "groups_kept": 4,
+    "labels": [
+     "null customer trigger",
+     "400 response behavior",
+     "avoid saveCustomerEmail when missing",
+     "do-not-edit helper path"
+    ],
+    "tokens": 1458,
+    "saving_vs_full": 0.498
+   }
+  }
+ },
+ "verdicts": {
+  "CONTROL_the_fixture_is_intact_full_context_keeps_every_group": true,
+  "CONTROL_the_noise_is_actually_present": true,
+  "CONTROL_the_splitter_produced_a_real_store": true,
+  "CONTROL_random_does_WORSE_than_recall": true,
+  "DERIVED_FROM_USE_MATCHES_THE_HAND_LIST": false,
+  "AT_A_MATCHED_BUDGET_IT_BEATS_BOTH_BASELINES": true,
+  "AND_THE_SAVING_IS_REAL": true,
+  "THE_MISSES_ARE_THE_EVIDENCE_NOT_THE_INSTRUCTIONS": true
+ },
+ "missed_groups": [
+  "buggy dereference",
+  "null customer trigger"
+ ],
+ "what_this_means": "derived-from-use finds the SYMPTOM and the INSTRUCTIONS and misses the CODE-level evidence: the two groups it never recovers are payload.customer.email and customer: null, both of which live in the source block and the payload sample. So it does not replace a hand-written required-fact list; it beats every cheap baseline at a matched budget and leaves a named, reproducible gap.",
+ "first_run_was_about_the_harness": "block split + task instruction only: recall 4/8 at k=12 while random reached 5/8 at k=8, but random had drawn a 1,225-token block against recall's 374. Both defects were ours: 38 of 63 records were under 120 chars, and the task instruction shares 0-1 content words with the blocks carrying the facts.",
+ "elapsed_s": 0.5
+}
