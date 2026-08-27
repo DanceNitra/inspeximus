@@ -47,7 +47,7 @@ RUN
     python benchmarks/longmemeval/run.py --subset small      # the pinned 20-question subset
 
 Exit codes: 0 ok · 2 dataset missing/unusable · 3 GPU pre-flight refused · 4 model pre-flight failed
-· 5 band check failed.
+· 5 band check failed · 6 judge not calibrated for these prompts.
 """
 from __future__ import annotations
 
@@ -85,23 +85,94 @@ K = 25                      # same k as this repo's published LoCoMo retrieval o
 MODE = "hybrid"             # lexical + semantic RRF; explicit, not left to the `auto` threshold
 CONTEXT_CHAR_BUDGET = 24000  # ~6k tokens. IDENTICAL for every arm — a budget gap flips rankings.
 NUM_CTX = 8192              # explicit; Ollama's default (2048) silently truncates and would measure that
-ANSWER_MAX_TOKENS = 256
-JUDGE_MAX_TOKENS = 96
-ANSWERER = "llama3.1:8b"
-JUDGE = "qwen2.5:7b"        # deliberately a different model family from the answerer
+# FLOORED, NEVER CAPPED, for the same reason as the pre-flight below. Measured on an
+# answer-shaped task with deepseek-v4-flash:0731-cloud: a complete two-part answer used 105 eval
+# tokens, of which roughly 40 were spent before the first visible character. 256 clears that here;
+# it is a parameter because the floor is a property of the ANSWERER, not of this benchmark, and the
+# value used is stamped into the result.
+# EVERY BUDGET IS A FLOOR, NEVER A CAP, AND 192 WAS STILL A CAP.
+#
+# The rule is a year old in our own store and the owner has now stated it again: any script calling
+# any model sets max_tokens HIGH, at least 8000, because these are thinking models that burn
+# thousands of tokens before the first visible character. When an LLM loop returns empty, the FIRST
+# suspect is the budget, and the fix is never to shrink the experiment around it.
+#
+# This file shipped a 24-token pre-flight. That is not a check, it is a filter that passes only
+# models old enough to answer immediately, which is exactly how a 7-month-old local judge sailed
+# through the same gate that failed the model under test. Measured here against
+# deepseek-v4-flash:0731-cloud on the pre-flight prompt: cap 24 empty, cap 64 empty, cap 128 answers
+# using 51 tokens. Then I set 192, which is the same mistake with a bigger number.
+PREFLIGHT_MAX_TOKENS = int(os.environ.get("PREFLIGHT_MAX_TOKENS", "8000"))
+ANSWER_MAX_TOKENS = int(os.environ.get("ANSWER_MAX_TOKENS", "8000"))
+# NO WEAK LOCAL MODEL JUDGES THIS. The judge was qwen2.5:7b at a 96-token budget: a 7B model given
+# less room than it needs to think, marking a reasoner's work. Both roles now run the cloud reasoner
+# with a real budget. The cost of a large ceiling on a short answer is nothing, because the model
+# stops when it is done; the cost of a small one is an empty completion scored as a wrong answer.
+JUDGE_MAX_TOKENS = int(os.environ.get("JUDGE_MAX_TOKENS", "8000"))
+# THE ANSWERER IS A PARAMETER, AND THAT IS THE POINT OF THIS RUN.
+#
+# On 2026-08-27 this benchmark reported oracle 0.500 and inspeximus 0.500 and its own band check
+# FAILED: "inspeximus (0.5) is not strictly below the oracle ceiling (0.5)". When flat retrieval
+# equals the oracle, retrieval is not the bottleneck and no retrieval arm can show anything. The
+# tell was temporal-reasoning, where the retrieval arms scored 0.50 against an ORACLE of 0.17: a
+# perfect context did worse than a partial one, which is not a memory result, it is an 8B answerer.
+#
+# The README already said the numbers are "not comparable to published LongMemEval numbers" because
+# "Zep, mem0 and the paper's own baselines use GPT-4-class answerers and judges; these are 7-8 B
+# local models". That is the roadmap's gap #1 -- no citable LongMemEval score -- restated as a
+# property of our own harness.
+#
+# THE ANSWERER AND THE JUDGE ARE THE SAME MODEL, AND THAT IS A KNOWN WEAKNESS, NOT A DESIGN.
+#
+# This block used to say the judge stayed local and was "deliberately a different model family from
+# the answerer". That stopped being true on 2026-08-27, when the local 7B judge was replaced because
+# a weak model must not mark a reasoner's work, and the comment was left describing the arrangement
+# it had just lost. A file that documents a property it no longer has is worse than one that
+# documents nothing, so it is written down plainly instead: both roles now run the same cloud model,
+# self-preference bias is therefore live and unmeasured, and any comparison against a published
+# LongMemEval figure has to carry that caveat.
+#
+# The gate that replaced the family separation is judge_calibration_gate(), below: whatever judge is
+# configured must have a calibration receipt measured on THESE prompts. It does not care which model
+# you choose, only that there is evidence for it.
+ANSWERER = os.environ.get("ANSWERER", "deepseek-v4-flash:0731-cloud")
+JUDGE = os.environ.get("JUDGE", "deepseek-v4-flash:0731-cloud")
 EMBEDDER = "nomic-embed-text"
 OLLAMA = os.environ.get("OLLAMA_HOST_URL", "http://localhost:11434")
 
 #: Subset sizes. `small` is the default and the one the README quotes.
 SUBSETS = {"smoke": 3, "small": 20, "medium": 50, "full": 470}
-ARMS = ["oracle", "inspeximus", "recency", "shuffled", "empty", "full_context"]
+ARMS = ["oracle", "inspeximus", "iterative", "recency", "shuffled", "empty", "full_context"]
+ROUNDS = int(os.environ.get("ROUNDS", "1"))
+FOLLOWUP_PROMPT = (
+    "A question needs evidence from several past conversations. You have some of it.\n\n"
+    "QUESTION: {question}\n\nWHAT YOU HAVE ALREADY FOUND:\n{seen}\n\n"
+    "Name up to three SHORT search queries for the parts that are still missing. "
+    "One per line, no numbering, no explanation. If nothing is missing, reply with nothing.")
 CEILING_ARM, SYSTEM_ARM, FLOOR_ARM = "oracle", "inspeximus", "recency"
 
 #: GPU pre-flight thresholds. This box shares one RTX 3090 with a long-running research process; a
 #: score measured while another model owns the card is a score of the contention, not of the memory
 #: system. The gate REFUSES rather than warns.
-MIN_FREE_VRAM_MB = 20 * 1024
-FOREIGN_GPU_PROCESSES = ("llama-server.exe", "llama-server")
+# The floor covers the answerer AND the judge. With the answerer on a cloud tag only the judge and
+# the embedder are resident, so the requirement is set from what actually loads rather than from the
+# worst case. Overridable, and the value used is stamped into the result.
+# With the answerer AND the judge on cloud tags, the only resident model is nomic-embed-text at
+# ~0.3 GB. The 20 GB floor described a configuration that no longer exists.
+MIN_FREE_VRAM_MB = int(os.environ.get("MIN_FREE_VRAM_MB", str(4 * 1024)))
+# THE MODELS THIS RUN IS ENTITLED TO HAVE RESIDENT. Anything else on the card is somebody's job.
+#
+# This gate used to look for a PROCESS NAME, "llama-server", and refuse if one existed. That was
+# right while the answerer and judge were local: a resident llama-server meant a big model on the
+# card. With both on cloud tags the only thing this benchmark loads locally is nomic-embed-text,
+# which Ollama also serves through llama-server, so the gate reported our own embedder as a foreign
+# job and could never pass. A check that cannot be satisfied by the configuration it is guarding is
+# not a safety gate.
+#
+# It now asks Ollama what is actually RESIDENT and flags any model that is not ours. That is the
+# question it was always trying to ask, and it still catches the case it exists for: someone else's
+# 20 GB model sitting on the card.
+OWN_MODELS_PREFIXES = ("nomic-embed-text",)
 
 # ── prompts (hashed into the result) ────────────────────────────────────────────────────────────
 ANSWER_PROMPT = """You are answering a question about a user's past conversations with an assistant.
@@ -398,13 +469,51 @@ def gpu_state() -> dict:
     except Exception as e:                                       # noqa: BLE001
         state["error"] = f"{type(e).__name__}: {str(e)[:160]}"
     try:
-        lister = ["tasklist"] if platform.system() == "Windows" else ["ps", "-eo", "comm"]
-        listing = subprocess.run(lister, capture_output=True, text=True, timeout=30).stdout or ""
-        state["foreign_processes"] = sorted({p for p in FOREIGN_GPU_PROCESSES
-                                             if p.lower() in listing.lower()})
-    except Exception:                                            # noqa: BLE001
-        pass
+        import urllib.request as _u
+        with _u.urlopen(OLLAMA + "/api/ps", timeout=20) as r:
+            resident = [m.get("name") or "" for m in (json.loads(r.read().decode()).get("models") or [])]
+        state["resident_models"] = resident
+        state["foreign_processes"] = sorted(
+            m for m in resident if not any(m.startswith(p) for p in OWN_MODELS_PREFIXES))
+    except Exception as e:                                       # noqa: BLE001
+        # Cannot tell who is on the card. Say so rather than reporting an empty list as "clear".
+        state["resident_models"] = None
+        state["foreign_processes"] = []
+        state["residency_unknown"] = f"{type(e).__name__}: {str(e)[:120]}"
     return state
+
+
+def judge_calibration_gate() -> tuple[bool, str]:
+    """Refuse to score unless THIS judge, with THESE prompts, has a calibration receipt.
+
+    The rule existed as a line in the module docstring, "run before trusting a score", and it did
+    not hold: on 2026-08-27 a run scored 20 questions with a 7B local judge that had been calibrated
+    a month earlier on a contended card, while the model under test failed its own pre-flight. A
+    sentence telling the operator to run something is not a gate; the operator is the person who
+    forgets.
+
+    Nothing here is a list of acceptable models. A list would go stale the first time a better judge
+    appeared, which is the same defect as a hand-written allow-list anywhere else. The gate asks for
+    EVIDENCE about whichever judge is configured, and the evidence expires by itself: the receipt
+    carries the sha256 of every prompt it was measured with, so editing a prompt invalidates the
+    calibration in the same commit that changes it.
+    """
+    p = HERE / "results" / ("judge_calibration_%s.json" % JUDGE.replace(":", "-"))
+    if not p.exists():
+        return False, "no calibration receipt for judge %r at %s" % (JUDGE, p.name)
+    try:
+        rec = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as e:                                            # noqa: BLE001
+        return False, "calibration receipt %s is unreadable: %s" % (p.name, e)
+    if rec.get("judge") != JUDGE:
+        return False, ("receipt %s was measured on judge %r, not %r"
+                       % (p.name, rec.get("judge"), JUDGE))
+    for k, want in PROMPT_HASHES.items():
+        got = rec.get(k)
+        if got != want:
+            return False, ("%s changed since calibration (%s: receipt %s, now %s). The receipt is "
+                           "void; re-run the calibration." % (k, k, str(got)[:12], want[:12]))
+    return True, "calibrated %s" % rec.get("generated_utc", "?")
 
 
 def gpu_preflight(allow_contended: bool) -> dict:
@@ -415,7 +524,10 @@ def gpu_preflight(allow_contended: bool) -> dict:
     elif st["free_mb"] < MIN_FREE_VRAM_MB:
         reasons.append(f"only {st['free_mb']} MiB VRAM free, need >= {MIN_FREE_VRAM_MB} MiB")
     if st["foreign_processes"]:
-        reasons.append("another model runner is resident: " + ", ".join(st["foreign_processes"]))
+        reasons.append("another model is resident on the card: " + ", ".join(st["foreign_processes"]))
+    if st.get("residency_unknown"):
+        reasons.append("could not read what is resident (%s); refusing rather than assuming a clear card"
+                       % st["residency_unknown"])
     st["passed"] = not reasons
     st["reasons"] = reasons
     st["override"] = bool(reasons) and allow_contended
@@ -451,7 +563,22 @@ def model_preflight(models: list[str]) -> dict:
     ok = True
     for m in models:
         t0 = time.time()
-        reply = chat(m, f"Repeat this code back exactly and write nothing else: {nonce}", 24,
+        # A CAP IS A MODEL FILTER, AND THIS ONE WAS SET TO 24.
+        #
+        # Every current model spends tokens on hidden reasoning before the first visible character,
+        # so a tight cap returns a truncated completion with EMPTY content and the check reads it as
+        # "the model did not answer". Measured here on 2026-08-27 against
+        # deepseek-v4-flash:0731-cloud, same prompt, temperature 0, one nonce:
+        #
+        #     cap  24 -> empty, eval_count 24 (hit the cap)
+        #     cap  64 -> empty, eval_count 64 (hit the cap)
+        #     cap 128 -> the nonce, eval_count 51
+        #
+        # At 24 the only model that passes is one old enough to emit its first token immediately,
+        # which is why qwen2.5:7b sailed through the same pre-flight that failed the answerer. The
+        # pre-flight was selecting for age, not for correctness.
+        reply = chat(m, f"Repeat this code back exactly and write nothing else: {nonce}",
+                     PREFLIGHT_MAX_TOKENS,
                      "preflight")
         dt = round(time.time() - t0, 2)
         good = nonce in reply and dt > 0.0
@@ -543,6 +670,35 @@ def context_for(arm: str, inst: dict, turns: list[dict], store, alt_store) -> tu
                 f"about {CONTEXT_CHAR_BUDGET}. Not computable at this operating point.")
             return None, info
         ctx, info["truncated"] = _fill([t["text"] for t in turns])
+        return ctx, info
+    if arm == "iterative":
+        # THE ARM THIS FILE'S OWN README DIAGNOSED AND NEVER RAN.
+        #
+        # The README says of the flat arm: "It scores 0.00 on multi-session against a 0.20 ceiling:
+        # a single top-k pass returns turns about the question, and a question spanning several
+        # sessions needs turns about each part of it." That second clause describes
+        # `recall_iterative`, which this library has shipped the whole time: retrieve, let a model
+        # read the hits and name what is missing, retrieve again on those follow-ups, merge.
+        #
+        # Its measured lever on the analogous task (LoCoMo multi-hop full-evidence recall@50, equal
+        # budget B=50) is flat 0.145 -> iterative 0.297, n=276. Nobody had pointed it at THIS
+        # benchmark, so the multi-session cell read 0.00 and got quoted as the axis being hard
+        # rather than as the one arm we had never run.
+        #
+        # SAME BUDGET as every other arm: `_fill` truncates to CONTEXT_CHAR_BUDGET, so the extra
+        # retrieval buys different turns, never more of them. Cost is one model call per round.
+        def ask_followup(q, current):
+            seen = "\n".join((h.get("text") or "")[:400] for h in (current or [])[:6])
+            out = chat(ANSWERER, FOLLOWUP_PROMPT.format(question=q, seen=seen or "(nothing)"),
+                       180, "followup") or ""
+            qs = [ln.strip(" -*\t") for ln in out.splitlines() if len(ln.strip(" -*\t")) > 8]
+            return qs[:3]
+
+        hits = store.recall_iterative(inst["question"], ask_followup, k=K, rounds=ROUNDS,
+                                      mode=MODE, reinforce=False) or []
+        info["hits"] = len(hits)
+        info["rounds"] = ROUNDS
+        ctx, info["truncated"] = _fill([h.get("text", "") for h in hits])
         return ctx, info
     src = alt_store if arm == "shuffled" else store
     hits = src.recall(inst["question"], k=K, mode=MODE, reinforce=False) or []
@@ -643,6 +799,12 @@ def main(argv=None) -> int:
               "prompt. Not scoring.", flush=True)
         return 4
 
+    cal_ok, cal_why = judge_calibration_gate()
+    if not cal_ok:
+        print("\nJUDGE NOT CALIBRATED — not scoring.\n  %s\n"
+              "  Run: python benchmarks/longmemeval/judge_calibration.py" % cal_why, flush=True)
+        return 6
+
     n = a.n or SUBSETS[a.subset]
     sample = select_subset(data, n)
     arms = [x.strip() for x in a.arms.split(",") if x.strip()]
@@ -655,7 +817,7 @@ def main(argv=None) -> int:
     for i, inst in enumerate(sample):
         turns = instance_turns(inst)
         all_turns.append(turns)
-        need_store = bool({"inspeximus", "shuffled"} & set(arms))
+        need_store = bool({"inspeximus", "shuffled", "iterative"} & set(arms))
         stores.append(build_store(turns) if need_store else None)
         print(f"  [{i + 1}/{len(sample)}] {inst['question_id']:16} {len(turns):4d} turns ingested "
               f"({time.time() - t0:.0f}s elapsed)", flush=True)
@@ -748,6 +910,7 @@ def main(argv=None) -> int:
             "embedder": EMBEDDER, "answerer": ANSWERER, "judge": JUDGE,
             "num_ctx": NUM_CTX, "temperature": 0.0, "seed": 0,
             "answer_max_tokens": ANSWER_MAX_TOKENS, "judge_max_tokens": JUDGE_MAX_TOKENS,
+        "preflight_max_tokens": PREFLIGHT_MAX_TOKENS,
             "llm_on_write_path": False,
             "inspeximus_version": getattr(__import__("inspeximus"), "__version__", "unknown"),
             **PROMPT_HASHES,
