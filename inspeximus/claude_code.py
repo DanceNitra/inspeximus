@@ -927,6 +927,28 @@ _PRE_PATTERNS = [
      "%s=1 prefixed once he has approved it." % _OVERRIDE),
     (r"\brm\s+-rf\b", "warn",
      "irreversible. Confirm the target resolves to what you think it does."),
+    # AN UNBOUNDED POLL: while/until together with sleep, and nothing present that can end it.
+    # A warn and not a block, because polling is legitimate and a guard that stopped it would be
+    # switched off within a day. What separates the two forms is the presence of a bound, so the
+    # negative lookahead lists them: a `seq` range, a `for` counter, `timeout`, `read` (bounded by
+    # the input it consumes), an explicit -c count, or `head -n`.
+    #
+    # Measured before it shipped, because a pattern that cries wolf is worse than no pattern. Six
+    # ordinary commands that must stay silent, including `while read -r f; do ... done < file` and
+    # `timeout 300 bash -c "while ! curl ...; do sleep 5; done"`: zero fired. Four unbounded forms:
+    # all four fired. The cost it exists for was two shells left spinning for thirteen hours on a
+    # condition that could never be met, waiting for output from a harness a timeout had killed.
+    # Every clause is anchored at the START of the command, not at the loop keyword. The first
+    # version put the lookahead after `while`, so it could only see forward, and
+    # `timeout 300 bash -c "while ! curl ...; do sleep 5; done"` fired: the bound was to the LEFT of
+    # the match and invisible to it. A guard that cannot see the thing that would exonerate its
+    # target is the defect this repository keeps finding in other people's instruments.
+    (r"(?s)^(?=.*\b(?:while|until)\b)(?=.*\bsleep\s+\d)"
+     r"(?!.*(?:\bseq\s+\d|\bfor\s+\w+\s+in\b|\btimeout\s+\d|\bread\s+-r?\b|-c\s*\d|\bhead\s+-n))",
+     "warn",
+     "this polls with sleep and carries nothing that can end it: no counter, no timeout, no input "
+     "to exhaust. If what you are waiting for has already failed, this waits forever. Give it a "
+     "bound, or wait on the process rather than on its output."),
 ]
 
 
