@@ -1055,8 +1055,25 @@ NON_CLAIM_TOKENS = {
         "5": (2, "twice, both parameters a reader changes rather than results we claim: the --n 5 "
               "argument in the offered local-judge command, and k=5 in the next-five-minutes recall "
               "snippet"),
-        "0": (3, "Python list indices [0] in the code examples, not measurements"),
-        "12": (1, "EU AI Act ARTICLE number in the docs table, not a quantity"),
+        "0": (5, "Python list indices [0] in the code examples, not measurements. Was 3 until the "
+              "tamper-detection example landed, which reads verify_writes()[0] and [1][0]"),
+        "1": (3, "index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
+              "tamper-detection example. None is a measurement"),
+        "12": (2, "EU AI Act ARTICLE number, not a quantity: once in the docs table, once in the "
+               "scope note under 'When someone asks you to prove it'. That section states which "
+               "articles the Act actually contains and that none of them names memory, provenance "
+               "or tamper-evidence, so the article numbers travel with the disclaimer rather than "
+               "with a claim."),
+        "19": (1, "EU AI Act Art. 19 (log retention) -- an article number in the same scope note"),
+        "2": (2, "the DAY in the two AI Act application dates, 2 December 2027 and 2 August 2028. "
+              "Deferred from 2 August 2026 by Regulation (EU) 2026/1744; verified 2026-08-27 against "
+              "CELEX 32026R1744 and the Commission's own page, because the widely-cited tracker "
+              "artificialintelligenceact.eu still prints the superseded 2026 date and was last "
+              "updated 1 August 2024"),
+        "2027": (1, "the year standalone Annex III high-risk obligations start to apply"),
+        "2028": (1, "the year Annex I product-embedded high-risk obligations start to apply"),
+        "15": (1, "EU AI Act Art. 15 (accuracy, robustness, cybersecurity) -- an article number in "
+               "the same scope note"),
         "73,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
                 "Was '68,' until 2026-08-25, when three places still said 68 or 71 while the server "
                 "had 73 tool defs: README's documentation table, two CLAIMS descriptions, and BOTH "

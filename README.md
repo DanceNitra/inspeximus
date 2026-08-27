@@ -1,11 +1,26 @@
-# inspeximus — agent memory that does not serve stale facts
+# inspeximus — the agent memory that takes it back
 
-**Python agent memory in one zero-dependency file, plus an MCP server for Claude Code and Cursor.**
-When a fact is corrected, inspeximus serves the new value and stops the stale one from coming back —
-deterministically, with no LLM in the loop.
+**Your agent's most expensive failure is not forgetting. It is confidently remembering the old
+answer.**
 
-This is about the fact that turned out to be **wrong, or true on Monday and outdated by Friday**,
-and what your agent keeps doing with it afterwards.
+Long-term memory for AI agents in one zero-dependency Python file, plus an MCP server for any
+client and a one-line config install for Claude Code, Cursor, Windsurf, Codex and Cline.
+
+Correcting a fact is not the hard part, and this field already does it. Graphiti invalidates facts
+and leads with it; cognee ships `forget` as one of its four operations. When we measured mem0 and
+Graphiti, both kept the corrected value, which is the right thing to do. What neither has is a
+channel to undo that correction on command, from an instruction that names no value. Here a fact
+that was wrong, or true on Monday and outdated by Friday, gets corrected once, and you can still put
+it back afterwards.
+
+The benchmarks ask which of two conflicting facts wins. The question after that one is whether you
+can take the correction back, and whether you can show what changed.
+
+The name is from medieval charters. A king, bishop, abbot or town council opened with *inspeximus*,
+"we have inspected", reciting an older document in full to record that they had examined it, usually
+confirming it, and sealing the result so a later reader could check. It attested that the copy
+faithfully matched the original, not that the original was true. Same guarantee here, and
+`provenance()` says so in a `limits` field rather than leaving you to find out.
 
 [![PyPI](https://img.shields.io/pypi/v/inspeximus?color=2563eb&label=pypi)](https://pypi.org/project/inspeximus/)
 [![Downloads](https://img.shields.io/pypi/dm/inspeximus?color=2563eb)](https://pypistats.org/packages/inspeximus)
@@ -65,6 +80,51 @@ which runs offline in a second.
 
 ---
 
+## When someone asks you to prove it
+
+Turn receipts on and every write joins a hash chain. The values alone cannot tell you whether
+somebody edited the file behind the library's back. The chain can.
+
+```python
+from inspeximus import Inspeximus
+
+m = Inspeximus("memory.json", receipts=True)
+m.remember("The staging database is db-3.internal", key="staging-db")
+m.remember("The staging database is db-7.internal", key="staging-db")
+
+m.verify_writes()[0]        # nothing has been touched yet
+# True
+
+# now somebody edits memory.json directly, turning db-7 into db-9
+raw = open("memory.json", encoding="utf-8").read()
+open("memory.json", "w", encoding="utf-8").write(raw.replace("db-7", "db-9"))
+
+Inspeximus("memory.json", receipts=True).verify_writes()[1][0].split(": ", 1)[1]
+# 'its TEXT or KEY no longer matches its write receipt (edited after write)'
+```
+
+`provenance(key=...)` answers the rest in one call: every value the key has held and the policy that
+retired each one, where the current value came from including taint inherited through summaries,
+whether the record still matches what its receipt committed to, and a `limits` field naming what none
+of it proves. Erasure works the same way. `forget_subject()` hard-deletes every memory attributable
+to a person, including the summaries that inherited it through lineage, and leaves a signed
+content-free tombstone, so a later reader can tell a deliberate erasure from tampering.
+`erasure_certificate()` makes that checkable by a third party with no private key and no reason to
+trust us.
+
+`inspeximus compliance` prints the same evidence labelled by article, with its own scope attached:
+the agent-memory slice only, not the whole system, and not a certification.
+
+**What this is not.** It is not compliance, and none of it is due yet. When the EU AI Act's
+high-risk obligations take effect, on 2 December 2027 for standalone Annex III systems and 2 August
+2028 for those embedded in regulated products, the Act will ask for automatic event logging
+(Art. 12), retention of those logs (Art. 19), and accuracy, robustness and cybersecurity (Art. 15).
+None of those articles names memory, provenance or tamper-evidence, so what is here goes past the
+text rather than implementing it. [docs/AI_ACT.md](docs/AI_ACT.md) maps what the store already keeps
+onto the logging duty, and says where the mapping stops.
+
+---
+
 ## The next five minutes
 
 The demo above ends at `revert()`. Here is what to do with it.
@@ -108,9 +168,9 @@ the line it starts on, generated from the AST and re-checked in CI.
 
 ---
 
-## Why another memory library
+## The receipts
 
-Because we measured the one thing the others do not publish: **how often a corrected fact comes back.**
+We measured the one thing the others do not publish: **how often a corrected fact comes back.**
 
 Each system was run on its own native configuration, same task, same 30 trials:
 
@@ -294,7 +354,9 @@ You are building an agent that runs for weeks, not minutes. It will learn someth
 thing will change — a config value, a policy, a person's preference, a fact. The failure that will cost
 you is not the agent forgetting. It is the agent **confidently remembering the old answer**.
 
-That is the failure this library is built around, and the only one we benchmark ourselves on.
+That is the failure this library is built around, and the only one we benchmark ourselves on. Most
+demos in this space show the write. This one shows the retraction, because that is the operation
+your agent will be judged by.
 
 ---
 
