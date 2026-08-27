@@ -4,7 +4,7 @@
   "name": "LongMemEval-S",
   "sha256": "08d8dad4be43ee2049a22ff5674eb86725d0ce5ff434cde2627e5e8e7e117894",
   "licence": "CC-BY-NC 4.0 -- research figures only, NOT a product benchmark",
-  "questions_used": 50,
+  "questions_used": 60,
   "questions_available": 500,
   "candidates_median": 51
  },
@@ -14,39 +14,39 @@
   "endpoint": "http://localhost:11434/api/embed",
   "chunk_chars": 6000,
   "pooling": "max over chunks",
-  "sessions_needing_more_than_one_chunk": 1810,
-  "chunks_embedded": 5443,
-  "empty_index_lines": 117,
+  "sessions_needing_more_than_one_chunk": 2138,
+  "chunks_embedded": 6503,
+  "empty_index_lines": 139,
   "why_chunked": "/api/embed silently drops the tail past ~12-16k chars: two texts differing only after 16k embed to cosine 1.000000"
  },
  "recall": {
   "ceiling": {
-   "1": 0.78,
-   "3": 0.88,
-   "5": 0.92
+   "1": 0.8333333333333334,
+   "3": 0.9166666666666666,
+   "5": 0.9333333333333333
   },
   "default_line": {
-   "1": 0.48,
-   "3": 0.7,
-   "5": 0.72
+   "1": 0.6333333333333333,
+   "3": 0.8,
+   "5": 0.85
   },
   "first_user": {
-   "1": 0.48,
-   "3": 0.64,
-   "5": 0.74
+   "1": 0.65,
+   "3": 0.75,
+   "5": 0.7833333333333333
   },
   "idf_terms": {
-   "1": 0.46,
-   "3": 0.7,
-   "5": 0.7
+   "1": 0.4666666666666667,
+   "3": 0.7166666666666667,
+   "5": 0.75
   },
   "CONTROL_shuffled_line": {
-   "1": 0.0,
-   "3": 0.02,
-   "5": 0.14
+   "1": 0.06666666666666667,
+   "3": 0.15,
+   "5": 0.23333333333333334
   }
  },
- "chance_at_3": 0.05868544600938967,
+ "chance_at_3": 0.059191055573824404,
  "verdicts": {
   "CONTROL_the_embedder_reads_to_the_END_of_a_chunk": true,
   "CONTROL_the_corpus_was_actually_ranked": true,
@@ -57,7 +57,201 @@
   "THE_CEILING_BEATS_THE_SHIPPED_DEFAULT": true,
   "A_DETERMINISTIC_LINE_DOES_NOT_CLOSE_THE_GAP": true
  },
+ "by_question_type": {
+  "ceiling": {
+   "knowledge-update": {
+    "any_at_3": 0.9,
+    "all_gold_at_k": 0.6,
+    "coverage_at_k": 0.75,
+    "n": 10
+   },
+   "multi-session": {
+    "any_at_3": 0.9,
+    "all_gold_at_k": 0.5,
+    "coverage_at_k": 0.7583333333333333,
+    "n": 10
+   },
+   "single-session-assistant": {
+    "any_at_3": 1.0,
+    "all_gold_at_k": 1.0,
+    "coverage_at_k": 1.0,
+    "n": 10
+   },
+   "single-session-preference": {
+    "any_at_3": 1.0,
+    "all_gold_at_k": 1.0,
+    "coverage_at_k": 1.0,
+    "n": 10
+   },
+   "single-session-user": {
+    "any_at_3": 0.8,
+    "all_gold_at_k": 0.8,
+    "coverage_at_k": 0.8,
+    "n": 10
+   },
+   "temporal-reasoning": {
+    "any_at_3": 0.9,
+    "all_gold_at_k": 0.5,
+    "coverage_at_k": 0.7083333333333333,
+    "n": 10
+   }
+  },
+  "default_line": {
+   "knowledge-update": {
+    "any_at_3": 0.7,
+    "all_gold_at_k": 0.4,
+    "coverage_at_k": 0.55,
+    "n": 10
+   },
+   "multi-session": {
+    "any_at_3": 1.0,
+    "all_gold_at_k": 0.4,
+    "coverage_at_k": 0.7083333333333333,
+    "n": 10
+   },
+   "single-session-assistant": {
+    "any_at_3": 0.8,
+    "all_gold_at_k": 0.8,
+    "coverage_at_k": 0.8,
+    "n": 10
+   },
+   "single-session-preference": {
+    "any_at_3": 0.8,
+    "all_gold_at_k": 0.8,
+    "coverage_at_k": 0.8,
+    "n": 10
+   },
+   "single-session-user": {
+    "any_at_3": 0.6,
+    "all_gold_at_k": 0.6,
+    "coverage_at_k": 0.6,
+    "n": 10
+   },
+   "temporal-reasoning": {
+    "any_at_3": 0.9,
+    "all_gold_at_k": 0.6,
+    "coverage_at_k": 0.7583333333333333,
+    "n": 10
+   }
+  },
+  "first_user": {
+   "knowledge-update": {
+    "any_at_3": 0.6,
+    "all_gold_at_k": 0.4,
+    "coverage_at_k": 0.5,
+    "n": 10
+   },
+   "multi-session": {
+    "any_at_3": 1.0,
+    "all_gold_at_k": 0.4,
+    "coverage_at_k": 0.675,
+    "n": 10
+   },
+   "single-session-assistant": {
+    "any_at_3": 0.8,
+    "all_gold_at_k": 0.8,
+    "coverage_at_k": 0.8,
+    "n": 10
+   },
+   "single-session-preference": {
+    "any_at_3": 0.8,
+    "all_gold_at_k": 0.8,
+    "coverage_at_k": 0.8,
+    "n": 10
+   },
+   "single-session-user": {
+    "any_at_3": 0.5,
+    "all_gold_at_k": 0.5,
+    "coverage_at_k": 0.5,
+    "n": 10
+   },
+   "temporal-reasoning": {
+    "any_at_3": 0.8,
+    "all_gold_at_k": 0.5,
+    "coverage_at_k": 0.6583333333333333,
+    "n": 10
+   }
+  },
+  "idf_terms": {
+   "knowledge-update": {
+    "any_at_3": 0.8,
+    "all_gold_at_k": 0.3,
+    "coverage_at_k": 0.55,
+    "n": 10
+   },
+   "multi-session": {
+    "any_at_3": 0.7,
+    "all_gold_at_k": 0.0,
+    "coverage_at_k": 0.325,
+    "n": 10
+   },
+   "single-session-assistant": {
+    "any_at_3": 1.0,
+    "all_gold_at_k": 1.0,
+    "coverage_at_k": 1.0,
+    "n": 10
+   },
+   "single-session-preference": {
+    "any_at_3": 0.4,
+    "all_gold_at_k": 0.4,
+    "coverage_at_k": 0.4,
+    "n": 10
+   },
+   "single-session-user": {
+    "any_at_3": 0.7,
+    "all_gold_at_k": 0.7,
+    "coverage_at_k": 0.7,
+    "n": 10
+   },
+   "temporal-reasoning": {
+    "any_at_3": 0.7,
+    "all_gold_at_k": 0.3,
+    "coverage_at_k": 0.4666666666666666,
+    "n": 10
+   }
+  },
+  "CONTROL_shuffled_line": {
+   "knowledge-update": {
+    "any_at_3": 0.2,
+    "all_gold_at_k": 0.0,
+    "coverage_at_k": 0.1,
+    "n": 10
+   },
+   "multi-session": {
+    "any_at_3": 0.3,
+    "all_gold_at_k": 0.0,
+    "coverage_at_k": 0.08333333333333333,
+    "n": 10
+   },
+   "single-session-assistant": {
+    "any_at_3": 0.0,
+    "all_gold_at_k": 0.0,
+    "coverage_at_k": 0.0,
+    "n": 10
+   },
+   "single-session-preference": {
+    "any_at_3": 0.1,
+    "all_gold_at_k": 0.1,
+    "coverage_at_k": 0.1,
+    "n": 10
+   },
+   "single-session-user": {
+    "any_at_3": 0.2,
+    "all_gold_at_k": 0.2,
+    "coverage_at_k": 0.2,
+    "n": 10
+   },
+   "temporal-reasoning": {
+    "any_at_3": 0.1,
+    "all_gold_at_k": 0.0,
+    "coverage_at_k": 0.025,
+    "n": 10
+   }
+  }
+ },
+ "why_three_metrics": "any@3 is only correct where a question has ONE gold session. knowledge-update always has two (the original and the update) and multi-session has two to five, so on those any@3 scores retrieving one of several as a hit. For supersession that is inverted: returning only the original IS the stale answer this product exists to prevent.",
+ "why_stratified": "the first run took data[:50] and every question was single-session-user, because the file is ordered by type. multi-session (cross-session) and knowledge-update (supersession) were zero of zero.",
  "not_run": "the written-line arm. 50 questions is 2,493 distinct sessions and ~6.1M input tokens; it is only worth spending once the free arms show a gap for a written line to close.",
  "seed": 20260826,
- "elapsed_s": 2087.0
+ "elapsed_s": 2427.0
 }

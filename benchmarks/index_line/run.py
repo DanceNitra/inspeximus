@@ -70,7 +70,7 @@ EMBED_MODEL = "nomic-embed-text"
 EMBED_URL = "http://localhost:11434/api/embed"     # /api/embeddings 500s above ~8k chars
 CHUNK_CHARS = 6000              # measured safe: at 6k the tail still moves the vector
 EMBED_CHAR_CAP = CHUNK_CHARS
-N_QUESTIONS = int(os.environ.get("N_QUESTIONS", "50"))
+PER_TYPE = int(os.environ.get("PER_TYPE", "10"))     # stratified: this many of EACH question type
 SEED = 20260826
 WORKERS = int(os.environ.get("WORKERS", "12"))   # localhost HTTP: the work is wait, not compute
 
@@ -217,9 +217,22 @@ def main() -> int:
     t0 = time.time()
     data = load()
     rng = random.Random(SEED)
-    qs = data[:N_QUESTIONS]
-    print("  LongMemEval-S, %d of %d questions, sha256 pinned | %d embed workers"
-          % (len(qs), len(data), WORKERS), flush=True)
+    # STRATIFY. The first run took data[:50] and every one of them was `single-session-user`,
+    # because the file is ordered by type: 0..69 single-session-user, 70..232 multi-session,
+    # 233..365 temporal-reasoning, 366..443 knowledge-update, 444..499 single-session-assistant.
+    # So the headline recall described the easiest type and said nothing about the two that matter
+    # most here: multi-session, which is cross-session recall, and knowledge-update, which is
+    # supersession. Both were zero of zero.
+    by_type: dict = {}
+    for q in data:
+        by_type.setdefault(q.get("question_type") or "?", []).append(q)
+    qs = []
+    for t in sorted(by_type):
+        qs.extend(by_type[t][:PER_TYPE])
+    print("  LongMemEval-S, %d questions across %d types (%d each), sha256 pinned | %d embed workers"
+          % (len(qs), len(by_type), PER_TYPE, WORKERS), flush=True)
+    for t in sorted(by_type):
+        print("     %-28s %d of %d available" % (t, min(PER_TYPE, len(by_type[t])), len(by_type[t])))
 
     # idf over the sessions actually used, so the deterministic arm is as strong as it can be here
     df: Counter = Counter()
@@ -232,6 +245,23 @@ def main() -> int:
 
     arms = ("ceiling", "default_line", "first_user", "idf_terms", "CONTROL_shuffled_line")
     hits = {a: {1: 0, 3: 0, 5: 0} for a in arms}
+    by_t: dict = {}          # arm -> type -> [any@3, all@k, coverage_sum, n]
+
+    # THREE METRICS, BECAUSE ONE OF THEM WAS WRONG FOR FOUR OF THE SIX TYPES.
+    #
+    # The first version scored "is ANY gold session in the top 3". Every single-session type has
+    # exactly one gold session, so that is correct there and nowhere else. knowledge-update always
+    # has TWO (the original fact and the update); multi-session has two to five; temporal-reasoning
+    # is mostly two or more. On those, retrieving one of three counted as a hit.
+    #
+    # For supersession it is worse than merely loose. knowledge-update needs the original AND the
+    # correction. A run that returns only the original produces the STALE answer, which is the exact
+    # failure this product exists to prevent, and "any@3" scores it as a success.
+    #
+    # So: any@3 stays for comparability with the earlier run, all@k asks whether every session the
+    # answer needs was retrieved (k grows with the question, since three slots cannot hold five
+    # sessions), and coverage@k reports the fraction, because all@k alone cannot tell "found four of
+    # five" from "found none".
     n_scored = 0
     gold_in_haystack = 0
     chunked = 0
@@ -275,6 +305,16 @@ def main() -> int:
             for k in (1, 3, 5):
                 if any(sess_ids[i] in gold for i in order[:k]):
                     hits[a][k] += 1
+            qt = q.get("question_type") or "?"
+            cell = by_t.setdefault(a, {}).setdefault(qt, [0, 0, 0.0, 0])
+            kk = max(3, len(gold))                      # room for every session the answer needs
+            got = {sess_ids[i] for i in order[:kk]} & gold
+            cell[3] += 1
+            if any(sess_ids[i] in gold for i in order[:3]):
+                cell[0] += 1
+            if len(got) == len(gold):
+                cell[1] += 1
+            cell[2] += len(got) / max(1, len(gold))
         n_scored += 1
         if (qi + 1) % 5 == 0:
             print("    %d/%d questions, %.0fs" % (qi + 1, len(qs), time.time() - t0), flush=True)
@@ -294,6 +334,30 @@ def main() -> int:
     v["THE_CEILING_BEATS_THE_SHIPPED_DEFAULT"] = rec["ceiling"][3] > rec["default_line"][3]
     v["A_DETERMINISTIC_LINE_DOES_NOT_CLOSE_THE_GAP"] = (
         max(rec["idf_terms"][3], rec["first_user"][3]) < rec["ceiling"][3] - 0.05)
+
+    types = sorted({t for a in by_t for t in by_t[a]})
+    gold_n = {}
+    for q in qs:
+        gold_n.setdefault(q.get("question_type") or "?", []).append(len(q.get("answer_session_ids") or []))
+
+    for label, idx, div in (("ALL gold sessions retrieved (all@k)", 1, 3),
+                            ("fraction of gold retrieved (coverage@k)", 2, None),
+                            ("any gold in top 3 (the OLD metric)", 0, 3)):
+        print("\n  === %s ===" % label)
+        print("    %-26s %-6s %s" % ("type", "gold", "  ".join("%-11s" % a[:11] for a in arms)))
+        for t in types:
+            g = gold_n.get(t) or [1]
+            span = "%d" % g[0] if len(set(g)) == 1 else "%d-%d" % (min(g), max(g))
+            row = []
+            for a in arms:
+                c = by_t.get(a, {}).get(t)
+                if not c or not c[3]:
+                    row.append("%-11s" % "-")
+                elif idx == 2:
+                    row.append("%-11s" % ("%.3f" % (c[2] / c[3])))
+                else:
+                    row.append("%-11s" % ("%.3f" % (c[idx] / c[3])))
+            print("    %-26s %-6s %s" % (t, span, "  ".join(row)))
 
     print("\n  === recall@k, %d questions, %d candidates median ===" % (
         n_scored, sorted(cand_counts)[len(cand_counts) // 2] if cand_counts else 0))
@@ -319,6 +383,21 @@ def main() -> int:
                    "why_chunked": ("/api/embed silently drops the tail past ~12-16k chars: two "
                                    "texts differing only after 16k embed to cosine 1.000000")},
         "recall": rec, "chance_at_3": chance3, "verdicts": v,
+        "by_question_type": {
+            a: {t: {"any_at_3": (c[0] / c[3]) if c[3] else None,
+                    "all_gold_at_k": (c[1] / c[3]) if c[3] else None,
+                    "coverage_at_k": (c[2] / c[3]) if c[3] else None,
+                    "n": c[3]}
+                for t, c in by_t.get(a, {}).items()} for a in arms},
+        "why_three_metrics": (
+            "any@3 is only correct where a question has ONE gold session. knowledge-update always "
+            "has two (the original and the update) and multi-session has two to five, so on those "
+            "any@3 scores retrieving one of several as a hit. For supersession that is inverted: "
+            "returning only the original IS the stale answer this product exists to prevent."),
+        "why_stratified": ("the first run took data[:50] and every question was "
+                           "single-session-user, because the file is ordered by type. "
+                           "multi-session (cross-session) and knowledge-update (supersession) "
+                           "were zero of zero."),
         "not_run": ("the written-line arm. 50 questions is 2,493 distinct sessions and ~6.1M input "
                     "tokens; it is only worth spending once the free arms show a gap for a written "
                     "line to close."),
