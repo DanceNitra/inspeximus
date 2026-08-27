@@ -24,9 +24,25 @@ would be worse than a miss, because a guard that cries wolf is a guard somebody 
 import io
 import os
 import re
-import tomllib
 
 import pytest
+
+# THIS FILE BROKE ITS OWN RULE ON THE FIRST PUSH, and CI caught it in five minutes.
+#
+# It imported `tomllib` at module scope. That is stdlib only from Python 3.11, the matrix runs 3.9,
+# and the whole module errored at collection: exactly the failure it exists to prevent, in the file
+# that enforces it. The lesson is not that the rule is hard to follow. It is that the author of a
+# rule is not exempt from it, and only the machine noticed.
+#
+# The guard is a fallback rather than a skip, so the check still runs everywhere it can: tomllib on
+# 3.11+, tomli where it is installed, and a skip only when neither exists.
+try:                                      # Python 3.11+
+    import tomllib as _toml
+except ModuleNotFoundError:               # pragma: no cover - older interpreters
+    try:
+        import tomli as _toml
+    except ModuleNotFoundError:
+        _toml = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TESTS = os.path.join(ROOT, "tests")
@@ -46,7 +62,9 @@ def _ci_installs():
 
 
 def _extras():
-    d = tomllib.load(io.open(os.path.join(ROOT, "pyproject.toml"), "rb"))
+    if _toml is None:
+        pytest.skip("no TOML reader on this interpreter (tomllib is 3.11+, tomli not installed)")
+    d = _toml.load(io.open(os.path.join(ROOT, "pyproject.toml"), "rb"))
     out = set()
     for specs in (d["project"].get("optional-dependencies") or {}).values():
         for spec in specs:
