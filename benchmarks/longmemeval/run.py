@@ -43,7 +43,7 @@ extraction, summarisation or rewriting step. The judge and the answerer are read
 RUN
 ---
     python benchmarks/longmemeval/run.py --download          # fetch the dataset (278 MB) once
-    python benchmarks/longmemeval/judge_calibration.py       # the judge gate; run before trusting a score
+    python benchmarks/longmemeval/judge_calibration.py       # required: run.py exits 6 without it
     python benchmarks/longmemeval/run.py --subset small      # the pinned 20-question subset
 
 Exit codes: 0 ok · 2 dataset missing/unusable · 3 GPU pre-flight refused · 4 model pre-flight failed
@@ -85,11 +85,6 @@ K = 25                      # same k as this repo's published LoCoMo retrieval o
 MODE = "hybrid"             # lexical + semantic RRF; explicit, not left to the `auto` threshold
 CONTEXT_CHAR_BUDGET = 24000  # ~6k tokens. IDENTICAL for every arm — a budget gap flips rankings.
 NUM_CTX = 8192              # explicit; Ollama's default (2048) silently truncates and would measure that
-# FLOORED, NEVER CAPPED, for the same reason as the pre-flight below. Measured on an
-# answer-shaped task with deepseek-v4-flash:0731-cloud: a complete two-part answer used 105 eval
-# tokens, of which roughly 40 were spent before the first visible character. 256 clears that here;
-# it is a parameter because the floor is a property of the ANSWERER, not of this benchmark, and the
-# value used is stamped into the result.
 # EVERY BUDGET IS A FLOOR, NEVER A CAP, AND 192 WAS STILL A CAP.
 #
 # The rule is a year old in our own store and the owner has now stated it again: any script calling
