@@ -20,7 +20,25 @@ keywords = [
     "llm", "agent", "memory", "agent-memory", "recall", "mcp", "rag",
 ]
 authors = [{ name = "Rastislav Drahoš (Agora)" }]
-classifiers = ["Programming Language :: Python :: 3", "Intended Audience :: Science/Research", "Topic :: Scientific/Engineering :: Artificial Intelligence"]
+# PyPI's own browse and filter surface runs on these, and we shipped three. Every entry below is a
+# claim we can back: the Python versions are the ones CI actually runs (3.9, 3.11, 3.12), not the
+# ">=3.8" the metadata declares and nothing tests; Beta rather than Stable because this ships several
+# releases a week; no "Typing :: Typed" because there is no py.typed; OS Independent because the base
+# package has no dependencies.
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [project.urls]
 # PyPI renders each of these as a link in the project sidebar. Until now they pointed only back at this
