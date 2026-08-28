@@ -81,16 +81,16 @@
     },
     "langgraph-checkpointer": {
       "adapter": "inspeximus.integrations.langgraph:InspeximusSaver",
-      "broken_against": "1.2.11",
+      "broken_against": null,
       "checked": "2026-08-28",
       "deep_audit": "checkpointer_conformance.py",
-      "detail": "StoreChangedOnDisk: <tmp>\\ckpt.jsonl changed on disk since this handle loaded it (another process or another Inspeximus() on the same path). Saving would erase its records. Call reload() to merge the two and retry, or give each writer its own store file.  [intermittent: failed on run 3 of 40]",
+      "detail": null,
       "note": null,
       "python": "3.12",
       "source": "langgraph.py",
-      "status": "broken",
+      "status": "verified",
       "upstream_dist": "langgraph",
-      "verified_against": null
+      "verified_against": "1.2.11"
     },
     "langgraph-store": {
       "adapter": "inspeximus.integrations.langgraph:InspeximusStore",

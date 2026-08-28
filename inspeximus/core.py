@@ -12807,6 +12807,14 @@ class Inspeximus:
                 else:
                     payload = data
                 _durable_replace(self.path, payload)
+                # INSIDE the lock, and that is the whole point. The check and the write already shared
+                # one critical section, but this line sat outside it, so the window simply moved: A
+                # writes, releases, and before it stamps its own signature B takes the lock, compares
+                # the file against a signature that predates A's write, and reports a competing PROCESS.
+                # LangGraph calls a checkpointer from its executor, so an ordinary app.invoke was enough
+                # to hit it -- 3 to 15 failures in 40 runs, load-dependent, which is why it read as
+                # flaky rather than broken. A guard that fires on its own peer is not protecting anyone.
+                self._file_sig = self._stat_sig()
             # record the embed recipe the persisted vectors were made with (only when vectors are actually
             # persisted) so a later open with a different recipe re-embeds instead of silently mismatching.
             # embed_id None means THIS opener has no recipe (e.g. a lexical hook run on a semantic store) —
@@ -12818,7 +12826,6 @@ class Inspeximus:
                     self._embedid_path.write_text(self.embed_id, encoding="utf-8")
                 except Exception as e:
                     self._sidecar_errors['embedid'] = f"{type(e).__name__}: {e}"
-            self._file_sig = self._stat_sig()        # our own write is not a conflict
             self._last_save = now
             self._dirty = False
             self._persist_error = None
