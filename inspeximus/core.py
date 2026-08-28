@@ -10912,7 +10912,22 @@ class Inspeximus:
         S = self._cusum_state()
         alarms = []
         for s in srcs:
-            S[s] = max(0.0, float(S.get(s, 0.0)) + float(weight) * (bad - k))
+            # WEIGHT IS ASYMMETRIC, AND DELIBERATELY SO. The step used to be
+            # `weight * (bad - k)`, which let ONE caller-supplied weight erase the whole
+            # accrued statistic: measured, a single monitor(outcome="good", weight=50)
+            # took S from 2.80 to 0.00 against h=3.0. We never called clear(), but a
+            # caller who owns the outcome channel could buy a clear() by choosing the
+            # weight -- and this method's own limit 3 says outcomes may be
+            # attacker-influenceable (MINJA). Prompted by OWASP agent-memory-guard #87,
+            # where a detector's window was emptied by a source class the threat model
+            # names as hostile: the counter was fine, the rule was fine, and the path to
+            # the rule belonged to the attacker.
+            # A bad outcome may still be weighted freely, because accelerating detection
+            # is the safe direction. A good one may subtract at most one call's worth,
+            # so suppression costs an attacker one call per bad outcome instead of one
+            # call total. Decay, never a reset -- which is what the CUSUM was for.
+            _step = float(weight) * (1.0 - k) if bad else -min(float(weight), 1.0) * k
+            S[s] = max(0.0, float(S.get(s, 0.0)) + _step)
             if S[s] >= h:
                 alarms.append(s)
         slashed = {}
