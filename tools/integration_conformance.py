@@ -355,9 +355,12 @@ def _rt_crewai(tmp):
     try:
         from crewai.memory.storage.backend import MemoryRecord, StorageBackend
     except ModuleNotFoundError:
-        # Read the version from metadata rather than importing the package again: on the releases
-        # this branch exists for, re-importing is both unnecessary and the thing most likely to
-        # raise next.
+        # THE OLD ROUND TRIP STILL HAS TO RUN. Returning here without exercising anything is what a
+        # check that measures nothing looks like, and the runner's own --falsify control caught it
+        # on CI within the hour: with the write path neutered this "passed", because it never wrote.
+        _rt_crewai_legacy(tmp)
+        # Version from metadata rather than importing the package again: on the releases this branch
+        # exists for, re-importing is both unnecessary and the thing most likely to raise next.
         import importlib.metadata as _md
         try:
             ver = _md.version("crewai")
@@ -407,6 +410,14 @@ def _rt_crewai(tmp):
     # assertion to notice ends the check, so whichever round trip runs first is the one the control
     # actually exercises. With this order that is the 1.x backend, which is what a current install
     # uses; putting the old class first left the new one covered by nothing.
+    _rt_crewai_legacy(tmp)
+
+
+def _rt_crewai_legacy(tmp):
+    """CrewAI's ORIGINAL storage interface. Runs on every version, and is the whole check on those
+    that predate `StorageBackend`."""
+    from inspeximus.integrations.crewai import InspeximusStorage
+
     old = InspeximusStorage(path=str(tmp / "crew.json"))
     old.save("the deployment window is 02:00 UTC", {"key": "ops::window", "object": "02:00 UTC"})
     hits = old.search("deployment window", limit=3)
