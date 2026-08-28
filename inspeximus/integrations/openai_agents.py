@@ -73,7 +73,15 @@ class InspeximusSession(ComplianceMixin):
     Mixes in `ComplianceMixin`: the same session object yields the EU AI Act evidence (compliance_report /
     compliance_check / retention / audit_bundle) with no extra wiring. Enable `receipts=True` on the store."""
 
-    def __init__(self, session_id: str, path: str | None = None, store: Any = None, extractor=None):
+    # The SDK's Session protocol carries this beside `session_id`, and the reference SQLiteSession
+    # declares it at class level with a None default. Without it this class failed a runtime
+    # isinstance() check against agents.memory.Session even though every method worked, so an SDK
+    # path keyed on the attribute was inert here. Declared, and HONOURED in get_items below: an
+    # attribute that exists but changes nothing is the failure this repository keeps writing about.
+    session_settings: Any = None
+
+    def __init__(self, session_id: str, path: str | None = None, store: Any = None, extractor=None,
+                 session_settings: Any = None):
         """Pass a `path` (a inspeximus store is created/opened there) OR an existing inspeximus `store` to share one
         store across sessions. `session_id` namespaces this conversation within the store. OPT-IN `extractor`
         (text -> (key, object)) auto-keys turns so the store supersedes corrected facts across the session;
@@ -85,6 +93,7 @@ class InspeximusSession(ComplianceMixin):
         self.store = store
         if extractor is not None:
             self.store.extractor = extractor
+        self.session_settings = session_settings
         self._src = {"doc": "oai-session:" + self.session_id}   # canonical source -> enables forget_subject
 
     # ── internal: this session's items as (seq, record) sorted oldest-first ──
@@ -100,10 +109,29 @@ class InspeximusSession(ComplianceMixin):
 
     # ── the Session protocol (async, as the SDK expects) ──
     async def get_items(self, limit: int | None = None) -> list[dict]:
+        limit = self._limit(limit)
         rows = self._rows()
         if limit is not None:
             rows = rows[-int(limit):] if limit else []
         return [(r.get("meta") or {}).get("item") for _, r in rows]
+
+    def _limit(self, explicit):
+        """The SDK's resolve_session_limit, reimplemented rather than imported.
+
+        An explicit argument wins; otherwise `session_settings.limit` applies. The SDK accepts either
+        a SessionSettings dataclass or a plain dict there and coerces, so both are read here. The
+        `agents` package is deliberately never imported by this adapter -- it is matched structurally,
+        the way the rest of this file is -- so the rule is restated rather than borrowed, and the
+        conformance runner is what keeps the restatement honest.
+        """
+        if explicit is not None:
+            return explicit
+        s = self.session_settings
+        if s is None:
+            return None
+        if isinstance(s, dict):
+            return s.get("limit")
+        return getattr(s, "limit", None)
 
     async def add_items(self, items: list[dict]) -> None:
         if not items:
