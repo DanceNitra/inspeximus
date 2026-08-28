@@ -274,12 +274,11 @@ needs nothing. The MCP server, encryption and framework adapters are all opt-in 
 `langchain` · `langgraph-store` · `llamaindex` · `haystack` · `autogen` · `pydantic-ai` ·
 `google-adk` · `memoryagentbench`
 
-**12 of 13 verified against current upstream, 1 recorded broken** — `crewai`, named rather than
-quietly dropped from the list. `openai-agents` and `langgraph-checkpointer` were two of the three
-and are fixed: the session was missing an attribute the SDK type-checks on, and the store's
-single-writer guard was firing on this process's own threads. CrewAI replaced its storage protocol
-wholesale in a major release, so that adapter needs rewriting rather than repairing, and it stays listed as
-broken until it is. The
+**13 of 13 verified against current upstream, 0 recorded broken.** Three were broken a day ago and
+the list said so, which is the only reason you can believe this line: `openai-agents` was missing an
+attribute the SDK type-checks on, the store's single-writer guard was firing on this process's own
+threads under `langgraph-checkpointer`, and CrewAI replaced its storage protocol wholesale, so that
+one needed a second class rather than a repair. The
 counts are read from [`docs/integration_conformance.json`](docs/integration_conformance.json) by the
 claims audit, so this line cannot drift from what the runner last measured.
 

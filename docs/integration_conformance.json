@@ -15,17 +15,17 @@
       "verified_against": "0.7.5"
     },
     "crewai": {
-      "adapter": "inspeximus.integrations.crewai:InspeximusStorage",
-      "broken_against": "1.15.18",
+      "adapter": "inspeximus.integrations.crewai:InspeximusMemoryBackend + InspeximusStorage",
+      "broken_against": null,
       "checked": "2026-08-28",
       "deep_audit": null,
-      "detail": "AssertionError: does not satisfy crewai.memory.storage.backend.StorageBackend; missing: adelete, asave, asearch, count, delete, get_record, get_scope_info, list_categories, list_records, list_scopes, update",
+      "detail": null,
       "note": null,
       "python": "3.12",
       "source": "crewai.py",
-      "status": "broken",
+      "status": "verified",
       "upstream_dist": "crewai",
-      "verified_against": null
+      "verified_against": "1.15.18"
     },
     "google-adk": {
       "adapter": "inspeximus.integrations.google_adk:InspeximusMemoryService",

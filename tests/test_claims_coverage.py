@@ -328,14 +328,28 @@ def test_CONTROL_a_published_tool_count_that_disagrees_with_the_server_is_caught
 
 
 def test_CONTROL_an_adapter_conformance_count_that_disagrees_with_the_ledger_is_caught(sandbox):
-    """The homepage advertised nine adapters unqualified while the ledger recorded three broken."""
+    """The homepage advertised nine adapters unqualified while the ledger recorded three broken.
+
+    THIS CONTROL STOPPED REPRODUCING ITS OWN DEFECT and was rewritten on 2026-08-28. It used to clear
+    every `broken_against`, "pretend everything passes", which disagreed with a page that said three
+    were broken. Once the three were actually fixed the page said zero, the ledger said zero, and
+    clearing an already-clear field injected nothing -- a green control over an unexercised checker.
+
+    So it now breaks an adapter instead of mending one. That direction cannot go stale the same way:
+    the page can only ever claim some number of broken adapters, and marking one more always
+    disagrees with it.
+    """
     p = sandbox / "docs" / "integration_conformance.json"
     import json
     d = json.loads(p.read_text(encoding="utf-8"))
-    for v in d["integrations"].values():
-        v["broken_against"] = None          # pretend everything passes; the page still says 3 broken
+    name, entry = sorted(d["integrations"].items())[0]
+    entry["status"] = "broken"
+    entry["broken_against"] = "9.9.9"
+    entry["verified_against"] = None
+    entry["detail"] = "injected by a control"
     p.write_text(json.dumps(d), encoding="utf-8")
-    assert "LIVE-MISMATCH" in _kinds(sandbox)
+    assert "LIVE-MISMATCH" in _kinds(sandbox), (
+        "breaking %s in the ledger did not disagree with the count published on the page" % name)
 
 
 def test_CONTROL_an_unreadable_conformance_ledger_does_not_read_as_clean(sandbox):

@@ -335,19 +335,61 @@ def _rt_pydantic_ai(tmp):
 
 
 def _rt_crewai(tmp):
-    """Through CrewAI's own storage protocol -- which is the whole question, since 1.x replaced it."""
-    from crewai.memory.storage.backend import StorageBackend
+    """Through CrewAI's own storage protocol -- which is the whole question, since 1.x replaced it.
 
-    from inspeximus.integrations.crewai import InspeximusStorage
+    Both classes are exercised. `InspeximusStorage` answers the ORIGINAL interface and is kept for
+    anyone pinned to an older CrewAI; `InspeximusMemoryBackend` answers the 1.x `StorageBackend`,
+    which is a different protocol rather than the same one with more methods -- records instead of
+    strings, a caller-supplied embedding instead of a query, and scopes, categories and CRUD on top.
+    """
+    from datetime import datetime, timezone
 
-    st = InspeximusStorage(path=str(tmp / "crew.json"))
-    st.save("the deployment window is 02:00 UTC", {"key": "ops::window", "object": "02:00 UTC"})
-    hits = st.search("deployment window", limit=3)
+    from crewai.memory.storage.backend import MemoryRecord, StorageBackend
+
+    from inspeximus.integrations.crewai import InspeximusMemoryBackend, InspeximusStorage
+
+    old = InspeximusStorage(path=str(tmp / "crew.json"))
+    old.save("the deployment window is 02:00 UTC", {"key": "ops::window", "object": "02:00 UTC"})
+    hits = old.search("deployment window", limit=3)
     assert hits and any("02:00" in str(h) for h in hits), hits
+
+    st = InspeximusMemoryBackend(path=str(tmp / "backend.json"))
     assert isinstance(st, StorageBackend), (
         "does not satisfy crewai.memory.storage.backend.StorageBackend; missing: "
         + ", ".join(a for a in sorted(getattr(StorageBackend, "__protocol_attrs__", []))
                     if not hasattr(st, a)))
+
+    now = datetime.now(timezone.utc)
+
+    def rec(i, scope, cats, vec):
+        return MemoryRecord(id="r%d" % i, content="fact %d" % i, scope=scope, categories=cats,
+                            metadata={"u": "x"}, importance=0.5, created_at=now, last_accessed=now,
+                            embedding=vec, source="conformance", private=False)
+
+    st.save([rec(1, "/team/a", ["notes"], [1.0, 0.0]),
+             rec(2, "/team/b", ["logs"], [0.0, 1.0])])
+    assert st.count() == 2, st.count()
+    assert st.count("/team/a") == 1
+    assert st.get_record("r1").content == "fact 1"
+    assert st.list_scopes("/team") == ["/team/a", "/team/b"], st.list_scopes("/team")
+    assert st.list_categories() == {"notes": 1, "logs": 1}, st.list_categories()
+
+    ranked = [r.id for r, _ in st.search([1.0, 0.0], limit=5)]
+    assert ranked[0] == "r1", ranked                       # the nearer vector ranks first
+    assert st.get_scope_info("/team").record_count == 2
+
+    st.update(MemoryRecord(id="r1", content="fact 1 CORRECTED", scope="/team/a", categories=["notes"],
+                           metadata={"u": "x"}, importance=0.5, created_at=now, last_accessed=now,
+                           embedding=[1.0, 0.0], source="conformance", private=False))
+    assert st.get_record("r1").content == "fact 1 CORRECTED"
+    assert st.count() == 2, "update duplicated a record: %d" % st.count()
+
+    # THE ERASURE IS THE POINT, so it is checked on disk and not through the API that performed it.
+    assert st.delete(record_ids=["r2"]) == 1
+    st.store.flush()
+    from inspeximus import Inspeximus
+    fresh = Inspeximus(path=str(tmp / "backend.json"))
+    assert not any("fact 2" in (r.get("text") or "") for r in fresh.items),         "delete() left the content in the file"
 
 
 def _rt_haystack(tmp):
@@ -540,7 +582,8 @@ CHECKS = [
     Check("pydantic-ai", "pydantic_ai", "pydantic-ai",
           "inspeximus.integrations.pydantic_ai:inspeximus_toolset", _rt_pydantic_ai, "pydantic_ai.py"),
     Check("crewai", "crewai", "crewai",
-          "inspeximus.integrations.crewai:InspeximusStorage", _rt_crewai, "crewai.py"),
+          "inspeximus.integrations.crewai:InspeximusMemoryBackend + InspeximusStorage",
+          _rt_crewai, "crewai.py"),
     Check("haystack", "haystack", "haystack-ai",
           "inspeximus.integrations.haystack:InspeximusDocumentStore", _rt_haystack,
           "haystack.py", deep="haystack_audit.py"),

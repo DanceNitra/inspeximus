@@ -646,9 +646,9 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE-WITH-DEPS",
        "curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py",
        "Published as our own failure, not a product claim. 210,499 records across ten stores."),
-    _c("readme-adapter-conformance", "README.md", ["12", "13", "1"],
-       "**12 of 13 verified against current upstream, 1 recorded broken**",
-       "Framework adapters: 12 of 13 verified against current upstream, 1 recorded broken",
+    _c("readme-adapter-conformance", "README.md", ["13", "13", "0"],
+       "**13 of 13 verified against current upstream, 0 recorded broken.**",
+       "Framework adapters: 13 of 13 verified against current upstream, 0 recorded broken",
        "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Read from docs/integration_conformance.json by _live_consistency(), which now checks BOTH "
        "index.html and README.md -- a second copy of a number is a second place for it to go stale. "
@@ -969,9 +969,9 @@ NUMBER_CLAIMS = [
        "Was 6 while the README said nine and the package ships nine agent-framework adapters "
        "(autogen, crewai, google_adk, haystack, langchain, langgraph, llamaindex, openai_agents, "
        "pydantic_ai)."),
-    _c("site-integration-conformance", "index.html", ["12", "13", "1"],
-       "12 of 13 verified against current upstream, 1 recorded broken",
-       "12 of 13 framework adapters verified against current upstream; 1 recorded broken",
+    _c("site-integration-conformance", "index.html", ["13", "13", "0"],
+       "13 of 13 verified against current upstream, 0 recorded broken",
+       "13 of 13 framework adapters verified against current upstream; 0 recorded broken",
        "REPRODUCIBLE", "python tools/integration_conformance.py",
        "Read from the committed ledger docs/integration_conformance.json by _live_consistency(), not "
        "typed. The page previously said 'Drop-in for' all nine frameworks with no qualifier at all, "
