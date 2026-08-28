@@ -1041,7 +1041,7 @@ NON_CLAIM_TOKENS = {
         "5": (2, "step number '5. Check us without trusting us', and --n 5 in the command it offers"),
         "187,": (1, "the first of the three timings followed by a comma in prose; the claim "
                  "itself is '187'"),
-        "3.8": (1, "the minimum Python version, a floor rather than a quantity we measured"),
+        "3.9": (1, "the minimum Python version, a floor rather than a quantity we measured"),
         "0": (3, "the db-3/db-7 fixture hostnames and 'zero dependencies' as a word"),
     },
     "README.md": {

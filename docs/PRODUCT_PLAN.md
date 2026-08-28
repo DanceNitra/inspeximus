@@ -20,7 +20,7 @@ import time      : 181 ms      after correction : 'db-7.internal'   (matches)
 total wall time  : 192 ms      after revert     : 'db-3.internal'   (matches)
 ```
 
-Zero core dependencies, Python 3.8+, no key, no service, no network, no LLM.
+Zero core dependencies, Python 3.9+, no key, no service, no network, no LLM.
 
 **We are the only one of five a stranger can run with nothing.** Checked against each vendor's own
 quickstart:

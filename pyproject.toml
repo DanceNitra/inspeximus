@@ -7,7 +7,7 @@ name = "inspeximus"
 version = "2.20.1"
 description = "The agent memory that takes it back: correct a fact once and the retired value stops coming back, by key, with no LLM in the loop. Long-term memory for AI agents in a zero-dependency single file + MCP server, with value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = { text = "MIT" }
 # Chosen by frequency in how developers actually describe this problem, not by how we describe it.
 # Measured 2026-08-25 over 837 agent-memory documents from 2026: stale 24.1%, forget 14.2%,
@@ -22,7 +22,7 @@ keywords = [
 authors = [{ name = "Rastislav Drahoš (Agora)" }]
 # PyPI's own browse and filter surface runs on these, and we shipped three. Every entry below is a
 # claim we can back: the Python versions are the ones CI actually runs (3.9, 3.11, 3.12), not the
-# ">=3.8" the metadata declares and nothing tests; Beta rather than Stable because this ships several
+# ">=3.9" the metadata declares, which is now what CI proves; Beta rather than Stable because this ships several
 # releases a week; no "Typing :: Typed" because there is no py.typed; OS Independent because the base
 # package has no dependencies.
 classifiers = [
