@@ -344,14 +344,31 @@ def _rt_crewai(tmp):
     """
     from datetime import datetime, timezone
 
-    from crewai.memory.storage.backend import MemoryRecord, StorageBackend
-
     from inspeximus.integrations.crewai import InspeximusMemoryBackend, InspeximusStorage
 
     old = InspeximusStorage(path=str(tmp / "crew.json"))
     old.save("the deployment window is 02:00 UTC", {"key": "ops::window", "object": "02:00 UTC"})
     hits = old.search("deployment window", limit=3)
     assert hits and any("02:00" in str(h) for h in hits), hits
+
+    # WHICH PROTOCOL THIS CREWAI HAS, rather than which one we wrote against. `StorageBackend`
+    # arrived in the 1.x line; before it, `InspeximusStorage` above IS the whole contract and there
+    # is nothing further to check. This is not hypothetical: CI installs every extra in one
+    # resolution and pip backtracks crewai to 1.6.1 to satisfy them together, while a user running
+    # `pip install inspeximus[crewai]` gets 1.15.x. Asserting the new protocol in both places would
+    # report an adapter broken for supporting the version actually installed.
+    try:
+        from crewai.memory.storage.backend import MemoryRecord, StorageBackend
+    except ModuleNotFoundError:
+        # Read the version from metadata rather than importing the package again: on the releases
+        # this branch exists for, re-importing is both unnecessary and the thing most likely to
+        # raise next.
+        import importlib.metadata as _md
+        try:
+            ver = _md.version("crewai")
+        except Exception:                                        # noqa: BLE001
+            ver = "?"
+        return "old Storage protocol only (crewai %s has no StorageBackend)" % ver
 
     st = InspeximusMemoryBackend(path=str(tmp / "backend.json"))
     assert isinstance(st, StorageBackend), (

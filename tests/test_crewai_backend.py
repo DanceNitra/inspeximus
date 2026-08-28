@@ -22,7 +22,10 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-pytest.importorskip("crewai")
+# The MODULE, not the distribution. `StorageBackend` arrived in the 1.x line, and CI resolves every
+# extra together, which backtracks crewai to a release that predates it -- so importing this at module
+# scope would error the whole file at COLLECTION on exactly the environment CI runs.
+pytest.importorskip("crewai.memory.storage.backend")
 
 from crewai.memory.storage.backend import MemoryRecord, StorageBackend  # noqa: E402
 
