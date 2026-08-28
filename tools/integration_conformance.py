@@ -346,11 +346,6 @@ def _rt_crewai(tmp):
 
     from inspeximus.integrations.crewai import InspeximusMemoryBackend, InspeximusStorage
 
-    old = InspeximusStorage(path=str(tmp / "crew.json"))
-    old.save("the deployment window is 02:00 UTC", {"key": "ops::window", "object": "02:00 UTC"})
-    hits = old.search("deployment window", limit=3)
-    assert hits and any("02:00" in str(h) for h in hits), hits
-
     # WHICH PROTOCOL THIS CREWAI HAS, rather than which one we wrote against. `StorageBackend`
     # arrived in the 1.x line; before it, `InspeximusStorage` above IS the whole contract and there
     # is nothing further to check. This is not hypothetical: CI installs every extra in one
@@ -407,6 +402,15 @@ def _rt_crewai(tmp):
     from inspeximus import Inspeximus
     fresh = Inspeximus(path=str(tmp / "backend.json"))
     assert not any("fact 2" in (r.get("text") or "") for r in fresh.items),         "delete() left the content in the file"
+
+    # The legacy class LAST, deliberately. Under --falsify the write path is neutered and the first
+    # assertion to notice ends the check, so whichever round trip runs first is the one the control
+    # actually exercises. With this order that is the 1.x backend, which is what a current install
+    # uses; putting the old class first left the new one covered by nothing.
+    old = InspeximusStorage(path=str(tmp / "crew.json"))
+    old.save("the deployment window is 02:00 UTC", {"key": "ops::window", "object": "02:00 UTC"})
+    hits = old.search("deployment window", limit=3)
+    assert hits and any("02:00" in str(h) for h in hits), hits
 
 
 def _rt_haystack(tmp):

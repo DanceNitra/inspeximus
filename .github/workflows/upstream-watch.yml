@@ -1,0 +1,87 @@
+# Nothing was watching the frameworks we integrate with.
+#
+# Three adapters were recorded broken on 2026-08-13 and fixed on 2026-08-28. Fifteen days, and the
+# only reason the gap ended was that somebody went looking. No workflow in this repository ran on a
+# schedule, so an upstream release could break an adapter and the next signal was whenever a human
+# happened to re-run the conformance by hand.
+#
+# THE SECOND HALF IS WHY ci.yml WOULD NOT HAVE CAUGHT IT EITHER. That job installs every extra in a
+# single resolution, so pip backtracks to whatever satisfies all of them together: it resolved crewai
+# to 1.6.1 while `pip install inspeximus[crewai]` gives 1.15.x, and openai-agents to 0.20.0 while
+# PyPI had 0.22.0. The combination CI tests is one no user has. This job installs ONE extra at a
+# time, at latest, which is the combination a user actually gets.
+#
+# It is allowed to fail. That is the point: a red scheduled run is the notice that an upstream moved
+# under an adapter, dated to the week it happened rather than to the day someone thought to look.
+name: upstream watch
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"          # Mondays, early. Weekly is enough for a release cadence in days.
+  workflow_dispatch:              # and on demand, because waiting a week to test a fix is absurd
+  push:
+    paths:
+      - '.github/workflows/upstream-watch.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upstream-watch-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adapter:
+    name: ${{ matrix.extra }} at latest
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false            # one broken framework must not hide the state of the others
+      matrix:
+        include:
+          - extra: autogen
+            names: autogen
+          - extra: crewai
+            names: crewai
+          - extra: google-adk
+            names: google-adk
+          - extra: haystack
+            names: haystack
+          - extra: langchain
+            names: langchain
+          - extra: langgraph
+            names: langgraph-store,langgraph-checkpointer
+          - extra: llamaindex
+            names: llamaindex
+          - extra: openai-agents
+            names: openai-agents
+          - extra: pydantic-ai
+            names: pydantic-ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install this extra ALONE, at latest
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade -e ".[${{ matrix.extra }}]"
+
+      - name: What did pip actually resolve
+        run: |
+          python - <<'EOF'
+          import importlib.metadata as md
+          for dist in ("crewai", "langgraph", "langchain-core", "llama-index-core", "autogen-core",
+                       "google-adk", "openai-agents", "haystack-ai", "pydantic-ai"):
+              try:
+                  print("  %-20s %s" % (dist, md.version(dist)))
+              except md.PackageNotFoundError:
+                  pass
+          EOF
+
+      # --require-all so a missing dependency is a failure. A skip that reads as a pass is how a
+      # green suite ends up having measured nothing, which this repository has written down more
+      # than once.
+      - name: Conformance for this adapter only
+        run: python -X utf8 tools/integration_conformance.py --only "${{ matrix.names }}" --require-all
