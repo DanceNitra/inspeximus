@@ -3729,6 +3729,182 @@ class Inspeximus:
                        "would not see the change")}
             results.append(row)
 
+        # ── ARGUMENT SURFACES. Five more read the store but take their subject as an argument,
+        # and for three of them the argument must be CAPTURED from the clean store before the
+        # corruption -- which is the auditor's own workflow: witness a head out of band, come back
+        # later, and check what you were shown against what is there now.
+        #
+        # Scored exactly like the pure surfaces: the honest call must come back clean, or the
+        # rejection of the corrupt one proves nothing.
+        def _arg_store(work, tag, **kw):
+            ix = type(self)(path=os.path.join(work, "arg_%s.json" % tag), **kw)
+            ix.remember("the rate is 5 percent", key="rate", object="5 percent")
+            ix.remember("the office is in Kosice", key="office", object="Kosice")
+            ix.remember("the deploy target is prod", key="target", object="prod")
+            ix.flush()
+            return ix
+
+        def _a_witness(work):
+            ix = _arg_store(work, "wit", receipts=True)
+            w = ix.witness()
+            forged = _copy.deepcopy(w)
+            forged["digest"] = "0" * len(str(w.get("digest") or "0"))
+            j = lambda r: bool(r.get("valid"))
+            return j(ix.verify_witness(w)), j(ix.verify_witness(forged))
+
+        def _a_consistency(work):
+            # Capture the anchor, then ROLL THE LOG BACK, which is what a rewriting operator does.
+            # An append must stay clean -- the surface proves append-only, not immutability -- so the
+            # honest case here is the untouched log rather than a grown one.
+            ix = _arg_store(work, "cons", receipts=True)
+            a = ix.anchor()
+            good = bool(ix.verify_consistency(a)[0])
+            chain = list(getattr(ix, "_receipts", []) or [])
+            if len(chain) < 2:
+                raise RuntimeError("the receipt chain is too short to roll back")
+            ix._receipts = chain[:-1]
+            bad = bool(ix.verify_consistency(a)[0])
+            ix._receipts = chain
+            return good, bad
+
+        def _a_claim(work):
+            ix = _arg_store(work, "claim")
+            j = lambda r: r.get("verdict") != "contradicted"
+            return (j(ix.verify_claim("the rate is 5 percent", key="rate", object="5 percent")),
+                    j(ix.verify_claim("the rate is 9 percent", key="rate", object="9 percent")))
+
+        def _a_conflict(work):
+            ix = _arg_store(work, "conf")
+            j = lambda r: not r
+            return (j(ix.check_conflict("the rate is 5 percent", key="rate", object="5 percent")),
+                    j(ix.check_conflict("the rate is 9 percent", key="rate", object="9 percent")))
+
+        def _a_certificate(work):
+            # A certificate for a request that never happened must not claim erasures. The honest
+            # case is a request that did.
+            ix = _arg_store(work, "cert", receipts=True)
+            ix.forget(ids=[ix.items[0]["id"]], basis="probe", request_id="req-real")
+            ix.flush()
+            real = ix.erasure_certificate(request_id="req-real")
+            fake = ix.erasure_certificate(request_id="req-never-happened")
+            n = lambda c: len((c or {}).get("erased_memory_ids") or (c or {}).get("erased") or [])
+            # clean == "this certificate attests to at least one real erasure"
+            return n(real) > 0, n(fake) > 0
+
+        def _a_attestations(work):
+            # A signature nobody re-checks is a claim, not an attestation. The corrupt case edits the
+            # signed TEXT after the fact, which is the attack the field exists to catch.
+            ix = _arg_store(work, "att")
+            sk, pk = new_source_keypair()
+            text = "the payout wallet is 0xTRUE"
+            rid = ix.remember(text, key="wallet", object="0xTRUE",
+                              source={"doc": "finance"}, attestation=(pk, attest(text, sk, "finance")))
+            ix.flush()
+            good = bool(ix.verify_attestations()[0])
+            for r in ix.items:
+                if r["id"] == rid:
+                    r["text"] = "the payout wallet is 0xEVIL"
+            ix.flush()
+            return good, bool(ix.verify_attestations()[0])
+
+        def _a_selection(work):
+            # Without a trust root this surface says so itself and decides nothing, so the fixture
+            # sets one. The corrupt case is an untrusted record reaching the top k.
+            ix = type(self)(path=os.path.join(work, "arg_sel.json"))
+            ix.remember("the rate is 5 percent", key="rate", object="5 percent",
+                        source={"doc": "finance"})
+            ix.remember("the rate is 5 percent per year", key="rate2", object="5pct",
+                        source={"doc": "finance"})
+            ix.flush()
+            ix.trust_seeds = {"finance"}
+            j = lambda r: r.get("stable") is not False
+            good = j(ix.selection_integrity("rate", k=2, pool=10))
+            ix.remember("the rate is 99 percent", key="evil", object="99",
+                        source={"doc": "attacker"})
+            ix.flush()
+            return good, j(ix.selection_integrity("rate", k=2, pool=10))
+
+        def _a_erasure_audit(work):
+            # The honest case erases a value that survives nowhere. The corrupt case erases one that
+            # is still sitting in another record's text, which is what a DSAR cannot afford to miss.
+            ix = type(self)(path=os.path.join(work, "arg_ea.json"))
+            lone = ix.remember("Dana works in Kosice", key="loc", object="Kosice")
+            ix.flush()
+            ix.forget(ids=[lone], basis="dsar", request_id="r-clean")
+            ix.flush()
+            j = lambda r: not (r.get("residue") or r.get("advisory"))
+            good = j(ix.erasure_audit(subject="Dana", values=["Kosice"]))
+            addr = ix.remember("Dana lives at 8 Rue du Nom Fictif", key="addr", object="8 Rue")
+            ix.remember("the invoice went to 8 Rue du Nom Fictif", key="inv", object="8 Rue")
+            ix.flush()
+            ix.forget(ids=[addr], basis="dsar", request_id="r-residue")
+            ix.flush()
+            return good, j(ix.erasure_audit(subject="Dana", values=["8 Rue du Nom Fictif"]))
+
+        def _a_convergence(work):
+            # The ratchet must not be self-served. A claim ratified by a DIFFERENT identity reaches
+            # adjudicated; the same claim ratified only by its own author must not.
+            ix = type(self)(path=os.path.join(work, "arg_conv.json"))
+            good_id = ix.remember("revenue is 900M", key="rev", object="900M",
+                                  source={"doc": "auditor-a"})
+            ix.flush()
+            ix.ratify(good_id, kind="reproduction", by_key="auditor-b")
+            ix.flush()
+            j = lambda r: bool(r.get("adjudicated"))
+            good = j(ix.convergence_report(good_id))
+            self_id = ix.remember("revenue is 800M", key="rev2", object="800M",
+                                  source={"doc": "auditor-c"})
+            ix.flush()
+            ix.ratify(self_id, kind="audit", by_key="auditor-c")     # self-ratification
+            ix.flush()
+            return good, j(ix.convergence_report(self_id))
+
+        argument_catalogue = [
+            ("a signed record edited after signing", "verify_attestations", _a_attestations,
+             "an attested text changed after the signature was taken"),
+            ("an untrusted record reaching the top k", "selection_integrity", _a_selection,
+             "a write that displaces trusted results from what recall returns"),
+            ("an erased value still sitting in other text", "erasure_audit", _a_erasure_audit,
+             "a value a DSAR erased that survives elsewhere in the store"),
+            ("a claim ratified only by its own author", "convergence_report", _a_convergence,
+             "a claim bootstrapping its own status past the corroboration ratchet"),
+            ("a forged hydration witness", "verify_witness", _a_witness,
+             "a witness digest that no longer matches the store it claims to describe"),
+            ("a log rolled back after the anchor", "verify_consistency", _a_consistency,
+             "an operator truncating history after an auditor witnessed the head"),
+            ("a claim the store contradicts", "verify_claim", _a_claim,
+             "a stated fact the current store disagrees with"),
+            ("a write that contradicts a keyed value", "check_conflict", _a_conflict,
+             "a candidate write that would silently replace a keyed fact"),
+            ("a certificate for an erasure that never happened", "erasure_certificate", _a_certificate,
+             "a certificate attesting to erasures the store never performed"),
+        ]
+
+        for name, surface, probe, catches in argument_catalogue:
+            work = _tempfile.mkdtemp(prefix="arg_")
+            try:
+                good_clean, bad_clean = probe(work)
+            except Exception as ex:                                        # noqa: BLE001
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "argument", "catches": catches,
+                                "why": "the fixture raised: %s: %s" % (type(ex).__name__, ex)})
+                continue
+            if not good_clean:
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "argument", "catches": catches,
+                                "why": "flagged the HONEST case, so flagging the corrupt one proves "
+                                       "nothing"})
+                continue
+            verdict = "NOTICED" if not bad_clean else "MISSED"
+            results.append({
+                "probe": name, "surface": surface, "catches": catches, "outcome": verdict,
+                "tier": "argument", "clean_on_honest_case": True,
+                "clean_on_corrupt_case": bool(bad_clean),
+                "read_this_as": (
+                    "the surface accepted the honest case and flagged the corrupt one"
+                    if verdict == "NOTICED" else
+                    "the surface accepted a CORRUPT case: a defect in THIS LIBRARY")})
+
         def _sel(*outcomes):
             return [r for r in results if r["outcome"] in outcomes]
 

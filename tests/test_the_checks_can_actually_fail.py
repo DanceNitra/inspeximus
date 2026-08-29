@@ -470,3 +470,129 @@ def test_coverage_is_15_of_24_and_names_what_is_left():
     assert s["probed"] >= 15, s
     for name in LEDGER_SURFACES + PURE_SURFACES:
         assert name not in s["unprobed"], name
+
+
+# ───────────── ARGUMENT surfaces: they read the store, but the subject arrives as an argument
+ARGUMENT_SURFACES = [
+    "verify_witness",
+    "verify_consistency",
+    "verify_claim",
+    "check_conflict",
+    "erasure_certificate",
+]
+
+
+def _argument_rows(ix):
+    return {p["surface"]: p for p in ix.audit_the_audits()["probes"]
+            if p.get("tier") == "argument"}
+
+
+def test_every_argument_surface_accepts_the_honest_case_and_flags_the_corrupt_one():
+    """Three of these capture their subject from the clean store first, which is the auditor's own
+    workflow: witness a head out of band, come back later, check what you were shown against what
+    is there now."""
+    got = _argument_rows(_receipted())
+    # a SUBSET check, not equality: this test names the first five and the catalogue has grown
+    # past them. Asserting equality here made a later batch fail a test about an earlier one.
+    assert set(ARGUMENT_SURFACES) <= set(got), sorted(got)
+    got = {k: v for k, v in got.items() if k in ARGUMENT_SURFACES}
+    for name, row in got.items():
+        assert row["outcome"] == "NOTICED", (name, row)
+        assert row["clean_on_honest_case"] is True, row
+        assert row["clean_on_corrupt_case"] is False, row
+
+
+def test_an_argument_surface_that_always_passes_is_scored_MISSED():
+    orig = _core.Inspeximus.verify_witness
+    try:
+        _core.Inspeximus.verify_witness = lambda self, w, resolver=None: {"valid": True}
+        assert _argument_rows(_receipted())["verify_witness"]["outcome"] == "MISSED"
+    finally:
+        _core.Inspeximus.verify_witness = orig
+
+
+def test_an_argument_surface_that_always_flags_is_scored_CONTROL_FAILED():
+    """A surface that cries wolf at everything would score NOTICED on the corrupt case while
+    proving nothing, so the honest case is checked first."""
+    orig = _core.Inspeximus.check_conflict
+    try:
+        _core.Inspeximus.check_conflict = lambda self, text, **k: [{"kind": "always"}]
+        assert _argument_rows(_receipted())["check_conflict"]["outcome"] == "CONTROL_FAILED"
+    finally:
+        _core.Inspeximus.check_conflict = orig
+
+
+def test_an_append_does_not_read_as_a_rollback():
+    """verify_consistency proves the log is append-ONLY, not immutable. Growing it must stay clean,
+    or the probe would convict the surface for doing its job."""
+    ix = _receipted()
+    a = ix.anchor()
+    ix.remember("one more record", key="extra", object="x")
+    ix.flush()
+    ok, problems = ix.verify_consistency(a)
+    assert ok is True, problems
+
+
+def test_every_surface_has_a_probe():
+    """24 of 24. The number a reader asks for, and the one that was 4 the morning this started.
+    A surface added later lands in `unprobed` and fails this test, which is the point: a class that
+    grows a verification surface without a probe for it goes back to claiming what it has not
+    shown."""
+    s = _receipted().audit_the_audits()["surfaces"]
+    assert s["available"] == 24, s
+    assert s["unprobed"] == [], s["unprobed"]
+    assert s["probed"] == 24, s
+
+
+ARGUMENT_SURFACES_FULL = ARGUMENT_SURFACES + [
+    "verify_attestations",
+    "selection_integrity",
+    "erasure_audit",
+    "convergence_report",
+]
+
+
+def test_the_last_four_surfaces_are_probed_and_pass():
+    """Each needed a fixture nobody had built: a signed attestation, a trust root, an erasure whose
+    value survives elsewhere, and a ratification by a second identity."""
+    got = _argument_rows(_receipted())
+    assert sorted(got) == sorted(ARGUMENT_SURFACES_FULL), sorted(got)
+    for name, row in got.items():
+        assert row["outcome"] == "NOTICED", (name, row)
+
+
+@pytest.mark.parametrize("surface,fake,want", [
+    ("verify_attestations",
+     lambda self, expected_key=None: (True, []), "MISSED"),
+    ("selection_integrity",
+     lambda self, query, k=6, pool=50: {"stable": True}, "MISSED"),
+    ("erasure_audit",
+     lambda self, subject=None, values=None: {"residue": [], "advisory": []}, "MISSED"),
+    ("convergence_report",
+     lambda self, target, _by_id=None: {"adjudicated": True}, "MISSED"),
+    ("convergence_report",
+     lambda self, target, _by_id=None: {"adjudicated": False}, "CONTROL_FAILED"),
+    ("erasure_audit",
+     lambda self, subject=None, values=None: {"advisory": [{"kind": "always"}]}, "CONTROL_FAILED"),
+])
+def test_the_last_four_probes_can_fail_in_both_directions(surface, fake, want):
+    """A surface that always passes must score MISSED. One that always flags must score
+    CONTROL_FAILED, because its reaction to the corrupt case would otherwise prove nothing. Without
+    both, 24 green rows are 24 rows nobody has tested."""
+    orig = getattr(_core.Inspeximus, surface)
+    try:
+        setattr(_core.Inspeximus, surface, fake)
+        assert _argument_rows(_receipted())[surface]["outcome"] == want
+    finally:
+        setattr(_core.Inspeximus, surface, orig)
+
+
+def test_self_ratification_cannot_lift_a_claim():
+    """The property the convergence probe guards. A claim ratified only by its own author must not
+    read as adjudicated, or the corroboration ratchet is self-served."""
+    ix = _receipted()
+    rid = ix.remember("revenue is 800M", key="rev", object="800M", source={"doc": "auditor-c"})
+    ix.flush()
+    out = ix.ratify(rid, kind="audit", by_key="auditor-c")
+    assert out["ok"] is False, out
+    assert ix.convergence_report(rid).get("adjudicated") is not True
