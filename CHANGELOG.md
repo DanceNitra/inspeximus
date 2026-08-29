@@ -1,3 +1,91 @@
+## 2.22.0 - UPGRADE IF YOU READ check_sources()["counts"]["ORPHANED"]: it stopped reporting your working directory
+
+**BEHAVIOUR CHANGE: a relative source locator that does not resolve is no longer ORPHANED.** It is
+counted under the new `UNRESOLVED_HERE` instead, and `ok` can now be true where it was false. If you
+alert on ORPHANED, read the new field as well before upgrading.
+
+### ORPHANED was describing the caller's working directory
+
+The default resolver reads local files, so it resolved a relative locator against `os.getcwd()`.
+Measured on our own store: the same file, the same 619 records, the same minute. From one directory
+`check_sources` reported 24 ORPHANED and its control failed; from another it reported 0 and passed.
+Every one of the 24 documents was on disk. The locators were relative, `CLAUDE.md` among them.
+
+ORPHANED is the report's claim that the evidence behind a memory no longer exists. On the evidence
+path it is the finding an auditor acts on, and a verdict that flips on `cd` cannot carry it.
+
+The fix narrows the claim rather than silencing it:
+
+| locator | verdict |
+|---|---|
+| absolute path that does not exist | ORPHANED, as before. It means the same thing from every directory. |
+| any locator when you pass `resolver=` | ORPHANED, as before. You said how to fetch; your None is an answer. |
+| relative path, or a non-file locator, under the default resolver | UNRESOLVED_HERE |
+
+The report also gains `resolution_base`, the directory relative locators were judged against, and
+`relative_locators`, how many verdicts move if the caller moves. `UNRESOLVED_HERE` does not enter
+`checked`, so the coverage ratios still describe what was actually re-read.
+
+`where_am_i` has existed since 1.x because an MCP stdio server does not choose its own working
+directory, the host does, and a cwd-relative store path is "half of my memories disappeared". The
+same reasoning had never reached the documents.
+
+### audit_the_audits: 22 of 24 surfaces demonstrated on your own records, not on invented ones
+
+Every mode except the store mode built its own two-to-four record fixture, so its verdict could never
+enter `demonstrated_on_your_store`. On our own 619-record store that meant 2 surfaces demonstrated
+and 20 proved on data belonging to nobody. "This check can fail somewhere" answers a different
+question from "this check can fail on my store".
+
+The pure, ledger and argument modes now build on a copy of your store, sidecars included, opened the
+way you opened it, and add only the records their own question needs. Probe keys are prefixed so a
+seeded subject cannot supersede one of your facts. Erasure probes target the first ACTIVE record,
+because `items[0]` on a real store is often already superseded and forgetting it moves no counter.
+
+**An assumption your store does not satisfy is not a demonstration on it.** A probe that has to
+switch on write receipts or PII detection you do not run keeps its verdict and lands in the fixture
+bucket, with the assumption named. The rule errs toward the fixture: the failure worth preventing is
+a summary that reads better than the store it describes.
+
+`verify_attribution` gains a probe for the attack it exists to catch. Its only probe deleted a
+record, which lands in `missing`, which `ok` excludes on purpose, because a store that has honoured
+an erasure has exactly that state. So it could only ever score SUMMARY_HIDES_DETAIL. A relabel flips
+`ok`, and the deletion probe keeps its own row.
+
+The embedder precondition could not pass for anyone. It was asked of a copy, and that copy has its
+embedder stripped by design, because yours may be a network call and an audit firing one per record
+is a stall. So it was handed a store with no embedder and answered "no embedder is configured" every
+time, on every store that has ever existed. Preconditions now ask your store, and a probe that needs
+an index gets a copy carrying one, under your own recipe id.
+
+Three defects found while building it, all in the reporting rather than in the checks. The summary
+bucket selected on mode names, so once tiers became measured `pii_report` matched none of them and
+fell out of every bucket: 24 surfaces reported as 22 plus one, with one simply missing. A test now
+asserts every surface lands in exactly one bucket. Narrowing the `check_conflict` judge broke the
+cry-wolf control, so a surface returning a flag for every input scored MISSED where CONTROL_FAILED is
+honest; the existing test caught it. And `selection_integrity` could not be demonstrated at all,
+because its attacker record did not enter the top k of a real store at any k tried.
+
+### The MCP server could not keep the vectors it paid for
+
+`open_store` has taken `persist_vectors` all along and the server never passed it. A server
+configured with `INSPEXIMUS_EMBED_URL` therefore ran a RAM-only index: one embedding call per record
+on every open, discarded at exit, paid again on the next start.
+
+The store had been reporting it. `index_coherence` returns the note "persist_vectors=False: vectors
+are a RAM-only cache rebuilt per process", and `reembed` returns a warning carrying the remedy:
+"Open the store with persist_vectors=True to keep them." The remedy named a constructor argument the
+server did not expose.
+
+`INSPEXIMUS_PERSIST_VECTORS` turns it on. `INSPEXIMUS_PII_DETECT` does the same for `pii_detect`,
+which had the same gap one line away: without it the detector never ran on a server-backed store, so
+`pii_report` returned zero exposure over a store where nobody had looked.
+
+Both default to off, so a store written before this is byte-identical to one written after. For
+`pii_detect` that default is load-bearing rather than cautious: the tag is stamped at write time and
+`forget_pii()` hard-deletes every record carrying one, so switching it on changes what a later
+data-minimization sweep removes.
+
 ## 2.21.0 - UPGRADE IF YOU CALL forget_pii() WITH pii_detect=True: a data-minimization sweep hard-deleted records whose only PII was a date
 
 **BEHAVIOUR CHANGE: `detect_pii` no longer tags dates, build timestamps, ORCIDs, or
