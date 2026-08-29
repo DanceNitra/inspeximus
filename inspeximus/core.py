@@ -4329,7 +4329,12 @@ class Inspeximus:
         VERDICTS, per record:
           FRESH        the source resolves and its content still hashes to what we recorded
           DRIFTED      it resolves and the content changed -> re-read it, do not serve it blind
-          ORPHANED     it does not resolve any more -> the source is gone
+          ORPHANED     it does not resolve any more -> the source is gone. Only ever said of a
+                       locator the resolver could ADDRESS: an absolute path, or any locator when
+                       the caller supplied a `resolver`.
+          UNRESOLVED_HERE  the default resolver could not address it from this working directory --
+                       a relative path, or a locator that is not a local path at all. NOT evidence
+                       of absence; see `resolution_base` and `relative_locators`.
           UNCHECKABLE  no fingerprint: either no source, or one that names a writer rather than a
                        document. This is the honest denominator and the report LEADS with it.
 
@@ -4343,10 +4348,14 @@ class Inspeximus:
         identifier is how a checker starts inventing ORPHANED verdicts.
         """
         counts = {"FRESH": 0, "DRIFTED": 0, "ORPHANED": 0, "UNCHECKABLE": 0, "UNBOUND_CAPTURE": 0,
-                  "NOT_BINDABLE": 0}
+                  "NOT_BINDABLE": 0, "UNRESOLVED_HERE": 0}
         #
-        drifted, orphaned, unbound_capture = [], [], []
+        drifted, orphaned, unbound_capture, unresolved_here = [], [], [], []
         bound = 0
+        # THE BASE EVERY RELATIVE LOCATOR IS JUDGED AGAINST, captured once and REPORTED, because a
+        # verdict that depends on it is not auditable without it. See the ORPHANED branch below.
+        resolution_base = os.getcwd()
+        relative_locators = 0
         # SCOPED, unlike verify_attestations. That one is store-level because relocation between
         # tenants is only visible whole-store; drift is per-record and per-source, so a tenant's
         # report is complete inside its own slice -- and the report carries record ids, which is
@@ -4380,12 +4389,39 @@ class Inspeximus:
                 # is the number worth chasing, because backfilling it is possible.
                 counts["UNCHECKABLE"] += 1
                 continue
+            # ADDRESSABLE BY THE DEFAULT RESOLVER, ASKED BEFORE THE FETCH. The default reads local
+            # files, so it can only ever make a claim about a path it could actually open. A
+            # RELATIVE path is judged against `resolution_base`, and a locator that is not a local
+            # path at all -- a URL, a ticket -- it cannot address from anywhere.
+            _addressable = bool(resolver) or (isinstance(doc, str) and os.path.isabs(doc))
+            if not resolver and isinstance(doc, str) and not os.path.isabs(doc):
+                relative_locators += 1
             try:
                 blob = resolver(doc) if resolver else (
                     open(doc, "rb").read() if os.path.exists(doc) else None)
             except Exception:
                 blob = None
             if blob is None:
+                # "THE SOURCE IS GONE" AND "I COULD NOT ADDRESS IT FROM HERE" ARE DIFFERENT CLAIMS,
+                # and only the first is ORPHANED. Measured on our own store 2026-08-29: the same
+                # store file reported 24 ORPHANED from one directory and 0 from another, in the same
+                # minute, with every one of the 24 documents present on disk. The locators were
+                # relative -- `CLAUDE.md` and the like -- so the verdict was describing the caller's
+                # working directory rather than the world.
+                #
+                # ORPHANED is the report's strongest word: on the evidence path it is the finding an
+                # auditor acts on. A claim that flips on `cd` cannot carry it. The library already
+                # knew this shape -- `where_am_i` exists because an MCP stdio server does not choose
+                # its own working directory, the host does -- and the reasoning had never been
+                # applied one layer down, to the documents.
+                #
+                # An ABSOLUTE path that does not exist keeps the verdict: it means the same thing
+                # from every directory. A caller-supplied `resolver` keeps it too, because such a
+                # caller has said how to fetch and its None is an answer, not an absence.
+                if not _addressable:
+                    counts["UNRESOLVED_HERE"] += 1
+                    unresolved_here.append(r.get("id"))
+                    continue
                 counts["ORPHANED"] += 1
                 orphaned.append(r.get("id"))
                 continue
@@ -4510,6 +4546,14 @@ class Inspeximus:
             "coverage": coverage,
             "drifted": drifted[:200], "orphaned": orphaned[:200],
             "unbound_capture": unbound_capture[:200],
+            # NOT FOLDED INTO `orphaned`, and reported beside the base it was measured against. A
+            # reader who cannot see `resolution_base` cannot tell an absent document from a caller
+            # standing in the wrong directory, which is the whole distinction this bucket exists for.
+            "unresolved_here": unresolved_here[:200],
+            "resolution_base": resolution_base,
+            # HOW MUCH OF THIS REPORT MOVES IF THE CALLER MOVES. Zero means every verdict here is
+            # base-independent and can be compared across machines and runs.
+            "relative_locators": relative_locators,
             # A capture whose source had already moved is a finding, not a note: the memory is bound
             # to bytes that are not on disk and never will be again, so nothing here can re-verify
             # what produced it. Folding it into `ok` is the difference between reporting the state

@@ -1013,7 +1013,9 @@ def check_sources() -> dict:
     Decay elsewhere in this library is temporal — a half-life on age — and age cannot tell a fact that has
     been true for five years from one that rotted in a week. This asks the question that can: did the thing
     this memory is about actually change? Per record: FRESH (source resolves, still hashes the same),
-    DRIFTED (resolves, content changed — re-read it, don't serve it blind), ORPHANED (no longer resolves),
+    DRIFTED (resolves, content changed — re-read it, don't serve it blind), ORPHANED (an addressable
+    source that is gone), UNRESOLVED_HERE (a relative or non-file locator the default resolver could not
+    address from this working directory — read it with `resolution_base`, it is not evidence of absence),
     UNCHECKABLE (no fingerprint: no source, or a source naming the WRITER rather than a document).
 
     READ `UNCHECKABLE` FIRST. Fingerprints are only taken when `remember(source={"doc": <path>})` points at a
