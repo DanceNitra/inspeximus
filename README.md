@@ -201,7 +201,7 @@ Measured 2026-08-25 against **Hindsight 0.9.2** (vectorize-io, 21k stars) and me
 config, n=20. These two need no judge at all — they read the raw recall payload, so nothing depends on a
 model reading well:
 
-| | inspeximus 2.20.1 | Hindsight 0.9.2 | mem0 |
+| | inspeximus 2.21.0 | Hindsight 0.9.2 | mem0 |
 |---|---|---|---|
 | after a correction, recall returns the new value and **not** the old one | **20 / 20** | 0 / 20 | 1 / 20 |
 | identical writes twice — same stored state? | **byte-identical** | 20 / 20 differ | — |

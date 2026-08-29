@@ -1,3 +1,94 @@
+## 2.21.0 - UPGRADE IF YOU CALL forget_pii() WITH pii_detect=True: a data-minimization sweep hard-deleted records whose only PII was a date
+
+**BEHAVIOUR CHANGE: `detect_pii` no longer tags dates, build timestamps, ORCIDs, or
+loopback addresses.** If you rely on the old matches, read the validator section before you
+upgrade.
+
+### The data loss
+
+`detect_pii` tagged the ISO date `2026-07-29` as a `phone`. With `pii_detect=True` that tag is
+stamped at write time. `forget_pii()` hard-deletes every tagged record. So a data-minimization
+sweep erased an ordinary record whose only PII was a date.
+
+Verified against the code before the fix. Two records went in, one holding a date and one holding
+an email address. The sweep took both.
+
+Build timestamps and ORCIDs went the same way as `credit_card`, because the pattern accepted any
+13 to 16 digit run:
+
+```
+2026-07-29             -> {'phone': ['2026-07-29']}
+20260731-191913        -> {'credit_card': ['20260731-191913 ']}
+0009-0009-4792-1433    -> {'credit_card': ['0009-0009-4792-1433']}
+127.0.0.1              -> {'ipv4': ['127.0.0.1']}
+2604.04089             -> {'phone': ['2604.04089']}
+```
+
+### How it was found
+
+By refusing to publish our own number. A coverage metric added to `pii_report` reported 478 of 576
+active records as matching the detector. Sampling what matched, rather than writing 478 into the
+report, was the whole finding. They were dates.
+
+### The fix
+
+The regular expressions stay as candidate generators. Each type gains a validator that rejects
+shapes which cannot be that type. None of them rejects a shape that merely looks unlikely, because
+on this path a false negative is undeleted personal data.
+
+| Type | Rule |
+|---|---|
+| `credit_card` | 13 to 19 digits and a passing Luhn check |
+| `phone` | 7 to 15 digits, E.164; rejects ISO dates, dates with a time, dotted quads, versions, and year ranges |
+| `ipv4` | rejects loopback, unspecified, link-local, and broadcast |
+
+A rejected candidate does not claim its span. Without that, excluding loopback from `ipv4` re-labels
+it `phone`, which trades one false positive for another. The both-directions test found it; reading
+the code did not.
+
+Real PII is still detected: email addresses, `+421 903 123 456`, `(555) 123-4567`, Luhn-valid card
+numbers, US SSNs, and public IPv4 addresses. Our own stores went from 478 matches to 100, and from
+1,677 to 877.
+
+### What we did not fix, and why
+
+The survivors are mostly GitHub comment ids. A bare 10-digit run cannot be told from a phone number
+by shape. Adding rules until our corpus looked clean would fit the detector to one dataset, so the
+limit is written in the code instead.
+
+`version 1.2.3.4` is still tagged as an IPv4 address. It is a syntactically valid public address,
+and no shape rule separates the two.
+
+### Two surfaces now say what they cannot see
+
+`pii_report` gains a `coverage` block. `records_with_pii: 0` read identically for "nothing here"
+and "detection was never on". Enabling `pii_detect` later never backfills, so a record written
+while it was off stays invisible. The report names that gap as `untagged_matches`.
+
+`forget_pii` gains `unswept_matches`. A destructive operation that reports success over a partial
+pass is what a data subject access request cannot afford.
+
+### Security: monitor() could be silenced by one call
+
+A caller-supplied weight on a good outcome subtracted the whole poison statistic. Measured at
+k=0.3 and h=3.0 after four honest bad outcomes: weight 1 took S from 2.800 to 2.500, weight 5 to
+1.300, and weight 50 to 0.000. The fix is asymmetric. A bad outcome can still be weighted freely,
+because accelerating detection is the safe direction. A good outcome subtracts at most one call's
+worth.
+
+### audit_the_audits reaches a fourth surface
+
+`verify_attribution` documents `missing` as ids in the receipt chain no longer in the store. Delete
+one receipted record and `missing` fills correctly, while `ok` stays `true`. Measured 5 times out of
+5, with the clean copy reporting `missing: 0` every trial. The probe reports
+`SUMMARY_HIDES_DETAIL`, because a monitor polling the boolean sees nothing.
+
+Coverage is now 4 of 24 surfaces. The other 20 are untested, which is not the same as working.
+
+### Tests
+
+3,413 passed, 230 skipped, 8 xfailed, plus 31 in the mutation set that the default run deselects.
+
 ## 2.20.1 - AFFECTS NOBODY'S CODE. Nothing in the library changed; upgrade only for the PyPI metadata, since keywords and the package description reach anyone only through a release
 
 No code path in `inspeximus/` moved. If you are running 2.20.0 and reading this for a reason to
