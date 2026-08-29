@@ -726,6 +726,79 @@ _PII_PATTERNS = (
 )
 
 
+def _luhn_ok(digits: str) -> bool:
+    """The check every real card number satisfies and almost no id shaped like one does."""
+    tot, alt = 0, False
+    for ch in reversed(digits):
+        d = ord(ch) - 48
+        if alt:
+            d *= 2
+            if d > 9:
+                d -= 9
+        tot += d
+        alt = not alt
+    return tot % 10 == 0
+
+
+_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_ISO_STAMP = re.compile(r"^\d{8}[-_ ]?\d{4,6}$")
+_DOTTED_NUM = re.compile(r"^\d+\.\d+$")
+_DOTTED_QUAD = re.compile(r"^\d{1,3}(?:\.\d{1,3}){3}$")
+_HAS_ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+_SEMVERISH = re.compile(r"^\d+(?:\.\d+){2,}")
+_YEAR_RANGE = re.compile(r"^(?:19|20)\d{2}-(?:19|20)\d{2}$")
+
+
+def _pii_plausible(label: str, raw: str) -> bool:
+    """Reject matches whose SHAPE says they are not the thing the label names.
+
+    The regexes above are candidate generators and were never more than that. Measured on our own
+    616-record decision store: 478 of 576 active records "matched", and the sample was dates
+    (2026-07-29 as a phone), build timestamps and an ORCID (20260731-191913 and 0009-0009-4792-1433
+    as credit cards), and 127.0.0.1. That is not a reporting nuisance -- `pii_detect=True` stamps
+    those tags at write time and `forget_pii()` HARD-DELETES every tagged record, so a GDPR
+    data-minimization sweep erased a record whose only PII was a date. Verified before this fix.
+
+    Kept deliberately narrow: each rule rejects a shape that cannot be the labelled type, never a
+    shape that merely looks unlikely. A validator that guesses would trade a false positive for a
+    false negative, and on this path a false negative is undeleted personal data.
+    """
+    digits = "".join(ch for ch in raw if ch.isdigit())
+    if label == "credit_card":
+        # 13-19 is the ISO/IEC 7812 range, and Luhn is the check every issuer number satisfies.
+        return 13 <= len(digits) <= 19 and _luhn_ok(digits)
+    if label == "phone":
+        t = raw.strip()
+        if _ISO_DATE.match(t) or _ISO_STAMP.match(t) or _DOTTED_NUM.match(t):
+            return False
+        # An address the ipv4 validator just rejected frees its span, and the phone pattern accepts
+        # dots. Without this, excluding loopback and broadcast from `ipv4` re-labels them `phone` --
+        # trading one false positive for another rather than removing it. Found by the both-
+        # directions test, not by reading the code.
+        if _DOTTED_QUAD.match(t):
+            return False
+        # Definitional, not empirical: a dialable number does not CONTAIN an ISO date, is not a
+        # dotted version, and is not a span of two years. Each of these was sampled from real
+        # matches on our own store ("2026-07-21 07", "2.0.11 0.20", "2025-2026").
+        if _HAS_ISO_DATE.search(t) or _SEMVERISH.match(t) or _YEAR_RANGE.match(t):
+            return False
+        # AND THE HONEST LIMIT, stated rather than tuned away: a bare 7-15 digit run with no
+        # separators and no country prefix is indistinguishable from an identifier. On our own
+        # store the survivors are GitHub comment ids (5075556864). Adding rules until this corpus
+        # looked clean would be fitting the detector to one dataset, so the precision cost stays
+        # visible here and `forget_pii` reports what it swept rather than pretending it is exact.
+        # E.164 allows 7 to 15 digits. Below 7 it is not a dialable number; above 15 it is an
+        # identifier of some other kind.
+        return 7 <= len(digits) <= 15
+    if label == "ipv4":
+        # Loopback, unspecified, link-local and broadcast identify no person by construction.
+        o = raw.split(".")
+        if o[0] == "127" or raw in ("0.0.0.0", "255.255.255.255"):
+            return False
+        return not (o[0] == "169" and o[1] == "254")
+    return True
+
+
 def detect_pii(text: str) -> dict:
     """Scan `text` and return {pii_type: [matched_substrings]} for every heuristic hit. Zero-dependency,
     deterministic. Ordered so specific patterns (SSN/credit-card) match before the broad phone pattern can
@@ -738,6 +811,11 @@ def detect_pii(text: str) -> dict:
         for m in pat.finditer(text):
             s, e = m.start(), m.end()
             if any(s < ce and cs < e for cs, ce in spans):   # overlaps an already-claimed (more specific) span
+                continue
+            if not _pii_plausible(label, m.group(0)):
+                # NOT claimed: a rejected candidate must leave the span free, or rejecting a
+                # credit_card would hide the text from `phone` and turn one false positive into a
+                # false negative.
                 continue
             spans.append((s, e))
             found.setdefault(label, []).append(m.group(0))
@@ -760,6 +838,8 @@ def redact_pii(text: str, types=None, mask: str = "[{}]") -> tuple:
         for m in pat.finditer(text):
             s, e = m.start(), m.end()
             if any(s < ce and cs < e for cs, ce in spans):
+                continue
+            if not _pii_plausible(label, m.group(0)):
                 continue
             spans.append((s, e))
             hits.append((s, e, label))
@@ -6236,21 +6316,56 @@ class Inspeximus:
         remember(pii=...)); it does NOT re-scan text here, so it reflects exactly what was tagged. Use it to
         drive a data-minimization review or a forget_pii() sweep. Read-only; returns no raw PII values.
 
-        Returns {records_with_pii, by_type: {type: count}, ids: {type: [id,...]}}."""
+        COVERAGE, added because the count above was a false comfort. A record written while
+        `pii_detect` was OFF carries no tag, and a record written while it was ON and found clean
+        carries no tag either -- the two are INDISTINGUISHABLE in the rows, so "0" could mean
+        "nothing here" or "nobody ever looked". Enabling `pii_detect` later does not backfill:
+        measured, a store written with it off then reopened with it on still reports 0 forever.
+        So this now re-runs `detect_pii` over ACTIVE text for the coverage block ONLY -- never to
+        change `records_with_pii`, which stays exactly what was tagged at write time -- and reports
+        `untagged_matches`, records whose text the detector matches but which carry no tag. That
+        number is the part a `forget_pii()` sweep would silently skip.
+
+        Returns {records_with_pii, by_type, ids, coverage: {pii_detect, scanned, tagged,
+        untagged_matches, untagged_ids, problem?}}."""
         by_type: dict = {}
         ids: dict = {}
         n = 0
+        scanned = 0
+        untagged_matches: list = []
         for r in self._tenant_rows():
             if r.get("status") != "active":
                 continue
+            scanned += 1
             types = r.get("pii")
             if not types:
+                # The whole point of the coverage block: text the detector WOULD have tagged, in a
+                # record that carries no tag. Costs one regex sweep per active record and is bounded
+                # by the same patterns `remember` uses, so it cannot report a type the writer could
+                # not have stamped.
+                if detect_pii(r.get("text") or ""):
+                    untagged_matches.append(r["id"])
                 continue
             n += 1
             for t in types:
                 by_type[t] = by_type.get(t, 0) + 1
                 ids.setdefault(t, []).append(r["id"])
-        return {"records_with_pii": n, "by_type": by_type, "ids": ids}
+        coverage = {"pii_detect": bool(getattr(self, "pii_detect", False)),
+                    "scanned": scanned, "tagged": n,
+                    "untagged_matches": len(untagged_matches),
+                    "untagged_ids": untagged_matches[:20]}
+        if untagged_matches:
+            coverage["problem"] = (
+                "%d active record(s) match the PII detector but carry no tag, so they are invisible "
+                "to records_with_pii AND to a forget_pii() sweep. Records written while pii_detect "
+                "was off are never backfilled by turning it on."
+                % len(untagged_matches))
+        elif not coverage["pii_detect"]:
+            coverage["problem"] = (
+                "pii_detect is OFF on this store, so no write stamped a tag and this count is 0 by "
+                "construction rather than by inspection. The detector found nothing in the current "
+                "text either, which is evidence and not proof -- detect_pii is a heuristic.")
+        return {"records_with_pii": n, "by_type": by_type, "ids": ids, "coverage": coverage}
 
     def forget_pii(self, types=None, subject: str | None = None, request_id: str | None = None,
                    basis: str | None = None, allow_ambiguous: bool = False) -> dict:
@@ -6287,9 +6402,31 @@ class Inspeximus:
                 continue
             target.append(r["id"])
         cov = self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))
+        # WHAT THIS SWEEP CANNOT REACH. The selection above is `r.get("pii")`, a tag stamped at
+        # write time, so every record written while `pii_detect` was off is invisible to a
+        # data-minimization sweep -- and turning the flag on later does not backfill it. That makes
+        # a destructive operation report success over a partial pass, which is the failure mode a
+        # DSAR cannot afford. Re-running the same detector over the untagged remainder costs one
+        # regex sweep and turns a silent miss into a named one. It does NOT widen what is erased:
+        # erasing on an untagged heuristic match would delete records the caller never tagged.
+        unswept = []
+        for r in self._tenant_rows():
+            if r.get("status") != "active" or r.get("pii") or r["id"] in target:
+                continue
+            if cand is not None and not (cand & Inspeximus._rec_sources(r)):
+                continue
+            hit = detect_pii(r.get("text") or "")
+            if hit and (want is None or (want & set(hit))):
+                unswept.append(r["id"])
+        unswept_block = {"count": len(unswept), "ids": unswept[:20]}
+        if unswept:
+            unswept_block["problem"] = (
+                "%d active record(s) match the PII detector but carry no tag, so this sweep did NOT "
+                "erase them. They were written while pii_detect was off; enabling it does not "
+                "backfill. Treat this result as PARTIAL." % len(unswept))
         if not target:
             return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
-                    "coverage": cov,
+                    "coverage": cov, "unswept_matches": unswept_block,
                     "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # same as forget_subject: forget() emits the receipts, so pass the reason through it rather
         # than writing a second tombstone per record on top of the one it already wrote
@@ -6297,6 +6434,7 @@ class Inspeximus:
         return {"erased": res["forgotten"], "ids": res["ids"],
                 "request_id": request_id, "tombstones": len(res["ids"]),
                 "coverage": res.get("coverage", cov),
+                "unswept_matches": unswept_block,
                 "residue_in_store": res.get("residue_in_store")}
 
     def for_tenant(self, tenant: str):

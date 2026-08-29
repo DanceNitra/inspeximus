@@ -1,4 +1,6 @@
 """Tenant isolation + PII layer (1.6.0). Zero-dependency; run with `python -m pytest tests/test_tenant_pii.py`."""
+import os
+import tempfile
 import time
 
 from inspeximus import Inspeximus, detect_pii, redact_pii
@@ -201,3 +203,102 @@ if __name__ == "__main__":
         fn()
         print("ok", fn.__name__)
     print(f"\n{len(fns)} passed")
+
+
+# ─────────────────────── the detector fired on shapes it names, and a sweep DELETED them
+import pytest
+from inspeximus.core import detect_pii
+
+
+NOT_PII = [
+    ("2026-07-29", "an ISO date read as a phone number"),
+    ("release 20260731-191913", "a build timestamp read as a credit card"),
+    ("ORCID 0009-0009-4792-1433", "an ORCID read as a credit card"),
+    ("server at 127.0.0.1", "loopback is not a person"),
+    ("bind 0.0.0.0", "the unspecified address is not a person"),
+    ("broadcast 255.255.255.255", "broadcast is not a person"),
+    ("link local 169.254.1.1", "link-local is not a person"),
+    ("arXiv 2604.04089", "an arXiv id read as a phone number"),
+    ("upgraded 2.0.11 0.20", "version strings read as a phone number"),
+    ("the 2025-2026 season", "a year range read as a phone number"),
+    ("logged 2026-07-21 07", "a date plus an hour read as a phone number"),
+]
+
+STILL_PII = [
+    "alice@example.com",
+    "+421 903 123 456",
+    "(555) 123-4567",
+    "4111 1111 1111 1111",
+    "5500 0000 0000 0004",
+    "123-45-6789",
+    "159.100.251.128",
+]
+
+
+@pytest.mark.parametrize("text,why", NOT_PII)
+def test_shapes_that_cannot_be_pii_are_not_tagged(text, why):
+    """Measured on our own 616-record decision store BEFORE this fix: 478 of 576 active records
+    'matched', overwhelmingly dates and build timestamps. The count was not the damage."""
+    assert detect_pii(text) == {}, why
+
+
+@pytest.mark.parametrize("text", STILL_PII)
+def test_real_pii_is_still_detected(text):
+    """The other direction, and the one that matters more: on this path a false negative is
+    undeleted personal data. Every rejection above is a shape that CANNOT be the labelled type,
+    never one that merely looks unlikely."""
+    assert detect_pii(text), "a validator traded a false positive for a false negative"
+
+
+def test_a_gdpr_sweep_does_not_hard_delete_a_record_whose_only_pii_is_a_date():
+    """THE defect, asserted where it hurt. `pii_detect=True` tagged '2026-07-29' as a phone, and
+    `forget_pii()` hard-deletes every tagged record -- so a data-minimization sweep erased an
+    ordinary record. Verified against the pre-fix code before this was written."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), pii_detect=True)
+    ix.remember("the meeting is on 2026-07-29", key="meeting", object="cal")
+    ix.remember("carol@example.com signed", key="signer", object="contract")
+    ix.flush()
+    out = ix.forget_pii()
+    survivors = [r["text"] for r in ix.items if r.get("status") == "active"]
+    assert "the meeting is on 2026-07-29" in survivors, "a date was erased as PII"
+    assert out["erased"] == 1, out
+
+
+def test_pii_report_says_when_its_zero_means_nobody_looked():
+    """`records_with_pii: 0` read identically for 'nothing here' and 'detection was never on', and a
+    record written while it was off is never backfilled by turning it on."""
+    path = os.path.join(tempfile.mkdtemp(), "s.json")
+    off = Inspeximus(path=path)
+    off.remember("dave@example.com wrote in", object="x")
+    off.flush()
+    rep = off.pii_report()
+    assert rep["records_with_pii"] == 0
+    assert rep["coverage"]["untagged_matches"] == 1, rep
+    assert "forget_pii" in rep["coverage"]["problem"]
+
+    on = Inspeximus(path=path, pii_detect=True)          # the retrofit trap
+    assert on.pii_report()["coverage"]["untagged_matches"] == 1, "enabling detection backfilled?"
+
+
+def test_a_clean_store_is_not_given_an_invented_gap():
+    """The negative control. A store with detection on and nothing to find must stay quiet."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), pii_detect=True)
+    ix.remember("the rate is 5 percent", object="x")
+    ix.flush()
+    cov = ix.pii_report()["coverage"]
+    assert cov["untagged_matches"] == 0 and "problem" not in cov, cov
+
+
+def test_forget_pii_names_what_it_could_not_sweep():
+    """A destructive op that reports success over a partial pass is what a DSAR cannot afford."""
+    path = os.path.join(tempfile.mkdtemp(), "s.json")
+    Inspeximus(path=path).remember("erin@example.com early", object="x")
+    early = Inspeximus(path=path)
+    early.flush()
+    late = Inspeximus(path=path, pii_detect=True)
+    late.remember("frank@example.com later", object="x")
+    late.flush()
+    out = late.forget_pii()
+    assert out["erased"] == 1, out
+    assert out["unswept_matches"]["count"] == 1, out
+    assert "PARTIAL" in out["unswept_matches"]["problem"]
