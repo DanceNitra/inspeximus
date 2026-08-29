@@ -3500,6 +3500,235 @@ class Inspeximus:
                 row["detail"] = after_detail
             results.append(row)
 
+        # ── PURE SURFACES. Four of the 24 never read the store at all: they take their subject
+        # as an argument. Corrupting a copy of the caller's data cannot reach them, so before this
+        # they were simply absent from the catalogue and counted as unprobed forever -- a coverage
+        # gap that looked like laziness and was actually a structural limit of the method.
+        #
+        # The question changes with the shape. For a store-reading check it is "would it notice if
+        # the store were corrupted". For a pure function it is "would it REJECT a corrupted INPUT".
+        # Both fixtures are built through the product's own API (anchor, inclusion_proof,
+        # witness_cosign) rather than hand-assembled, for the reason the source probes learned:
+        # a record the library wrote carries commitments a hand-built dict does not.
+        #
+        # A verdict here is a fact about the LIBRARY, never about the caller's data, and the row
+        # says so. A MISSED is the loudest thing this method can report.
+        def _pure_store(work, tag, last):
+            ix = type(self)(path=os.path.join(work, "pure_%s.json" % tag), receipts=True)
+            for i in range(3):
+                ix.remember("record %d" % i, key="k%d" % i, object="probe")
+            ix.remember(last, key="k3", object="probe")
+            ix.flush()
+            return ix
+
+        def _b_inclusion(work):
+            ix = _pure_store(work, "incl", "the last record")
+            good = ix.inclusion_proof(0, kind="write")
+            bad = _copy.deepcopy(good)
+            bad["leaf"] = "0" * len(str(bad.get("leaf") or "0"))
+            return (good, good.get("root")), (bad, good.get("root"))
+
+        def _b_cosigned(work):
+            ix = _pure_store(work, "cosign", "the last record")
+            sk, pk = new_ed25519_keypair()
+            a = ix.anchor()
+            sig = witness_cosign(sk, a)
+            forged = _copy.deepcopy(a)
+            forged["writes_tip"] = "f" * 64          # the operator rewrote the head
+            return (a, [(pk, sig)], {pk}), (forged, [(pk, sig)], {pk})
+
+        def _b_split_view(work):
+            # Two histories of the SAME length with DIFFERENT tips, both co-signed by one witness.
+            # That double signature is the fork proof. The control is the same anchor twice, which
+            # must NOT read as a fork -- without it, a detector that always cries fork would pass.
+            sk, pk = new_ed25519_keypair()
+            a = _pure_store(work, "fork_a", "branch A").anchor()
+            b = _pure_store(work, "fork_b", "branch B").anchor()
+            sa, sb = witness_cosign(sk, a), witness_cosign(sk, b)
+            return (a, [(pk, sa)], a, [(pk, sa)], {pk}), (a, [(pk, sa)], b, [(pk, sb)], {pk})
+
+        def _b_self_narration(work):
+            return ("The staging database is db-7.internal",), ("I think the user prefers dark mode",)
+
+        pure_catalogue = [
+            ("a tampered inclusion bundle", "verify_inclusion", _b_inclusion,
+             lambda r: bool(r),
+             "a proof whose leaf was altered after the root was witnessed"),
+            ("a rewritten anchor head", "verify_cosigned_anchor", _b_cosigned,
+             lambda r: bool(r.get("ok")),
+             "an anchor whose tip changed after the witness signed it"),
+            ("two heads at one log size", "detect_split_view", _b_split_view,
+             lambda r: not r.get("fork"),
+             "one witness validly co-signing two different heads: proof of a split view"),
+            ("the assistant narrating itself", "check_self_narration", _b_self_narration,
+             lambda r: not r.get("self_narration"),
+             "a candidate write that is the assistant's self-talk rather than a fact"),
+        ]
+
+        for name, surface, build, judge, catches in pure_catalogue:
+            fn = getattr(type(self), surface, None)
+            if fn is None:
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "pure function",
+                                "why": "the surface does not exist on this class"})
+                continue
+            work = _tempfile.mkdtemp(prefix="pure_")
+            try:
+                good, bad = build(work)
+            except Exception as ex:                                        # noqa: BLE001
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "pure function",
+                                "why": "the fixture could not be built: %s: %s"
+                                       % (type(ex).__name__, ex)})
+                continue
+            try:
+                good_clean = judge(fn(*good))
+            except Exception as ex:                                        # noqa: BLE001
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "pure function",
+                                "why": "the surface raised on the VALID input: %s"
+                                       % type(ex).__name__})
+                continue
+            if not good_clean:
+                # The fixture, not the surface. Scoring this as a catch would credit the surface for
+                # rejecting an input it should have accepted.
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "pure function", "catches": catches,
+                                "why": "rejected the VALID input, so its rejection of the corrupted "
+                                       "one proves nothing"})
+                continue
+            try:
+                bad_clean = judge(fn(*bad))
+            except Exception:                                              # noqa: BLE001
+                bad_clean = False        # raising on a corrupted input is a rejection
+            verdict = "NOTICED" if not bad_clean else "MISSED"
+            results.append({
+                "probe": name, "surface": surface, "catches": catches, "outcome": verdict,
+                "tier": "pure function", "clean_on_valid_input": True,
+                "clean_on_corrupted_input": bool(bad_clean),
+                "read_this_as": (
+                    "the surface accepted a valid input and rejected a corrupted one. This says "
+                    "nothing about your store, because this surface never reads it"
+                    if verdict == "NOTICED" else
+                    "the surface accepted a CORRUPTED input: a defect in THIS LIBRARY")})
+
+        # ── LEDGER SURFACES. Eight of the 24 are inventories, not checks: memory_report,
+        # supersession_report, pii_report, erasure_report, governance_report,
+        # influence_gate_report, irreversible_budget_report and convergence_report. They have no
+        # pass/fail, so "would it notice a corruption" is the wrong question and probing them that
+        # way would have scored a working report as blind.
+        #
+        # The question that fits is whether the number TRACKS the store. Change the store by a known
+        # amount and the counter must move by that amount. A counter that does not move is the same
+        # defect as a check that cannot fail, one shape over.
+        #
+        # THE CONTROL IS THE POINT, and it comes from getting this wrong by hand first. Writing the
+        # same key twice with the SAME `object` supersedes nothing -- `_supersede_by_key` branches on
+        # object and asserts_change, so an identical object is a restatement rather than a change.
+        # Reading only the report, that looks exactly like a broken counter. So every probe reads the
+        # GROUND TRUTH out of the store as well, and a change that did not land is CONTROL_FAILED
+        # against the fixture rather than MISSED against the report.
+        def _ledger_store(work, tag, **kw):
+            ix = type(self)(path=os.path.join(work, "ledger_%s.json" % tag), **kw)
+            ix.remember("the rate is 5 percent", key="rate", object="5 percent")
+            ix.remember("the office is in Kosice", key="office", object="Kosice")
+            ix.flush()
+            return ix
+
+        def _n_status(ix, want):
+            return sum(1 for r in ix.items if r.get("status") == want)
+
+        # (name, surface, make, counter, change, truth, counter_delta, truth_delta, catches)
+        ledger_catalogue = [
+            ("a new record", "memory_report",
+             lambda w: _ledger_store(w, "mem"),
+             lambda ix: ix.memory_report().get("total"),
+             lambda ix: (ix.remember("a third fact", key="third", object="3"), ix.flush()),
+             lambda ix: len(ix.items), 1, 1,
+             "a write that the total does not count"),
+            ("a keyed value replaced", "supersession_report",
+             lambda w: _ledger_store(w, "sup"),
+             lambda ix: ix.supersession_report().get("superseded_total"),
+             lambda ix: (ix.remember("the rate is 7 percent", key="rate", object="7 percent"),
+                         ix.flush()),
+             lambda ix: _n_status(ix, "superseded"), 1, 1,
+             "a retirement the supersession ledger does not record"),
+            ("a record carrying PII", "pii_report",
+             lambda w: _ledger_store(w, "pii", pii_detect=True),
+             lambda ix: ix.pii_report().get("records_with_pii"),
+             lambda ix: (ix.remember("write to alex@example.com", key="mail", object="alex"),
+                         ix.flush()),
+             lambda ix: sum(1 for r in ix.items
+                            if r.get("status") == "active" and r.get("pii")), 1, 1,
+             "PII entering the store that the exposure count does not see"),
+            ("a deliberate erasure", "erasure_report",
+             lambda w: _ledger_store(w, "era"),
+             lambda ix: ix.erasure_report().get("tombstoned_total"),
+             lambda ix: (ix.forget(ids=[ix.items[0]["id"]], basis="probe"), ix.flush()),
+             lambda ix: len(ix.items), 1, -1,
+             "an erasure the tombstone ledger does not record"),
+            ("an erasure the governance view must show", "governance_report",
+             lambda w: _ledger_store(w, "gov"),
+             lambda ix: ix.governance_report().get("erasures_total"),
+             lambda ix: (ix.forget(ids=[ix.items[0]["id"]], basis="probe"), ix.flush()),
+             lambda ix: len(ix.items), 1, -1,
+             "an erasure missing from the governance view an auditor reads"),
+            ("a new active record", "influence_gate_report",
+             lambda w: _ledger_store(w, "inf"),
+             lambda ix: ix.influence_gate_report().get("active"),
+             lambda ix: (ix.remember("a third fact", key="third", object="3"), ix.flush()),
+             lambda ix: _n_status(ix, "active"), 1, 1,
+             "a record the gate's own cost report does not count"),
+            ("a source that spent budget", "irreversible_budget_report",
+             lambda w: _ledger_store(w, "bud"),
+             lambda ix: len(ix.irreversible_budget_report()),
+             lambda ix: ix.spend_irreversible(
+                 [ix.remember("a spending record", key="spend", object="s",
+                              source={"doc": "probe-source"})], 0.5),
+             lambda ix: len(ix._budget_state()), 1, 1,
+             "a spend the lifetime budget report does not show"),
+        ]
+
+        for name, surface, make, counter, change, truth, c_delta, t_delta, catches in ledger_catalogue:
+            work = _tempfile.mkdtemp(prefix="ledger_")
+            try:
+                ix = make(work)
+                c0, t0 = counter(ix), truth(ix)
+                change(ix)
+                t1 = truth(ix)
+            except Exception as ex:                                        # noqa: BLE001
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "ledger", "catches": catches,
+                                "why": "the fixture raised: %s: %s" % (type(ex).__name__, ex)})
+                continue
+            if (t1 - t0) != t_delta:
+                # The store did not change the way the fixture intended, so the report cannot be
+                # judged. Blaming the counter here is how a correct report gets called broken.
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "ledger", "catches": catches,
+                                "why": "the change did not land: the store's own count moved by %d, "
+                                       "not %d, so the report has nothing to track"
+                                       % (t1 - t0, t_delta)})
+                continue
+            try:
+                c1 = counter(ix)
+            except Exception as ex:                                        # noqa: BLE001
+                results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
+                                "tier": "ledger", "catches": catches,
+                                "why": "the report raised after the change: %s" % type(ex).__name__})
+                continue
+            moved = (c1 - c0) if isinstance(c1, int) and isinstance(c0, int) else None
+            verdict = "NOTICED" if moved == c_delta else "MISSED"
+            row = {"probe": name, "surface": surface, "catches": catches, "outcome": verdict,
+                   "tier": "ledger", "counter_before": c0, "counter_after": c1,
+                   "expected_move": c_delta,
+                   "read_this_as": (
+                       "the number tracks the store: the change landed and the report moved with it"
+                       if verdict == "NOTICED" else
+                       "the store changed and this number did not follow, so a reader watching it "
+                       "would not see the change")}
+            results.append(row)
+
         def _sel(*outcomes):
             return [r for r in results if r["outcome"] in outcomes]
 

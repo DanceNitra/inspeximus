@@ -321,3 +321,152 @@ def test_the_attribution_probe_is_unaskable_without_receipts_and_says_so():
            if p["surface"] == "verify_attribution"][0]
     assert row["outcome"] == "NOT_REACHABLE_HERE", row
     assert row["on_a_fixture"] == "SUMMARY_HIDES_DETAIL", row
+
+
+# ───────────────────────────── PURE surfaces: the four that never read the store
+import inspeximus.core as _core
+
+
+PURE_SURFACES = [
+    "verify_inclusion",
+    "verify_cosigned_anchor",
+    "detect_split_view",
+    "check_self_narration",
+]
+
+
+def _pure_rows(ix):
+    return {p["surface"]: p["outcome"] for p in ix.audit_the_audits()["probes"]
+            if p.get("tier") == "pure function"}
+
+
+def _receipted(n=5):
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), receipts=True)
+    for i in range(n):
+        ix.remember("record %d" % i, key="k%d" % i, object="probe")
+    ix.flush()
+    return ix
+
+
+def test_every_pure_surface_has_a_probe_and_catches_its_corruption():
+    """Four of the 24 surfaces take their subject as an argument, so corrupting a copy of the
+    caller's store cannot reach them. Before PURE mode they were unprobed by construction and the
+    coverage number said so forever."""
+    got = _pure_rows(_receipted())
+    assert sorted(got) == sorted(PURE_SURFACES), got
+    assert set(got.values()) == {"NOTICED"}, got
+
+
+def test_a_pure_surface_that_always_reports_clean_is_scored_MISSED():
+    """The loudest verdict this method can reach, and the one that must not be reachable by
+    accident. A blind surface is a defect in the library, not in anyone's data."""
+    orig = {n: getattr(_core.Inspeximus, n) for n in PURE_SURFACES}
+    try:
+        _core.Inspeximus.verify_inclusion = staticmethod(lambda *a, **k: True)
+        _core.Inspeximus.verify_cosigned_anchor = staticmethod(lambda *a, **k: {"ok": True})
+        _core.Inspeximus.detect_split_view = staticmethod(lambda *a, **k: {"fork": False})
+        _core.Inspeximus.check_self_narration = staticmethod(lambda *a, **k: {"self_narration": False})
+        got = _pure_rows(_receipted())
+        assert set(got.values()) == {"MISSED"}, got
+    finally:
+        for n, f in orig.items():
+            setattr(_core.Inspeximus, n, f)
+
+
+def test_a_pure_surface_that_rejects_the_valid_input_is_scored_CONTROL_FAILED():
+    """The other direction. A surface that cries wolf at everything would score NOTICED on the
+    corrupted input while proving nothing, so the valid input is checked first and its rejection
+    disqualifies the run."""
+    orig = {n: getattr(_core.Inspeximus, n) for n in PURE_SURFACES}
+    try:
+        _core.Inspeximus.verify_inclusion = staticmethod(lambda *a, **k: False)
+        _core.Inspeximus.verify_cosigned_anchor = staticmethod(lambda *a, **k: {"ok": False})
+        _core.Inspeximus.detect_split_view = staticmethod(lambda *a, **k: {"fork": True})
+        _core.Inspeximus.check_self_narration = staticmethod(lambda *a, **k: {"self_narration": True})
+        got = _pure_rows(_receipted())
+        assert set(got.values()) == {"CONTROL_FAILED"}, got
+    finally:
+        for n, f in orig.items():
+            setattr(_core.Inspeximus, n, f)
+
+
+def test_the_split_view_fixture_carries_its_own_negative_case():
+    """The fork builder hands the detector the SAME anchor twice as its valid input. Without that,
+    a detector that always cries fork would pass the probe."""
+    out = _receipted().audit_the_audits()
+    row = [p for p in out["probes"] if p["surface"] == "detect_split_view"][0]
+    assert row["clean_on_valid_input"] is True, row
+    assert row["clean_on_corrupted_input"] is False, row
+
+
+def test_pure_probes_count_toward_coverage():
+    """A probe that does not move the coverage number is invisible to the reader who asks how much
+    of the class is actually tested."""
+    s = _receipted().audit_the_audits()["surfaces"]
+    assert s["probed"] >= 8, s
+    for name in PURE_SURFACES:
+        assert name not in s["unprobed"], name
+
+
+# ──────────────────── LEDGER surfaces: inventories, where the question is whether the number moves
+LEDGER_SURFACES = [
+    "memory_report",
+    "supersession_report",
+    "pii_report",
+    "erasure_report",
+    "governance_report",
+    "influence_gate_report",
+    "irreversible_budget_report",
+]
+
+
+def _ledger_rows(ix):
+    return {p["surface"]: p for p in ix.audit_the_audits()["probes"]
+            if p.get("tier") == "ledger"}
+
+
+def test_every_inventory_counter_tracks_the_store():
+    """A report has no pass/fail, so "would it notice a corruption" is the wrong question and would
+    have scored a working report as blind. The question that fits is whether the number moves when
+    the store does."""
+    got = _ledger_rows(_receipted())
+    assert sorted(got) == sorted(LEDGER_SURFACES), sorted(got)
+    for name, row in got.items():
+        assert row["outcome"] == "NOTICED", (name, row)
+        assert row["counter_after"] - row["counter_before"] == row["expected_move"], row
+
+
+def test_a_frozen_counter_is_scored_MISSED():
+    """The defect this mode exists to find: the store changes and the number does not follow."""
+    orig = _core.Inspeximus.memory_report
+    try:
+        _core.Inspeximus.memory_report = (
+            lambda self, dup_threshold=0.9: {"total": 0, "active": 0, "superseded": 0})
+        assert _ledger_rows(_receipted())["memory_report"]["outcome"] == "MISSED"
+    finally:
+        _core.Inspeximus.memory_report = orig
+
+
+def test_a_change_that_did_not_land_is_CONTROL_FAILED_not_MISSED():
+    """Found by getting it wrong by hand. Writing the same key twice with the SAME object supersedes
+    nothing, because _supersede_by_key branches on object and asserts_change. Reading only the
+    report, that looks exactly like a broken counter. So the probe reads the store's own count too,
+    and a change that did not land disqualifies the fixture instead of convicting the report."""
+    orig = _core.Inspeximus._supersede_by_key
+    try:
+        _core.Inspeximus._supersede_by_key = lambda self, rec, reaffirm=False: []
+        row = _ledger_rows(_receipted())["supersession_report"]
+        assert row["outcome"] == "CONTROL_FAILED", row
+        assert "did not land" in row["why"], row
+    finally:
+        _core.Inspeximus._supersede_by_key = orig
+
+
+def test_coverage_is_15_of_24_and_names_what_is_left():
+    """The number a reader asks for. Untested is not the same as working, so the remaining nine are
+    named rather than rounded away."""
+    s = _receipted().audit_the_audits()["surfaces"]
+    assert s["available"] == 24, s
+    assert s["probed"] >= 15, s
+    for name in LEDGER_SURFACES + PURE_SURFACES:
+        assert name not in s["unprobed"], name
