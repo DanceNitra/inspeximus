@@ -22,6 +22,9 @@ Config (environment):
     INSPEXIMUS_EMBED_URL   optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall
     INSPEXIMUS_EMBED_MODEL embedding model id (default: text-embedding-3-small)
     INSPEXIMUS_EMBED_KEY   bearer key for that endpoint
+    INSPEXIMUS_PERSIST_VECTORS  write the embedding vectors to disk instead of holding them for the
+                           life of the process. Off by default. With an embedder configured and this
+                           off, every open re-embeds every record and throws the result away at exit.
     INSPEXIMUS_OBSERVE_RECALL  record which memories were served immediately before each write, as an
                            observation (`recall_window`), never as claimed lineage. Off by default; a store
                            written without it is byte-identical to one written before it existed. It feeds
@@ -131,7 +134,18 @@ _PATH = resolve_path()
 # INSPEXIMUS_RECEIPTS (opt-in, default off): keep the tamper-evident write/erasure chain that the compliance_*
 # / audit_bundle MCP tools evidence (EU AI Act Art. 12/19). Off by default so an existing MCP store gains no
 # sidecar file unexpectedly; set INSPEXIMUS_RECEIPTS=1 to enable it.
-_RECEIPTS = os.environ.get("INSPEXIMUS_RECEIPTS", "").strip().lower() in ("1", "true", "yes", "on")
+def _flag_from_env(name: str, env: dict | None = None) -> bool:
+    """One spelling rule for every on/off environment flag this server reads.
+
+    Three flags parsed this expression inline, and a fourth written from memory is how the set drifts:
+    an operator who writes INSPEXIMUS_PERSIST_VECTORS=0 must not get persistence because the string is
+    non-empty. Anything outside the listed spellings is off.
+    """
+    env = os.environ if env is None else env
+    return (env.get(name, "") or "").strip().lower() in ("1", "true", "yes", "on")
+
+
+_RECEIPTS = _flag_from_env("INSPEXIMUS_RECEIPTS")
 # The PUBLIC key the receipts are expected to carry. verify_writes(expected_pubkey=...) is the check that a
 # receipt was signed by the key you expect rather than by A key; the MCP tools took no arguments at all, so
 # every MCP caller got the unpinned verdict. MEASURED (probes/audit_mcp_verify_writes_key.py): a store whose
@@ -209,7 +223,7 @@ _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
 # THIS is the surface where the flow is real: one module-level store for the whole process, so a `recall`
 # call followed by a `remember`/`remember_decision` call is the same agent, causally linked. The library
 # feature shipped with no consumer for exactly one release.
-_OBSERVE_RECALL = os.environ.get("INSPEXIMUS_OBSERVE_RECALL", "").strip().lower() in ("1", "true", "yes", "on")
+_OBSERVE_RECALL = _flag_from_env("INSPEXIMUS_OBSERVE_RECALL")
 # WRITER IDENTITY. `INSPEXIMUS_WRITER_KEY_FILE` (preferred — a secret belongs in a gitignored file, not
 # in the process environment) or `INSPEXIMUS_WRITER_KEY` (hex). With one set, this server signs its own
 # writes, so `attested_key` is populated by ordinary use.
@@ -230,8 +244,20 @@ def _writer_key_from_env():
 
 
 _WRITER_KEY = _writer_key_from_env()
+# KEEP THE VECTORS THIS SERVER PAYS FOR. `open_store` has taken `persist_vectors` all along and this
+# call never passed it, so a server configured with INSPEXIMUS_EMBED_URL ran a RAM-only index: one
+# embedding call per record on every open, discarded at exit, paid again on the next start. On a
+# 619-record store that is 619 network calls per restart for an index that never reaches disk.
+#
+# The store had been saying so. `index_coherence` returns the note "persist_vectors=False: vectors
+# are a RAM-only cache rebuilt per process", and `reembed` returns a warning naming the remedy --
+# "Open the store with persist_vectors=True to keep them" -- which pointed at a constructor argument
+# the server did not expose. Default stays off, so a store written before this is byte-identical to
+# one written after.
+_PERSIST_VECTORS = _flag_from_env("INSPEXIMUS_PERSIST_VECTORS")
 _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
-                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY)
+                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
+                  persist_vectors=_PERSIST_VECTORS)
 
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
 
