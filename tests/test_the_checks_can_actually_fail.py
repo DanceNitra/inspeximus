@@ -596,3 +596,26 @@ def test_self_ratification_cannot_lift_a_claim():
     out = ix.ratify(rid, kind="audit", by_key="auditor-c")
     assert out["ok"] is False, out
     assert ix.convergence_report(rid).get("adjudicated") is not True
+
+
+def test_a_fixture_verdict_is_not_reported_as_your_store_demonstrating_anything():
+    """The field says "on your store", so only the store tier may populate it.
+
+    Adding three modes without changing this summary made it claim 20 surfaces demonstrated on a
+    store that had demonstrated 3. The pure, ledger and argument probes build their own fixtures and
+    never read the caller's records, so their NOTICED is a fact about the library. Both numbers are
+    worth having; merging them turns the honest one into the flattering one."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"))   # no receipts, no embedder
+    for i in range(3):
+        ix.remember("record %d" % i, key="k%d" % i, object="o%d" % i)
+    ix.flush()
+    out = ix.audit_the_audits()
+    s = out["surfaces"]
+
+    tiers = {r["surface"]: r.get("tier") for r in out["probes"] if r["outcome"] == "NOTICED"}
+    for name in s["demonstrated_on_your_store"]:
+        assert tiers.get(name) == "your store", (name, tiers.get(name))
+    for name in s["proved_on_a_fixture"]:
+        assert tiers.get(name) != "your store", (name, tiers.get(name))
+    assert not (set(s["demonstrated_on_your_store"]) & set(s["proved_on_a_fixture"]))
+    assert s["proved_on_a_fixture"], "the fixture-proved list cannot be empty with 24 probes wired"

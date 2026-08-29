@@ -3335,6 +3335,7 @@ class Inspeximus:
                     "control_failed": [], "not_reachable_here": [], "blind_even_on_a_fixture": [],
                     "surfaces": {"available": len(available), "probed": 0, "unprobed": available,
                                  "demonstrated_on_your_store": [],
+                                 "proved_on_a_fixture": [],
                                  "working_but_unreachable_here": [],
                                  "blind_even_on_a_fixture": [], "unanswerable_here": []},
                     "surfaces_covered": [], "surfaces_available": len(available), "limits": limits}
@@ -3914,7 +3915,17 @@ class Inspeximus:
         unreach = _sel("NOT_REACHABLE_HERE")
         # THE LOUDEST BUCKET: clean on a store built to trigger it. Not a fact about the caller.
         blind = [r for r in unreach if r.get("on_a_fixture") == "MISSED"]
-        covered = sorted({r["surface"] for r in results if r["outcome"] == "NOTICED"})
+        # A NOTICED is not the same claim in every mode, and treating it as one made this field
+        # lie. `demonstrated_on_your_store` is answering "what did YOUR DATA show", so only the
+        # store tier can populate it -- the pure, ledger and argument probes run on fixtures they
+        # build themselves and never read the caller's records. Counting all of them here reported
+        # 20 surfaces demonstrated on a store that had demonstrated 3, one hour after this method
+        # was extended to three new modes and its summary was not.
+        covered = sorted({r["surface"] for r in results
+                          if r["outcome"] == "NOTICED" and r.get("tier") == "your store"})
+        proved_on_a_fixture = sorted({r["surface"] for r in results
+                                      if r["outcome"] == "NOTICED"
+                                      and r.get("tier") in ("pure function", "ledger", "argument")})
         works_on_fixture = sorted({r["surface"] for r in unreach
                                    if r.get("on_a_fixture") == "NOTICED"})
         probed = sorted({r["surface"] for r in results})
@@ -3927,6 +3938,7 @@ class Inspeximus:
             "probed": len(probed),
             "unprobed": unprobed,
             "demonstrated_on_your_store": covered,
+            "proved_on_a_fixture": proved_on_a_fixture,
             "working_but_unreachable_here": works_on_fixture,
             "blind_even_on_a_fixture": sorted({r["surface"] for r in blind}),
             "unanswerable_here": sorted({r["surface"] for r in cfail}),
