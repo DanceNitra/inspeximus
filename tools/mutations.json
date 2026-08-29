@@ -1,1580 +1,1580 @@
 [
-  {
-    "name": "route()'s default policy drifts from safe to trusting",
-    "file": "inspeximus/core.py",
-    "old": "policy: str = \"safe\"",
-    "new": "policy: str = \"trusting\"",
-    "tests": [
-      "tests/test_echo_policy_panel.py"
-    ]
-  },
-  {
-    "name": "the docstring number is edited away from the measurement",
-    "file": "inspeximus/core.py",
-    "old": "1.00 echo-blocked",
-    "new": "0.50 echo-blocked",
-    "tests": [
-      "tests/test_echo_policy_panel.py"
-    ]
-  },
-  {
-    "name": "the citation points back at the unrunnable probe",
-    "file": "inspeximus/core.py",
-    "old": "probes/echo_policy_panel.py",
-    "new": "probes/echo_attack_probe_v2.py",
-    "tests": [
-      "tests/test_echo_policy_panel.py"
-    ]
-  },
-  {
-    "name": "the echo guard stops blocking a replayed superseded value",
-    "file": "probes/echo_policy_panel.py",
-    "old": "m.echo_guard = True",
-    "new": "m.echo_guard = False",
-    "tests": [
-      "tests/test_echo_policy_panel.py"
-    ]
-  },
-  {
-    "name": "the content check stops seeing mismatches",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "mismatched = b.get(\"mismatched\") or []",
-    "new": "mismatched = []",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "the verdict claims content was checked when it was not",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "content_checked = store_items is not None",
-    "new": "content_checked = True",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "ordinary growth is escalated into a failure (false alarm)",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "limits.append(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
-    "new": "bad(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "the CLI stops printing the scope next to the verdict",
-    "file": "inspeximus/cli.py",
-    "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
-    "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "the headline CLI stops passing the store through",
-    "file": "inspeximus/cli.py",
-    "old": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,\n                            store_items=items, store_receipts=receipts,",
-    "new": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,\n                            store_receipts=receipts,",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "a mistyped store path is created instead of refused (shared guard)",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "    if not os.path.exists(path):\n        return None\n    return list(Inspeximus(path=path, receipts=True).items)",
-    "new": "    if False:\n        return None\n    return list(Inspeximus(path=path, receipts=True).items)",
-    "tests": [
-      "tests/test_docs_examples_are_runnable.py"
-    ]
-  },
-  {
-    "name": "the headline CLI stops printing the scope",
-    "file": "inspeximus/cli.py",
-    "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
-    "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "torch creeps back to module level (mechanism arm dies)",
-    "file": "probes/agentpoison_influence_gate.py",
-    "old": "import json\nimport os\nimport random\nimport sys",
-    "new": "import json\nimport os\nimport random\nimport sys\nimport torch",
-    "tests": [
-      "tests/test_influence_gate_probes.py"
-    ]
-  },
-  {
-    "name": "the influence gate stops filtering uncorroborated memory",
-    "file": "probes/agentpoison_influence_gate.py",
-    "old": "        return [h for h in hits if corroborated(by_id[h[\"id\"]], by_id)]",
-    "new": "        return list(hits)",
-    "tests": [
-      "tests/test_influence_gate_probes.py"
-    ]
-  },
-  {
-    "name": "the dense arm becomes the default again",
-    "file": "probes/agentpoison_influence_gate.py",
-    "old": "    want_dense = \"--dense\" in argv",
-    "new": "    want_dense = _have_torch()",
-    "tests": [
-      "tests/test_influence_gate_probes.py"
-    ]
-  },
-  {
-    "name": "the hashing embedder stops being normalised",
-    "file": "probes/agentpoison_influence_gate.py",
-    "old": "    return [v / norm for v in vec] if norm else vec",
-    "new": "    return vec",
-    "tests": [
-      "tests/test_influence_gate_probes.py"
-    ]
-  },
-  {
-    "name": "the census stops seeing module-level guards",
-    "file": "tools/skip_census.py",
-    "old": "        for c in (n for n in ast.walk(node) if isinstance(n, ast.Call)):",
-    "new": "        for c in ():",
-    "tests": [
-      "tests/test_skip_census.py"
-    ]
-  },
-  {
-    "name": "the census counts by importing (environment-dependent again)",
-    "file": "tools/skip_census.py",
-    "old": "        absent = [d for d in deps if importlib.util.find_spec(d) is None]",
-    "new": "        absent = []",
-    "tests": [
-      "tests/test_skip_census.py"
-    ]
-  },
-  {
-    "name": "the integrations CI job is deleted",
-    "file": ".github/workflows/ci.yml",
-    "old": "  integrations:",
-    "new": "  integrations_disabled:",
-    "tests": [
-      "tests/test_skip_census.py"
-    ]
-  },
-  {
-    "name": "absence of a clash is reported as support again",
-    "file": "inspeximus/core.py",
-    "old": "            return _restates(text, rec_text or \"\")                          # True, or None for \"cannot tell\"",
-    "new": "            return True",
-    "tests": [
-      "tests/test_verify_claim_undecidable.py"
-    ]
-  },
-  {
-    "name": "the restatement test accepts any overlap",
-    "file": "inspeximus/core.py",
-    "old": "            return True if overlap >= 0.9 else None",
-    "new": "            return True",
-    "tests": [
-      "tests/test_verify_claim_undecidable.py"
-    ]
-  },
-  {
-    "name": "the undecidable case is folded back into 'supported'",
-    "file": "inspeximus/core.py",
-    "old": "            return _out(\"unverifiable\", undecidable.get(\"object\"),",
-    "new": "            return _out(\"supported\", undecidable.get(\"object\"),",
-    "tests": [
-      "tests/test_verify_claim_undecidable.py"
-    ]
-  },
-  {
-    "name": "the keyed path stops distinguishing cannot-tell",
-    "file": "inspeximus/core.py",
-    "old": "            if m is None:\n                # Neither side carries a value, and the claim is not a restatement. The honest answer is\n                # that this store cannot tell -- with the record attached so the caller can judge.",
-    "new": "            if False:\n                # disabled",
-    "tests": [
-      "tests/test_verify_claim_undecidable.py"
-    ]
-  },
-  {
-    "name": "a pruned directory goes unreported again",
-    "file": "inspeximus/erasure_residue.py",
-    "old": "        for d in pruned:",
-    "new": "        for d in []:",
-    "tests": [
-      "tests/test_erasure_residue.py"
-    ]
-  },
-  {
-    "name": "skip_dirs goes back to being unioned (caller cannot opt out)",
-    "file": "inspeximus/erasure_residue.py",
-    "old": "    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)",
-    "new": "    skip = set(skip_dirs or ()) | _SKIP_DIRS",
-    "tests": [
-      "tests/test_erasure_residue.py"
-    ]
-  },
-  {
-    "name": "a nonexistent root returns clean again",
-    "file": "inspeximus/erasure_residue.py",
-    "old": "    if not os.path.isdir(root):",
-    "new": "    if False:",
-    "tests": [
-      "tests/test_erasure_residue.py"
-    ]
-  },
-  {
-    "name": "zero comparisons pass again",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "    return {\"ok\": bool(compared) and not mismatched, \"checked\": compared, \"receipted\": len(first),",
-    "new": "    return {\"ok\": not mismatched, \"checked\": compared, \"receipted\": len(first),",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "'checked' counts receipts instead of comparisons",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "        compared += 1",
-    "new": "        compared += 0",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "the orphan truncation stops announcing itself",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "        if len(orph) > 5:",
-    "new": "        if False:",
-    "tests": [
-      "tests/test_verify_bundle_content_scope.py"
-    ]
-  },
-  {
-    "name": "unreceipted records go uncounted again",
-    "file": "inspeximus/core.py",
-    "old": "            if cur.get(\"status\") == \"active\" and mid not in committed:\n                uncommitted.append(mid)",
-    "new": "            if False:\n                uncommitted.append(mid)",
-    "tests": [
-      "tests/test_uncounted_is_not_unchecked.py"
-    ]
-  },
-  {
-    "name": "verify_attribution stops failing closed on disabled receipts",
-    "file": "inspeximus/core.py",
-    "old": "        if not self.receipts_enabled and self.items:\n            # The sibling one call site over",
-    "new": "        if False:\n            # The sibling one call site over",
-    "tests": [
-      "tests/test_uncounted_is_not_unchecked.py"
-    ]
-  },
-  {
-    "name": "coverage goes back to comparing two integers",
-    "file": "inspeximus/compliance.py",
-    "old": "    if require_receipts and n_receipts and uncovered:",
-    "new": "    if False:",
-    "tests": [
-      "tests/test_uncounted_is_not_unchecked.py"
-    ]
-  },
-  {
-    "name": "autogen clear() unscopes again (erases the whole store)",
-    "file": "inspeximus/integrations/autogen.py",
-    "old": "               if r.get(\"status\") == \"active\" and (\n                   self._tag in (r.get(\"tags\") or [])\n                   or (self._source and (r.get(\"source\") or {}).get(\"doc\") == self._source))]",
-    "new": "               if r.get(\"status\") == \"active\"]",
-    "tests": [
-      "tests/test_uncounted_is_not_unchecked.py"
-    ]
-  },
-  {
-    "name": "the served value leaves the commitment again",
-    "file": "inspeximus/core.py",
-    "old": "                \"value_sha256\": _sha256_hex(_canon({\"object\": rec.get(\"object\")})),",
-    "new": "                \"value_sha256\": \"constant\",",
-    "tests": [
-      "tests/test_value_is_committed.py"
-    ]
-  },
-  {
-    "name": "verify_writes stops comparing the value",
-    "file": "inspeximus/core.py",
-    "old": "                              for k in (\"immutable_sha256\", \"mtype\", \"value_sha256\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
-    "new": "                              for k in (\"immutable_sha256\", \"mtype\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
-    "tests": [
-      "tests/test_value_is_committed.py"
-    ]
-  },
-  {
-    "name": "the audit bundle stops binding the value",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "        for field in (\"immutable_sha256\", \"content_sha256\", \"value_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
-    "new": "        for field in (\"immutable_sha256\", \"content_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
-    "tests": [
-      "tests/test_value_is_committed.py"
-    ]
-  },
-  {
-    "name": "legacy receipts are silently left uncovered",
-    "file": "inspeximus/core.py",
-    "old": "        if value_strict:",
-    "new": "        if False:",
-    "tests": [
-      "tests/test_value_is_committed.py"
-    ]
-  },
-  {
-    "name": "a pre-1.82 receipt raises a false alarm on honest data",
-    "file": "inspeximus/core.py",
-    "old": "                              if k not in forgiven and k in rc)",
-    "new": "                              if k not in forgiven)",
-    "tests": [
-      "tests/test_value_is_committed.py"
-    ]
-  },
-  {
-    "name": "recommit stops appending a receipt",
-    "file": "inspeximus/core.py",
-    "old": "            self._emit_write_receipt(rec)\n            done.append(rec[\"id\"])",
-    "new": "            done.append(rec[\"id\"])",
-    "tests": [
-      "tests/test_value_is_committed.py"
-    ]
-  },
-  {
-    "name": "the manifest header is unbound again",
-    "file": "inspeximus/deletion_manifest.py",
-    "old": "        prev = _header_hash(subject, request_id, basis, authorized_by, [t.name for t in self._targets])",
-    "new": "        prev = _GENESIS",
-    "tests": [
-      "tests/test_deletion_manifest_header.py"
-    ]
-  },
-  {
-    "name": "verify stops checking the header seed",
-    "file": "inspeximus/deletion_manifest.py",
-    "old": "        if first_prev == _GENESIS and first_prev != header:",
-    "new": "        if False:",
-    "tests": [
-      "tests/test_deletion_manifest_header.py"
-    ]
-  },
-  {
-    "name": "the legacy escape hatch stops opening",
-    "file": "inspeximus/deletion_manifest.py",
-    "old": "        return (len(problems) == 0, problems + notes)",
-    "new": "        return (len(problems + notes) == 0, problems + notes)",
-    "tests": [
-      "tests/test_deletion_manifest_header.py"
-    ]
-  },
-  {
-    "name": "a pinned key is ignored when verifying signatures",
-    "file": "inspeximus/deletion_manifest.py",
-    "old": "                if expected_pubkey is not None and e.get(\"pubkey\") != expected_pubkey:",
-    "new": "                if False:",
-    "tests": [
-      "tests/test_deletion_manifest_header.py"
-    ]
-  },
-  {
-    "name": "the header hash drops the subject",
-    "file": "inspeximus/deletion_manifest.py",
-    "old": "    return _sha256({\"subject\": subject, \"request_id\": request_id, \"basis\": basis,",
-    "new": "    return _sha256({\"subject\": None, \"request_id\": request_id, \"basis\": basis,",
-    "tests": [
-      "tests/test_deletion_manifest_header.py"
-    ]
-  },
-  {
-    "name": "zero-deps goes back to reading only installed METADATA",
-    "file": "claims_audit.py",
-    "old": "        pyproject = root.parent / \"pyproject.toml\"",
-    "new": "        pyproject = root.parent / \"nope.toml\"",
-    "tests": [
-      "tests/test_audit_scripts_have_teeth.py"
-    ]
-  },
-  {
-    "name": "a skip stops counting against the gate",
-    "file": "claims_audit.py",
-    "old": "    return ok is None and not auditing_history",
-    "new": "    return False",
-    "tests": [
-      "tests/test_audit_scripts_have_teeth.py"
-    ]
-  },
-  {
-    "name": "the secret sweep can be empty again",
-    "file": "governance_audit.py",
-    "old": "    if not declared:",
-    "new": "    if False:",
-    "tests": [
-      "tests/test_audit_scripts_have_teeth.py"
-    ]
-  },
-  {
-    "name": "a declared secret need not appear in the scenario",
-    "file": "governance_audit.py",
-    "old": "    if absent:",
-    "new": "    if False:",
-    "tests": [
-      "tests/test_audit_scripts_have_teeth.py"
-    ]
-  },
-  {
-    "name": "the audit downloads a package that does not exist",
-    "file": "governance_audit.py",
-    "old": "                        f\"inspeximus=={a.version}\" if a.version else \"inspeximus\",",
-    "new": "                        f\"agora-inspeximus=={a.version}\" if a.version else \"agora-inspeximus\",",
-    "tests": [
-      "tests/test_audit_scripts_have_teeth.py"
-    ]
-  },
-  {
-    "name": "remember_decision commits the TOPIC as the value again",
-    "file": "inspeximus/core.py",
-    "old": "                             mtype=\"procedural\", key=key, object=(decision.strip() or None),",
-    "new": "                             mtype=\"procedural\", key=key, object=(topic.strip() if topic else None),",
-    "tests": [
-      "tests/test_remember_decision_supersedes.py"
-    ]
-  },
-  {
-    "name": "the seeded probe drops back to five seeds",
-    "file": "probes/identity_gate_supersession_probe.py",
-    "old": "SEEDS = 25",
-    "new": "SEEDS = 5",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the probe stops printing n with the range",
-    "file": "probes/identity_gate_supersession_probe.py",
-    "old": "          f\"sd {sd_u:.3f} +/-{rel*100:.0f}%  range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  \"",
-    "new": "          f\"sd {sd_u:.3f} +/-{rel*100:.0f}%  range {min(ung):.3f}-{max(ung):.3f}  \"",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the manipulation check stops noticing a count collapse",
-    "file": "tools/probe_gate.py",
-    "old": "        if len(before) != len(after):",
-    "new": "        if False:",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the spread floor is removed",
-    "file": "tools/probe_gate.py",
-    "old": "        ok = len(vals) >= min_trials",
-    "new": "        ok = True",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the harness stops restoring what it dirtied",
-    "file": "tools/mutation_check.py",
-    "old": "        if not _ARTIFACT.match(path.replace(\"\\\\\", \"/\")):",
-    "new": "        if False:",
-    "tests": [
-      "tests/test_mutation_check_harness.py"
-    ]
-  },
-  {
-    "name": "examples run in the repo again (residue returns)",
-    "file": "tests/test_examples_run.py",
-    "old": "        cwd=tempfile.mkdtemp(prefix=\"inspeximus_example_\"), capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=180,",
-    "new": "        cwd=ROOT, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=180,",
-    "tests": [
-      "tests/test_examples_run.py"
-    ]
-  },
-  {
-    "name": "the recency tie-break is removed (crowded-store target is lost)",
-    "file": "inspeximus/core.py",
-    "old": "        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get(\"id\"), -1)))",
-    "new": "        scored.sort(key=lambda x: -x[0])",
-    "tests": [
-      "tests/test_recall_is_deterministic.py"
-    ]
-  },
-  {
-    "name": "BM25 sums its terms in set order again (float noise returns)",
-    "file": "inspeximus/core.py",
-    "old": "        _qterms = sorted(qtok)",
-    "new": "        _qterms = list(qtok)",
-    "tests": [
-      "tests/test_recall_is_deterministic.py"
-    ]
-  },
-  {
-    "name": "decay age goes back to sub-second resolution",
-    "file": "inspeximus/core.py",
-    "old": "        age = float(int(max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))))",
-    "new": "        age = max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))",
-    "tests": [
-      "tests/test_recall_is_deterministic.py"
-    ]
-  },
-  {
-    "name": "a refused revert exits 0 again",
-    "file": "inspeximus/cli.py",
-    "old": "        if not res.get(\"ok\"):\n            reason = res.get(\"reason\") or \"refused\"",
-    "new": "        if False:\n            reason = res.get(\"reason\") or \"refused\"",
-    "tests": [
-      "tests/test_cli_exit_codes.py"
-    ]
-  },
-  {
-    "name": "memory_report samples the oldest 400 again",
-    "file": "inspeximus/core.py",
-    "old": "        sample = act if len(act) <= 400 else _random.Random(0).sample(act, 400)",
-    "new": "        sample = act if len(act) <= 400 else act[:400]",
-    "tests": [
-      "tests/test_memory_report_sampling.py"
-    ]
-  },
-  {
-    "name": "the sample stops being seeded (evidence moves between runs)",
-    "file": "inspeximus/core.py",
-    "old": "else _random.Random(0).sample(act, 400)",
-    "new": "else _random.sample(act, 400)",
-    "tests": [
-      "tests/test_memory_report_sampling.py"
-    ]
-  },
-  {
-    "name": "the harness restores source files again (eats concurrent work)",
-    "file": "tools/mutation_check.py",
-    "old": "        if not _ARTIFACT.match(path.replace(\"\\\\\", \"/\")):\n            continue",
-    "new": "        if False:\n            continue",
-    "tests": [
-      "tests/test_mutation_check_harness.py"
-    ]
-  },
-  {
-    "name": "the shared store guard stops refusing a missing path",
-    "file": "inspeximus/audit_bundle.py",
-    "old": "    if not os.path.exists(path):\n        return None\n    return list(getattr(Inspeximus(path=path, receipts=True), \"_receipts\", None) or [])",
-    "new": "    if False:\n        return None\n    return list(getattr(Inspeximus(path=path, receipts=True), \"_receipts\", None) or [])",
-    "tests": [
-      "tests/test_docs_examples_are_runnable.py"
-    ]
-  },
-  {
-    "name": "audit_bundle's CLI ignores the guard's refusal",
-    "file": "inspeximus/cli.py",
-    "old": "            receipts = load_store_receipts(a.store)\n            if items is None:",
-    "new": "            receipts = load_store_receipts(a.store)\n            if False:",
-    "tests": [
-      "tests/test_docs_examples_are_runnable.py"
-    ]
-  },
-  {
-    "name": "the README stops pointing at the claims registry",
-    "file": "README.md",
-    "old": "**Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**",
-    "new": "**Every number on this page traces to a runnable probe.**",
-    "tests": [
-      "tests/test_claims_coverage.py"
-    ]
-  },
-  {
-    "name": "the surface opener stops setting the echo-guard posture (the wedge returns)",
-    "file": "inspeximus/_surface.py",
-    "old": "    store.echo_guard = echo_guard_default()",
-    "new": "    store.echo_guard = False",
-    "tests": [
-      "tests/test_surface_parity.py"
-    ]
-  },
-  {
-    "name": "the surface default flips to OFF unless asked",
-    "file": "inspeximus/core.py",
-    "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
-    "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"0\") != \"0\"",
-    "tests": [
-      "tests/test_surface_parity.py",
-      "tests/test_echo_guard_posture.py"
-    ]
-  },
-  {
-    "name": "the surface stops keeping an existing receipt chain (a hole in the evidence)",
-    "file": "inspeximus/_surface.py",
-    "old": "    if not receipts and p and os.path.exists(str(p) + \".receipts.json\"):\n        receipts = True",
-    "new": "    if False:\n        receipts = True",
-    "tests": [
-      "tests/test_surface_parity.py"
-    ]
-  },
-  {
-    "name": "the surface resolves a path an adapter meant to keep in memory",
-    "file": "inspeximus/_surface.py",
-    "old": "    p = resolve_path(path) if resolve else path",
-    "new": "    p = resolve_path(path)",
-    "tests": [
-      "tests/test_surface_parity.py"
-    ]
-  },
-  {
-    "name": "an adapter goes back to constructing the store itself",
-    "file": "inspeximus/integrations/langchain.py",
-    "old": "        self.store = store if store is not None else open_store(path, embed=embed, resolve=False)",
-    "new": "        self.store = store if store is not None else Inspeximus(path=path, embed=embed)",
-    "tests": [
-      "tests/test_surface_parity.py"
-    ]
-  },
-  {
-    "name": "the editor hook goes back to constructing the store itself",
-    "file": "inspeximus/claude_code.py",
-    "old": "    return open_store(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
-    "new": "    return Inspeximus(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
-    "tests": [
-      "tests/test_surface_parity.py"
-    ]
-  },
-  {
-    "name": "the MCP server goes back to constructing the store itself",
-    "file": "inspeximus/mcp_server.py",
-    "old": "_MEM = open_store(_PATH, embed=_EMB_DOC",
-    "new": "_MEM = Inspeximus(_PATH, embed=_EMB_DOC",
-    "tests": [
-      "tests/test_surface_parity.py"
-    ]
-  },
-  {
-    "name": "MCP verify_audit_bundle drops store_items again (content never compared)",
-    "file": "inspeximus/mcp_server.py",
-    "old": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items,\n                         store_receipts=receipts, require_signed=require_signed,\n                         expected_pubkey=(expected_pubkey or None))",
-    "new": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold,\n                         store_receipts=receipts, require_signed=require_signed,\n                         expected_pubkey=(expected_pubkey or None))",
-    "tests": [
-      "tests/test_mcp_verification_gaps.py"
-    ]
-  },
-  {
-    "name": "MCP verify_audit_bundle downgrades a missing store_path instead of refusing",
-    "file": "inspeximus/mcp_server.py",
-    "old": "        if items is None:",
-    "new": "        if False:",
-    "tests": [
-      "tests/test_mcp_verification_gaps.py"
-    ]
-  },
-  {
-    "name": "a skipped mutation counts as a pass again (unevaluated reads as clean)",
-    "file": "tools/mutation_check.py",
-    "old": "    return 1 if (survived or skipped) else 0",
-    "new": "    return 1 if survived else 0",
-    "tests": [
-      "tests/test_mutation_check_harness.py"
-    ]
-  },
-  {
-    "name": "the keep-budget goes back to slicing a population an earlier pass already retired",
-    "file": "inspeximus/core.py",
-    "old": "        active = [r for r in active if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if keep is not None and len(active) > keep:",
-    "new": "        if keep is not None and len(active) > keep:",
-    "tests": [
-      "tests/test_consolidate_keep_budget.py"
-    ]
-  },
-  {
-    "name": "the keep-budget demotes guard bookkeeping again, silencing check_code",
-    "file": "inspeximus/core.py",
-    "old": "        active = [r for r in active if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if keep is not None and len(active) > keep:",
-    "new": "        active = [r for r in active if r.get(\"status\") == \"active\"]\n        if keep is not None and len(active) > keep:",
-    "tests": [
-      "tests/test_guard_keyspace_survives_housekeeping.py"
-    ]
-  },
-  {
-    "name": "capacity eviction hard-deletes deprecation records again",
-    "file": "inspeximus/core.py",
-    "old": "        active = [r for r in self.items if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if len(active) <= self.capacity:",
-    "new": "        active = [r for r in self.items if r.get(\"status\") == \"active\"]\n        if len(active) <= self.capacity:",
-    "tests": [
-      "tests/test_guard_keyspace_survives_housekeeping.py"
-    ]
-  },
-  {
-    "name": "the guard keyspace registry goes empty, so nothing is carved out",
-    "file": "inspeximus/core.py",
-    "old": "_GUARD_KEYSPACES = (_CODE_GUARD_PREFIX, _ACL_PREFIX)",
-    "new": "_GUARD_KEYSPACES = ()",
-    "tests": [
-      "tests/test_guard_keyspace_survives_housekeeping.py"
-    ]
-  },
-  {
-    "name": "check_code stops matching the tail, missing qualified refactor records again",
-    "file": "inspeximus/code_guard.py",
-    "old": "    if tail and subject and re.search(_ident(subject), code):\n        return _ident(tail)",
-    "new": "    if False:\n        return _ident(tail)",
-    "tests": [
-      "tests/test_code_guard_qualified_symbols.py"
-    ]
-  },
-  {
-    "name": "check_code matches the tail WITHOUT the subject check, flagging every unrelated object",
-    "file": "inspeximus/code_guard.py",
-    "old": "    if tail and subject and re.search(_ident(subject), code):\n        return _ident(tail)",
-    "new": "    if tail:\n        return _ident(tail)",
-    "tests": [
-      "tests/test_code_guard_qualified_symbols.py"
-    ]
-  },
-  {
-    "name": "consolidate reports the keep REQUEST as if it were the survivors again",
-    "file": "inspeximus/core.py",
-    "old": "\"staled\": staled, \"kept\": _live, \"keep_requested\": keep,",
-    "new": "\"staled\": staled, \"kept\": keep, \"keep_requested\": keep,",
-    "tests": [
-      "tests/test_consolidate_keep_budget.py"
-    ]
-  },
-  {
-    "name": "an unsigned certificate claims its signatures are valid again",
-    "file": "inspeximus/core.py",
-    "old": "    signed = [t for t in toms if t.get(\"sig\")]",
-    "new": "    signed = list(toms)",
-    "tests": [
-      "tests/test_certificate_scope_and_signing.py"
-    ]
-  },
-  {
-    "name": "the certificate's scope statement goes back to being unchecked free text",
-    "file": "inspeximus/core.py",
-    "old": "    if _scope_txt is not None and _scope_txt != _CERT_SCOPE:",
-    "new": "    if False:",
-    "tests": [
-      "tests/test_certificate_scope_and_signing.py"
-    ]
-  },
-  {
-    "name": "publishing stops depending on the test suite (a red suite reaches PyPI again)",
-    "file": ".github/workflows/release.yml",
-    "old": "    needs: [audit, tests]",
-    "new": "    needs: audit",
-    "tests": [
-      "tests/test_release_cannot_publish_untested.py"
-    ]
-  },
-  {
-    "name": "the release pinner goes back to leaving the plugin manifests behind",
-    "file": "packages/_pin_server_json.py",
-    "old": "    p = ROOT / \".claude-plugin\" / \"plugin.json\"\n    if p.exists():",
-    "new": "    p = ROOT / \".claude-plugin\" / \"plugin.json\"\n    if False:",
-    "tests": [
-      "tests/test_manifest_versions.py"
-    ]
-  },
-  {
-    "name": "the pinner overwrites the marketplace SCHEMA version with the package version",
-    "file": "packages/_pin_server_json.py",
-    "old": "        for entry in d.get(\"plugins\", []):        # NOT d[\"version\"] -- that is the schema's own",
-    "new": "        d[\"version\"] = version\n        for entry in d.get(\"plugins\", []):",
-    "tests": [
-      "tests/test_manifest_versions.py"
-    ]
-  },
-  {
-    "name": "a mutant's falsified receipt is left in the tree for the rest of the run",
-    "file": "tools/mutation_check.py",
-    "old": "            for _p in _restore(_dirty_tracked() - dirty_before):\n                restored_all.add(_p)",
-    "new": "            pass",
-    "tests": [
-      "tests/test_mutation_check_harness.py"
-    ]
-  },
-  {
-    "name": "the receipt allowlist goes back to a suffix a fifth of the probes ignore",
-    "file": "tools/mutation_check.py",
-    "old": "_ARTIFACT = re.compile(r\"^probes/[\\w.-]+\\.json$\")",
-    "new": "_ARTIFACT = re.compile(r\"^probes/[\\w.-]+_result\\.json$\")",
-    "tests": [
-      "tests/test_mutation_check_harness.py"
-    ]
-  },
-  {
-    "name": "MCP compliance_check drops prior_anchor again (not_append_only cannot fire)",
-    "file": "inspeximus/mcp_server.py",
-    "old": "               prior_anchor=prior_anchor)",
-    "new": "               prior_anchor=None)",
-    "tests": [
-      "tests/test_mcp_verification_gaps.py"
-    ]
-  },
-  {
-    "name": "subject matching goes back to the coarse host-only key (ghost DSAR deletes a stranger)",
-    "file": "inspeximus/core.py",
-    "old": "        ids = self._narrow_to_subject(subject, ids)",
-    "new": "        ids = list(ids)",
-    "tests": [
-      "tests/test_isolation_and_persistence.py"
-    ]
-  },
-  {
-    "name": "narrowing drops the derived-lineage cascade again (erasure becomes INCOMPLETE)",
-    "file": "inspeximus/core.py",
-    "old": "        keep |= inherited\n        return [rid for rid in ids if rid in keep]",
-    "new": "        return [rid for rid in ids if rid in roots]",
-    "tests": [
-      "tests/test_erasure_preview.py",
-      "tests/test_erasure_audit.py"
-    ]
-  },
-  {
-    "name": "forget_pii re-matches on the coarse candidate set, bypassing the resolver",
-    "file": "inspeximus/core.py",
-    "old": "            if sel_ids is not None and r[\"id\"] not in sel_ids:\n                continue",
-    "new": "            if False:\n                continue",
-    "tests": [
-      "tests/test_isolation_and_persistence.py"
-    ]
-  },
-  {
-    "name": "erasure coverage reports complete without reading the manifest",
-    "file": "inspeximus/core.py",
-    "old": "        cov[\"complete\"] = bool(manifest.get(\"complete\"))",
-    "new": "        cov[\"complete\"] = True",
-    "tests": [
-      "tests/test_erasure_coverage.py"
-    ]
-  },
-  {
-    "name": "the write verdict is never reset, so a stale one is reported as this call's",
-    "file": "inspeximus/core.py",
-    "old": "        self.last_write = {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": False, \"policy\": None}",
-    "new": "        self.last_write = getattr(self, \"last_write\", None) or {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": False, \"policy\": None}",
-    "tests": [
-      "tests/test_write_verdict.py"
-    ]
-  },
-  {
-    "name": "every write reports blocked, so the verdict carries no information",
-    "file": "inspeximus/core.py",
-    "old": "        self.last_write = {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": False, \"policy\": None}",
-    "new": "        self.last_write = {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": True, \"policy\": None}",
-    "tests": [
-      "tests/test_write_verdict.py"
-    ]
-  },
-  {
-    "name": "the echo-guard resolver ignores an explicit argument in favour of the environment",
-    "file": "inspeximus/core.py",
-    "old": "    if explicit is not None:\n        return bool(explicit)\n    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
-    "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
-    "tests": [
-      "tests/test_echo_guard_posture.py"
-    ]
-  },
-  {
-    "name": "the echo-guard resolver ignores the environment, reviving the dead off-switch",
-    "file": "inspeximus/core.py",
-    "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
-    "new": "    return True",
-    "tests": [
-      "tests/test_echo_guard_posture.py"
-    ]
-  },
-  {
-    "name": "the overview counts ordinary supersessions as writes retired on arrival",
-    "file": "inspeximus/core.py",
-    "old": "        retired = {p: n for p, n in by_policy.items() if p in (\"echo_guard\", \"objectless_guard\")}",
-    "new": "        retired = dict(by_policy)",
-    "tests": [
-      "tests/test_report_shows_retired_writes.py"
-    ]
-  },
-  {
-    "name": "the overview always reports nothing was retired",
-    "file": "inspeximus/core.py",
-    "old": "        retired = {p: n for p, n in by_policy.items() if p in (\"echo_guard\", \"objectless_guard\")}",
-    "new": "        retired = {}",
-    "tests": [
-      "tests/test_report_shows_retired_writes.py"
-    ]
-  },
-  {
-    "name": "the erasure audit selects by the coarse key again",
-    "file": "inspeximus/core.py",
-    "old": "            for rid in self._narrow_to_subject(subject, coarse):",
-    "new": "            for rid in coarse:",
-    "tests": [
-      "tests/test_erasure_audit_subject.py"
-    ]
-  },
-  {
-    "name": "the erasure audit narrows to nothing, so it can never report residue",
-    "file": "inspeximus/core.py",
-    "old": "            for rid in self._narrow_to_subject(subject, coarse):",
-    "new": "            for rid in []:",
-    "tests": [
-      "tests/test_erasure_audit_subject.py"
-    ]
-  },
-  {
-    "name": "the erasure preview claims completeness with nothing contacted",
-    "file": "inspeximus/core.py",
-    "old": "               \"coverage\": dict(Inspeximus._erasure_coverage(\n                   None, len(getattr(self, \"_erasure_targets\", []))), preview=True),",
-    "new": "               \"coverage\": {\"complete\": True, \"preview\": True, \"unregistered\": False, \"external_targets\": 0, \"note\": \"\"},",
-    "tests": [
-      "tests/test_erasure_audit_subject.py"
-    ]
-  },
-  {
-    "name": "the erasure preview is not labelled as a rehearsal",
-    "file": "inspeximus/core.py",
-    "old": "                   None, len(getattr(self, \"_erasure_targets\", []))), preview=True),",
-    "new": "                   None, len(getattr(self, \"_erasure_targets\", []))), preview=False),",
-    "tests": [
-      "tests/test_erasure_audit_subject.py"
-    ]
-  },
-  {
-    "name": "confirmed counts the store's own attestation again",
-    "file": "inspeximus/core.py",
-    "old": "        ext = [e for e in entries if e.get(\"target\") != \"inspeximus-store\"]",
-    "new": "        ext = list(entries)",
-    "tests": [
-      "tests/test_coverage_confirmed_counts_externals.py"
-    ]
-  },
-  {
-    "name": "confirmed can never be non-zero, so the field is not a measurement",
-    "file": "inspeximus/core.py",
-    "old": "        cov[\"confirmed\"] = sum(1 for e in ext if e.get(\"verified_absent\") is True)",
-    "new": "        cov[\"confirmed\"] = 0",
-    "tests": [
-      "tests/test_coverage_confirmed_counts_externals.py"
-    ]
-  },
-  {
-    "name": "a dissenting target is counted as a confirmation",
-    "file": "inspeximus/core.py",
-    "old": "        cov[\"confirmed\"] = sum(1 for e in ext if e.get(\"verified_absent\") is True)",
-    "new": "        cov[\"confirmed\"] = len(ext)",
-    "tests": [
-      "tests/test_coverage_confirmed_counts_externals.py"
-    ]
-  },
-  {
-    "name": "the store's own self-check is dropped from the report",
-    "file": "inspeximus/core.py",
-    "old": "        cov[\"store_self_check\"] = next(\n            (bool(e.get(\"verified_absent\")) for e in entries if e.get(\"target\") == \"inspeximus-store\"),\n            None)",
-    "new": "        cov[\"store_self_check\"] = None",
-    "tests": [
-      "tests/test_coverage_confirmed_counts_externals.py"
-    ]
-  },
-  {
-    "name": "the gate restores through a newline-translating writer",
-    "file": "tools/mutation_check.py",
-    "old": "    with io.open(path, \"w\", encoding=\"utf-8\", newline=\"\") as fh:\n        fh.write(text)",
-    "new": "    with io.open(path, \"w\", encoding=\"utf-8\") as fh:\n        fh.write(text)",
-    "tests": [
-      "tests/test_mutation_restore_is_byte_exact.py"
-    ]
-  },
-  {
-    "name": "the gate reads through a newline-translating reader",
-    "file": "tools/mutation_check.py",
-    "old": "    return io.open(path, encoding=\"utf-8\", newline=\"\").read()",
-    "new": "    return io.open(path, encoding=\"utf-8\").read()",
-    "tests": [
-      "tests/test_mutation_restore_is_byte_exact.py"
-    ]
-  },
-  {
-    "name": "the gate stops matching spec endings to the file",
-    "file": "tools/mutation_check.py",
-    "old": "    if \"\\r\\n\" in src and \"\\r\\n\" not in fragment:\n        return fragment.replace(\"\\n\", \"\\r\\n\")\n    return fragment",
-    "new": "    return fragment",
-    "tests": [
-      "tests/test_mutation_restore_is_byte_exact.py"
-    ]
-  },
-  {
-    "name": "the gate converts endings unconditionally, breaking LF files",
-    "file": "tools/mutation_check.py",
-    "old": "    if \"\\r\\n\" in src and \"\\r\\n\" not in fragment:\n        return fragment.replace(\"\\n\", \"\\r\\n\")\n    return fragment",
-    "new": "    return fragment.replace(\"\\n\", \"\\r\\n\")",
-    "tests": [
-      "tests/test_mutation_restore_is_byte_exact.py"
-    ]
-  },
-  {
-    "name": "the MCP server drops the source it was given",
-    "file": "inspeximus/mcp_server.py",
-    "old": "                        source={\"doc\": source} if source else None,",
-    "new": "                        source=None,",
-    "tests": [
-      "tests/test_mcp_provenance_reach.py"
-    ]
-  },
-  {
-    "name": "the MCP server passes the source in a shape the resolver cannot read",
-    "file": "inspeximus/mcp_server.py",
-    "old": "                        source={\"doc\": source} if source else None,",
-    "new": "                        source={\"name\": source} if source else None,",
-    "tests": [
-      "tests/test_mcp_provenance_reach.py"
-    ]
-  },
-  {
-    "name": "the MCP server invents a subject the caller never supplied",
-    "file": "inspeximus/mcp_server.py",
-    "old": "                        source={\"doc\": source} if source else None,",
-    "new": "                        source={\"doc\": source or \"hr/bob\"},",
-    "tests": [
-      "tests/test_mcp_provenance_reach.py"
-    ]
-  },
-  {
-    "name": "the MCP server drops the declared lineage",
-    "file": "inspeximus/mcp_server.py",
-    "old": "                        derived_from=derived_from or None,",
-    "new": "                        derived_from=None,",
-    "tests": [
-      "tests/test_mcp_provenance_reach.py"
-    ]
-  },
-  {
-    "name": "the write result drops the declared lineage it reports back",
-    "file": "inspeximus/mcp_server.py",
-    "old": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": list(derived_from or []),",
-    "new": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": [],",
-    "tests": [
-      "tests/test_mcp_provenance_reach.py"
-    ]
-  },
-  {
-    "name": "the CLI drops the declared lineage",
-    "file": "inspeximus/cli.py",
-    "old": "                         derived_from=a.derived_from or None)",
-    "new": "                         derived_from=None)",
-    "tests": [
-      "tests/test_cli_provenance.py"
-    ]
-  },
-  {
-    "name": "the decision path drops the source it was given",
-    "file": "inspeximus/core.py",
-    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
-    "new": "                             source=None,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
-    "tests": [
-      "tests/test_write_paths_provenance_census.py"
-    ]
-  },
-  {
-    "name": "the decision path invents a subject the caller never supplied",
-    "file": "inspeximus/core.py",
-    "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
-    "new": "                             source={\"doc\": source or \"hr/bob\"},\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
-    "tests": [
-      "tests/test_write_paths_provenance_census.py"
-    ]
-  },
-  {
-    "name": "the decision result always claims the record is attributable",
-    "file": "inspeximus/mcp_server.py",
-    "old": "            \"attributable\": bool(source) or bool(derived_from)}\n\n\n@mcp.tool()\ndef revert",
-    "new": "            \"attributable\": True}\n\n\n@mcp.tool()\ndef revert",
-    "tests": [
-      "tests/test_write_paths_provenance_census.py"
-    ]
-  },
-  {
-    "name": "the CLI decision path drops the source it was given",
-    "file": "inspeximus/cli.py",
-    "old": "                                  source=a.source or None, derived_from=a.derived_from or None)",
-    "new": "                                  source=None, derived_from=None)",
-    "tests": [
-      "tests/test_cli_provenance.py"
-    ]
-  },
-  {
-    "name": "the CLI decision path invents a subject the caller never supplied",
-    "file": "inspeximus/cli.py",
-    "old": "                                  source=a.source or None, derived_from=a.derived_from or None)",
-    "new": "                                  source=a.source or \"hr/bob\", derived_from=a.derived_from or None)",
-    "tests": [
-      "tests/test_cli_provenance.py"
-    ]
-  },
-  {
-    "name": "the census reads a guard out of prose again",
-    "file": "tools/skip_census.py",
-    "old": "            if name != \"importorskip\" or not c.args:",
-    "new": "            if False:",
-    "tests": [
-      "tests/test_skip_census.py"
-    ]
-  },
-  {
-    "name": "the census stops detecting real guards",
-    "file": "tools/skip_census.py",
-    "old": "                deps.append(arg.value)\n                found_guard = True",
-    "new": "                found_guard = True",
-    "tests": [
-      "tests/test_skip_census.py"
-    ]
-  },
-  {
-    "name": "the erasure stops checking its own store for residue",
-    "file": "inspeximus/core.py",
-    "old": "        out[\"residue_in_store\"] = scan_records(self.items, _residue_values)",
-    "new": "        out[\"residue_in_store\"] = {\"ok\": True, \"findings\": [], \"problems\": [], \"checked_records\": 0, \"searched_values\": 0, \"method\": \"\"}",
-    "tests": [
-      "tests/test_instore_residue.py"
-    ]
-  },
-  {
-    "name": "the residue report echoes the erased value instead of a fingerprint",
-    "file": "inspeximus/erasure_residue.py",
-    "old": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": _fingerprint(v)})",
-    "new": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": v})",
-    "tests": [
-      "tests/test_instore_residue.py"
-    ]
-  },
-  {
-    "name": "an empty in-store search reports clean",
-    "file": "inspeximus/erasure_residue.py",
-    "old": "        return {\"ok\": False, \"checked_records\": len(recs), \"searched_values\": 0, \"findings\": [],",
-    "new": "        return {\"ok\": True, \"checked_records\": len(recs), \"searched_values\": 0, \"findings\": [],",
-    "tests": [
-      "tests/test_instore_residue.py"
-    ]
-  },
-  {
-    "name": "short values are searched, so residue matches everywhere",
-    "file": "inspeximus/erasure_residue.py",
-    "old": "    vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 4]",
-    "new": "    vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 1]",
-    "tests": [
-      "tests/test_instore_residue.py"
-    ]
-  },
-  {
-    "name": "a bounded in-store scan does not say it was bounded",
-    "file": "inspeximus/erasure_residue.py",
-    "old": "            problems.append(f\"stopped after {checked} record(s): the comparison budget was reached, so \"\n                            f\"{len(recs) - checked} record(s) were NOT examined\")",
-    "new": "            pass",
-    "tests": [
-      "tests/test_instore_residue.py"
-    ]
-  },
-  {
-    "name": "forget_subject stops carrying the residue report",
-    "file": "inspeximus/core.py",
-    "old": "               \"residue_in_store\": res.get(\"residue_in_store\")}\n        if targets:",
-    "new": "               \"residue_in_store\": None}\n        if targets:",
-    "tests": [
-      "tests/test_instore_residue.py"
-    ]
-  },
-  {
-    "name": "forget_pii stops carrying the residue report",
-    "file": "inspeximus/core.py",
-    "old": "                \"coverage\": res.get(\"coverage\", cov),\n                \"residue_in_store\": res.get(\"residue_in_store\")}",
-    "new": "                \"coverage\": res.get(\"coverage\", cov),\n                \"residue_in_store\": None}",
-    "tests": [
-      "tests/test_instore_residue.py"
-    ]
-  },
-  {
-    "name": "route stops declaring a parent at every write site",
-    "file": "inspeximus/core.py",
-    "old": "            cur_rec = self._current_active(kk) if kk else None\n            return [cur_rec[\"id\"]] if cur_rec else None",
-    "new": "            return None",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "route declares a parent even when there is no key",
-    "file": "inspeximus/core.py",
-    "old": "            cur_rec = self._current_active(kk) if kk else None",
-    "new": "            cur_rec = self._current_active(kk) if kk else (self.items[0] if self.items else None)",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "route drops the source at every write site",
-    "file": "inspeximus/core.py",
-    "old": "        _src = {\"doc\": source} if isinstance(source, str) and source else source",
-    "new": "        _src = None",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the echo branch writes without provenance again",
-    "file": "inspeximus/core.py",
-    "old": "            rid = self.remember(text, key=key, object=object,      # guard retires it, judge-logged\n                                source=_src, derived_from=_parent())",
-    "new": "            rid = self.remember(text, key=key, object=object)",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the keyless echo branch writes without provenance again",
-    "file": "inspeximus/core.py",
-    "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
-    "new": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"})",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the keyless echo branch gains a key and can clobber",
-    "file": "inspeximus/core.py",
-    "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
-    "new": "            rid = self.remember(text, key=key, object=object, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "_parent ignores the resolved key and reads the parameter",
-    "file": "inspeximus/core.py",
-    "old": "            kk = k if k is not None else key",
-    "new": "            kk = key",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the revert-restore branch stops declaring a parent",
-    "file": "inspeximus/core.py",
-    "old": "                                    capability=capability, meta={\"routed\": \"revert_named\"},\n                                    source=_src, derived_from=_parent(k))",
-    "new": "                                    capability=capability, meta={\"routed\": \"revert_named\"})",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the revert-to-original branch stops declaring a parent",
-    "file": "inspeximus/core.py",
-    "old": "                                    capability=capability, meta={\"routed\": \"revert_original\"},\n                                    source=_src, derived_from=_parent(k))",
-    "new": "                                    capability=capability, meta={\"routed\": \"revert_original\"})",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the keyless delete branch drops the caller's source",
-    "file": "inspeximus/core.py",
-    "old": "                rid = self.remember(text, source=_src)\n                return {\"intent\": \"delete\"",
-    "new": "                rid = self.remember(text)\n                return {\"intent\": \"delete\"",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "the keyless revert branch drops the caller's source",
-    "file": "inspeximus/core.py",
-    "old": "                rid = self.remember(text, source=_src)      # same as the delete branch",
-    "new": "                rid = self.remember(text)      # same as the delete branch",
-    "tests": [
-      "tests/test_route_correction_lineage.py"
-    ]
-  },
-  {
-    "name": "distill swallows a failed write again",
-    "file": "inspeximus/core.py",
-    "old": "                errors.append(f\"{type(e).__name__}: {str(e)[:120]}\")",
-    "new": "                pass",
-    "tests": [
-      "tests/test_distill_reports_failures.py"
-    ]
-  },
-  {
-    "name": "distill reports an error block on a clean run",
-    "file": "inspeximus/core.py",
-    "old": "        if errors:\n            out[\"errors\"] = errors\n            out[\"failed\"] = len(errors)",
-    "new": "        out[\"errors\"] = errors\n        out[\"failed\"] = len(errors)",
-    "tests": [
-      "tests/test_distill_reports_failures.py"
-    ]
-  },
-  {
-    "name": "distill counts every failure as one",
-    "file": "inspeximus/core.py",
-    "old": "            out[\"failed\"] = len(errors)",
-    "new": "            out[\"failed\"] = 1",
-    "tests": [
-      "tests/test_distill_reports_failures.py"
-    ]
-  },
-  {
-    "name": "the CLI distill passes a bare string source",
-    "file": "inspeximus/cli.py",
-    "old": "                                     source={\"doc\": a.source} if a.source else None)",
-    "new": "                                     source=a.source or None)",
-    "tests": [
-      "tests/test_distill_reports_failures.py",
-      "tests/test_cli_provenance.py"
-    ]
-  },
-  {
-    "name": "the routed delete drops the erasure fields again",
-    "file": "inspeximus/core.py",
-    "old": "                    \"forgotten\": res.get(\"forgotten\", 0),\n                    \"coverage\": res.get(\"coverage\"),\n                    \"residue_in_store\": res.get(\"residue_in_store\")}",
-    "new": "                    \"forgotten\": res.get(\"forgotten\", 0)}",
-    "tests": [
-      "tests/test_route_delete_answers_like_an_erasure.py"
-    ]
-  },
-  {
-    "name": "the empty forget early return loses coverage again",
-    "file": "inspeximus/core.py",
-    "old": "            return {\"forgotten\": 0, \"ids\": [], \"scrubbed_links\": 0, \"tombstones\": 0,\n                    \"coverage\": self._erasure_coverage(None, len(getattr(self, \"_erasure_targets\", []))),",
-    "new": "            return {\"forgotten\": 0, \"ids\": [], \"scrubbed_links\": 0, \"tombstones\": 0,",
-    "tests": [
-      "tests/test_route_delete_answers_like_an_erasure.py"
-    ]
-  },
-  {
-    "name": "the spread is reported without the c4 bias correction",
-    "file": "tools/probe_gate.py",
-    "old": "        sd_hat = (statistics.stdev(vals) / c4(n)) if n >= 2 else 0.0",
-    "new": "        sd_hat = (statistics.stdev(vals)) if n >= 2 else 0.0",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the corrected SD stops stating its own uncertainty",
-    "file": "tools/probe_gate.py",
-    "old": "    rel = math.sqrt(max(0.0, 1.0 - c * c)) / c",
-    "new": "    rel = math.sqrt(max(0.0, 1.0 - c * c))",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the probe artifact divides by a stale seed count again",
-    "file": "probes/identity_gate_supersession_probe.py",
-    "old": "    cand_per_run = ncand / SEEDS",
-    "new": "    cand_per_run = ncand / 5",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the kurtosis inflation is dropped from sd_rel_error",
-    "file": "tools/probe_gate.py",
-    "old": "        rel *= max(1.0, math.sqrt(max(0.0, 1.0 + g2 / 2.0)))",
-    "new": "        rel *= 1.0",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the inflation loses its floor and may SHRINK the stated uncertainty",
-    "file": "tools/probe_gate.py",
-    "old": "        rel *= max(1.0, math.sqrt(max(0.0, 1.0 + g2 / 2.0)))",
-    "new": "        rel *= math.sqrt(max(0.0, 1.0 + g2 / 2.0))",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "spread() stops passing its values, so the +/- reverts to pure normal theory",
-    "file": "tools/probe_gate.py",
-    "old": "        rel = sd_rel_error(n, vals if n >= 4 else None)",
-    "new": "        rel = sd_rel_error(n)",
-    "tests": [
-      "tests/test_probe_gate.py"
-    ]
-  },
-  {
-    "name": "the recall window is never stamped onto the write",
-    "file": "inspeximus/core.py",
-    "old": "            rec[\"recall_window\"] = _obs",
-    "new": "            pass",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "forget() scrubs the recall window, deleting the erasure evidence",
-    "file": "inspeximus/core.py",
-    "old": "        scrubbed = 0\n        if redact_links:",
-    "new": "        scrubbed = 0\n        for _r in self.items:\n            _rw = _r.get(\"recall_window\")\n            if _rw: _rw[\"ids\"] = [i for i in _rw[\"ids\"] if i not in target]\n        if redact_links:",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "erasure_audit goes blind to the recall_window pointer channel",
-    "file": "inspeximus/core.py",
-    "old": "            for pid in [p for p in ((r.get(\"recall_window\") or {}).get(\"ids\") or []) if p not in by_id]:",
-    "new": "            for pid in []:",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "a capped window truncates silently, hiding its true width",
-    "file": "inspeximus/core.py",
-    "old": "                _obs[\"n\"] = len(_win)",
-    "new": "                pass",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "the writes-since-recall counter never resets",
-    "file": "inspeximus/core.py",
-    "old": "        self._last_recall_writes = 0\n",
-    "new": "        pass\n",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "an iterative recall stamps only its last hop, not the union",
-    "file": "inspeximus/core.py",
-    "old": "        self._note_recall_window(list(seen), query)\n",
-    "new": "",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "the two-phase surface drops round 1 from the window",
-    "file": "inspeximus/core.py",
-    "old": "        self._note_recall_window(merged, query)\n",
-    "new": "",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "a foreign (observe=False) read is observed anyway",
-    "file": "inspeximus/core.py",
-    "old": "                self._last_recall_at = 0.0      # sentinel",
-    "new": "                self._last_recall_at = self._last_recall_at or 0.0  # sentinel",
-    "tests": [
-      "tests/test_recall_window_observation.py"
-    ]
-  },
-  {
-    "name": "the MCP server reads the observe flag and never passes it to the store",
-    "file": "inspeximus/mcp_server.py",
-    "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY)",
-    "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  writer_key=_WRITER_KEY)",
-    "tests": [
-      "tests/test_mcp_observe_recall.py"
-    ]
-  },
-  {
-    "name": "the recall hook loses its encoding guard (cp1250 deletes the block)",
-    "file": "inspeximus/claude_code.py",
-    "old": "    try:\n        sys.stdout.reconfigure(errors=\"replace\")\n    except Exception:\n        pass\n",
-    "new": "",
-    "tests": [
-      "tests/test_claude_code_recall_surfaces_decisions.py"
-    ]
-  },
-  {
-    "name": "the recall hook stops reading the external decision store",
-    "file": "inspeximus/claude_code.py",
-    "old": "    ext = (os.environ.get(\"INSPEXIMUS_DECISION_STORE\") or \"\").strip()",
-    "new": "    ext = \"\"",
-    "tests": [
-      "tests/test_claude_code_recall_surfaces_decisions.py"
-    ]
-  },
-  {
-    "name": "the recall block drops its per-record bound",
-    "file": "inspeximus/claude_code.py",
-    "old": "        out += [f\"  * {_injected(d['text'], 480)}\" for d in decisions]",
-    "new": "        out += [f\"  * {d['text']}\" for d in decisions]",
-    "tests": [
-      "tests/test_claude_code_recall_surfaces_decisions.py"
-    ]
-  },
-  {
-    "name": "index.html JSON-LD softwareVersion stops being pinned",
-    "file": "packages/_pin_server_json.py",
-    "old": "        new, n = re.subn(r'(\"softwareVersion\":\\s*\")[^\"]*(\")', rf'\\g<1>{version}\\g<2>', text, count=1)",
-    "new": "        new, n = text, 1",
-    "tests": [
-      "tests/test_manifest_versions.py"
-    ]
-  },
-  {
-    "name": "the index.html hero eyebrow stops being pinned",
-    "file": "packages/_pin_server_json.py",
-    "old": "        new, m = re.subn(r'(<p class=\"eyebrow\">)v\\d+\\.\\d+\\.\\d+(\\s)', rf'\\g<1>v{version}\\g<2>', new, count=1)",
-    "new": "        m = 1",
-    "tests": [
-      "tests/test_manifest_versions.py"
-    ]
-  },
-  {
-    "name": "the no-tenant fallback comes back for our own key (unbound rows promotable)",
-    "file": "inspeximus/core.py",
-    "old": "for cand in ((_tn,) if (_tn is None or key in nameable) else (_tn, None)):",
-    "new": "for cand in ((_tn,) if _tn is None else (_tn, None)):",
-    "tests": [
-      "tests/test_writes_can_carry_their_own_key.py"
-    ]
-  },
-  {
-    "name": "reserved meta keys reach the record again (top tier askable)",
-    "file": "inspeximus/core.py",
-    "old": "                    if k not in _RESERVED_META and k not in _META_ALIASED_PARAM}",
-    "new": "                    if k not in _META_ALIASED_PARAM}",
-    "tests": [
-      "tests/test_isolation_and_persistence.py"
-    ]
-  },
-  {
-    "name": "the tenant view forwards _stamp to the parent (internal writes unscoped)",
-    "file": "inspeximus/core.py",
-    "old": "        return Inspeximus._stamp(self, *a, **k)",
-    "new": "        return self._parent._stamp(*a, **k)",
-    "tests": [
-      "tests/test_session_digest.py"
-    ]
-  },
-  {
-    "name": "check_sources calls a store with nothing checkable OK (empty check reads clean)",
-    "file": "inspeximus/core.py",
-    "old": "            \"ok\": (not drifted and not orphaned and not unbound_capture\n                   and (bool(checked) or (_bindable == 0 and _n > 0))),",
-    "new": "            \"ok\": (not drifted and not orphaned and not unbound_capture),",
-    "tests": [
-      "tests/test_isolation_and_persistence.py"
-    ]
-  },
-  {
-    "name": "the source fingerprint goes into the caller-writable source dict instead of reserved meta",
-    "file": "inspeximus/core.py",
-    "old": "                    rec[\"meta\"][\"source_sha256\"] = _obs.lower() if _obs else _at_write",
-    "new": "                    rec[\"source\"][\"sha256\"] = _obs.lower() if _obs else _at_write",
-    "tests": [
-      "tests/test_isolation_and_persistence.py"
-    ]
-  },
-  {
-    "name": "check_sources reads the raw list, leaking other tenants into a tenant's report",
-    "file": "inspeximus/core.py",
-    "old": "        for r in self.items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
-    "new": "        for r in self._items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
-    "tests": [
-      "tests/test_isolation_and_persistence.py"
-    ]
-  }
+ {
+  "name": "route()'s default policy drifts from safe to trusting",
+  "file": "inspeximus/core.py",
+  "old": "policy: str = \"safe\"",
+  "new": "policy: str = \"trusting\"",
+  "tests": [
+   "tests/test_echo_policy_panel.py"
+  ]
+ },
+ {
+  "name": "the docstring number is edited away from the measurement",
+  "file": "inspeximus/core.py",
+  "old": "1.00 echo-blocked",
+  "new": "0.50 echo-blocked",
+  "tests": [
+   "tests/test_echo_policy_panel.py"
+  ]
+ },
+ {
+  "name": "the citation points back at the unrunnable probe",
+  "file": "inspeximus/core.py",
+  "old": "probes/echo_policy_panel.py",
+  "new": "probes/echo_attack_probe_v2.py",
+  "tests": [
+   "tests/test_echo_policy_panel.py"
+  ]
+ },
+ {
+  "name": "the echo guard stops blocking a replayed superseded value",
+  "file": "probes/echo_policy_panel.py",
+  "old": "m.echo_guard = True",
+  "new": "m.echo_guard = False",
+  "tests": [
+   "tests/test_echo_policy_panel.py"
+  ]
+ },
+ {
+  "name": "the content check stops seeing mismatches",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "mismatched = b.get(\"mismatched\") or []",
+  "new": "mismatched = []",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "the verdict claims content was checked when it was not",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "content_checked = store_items is not None",
+  "new": "content_checked = True",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "ordinary growth is escalated into a failure (false alarm)",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "limits.append(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
+  "new": "bad(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "the CLI stops printing the scope next to the verdict",
+  "file": "inspeximus/cli.py",
+  "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
+  "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "the headline CLI stops passing the store through",
+  "file": "inspeximus/cli.py",
+  "old": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,\n                            store_items=items, store_receipts=receipts,",
+  "new": "res = verify_bundle(bundle, witnesses=wl, threshold=a.threshold,\n                            store_receipts=receipts,",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "a mistyped store path is created instead of refused (shared guard)",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "    if not os.path.exists(path):\n        return None\n    return list(Inspeximus(path=path, receipts=True).items)",
+  "new": "    if False:\n        return None\n    return list(Inspeximus(path=path, receipts=True).items)",
+  "tests": [
+   "tests/test_docs_examples_are_runnable.py"
+  ]
+ },
+ {
+  "name": "the headline CLI stops printing the scope",
+  "file": "inspeximus/cli.py",
+  "old": "            for lim in res.get(\"limits\") or []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
+  "new": "            for lim in []:\n                print(f\"  NOTE {lim}\")\n            s = res[\"summary\"]",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "torch creeps back to module level (mechanism arm dies)",
+  "file": "probes/agentpoison_influence_gate.py",
+  "old": "import json\nimport os\nimport random\nimport sys",
+  "new": "import json\nimport os\nimport random\nimport sys\nimport torch",
+  "tests": [
+   "tests/test_influence_gate_probes.py"
+  ]
+ },
+ {
+  "name": "the influence gate stops filtering uncorroborated memory",
+  "file": "probes/agentpoison_influence_gate.py",
+  "old": "        return [h for h in hits if corroborated(by_id[h[\"id\"]], by_id)]",
+  "new": "        return list(hits)",
+  "tests": [
+   "tests/test_influence_gate_probes.py"
+  ]
+ },
+ {
+  "name": "the dense arm becomes the default again",
+  "file": "probes/agentpoison_influence_gate.py",
+  "old": "    want_dense = \"--dense\" in argv",
+  "new": "    want_dense = _have_torch()",
+  "tests": [
+   "tests/test_influence_gate_probes.py"
+  ]
+ },
+ {
+  "name": "the hashing embedder stops being normalised",
+  "file": "probes/agentpoison_influence_gate.py",
+  "old": "    return [v / norm for v in vec] if norm else vec",
+  "new": "    return vec",
+  "tests": [
+   "tests/test_influence_gate_probes.py"
+  ]
+ },
+ {
+  "name": "the census stops seeing module-level guards",
+  "file": "tools/skip_census.py",
+  "old": "        for c in (n for n in ast.walk(node) if isinstance(n, ast.Call)):",
+  "new": "        for c in ():",
+  "tests": [
+   "tests/test_skip_census.py"
+  ]
+ },
+ {
+  "name": "the census counts by importing (environment-dependent again)",
+  "file": "tools/skip_census.py",
+  "old": "        absent = [d for d in deps if importlib.util.find_spec(d) is None]",
+  "new": "        absent = []",
+  "tests": [
+   "tests/test_skip_census.py"
+  ]
+ },
+ {
+  "name": "the integrations CI job is deleted",
+  "file": ".github/workflows/ci.yml",
+  "old": "  integrations:",
+  "new": "  integrations_disabled:",
+  "tests": [
+   "tests/test_skip_census.py"
+  ]
+ },
+ {
+  "name": "absence of a clash is reported as support again",
+  "file": "inspeximus/core.py",
+  "old": "            return _restates(text, rec_text or \"\")                          # True, or None for \"cannot tell\"",
+  "new": "            return True",
+  "tests": [
+   "tests/test_verify_claim_undecidable.py"
+  ]
+ },
+ {
+  "name": "the restatement test accepts any overlap",
+  "file": "inspeximus/core.py",
+  "old": "            return True if overlap >= 0.9 else None",
+  "new": "            return True",
+  "tests": [
+   "tests/test_verify_claim_undecidable.py"
+  ]
+ },
+ {
+  "name": "the undecidable case is folded back into 'supported'",
+  "file": "inspeximus/core.py",
+  "old": "            return _out(\"unverifiable\", undecidable.get(\"object\"),",
+  "new": "            return _out(\"supported\", undecidable.get(\"object\"),",
+  "tests": [
+   "tests/test_verify_claim_undecidable.py"
+  ]
+ },
+ {
+  "name": "the keyed path stops distinguishing cannot-tell",
+  "file": "inspeximus/core.py",
+  "old": "            if m is None:\n                # Neither side carries a value, and the claim is not a restatement. The honest answer is\n                # that this store cannot tell -- with the record attached so the caller can judge.",
+  "new": "            if False:\n                # disabled",
+  "tests": [
+   "tests/test_verify_claim_undecidable.py"
+  ]
+ },
+ {
+  "name": "a pruned directory goes unreported again",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "        for d in pruned:",
+  "new": "        for d in []:",
+  "tests": [
+   "tests/test_erasure_residue.py"
+  ]
+ },
+ {
+  "name": "skip_dirs goes back to being unioned (caller cannot opt out)",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)",
+  "new": "    skip = set(skip_dirs or ()) | _SKIP_DIRS",
+  "tests": [
+   "tests/test_erasure_residue.py"
+  ]
+ },
+ {
+  "name": "a nonexistent root returns clean again",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "    if not os.path.isdir(root):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_erasure_residue.py"
+  ]
+ },
+ {
+  "name": "zero comparisons pass again",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "    return {\"ok\": bool(compared) and not mismatched, \"checked\": compared, \"receipted\": len(first),",
+  "new": "    return {\"ok\": not mismatched, \"checked\": compared, \"receipted\": len(first),",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "'checked' counts receipts instead of comparisons",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "        compared += 1",
+  "new": "        compared += 0",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "the orphan truncation stops announcing itself",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "        if len(orph) > 5:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_verify_bundle_content_scope.py"
+  ]
+ },
+ {
+  "name": "unreceipted records go uncounted again",
+  "file": "inspeximus/core.py",
+  "old": "            if cur.get(\"status\") == \"active\" and mid not in committed:\n                uncommitted.append(mid)",
+  "new": "            if False:\n                uncommitted.append(mid)",
+  "tests": [
+   "tests/test_uncounted_is_not_unchecked.py"
+  ]
+ },
+ {
+  "name": "verify_attribution stops failing closed on disabled receipts",
+  "file": "inspeximus/core.py",
+  "old": "        if not self.receipts_enabled and self.items:\n            # The sibling one call site over",
+  "new": "        if False:\n            # The sibling one call site over",
+  "tests": [
+   "tests/test_uncounted_is_not_unchecked.py"
+  ]
+ },
+ {
+  "name": "coverage goes back to comparing two integers",
+  "file": "inspeximus/compliance.py",
+  "old": "    if require_receipts and n_receipts and uncovered:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_uncounted_is_not_unchecked.py"
+  ]
+ },
+ {
+  "name": "autogen clear() unscopes again (erases the whole store)",
+  "file": "inspeximus/integrations/autogen.py",
+  "old": "               if r.get(\"status\") == \"active\" and (\n                   self._tag in (r.get(\"tags\") or [])\n                   or (self._source and (r.get(\"source\") or {}).get(\"doc\") == self._source))]",
+  "new": "               if r.get(\"status\") == \"active\"]",
+  "tests": [
+   "tests/test_uncounted_is_not_unchecked.py"
+  ]
+ },
+ {
+  "name": "the served value leaves the commitment again",
+  "file": "inspeximus/core.py",
+  "old": "                \"value_sha256\": _sha256_hex(_canon({\"object\": rec.get(\"object\")})),",
+  "new": "                \"value_sha256\": \"constant\",",
+  "tests": [
+   "tests/test_value_is_committed.py"
+  ]
+ },
+ {
+  "name": "verify_writes stops comparing the value",
+  "file": "inspeximus/core.py",
+  "old": "                              for k in (\"immutable_sha256\", \"mtype\", \"value_sha256\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
+  "new": "                              for k in (\"immutable_sha256\", \"mtype\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
+  "tests": [
+   "tests/test_value_is_committed.py"
+  ]
+ },
+ {
+  "name": "the audit bundle stops binding the value",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "        for field in (\"immutable_sha256\", \"content_sha256\", \"value_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
+  "new": "        for field in (\"immutable_sha256\", \"content_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
+  "tests": [
+   "tests/test_value_is_committed.py"
+  ]
+ },
+ {
+  "name": "legacy receipts are silently left uncovered",
+  "file": "inspeximus/core.py",
+  "old": "        if value_strict:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_value_is_committed.py"
+  ]
+ },
+ {
+  "name": "a pre-1.82 receipt raises a false alarm on honest data",
+  "file": "inspeximus/core.py",
+  "old": "                              if k not in forgiven and k in rc)",
+  "new": "                              if k not in forgiven)",
+  "tests": [
+   "tests/test_value_is_committed.py"
+  ]
+ },
+ {
+  "name": "recommit stops appending a receipt",
+  "file": "inspeximus/core.py",
+  "old": "            self._emit_write_receipt(rec)\n            done.append(rec[\"id\"])",
+  "new": "            done.append(rec[\"id\"])",
+  "tests": [
+   "tests/test_value_is_committed.py"
+  ]
+ },
+ {
+  "name": "the manifest header is unbound again",
+  "file": "inspeximus/deletion_manifest.py",
+  "old": "        prev = _header_hash(subject, request_id, basis, authorized_by, [t.name for t in self._targets])",
+  "new": "        prev = _GENESIS",
+  "tests": [
+   "tests/test_deletion_manifest_header.py"
+  ]
+ },
+ {
+  "name": "verify stops checking the header seed",
+  "file": "inspeximus/deletion_manifest.py",
+  "old": "        if first_prev == _GENESIS and first_prev != header:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_deletion_manifest_header.py"
+  ]
+ },
+ {
+  "name": "the legacy escape hatch stops opening",
+  "file": "inspeximus/deletion_manifest.py",
+  "old": "        return (len(problems) == 0, problems + notes)",
+  "new": "        return (len(problems + notes) == 0, problems + notes)",
+  "tests": [
+   "tests/test_deletion_manifest_header.py"
+  ]
+ },
+ {
+  "name": "a pinned key is ignored when verifying signatures",
+  "file": "inspeximus/deletion_manifest.py",
+  "old": "                if expected_pubkey is not None and e.get(\"pubkey\") != expected_pubkey:",
+  "new": "                if False:",
+  "tests": [
+   "tests/test_deletion_manifest_header.py"
+  ]
+ },
+ {
+  "name": "the header hash drops the subject",
+  "file": "inspeximus/deletion_manifest.py",
+  "old": "    return _sha256({\"subject\": subject, \"request_id\": request_id, \"basis\": basis,",
+  "new": "    return _sha256({\"subject\": None, \"request_id\": request_id, \"basis\": basis,",
+  "tests": [
+   "tests/test_deletion_manifest_header.py"
+  ]
+ },
+ {
+  "name": "zero-deps goes back to reading only installed METADATA",
+  "file": "claims_audit.py",
+  "old": "        pyproject = root.parent / \"pyproject.toml\"",
+  "new": "        pyproject = root.parent / \"nope.toml\"",
+  "tests": [
+   "tests/test_audit_scripts_have_teeth.py"
+  ]
+ },
+ {
+  "name": "a skip stops counting against the gate",
+  "file": "claims_audit.py",
+  "old": "    return ok is None and not auditing_history",
+  "new": "    return False",
+  "tests": [
+   "tests/test_audit_scripts_have_teeth.py"
+  ]
+ },
+ {
+  "name": "the secret sweep can be empty again",
+  "file": "governance_audit.py",
+  "old": "    if not declared:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_scripts_have_teeth.py"
+  ]
+ },
+ {
+  "name": "a declared secret need not appear in the scenario",
+  "file": "governance_audit.py",
+  "old": "    if absent:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_scripts_have_teeth.py"
+  ]
+ },
+ {
+  "name": "the audit downloads a package that does not exist",
+  "file": "governance_audit.py",
+  "old": "                        f\"inspeximus=={a.version}\" if a.version else \"inspeximus\",",
+  "new": "                        f\"agora-inspeximus=={a.version}\" if a.version else \"agora-inspeximus\",",
+  "tests": [
+   "tests/test_audit_scripts_have_teeth.py"
+  ]
+ },
+ {
+  "name": "remember_decision commits the TOPIC as the value again",
+  "file": "inspeximus/core.py",
+  "old": "                             mtype=\"procedural\", key=key, object=(decision.strip() or None),",
+  "new": "                             mtype=\"procedural\", key=key, object=(topic.strip() if topic else None),",
+  "tests": [
+   "tests/test_remember_decision_supersedes.py"
+  ]
+ },
+ {
+  "name": "the seeded probe drops back to five seeds",
+  "file": "probes/identity_gate_supersession_probe.py",
+  "old": "SEEDS = 25",
+  "new": "SEEDS = 5",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the probe stops printing n with the range",
+  "file": "probes/identity_gate_supersession_probe.py",
+  "old": "          f\"sd {sd_u:.3f} +/-{rel*100:.0f}%  range {min(ung):.3f}-{max(ung):.3f} over seeds={SEEDS}  \"",
+  "new": "          f\"sd {sd_u:.3f} +/-{rel*100:.0f}%  range {min(ung):.3f}-{max(ung):.3f}  \"",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the manipulation check stops noticing a count collapse",
+  "file": "tools/probe_gate.py",
+  "old": "        if len(before) != len(after):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the spread floor is removed",
+  "file": "tools/probe_gate.py",
+  "old": "        ok = len(vals) >= min_trials",
+  "new": "        ok = True",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the harness stops restoring what it dirtied",
+  "file": "tools/mutation_check.py",
+  "old": "        if not _ARTIFACT.match(path.replace(\"\\\\\", \"/\")):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_mutation_check_harness.py"
+  ]
+ },
+ {
+  "name": "examples run in the repo again (residue returns)",
+  "file": "tests/test_examples_run.py",
+  "old": "        cwd=tempfile.mkdtemp(prefix=\"inspeximus_example_\"), capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=180,",
+  "new": "        cwd=ROOT, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=180,",
+  "tests": [
+   "tests/test_examples_run.py"
+  ]
+ },
+ {
+  "name": "the recency tie-break is removed (crowded-store target is lost)",
+  "file": "inspeximus/core.py",
+  "old": "        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get(\"id\"), -1)))",
+  "new": "        scored.sort(key=lambda x: -x[0])",
+  "tests": [
+   "tests/test_recall_is_deterministic.py"
+  ]
+ },
+ {
+  "name": "BM25 sums its terms in set order again (float noise returns)",
+  "file": "inspeximus/core.py",
+  "old": "        _qterms = sorted(qtok)",
+  "new": "        _qterms = list(qtok)",
+  "tests": [
+   "tests/test_recall_is_deterministic.py"
+  ]
+ },
+ {
+  "name": "decay age goes back to sub-second resolution",
+  "file": "inspeximus/core.py",
+  "old": "        age = float(int(max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))))",
+  "new": "        age = max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))",
+  "tests": [
+   "tests/test_recall_is_deterministic.py"
+  ]
+ },
+ {
+  "name": "a refused revert exits 0 again",
+  "file": "inspeximus/cli.py",
+  "old": "        if not res.get(\"ok\"):\n            reason = res.get(\"reason\") or \"refused\"",
+  "new": "        if False:\n            reason = res.get(\"reason\") or \"refused\"",
+  "tests": [
+   "tests/test_cli_exit_codes.py"
+  ]
+ },
+ {
+  "name": "memory_report samples the oldest 400 again",
+  "file": "inspeximus/core.py",
+  "old": "        sample = act if len(act) <= 400 else _random.Random(0).sample(act, 400)",
+  "new": "        sample = act if len(act) <= 400 else act[:400]",
+  "tests": [
+   "tests/test_memory_report_sampling.py"
+  ]
+ },
+ {
+  "name": "the sample stops being seeded (evidence moves between runs)",
+  "file": "inspeximus/core.py",
+  "old": "else _random.Random(0).sample(act, 400)",
+  "new": "else _random.sample(act, 400)",
+  "tests": [
+   "tests/test_memory_report_sampling.py"
+  ]
+ },
+ {
+  "name": "the harness restores source files again (eats concurrent work)",
+  "file": "tools/mutation_check.py",
+  "old": "        if not _ARTIFACT.match(path.replace(\"\\\\\", \"/\")):\n            continue",
+  "new": "        if False:\n            continue",
+  "tests": [
+   "tests/test_mutation_check_harness.py"
+  ]
+ },
+ {
+  "name": "the shared store guard stops refusing a missing path",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "    if not os.path.exists(path):\n        return None\n    return list(getattr(Inspeximus(path=path, receipts=True), \"_receipts\", None) or [])",
+  "new": "    if False:\n        return None\n    return list(getattr(Inspeximus(path=path, receipts=True), \"_receipts\", None) or [])",
+  "tests": [
+   "tests/test_docs_examples_are_runnable.py"
+  ]
+ },
+ {
+  "name": "audit_bundle's CLI ignores the guard's refusal",
+  "file": "inspeximus/cli.py",
+  "old": "            receipts = load_store_receipts(a.store)\n            if items is None:",
+  "new": "            receipts = load_store_receipts(a.store)\n            if False:",
+  "tests": [
+   "tests/test_docs_examples_are_runnable.py"
+  ]
+ },
+ {
+  "name": "the README stops pointing at the claims registry",
+  "file": "README.md",
+  "old": "**Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**",
+  "new": "**Every number on this page traces to a runnable probe.**",
+  "tests": [
+   "tests/test_claims_coverage.py"
+  ]
+ },
+ {
+  "name": "the surface opener stops setting the echo-guard posture (the wedge returns)",
+  "file": "inspeximus/_surface.py",
+  "old": "    store.echo_guard = echo_guard_default()",
+  "new": "    store.echo_guard = False",
+  "tests": [
+   "tests/test_surface_parity.py"
+  ]
+ },
+ {
+  "name": "the surface default flips to OFF unless asked",
+  "file": "inspeximus/core.py",
+  "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
+  "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"0\") != \"0\"",
+  "tests": [
+   "tests/test_surface_parity.py",
+   "tests/test_echo_guard_posture.py"
+  ]
+ },
+ {
+  "name": "the surface stops keeping an existing receipt chain (a hole in the evidence)",
+  "file": "inspeximus/_surface.py",
+  "old": "    if not receipts and p and os.path.exists(str(p) + \".receipts.json\"):\n        receipts = True",
+  "new": "    if False:\n        receipts = True",
+  "tests": [
+   "tests/test_surface_parity.py"
+  ]
+ },
+ {
+  "name": "the surface resolves a path an adapter meant to keep in memory",
+  "file": "inspeximus/_surface.py",
+  "old": "    p = resolve_path(path) if resolve else path",
+  "new": "    p = resolve_path(path)",
+  "tests": [
+   "tests/test_surface_parity.py"
+  ]
+ },
+ {
+  "name": "an adapter goes back to constructing the store itself",
+  "file": "inspeximus/integrations/langchain.py",
+  "old": "        self.store = store if store is not None else open_store(path, embed=embed, resolve=False)",
+  "new": "        self.store = store if store is not None else Inspeximus(path=path, embed=embed)",
+  "tests": [
+   "tests/test_surface_parity.py"
+  ]
+ },
+ {
+  "name": "the editor hook goes back to constructing the store itself",
+  "file": "inspeximus/claude_code.py",
+  "old": "    return open_store(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
+  "new": "    return Inspeximus(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
+  "tests": [
+   "tests/test_surface_parity.py"
+  ]
+ },
+ {
+  "name": "the MCP server goes back to constructing the store itself",
+  "file": "inspeximus/mcp_server.py",
+  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC",
+  "new": "_MEM = Inspeximus(_PATH, embed=_EMB_DOC",
+  "tests": [
+   "tests/test_surface_parity.py"
+  ]
+ },
+ {
+  "name": "MCP verify_audit_bundle drops store_items again (content never compared)",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold, store_items=items,\n                         store_receipts=receipts, require_signed=require_signed,\n                         expected_pubkey=(expected_pubkey or None))",
+  "new": "    return verify_bundle(bundle, witnesses=witnesses, threshold=threshold,\n                         store_receipts=receipts, require_signed=require_signed,\n                         expected_pubkey=(expected_pubkey or None))",
+  "tests": [
+   "tests/test_mcp_verification_gaps.py"
+  ]
+ },
+ {
+  "name": "MCP verify_audit_bundle downgrades a missing store_path instead of refusing",
+  "file": "inspeximus/mcp_server.py",
+  "old": "        if items is None:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_mcp_verification_gaps.py"
+  ]
+ },
+ {
+  "name": "a skipped mutation counts as a pass again (unevaluated reads as clean)",
+  "file": "tools/mutation_check.py",
+  "old": "    return 1 if (survived or skipped) else 0",
+  "new": "    return 1 if survived else 0",
+  "tests": [
+   "tests/test_mutation_check_harness.py"
+  ]
+ },
+ {
+  "name": "the keep-budget goes back to slicing a population an earlier pass already retired",
+  "file": "inspeximus/core.py",
+  "old": "        active = [r for r in active if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if keep is not None and len(active) > keep:",
+  "new": "        if keep is not None and len(active) > keep:",
+  "tests": [
+   "tests/test_consolidate_keep_budget.py"
+  ]
+ },
+ {
+  "name": "the keep-budget demotes guard bookkeeping again, silencing check_code",
+  "file": "inspeximus/core.py",
+  "old": "        active = [r for r in active if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if keep is not None and len(active) > keep:",
+  "new": "        active = [r for r in active if r.get(\"status\") == \"active\"]\n        if keep is not None and len(active) > keep:",
+  "tests": [
+   "tests/test_guard_keyspace_survives_housekeeping.py"
+  ]
+ },
+ {
+  "name": "capacity eviction hard-deletes deprecation records again",
+  "file": "inspeximus/core.py",
+  "old": "        active = [r for r in self.items if r.get(\"status\") == \"active\" and not _is_guard_record(r)]\n        if len(active) <= self.capacity:",
+  "new": "        active = [r for r in self.items if r.get(\"status\") == \"active\"]\n        if len(active) <= self.capacity:",
+  "tests": [
+   "tests/test_guard_keyspace_survives_housekeeping.py"
+  ]
+ },
+ {
+  "name": "the guard keyspace registry goes empty, so nothing is carved out",
+  "file": "inspeximus/core.py",
+  "old": "_GUARD_KEYSPACES = (_CODE_GUARD_PREFIX, _ACL_PREFIX)",
+  "new": "_GUARD_KEYSPACES = ()",
+  "tests": [
+   "tests/test_guard_keyspace_survives_housekeeping.py"
+  ]
+ },
+ {
+  "name": "check_code stops matching the tail, missing qualified refactor records again",
+  "file": "inspeximus/code_guard.py",
+  "old": "    if tail and subject and re.search(_ident(subject), code):\n        return _ident(tail)",
+  "new": "    if False:\n        return _ident(tail)",
+  "tests": [
+   "tests/test_code_guard_qualified_symbols.py"
+  ]
+ },
+ {
+  "name": "check_code matches the tail WITHOUT the subject check, flagging every unrelated object",
+  "file": "inspeximus/code_guard.py",
+  "old": "    if tail and subject and re.search(_ident(subject), code):\n        return _ident(tail)",
+  "new": "    if tail:\n        return _ident(tail)",
+  "tests": [
+   "tests/test_code_guard_qualified_symbols.py"
+  ]
+ },
+ {
+  "name": "consolidate reports the keep REQUEST as if it were the survivors again",
+  "file": "inspeximus/core.py",
+  "old": "\"staled\": staled, \"kept\": _live, \"keep_requested\": keep,",
+  "new": "\"staled\": staled, \"kept\": keep, \"keep_requested\": keep,",
+  "tests": [
+   "tests/test_consolidate_keep_budget.py"
+  ]
+ },
+ {
+  "name": "an unsigned certificate claims its signatures are valid again",
+  "file": "inspeximus/core.py",
+  "old": "    signed = [t for t in toms if t.get(\"sig\")]",
+  "new": "    signed = list(toms)",
+  "tests": [
+   "tests/test_certificate_scope_and_signing.py"
+  ]
+ },
+ {
+  "name": "the certificate's scope statement goes back to being unchecked free text",
+  "file": "inspeximus/core.py",
+  "old": "    if _scope_txt is not None and _scope_txt != _CERT_SCOPE:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_certificate_scope_and_signing.py"
+  ]
+ },
+ {
+  "name": "publishing stops depending on the test suite (a red suite reaches PyPI again)",
+  "file": ".github/workflows/release.yml",
+  "old": "    needs: [audit, tests]",
+  "new": "    needs: audit",
+  "tests": [
+   "tests/test_release_cannot_publish_untested.py"
+  ]
+ },
+ {
+  "name": "the release pinner goes back to leaving the plugin manifests behind",
+  "file": "packages/_pin_server_json.py",
+  "old": "    p = ROOT / \".claude-plugin\" / \"plugin.json\"\n    if p.exists():",
+  "new": "    p = ROOT / \".claude-plugin\" / \"plugin.json\"\n    if False:",
+  "tests": [
+   "tests/test_manifest_versions.py"
+  ]
+ },
+ {
+  "name": "the pinner overwrites the marketplace SCHEMA version with the package version",
+  "file": "packages/_pin_server_json.py",
+  "old": "        for entry in d.get(\"plugins\", []):        # NOT d[\"version\"] -- that is the schema's own",
+  "new": "        d[\"version\"] = version\n        for entry in d.get(\"plugins\", []):",
+  "tests": [
+   "tests/test_manifest_versions.py"
+  ]
+ },
+ {
+  "name": "a mutant's falsified receipt is left in the tree for the rest of the run",
+  "file": "tools/mutation_check.py",
+  "old": "            for _p in _restore(_dirty_tracked() - dirty_before):\n                restored_all.add(_p)",
+  "new": "            pass",
+  "tests": [
+   "tests/test_mutation_check_harness.py"
+  ]
+ },
+ {
+  "name": "the receipt allowlist goes back to a suffix a fifth of the probes ignore",
+  "file": "tools/mutation_check.py",
+  "old": "_ARTIFACT = re.compile(r\"^probes/[\\w.-]+\\.json$\")",
+  "new": "_ARTIFACT = re.compile(r\"^probes/[\\w.-]+_result\\.json$\")",
+  "tests": [
+   "tests/test_mutation_check_harness.py"
+  ]
+ },
+ {
+  "name": "MCP compliance_check drops prior_anchor again (not_append_only cannot fire)",
+  "file": "inspeximus/mcp_server.py",
+  "old": "               prior_anchor=prior_anchor)",
+  "new": "               prior_anchor=None)",
+  "tests": [
+   "tests/test_mcp_verification_gaps.py"
+  ]
+ },
+ {
+  "name": "subject matching goes back to the coarse host-only key (ghost DSAR deletes a stranger)",
+  "file": "inspeximus/core.py",
+  "old": "        ids = self._narrow_to_subject(subject, ids)",
+  "new": "        ids = list(ids)",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "narrowing drops the derived-lineage cascade again (erasure becomes INCOMPLETE)",
+  "file": "inspeximus/core.py",
+  "old": "        keep |= inherited\n        return [rid for rid in ids if rid in keep]",
+  "new": "        return [rid for rid in ids if rid in roots]",
+  "tests": [
+   "tests/test_erasure_preview.py",
+   "tests/test_erasure_audit.py"
+  ]
+ },
+ {
+  "name": "forget_pii re-matches on the coarse candidate set, bypassing the resolver",
+  "file": "inspeximus/core.py",
+  "old": "            if sel_ids is not None and r[\"id\"] not in sel_ids:\n                continue",
+  "new": "            if False:\n                continue",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "erasure coverage reports complete without reading the manifest",
+  "file": "inspeximus/core.py",
+  "old": "        cov[\"complete\"] = bool(manifest.get(\"complete\"))",
+  "new": "        cov[\"complete\"] = True",
+  "tests": [
+   "tests/test_erasure_coverage.py"
+  ]
+ },
+ {
+  "name": "the write verdict is never reset, so a stale one is reported as this call's",
+  "file": "inspeximus/core.py",
+  "old": "        self.last_write = {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": False, \"policy\": None}",
+  "new": "        self.last_write = getattr(self, \"last_write\", None) or {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": False, \"policy\": None}",
+  "tests": [
+   "tests/test_write_verdict.py"
+  ]
+ },
+ {
+  "name": "every write reports blocked, so the verdict carries no information",
+  "file": "inspeximus/core.py",
+  "old": "        self.last_write = {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": False, \"policy\": None}",
+  "new": "        self.last_write = {\"id\": mid, \"key\": key, \"status\": \"active\", \"blocked\": True, \"policy\": None}",
+  "tests": [
+   "tests/test_write_verdict.py"
+  ]
+ },
+ {
+  "name": "the echo-guard resolver ignores an explicit argument in favour of the environment",
+  "file": "inspeximus/core.py",
+  "old": "    if explicit is not None:\n        return bool(explicit)\n    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
+  "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
+  "tests": [
+   "tests/test_echo_guard_posture.py"
+  ]
+ },
+ {
+  "name": "the echo-guard resolver ignores the environment, reviving the dead off-switch",
+  "file": "inspeximus/core.py",
+  "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
+  "new": "    return True",
+  "tests": [
+   "tests/test_echo_guard_posture.py"
+  ]
+ },
+ {
+  "name": "the overview counts ordinary supersessions as writes retired on arrival",
+  "file": "inspeximus/core.py",
+  "old": "        retired = {p: n for p, n in by_policy.items() if p in (\"echo_guard\", \"objectless_guard\")}",
+  "new": "        retired = dict(by_policy)",
+  "tests": [
+   "tests/test_report_shows_retired_writes.py"
+  ]
+ },
+ {
+  "name": "the overview always reports nothing was retired",
+  "file": "inspeximus/core.py",
+  "old": "        retired = {p: n for p, n in by_policy.items() if p in (\"echo_guard\", \"objectless_guard\")}",
+  "new": "        retired = {}",
+  "tests": [
+   "tests/test_report_shows_retired_writes.py"
+  ]
+ },
+ {
+  "name": "the erasure audit selects by the coarse key again",
+  "file": "inspeximus/core.py",
+  "old": "            for rid in self._narrow_to_subject(subject, coarse):",
+  "new": "            for rid in coarse:",
+  "tests": [
+   "tests/test_erasure_audit_subject.py"
+  ]
+ },
+ {
+  "name": "the erasure audit narrows to nothing, so it can never report residue",
+  "file": "inspeximus/core.py",
+  "old": "            for rid in self._narrow_to_subject(subject, coarse):",
+  "new": "            for rid in []:",
+  "tests": [
+   "tests/test_erasure_audit_subject.py"
+  ]
+ },
+ {
+  "name": "the erasure preview claims completeness with nothing contacted",
+  "file": "inspeximus/core.py",
+  "old": "               \"coverage\": dict(Inspeximus._erasure_coverage(\n                   None, len(getattr(self, \"_erasure_targets\", []))), preview=True),",
+  "new": "               \"coverage\": {\"complete\": True, \"preview\": True, \"unregistered\": False, \"external_targets\": 0, \"note\": \"\"},",
+  "tests": [
+   "tests/test_erasure_audit_subject.py"
+  ]
+ },
+ {
+  "name": "the erasure preview is not labelled as a rehearsal",
+  "file": "inspeximus/core.py",
+  "old": "                   None, len(getattr(self, \"_erasure_targets\", []))), preview=True),",
+  "new": "                   None, len(getattr(self, \"_erasure_targets\", []))), preview=False),",
+  "tests": [
+   "tests/test_erasure_audit_subject.py"
+  ]
+ },
+ {
+  "name": "confirmed counts the store's own attestation again",
+  "file": "inspeximus/core.py",
+  "old": "        ext = [e for e in entries if e.get(\"target\") != \"inspeximus-store\"]",
+  "new": "        ext = list(entries)",
+  "tests": [
+   "tests/test_coverage_confirmed_counts_externals.py"
+  ]
+ },
+ {
+  "name": "confirmed can never be non-zero, so the field is not a measurement",
+  "file": "inspeximus/core.py",
+  "old": "        cov[\"confirmed\"] = sum(1 for e in ext if e.get(\"verified_absent\") is True)",
+  "new": "        cov[\"confirmed\"] = 0",
+  "tests": [
+   "tests/test_coverage_confirmed_counts_externals.py"
+  ]
+ },
+ {
+  "name": "a dissenting target is counted as a confirmation",
+  "file": "inspeximus/core.py",
+  "old": "        cov[\"confirmed\"] = sum(1 for e in ext if e.get(\"verified_absent\") is True)",
+  "new": "        cov[\"confirmed\"] = len(ext)",
+  "tests": [
+   "tests/test_coverage_confirmed_counts_externals.py"
+  ]
+ },
+ {
+  "name": "the store's own self-check is dropped from the report",
+  "file": "inspeximus/core.py",
+  "old": "        cov[\"store_self_check\"] = next(\n            (bool(e.get(\"verified_absent\")) for e in entries if e.get(\"target\") == \"inspeximus-store\"),\n            None)",
+  "new": "        cov[\"store_self_check\"] = None",
+  "tests": [
+   "tests/test_coverage_confirmed_counts_externals.py"
+  ]
+ },
+ {
+  "name": "the gate restores through a newline-translating writer",
+  "file": "tools/mutation_check.py",
+  "old": "    with io.open(path, \"w\", encoding=\"utf-8\", newline=\"\") as fh:\n        fh.write(text)",
+  "new": "    with io.open(path, \"w\", encoding=\"utf-8\") as fh:\n        fh.write(text)",
+  "tests": [
+   "tests/test_mutation_restore_is_byte_exact.py"
+  ]
+ },
+ {
+  "name": "the gate reads through a newline-translating reader",
+  "file": "tools/mutation_check.py",
+  "old": "    return io.open(path, encoding=\"utf-8\", newline=\"\").read()",
+  "new": "    return io.open(path, encoding=\"utf-8\").read()",
+  "tests": [
+   "tests/test_mutation_restore_is_byte_exact.py"
+  ]
+ },
+ {
+  "name": "the gate stops matching spec endings to the file",
+  "file": "tools/mutation_check.py",
+  "old": "    if \"\\r\\n\" in src and \"\\r\\n\" not in fragment:\n        return fragment.replace(\"\\n\", \"\\r\\n\")\n    return fragment",
+  "new": "    return fragment",
+  "tests": [
+   "tests/test_mutation_restore_is_byte_exact.py"
+  ]
+ },
+ {
+  "name": "the gate converts endings unconditionally, breaking LF files",
+  "file": "tools/mutation_check.py",
+  "old": "    if \"\\r\\n\" in src and \"\\r\\n\" not in fragment:\n        return fragment.replace(\"\\n\", \"\\r\\n\")\n    return fragment",
+  "new": "    return fragment.replace(\"\\n\", \"\\r\\n\")",
+  "tests": [
+   "tests/test_mutation_restore_is_byte_exact.py"
+  ]
+ },
+ {
+  "name": "the MCP server drops the source it was given",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                        source={\"doc\": source} if source else None,",
+  "new": "                        source=None,",
+  "tests": [
+   "tests/test_mcp_provenance_reach.py"
+  ]
+ },
+ {
+  "name": "the MCP server passes the source in a shape the resolver cannot read",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                        source={\"doc\": source} if source else None,",
+  "new": "                        source={\"name\": source} if source else None,",
+  "tests": [
+   "tests/test_mcp_provenance_reach.py"
+  ]
+ },
+ {
+  "name": "the MCP server invents a subject the caller never supplied",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                        source={\"doc\": source} if source else None,",
+  "new": "                        source={\"doc\": source or \"hr/bob\"},",
+  "tests": [
+   "tests/test_mcp_provenance_reach.py"
+  ]
+ },
+ {
+  "name": "the MCP server drops the declared lineage",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                        derived_from=derived_from or None,",
+  "new": "                        derived_from=None,",
+  "tests": [
+   "tests/test_mcp_provenance_reach.py"
+  ]
+ },
+ {
+  "name": "the write result drops the declared lineage it reports back",
+  "file": "inspeximus/mcp_server.py",
+  "old": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": list(derived_from or []),",
+  "new": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": [],",
+  "tests": [
+   "tests/test_mcp_provenance_reach.py"
+  ]
+ },
+ {
+  "name": "the CLI drops the declared lineage",
+  "file": "inspeximus/cli.py",
+  "old": "                         derived_from=a.derived_from or None)",
+  "new": "                         derived_from=None)",
+  "tests": [
+   "tests/test_cli_provenance.py"
+  ]
+ },
+ {
+  "name": "the decision path drops the source it was given",
+  "file": "inspeximus/core.py",
+  "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
+  "new": "                             source=None,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
+  "tests": [
+   "tests/test_write_paths_provenance_census.py"
+  ]
+ },
+ {
+  "name": "the decision path invents a subject the caller never supplied",
+  "file": "inspeximus/core.py",
+  "old": "                             source={\"doc\": source} if isinstance(source, str) and source else source,\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
+  "new": "                             source={\"doc\": source or \"hr/bob\"},\n                             derived_from=derived_from or None,\n                             user_id=user_id, agent_id=agent_id, session_id=session_id)",
+  "tests": [
+   "tests/test_write_paths_provenance_census.py"
+  ]
+ },
+ {
+  "name": "the decision result always claims the record is attributable",
+  "file": "inspeximus/mcp_server.py",
+  "old": "            \"attributable\": bool(source) or bool(derived_from)}\n\n\n@mcp.tool()\ndef revert",
+  "new": "            \"attributable\": True}\n\n\n@mcp.tool()\ndef revert",
+  "tests": [
+   "tests/test_write_paths_provenance_census.py"
+  ]
+ },
+ {
+  "name": "the CLI decision path drops the source it was given",
+  "file": "inspeximus/cli.py",
+  "old": "                                  source=a.source or None, derived_from=a.derived_from or None)",
+  "new": "                                  source=None, derived_from=None)",
+  "tests": [
+   "tests/test_cli_provenance.py"
+  ]
+ },
+ {
+  "name": "the CLI decision path invents a subject the caller never supplied",
+  "file": "inspeximus/cli.py",
+  "old": "                                  source=a.source or None, derived_from=a.derived_from or None)",
+  "new": "                                  source=a.source or \"hr/bob\", derived_from=a.derived_from or None)",
+  "tests": [
+   "tests/test_cli_provenance.py"
+  ]
+ },
+ {
+  "name": "the census reads a guard out of prose again",
+  "file": "tools/skip_census.py",
+  "old": "            if name != \"importorskip\" or not c.args:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_skip_census.py"
+  ]
+ },
+ {
+  "name": "the census stops detecting real guards",
+  "file": "tools/skip_census.py",
+  "old": "                deps.append(arg.value)\n                found_guard = True",
+  "new": "                found_guard = True",
+  "tests": [
+   "tests/test_skip_census.py"
+  ]
+ },
+ {
+  "name": "the erasure stops checking its own store for residue",
+  "file": "inspeximus/core.py",
+  "old": "        out[\"residue_in_store\"] = scan_records(self.items, _residue_values)",
+  "new": "        out[\"residue_in_store\"] = {\"ok\": True, \"findings\": [], \"problems\": [], \"checked_records\": 0, \"searched_values\": 0, \"method\": \"\"}",
+  "tests": [
+   "tests/test_instore_residue.py"
+  ]
+ },
+ {
+  "name": "the residue report echoes the erased value instead of a fingerprint",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": _fingerprint(v)})",
+  "new": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": v})",
+  "tests": [
+   "tests/test_instore_residue.py"
+  ]
+ },
+ {
+  "name": "an empty in-store search reports clean",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "        return {\"ok\": False, \"checked_records\": len(recs), \"searched_values\": 0, \"findings\": [],",
+  "new": "        return {\"ok\": True, \"checked_records\": len(recs), \"searched_values\": 0, \"findings\": [],",
+  "tests": [
+   "tests/test_instore_residue.py"
+  ]
+ },
+ {
+  "name": "short values are searched, so residue matches everywhere",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "    vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 4]",
+  "new": "    vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 1]",
+  "tests": [
+   "tests/test_instore_residue.py"
+  ]
+ },
+ {
+  "name": "a bounded in-store scan does not say it was bounded",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "            problems.append(f\"stopped after {checked} record(s): the comparison budget was reached, so \"\n                            f\"{len(recs) - checked} record(s) were NOT examined\")",
+  "new": "            pass",
+  "tests": [
+   "tests/test_instore_residue.py"
+  ]
+ },
+ {
+  "name": "forget_subject stops carrying the residue report",
+  "file": "inspeximus/core.py",
+  "old": "               \"residue_in_store\": res.get(\"residue_in_store\")}\n        if targets:",
+  "new": "               \"residue_in_store\": None}\n        if targets:",
+  "tests": [
+   "tests/test_instore_residue.py"
+  ]
+ },
+ {
+  "name": "forget_pii stops carrying the residue report",
+  "file": "inspeximus/core.py",
+  "old": "                \"coverage\": res.get(\"coverage\", cov),\n                \"unswept_matches\": unswept_block,\n                \"residue_in_store\": res.get(\"residue_in_store\")}",
+  "new": "                \"coverage\": res.get(\"coverage\", cov),\n                \"unswept_matches\": unswept_block,\n                \"residue_in_store\": None}",
+  "tests": [
+   "tests/test_instore_residue.py"
+  ]
+ },
+ {
+  "name": "route stops declaring a parent at every write site",
+  "file": "inspeximus/core.py",
+  "old": "            cur_rec = self._current_active(kk) if kk else None\n            return [cur_rec[\"id\"]] if cur_rec else None",
+  "new": "            return None",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "route declares a parent even when there is no key",
+  "file": "inspeximus/core.py",
+  "old": "            cur_rec = self._current_active(kk) if kk else None",
+  "new": "            cur_rec = self._current_active(kk) if kk else (self.items[0] if self.items else None)",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "route drops the source at every write site",
+  "file": "inspeximus/core.py",
+  "old": "        _src = {\"doc\": source} if isinstance(source, str) and source else source",
+  "new": "        _src = None",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "the echo branch writes without provenance again",
+  "file": "inspeximus/core.py",
+  "old": "            rid = self.remember(text, key=key, object=object,      # guard retires it, judge-logged\n                                source=_src, derived_from=_parent())",
+  "new": "            rid = self.remember(text, key=key, object=object)",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "the keyless echo branch writes without provenance again",
+  "file": "inspeximus/core.py",
+  "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+  "new": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"})",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "the keyless echo branch gains a key and can clobber",
+  "file": "inspeximus/core.py",
+  "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+  "new": "            rid = self.remember(text, key=key, object=object, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "_parent ignores the resolved key and reads the parameter",
+  "file": "inspeximus/core.py",
+  "old": "            kk = k if k is not None else key",
+  "new": "            kk = key",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "the revert-restore branch stops declaring a parent",
+  "file": "inspeximus/core.py",
+  "old": "                                    capability=capability, meta={\"routed\": \"revert_named\"},\n                                    source=_src, derived_from=_parent(k))",
+  "new": "                                    capability=capability, meta={\"routed\": \"revert_named\"})",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "the revert-to-original branch stops declaring a parent",
+  "file": "inspeximus/core.py",
+  "old": "                                    capability=capability, meta={\"routed\": \"revert_original\"},\n                                    source=_src, derived_from=_parent(k))",
+  "new": "                                    capability=capability, meta={\"routed\": \"revert_original\"})",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "the keyless delete branch drops the caller's source",
+  "file": "inspeximus/core.py",
+  "old": "                rid = self.remember(text, source=_src)\n                return {\"intent\": \"delete\"",
+  "new": "                rid = self.remember(text)\n                return {\"intent\": \"delete\"",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "the keyless revert branch drops the caller's source",
+  "file": "inspeximus/core.py",
+  "old": "                rid = self.remember(text, source=_src)      # same as the delete branch",
+  "new": "                rid = self.remember(text)      # same as the delete branch",
+  "tests": [
+   "tests/test_route_correction_lineage.py"
+  ]
+ },
+ {
+  "name": "distill swallows a failed write again",
+  "file": "inspeximus/core.py",
+  "old": "                errors.append(f\"{type(e).__name__}: {str(e)[:120]}\")",
+  "new": "                pass",
+  "tests": [
+   "tests/test_distill_reports_failures.py"
+  ]
+ },
+ {
+  "name": "distill reports an error block on a clean run",
+  "file": "inspeximus/core.py",
+  "old": "        if errors:\n            out[\"errors\"] = errors\n            out[\"failed\"] = len(errors)",
+  "new": "        out[\"errors\"] = errors\n        out[\"failed\"] = len(errors)",
+  "tests": [
+   "tests/test_distill_reports_failures.py"
+  ]
+ },
+ {
+  "name": "distill counts every failure as one",
+  "file": "inspeximus/core.py",
+  "old": "            out[\"failed\"] = len(errors)",
+  "new": "            out[\"failed\"] = 1",
+  "tests": [
+   "tests/test_distill_reports_failures.py"
+  ]
+ },
+ {
+  "name": "the CLI distill passes a bare string source",
+  "file": "inspeximus/cli.py",
+  "old": "                                     source={\"doc\": a.source} if a.source else None)",
+  "new": "                                     source=a.source or None)",
+  "tests": [
+   "tests/test_distill_reports_failures.py",
+   "tests/test_cli_provenance.py"
+  ]
+ },
+ {
+  "name": "the routed delete drops the erasure fields again",
+  "file": "inspeximus/core.py",
+  "old": "                    \"forgotten\": res.get(\"forgotten\", 0),\n                    \"coverage\": res.get(\"coverage\"),\n                    \"residue_in_store\": res.get(\"residue_in_store\")}",
+  "new": "                    \"forgotten\": res.get(\"forgotten\", 0)}",
+  "tests": [
+   "tests/test_route_delete_answers_like_an_erasure.py"
+  ]
+ },
+ {
+  "name": "the empty forget early return loses coverage again",
+  "file": "inspeximus/core.py",
+  "old": "            return {\"forgotten\": 0, \"ids\": [], \"scrubbed_links\": 0, \"tombstones\": 0,\n                    \"coverage\": self._erasure_coverage(None, len(getattr(self, \"_erasure_targets\", []))),",
+  "new": "            return {\"forgotten\": 0, \"ids\": [], \"scrubbed_links\": 0, \"tombstones\": 0,",
+  "tests": [
+   "tests/test_route_delete_answers_like_an_erasure.py"
+  ]
+ },
+ {
+  "name": "the spread is reported without the c4 bias correction",
+  "file": "tools/probe_gate.py",
+  "old": "        sd_hat = (statistics.stdev(vals) / c4(n)) if n >= 2 else 0.0",
+  "new": "        sd_hat = (statistics.stdev(vals)) if n >= 2 else 0.0",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the corrected SD stops stating its own uncertainty",
+  "file": "tools/probe_gate.py",
+  "old": "    rel = math.sqrt(max(0.0, 1.0 - c * c)) / c",
+  "new": "    rel = math.sqrt(max(0.0, 1.0 - c * c))",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the probe artifact divides by a stale seed count again",
+  "file": "probes/identity_gate_supersession_probe.py",
+  "old": "    cand_per_run = ncand / SEEDS",
+  "new": "    cand_per_run = ncand / 5",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the kurtosis inflation is dropped from sd_rel_error",
+  "file": "tools/probe_gate.py",
+  "old": "        rel *= max(1.0, math.sqrt(max(0.0, 1.0 + g2 / 2.0)))",
+  "new": "        rel *= 1.0",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the inflation loses its floor and may SHRINK the stated uncertainty",
+  "file": "tools/probe_gate.py",
+  "old": "        rel *= max(1.0, math.sqrt(max(0.0, 1.0 + g2 / 2.0)))",
+  "new": "        rel *= math.sqrt(max(0.0, 1.0 + g2 / 2.0))",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "spread() stops passing its values, so the +/- reverts to pure normal theory",
+  "file": "tools/probe_gate.py",
+  "old": "        rel = sd_rel_error(n, vals if n >= 4 else None)",
+  "new": "        rel = sd_rel_error(n)",
+  "tests": [
+   "tests/test_probe_gate.py"
+  ]
+ },
+ {
+  "name": "the recall window is never stamped onto the write",
+  "file": "inspeximus/core.py",
+  "old": "            rec[\"recall_window\"] = _obs",
+  "new": "            pass",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "forget() scrubs the recall window, deleting the erasure evidence",
+  "file": "inspeximus/core.py",
+  "old": "        scrubbed = 0\n        if redact_links:",
+  "new": "        scrubbed = 0\n        for _r in self.items:\n            _rw = _r.get(\"recall_window\")\n            if _rw: _rw[\"ids\"] = [i for i in _rw[\"ids\"] if i not in target]\n        if redact_links:",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "erasure_audit goes blind to the recall_window pointer channel",
+  "file": "inspeximus/core.py",
+  "old": "            for pid in [p for p in ((r.get(\"recall_window\") or {}).get(\"ids\") or []) if p not in by_id]:",
+  "new": "            for pid in []:",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "a capped window truncates silently, hiding its true width",
+  "file": "inspeximus/core.py",
+  "old": "                _obs[\"n\"] = len(_win)",
+  "new": "                pass",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "the writes-since-recall counter never resets",
+  "file": "inspeximus/core.py",
+  "old": "        self._last_recall_writes = 0\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "an iterative recall stamps only its last hop, not the union",
+  "file": "inspeximus/core.py",
+  "old": "        self._note_recall_window(list(seen), query)\n",
+  "new": "",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "the two-phase surface drops round 1 from the window",
+  "file": "inspeximus/core.py",
+  "old": "        self._note_recall_window(merged, query)\n",
+  "new": "",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "a foreign (observe=False) read is observed anyway",
+  "file": "inspeximus/core.py",
+  "old": "                self._last_recall_at = 0.0      # sentinel",
+  "new": "                self._last_recall_at = self._last_recall_at or 0.0  # sentinel",
+  "tests": [
+   "tests/test_recall_window_observation.py"
+  ]
+ },
+ {
+  "name": "the MCP server reads the observe flag and never passes it to the store",
+  "file": "inspeximus/mcp_server.py",
+  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY)",
+  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  writer_key=_WRITER_KEY)",
+  "tests": [
+   "tests/test_mcp_observe_recall.py"
+  ]
+ },
+ {
+  "name": "the recall hook loses its encoding guard (cp1250 deletes the block)",
+  "file": "inspeximus/claude_code.py",
+  "old": "    try:\n        sys.stdout.reconfigure(errors=\"replace\")\n    except Exception:\n        pass\n",
+  "new": "",
+  "tests": [
+   "tests/test_claude_code_recall_surfaces_decisions.py"
+  ]
+ },
+ {
+  "name": "the recall hook stops reading the external decision store",
+  "file": "inspeximus/claude_code.py",
+  "old": "    ext = (os.environ.get(\"INSPEXIMUS_DECISION_STORE\") or \"\").strip()",
+  "new": "    ext = \"\"",
+  "tests": [
+   "tests/test_claude_code_recall_surfaces_decisions.py"
+  ]
+ },
+ {
+  "name": "the recall block drops its per-record bound",
+  "file": "inspeximus/claude_code.py",
+  "old": "        out += [f\"  * {_injected(d['text'], 480)}\" for d in decisions]",
+  "new": "        out += [f\"  * {d['text']}\" for d in decisions]",
+  "tests": [
+   "tests/test_claude_code_recall_surfaces_decisions.py"
+  ]
+ },
+ {
+  "name": "index.html JSON-LD softwareVersion stops being pinned",
+  "file": "packages/_pin_server_json.py",
+  "old": "        new, n = re.subn(r'(\"softwareVersion\":\\s*\")[^\"]*(\")', rf'\\g<1>{version}\\g<2>', text, count=1)",
+  "new": "        new, n = text, 1",
+  "tests": [
+   "tests/test_manifest_versions.py"
+  ]
+ },
+ {
+  "name": "the index.html hero eyebrow stops being pinned",
+  "file": "packages/_pin_server_json.py",
+  "old": "        new, m = re.subn(r'(<p class=\"eyebrow\">)v\\d+\\.\\d+\\.\\d+(\\s)', rf'\\g<1>v{version}\\g<2>', new, count=1)",
+  "new": "        m = 1",
+  "tests": [
+   "tests/test_manifest_versions.py"
+  ]
+ },
+ {
+  "name": "the no-tenant fallback comes back for our own key (unbound rows promotable)",
+  "file": "inspeximus/core.py",
+  "old": "for cand in ((_tn,) if (_tn is None or key in nameable) else (_tn, None)):",
+  "new": "for cand in ((_tn,) if _tn is None else (_tn, None)):",
+  "tests": [
+   "tests/test_writes_can_carry_their_own_key.py"
+  ]
+ },
+ {
+  "name": "reserved meta keys reach the record again (top tier askable)",
+  "file": "inspeximus/core.py",
+  "old": "                    if k not in _RESERVED_META and k not in _META_ALIASED_PARAM}",
+  "new": "                    if k not in _META_ALIASED_PARAM}",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "the tenant view forwards _stamp to the parent (internal writes unscoped)",
+  "file": "inspeximus/core.py",
+  "old": "        return Inspeximus._stamp(self, *a, **k)",
+  "new": "        return self._parent._stamp(*a, **k)",
+  "tests": [
+   "tests/test_session_digest.py"
+  ]
+ },
+ {
+  "name": "check_sources calls a store with nothing checkable OK (empty check reads clean)",
+  "file": "inspeximus/core.py",
+  "old": "            \"ok\": (not drifted and not orphaned and not unbound_capture\n                   and (bool(checked) or (_bindable == 0 and _n > 0))),",
+  "new": "            \"ok\": (not drifted and not orphaned and not unbound_capture),",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "the source fingerprint goes into the caller-writable source dict instead of reserved meta",
+  "file": "inspeximus/core.py",
+  "old": "                    rec[\"meta\"][\"source_sha256\"] = _obs.lower() if _obs else _at_write",
+  "new": "                    rec[\"source\"][\"sha256\"] = _obs.lower() if _obs else _at_write",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "check_sources reads the raw list, leaking other tenants into a tenant's report",
+  "file": "inspeximus/core.py",
+  "old": "        for r in self.items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
+  "new": "        for r in self._items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
+ }
 ]
