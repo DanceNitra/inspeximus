@@ -57,3 +57,29 @@ def test_the_server_hands_the_flag_to_the_store():
     call = src.split("_MEM = open_store(")[1].split(")\n")[0]
     assert "persist_vectors=" in call, (
         "open_store is called without persist_vectors, so the flag changes nothing: %r" % call)
+
+
+def test_the_pii_flag_reaches_the_store_too():
+    """The same gap, found while closing the first one.
+
+    The store takes `pii_detect` and the server had no way to set it, so `pii_report` on a
+    server-backed store counted a column nothing ever filled: zero exposure over a store where
+    nobody had looked. A report that cannot be wrong is the shape this project keeps finding.
+    """
+    import inspect
+
+    from inspeximus import mcp_server
+
+    call = inspect.getsource(mcp_server).split("_MEM = open_store(")[1].split(")\n")[0]
+    assert "pii_detect=" in call, (
+        "open_store is called without pii_detect, so the flag changes nothing: %r" % call)
+
+
+def test_both_new_flags_default_to_off():
+    """Neither may change a store that was written before them.
+
+    `pii_detect` especially: the tag is stamped at write time and `forget_pii()` hard-deletes every
+    record carrying one, so a default-on flag would change what a later sweep removes.
+    """
+    assert _flag_from_env("INSPEXIMUS_PERSIST_VECTORS", {}) is False
+    assert _flag_from_env("INSPEXIMUS_PII_DETECT", {}) is False

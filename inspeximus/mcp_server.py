@@ -25,6 +25,10 @@ Config (environment):
     INSPEXIMUS_PERSIST_VECTORS  write the embedding vectors to disk instead of holding them for the
                            life of the process. Off by default. With an embedder configured and this
                            off, every open re-embeds every record and throws the result away at exit.
+    INSPEXIMUS_PII_DETECT  tag records that match the PII detector as they are written, so pii_report
+                           counts real exposure. Off by default: the tag is stamped at write time and
+                           forget_pii() hard-deletes every record carrying one, so turning this on
+                           changes what a later data-minimization sweep removes.
     INSPEXIMUS_OBSERVE_RECALL  record which memories were served immediately before each write, as an
                            observation (`recall_window`), never as claimed lineage. Off by default; a store
                            written without it is byte-identical to one written before it existed. It feeds
@@ -255,9 +259,15 @@ _WRITER_KEY = _writer_key_from_env()
 # the server did not expose. Default stays off, so a store written before this is byte-identical to
 # one written after.
 _PERSIST_VECTORS = _flag_from_env("INSPEXIMUS_PERSIST_VECTORS")
+# THE SAME GAP AS THE ONE ABOVE, found while closing it. The store takes `pii_detect` and the server
+# had no way to set it, so `pii_report` on a server-backed store counts a column nothing ever fills
+# and reports zero exposure over a store where nobody looked. Off by default, because tagging is
+# stamped at WRITE time and `forget_pii()` hard-deletes what carries the tag: turning it on changes
+# what a later data-minimization sweep removes, which is an operator's decision and not a default.
+_PII_DETECT = _flag_from_env("INSPEXIMUS_PII_DETECT")
 _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
                   observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
-                  persist_vectors=_PERSIST_VECTORS)
+                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)
 
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
 
