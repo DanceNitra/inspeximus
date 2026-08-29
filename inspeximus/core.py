@@ -3075,6 +3075,29 @@ class Inspeximus:
             r = store.index_coherence()
             return bool(r.get("coherent", True)), {"missing_vecs": r.get("missing_vecs")}
 
+        def _attribution(store):
+            """`ok` alone, plus the discrepancy it does not fold in, named as a `problem`.
+
+            verify_attribution reports `missing` (ids in the receipt chain no longer in the store)
+            and `relabeled` in its detail, and leaves `ok` true for both. Measured 5/5 trials:
+            delete one receipted record and `missing` goes 0 -> 1 while `ok` stays True. Returning
+            `clean = ok and not missing` here would score NOTICED and quietly hide the thing worth
+            reporting, which is that a caller polling the boolean sees nothing. So `clean` is the
+            boolean a monitor would read, and the gap is handed to the SUMMARY_HIDES_DETAIL path.
+            """
+            r = store.verify_attribution()
+            ok = bool(r.get("ok"))
+            missing = list(r.get("missing") or [])
+            relabeled = list(r.get("relabeled") or [])
+            d = {"missing": missing[:3], "relabeled": relabeled[:3],
+                 "chain_ok": r.get("chain_ok")}
+            if ok and (missing or relabeled):
+                d["problem"] = (
+                    "ok stayed true while %d id(s) committed to the receipt chain are no longer in "
+                    "the store and %d were relabeled -- a caller reading the boolean is reassured, "
+                    "a caller reading `missing` is not" % (len(missing), len(relabeled)))
+            return ok, d
+
         # ── PRECONDITIONS: does THIS store have the shape the surface needs to be exercised at all?
         # Without these, a store that simply lacks receipts reports its receipt checks as
         # CONTROL_FAILED -- which reads as "your data is unhappy" when the truth is "this question
@@ -3143,6 +3166,11 @@ class Inspeximus:
              lambda rows: [{k: v for k, v in r.items() if k != "source"} for r in rows] or None,
              "no record carries a source at all -- the 261,673-record instance",
              _needs_bindable_source, {"source": True}),
+            ("record_deleted_after_receipt", "verify_attribution", _attribution,
+             lambda rows: rows[1:] if len(rows) > 1 else None,
+             "a record deleted from the store after its attribution was committed to the receipt "
+             "chain -- the deletion an operator holding receipt_key can still perform",
+             _needs_receipt_chain, {"receipts": True}),
             ("index_behind_store", "index_coherence", _coherent,
              lambda rows: [{k: v for k, v in r.items() if k != "vec"} for r in rows] or None,
              "every persisted vector dropped while an embedder is configured -- semantic recall "

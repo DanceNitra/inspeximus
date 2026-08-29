@@ -248,3 +248,76 @@ def test_embed_false_and_embed_none_mean_the_same_thing():
     assert c["coherent"] is True and c["missing_vecs"] == 0, \
         "a store with no embedder has no index that could be behind it"
     assert ix.reembed().get("error") == "no embedder configured"
+
+
+# ─────────────────────────────── verify_attribution: `ok` does not fold in what `missing` reports
+def _receipted(n=5):
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), receipts=True)
+    for i in range(n):
+        ix.remember("record number %d" % i, key="k%d" % i, object="o")
+    ix.flush()
+    return ix
+
+
+def test_deleting_a_receipted_record_leaves_verify_attribution_ok_true():
+    """The finding this probe exists to carry, asserted directly rather than through the harness.
+
+    `verify_attribution` documents `missing` as "ids in the receipt chain no longer in the store".
+    Delete one and `missing` fills correctly -- while `ok` stays True. That is not a lie and not a
+    catch: a monitor polling the boolean sees nothing. Measured 5/5 trials before this was wired.
+    If a later release folds `missing` into `ok`, this test fails and the probe below must be
+    rescored to NOTICED, which is a fix rather than a regression -- update both together.
+    """
+    ix = _receipted()
+    before = ix.verify_attribution()
+    assert before["ok"] is True and not before["missing"], before
+
+    rows = json.loads(open(ix.path, encoding="utf-8").read())
+    items = rows["items"] if isinstance(rows, dict) and "items" in rows else rows
+    keep = items[1:]
+    if isinstance(rows, dict) and "items" in rows:
+        rows["items"] = keep
+    else:
+        rows = keep
+    with open(ix.path, "w", encoding="utf-8") as fh:
+        json.dump(rows, fh, default=str)
+
+    after = Inspeximus(path=ix.path, receipts=True).verify_attribution()
+    assert len(after["missing"]) == 1, after
+    assert after["ok"] is True, "if ok now folds in `missing`, rescore the probe to NOTICED"
+
+
+def test_the_attribution_probe_reports_summary_hides_detail_not_missed():
+    """Scoring this MISSED would be the reader trusting a summary over the contents it summarises --
+    the exact defect this method exists to find. The reader therefore returns the boolean a monitor
+    would read and names the gap as a `problem`."""
+    out = _receipted().audit_the_audits()
+    row = [p for p in out["probes"] if p["surface"] == "verify_attribution"]
+    assert row, "verify_attribution has no probe at all"
+    row = row[0]
+    assert row["outcome"] == "SUMMARY_HIDES_DETAIL", row
+    assert "missing" in (row.get("the_boolean_said_clean_but") or ""), row
+
+
+def test_the_attribution_probe_refuses_a_corruption_that_cannot_land():
+    """One record, so `rows[1:]` is empty and nothing is deleted. A probe that scored this as a
+    result would be reporting its own setup."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), receipts=True)
+    ix.remember("only one", key="k", object="o")
+    ix.flush()
+    row = [p for p in ix.audit_the_audits()["probes"]
+           if p["surface"] == "verify_attribution"][0]
+    assert row["outcome"] == "CONTROL_FAILED", row
+
+
+def test_the_attribution_probe_is_unaskable_without_receipts_and_says_so():
+    """No receipt chain means no committed attribution to delete out from under. That is a gap in
+    what the store can demonstrate, not a defect in the surface -- and the fixture still answers."""
+    ix = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"))
+    for i in range(4):
+        ix.remember("r%d" % i, key="k%d" % i, object="o")
+    ix.flush()
+    row = [p for p in ix.audit_the_audits()["probes"]
+           if p["surface"] == "verify_attribution"][0]
+    assert row["outcome"] == "NOT_REACHABLE_HERE", row
+    assert row["on_a_fixture"] == "SUMMARY_HIDES_DETAIL", row
