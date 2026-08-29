@@ -3251,6 +3251,15 @@ class Inspeximus:
              "a record deleted from the store after its attribution was committed to the receipt "
              "chain -- the deletion an operator holding receipt_key can still perform",
              _needs_receipt_chain, {"receipts": True}),
+            ("source_relabeled_after_receipt", "verify_attribution", _attribution,
+             lambda rows: ([dict(r, source="RELABELED-BY-AN-ATTACKER")
+                            for r in rows if r.get("status") == "active"][:1]
+                           + [r for r in rows if r.get("status") != "active"]
+                           + [r for r in rows if r.get("status") == "active"][1:]) or None,
+             "a record's canonical source rewritten after its attribution was committed -- the "
+             "silent relabel that voids k, the influence budget, the influence gate and slash at "
+             "once, because all four are keyed on that source",
+             _needs_receipt_chain, {"receipts": True}),
             ("index_behind_store", "index_coherence", _coherent,
              lambda rows: [{k: v for k, v in r.items() if k != "vec"} for r in rows] or None,
              "every persisted vector dropped while an embedder is configured -- semantic recall "
@@ -3291,7 +3300,14 @@ class Inspeximus:
             if shape.get("embedder"):
                 # persist_vectors, or the index lives in RAM only and "the index fell behind the
                 # file" is not a state this store can be in -- the probe would corrupt nothing.
-                kw = {"embed": _stub_embed, "persist_vectors": True, "embed_id": "audit-stub-v1"}
+                # THE CALLER'S RECIPE ID, NOT THE STUB'S, WHEN THEY HAVE ONE. The copied file
+                # carries their persisted vectors and their `.embedid` sidecar, so labelling the copy
+                # "audit-stub-v1" would make `index_coherence` report a recipe mismatch on the CLEAN
+                # copy and the probe would fail its own control. The callable is still the stub: what
+                # is under test is whether a stale index is noticed, never how well anything embeds,
+                # and an audit that fires one network call per record is a stall rather than an audit.
+                kw = {"embed": _stub_embed, "persist_vectors": True,
+                      "embed_id": getattr(self, "embed_id", None) or "audit-stub-v1"}
             return type(self)(
                 path=path,
                 receipts=bool(shape["receipts"]) if "receipts" in shape
@@ -3312,6 +3328,18 @@ class Inspeximus:
             path = os.path.join(work, "fixture.json")
             fx = _open_copy(path, shape)
             src = None
+            # THE CALLER'S TEXT IS DELIBERATELY NOT COPIED IN HERE. The first version of the embedder
+            # shape replayed their records through `remember()` so the index would be built out of
+            # their content. `test_a_new_write_site_that_COPIES_TEXT_must_declare_where_it_came_from`
+            # rejected it and was right: a write whose text comes from another record and declares no
+            # edge to it is the shape that makes erasure unable to follow content, and a throwaway
+            # audit fixture is no reason to open that door -- the parent lives in a different store,
+            # so there is no honest edge to declare.
+            #
+            # It was also solving the problem in the wrong place. A store that HAS an embedder now
+            # reaches the store tier directly (see the precondition below), so it never arrives here.
+            # A store that has none is a fixture in the plain sense, and dressing it in the caller's
+            # words would not have made it theirs.
             if shape.get("source"):
                 src = os.path.join(work, "fixture_source.txt")
                 with open(src, "wb") as fh:
@@ -3368,7 +3396,16 @@ class Inspeximus:
             tier, tier_why, shape, open_fn = "your store", "", None, _open_copy
             if needs is not None:
                 try:
-                    reachable, why_not = needs(_open_copy(path))
+                    # ASKED OF THE CALLER'S STORE, because that is what the question is about.
+                    # It used to be asked of `_open_copy(path)`, and that copy has its embedder
+                    # STRIPPED by design -- the caller's may be a network call, and an audit firing
+                    # one per record is a stall. So `_needs_embedder` was handed a store with no
+                    # embedder and answered "no embedder is configured" every time, for every
+                    # caller, however well configured: `index_coherence` could not reach the store
+                    # tier from any store that has ever existed. A check that cannot see its target
+                    # reports the same thing every time, and that thing reads as a finding about
+                    # your data.
+                    reachable, why_not = needs(self)
                 except Exception as ex:                                     # noqa: BLE001
                     reachable, why_not = False, f"the precondition raised {type(ex).__name__}"
                 if not reachable:
@@ -3392,6 +3429,12 @@ class Inspeximus:
                         continue
                     rows = _json.loads(open(path, encoding="utf-8").read())
                     open_fn = lambda p, _s=shape: _open_copy(p, _s)         # noqa: E731
+            # A PROBE THAT NEEDS AN INDEX NEEDS THE COPY TO CARRY ONE. Without this the precondition
+            # passes on the caller's store and the surface is then handed a copy with no embedder,
+            # which is the same blindness one step later.
+            if tier == "your store" and (fixture_shape or {}).get("embedder"):
+                open_fn = lambda p, _s=dict(fixture_shape): _open_copy(p, _s)   # noqa: E731
+
             # Source-bearing probes need a source that EXISTS locally, so they build one rather than
             # depending on the caller's filesystem: a probe that silently tests nothing because the
             # locator was a URL is the defect, not a limitation.
@@ -3501,6 +3544,88 @@ class Inspeximus:
                 row["detail"] = after_detail
             results.append(row)
 
+        # ── THE SUBJECT COMES FROM THE CALLER'S STORE WHEREVER IT CAN.
+        #
+        # The pure, ledger and argument modes each built their own two-to-four record fixture, so
+        # their verdicts could never enter `demonstrated_on_your_store`: 22 of the 24 surfaces were
+        # provable in principle and unproven on the data the caller actually holds. That is not a
+        # small gap for a library sold as an evidence layer. "This surface can fail somewhere"
+        # answers a different question from "this surface can fail on my store".
+        #
+        # So every mode now builds on a COPY of the live store, sidecars included, opened the way the
+        # original was, and adds only the records its own question needs on top. A fixture stays the
+        # fallback and NAMES ITSELF as one in `tier`, with the reason in `tier_why`.
+        #
+        # WHAT `tier: "your store"` MEANS, stated because inflating it would be the exact defect this
+        # method exists to find: the SUBJECT came from your store. For a store-reading surface that
+        # means the corruption was applied to your records. For a pure surface it means the anchor,
+        # proof or text handed in was derived from your records -- the surface still never reads the
+        # store, and `mode` keeps saying so.
+        _seed_tier = {"tier": "your store", "why": ""}
+
+        def _live_seed(tag, **kw):
+            """(store, why). A copy of the caller's store, or None with the reason it is not one."""
+            if not getattr(self, "path", None):
+                return None, "this store has no file on disk to copy, so every subject here is built"
+            work = _tempfile.mkdtemp(prefix="seed_%s_" % tag)
+            import glob as _g
+            for f in _g.glob(str(self.path) + "*"):
+                try:
+                    _shutil.copy(f, os.path.join(work, os.path.basename(f)))
+                except Exception:                                          # noqa: BLE001
+                    pass
+            path = os.path.join(work, os.path.basename(str(self.path)))
+            if not os.path.exists(path):
+                return None, "the store file could not be copied, so the subject here is built"
+            kw = dict(kw)
+            kw.setdefault("receipts", bool(getattr(self, "receipts_enabled", False)))
+            kw.setdefault("embed", None)
+            try:
+                return type(self)(path=path, **kw), ""
+            except Exception as ex:                                        # noqa: BLE001
+                return None, "the copy would not open (%s), so the subject here is built" % (
+                    type(ex).__name__,)
+
+        def _seeded(work, tag, **kw):
+            """The store a non-store probe builds on. Sets `_seed_tier` for the runner to read.
+
+            The holder is written here and read by the runner a few lines later, which is safe only
+            because probes run one at a time; each runner resets it before calling the builder.
+            """
+            # AN ASSUMPTION YOUR STORE DOES NOT SATISFY IS NOT A DEMONSTRATION ON YOUR STORE.
+            # Some probes need a construction the caller may not have: a receipt chain to prove
+            # inclusion against, PII detection for the exposure count to move. Carrying the caller's
+            # RECORDS while switching one of those on answers a question about a store they do not
+            # run, so it belongs in the fixture bucket however real the content is. The rule errs
+            # toward the fixture, because the failure worth preventing here is a summary that reads
+            # better than the store it describes.
+            assumed = []
+            if kw.get("receipts") and not getattr(self, "receipts_enabled", False):
+                assumed.append("write receipts, which this store does not keep")
+            if kw.get("pii_detect") and not getattr(self, "pii_detect", False):
+                assumed.append("PII detection, which this store does not enable")
+            st, why = _live_seed(tag, **kw)
+            if st is not None:
+                if assumed:
+                    _seed_tier["tier"] = "fixture"
+                    _seed_tier["why"] = ("your records, but the probe had to assume "
+                                         + "; ".join(assumed))
+                return st
+            _seed_tier["tier"], _seed_tier["why"] = "fixture", why
+            return type(self)(path=os.path.join(work, "%s.json" % tag), **kw)
+
+        def _first_active(ix):
+            """The id of a record an erasure can actually retire.
+
+            `items[0]` was fine on a two-record fixture and is not on a copy of a real store, where
+            the oldest record is often already superseded. Forgetting one of those moves no counter,
+            and the probe would report the LEDGER as broken over its own choice of target.
+            """
+            for r in ix.items:
+                if r.get("status") == "active":
+                    return r["id"]
+            raise RuntimeError("no active record to erase")
+
         # ── PURE SURFACES. Four of the 24 never read the store at all: they take their subject
         # as an argument. Corrupting a copy of the caller's data cannot reach them, so before this
         # they were simply absent from the catalogue and counted as unprobed forever -- a coverage
@@ -3515,10 +3640,13 @@ class Inspeximus:
         # A verdict here is a fact about the LIBRARY, never about the caller's data, and the row
         # says so. A MISSED is the loudest thing this method can report.
         def _pure_store(work, tag, last):
-            ix = type(self)(path=os.path.join(work, "pure_%s.json" % tag), receipts=True)
+            # KEYS ARE PREFIXED because this now writes into a copy of the caller's store. A bare
+            # `k0` could collide with a real key and supersede one of their facts, which would make
+            # the probe's own subject the thing it corrupted.
+            ix = _seeded(work, "pure_%s" % tag, receipts=True)
             for i in range(3):
-                ix.remember("record %d" % i, key="k%d" % i, object="probe")
-            ix.remember(last, key="k3", object="probe")
+                ix.remember("record %d" % i, key="__probe_k%d" % i, object="probe")
+            ix.remember(last, key="__probe_k3", object="probe")
             ix.flush()
             return ix
 
@@ -3567,10 +3695,11 @@ class Inspeximus:
         ]
 
         for name, surface, build, judge, catches in pure_catalogue:
+            _seed_tier["tier"], _seed_tier["why"] = "your store", ""
             fn = getattr(type(self), surface, None)
             if fn is None:
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "pure function",
+                                "tier": _seed_tier["tier"], "mode": "pure function",
                                 "why": "the surface does not exist on this class"})
                 continue
             work = _tempfile.mkdtemp(prefix="pure_")
@@ -3578,7 +3707,7 @@ class Inspeximus:
                 good, bad = build(work)
             except Exception as ex:                                        # noqa: BLE001
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "pure function",
+                                "tier": _seed_tier["tier"], "mode": "pure function",
                                 "why": "the fixture could not be built: %s: %s"
                                        % (type(ex).__name__, ex)})
                 continue
@@ -3586,7 +3715,7 @@ class Inspeximus:
                 good_clean = judge(fn(*good))
             except Exception as ex:                                        # noqa: BLE001
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "pure function",
+                                "tier": _seed_tier["tier"], "mode": "pure function",
                                 "why": "the surface raised on the VALID input: %s"
                                        % type(ex).__name__})
                 continue
@@ -3594,7 +3723,7 @@ class Inspeximus:
                 # The fixture, not the surface. Scoring this as a catch would credit the surface for
                 # rejecting an input it should have accepted.
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "pure function", "catches": catches,
+                                "tier": _seed_tier["tier"], "mode": "pure function", "catches": catches,
                                 "why": "rejected the VALID input, so its rejection of the corrupted "
                                        "one proves nothing"})
                 continue
@@ -3605,7 +3734,7 @@ class Inspeximus:
             verdict = "NOTICED" if not bad_clean else "MISSED"
             results.append({
                 "probe": name, "surface": surface, "catches": catches, "outcome": verdict,
-                "tier": "pure function", "clean_on_valid_input": True,
+                "tier": _seed_tier["tier"], "mode": "pure function", "clean_on_valid_input": True,
                 "clean_on_corrupted_input": bool(bad_clean),
                 "read_this_as": (
                     "the surface accepted a valid input and rejected a corrupted one. This says "
@@ -3630,9 +3759,9 @@ class Inspeximus:
         # GROUND TRUTH out of the store as well, and a change that did not land is CONTROL_FAILED
         # against the fixture rather than MISSED against the report.
         def _ledger_store(work, tag, **kw):
-            ix = type(self)(path=os.path.join(work, "ledger_%s.json" % tag), **kw)
-            ix.remember("the rate is 5 percent", key="rate", object="5 percent")
-            ix.remember("the office is in Kosice", key="office", object="Kosice")
+            ix = _seeded(work, "ledger_%s" % tag, **kw)
+            ix.remember("the rate is 5 percent", key="__probe_rate", object="5 percent")
+            ix.remember("the office is in Kosice", key="__probe_office", object="Kosice")
             ix.flush()
             return ix
 
@@ -3644,20 +3773,21 @@ class Inspeximus:
             ("a new record", "memory_report",
              lambda w: _ledger_store(w, "mem"),
              lambda ix: ix.memory_report().get("total"),
-             lambda ix: (ix.remember("a third fact", key="third", object="3"), ix.flush()),
+             lambda ix: (ix.remember("a third fact", key="__probe_third", object="3"), ix.flush()),
              lambda ix: len(ix.items), 1, 1,
              "a write that the total does not count"),
             ("a keyed value replaced", "supersession_report",
              lambda w: _ledger_store(w, "sup"),
              lambda ix: ix.supersession_report().get("superseded_total"),
-             lambda ix: (ix.remember("the rate is 7 percent", key="rate", object="7 percent"),
-                         ix.flush()),
+             lambda ix: (ix.remember("the rate is 7 percent", key="__probe_rate",
+                                     object="7 percent"), ix.flush()),
              lambda ix: _n_status(ix, "superseded"), 1, 1,
              "a retirement the supersession ledger does not record"),
             ("a record carrying PII", "pii_report",
              lambda w: _ledger_store(w, "pii", pii_detect=True),
              lambda ix: ix.pii_report().get("records_with_pii"),
-             lambda ix: (ix.remember("write to alex@example.com", key="mail", object="alex"),
+             lambda ix: (ix.remember("write to alex@example.com", key="__probe_mail",
+                                     object="alex"),
                          ix.flush()),
              lambda ix: sum(1 for r in ix.items
                             if r.get("status") == "active" and r.get("pii")), 1, 1,
@@ -3665,32 +3795,33 @@ class Inspeximus:
             ("a deliberate erasure", "erasure_report",
              lambda w: _ledger_store(w, "era"),
              lambda ix: ix.erasure_report().get("tombstoned_total"),
-             lambda ix: (ix.forget(ids=[ix.items[0]["id"]], basis="probe"), ix.flush()),
+             lambda ix: (ix.forget(ids=[_first_active(ix)], basis="probe"), ix.flush()),
              lambda ix: len(ix.items), 1, -1,
              "an erasure the tombstone ledger does not record"),
             ("an erasure the governance view must show", "governance_report",
              lambda w: _ledger_store(w, "gov"),
              lambda ix: ix.governance_report().get("erasures_total"),
-             lambda ix: (ix.forget(ids=[ix.items[0]["id"]], basis="probe"), ix.flush()),
+             lambda ix: (ix.forget(ids=[_first_active(ix)], basis="probe"), ix.flush()),
              lambda ix: len(ix.items), 1, -1,
              "an erasure missing from the governance view an auditor reads"),
             ("a new active record", "influence_gate_report",
              lambda w: _ledger_store(w, "inf"),
              lambda ix: ix.influence_gate_report().get("active"),
-             lambda ix: (ix.remember("a third fact", key="third", object="3"), ix.flush()),
+             lambda ix: (ix.remember("a third fact", key="__probe_third", object="3"), ix.flush()),
              lambda ix: _n_status(ix, "active"), 1, 1,
              "a record the gate's own cost report does not count"),
             ("a source that spent budget", "irreversible_budget_report",
              lambda w: _ledger_store(w, "bud"),
              lambda ix: len(ix.irreversible_budget_report()),
              lambda ix: ix.spend_irreversible(
-                 [ix.remember("a spending record", key="spend", object="s",
+                 [ix.remember("a spending record", key="__probe_spend", object="s",
                               source={"doc": "probe-source"})], 0.5),
              lambda ix: len(ix._budget_state()), 1, 1,
              "a spend the lifetime budget report does not show"),
         ]
 
         for name, surface, make, counter, change, truth, c_delta, t_delta, catches in ledger_catalogue:
+            _seed_tier["tier"], _seed_tier["why"] = "your store", ""
             work = _tempfile.mkdtemp(prefix="ledger_")
             try:
                 ix = make(work)
@@ -3699,14 +3830,14 @@ class Inspeximus:
                 t1 = truth(ix)
             except Exception as ex:                                        # noqa: BLE001
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "ledger", "catches": catches,
+                                "tier": _seed_tier["tier"], "mode": "ledger", "catches": catches,
                                 "why": "the fixture raised: %s: %s" % (type(ex).__name__, ex)})
                 continue
             if (t1 - t0) != t_delta:
                 # The store did not change the way the fixture intended, so the report cannot be
                 # judged. Blaming the counter here is how a correct report gets called broken.
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "ledger", "catches": catches,
+                                "tier": _seed_tier["tier"], "mode": "ledger", "catches": catches,
                                 "why": "the change did not land: the store's own count moved by %d, "
                                        "not %d, so the report has nothing to track"
                                        % (t1 - t0, t_delta)})
@@ -3715,13 +3846,13 @@ class Inspeximus:
                 c1 = counter(ix)
             except Exception as ex:                                        # noqa: BLE001
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "ledger", "catches": catches,
+                                "tier": _seed_tier["tier"], "mode": "ledger", "catches": catches,
                                 "why": "the report raised after the change: %s" % type(ex).__name__})
                 continue
             moved = (c1 - c0) if isinstance(c1, int) and isinstance(c0, int) else None
             verdict = "NOTICED" if moved == c_delta else "MISSED"
             row = {"probe": name, "surface": surface, "catches": catches, "outcome": verdict,
-                   "tier": "ledger", "counter_before": c0, "counter_after": c1,
+                   "tier": _seed_tier["tier"], "mode": "ledger", "counter_before": c0, "counter_after": c1,
                    "expected_move": c_delta,
                    "read_this_as": (
                        "the number tracks the store: the change landed and the report moved with it"
@@ -3738,10 +3869,10 @@ class Inspeximus:
         # Scored exactly like the pure surfaces: the honest call must come back clean, or the
         # rejection of the corrupt one proves nothing.
         def _arg_store(work, tag, **kw):
-            ix = type(self)(path=os.path.join(work, "arg_%s.json" % tag), **kw)
-            ix.remember("the rate is 5 percent", key="rate", object="5 percent")
-            ix.remember("the office is in Kosice", key="office", object="Kosice")
-            ix.remember("the deploy target is prod", key="target", object="prod")
+            ix = _seeded(work, "arg_%s" % tag, **kw)
+            ix.remember("the rate is 5 percent", key="__probe_rate", object="5 percent")
+            ix.remember("the office is in Kosice", key="__probe_office", object="Kosice")
+            ix.remember("the deploy target is prod", key="__probe_target", object="prod")
             ix.flush()
             return ix
 
@@ -3771,20 +3902,51 @@ class Inspeximus:
         def _a_claim(work):
             ix = _arg_store(work, "claim")
             j = lambda r: r.get("verdict") != "contradicted"
-            return (j(ix.verify_claim("the rate is 5 percent", key="rate", object="5 percent")),
-                    j(ix.verify_claim("the rate is 9 percent", key="rate", object="9 percent")))
+            return (j(ix.verify_claim("the rate is 5 percent", key="__probe_rate",
+                                      object="5 percent")),
+                    j(ix.verify_claim("the rate is 9 percent", key="__probe_rate",
+                                      object="9 percent")))
 
         def _a_conflict(work):
             ix = _arg_store(work, "conf")
-            j = lambda r: not r
-            return (j(ix.check_conflict("the rate is 5 percent", key="rate", object="5 percent")),
-                    j(ix.check_conflict("the rate is 9 percent", key="rate", object="9 percent")))
+            # THE KEYED SIGNAL, not every clash. `clash` is a similarity signal over the whole store,
+            # and on a real store it fires on unrelated records: measured on our own 619-record store,
+            # "the rate is 5 percent" clashed with a decision about a detector's FIRING RATE, on one
+            # shared word and a number apiece. That is the documented behaviour of the lexical
+            # fallback when no embedder is configured, and it is a different question from the one
+            # this probe asks. The catalogue names the surface under test -- a candidate write that
+            # would silently replace a KEYED fact -- so the judge reads that signal, on the probe's
+            # own key. Narrowing the judge to the named signal is not weakening the control: the
+            # honest case must still produce none of it and the corrupt case must produce it.
+            #
+            # AND THE CRY-WOLF CONTROL SURVIVES THE NARROWING, which the first version of it did
+            # not. Filtering to one `kind` let a surface that returns a flag for EVERY input slip
+            # through as clean, so it scored MISSED where the honest verdict is CONTROL_FAILED: a
+            # caller gating on "is this list empty" would reject every write, and such a surface
+            # proves nothing by reacting to the corrupt case. A real finding names a record that is
+            # in the store; a manufactured one has no id to name. So the honest case must be free of
+            # the keyed signal AND free of any flag that points at nothing.
+            _ids = {r.get("id") for r in ix.items}
+
+            def kv(r):
+                return [c for c in (r or []) if c.get("kind") == "keyed_value_change"
+                        and c.get("key") == "__probe_rate"]
+
+            def unattributed(r):
+                return [c for c in (r or []) if c.get("id") not in _ids]
+
+            j = lambda r: not kv(r) and not unattributed(r)
+            jb = lambda r: not kv(r)
+            return (j(ix.check_conflict("the rate is 5 percent", key="__probe_rate",
+                                        object="5 percent")),
+                    jb(ix.check_conflict("the rate is 9 percent", key="__probe_rate",
+                                         object="9 percent")))
 
         def _a_certificate(work):
             # A certificate for a request that never happened must not claim erasures. The honest
             # case is a request that did.
             ix = _arg_store(work, "cert", receipts=True)
-            ix.forget(ids=[ix.items[0]["id"]], basis="probe", request_id="req-real")
+            ix.forget(ids=[_first_active(ix)], basis="probe", request_id="req-real")
             ix.flush()
             real = ix.erasure_certificate(request_id="req-real")
             fake = ix.erasure_certificate(request_id="req-never-happened")
@@ -3798,7 +3960,7 @@ class Inspeximus:
             ix = _arg_store(work, "att")
             sk, pk = new_source_keypair()
             text = "the payout wallet is 0xTRUE"
-            rid = ix.remember(text, key="wallet", object="0xTRUE",
+            rid = ix.remember(text, key="__probe_wallet", object="0xTRUE",
                               source={"doc": "finance"}, attestation=(pk, attest(text, sk, "finance")))
             ix.flush()
             good = bool(ix.verify_attestations()[0])
@@ -3811,32 +3973,56 @@ class Inspeximus:
         def _a_selection(work):
             # Without a trust root this surface says so itself and decides nothing, so the fixture
             # sets one. The corrupt case is an untrusted record reaching the top k.
-            ix = type(self)(path=os.path.join(work, "arg_sel.json"))
-            ix.remember("the rate is 5 percent", key="rate", object="5 percent",
+            ix = _seeded(work, "arg_sel")
+            # A DISTINCTIVE SUBJECT, because the attack has to reach the top k to be visible. On a
+            # two-record fixture the query "rate" was enough. Measured on a copy of our own
+            # 619-record store: the attacker's record did not enter the top k at ANY k we tried, so
+            # the surface had nothing to report and the probe would have scored it blind over its
+            # own weak attack. Real selection rerouting works the other way round: the attacker
+            # writes something that ranks. So the probe seeds a subject of its own into the caller's
+            # store and lets the attacker compete on it.
+            q = "quarterly settlement rate for the Zurich desk"
+            ix.remember(q + " is 5 percent", key="__probe_rate", object="5 percent",
                         source={"doc": "finance"})
-            ix.remember("the rate is 5 percent per year", key="rate2", object="5pct",
+            ix.remember(q + " is 5 percent per year", key="__probe_rate2", object="5pct",
                         source={"doc": "finance"})
             ix.flush()
-            ix.trust_seeds = {"finance"}
+            # THE TRUST ROOT COVERS THE SOURCES ALREADY IN THE STORE. `{"finance"}` alone was right
+            # for a two-record fixture and wrong for a copy of a real one: every pre-existing record
+            # then reads as untrusted, the honest case reports untrusted records in the top k, and
+            # the probe scores CONTROL_FAILED over its own policy rather than over the surface. The
+            # docstring is explicit that "qualified is exactly your attestation / trust-seed policy",
+            # so a policy that trusts what the operator already holds is the realistic one. The
+            # attacker's source is deliberately left out of it.
+            seeds = {"finance"}
+            for _r in ix.items:
+                _raw = Inspeximus._raw_source(_r)
+                if isinstance(_raw, str) and _raw:
+                    seeds.add(_raw)
+                elif isinstance(_raw, dict) and _raw.get("doc"):
+                    seeds.add(str(_raw["doc"]))
+            ix.trust_seeds = seeds
             j = lambda r: r.get("stable") is not False
-            good = j(ix.selection_integrity("rate", k=2, pool=10))
-            ix.remember("the rate is 99 percent", key="evil", object="99",
+            good = j(ix.selection_integrity(q, k=2, pool=10))
+            ix.remember(q + " is 99 percent", key="__probe_evil", object="99",
                         source={"doc": "attacker"})
             ix.flush()
-            return good, j(ix.selection_integrity("rate", k=2, pool=10))
+            return good, j(ix.selection_integrity(q, k=2, pool=10))
 
         def _a_erasure_audit(work):
             # The honest case erases a value that survives nowhere. The corrupt case erases one that
             # is still sitting in another record's text, which is what a DSAR cannot afford to miss.
-            ix = type(self)(path=os.path.join(work, "arg_ea.json"))
-            lone = ix.remember("Dana works in Kosice", key="loc", object="Kosice")
+            ix = _seeded(work, "arg_ea")
+            lone = ix.remember("Dana works in Kosice", key="__probe_loc", object="Kosice")
             ix.flush()
             ix.forget(ids=[lone], basis="dsar", request_id="r-clean")
             ix.flush()
             j = lambda r: not (r.get("residue") or r.get("advisory"))
             good = j(ix.erasure_audit(subject="Dana", values=["Kosice"]))
-            addr = ix.remember("Dana lives at 8 Rue du Nom Fictif", key="addr", object="8 Rue")
-            ix.remember("the invoice went to 8 Rue du Nom Fictif", key="inv", object="8 Rue")
+            addr = ix.remember("Dana lives at 8 Rue du Nom Fictif", key="__probe_addr",
+                               object="8 Rue")
+            ix.remember("the invoice went to 8 Rue du Nom Fictif", key="__probe_inv",
+                        object="8 Rue")
             ix.flush()
             ix.forget(ids=[addr], basis="dsar", request_id="r-residue")
             ix.flush()
@@ -3845,15 +4031,15 @@ class Inspeximus:
         def _a_convergence(work):
             # The ratchet must not be self-served. A claim ratified by a DIFFERENT identity reaches
             # adjudicated; the same claim ratified only by its own author must not.
-            ix = type(self)(path=os.path.join(work, "arg_conv.json"))
-            good_id = ix.remember("revenue is 900M", key="rev", object="900M",
+            ix = _seeded(work, "arg_conv")
+            good_id = ix.remember("revenue is 900M", key="__probe_rev", object="900M",
                                   source={"doc": "auditor-a"})
             ix.flush()
             ix.ratify(good_id, kind="reproduction", by_key="auditor-b")
             ix.flush()
             j = lambda r: bool(r.get("adjudicated"))
             good = j(ix.convergence_report(good_id))
-            self_id = ix.remember("revenue is 800M", key="rev2", object="800M",
+            self_id = ix.remember("revenue is 800M", key="__probe_rev2", object="800M",
                                   source={"doc": "auditor-c"})
             ix.flush()
             ix.ratify(self_id, kind="audit", by_key="auditor-c")     # self-ratification
@@ -3882,24 +4068,25 @@ class Inspeximus:
         ]
 
         for name, surface, probe, catches in argument_catalogue:
+            _seed_tier["tier"], _seed_tier["why"] = "your store", ""
             work = _tempfile.mkdtemp(prefix="arg_")
             try:
                 good_clean, bad_clean = probe(work)
             except Exception as ex:                                        # noqa: BLE001
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "argument", "catches": catches,
+                                "tier": _seed_tier["tier"], "mode": "argument", "catches": catches,
                                 "why": "the fixture raised: %s: %s" % (type(ex).__name__, ex)})
                 continue
             if not good_clean:
                 results.append({"probe": name, "surface": surface, "outcome": "CONTROL_FAILED",
-                                "tier": "argument", "catches": catches,
+                                "tier": _seed_tier["tier"], "mode": "argument", "catches": catches,
                                 "why": "flagged the HONEST case, so flagging the corrupt one proves "
                                        "nothing"})
                 continue
             verdict = "NOTICED" if not bad_clean else "MISSED"
             results.append({
                 "probe": name, "surface": surface, "catches": catches, "outcome": verdict,
-                "tier": "argument", "clean_on_honest_case": True,
+                "tier": _seed_tier["tier"], "mode": "argument", "clean_on_honest_case": True,
                 "clean_on_corrupt_case": bool(bad_clean),
                 "read_this_as": (
                     "the surface accepted the honest case and flagged the corrupt one"
@@ -3916,16 +4103,25 @@ class Inspeximus:
         # THE LOUDEST BUCKET: clean on a store built to trigger it. Not a fact about the caller.
         blind = [r for r in unreach if r.get("on_a_fixture") == "MISSED"]
         # A NOTICED is not the same claim in every mode, and treating it as one made this field
-        # lie. `demonstrated_on_your_store` is answering "what did YOUR DATA show", so only the
-        # store tier can populate it -- the pure, ledger and argument probes run on fixtures they
-        # build themselves and never read the caller's records. Counting all of them here reported
-        # 20 surfaces demonstrated on a store that had demonstrated 3, one hour after this method
-        # was extended to three new modes and its summary was not.
+        # lie. `demonstrated_on_your_store` answers "what did YOUR DATA show", so only the store
+        # tier populates it. Counting every mode here once reported 20 surfaces demonstrated on a
+        # store that had demonstrated 3, one hour after this method gained three modes and its
+        # summary did not.
+        #
+        # THE TIER IS NOW MEASURED RATHER THAN FIXED PER MODE: every mode builds on a copy of the
+        # caller's store where it can, and falls back to a built fixture when it cannot -- when the
+        # store has no file to copy, or when the probe would have to switch on a setting the caller
+        # does not run. `mode` still records which question was asked.
+        #
+        # THIS LINE USED TO SELECT ON THE MODE NAMES, and after the tiers became measured it matched
+        # nothing: `pii_report` fell out of EVERY bucket and 24 surfaces reported as 22 plus one,
+        # with one simply missing. The accounting is asserted in the tests now, because a summary
+        # that can silently drop a row is the same defect this method exists to find.
         covered = sorted({r["surface"] for r in results
                           if r["outcome"] == "NOTICED" and r.get("tier") == "your store"})
         proved_on_a_fixture = sorted({r["surface"] for r in results
                                       if r["outcome"] == "NOTICED"
-                                      and r.get("tier") in ("pure function", "ledger", "argument")})
+                                      and r.get("tier") == "fixture"} - set(covered))
         works_on_fixture = sorted({r["surface"] for r in unreach
                                    if r.get("on_a_fixture") == "NOTICED"})
         probed = sorted({r["surface"] for r in results})

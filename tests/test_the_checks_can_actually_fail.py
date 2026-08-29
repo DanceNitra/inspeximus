@@ -337,7 +337,7 @@ PURE_SURFACES = [
 
 def _pure_rows(ix):
     return {p["surface"]: p["outcome"] for p in ix.audit_the_audits()["probes"]
-            if p.get("tier") == "pure function"}
+            if p.get("mode") == "pure function"}
 
 
 def _receipted(n=5):
@@ -422,7 +422,7 @@ LEDGER_SURFACES = [
 
 def _ledger_rows(ix):
     return {p["surface"]: p for p in ix.audit_the_audits()["probes"]
-            if p.get("tier") == "ledger"}
+            if p.get("mode") == "ledger"}
 
 
 def test_every_inventory_counter_tracks_the_store():
@@ -484,7 +484,7 @@ ARGUMENT_SURFACES = [
 
 def _argument_rows(ix):
     return {p["surface"]: p for p in ix.audit_the_audits()["probes"]
-            if p.get("tier") == "argument"}
+            if p.get("mode") == "argument"}
 
 
 def test_every_argument_surface_accepts_the_honest_case_and_flags_the_corrupt_one():
@@ -618,4 +618,39 @@ def test_a_fixture_verdict_is_not_reported_as_your_store_demonstrating_anything(
     for name in s["proved_on_a_fixture"]:
         assert tiers.get(name) != "your store", (name, tiers.get(name))
     assert not (set(s["demonstrated_on_your_store"]) & set(s["proved_on_a_fixture"]))
-    assert s["proved_on_a_fixture"], "the fixture-proved list cannot be empty with 24 probes wired"
+
+    # THE INVARIANT, restated after the tier stopped being fixed per mode. Every mode now builds on
+    # a copy of the caller's store where it can, so "the fixture list cannot be empty" no longer
+    # holds -- it described a limitation rather than a safety property, and a store that CAN host
+    # every probe correctly reports an empty fixture list.
+    #
+    # What must still hold is the thing the old assertion was protecting: a probe that had to switch
+    # on a setting this store does not run may not be reported as demonstrated on it. This fixture
+    # keeps no receipts and has no embedder, so at least one probe must land outside the demonstrated
+    # list, and none of the ones that did may appear inside it.
+    outside = set(s["proved_on_a_fixture"]) | set(s["working_but_unreachable_here"])         | set(s["unanswerable_here"])
+    assert outside, (
+        "a store with no receipts and no embedder cannot demonstrate every surface, so something "
+        "must sit outside the demonstrated list")
+    assert not (outside & set(s["demonstrated_on_your_store"]))
+
+
+def test_every_surface_lands_in_exactly_one_bucket():
+    """A surface that falls out of all of them reports 24 as 22 plus one, with one just missing.
+
+    That happened: the fixture bucket selected on the MODE names after the tiers became measured, so
+    `pii_report` matched nothing and vanished from the summary while still being probed. A total
+    that does not add up is the same defect this method exists to find, in its own output.
+    """
+    ix = _receipted()
+    out = ix.audit_the_audits()
+    s = out["surfaces"]
+    buckets = ("demonstrated_on_your_store", "proved_on_a_fixture",
+               "working_but_unreachable_here", "unanswerable_here")
+    seen = set()
+    for b in buckets:
+        seen |= set(s[b])
+    missing = {r["surface"] for r in out["probes"]} - seen
+    assert not missing, "probed but reported in no bucket: %s" % sorted(missing)
+    assert len(seen) == s["available"], (
+        "%d surfaces accounted for, %d available" % (len(seen), s["available"]))
