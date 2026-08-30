@@ -91,11 +91,52 @@ def test_the_derived_set_is_not_empty():
         "cryptography IS installed by ci.yml, so requiring a guard for it would be a false alarm")
 
 
+def _first_party_carriers():
+    """Our OWN modules that import an unguarded extra at module scope.
+
+    THE HOLE THIS CLOSES, found by CI on 2026-08-29 rather than by this file. A new test imported
+    `inspeximus.mcp_server`, whose first line of real work is `from mcp...`. The scan below reads the
+    TOP-LEVEL name of each import, saw `inspeximus`, matched nothing in the must-guard set, and
+    skipped the file. CI then lost every test in it to a collection error.
+
+    An indirect import is the same failure with one more step, and the step is invisible to a scan
+    that only reads the first dotted segment. So the carriers are derived the same way everything
+    else here is: read our own package, and treat a module that imports an extra as if it were that
+    extra.
+    """
+    pkg = os.path.join(ROOT, "inspeximus")
+    guard, out = _must_guard(), {}
+    for fn in sorted(os.listdir(pkg)):
+        if not fn.endswith(".py"):
+            continue
+        text = io.open(os.path.join(pkg, fn), encoding="utf-8", errors="replace").read()
+        hit = sorted({m.split(".")[0] for m in IMPORT.findall(text)} & guard)
+        if hit:
+            out["inspeximus." + fn[:-3]] = hit
+    return out
+
+
+def test_the_carrier_set_names_a_module_we_actually_ship():
+    """CONTROL. If the package moves or the derivation breaks, the check below quietly examines
+    nothing and every file passes. mcp_server is the known carrier; it has to be in there."""
+    carriers = _first_party_carriers()
+    assert carriers, "no first-party carrier found, so the indirect check would pass vacuously"
+    assert "inspeximus.mcp_server" in carriers, (
+        "mcp_server imports the MCP SDK at module scope and must be listed: %s" % sorted(carriers))
+
+
 @pytest.mark.parametrize("name", sorted(f for f in os.listdir(TESTS) if f.endswith(".py")))
 def test_an_unguarded_extra_import_would_error_on_collection(name):
     text = io.open(os.path.join(TESTS, name), encoding="utf-8", errors="replace").read()
     tops = {m.split(".")[0] for m in IMPORT.findall(text)}
     needs = sorted(tops & _must_guard())
+    # INDIRECT, through one of our own modules that carries the extra. Reported under the extra's
+    # name, because that is what the reader has to guard against and what the failure will say.
+    imported = set(IMPORT.findall(text))
+    for mod, extras in _first_party_carriers().items():
+        tail = mod.split(".")[-1]
+        if mod in imported or ("from inspeximus import %s" % tail) in text:
+            needs = sorted(set(needs) | {"%s (via %s)" % (e, mod) for e in extras})
     if not needs:
         pytest.skip("imports no extra that CI omits")
     assert "importorskip" in text, (

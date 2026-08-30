@@ -14,9 +14,41 @@ Default stays off, so a store written before this is byte-identical to one writt
 """
 from __future__ import annotations
 
+import io
+import os
+
 import pytest
 
-from inspeximus.mcp_server import _flag_from_env
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SERVER = os.path.join(ROOT, "inspeximus", "mcp_server.py")
+
+# THE WIRING TESTS READ THE SOURCE AS TEXT, ON PURPOSE. `inspeximus.mcp_server` imports the MCP SDK at
+# module scope and CI does not install that extra, so importing it here cost the whole file: a
+# collection error, every test in it lost, and a red run on the commit that added them. Guarding the
+# import with `importorskip` would have turned that into a SKIP, which is worse -- the assertion that
+# matters is that the flag reaches `open_store`, and skipping it in CI leaves it unchecked exactly
+# where it would catch a regression. Reading the file needs no SDK and runs everywhere.
+_SRC = io.open(SERVER, encoding="utf-8").read()
+
+
+def _flag_from_env(name, env=None):
+    """The parser under test, loaded WITHOUT importing the server module.
+
+    Compiling the one function keeps its behaviour under test on an interpreter that has no MCP SDK.
+    The definition is taken from the shipped file, so it cannot drift from what the server runs, and
+    the test below asserts the extraction actually found it rather than falling back to something
+    written here.
+    """
+    ns = {"os": os}
+    sep = chr(10) * 3
+    body = _SRC.split("def _flag_from_env(", 1)[1].split(sep, 1)[0]
+    exec("def _flag_from_env(" + body, ns)          # noqa: S102
+    return ns["_flag_from_env"](name, env)
+
+
+def test_the_extraction_found_the_real_function():
+    """CONTROL. Without this, a rename makes every test below exercise nothing and still pass."""
+    assert "def _flag_from_env(" in _SRC, "the server no longer defines the parser these tests check"
 
 
 @pytest.mark.parametrize("value", ["1", "true", "TRUE", "yes", "on", " on "])
@@ -49,12 +81,7 @@ def test_the_server_hands_the_flag_to_the_store():
     This is the half that was missing before: the argument existed, the server simply never passed
     it. Reading the call site is the only way to tell a wired flag from a parsed one.
     """
-    import inspect
-
-    from inspeximus import mcp_server
-
-    src = inspect.getsource(mcp_server)
-    call = src.split("_MEM = open_store(")[1].split(")\n")[0]
+    call = _SRC.split("_MEM = open_store(")[1].split(")\n")[0]
     assert "persist_vectors=" in call, (
         "open_store is called without persist_vectors, so the flag changes nothing: %r" % call)
 
@@ -66,11 +93,7 @@ def test_the_pii_flag_reaches_the_store_too():
     server-backed store counted a column nothing ever filled: zero exposure over a store where
     nobody had looked. A report that cannot be wrong is the shape this project keeps finding.
     """
-    import inspect
-
-    from inspeximus import mcp_server
-
-    call = inspect.getsource(mcp_server).split("_MEM = open_store(")[1].split(")\n")[0]
+    call = _SRC.split("_MEM = open_store(")[1].split(")\n")[0]
     assert "pii_detect=" in call, (
         "open_store is called without pii_detect, so the flag changes nothing: %r" % call)
 
