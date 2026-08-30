@@ -486,7 +486,32 @@ def check_tests(rep, root=ROOT, skip=False):
     # say what failed, which cost exactly one more 20-minute run to find out. `errors="replace"`
     # because a probe printed a cp1250 byte and the decode blew up inside subprocess's reader
     # thread, which loses the output the same way silence does.
-    proc = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-rfE"], cwd=str(root),
+    # AN EXPLICIT WORKER COUNT, because `-n auto` made this leg measure the DISK rather than the code.
+    #
+    # Measured 2026-08-30 on a 24-thread box. Three tests in test_probes_cited_by_docs.py are hang
+    # detectors: they run a probe in a subprocess against a budget declared per probe and measured on
+    # an idle machine. The heavy ones perform ~14,000 durable store writes apiece, so their cost is
+    # fsync, and at 24-way parallelism they blew budgets they clear four to six times over alone:
+    #
+    #     dogfood_cross_session              49.7s idle   vs 180s
+    #     identity_gate_supersession_probe   68.7s idle   vs 400s
+    #     recall_iterative_surface_multihop 100.3s idle   vs 400s
+    #
+    # Three release runs failed on those and nothing else, the same tests passed 60 of 60 run alone,
+    # and CI passes them. The gate was blocking a release on a property of this machine.
+    #
+    # WHY NOT THE OTHER TWO FIXES. Raising the budgets is what the probe table's own comment rejects:
+    # surviving 24-way load needs roughly ten times the idle cost, which blinds the hang detector for
+    # 150 probes to buy margin for three. Pinning the probe tests to one xdist group was tried and
+    # measured: failures fell from three to one and the suite went from 12 minutes to 22, so it
+    # bought half a fix for ten minutes a run, and was reverted.
+    #
+    # This changes NO assertion and skips NO test. It runs the same suite with less contention, and
+    # a real failure fails exactly as before. The cap is deliberately not `auto`: a bigger machine
+    # would otherwise re-create the contention this exists to remove.
+    workers = max(2, min(8, (os.cpu_count() or 4) - 1))
+    proc = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-rfE",
+                           "-n", str(workers)], cwd=str(root),
                           capture_output=True, text=True, errors="replace")
     tail = [ln for ln in (proc.stdout or "").strip().splitlines() if ln.strip()]
     summary = tail[-1] if tail else "no output"
