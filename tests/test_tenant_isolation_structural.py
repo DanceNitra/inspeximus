@@ -55,6 +55,14 @@ def _b_id(store):
 
 # ── the sweep: every public method, not a curated list ───────────────────────────────────────────────
 _ARGS = {                                     # plausible arguments that would reach the other tenant
+    # remember_certificate() takes a residue certificate. The sweep hands it a HAND-BUILT one whose
+    # root_label carries the other side's secret, because the label becomes the record KEY: if the
+    # method ever echoed its input, or wrote under a key it was handed rather than one it derived, this
+    # is where it would show.
+    "remember_certificate": ({"inspeximus_residue_certificate": "1.0", "root_label": SECRET,
+                              "issued_iso": "2026-01-01T00:00:00Z", "issued_ts": 1.0, "ok": True,
+                              "findings": [], "skipped": [], "problems": [], "manifest": [],
+                              "checked_files": 0, "values_count": 0}, "swept"),
     # commitment_supports reads an artifact dict the caller already holds. The sweep aims a
     # HAND-BUILT artifact carrying the other side's secret in a field it is not supposed to read,
     # so that if the helper ever started echoing its input back, this catches it.

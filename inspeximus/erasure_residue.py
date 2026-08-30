@@ -59,6 +59,7 @@ import hashlib
 import json
 import os
 import sqlite3
+import time
 
 _SQLITE_MAGIC = b"SQLite format 3\x00"
 _SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv", ".mypy_cache", ".pytest_cache"}
@@ -164,17 +165,25 @@ def _live_rows(path: str, value: str) -> list[dict]:
 
 
 def scan_residue(root: str, values, max_file_mb: float = 512.0,
-                 skip_dirs=None, follow_symlinks: bool = False) -> dict:
+                 skip_dirs=None, follow_symlinks: bool = False,
+                 manifest: bool = False) -> dict:
     """Search `root` for values that should no longer exist anywhere.
 
-    Returns {ok, checked_files, skipped, findings, problems}. `ok` is True only when nothing was found --
+    Returns {ok, checked_files, skipped, findings, problems, manifest}. `ok` is True only when nothing was found --
     including unreclaimed bytes, because "logically deleted but still on the disk you are handing to
     someone" is exactly the state an erasure obligation is about. The `kind` on each finding is what tells
     you whether to file a bug or run a VACUUM.
+
+    `manifest=True` additionally records, for every file actually READ, its path relative to `root`, its
+    SHA-256 and its size. That list is what turns a scan into evidence: a count of files is the scanner's
+    word, whereas hashes let a third party re-walk the same directory and confirm both that the bytes are
+    the ones that were searched and that nothing changed afterwards. It costs one hash per file over bytes
+    already in memory, so it is off by default only because most callers want the verdict, not the proof.
+    `residue_certificate()` requires it.
     """
     vals = [v for v in (values or []) if isinstance(v, str) and v]
     if not vals:
-        return {"ok": False, "checked_files": 0, "skipped": [], "findings": [],
+        return {"ok": False, "checked_files": 0, "skipped": [], "findings": [], "manifest": [],
                 "problems": ["no values were given, so nothing was searched for -- an empty search is "
                              "not a clean result"]}
 
@@ -188,12 +197,13 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
     # health, and it is the same defect the erasure certificate had when its absence proof pointed at a
     # path that did not exist. Fail closed and name the cause.
     if not os.path.isdir(root):
-        return {"ok": False, "checked_files": 0, "skipped": [], "findings": [],
+        return {"ok": False, "checked_files": 0, "skipped": [], "findings": [], "manifest": [],
                 "problems": [f"{root!r} is not a directory, so nothing was searched -- an unsearched "
                              f"location is not a clean one"]}
     findings: list[dict] = []
     problems: list[str] = []
     skipped: list[dict] = []
+    files: list[dict] = []
     checked = 0
     limit = int(max_file_mb * 1024 * 1024)
 
@@ -228,6 +238,9 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
                 skipped.append({"path": rel, "why": f"{type(e).__name__}"})
                 continue
             checked += 1
+            if manifest:
+                files.append({"path": rel.replace(os.sep, "/"), "sha256": hashlib.sha256(blob).hexdigest(),
+                              "bytes": len(blob)})
 
             present = [v for v in vals if v.encode("utf-8") in blob]
             if not present:
@@ -271,7 +284,295 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
                         "result about nothing; confirm the path is the one you meant")
 
     return {"ok": not findings and not skipped, "checked_files": checked,
-            "skipped": skipped, "findings": findings, "problems": problems}
+            "skipped": skipped, "findings": findings, "problems": problems,
+            "manifest": sorted(files, key=lambda f: f["path"])}
+
+
+try:                                  # OPTIONAL: only needed to SIGN or verify a residue certificate.
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+        Ed25519PrivateKey as _Ed25519SK, Ed25519PublicKey as _Ed25519PK)
+    _HAVE_ED = True
+except Exception:
+    _HAVE_ED = False
+
+RESIDUE_CERT_SCOPE = (
+    "This certificate attests WHAT THE SCANNER READ at issue time, and nothing else. It states that at "
+    "`issued_iso`, the files listed in `manifest` had the SHA-256 hashes given there, and that a literal, "
+    "case-sensitive byte search of those files for the values in `values_searched` produced `findings`. "
+    "It does NOT certify that the store is complete: a file listed in `skipped` was never read, a file "
+    "created after the scan is invisible to it, and re-verification against a live directory reports both. "
+    "It does NOT certify that the values never existed, that they are unrecoverable from backups or from a "
+    "filesystem's free space, or that an encoded form is absent -- the match is literal, so a lowercased or "
+    "re-spaced copy is MISSED by design (see the module docstring). The signature identifies the scanner to "
+    "a party who does not hold its key; it does not make the finding true. The finding is checkable by "
+    "re-running the scan against the hashes in `manifest`, which is what makes this evidence rather than "
+    "an assertion.")
+
+
+def _canonical(doc) -> bytes:
+    """The exact bytes that get signed. Sorted keys, no whitespace, ASCII-escaped, so that a document
+    round-tripped through any conforming JSON implementation re-serialises identically."""
+    return json.dumps(doc, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+
+
+def residue_certificate(root: str, values, signing_key: str | None = None, *,
+                        root_label: str | None = None, max_file_mb: float = 512.0,
+                        skip_dirs=None, follow_symlinks: bool = False) -> dict:
+    """Scan a store you DO NOT OWN and package the result as an independently verifiable document.
+
+    This is the auditor's form of `scan_residue`. An auditor is engaged to state a fact about someone
+    else's system, and a Python dict is his word for it. This returns a self-contained JSON document that
+    his client can hand to a regulator, and that the regulator checks with the module-level
+    `verify_residue_certificate(cert, root=...)` WITHOUT the scanner's private key and WITHOUT trusting
+    the scanner.
+
+    It differs from `Inspeximus.erasure_certificate()` in what it can honestly claim, and the difference
+    is the reason both exist. That one is issued by the OPERATOR about the ACT of erasure, and its
+    evidence is a signed tombstone chain it owns. This one is issued by an OUTSIDE party about the
+    CONTENT of a directory at one moment, and its evidence is the bytes it read. A scanner has no chain
+    and cannot get one, so the certificate commits to file hashes instead: that is what a third party
+    re-walks to confirm both that the search covered the bytes it claims and that they have not changed.
+
+    `signing_key` is an Ed25519 secret as hex (see `new_receipt_keypair()`). Without one the document is
+    still returned and still re-verifiable by re-walking, but it carries no signature and
+    `verify_residue_certificate` reports `signed: False`. An unsigned certificate names no one, so
+    anybody could have produced it.
+
+    Every parameter that changes what gets read is recorded in `scan_parameters`, because a verifier who
+    cannot reproduce the walk cannot check the result.
+    """
+    if signing_key is not None and not _HAVE_ED:
+        raise RuntimeError("signing a residue certificate needs the `cryptography` package "
+                           "(pip install cryptography). Omit signing_key for an unsigned document.")
+    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)
+    scan = scan_residue(root, values, max_file_mb=max_file_mb, skip_dirs=skip,
+                        follow_symlinks=follow_symlinks, manifest=True)
+    vals = [v for v in (values or []) if isinstance(v, str) and v]
+    core = {
+        "inspeximus_residue_certificate": "1.0",
+        "issued_ts": time.time(),
+        "issued_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        # The label is what a report can print. The absolute path is deliberately NOT signed into the
+        # core: the same directory legitimately sits at a different path on the verifier's machine, and
+        # pinning it would fail an honest re-verification.
+        "root_label": root_label or os.path.basename(os.path.abspath(root)) or root,
+        "scan_parameters": {"max_file_mb": max_file_mb, "skip_dirs": sorted(skip),
+                            "follow_symlinks": bool(follow_symlinks),
+                            "match": "literal, case-sensitive, byte substring"},
+        "values_searched": [{"fingerprint": _fingerprint(v)} for v in vals],
+        "values_count": len(vals),
+        "ok": scan["ok"],
+        "checked_files": scan["checked_files"],
+        "findings": scan["findings"],
+        "skipped": scan["skipped"],
+        "problems": scan["problems"],
+        "manifest": scan["manifest"],
+        "manifest_sha256": hashlib.sha256(_canonical(scan["manifest"])).hexdigest(),
+        "scope": RESIDUE_CERT_SCOPE,
+    }
+    cert = dict(core)
+    if signing_key is not None:
+        sk = _Ed25519SK.from_private_bytes(bytes.fromhex(signing_key))
+        cert["pubkey"] = sk.public_key().public_bytes_raw().hex()
+        # Sign the core WITH the pubkey inside it, so that a signature cannot be re-attributed to another
+        # key by editing the field it is checked against.
+        cert["signature"] = sk.sign(_canonical(dict(core, pubkey=cert["pubkey"]))).hex()
+    cert["verify_with"] = ("inspeximus.verify_residue_certificate(cert, root=<dir>)  "
+                           "# root is optional; without it the bytes are not re-checked")
+    return cert
+
+
+def verify_residue_certificate(cert: dict, root: str | None = None,
+                               expected_pubkey: str | None = None) -> dict:
+    """Check a residue certificate WITHOUT the scanner's key and WITHOUT trusting the scanner.
+
+    Four checks, and the last is the one that carries the weight:
+
+      1. The document is structurally a residue certificate of a version this code knows.
+      2. `manifest_sha256` commits to the manifest that is actually present.
+      3. The Ed25519 signature verifies against the pubkey in the document, pinned to `expected_pubkey`
+         when you supply one. Verifying against a key the document itself names proves only internal
+         consistency, so pin the key you independently expect, or the signature answers a question
+         nobody asked.
+      4. Given `root`, every file in the manifest is re-hashed on disk. Reports `unchanged`, `changed`,
+         `missing`, and `added`, where added names files that exist now and that the scan never read. A
+         certificate whose bytes no longer match is not invalid, it is STALE. The two are reported
+         separately because merging them either hides a real change or condemns an honest record.
+
+    Returns {valid, signed, checks, problems, bytes}. `valid` is a statement about the document. It is
+    never a verdict on the store: read `cert["ok"]` for that, and `cert["scope"]` for what it is worth.
+    """
+    problems: list = []
+    checks: dict = {}
+    if not isinstance(cert, dict) or "inspeximus_residue_certificate" not in cert:
+        return {"valid": False, "signed": False, "checks": {},
+                "problems": ["not an inspeximus residue certificate"], "bytes": None}
+    ver = cert.get("inspeximus_residue_certificate")
+    checks["version_known"] = ver == "1.0"
+    if not checks["version_known"]:
+        problems.append("certificate version " + repr(ver) + " is not one this verifier knows")
+
+    manifest = cert.get("manifest")
+    if not isinstance(manifest, list):
+        problems.append("certificate carries no manifest, so nothing commits to the bytes searched")
+        checks["manifest_committed"] = False
+    else:
+        recomputed = hashlib.sha256(_canonical(manifest)).hexdigest()
+        checks["manifest_committed"] = recomputed == cert.get("manifest_sha256")
+        if not checks["manifest_committed"]:
+            problems.append("manifest_sha256 does not commit to the manifest in this document")
+
+    signed = bool(cert.get("signature"))
+    checks["signed"] = signed
+    if not signed:
+        problems.append("certificate is unsigned, so it names no scanner; anybody could have produced it")
+    else:
+        pub = cert.get("pubkey") or ""
+        if expected_pubkey and pub != expected_pubkey:
+            checks["pubkey_pinned"] = False
+            problems.append("certificate pubkey does not match the expected one")
+        elif expected_pubkey:
+            checks["pubkey_pinned"] = True
+        if not _HAVE_ED:
+            checks["signature_valid"] = None
+            problems.append("cannot check the signature without the `cryptography` package")
+        else:
+            core = {k: v for k, v in cert.items() if k not in ("signature", "verify_with")}
+            try:
+                _Ed25519PK.from_public_bytes(bytes.fromhex(pub)).verify(
+                    bytes.fromhex(cert["signature"]), _canonical(core))
+                checks["signature_valid"] = True
+            except Exception as e:
+                checks["signature_valid"] = False
+                problems.append("signature does not verify: " + type(e).__name__)
+
+    byte_report = None
+    if root is not None and isinstance(manifest, list):
+        byte_report = _recheck_bytes(cert, root)
+        checks["bytes_unchanged"] = not (byte_report["changed"] or byte_report["missing"])
+        if not checks["bytes_unchanged"]:
+            problems.append(
+                str(len(byte_report["changed"])) + " file(s) changed and " +
+                str(len(byte_report["missing"])) + " missing since the scan, so this certificate is "
+                "STALE for the current directory. That is a fact about the store rather than a defect "
+                "in the document.")
+        if byte_report["added"]:
+            problems.append(
+                str(len(byte_report["added"])) + " file(s) exist now that the scan never read, so the "
+                "certificate says nothing about them")
+
+    valid = (checks.get("version_known") and checks.get("manifest_committed")
+             and checks.get("signature_valid") is not False
+             and checks.get("pubkey_pinned") is not False)
+    return {"valid": bool(valid), "signed": signed, "checks": checks,
+            "problems": problems, "bytes": byte_report}
+
+
+def _recheck_bytes(cert: dict, root: str) -> dict:
+    """Re-walk `root` and compare it against the certificate's manifest.
+
+    The walk uses the certificate's OWN recorded parameters rather than this function's defaults. A
+    verifier who skips a different set of directories is answering a different question, and would
+    report every file in them as added.
+    """
+    params = cert.get("scan_parameters") or {}
+    skip = set(params.get("skip_dirs") or [])
+    limit = float(params.get("max_file_mb") or 512.0) * 1024 * 1024
+    follow = bool(params.get("follow_symlinks"))
+    recorded = {f["path"]: f for f in cert.get("manifest") or [] if isinstance(f, dict) and "path" in f}
+    seen = set()
+    unchanged = []
+    changed = []
+    added = []
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=follow):
+        dirnames[:] = [d for d in dirnames if d not in skip]
+        for name in filenames:
+            path = os.path.join(dirpath, name)
+            rel = os.path.relpath(path, root).replace(os.sep, "/")
+            try:
+                if os.path.getsize(path) > limit:
+                    continue
+                with open(path, "rb") as fh:
+                    digest = hashlib.sha256(fh.read()).hexdigest()
+            except OSError:
+                continue
+            if rel not in recorded:
+                added.append(rel)
+                continue
+            seen.add(rel)
+            (unchanged if recorded[rel].get("sha256") == digest else changed).append(rel)
+    missing = sorted(set(recorded) - seen)
+    return {"unchanged": sorted(unchanged), "changed": sorted(changed),
+            "missing": missing, "added": sorted(added), "manifest_files": len(recorded)}
+
+
+def certificate_drift(old: dict, new: dict) -> dict:
+    """What changed in a store between two residue certificates.
+
+    This is the question a repeat engagement actually asks. A single certificate says whether a store was
+    clean at one moment; two say whether it is getting better or worse, and which files moved. Both
+    documents carry a per-file SHA-256, so the comparison is exact rather than inferred from counts.
+
+    Returns {clean_to_dirty, dirty_to_clean, changed, added, removed, findings_delta, days,
+    comparable, problems}. `clean_to_dirty` is the alarm: a store that passed and now does not.
+
+    `comparable` is False when the two scans cannot honestly be differenced, and the reasons are in
+    `problems`. Two scans of different roots, or with different skip lists, produce file sets that differ
+    because the WALK differed rather than because the store did, and reporting that as drift would invent
+    a change out of a parameter. Ordering is by issue time, so passing the pair the wrong way round is
+    corrected rather than inverted.
+    """
+    problems: list = []
+    for name, doc in (("old", old), ("new", new)):
+        if not isinstance(doc, dict) or "inspeximus_residue_certificate" not in doc:
+            return {"comparable": False, "problems": [name + " is not a residue certificate"],
+                    "clean_to_dirty": None, "dirty_to_clean": None, "changed": [], "added": [],
+                    "removed": [], "findings_delta": None, "days": None}
+    if (old.get("issued_ts") or 0) > (new.get("issued_ts") or 0):
+        old, new = new, old                       # order by issue time, not by argument position
+    if old.get("root_label") != new.get("root_label"):
+        problems.append("the two certificates are about different stores (" +
+                        repr(old.get("root_label")) + " and " + repr(new.get("root_label")) +
+                        "), so a file-level difference between them is not drift")
+    op = (old.get("scan_parameters") or {})
+    npar = (new.get("scan_parameters") or {})
+    if op.get("skip_dirs") != npar.get("skip_dirs") or op.get("max_file_mb") != npar.get("max_file_mb"):
+        problems.append("the two scans used different parameters, so files can appear or vanish because "
+                        "the walk changed rather than because the store did")
+    o = {f["path"]: f.get("sha256") for f in old.get("manifest") or [] if isinstance(f, dict)}
+    n = {f["path"]: f.get("sha256") for f in new.get("manifest") or [] if isinstance(f, dict)}
+    both = set(o) & set(n)
+    days = None
+    if old.get("issued_ts") and new.get("issued_ts"):
+        days = round((new["issued_ts"] - old["issued_ts"]) / 86400.0, 2)
+    return {
+        "comparable": not problems,
+        "problems": problems,
+        "clean_to_dirty": bool(old.get("ok")) and not bool(new.get("ok")),
+        "dirty_to_clean": (not bool(old.get("ok"))) and bool(new.get("ok")),
+        "changed": sorted(k for k in both if o[k] != n[k]),
+        "added": sorted(set(n) - set(o)),
+        "removed": sorted(set(o) - set(n)),
+        "findings_delta": len(new.get("findings") or []) - len(old.get("findings") or []),
+        "days": days,
+    }
+
+
+def certificate_summary(cert: dict) -> dict:
+    """The content-free summary of a certificate, small enough to keep in a memory store.
+
+    The full document carries one line per file, so a large store makes it far too big to remember. This
+    keeps what an auditor needs to answer "what did we certify, and when", plus `manifest_sha256` and
+    `signature`, which together identify WHICH file on disk is the certificate this record refers to. The
+    evidence stays in the file; the store remembers the claim.
+    """
+    return {"root_label": cert.get("root_label"), "issued_iso": cert.get("issued_iso"),
+            "issued_ts": cert.get("issued_ts"), "ok": cert.get("ok"),
+            "findings": len(cert.get("findings") or []), "checked_files": cert.get("checked_files"),
+            "skipped": len(cert.get("skipped") or []), "values_count": cert.get("values_count"),
+            "manifest_files": len(cert.get("manifest") or []),
+            "manifest_sha256": cert.get("manifest_sha256"), "pubkey": cert.get("pubkey"),
+            "signature": cert.get("signature")}
 
 
 def main(argv=None) -> int:

@@ -1594,5 +1594,77 @@
     "tests": [
       "tests/test_the_server_can_keep_the_vectors_it_paid_for.py"
     ]
+  },
+  {
+    "name": "the certificate signs a core without the pubkey, so a signature can be re-attributed",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "cert[\"signature\"] = sk.sign(_canonical(dict(core, pubkey=cert[\"pubkey\"]))).hex()",
+    "new": "cert[\"signature\"] = sk.sign(_canonical(core)).hex()",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
+  },
+  {
+    "name": "the manifest commitment is asserted rather than recomputed",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "checks[\"manifest_committed\"] = recomputed == cert.get(\"manifest_sha256\")",
+    "new": "checks[\"manifest_committed\"] = True",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
+  },
+  {
+    "name": "a document with a bad signature is still called valid",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "             and checks.get(\"signature_valid\") is not False",
+    "new": "             and checks.get(\"signature_valid\") is not None",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
+  },
+  {
+    "name": "the manifest records no hash, so nothing commits to the bytes that were searched",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "files.append({\"path\": rel.replace(os.sep, \"/\"), \"sha256\": hashlib.sha256(blob).hexdigest(),",
+    "new": "files.append({\"path\": rel.replace(os.sep, \"/\"), \"sha256\": \"\",",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
+  },
+  {
+    "name": "re-verification walks with its own parameters instead of the certificate's",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "    skip = set(params.get(\"skip_dirs\") or [])",
+    "new": "    skip = set()",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
+  },
+  {
+    "name": "drift compares two scans that cannot honestly be differenced",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "        \"comparable\": not problems,",
+    "new": "        \"comparable\": True,",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
+  },
+  {
+    "name": "the remembered summary carries the whole manifest into the memory store",
+    "file": "inspeximus/erasure_residue.py",
+    "old": "            \"manifest_files\": len(cert.get(\"manifest\") or []),",
+    "new": "            \"manifest_files\": len(cert.get(\"manifest\") or []), \"manifest\": cert.get(\"manifest\"),",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
+  },
+  {
+    "name": "every engagement is remembered under one key, so clients overwrite each other",
+    "file": "inspeximus/core.py",
+    "old": "key = key or (\"residue::\" + str(label))",
+    "new": "key = key or \"residue\"",
+    "tests": [
+      "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+    ]
   }
 ]

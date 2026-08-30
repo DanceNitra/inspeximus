@@ -556,6 +556,24 @@ def main(argv=None):
     rz.add_argument("--value", action="append", default=[], help="a value that should be gone (repeatable)")
     rz.add_argument("--value-file", help="file with one value per line")
     rz.add_argument("--max-file-mb", type=float, default=512.0)
+    rz.add_argument("--cert-out", help="write an independently verifiable residue CERTIFICATE to this path: "
+                                       "the scan plus a SHA-256 per file read, so a third party can re-walk "
+                                       "the directory and confirm both the coverage and that the bytes have "
+                                       "not changed")
+    rz.add_argument("--sign-key-file", help="file holding an Ed25519 secret (hex) to sign the certificate "
+                                            "with; see `inspeximus writer-key`. Without it the certificate "
+                                            "names no scanner")
+    rz.add_argument("--label", help="what to call the scanned store in the certificate (default: the "
+                                    "directory name). The absolute path is deliberately not recorded")
+
+    rzv = sub.add_parser("residue-verify",
+                         help="verify a residue certificate OFFLINE, without the scanner's key and without "
+                              "trusting the scanner (give --root to also re-check the bytes)")
+    rzv.add_argument("certificate", help="the certificate json written by `residue --cert-out`")
+    rzv.add_argument("--root", help="the directory to re-walk and compare against the certificate manifest")
+    rzv.add_argument("--expected-pubkey", help="the scanner key you INDEPENDENTLY expect. Checking a "
+                                               "signature only against the key the document itself names "
+                                               "proves internal consistency and nothing more")
 
     co = sub.add_parser("consolidate", help="run the dedup/consolidation pass (optionally prune to --keep)")
     co.add_argument("--keep", type=int, default=None)
@@ -863,6 +881,75 @@ def main(argv=None):
         # nobody can attribute, discovered only when the auditor pins a key months later.
         print(f"cannot read the receipt key: {e}", file=sys.stderr)
         return 2
+    # residue and residue-verify are AUDITOR commands about a store we do NOT own, so neither may open
+    # ours. This is the defect the erasure-verify comment records, and residue had it: the dispatch sat
+    # after `m = _store(...)`, so scanning a client directory minted an empty store of our own at the
+    # default path. Nothing in the output said so.
+    if a.cmd == "residue":
+        from .erasure_residue import residue_certificate, scan_residue
+        values = list(a.value)
+        if a.value_file:
+            with open(a.value_file, encoding="utf-8") as fh:
+                values += [ln.strip() for ln in fh if ln.strip()]
+        key = None
+        if a.sign_key_file:
+            try:
+                with open(a.sign_key_file, encoding="utf-8") as fh:
+                    key = fh.read().strip()
+            except OSError as e:
+                # Falling through to unsigned would produce a document that LOOKS like the signed one and
+                # names nobody. Same reasoning as the receipt key a few lines on.
+                print(f"cannot read the signing key: {e}", file=sys.stderr)
+                return 2
+        if key and not a.cert_out:
+            print("residue: --sign-key-file signs a certificate, so it needs --cert-out", file=sys.stderr)
+            return 2
+        if a.cert_out:
+            cert = residue_certificate(a.root, values, key, root_label=a.label,
+                                       max_file_mb=a.max_file_mb)
+            with open(a.cert_out, "w", encoding="utf-8") as fh:
+                json.dump(cert, fh, ensure_ascii=False, indent=2)
+            rep = cert
+        else:
+            rep = scan_residue(a.root, values, max_file_mb=a.max_file_mb)
+        if not _out(rep, a.json):
+            print(f"checked {rep['checked_files']} file(s) under {a.root}")
+            for f in rep["findings"]:
+                where = (f" [{f.get('table')}.{f.get('column')} x{f.get('rows')}]"
+                         if f["kind"] == "LIVE" else "")
+                print(f"  {f['kind']:12s} {f['path']}{where}   fp={f['fingerprint']}")
+            for problem in rep["problems"]:
+                print(f"  ! {problem}")
+            if a.cert_out:
+                print(f"wrote residue certificate -> {a.cert_out}  "
+                      f"({len(rep['manifest'])} file(s) committed by SHA-256"
+                      f"{', signed' if rep.get('signature') else ', UNSIGNED'})")
+                print(f"  verify with: inspeximus residue-verify {a.cert_out} --root {a.root}")
+            print("RESULT:", "clean - no residue found" if rep["ok"] else "residue found (listed earlier)")
+        # a non-zero exit so this is usable as a gate in CI or a DSAR runbook
+        raise SystemExit(0 if rep["ok"] else 1)
+
+    if a.cmd == "residue-verify":
+        from .erasure_residue import verify_residue_certificate
+        with open(a.certificate, encoding="utf-8") as fh:
+            cert = json.load(fh)
+        res = verify_residue_certificate(cert, root=a.root, expected_pubkey=a.expected_pubkey)
+        if not _out(res, a.json):
+            print(f"certificate for {cert.get('root_label')!r} issued {cert.get('issued_iso')}")
+            for name, val in res["checks"].items():
+                mark = {True: "ok  ", False: "FAIL", None: "??  "}.get(val, "??  ")
+                print(f"  {mark} {name}")
+            b = res.get("bytes")
+            if b:
+                print(f"  bytes: {len(b['unchanged'])} unchanged, {len(b['changed'])} changed, "
+                      f"{len(b['missing'])} missing, {len(b['added'])} never read")
+            for problem in res["problems"]:
+                print(f"  ! {problem}")
+            # Two verdicts, deliberately separate. The document can be sound about a store that is not.
+            print("DOCUMENT:", "valid" if res["valid"] else "INVALID")
+            print("STORE AT SCAN TIME:", "clean" if cert.get("ok") else "residue found")
+        return 0 if res["valid"] else 1
+
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
@@ -1232,25 +1319,6 @@ def main(argv=None):
         else:
             for p in pairs:
                 print(f"- {p.get('a_text','')}  <>  {p.get('b_text','')}")
-
-    elif a.cmd == "residue":
-        from .erasure_residue import scan_residue
-        values = list(a.value)
-        if a.value_file:
-            with open(a.value_file, encoding="utf-8") as fh:
-                values += [ln.strip() for ln in fh if ln.strip()]
-        rep = scan_residue(a.root, values, max_file_mb=a.max_file_mb)
-        if not _out(rep, a.json):
-            print(f"checked {rep['checked_files']} file(s) under {a.root}")
-            for f in rep["findings"]:
-                where = (f" [{f.get('table')}.{f.get('column')} x{f.get('rows')}]"
-                         if f["kind"] == "LIVE" else "")
-                print(f"  {f['kind']:12s} {f['path']}{where}   fp={f['fingerprint']}")
-            for problem in rep["problems"]:
-                print(f"  ! {problem}")
-            print("RESULT:", "clean - no residue found" if rep["ok"] else "residue found (see above)")
-        # a non-zero exit so this is usable as a gate in CI or a DSAR runbook
-        raise SystemExit(0 if rep["ok"] else 1)
 
     elif a.cmd == "erasure-certificate":
         cert = m.erasure_certificate(request_id=a.request_id, expected_pubkey=a.expected_pubkey)

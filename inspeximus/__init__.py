@@ -32,6 +32,18 @@ from .core import (
     __version__,
 )
 
+# 2.22.0. The auditor's half of erasure. `scan_residue` answers about a store we do NOT own, and
+# the certificate turns that answer into a document a third party verifies without our key. Exported here
+# because a capability reachable only as inspeximus.erasure_residue.residue_certificate is one a reader
+# following the obvious import does not find, which is the defect recorded in the preceding note.
+from .erasure_residue import (
+    scan_residue,
+    residue_certificate,
+    verify_residue_certificate,
+    certificate_drift,
+    certificate_summary,
+)
+
 __all__ = [
     "Inspeximus",
     "AmbiguousSubject",
@@ -43,6 +55,11 @@ __all__ = [
     "sign_erasure",
     "erasure_challenge",
     "verify_erasure_certificate",
+    "scan_residue",
+    "residue_certificate",
+    "verify_residue_certificate",
+    "certificate_drift",
+    "certificate_summary",
     "attest",
     "derive_key",
     "regex_extractor",

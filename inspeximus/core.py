@@ -3132,9 +3132,16 @@ class Inspeximus:
         import tempfile as _tempfile
 
         cls = type(self)
+        # The suffix rule selects on the SHAPE OF A NAME, and a name is not a contract. It over-matched
+        # the moment a WRITE method ended in "certificate": remember_certificate() records a scan, can
+        # never notice a corruption, and counting it inflated `available` to 25 with no probe possible.
+        # Write verbs are excluded explicitly rather than by renaming the method, because the next
+        # honestly-named writer would land here again.
+        _WRITES = ("remember", "forget", "consolidate", "revert", "grant", "revoke")
         available = sorted(
             n for n in dir(cls)
             if not n.startswith("_") and callable(getattr(cls, n, None))
+            and not n.startswith(_WRITES)
             and (n.startswith(("verify", "check", "detect"))
                  or n.endswith(("audit", "_report", "certificate", "integrity", "coherence"))))
 
@@ -8128,6 +8135,56 @@ class Inspeximus:
             "scope": _CERT_SCOPE,
             "verify_with": "inspeximus.verify_erasure_certificate(cert, store_path=<file>)  # or store_items=<list>",
         }
+
+    def remember_certificate(self, cert: dict, key: str | None = None, **kw) -> dict:
+        """Remember a residue certificate, so a repeat engagement can see what changed.
+
+        Signing answers "is this document genuine". Remembering answers "is this store getting worse",
+        which is the question a second visit is paid to settle. The record is keyed on the store the
+        certificate is about, so a re-scan SUPERSEDES the previous one: `recall` returns the current
+        state, `history(key)` returns every certificate issued about that store in order, and `as_of`
+        answers what we certified on a given date.
+
+        Only the summary is stored, never the manifest: one line per file makes a large store far too big
+        to keep in memory, and the evidence belongs in the certificate file anyway. The summary carries
+        `manifest_sha256` and `signature`, which identify which file on disk this record refers to.
+
+        Returns {id, key, first_scan, drift}. `drift` is None on a first scan and otherwise reports the
+        change since the previous certificate, with `clean_to_dirty` as the alarm. It is computed from
+        the summaries, so it can compare verdicts and counts but not individual files; for a file-level
+        difference pass both certificate FILES to `certificate_drift`.
+        """
+        from .erasure_residue import certificate_summary
+        if not isinstance(cert, dict) or "inspeximus_residue_certificate" not in cert:
+            raise ValueError("remember_certificate() takes a residue certificate from "
+                             "residue_certificate(); got something else")
+        summary = certificate_summary(cert)
+        label = summary.get("root_label") or "unlabelled"
+        key = key or ("residue::" + str(label))
+        prior = [h for h in self.history(key) if h.get("object")]
+        previous = None
+        if prior:
+            try:
+                previous = json.loads(prior[-1]["object"])
+            except Exception:
+                previous = None
+        drift = None
+        if previous:
+            drift = {
+                "clean_to_dirty": bool(previous.get("ok")) and not bool(summary["ok"]),
+                "dirty_to_clean": (not bool(previous.get("ok"))) and bool(summary["ok"]),
+                "findings_delta": (summary["findings"] or 0) - (previous.get("findings") or 0),
+                "bytes_changed": previous.get("manifest_sha256") != summary["manifest_sha256"],
+                "days": (round((summary["issued_ts"] - previous["issued_ts"]) / 86400.0, 2)
+                         if summary.get("issued_ts") and previous.get("issued_ts") else None),
+                "previous_issued_iso": previous.get("issued_iso"),
+            }
+        verdict = "clean" if summary["ok"] else ("%d finding(s)" % summary["findings"])
+        text = ("residue certificate for %s issued %s: %s, %s file(s) read"
+                % (label, summary["issued_iso"], verdict, summary["checked_files"]))
+        mid = self.remember(text, key=key, object=json.dumps(summary, sort_keys=True),
+                            mtype="semantic", **kw)
+        return {"id": mid, "key": key, "first_scan": previous is None, "drift": drift}
 
     def governance_report(self, expected_pubkey: str | None = None) -> dict:
         """ONE auditor-facing surface for erasure-with-proof — the compliance view of forget_subject, built for
@@ -14010,6 +14067,10 @@ class _TenantView:
     # store-wide -- one writer, one policy -- but `measured` is a property of the rows in scope.
     def identifier_contract(self, *a, **k):  return Inspeximus.identifier_contract(self, *a, **k)
     def remember(self, *a, **k):        return Inspeximus.remember(self, *a, **k)
+    # Safe to rebind rather than reserve for the operator: it writes through self.remember()
+    # and reads through self.history(), both of which are tenant-scoped on this view, so a
+    # tenant records its OWN engagements and sees no other tenant's certificates.
+    def remember_certificate(self, *a, **k): return Inspeximus.remember_certificate(self, *a, **k)
     def history(self, *a, **k):             return Inspeximus.history(self, *a, **k)
     def provenance(self, *a, **k):          return Inspeximus.provenance(self, *a, **k)
     def as_of(self, *a, **k):               return Inspeximus.as_of(self, *a, **k)

@@ -155,7 +155,7 @@ $ inspeximus residue --root ./dsar --value bob@example.com
 checked 3 file(s) under ./dsar
   PLAIN        store.json   fp=5ff860bf1190
   ! a plain file still contains the value; nothing reclaims this automatically
-RESULT: residue found (see above)
+RESULT: residue found (listed earlier)
 # exit status: 1
 ```
 
