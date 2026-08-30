@@ -251,6 +251,28 @@ knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 including summaries that inherited it through lineage — and leaves a signed, content-free tombstone, so
 a later audit can tell *deliberately erased* from *tampered with*.
 
+**A deletion check that reads the bytes, on any store.** `delete()` returning success tells you a row
+is gone from an index. It does not tell you the value has left the disk, and for an erasure obligation
+that is the part that matters. `scan_residue(root, values)` searches a directory for values that are
+supposed to be gone and separates three outcomes that are usually collapsed into one: `LIVE` (a table
+still holds it in a row), `UNRECLAIMED` (the bytes are there but in no live row, because the storage
+engine has not reused the page yet, which is a property of the engine and not a vendor defect), and
+`PLAIN` (a log, trace or backup file still contains it). Nothing about it is specific to inspeximus:
+point it at a vector database, a SQLite history, a JSONL trace, or another library's data directory,
+and it answers for that deployment.
+
+`residue_certificate()` turns one of those scans into a document somebody else can check.
+It records a SHA-256 for every file it read, so a third party re-walks the same directory with
+`verify_residue_certificate()` and confirms both that the search covered the bytes it claims and that
+they have not changed since. The signature identifies the scanner without making the finding true;
+what makes it evidence is that anyone can re-run it. From the shell: `inspeximus residue --root DIR
+--value SECRET --cert-out cert.json`, then `inspeximus residue-verify cert.json --root DIR`.
+
+Read the scope before treating a clean result as an all-clear. The match is literal and
+case-sensitive, so a lowercased or re-spaced copy of the value is missed by design; a file the scan
+could not read is reported and keeps the verdict negative, because "clean" must never mean "we did not
+look there". Both limits travel inside the signed certificate.
+
 **Provenance you can check, not just store.** `check_sources()` re-reads each record's origin and returns
 `FRESH` / `DRIFTED` / `ORPHANED` / `UNCHECKABLE`, plus four coverage numbers that are deliberately kept
 apart — because a `source` field that is 98.3% populated and 0.01% re-fetchable is a schema, not a
