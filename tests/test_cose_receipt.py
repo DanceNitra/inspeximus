@@ -88,8 +88,17 @@ def test_the_receipt_has_the_shape_the_draft_specifies(store, signer):
     proofs = unprotected[HDR_VDP][PROOF_INCLUSION]     # 396 : { -1 : [ ... ] }
     size, index, path = decode(proofs[0])
     assert (size, index) == (9, 3)
-    assert payload == bytes.fromhex(b["root"]), "payload MUST be the Merkle root"
+    # RFC 9942 section 4.4: "The payload in such definitions SHOULD be detached", and the section
+    # 5.2.1 example for RFC9162_SHA256 encodes null. The signature still covers the root, which is
+    # what the round trip below proves; the message just does not carry it.
+    assert payload is None, "RFC 9942 detaches the payload; the root is not carried in the message"
     assert len(sig) == 64
+
+    # The root is still what was signed, so an attached receipt over the same tree verifies the same.
+    attached = inclusion_receipt(b["tree_size"], b["index"],
+                                 [bytes.fromhex(h) for h in b["audit_path"]],
+                                 bytes.fromhex(b["root"]), sign, detached=False)
+    assert decode(attached).value[2] == bytes.fromhex(b["root"])
 
 
 def test_the_receipt_verifies_end_to_end(store, signer):
@@ -153,7 +162,18 @@ def test_not_checking_inclusion_is_reported_not_assumed(store, signer):
                           bytes.fromhex(b["root"]), sign)
     out = verify_receipt(r, verify)
     assert not out["ok"]
-    assert any("inclusion NOT checked" in p for p in out["problems"])
+    # With a detached payload and no leaf, there is not even a root to check the signature against,
+    # and the verifier says which check it could not perform rather than reporting a failure it did
+    # not measure.
+    assert any("nothing was verified" in p or "inclusion NOT checked" in p for p in out["problems"])
+
+    # An ATTACHED receipt still reaches the older message, because the root is in the message and only
+    # the inclusion check is missing.
+    att = inclusion_receipt(b["tree_size"], b["index"], [bytes.fromhex(h) for h in b["audit_path"]],
+                            bytes.fromhex(b["root"]), sign, detached=False)
+    out_att = verify_receipt(att, verify)
+    assert not out_att["ok"]
+    assert any("inclusion NOT checked" in p for p in out_att["problems"])
 
 
 def test_an_unsigned_receipt_cannot_be_produced(store):
@@ -179,3 +199,36 @@ def test_the_digest_is_stable(store, signer):
     r1 = inclusion_receipt(*args, sign)
     assert receipt_digest(r1) == hashlib.sha256(r1).hexdigest()
     assert len(receipt_digest(r1)) == 64
+
+
+def test_expected_root_is_never_the_source_of_the_root_it_is_compared_to(store, signer):
+    """The tautology this file caught while the payload was being detached.
+
+    A detached receipt carries no root. The first implementation resolved it from `expected_root` when
+    no leaf was given, and then compared the root to `expected_root`: yes by construction, on every
+    input, including a root the receipt has nothing to do with. `root_matches` must be UNKNOWN there,
+    never True, and the verifier has to say which of the two it is.
+    """
+    sign, verify = signer
+    b = store.inclusion_proof(3)
+    r = inclusion_receipt(b["tree_size"], b["index"], [bytes.fromhex(h) for h in b["audit_path"]],
+                          bytes.fromhex(b["root"]), sign)
+
+    # No leaf: the root cannot be established, so the comparison is not made.
+    blind = verify_receipt(r, verify, expected_root=bytes(32))
+    assert blind["root_matches"] is None, "a root taken from expected_root cannot confirm itself"
+    assert not blind["ok"]
+    assert any("UNCHECKED" in p for p in blind["problems"])
+    assert blind["root_source"] == "trusted"
+
+    # CONTROL, both directions, with the leaf supplied so the root is derived independently.
+    good = verify_receipt(r, verify, leaf_data=b["leaf"].encode(),
+                          expected_root=bytes.fromhex(b["root"]))
+    assert good["root_matches"] is True and good["ok"]
+    bad = verify_receipt(r, verify, leaf_data=b["leaf"].encode(), expected_root=bytes(32))
+    assert bad["root_matches"] is False and not bad["ok"]
+    # Both checks run against the root the CALLER trusts, so that is the source in both. The verdict
+    # differs because the leaf either reaches that root or does not, which is the independent part.
+    assert good["root_source"] == bad["root_source"] == "trusted"
+    assert good["inclusion_ok"] is True and bad["inclusion_ok"] is False
+    assert good["signature_ok"] is True, "the signer vouched for the trusted root in both cases"

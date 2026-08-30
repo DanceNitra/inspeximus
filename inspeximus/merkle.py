@@ -27,9 +27,10 @@ promise, not an accident.
 from __future__ import annotations
 
 import hashlib
+import hmac
 
 __all__ = [
-    "leaf_hash", "node_hash", "root", "inclusion_proof", "verify_inclusion",
+    "leaf_hash", "node_hash", "root", "inclusion_proof", "verify_inclusion", "root_from_inclusion",
     "consistency_proof", "verify_consistency_proof",
 ]
 
@@ -90,19 +91,25 @@ def _path(m: int, mtl: list[bytes]) -> list[bytes]:
     return _path(m - k, mtl[k:]) + [_root_hashed(mtl[:k])]
 
 
-def verify_inclusion(leaf_data: bytes, m: int, n: int, proof: list[bytes], expected_root: bytes) -> bool:
-    """Check an audit path WITHOUT the log — the whole point. RFC 6962 section 2.1.1.
+def root_from_inclusion(leaf_data: bytes, m: int, n: int, proof: list[bytes]) -> bytes | None:
+    """Walk an audit path and return the root it leads to, or None if the path is malformed.
 
-    A verifier needs only: the record, its index, the tree size, log2(n) hashes, and a root it trusts
-    (one it witnessed, or one co-signed by independent witnesses).
+    Split out of verify_inclusion() because a DETACHED COSE Receipt (RFC 9942) does not carry the root:
+    the verifier recomputes it from the leaf and the path, then checks the signature against that. The
+    walk lives here once rather than in both callers, so the two can never disagree about what a path
+    means.
+
+    None is the honest answer for a path that does not resolve, and it is deliberately distinct from a
+    root that resolves but is not the one you trust. Confusing those two is how "this proof is invalid"
+    and "this proof is for a different tree" get the same error message.
     """
     if not 0 <= m < n:
-        return False
+        return None
     fn, sn = m, n - 1
     r = leaf_hash(leaf_data)
     for p in proof:
         if sn == 0:
-            return False
+            return None
         if fn & 1 or fn == sn:
             r = node_hash(p, r)
             while fn & 1 == 0 and fn != 0:
@@ -112,7 +119,17 @@ def verify_inclusion(leaf_data: bytes, m: int, n: int, proof: list[bytes], expec
             r = node_hash(r, p)
         fn >>= 1
         sn >>= 1
-    return sn == 0 and r == expected_root
+    return r if sn == 0 else None
+
+
+def verify_inclusion(leaf_data: bytes, m: int, n: int, proof: list[bytes], expected_root: bytes) -> bool:
+    """Check an audit path WITHOUT the log — the whole point. RFC 6962 section 2.1.1.
+
+    A verifier needs only: the record, its index, the tree size, log2(n) hashes, and a root it trusts
+    (one it witnessed, or one co-signed by independent witnesses).
+    """
+    r = root_from_inclusion(leaf_data, m, n, proof)
+    return r is not None and hmac.compare_digest(r, bytes(expected_root))
 
 
 def consistency_proof(leaves: list[bytes], m: int) -> list[bytes]:
