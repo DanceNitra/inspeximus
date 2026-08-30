@@ -544,6 +544,12 @@ def main(argv=None):
 
     sub.add_parser("contradictions", help="list mutually-incompatible memories (flagged, not auto-resolved)")
     sub.add_parser("governance", help="governance/erasure/tamper-evidence snapshot")
+    # THE ONE COMMAND THAT CAN COME BACK BAD ABOUT US, run on the caller's own data. Every other
+    # number this project publishes is ours, about our store, which is the reason a curator gave for
+    # declining it in Snseam/awesome-agent-memory#19: "vendor/self-claimed benchmark signals". This
+    # corrupts a COPY of the caller's records and reports which surfaces actually noticed.
+    sub.add_parser("audit", help="can these checks actually FAIL? corrupts a copy of YOUR store and "
+                                 "reports which surfaces noticed (no key, no network, no our data)")
     rz = sub.add_parser("residue", help="did the bytes actually go? scan ANY directory for values that "
                                         "should be erased (works on other vendors' stores too)")
     rz.add_argument("--root", required=True, help="directory to search")
@@ -1272,6 +1278,40 @@ def main(argv=None):
 
     elif a.cmd == "governance":
         _out(m.governance_report(), a.json) or print(json.dumps(m.governance_report(), indent=2, default=str))
+
+    elif a.cmd == "audit":
+        res = m.audit_the_audits()
+        bad = bool(res["missed"] or res["blind_even_on_a_fixture"])
+        if _out(res, a.json):
+            return 1 if bad else 0
+        surf = res["surfaces"]
+        print("can these checks actually fail, on YOUR store?")
+        print("")
+        print("  %d verification surfaces, %d probed" % (surf["available"], surf["probed"]))
+        print("  %3d demonstrated on your data" % len(surf["demonstrated_on_your_store"]))
+        for label, key in (("proved on a fixture instead", "proved_on_a_fixture"),
+                           ("work, but your store cannot exercise them",
+                            "working_but_unreachable_here"),
+                           ("unanswerable here", "unanswerable_here")):
+            names = surf[key]
+            if names:
+                print("  %3d %s: %s" % (len(names), label, ", ".join(names)))
+        # THE TWO THAT ARE ABOUT US, printed even at zero. A report that shows a row only when it
+        # is non-zero lets a reader mistake silence for absence.
+        missed = [r["surface"] for r in res["missed"]]
+        blind = surf["blind_even_on_a_fixture"]
+        print("  %3d MISSED a corruption, which is a defect in inspeximus%s"
+              % (len(missed), (": " + ", ".join(missed)) if missed else ""))
+        print("  %3d blind even on a fixture%s"
+              % (len(blind), (": " + ", ".join(blind)) if blind else ""))
+        for line in res.get("limits") or []:
+            print("")
+            print("  LIMIT: %s" % line)
+        print("")
+        print("The first number is a fact about YOUR data. A surface listed as unreachable works;")
+        print("this store cannot exercise it. Only MISSED and blind are findings about inspeximus,")
+        print("and they are the only two that make this command exit non-zero.")
+        return 1 if bad else 0
 
     elif a.cmd == "consolidate":
         res = m.consolidate(keep=a.keep)
