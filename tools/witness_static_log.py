@@ -116,9 +116,21 @@ def load_state(path):
 
 
 def save_state(path, state):
+    """Write the witness's memory durably, creating its directory if it is not there.
+
+    The missing mkdir crashed the first CI run AFTER the witness had already signed. That ordering
+    is the real defect and it is fixed below: a signature emitted by a witness whose memory failed to
+    persist is worse than no signature, because the next run sees FIRST_CONTACT again and the witness
+    is permanently disarmed while still printing "signed".
+    """
+    parent = os.path.dirname(os.path.abspath(path))
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8", newline="") as fh:
         json.dump(state, fh, indent=2, sort_keys=True)
+        fh.flush()
+        os.fsync(fh.fileno())
     os.replace(tmp, path)
 
 
@@ -158,6 +170,17 @@ def main(argv=None):
               "refusal: it is the only reason a witness is worth running.")
         return 2
 
+    # REMEMBER FIRST, SIGN SECOND. The order is the requirement, not a preference, and it is the same
+    # rule `TransparencyService.register` follows for the same reason. A witness that signs and then
+    # fails to persist its memory has attested to a head it will not recognise next time: every later
+    # run reads FIRST_CONTACT, so it can never refuse anything, while its output still says "signed".
+    # Measured on the first CI run, where a missing directory crashed the save one line after the
+    # signature was printed.
+    state[a.url] = {"n_writes": len(mtl), "writes_tip": head["writes_tip"],
+                    "sth_hash": head["sth_hash"], "seen_utc": time.strftime(
+                        "%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    save_state(a.state, state)
+
     signature, pub = None, None
     if secret:
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey as SK
@@ -168,11 +191,6 @@ def main(argv=None):
     else:
         print("NOT signed: no witness key was given, so this run only remembers. Set "
               "INSPEXIMUS_WITNESS_SECRET to make the observation checkable by others.")
-
-    state[a.url] = {"n_writes": len(mtl), "writes_tip": head["writes_tip"],
-                    "sth_hash": head["sth_hash"], "seen_utc": time.strftime(
-                        "%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
-    save_state(a.state, state)
 
     if a.out and signature:
         os.makedirs(a.out, exist_ok=True)

@@ -323,3 +323,43 @@ def test_with_no_cosignatures_the_page_says_so_in_words(publisher, tmp_path):
     assert got["cosignatures"] == []
     assert "No witness has co-signed this log yet." in (site / "index.html").read_text(
         encoding="utf-8")
+
+
+# -- the order, which the first CI run got wrong ------------------------------------------------------
+def test_the_state_directory_is_created_rather_than_assumed(witness, publisher, tmp_path,
+                                                            monkeypatch):
+    """The first CI run crashed here, one line after printing "signed"."""
+    site, service = _publish(publisher, tmp_path, "o", 2)
+    head, mtl = _read(witness, site)
+    monkeypatch.setattr(witness, "read_log", lambda *a, **k: (head, mtl))
+    nested = tmp_path / "does" / "not" / "exist" / "state.json"
+
+    assert witness.main(["--url", "file:///t/o", "--state", str(nested)]) == 0
+    assert nested.exists()
+
+
+def test_no_signature_is_emitted_when_the_memory_cannot_be_written(witness, publisher, tmp_path,
+                                                                   monkeypatch, capsys):
+    """A witness that signs and then loses its memory is permanently disarmed while still printing
+    "signed": every later run reads FIRST_CONTACT, so it can never refuse. Remember first, sign
+    second, the same order TransparencyService.register uses and for the same reason."""
+    site, service = _publish(publisher, tmp_path, "p", 2)
+    head, mtl = _read(witness, site)
+    secret, _ = new_receipt_keypair()
+    key_file = tmp_path / "k"
+    key_file.write_text(secret, encoding="utf-8")
+    out = tmp_path / "cosig_never"
+
+    monkeypatch.setattr(witness, "read_log", lambda *a, **k: (head, mtl))
+
+    def explode(*_a, **_k):
+        raise OSError("the disk said no")
+
+    monkeypatch.setattr(witness, "save_state", explode)
+    with pytest.raises(OSError):
+        witness.main(["--url", "file:///t/p", "--state", str(tmp_path / "s.json"),
+                      "--out", str(out), "--key-file", str(key_file)])
+
+    assert "signed   :" not in capsys.readouterr().out, \
+        "the witness signed before its memory was durable"
+    assert not out.exists(), "a co-signature was written despite the memory failing"
