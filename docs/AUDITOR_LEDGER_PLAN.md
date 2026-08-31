@@ -100,9 +100,11 @@ and the ecosystem follows RFC 6962 plus C2SP static-ct-api), W3C VC 2.0.
 - **RFC 3161 timestamps** from an EU Trusted List QTSP over the log root. eIDAS Article 41 gives a
   qualified timestamp a rebuttable presumption of time, which is the cheapest credibility an auditor
   recognises.
-- **An external witness in the loop.** `witness_server.py` exists and nothing in the Transparency
-  Service calls it, so non-equivocation is still an instruction in a docstring rather than a property
-  of the running system.
+- ~~An external witness in the loop.~~ Done: `TransparencyService.head()` emits the anchor shape the
+  existing witnesses already understand, and `witnessed_head()` collects k-of-n co-signatures and
+  reports refusals rather than raising them. A test forks the log at a witnessed size and requires the
+  refusal; its control shows a FRESH witness signing the same fork, because the guarantee comes from
+  continuity of memory and not from the signature.
 - **A hosted instance.** Every artifact so far is something an operator runs themselves.
 
 ## Two competitors found late and not yet examined

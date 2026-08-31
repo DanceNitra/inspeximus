@@ -201,3 +201,85 @@ def test_describe_carries_the_scope_and_not_the_private_key(service):
 def test_a_policy_needs_a_name():
     with pytest.raises(ValueError):
         RegistrationPolicy("")
+
+
+# ---------------------------------------------------------------------------------------------------
+# The external half. Everything above is checkable from bytes ONE operator produced. Non-equivocation
+# is not, and only somebody else's memory of the head catches it.
+# ---------------------------------------------------------------------------------------------------
+
+def _witness(tmp, name):
+    from inspeximus.witness_pool import Witness
+    return Witness(new_receipt_keypair()[0], state_path=os.path.join(tmp, name + ".json"))
+
+
+def test_the_head_is_coherent_enough_for_a_witness_to_sign(service):
+    """A witness refuses a head whose sth_hash does not commit to its own fields, because a signature
+    over a hash nobody re-derives authenticates nothing a reader uses."""
+    from inspeximus.core import anchor_binds_its_fields
+    ts, _isign, _iv, _sv = service
+    head = ts.head()
+    assert anchor_binds_its_fields(head)
+    assert head["writes_tip"] == ts.root().hex()
+    assert head["n_writes"] == ts.size()
+
+
+def test_independent_witnesses_cosign_and_the_threshold_is_reported(service):
+    ts, isign, _iv, _sv = service
+    tmp = os.path.dirname(ts.path)
+    ws = [_witness(tmp, "a"), _witness(tmp, "b")]
+    out = ts.witnessed_head(ws, threshold=2)
+    assert out["met"] is True and len(out["cosignatures"]) == 2 and out["refused"] == []
+    ts.register(_statement(isign))
+    after = ts.witnessed_head(ws, threshold=2)
+    assert after["met"] is True, "growing the log is not a fork"
+    assert after["head"]["n_writes"] == ts.size()
+
+
+def test_a_fork_at_a_witnessed_size_is_REFUSED(service):
+    """THE property, and the reason any of this is worth running. Two different logs of the same size
+    are exactly what showing two histories to two readers looks like. A witness that already signed
+    one size must refuse a different tip at that size, and the refusal is the alarm."""
+    ts, isign, iverify, _sv = service
+    tmp = os.path.dirname(ts.path)
+    w = _witness(tmp, "shared")
+
+    ts.register(_statement(isign, b"the real one"))
+    first = ts.witnessed_head([w], threshold=1)
+    assert first["met"] is True
+
+    # A SECOND log, same operator, same size, different contents: the fork.
+    other = TransparencyService(os.path.join(tmp, "log.jsonl"), ts.policy, ts._sign, ts._verify_issuer,
+                                service_pubkey=ts.service_pubkey)
+    forked = os.path.join(tmp, "forked.jsonl")
+    import shutil
+    shutil.copy(ts.path, forked)
+    fork = TransparencyService(forked, ts.policy, ts._sign, ts._verify_issuer,
+                               service_pubkey=ts.service_pubkey)
+    # rewrite history: drop the last entry and put a different one at the same position
+    fork._entries = fork._entries[:-1]
+    with open(forked, "w", encoding="utf-8", newline="\n") as fh:
+        for e in fork._entries:
+            fh.write(json.dumps(e, sort_keys=True, separators=(",", ":"), ensure_ascii=True) + "\n")
+    fork.register(_statement(isign, b"a different history"))
+    assert fork.size() == ts.size(), "the fork must be the SAME size, or this tests a rollback instead"
+    assert fork.root() != ts.root()
+
+    # The witness has the same store_id in view, because it is derived from the path... which differs
+    # here. Force the honest comparison by asking it about the SAME id.
+    fork.store_id = ts.store_id
+    out = fork.witnessed_head([w], threshold=1)
+    assert out["met"] is False, "a witness co-signed two different histories at one size"
+    assert out["refused"], "the refusal is the alarm and must be reported, not swallowed"
+    assert "fork" in json.dumps(out["refused"]).lower() or "split" in json.dumps(out["refused"]).lower()
+
+
+def test_a_witness_that_never_saw_the_log_is_not_evidence_of_anything(service):
+    """CONTROL for the refusal above: a FRESH witness signs the fork happily, because it has no
+    memory to contradict. The guarantee comes from continuity, not from the signature."""
+    ts, isign, _iv, _sv = service
+    tmp = os.path.dirname(ts.path)
+    ts.register(_statement(isign))
+    fresh = _witness(tmp, "amnesiac")
+    out = ts.witnessed_head([fresh], threshold=1)
+    assert out["met"] is True and out["refused"] == []

@@ -129,6 +129,10 @@ class TransparencyService:
         if not callable(sign) or not callable(verify_issuer):
             raise TypeError("a Transparency Service needs a signer and an issuer verifier")
         self.path = str(path)
+        # The witness keys its fork memory on this, so it has to be STABLE across restarts and
+        # DISTINCT per log. The absolute path is both, and it never leaves this process: what the
+        # witness stores is the id the caller hands it.
+        self.store_id = "scitt:" + hashlib.sha256(os.path.abspath(str(path)).encode("utf-8")).hexdigest()[:16]
         self.policy = policy
         self._sign = sign
         self._verify_issuer = verify_issuer
@@ -236,6 +240,49 @@ class TransparencyService:
         """Register and return the TRANSPARENT statement: the caller's statement carrying its Receipt."""
         return scitt.transparent_statement(statement, [self.register(statement)])
 
+    # ---------------------------------------------------------------- the external half
+    def head(self) -> dict:
+        """The log's head, in the shape a witness can co-sign.
+
+        Reusing the anchor shape rather than inventing one means the witnesses, the split-view
+        detector and the co-signature verifier already shipped here all work on it unchanged. The
+        mapping is the honest one: entries are the writes, the Merkle root is the tip, and a
+        transparency log has no tombstones because nothing is ever removed from it.
+
+        `sth_hash` is derived by the same function the verifier re-derives it with, so an operator
+        cannot paste a different root into a co-signed head and keep the signatures. That inversion
+        was measured once and is the reason anchor_binds_its_fields exists.
+        """
+        from .core import sth_hash_of
+        head = {"n_writes": self.size(), "writes_tip": self.root().hex(),
+                "n_tombstones": 0, "tombstones_tip": "",
+                "store_id": self.store_id, "kind": "scitt-transparency-log"}
+        head["sth_hash"] = sth_hash_of(head)
+        return head
+
+    def witnessed_head(self, witnesses, threshold: int = 1) -> dict:
+        """Offer the head to independent witnesses and report what they said.
+
+        THIS IS THE PROPERTY THE SERVICE CANNOT GIVE ITSELF. Everything else here is checkable from
+        bytes one operator produced: inclusion, consistency, policy, signatures. Non-equivocation is
+        not, because showing two histories to two readers is invisible from inside either one. Only
+        somebody else's memory of the head catches it.
+
+        A REFUSAL IS THE ALARM, not an error to retry. An honest witness refuses exactly one thing: a
+        head that forks or rolls back what it already signed. So `refused` being non-empty is the
+        single most informative field here, and it is returned rather than raised, because a caller
+        that only sees an exception learns that something went wrong and not that the log forked.
+
+        Returns {head, cosignatures, witnesses, refused, threshold, met}.
+        """
+        from .witness_pool import collect_cosignatures
+        head = self.head()
+        got = collect_cosignatures(self.store_id, head, witnesses)
+        met = len(got.get("cosignatures") or []) >= int(threshold)
+        return {"head": head, "cosignatures": got.get("cosignatures") or [],
+                "witnesses": got.get("witnesses") or [], "refused": got.get("refused") or [],
+                "threshold": int(threshold), "met": bool(met)}
+
     # ---------------------------------------------------------------- what a reader is owed
     def entry_leaf(self, index: int) -> bytes:
         return self._leaves()[index]
@@ -245,6 +292,7 @@ class TransparencyService:
         p = self.policy_in_force()
         return {"scitt_transparency_service": "1.0", "entries": self.size(),
                 "root": self.root().hex(), "service_pubkey": self.service_pubkey,
+                "store_id": self.store_id,
                 "policy": p["policy"], "policy_sha256": p["policy_sha256"],
                 "policy_at_seq": p["seq"],
                 "scope": ("One operator holds this log. Inclusion and consistency are provable from "
