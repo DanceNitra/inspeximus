@@ -687,6 +687,25 @@ def main(argv=None):
                                        "hash chain not a Merkle tree: no inclusion proofs)")
     an.add_argument("--out", default=None, help="write the anchor json here (default: stdout)")
 
+    ts = sub.add_parser("timestamp", help="third-party proof of WHEN, and whether that third party was "
+                                          "a QUALIFIED EU authority at the moment it signed")
+    tsub = ts.add_subparsers(dest="timestamp_cmd", required=True)
+
+    tsl = tsub.add_parser("trusted-lists",
+                          help="build the offline cache of EU qualified timestamp services from the "
+                               "Commission's list of trusted lists (about 1.2 MB, a few seconds)")
+    tsl.add_argument("--out", default="inspeximus_trusted_lists.json")
+    tsl.add_argument("--timeout", type=float, default=45.0)
+
+    tsq = tsub.add_parser("qualified",
+                          help="was the authority that signed this RFC 3161 token a QUALIFIED EU "
+                               "timestamp service AT THE TIME? Exit 0 yes, 1 no, 2 undetermined")
+    tsq.add_argument("token", help="the .tsr token file")
+    tsq.add_argument("--trusted-list", required=True, help="the cache from `timestamp trusted-lists`")
+    tsq.add_argument("--when", default=None,
+                     help="the moment to judge, ISO-8601 (default: now, which is the wrong question "
+                          "for a stored token: pass the date it was made)")
+
     wt = sub.add_parser("witness", help="witness network: independent co-signers that make a SPLIT VIEW "
                                         "(one history shown to one reader, another to another) detectable")
     wsub = wt.add_subparsers(dest="witness_cmd", required=True)
@@ -949,6 +968,9 @@ def main(argv=None):
             print("DOCUMENT:", "valid" if res["valid"] else "INVALID")
             print("STORE AT SCAN TIME:", "clean" if cert.get("ok") else "residue found")
         return 0 if res["valid"] else 1
+
+    if a.cmd == "timestamp":
+        return _timestamp_cmd(a)
 
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
@@ -1559,6 +1581,56 @@ def main(argv=None):
                                    f"{res.get('dropped',0)} dropped)")
     return _flush_or_fail(m, required=False)
 
+
+def _timestamp_cmd(a):
+    """`timestamp trusted-lists` and `timestamp qualified`.
+
+    Kept out of the store dispatch because neither touches a store. A token and a published list are
+    the whole input, which is the point: an auditor can run this against evidence you handed them
+    without your database.
+    """
+    import json as _json
+
+    if a.timestamp_cmd == "trusted-lists":
+        from inspeximus.trusted_list import fetch                      # noqa: PLC0415
+        trusted, provenance = fetch(timeout=a.timeout, progress=lambda *x: print(*x, flush=True))
+        with open(a.out, "w", encoding="utf-8") as fh:
+            _json.dump(trusted.to_cache(provenance), fh, separators=(",", ":"), sort_keys=True)
+        changing = sum(1 for s in trusted.services if len({x.kind for x in s.statuses}) > 1)
+        print("wrote %s: %d services from %d of %d lists, %d of them have held both a qualified and "
+              "a non-qualified status" % (a.out, len(trusted), len(trusted.territories),
+                                          len(provenance["territories"]), changing))
+        if provenance["unreachable"]:
+            print("NOT reached, so an absence here is not an EU-wide absence: %s"
+                  % ", ".join(sorted(provenance["unreachable"])))
+        return 0
+
+    from inspeximus.timestamp import qualified_status, read_status     # noqa: PLC0415
+    from inspeximus.trusted_list import TrustedList                    # noqa: PLC0415
+
+    with open(a.token, "rb") as fh:
+        token = fh.read()
+    with open(a.trusted_list, encoding="utf-8") as fh:
+        trusted = TrustedList.from_cache(_json.load(fh))
+
+    status = read_status(token)
+    got = qualified_status(token, trusted, when=a.when)
+    if a.json:
+        _out(dict(got, token_status=status["status_text"]), True)
+    else:
+        print("token      %s (PKIStatus %s)" % (a.token, status["status_text"]))
+        print("judged at  %s" % got["when"])
+        print("verdict    %s" % got["verdict"])
+        for m in got["matched"]:
+            print("           %s / %s -- %s, matched by %s, in force since %s"
+                  % (m["territory"], m["service"], m["status_at_the_time"], m["matched_by"],
+                     m["in_force_since"]))
+        for problem in got["problems"]:
+            print("note       %s" % problem)
+        print("scope      %s" % got["scope"])
+    # Three exit codes, because two would fold "I could not tell" into one of the answers, and a
+    # script gating a release on this must be able to stop rather than guess.
+    return 0 if got["qualified"] is True else (1 if got["qualified"] is False else 2)
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -66,7 +66,7 @@ whose meaning comes from us.
 | 1 | **RFC 9942** COSE Receipts | Proposed Standard, June 2026 | an inclusion proof any implementation reads | **done** |
 | 2 | **RFC 9943** SCITT Signed Statements | Proposed Standard, June 2026 | WHO said it and WHAT it is about | **done** |
 | 3 | Registration Policy + service identity | RFC 9943 section 5.1.1 | the right to call it a Transparency Service | **done** |
-| 4 | **RFC 3161** timestamp from an EU Trusted List QTSP | ETSI EN 319 422 | eIDAS Article 41 presumption of time | **client done, QTSP pending** |
+| 4 | **RFC 3161** timestamp from an EU Trusted List QTSP | ETSI EN 319 422, ETSI TS 119 612 | eIDAS Article 41 presumption of time | **done, both directions proven on live authorities** |
 | 5 | Rekor v2 or Tessera as an external witness | GA October 2025 | a log we do not control | optional |
 | 6 | DSSE / in-toto for release provenance | in-toto 1.2.0, SLSA 1.1 | provenance of the library itself | optional |
 
@@ -101,9 +101,39 @@ and the ecosystem follows RFC 6962 plus C2SP static-ct-api), W3C VC 2.0.
   file a rejection as evidence. Proven against a production authority rather than a mock: DigiCert
   granted a 6,008-byte token over our head digest on 2026-08-31, and it is kept as a test fixture.
   Full token verification is DELEGATED to `openssl ts -verify` and says so; a hand-rolled partial CMS
-  parser reporting "valid" would pass tokens a real verifier rejects. Still to do: point it at a
-  QTSP on the EU Trusted List, since eIDAS Article 41's presumption attaches to a QUALIFIED timestamp
-  and DigiCert's public TSA is not one.
+  parser reporting "valid" would pass tokens a real verifier rejects.
+- ~~A qualified authority, not just any authority.~~ Done, and the investigation inverted the task.
+  The EU Trusted List does not publish TSA endpoints: across the 42 qualified timestamp services in
+  the first three national lists read, zero carry a `ServiceSupplyPoint`. You cannot use it to FIND a
+  qualified authority, only to CHECK one you were given, which is the direction an audit needs.
+
+  `trusted_list.py` reads the Commission's list of trusted lists, follows each member state, and
+  answers whether a signer was qualified AT A GIVEN MOMENT. The date is the whole point: of the 1477
+  qualified timestamp services published across 25 territories on 2026-08-31, **570, or 39 percent,
+  have held both a qualified and a non-qualified status**, so a membership check that ignores the
+  date is wrong for two services in five. `timestamp.py` extracts the signer from a token by its
+  `id-kp-timeStamping` extended key usage, and `stamp_head` records the standing at stamping time,
+  while the answer is still certain.
+
+  Proven in both directions on real tokens, because a check that can only say no has not been shown
+  to work. Izenpe, a Spanish QTSP, signed a token that reads QUALIFIED_AT_THE_TIME; DigiCert's token
+  is equally genuine and reads NOT_ON_ANY_LIST_LOADED. Both are kept as fixtures. An Austrian service
+  that went accredited (2015) to withdrawn (2016) to granted (2018) gives four different verdicts
+  from one certificate with only the date changing.
+
+  Three things it deliberately does not do, each stated in every verdict rather than in a footnote:
+  it does not verify the XAdES signature on the list, it says nothing about whether the token is
+  authentic, and it answers UNKNOWN rather than "no" before the earliest status a list records. It
+  also refuses to judge the pre-eIDAS supervision statuses, `accredited` and `undersupervision`,
+  which are 220 of 1190 status instances: whether a token of that vintage carries the Article 41
+  presumption is a question of law, and a library answering it would be a legal opinion wearing a
+  boolean.
+
+  Found while building it, and worth keeping because it is the recurring shape: each country is
+  pointed at twice, as XML and as a PDF for human readers, under the same territory. Taking the first
+  pointer fetched the PDF for 9 of 31 countries, France and Spain among them. HTTP 200, a 400 KB
+  file, zero services parsed, and the output would have read "France lists no qualified timestamp
+  authority" in the same shape as a real answer.
 - ~~An external witness in the loop.~~ Done: `TransparencyService.head()` emits the anchor shape the
   existing witnesses already understand, and `witnessed_head()` collects k-of-n co-signatures and
   reports refusals rather than raising them. A test forks the log at a witnessed size and requires the

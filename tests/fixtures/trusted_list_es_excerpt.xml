@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A REAL excerpt from the ES trusted list, fetched 2026-08-31 from the location the EU List of
+     Trusted Lists points at. Trimmed to the 1 service(s) a test needs, byte-for-byte otherwise:
+     the certificates, statuses and dates are the published ones, so a test that passes here is
+     testing the shape the Commission actually publishes rather than one we invented.
+     Regenerate with tools/fetch_trusted_lists.py. -->
+<TrustServiceStatusList xmlns="http://uri.etsi.org/02231/v2#"
+                        xmlns:ns3="http://uri.etsi.org/02231/v2/additionaltypes#">
+  <SchemeInformation>
+    <SchemeTerritory>ES</SchemeTerritory>
+  </SchemeInformation>
+  <TrustServiceProviderList>
+    <TrustServiceProvider>
+      <TSPInformation>
+        <TSPName><Name xml:lang="en">IZENPE S.A.</Name></TSPName>
+      </TSPInformation>
+      <TSPServices>
+<TSPService>
+                    <ServiceInformation>
+                        <ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/TSA/QTST</ServiceTypeIdentifier>
+                        <ServiceName>
+                            <Name xml:lang="en">Qualified TimeStamp issued by "tsa.izenpe.com 2025"</Name>
+                            <Name xml:lang="es">Servicio de sello de tiempo cualificado emitido por "tsa.izenpe.com 2025"</Name>
+                        </ServiceName>
+                        <ServiceDigitalIdentity>
+                            <DigitalId>
+<X509Certificate>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</X509Certificate>
+                            </DigitalId>
+                            <DigitalId>
+<X509SubjectName>CN=tsa.izenpe.com, OID.2.5.4.97=VATES-A01337260, O=ZIURTAPEN ETA ZERBITZU ENPRESA-EMPRESA DE CERTIFICACION Y SERVICIOS IZENPE S.A., C=ES</X509SubjectName>
+                            </DigitalId>
+                            <DigitalId>
+<X509SKI>mcgDWuKVAOKScNFukhmsxnVT58g=</X509SKI>
+                            </DigitalId>
+                        </ServiceDigitalIdentity>
+                        <ServiceStatus>http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/granted</ServiceStatus>
+                        <StatusStartingTime>2025-04-08T02:00:00Z</StatusStartingTime>
+                    </ServiceInformation>
+                </TSPService>
+      </TSPServices>
+    </TrustServiceProvider>
+  </TrustServiceProviderList>
+</TrustServiceStatusList>

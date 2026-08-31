@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A REAL excerpt from the AT trusted list, fetched 2026-08-31 from the location the EU List of
+     Trusted Lists points at. Trimmed to the 1 service(s) a test needs, byte-for-byte otherwise:
+     the certificates, statuses and dates are the published ones, so a test that passes here is
+     testing the shape the Commission actually publishes rather than one we invented.
+     Regenerate with tools/fetch_trusted_lists.py. -->
+<TrustServiceStatusList xmlns="http://uri.etsi.org/02231/v2#"
+                        xmlns:ns3="http://uri.etsi.org/02231/v2/additionaltypes#">
+  <SchemeInformation>
+    <SchemeTerritory>AT</SchemeTerritory>
+  </SchemeInformation>
+  <TrustServiceProviderList>
+    <TrustServiceProvider>
+      <TSPInformation>
+        <TSPName><Name xml:lang="en">e-commerce monitoring GmbH</Name></TSPName>
+      </TSPInformation>
+      <TSPServices>
+<TSPService>
+                    <ServiceInformation>
+                        <ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/TSA/QTST</ServiceTypeIdentifier>
+                        <ServiceName>
+                            <Name xml:lang="en">GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1</Name>
+                            <Name xml:lang="de">GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1</Name>
+                        </ServiceName>
+                        <ServiceDigitalIdentity>
+                            <DigitalId>
+<X509Certificate>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</X509Certificate>
+                            </DigitalId>
+                            <DigitalId>
+<X509SubjectName>CN=GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1, OU=GLOBALTRUST Certification Service, O=e-commerce monitoring GmbH, L=Wien, ST=Wien, C=AT</X509SubjectName>
+                            </DigitalId>
+                        </ServiceDigitalIdentity>
+                        <ServiceStatus>http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/granted</ServiceStatus>
+                        <StatusStartingTime>2018-09-18T22:00:00Z</StatusStartingTime>
+                    </ServiceInformation>
+                    <ServiceHistory>
+                        <ServiceHistoryInstance>
+                            <ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/TSA/QTST</ServiceTypeIdentifier>
+                            <ServiceName>
+<Name xml:lang="en">GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1</Name>
+<Name xml:lang="de">GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1</Name>
+                            </ServiceName>
+                            <ServiceDigitalIdentity>
+<DigitalId>
+    <X509SubjectName>CN=GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1, OU=GLOBALTRUST Certification Service, O=e-commerce monitoring GmbH, L=Wien, ST=Wien, C=AT</X509SubjectName>
+</DigitalId>
+<DigitalId>
+    <X509SKI>8jsx5Q3SC9mBeVB1vWJQ5pHKg78=</X509SKI>
+</DigitalId>
+                            </ServiceDigitalIdentity>
+                            <ServiceStatus>http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/withdrawn</ServiceStatus>
+                            <StatusStartingTime>2016-06-30T22:00:00Z</StatusStartingTime>
+                        </ServiceHistoryInstance>
+                        <ServiceHistoryInstance>
+                            <ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/TSA/QTST</ServiceTypeIdentifier>
+                            <ServiceName>
+<Name xml:lang="en">GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1</Name>
+<Name xml:lang="de">GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1</Name>
+                            </ServiceName>
+                            <ServiceDigitalIdentity>
+<DigitalId>
+    <X509SubjectName>CN=GLOBALTRUST 2015 QUALIFIED TIMESTAMP 1, OU=GLOBALTRUST Certification Service, O=e-commerce monitoring GmbH, L=Wien, ST=Wien, C=AT</X509SubjectName>
+</DigitalId>
+<DigitalId>
+    <X509SKI>8jsx5Q3SC9mBeVB1vWJQ5pHKg78=</X509SKI>
+</DigitalId>
+                            </ServiceDigitalIdentity>
+                            <ServiceStatus>http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/accredited</ServiceStatus>
+                            <StatusStartingTime>2015-06-29T13:00:00Z</StatusStartingTime>
+                        </ServiceHistoryInstance>
+                    </ServiceHistory>
+                </TSPService>
+      </TSPServices>
+    </TrustServiceProvider>
+  </TrustServiceProviderList>
+</TrustServiceStatusList>
