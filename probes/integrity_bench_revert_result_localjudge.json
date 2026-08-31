@@ -4,7 +4,7 @@
   "judge": "local",
   "judge_model": "deterministic, no model",
   "judge_temperature": null,
-  "measured_at": "2026-08-25T03:29:09Z",
+  "measured_at": "2026-08-31T13:54:58Z",
   "n": 3,
   "fixture": "ENTS/REVERTS in this file, deterministic and committed",
   "comparable_with_published": false,

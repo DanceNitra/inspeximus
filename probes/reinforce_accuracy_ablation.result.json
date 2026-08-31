@@ -1,7 +1,7 @@
 {
  "probe": "reinforce_accuracy_ablation",
- "generated_utc": "2026-08-31T07:00:10Z",
- "inspeximus_version": "2.23.0",
+ "generated_utc": "2026-08-31T13:54:11Z",
+ "inspeximus_version": "2.24.0",
  "scope": "MEASUREMENT ONLY -- the reinforce default and the ranking are unchanged by this probe",
  "k": 5,
  "zipf_a": 1.3,
@@ -36,7 +36,7 @@
      "value": 0.4469,
      "meaning": "fraction of HELD-OUT questions whose gold record was also the answer to some TRAINING question. This is the ceiling on what any popularity prior could buy: for the remaining questions no prior about the right record can exist at evaluation time, so training can only add noise."
     },
-    "seconds": 21.6,
+    "seconds": 25.4,
     "weightings": {
      "uniform": {
       "guard_hit1": {
@@ -233,7 +233,7 @@
    "control_cold_stream": {
     "status": "KNOWN NEGATIVE -- already published (README 1.15.0 correction / CHANGELOG): reinforcement depresses recall on a cold query stream. Carried as a control that the harness reproduces the published sign, NOT as a new finding.",
     "events_per_seed": 1200,
-    "seconds": 13.2,
+    "seconds": 15.4,
     "guard_hit1": {
      "label": "synthetic cold hit@1",
      "accuracy": 0.3342,
@@ -354,7 +354,7 @@
      "divergence_excess_over_time_control": 0.0,
      "attributable_resolution": 0.0125,
      "attributable_to_admit": false,
-     "seconds_admitting": 1.87,
+     "seconds_admitting": 2.35,
      "time_control_changed": 0,
      "n_admit_calls": 2000,
      "n_admitted": 0,
@@ -372,7 +372,7 @@
      "n_queries_excluding_new_records": 80,
      "control": "a time-matched twin store, built beside the treated one and read interleaved with it, is never handed to admit(). Whatever it moves is the clock; only the excess over it is evidence about the write path, and only when every trial agrees on the sign"
     },
-    "seconds": 22.6,
+    "seconds": 28.1,
     "carrier": "b_insert_order_BY_DESIGN",
     "claim_reproduces": true,
     "read_purity_divergence": 0.3177,
@@ -395,7 +395,7 @@
      "value": 0.0956,
      "meaning": "fraction of HELD-OUT questions whose gold record was also the answer to some TRAINING question. This is the ceiling on what any popularity prior could buy: for the remaining questions no prior about the right record can exist at evaluation time, so training can only add noise."
     },
-    "seconds": 8.9,
+    "seconds": 10.6,
     "weightings": {
      "uniform": {
       "guard_hit1": {
@@ -592,7 +592,7 @@
    "control_cold_stream": {
     "status": "KNOWN NEGATIVE -- already published (README 1.15.0 correction / CHANGELOG): reinforcement depresses recall on a cold query stream. Carried as a control that the harness reproduces the published sign, NOT as a new finding.",
     "events_per_seed": 149,
-    "seconds": 1.7,
+    "seconds": 2.0,
     "guard_hit1": {
      "label": "locomo_conv0 cold hit@1",
      "accuracy": 0.2081,
@@ -687,34 +687,34 @@
      "property": "write-path read-purity: admit() calls recall(t, k=1) (core.py ~7002; remember_dedup() the same at ~2561). Read `divergence_excess_over_time_control`, NOT `divergence`: an untouched store moves on elapsed time alone, and the raw figure is mostly that.",
      "n_trials": 5,
      "per_trial_divergence": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      0.0875,
+      0.2,
+      0.1,
+      0.2,
+      0.0875
      ],
      "per_trial_time_control": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
+      0.075,
+      0.2,
+      0.0875,
+      0.2,
+      0.075
      ],
      "per_trial_excess": [
+      0.0125,
       0.0,
+      0.0125,
       0.0,
-      0.0,
-      0.0,
-      0.0
+      0.0125
      ],
-     "trials_with_positive_excess": 0,
-     "divergence": 0.0,
-     "time_control_divergence": 0.0,
-     "divergence_excess_over_time_control": 0.0,
+     "trials_with_positive_excess": 3,
+     "divergence": 0.1,
+     "time_control_divergence": 0.0875,
+     "divergence_excess_over_time_control": 0.0125,
      "attributable_resolution": 0.0125,
      "attributable_to_admit": false,
-     "seconds_admitting": 2.69,
-     "time_control_changed": 0,
+     "seconds_admitting": 3.6,
+     "time_control_changed": 6,
      "n_admit_calls": 2000,
      "n_admitted": 0,
      "all_rejected_as_duplicates": true,
@@ -725,13 +725,13 @@
      "max_value_before": 1.0,
      "max_value_after": 1.0,
      "n_queries": 80,
-     "changed": 0,
+     "changed": 7,
      "divergence_confounded_by_admissions": false,
-     "divergence_excluding_new_records": 0.0,
+     "divergence_excluding_new_records": 0.0875,
      "n_queries_excluding_new_records": 80,
      "control": "a time-matched twin store, built beside the treated one and read interleaved with it, is never handed to admit(). Whatever it moves is the clock; only the excess over it is evidence about the write path, and only when every trial agrees on the sign"
     },
-    "seconds": 9.7,
+    "seconds": 11.4,
     "carrier": "b_insert_order_BY_DESIGN",
     "claim_reproduces": true,
     "read_purity_divergence": 0.3778,
@@ -754,7 +754,7 @@
      "value": 0.0447,
      "meaning": "fraction of HELD-OUT questions whose gold record was also the answer to some TRAINING question. This is the ceiling on what any popularity prior could buy: for the remaining questions no prior about the right record can exist at evaluation time, so training can only add noise."
     },
-    "seconds": 4.0,
+    "seconds": 5.1,
     "weightings": {
      "uniform": {
       "guard_hit1": {
@@ -951,7 +951,7 @@
    "control_cold_stream": {
     "status": "KNOWN NEGATIVE -- already published (README 1.15.0 correction / CHANGELOG): reinforcement depresses recall on a cold query stream. Carried as a control that the harness reproduces the published sign, NOT as a new finding.",
     "events_per_seed": 81,
-    "seconds": 1.0,
+    "seconds": 1.1,
     "guard_hit1": {
      "label": "locomo_conv1 cold hit@1",
      "accuracy": 0.2593,
@@ -1048,16 +1048,16 @@
      "per_trial_divergence": [
       0.0,
       0.0,
-      0.05,
       0.0,
-      0.05
+      0.0,
+      0.0625
      ],
      "per_trial_time_control": [
       0.0,
       0.0,
-      0.05,
       0.0,
-      0.0375
+      0.0,
+      0.05
      ],
      "per_trial_excess": [
       0.0,
@@ -1072,8 +1072,8 @@
      "divergence_excess_over_time_control": 0.0,
      "attributable_resolution": 0.0125,
      "attributable_to_admit": false,
-     "seconds_admitting": 2.81,
-     "time_control_changed": 3,
+     "seconds_admitting": 3.02,
+     "time_control_changed": 4,
      "n_admit_calls": 2000,
      "n_admitted": 0,
      "all_rejected_as_duplicates": true,
@@ -1084,13 +1084,13 @@
      "max_value_before": 1.0,
      "max_value_after": 1.0,
      "n_queries": 80,
-     "changed": 4,
+     "changed": 5,
      "divergence_confounded_by_admissions": false,
-     "divergence_excluding_new_records": 0.05,
+     "divergence_excluding_new_records": 0.0625,
      "n_queries_excluding_new_records": 80,
      "control": "a time-matched twin store, built beside the treated one and read interleaved with it, is never handed to admit(). Whatever it moves is the clock; only the excess over it is evidence about the write path, and only when every trial agrees on the sign"
     },
-    "seconds": 7.2,
+    "seconds": 8.0,
     "carrier": "b_insert_order_BY_DESIGN",
     "claim_reproduces": true,
     "read_purity_divergence": 0.3245,
@@ -1113,7 +1113,7 @@
      "value": 0.1798,
      "meaning": "fraction of HELD-OUT questions whose gold record was also the answer to some TRAINING question. This is the ceiling on what any popularity prior could buy: for the remaining questions no prior about the right record can exist at evaluation time, so training can only add noise."
     },
-    "seconds": 15.1,
+    "seconds": 17.7,
     "weightings": {
      "uniform": {
       "guard_hit1": {
@@ -1152,8 +1152,8 @@
        "reinforce_false": 0.2588,
        "delta": -0.22149,
        "ci95": [
-        -0.23465,
-        -0.20395
+        -0.23904,
+        -0.19956
        ],
        "n_seeds": 6,
        "seeds_favouring_reinforce": 0,
@@ -1166,13 +1166,13 @@
        "reinforce_false": 0.2588,
        "delta": -0.07237,
        "ci95": [
-        -0.125,
-        -0.02412
+        -0.13158,
+        -0.01974
        ],
        "n_seeds": 6,
        "seeds_favouring_reinforce": 0,
-       "seeds_favouring_control": 5,
-       "seeds_tied": 1,
+       "seeds_favouring_control": 4,
+       "seeds_tied": 2,
        "significant_at_95": true,
        "note": "upper bound: value bumped ONLY on the record that was right. Not a proposal and not in the library -- it separates 'the prior is harmful' from 'the prior is estimated from what was returned rather than what was correct'."
       },
@@ -1181,8 +1181,8 @@
        "reinforce_false": 0.4408,
        "delta": -0.3136,
        "ci95": [
-        -0.3443,
-        -0.28728
+        -0.33991,
+        -0.28947
        ],
        "n_seeds": 6,
        "seeds_favouring_reinforce": 0,
@@ -1195,14 +1195,14 @@
        "reinforce_false": 0.4408,
        "delta": 0.02193,
        "ci95": [
-        -0.00219,
-        0.04605
+        0.00439,
+        0.03728
        ],
        "n_seeds": 6,
-       "seeds_favouring_reinforce": 4,
+       "seeds_favouring_reinforce": 5,
        "seeds_favouring_control": 1,
-       "seeds_tied": 1,
-       "significant_at_95": false,
+       "seeds_tied": 0,
+       "significant_at_95": true,
        "note": "upper bound: value bumped ONLY on the record that was right. Not a proposal and not in the library -- it separates 'the prior is harmful' from 'the prior is estimated from what was returned rather than what was correct'."
       }
      },
@@ -1212,7 +1212,7 @@
        "accuracy": 0.1587,
        "chance": 0.001508,
        "ratio_over_chance": 105.23,
-       "z_vs_chance": 21.82,
+       "z_vs_chance": 21.81,
        "n": 29,
        "interpretable": true,
        "thresholds": {
@@ -1224,9 +1224,9 @@
       },
       "guard_hitk": {
        "label": "locomo_conv2 warm/zipf hit@5",
-       "accuracy": 0.4037,
+       "accuracy": 0.4038,
        "chance": 0.007541,
-       "ratio_over_chance": 53.53,
+       "ratio_over_chance": 53.54,
        "z_vs_chance": 24.66,
        "n": 29,
        "interpretable": true,
@@ -1241,10 +1241,10 @@
       "hit1": {
        "reinforce_true": 0.0309,
        "reinforce_false": 0.1587,
-       "delta": -0.1278,
+       "delta": -0.12779,
        "ci95": [
-        -0.23744,
-        -0.05311
+        -0.23772,
+        -0.05296
        ],
        "n_seeds": 6,
        "seeds_favouring_reinforce": 0,
@@ -1255,10 +1255,10 @@
       "oracle_hit1": {
        "gold_only_bump": 0.1043,
        "reinforce_false": 0.1587,
-       "delta": -0.05447,
+       "delta": -0.05446,
        "ci95": [
         -0.18504,
-        0.02689
+        0.02702
        ],
        "n_seeds": 6,
        "seeds_favouring_reinforce": 3,
@@ -1269,11 +1269,11 @@
       },
       "hitk": {
        "reinforce_true": 0.1379,
-       "reinforce_false": 0.4037,
-       "delta": -0.26577,
+       "reinforce_false": 0.4038,
+       "delta": -0.26583,
        "ci95": [
-        -0.4371,
-        -0.13054
+        -0.43688,
+        -0.12916
        ],
        "n_seeds": 6,
        "seeds_favouring_reinforce": 0,
@@ -1283,11 +1283,11 @@
       },
       "oracle_hitk": {
        "gold_only_bump": 0.3963,
-       "reinforce_false": 0.4037,
-       "delta": -0.00741,
+       "reinforce_false": 0.4038,
+       "delta": -0.00747,
        "ci95": [
-        -0.06042,
-        0.02984
+        -0.05878,
+        0.02832
        ],
        "n_seeds": 6,
        "seeds_favouring_reinforce": 4,
@@ -1310,7 +1310,7 @@
    "control_cold_stream": {
     "status": "KNOWN NEGATIVE -- already published (README 1.15.0 correction / CHANGELOG): reinforcement depresses recall on a cold query stream. Carried as a control that the harness reproduces the published sign, NOT as a new finding.",
     "events_per_seed": 152,
-    "seconds": 3.6,
+    "seconds": 3.8,
     "guard_hit1": {
      "label": "locomo_conv2 cold hit@1",
      "accuracy": 0.2697,
@@ -1431,7 +1431,7 @@
      "divergence_excess_over_time_control": 0.0,
      "attributable_resolution": 0.0125,
      "attributable_to_admit": false,
-     "seconds_admitting": 4.17,
+     "seconds_admitting": 4.63,
      "time_control_changed": 20,
      "n_admit_calls": 2000,
      "n_admitted": 0,
@@ -1449,7 +1449,7 @@
      "n_queries_excluding_new_records": 80,
      "control": "a time-matched twin store, built beside the treated one and read interleaved with it, is never handed to admit(). Whatever it moves is the clock; only the excess over it is evidence about the write path, and only when every trial agrees on the sign"
     },
-    "seconds": 15.3,
+    "seconds": 17.8,
     "carrier": "b_insert_order_BY_DESIGN",
     "claim_reproduces": true,
     "read_purity_divergence": 0.3844,
@@ -1472,7 +1472,7 @@
      "value": 0.1667,
      "meaning": "fraction of HELD-OUT questions whose gold record was also the answer to some TRAINING question. This is the ceiling on what any popularity prior could buy: for the remaining questions no prior about the right record can exist at evaluation time, so training can only add noise."
     },
-    "seconds": 18.5,
+    "seconds": 22.3,
     "weightings": {
      "uniform": {
       "guard_hit1": {
@@ -1669,7 +1669,7 @@
    "control_cold_stream": {
     "status": "KNOWN NEGATIVE -- already published (README 1.15.0 correction / CHANGELOG): reinforcement depresses recall on a cold query stream. Carried as a control that the harness reproduces the published sign, NOT as a new finding.",
     "events_per_seed": 199,
-    "seconds": 3.5,
+    "seconds": 4.7,
     "guard_hit1": {
      "label": "locomo_conv3 cold hit@1",
      "accuracy": 0.2362,
@@ -1764,16 +1764,16 @@
      "property": "write-path read-purity: admit() calls recall(t, k=1) (core.py ~7002; remember_dedup() the same at ~2561). Read `divergence_excess_over_time_control`, NOT `divergence`: an untouched store moves on elapsed time alone, and the raw figure is mostly that.",
      "n_trials": 5,
      "per_trial_divergence": [
-      0.075,
       0.0875,
-      0.075,
+      0.0875,
+      0.0875,
       0.0875,
       0.0875
      ],
      "per_trial_time_control": [
-      0.075,
       0.0875,
-      0.075,
+      0.0875,
+      0.0875,
       0.0875,
       0.0875
      ],
@@ -1790,7 +1790,7 @@
      "divergence_excess_over_time_control": 0.0,
      "attributable_resolution": 0.0125,
      "attributable_to_admit": false,
-     "seconds_admitting": 4.28,
+     "seconds_admitting": 5.0,
      "time_control_changed": 7,
      "n_admit_calls": 2000,
      "n_admitted": 0,
@@ -1808,7 +1808,7 @@
      "n_queries_excluding_new_records": 80,
      "control": "a time-matched twin store, built beside the treated one and read interleaved with it, is never handed to admit(). Whatever it moves is the clock; only the excess over it is evidence about the write path, and only when every trial agrees on the sign"
     },
-    "seconds": 15.9,
+    "seconds": 19.1,
     "carrier": "c_query_order_reinforce_true",
     "claim_reproduces": true,
     "read_purity_divergence": 0.6045,
@@ -1840,7 +1840,7 @@
   "CONTROL(known negative) locomo_conv0 cold/hit1: reinforcement HURTS (-0.0738, CI95 [-0.0817, -0.0649]; control 0.2081, chance 0.002387)",
   "CONTROL(known negative) locomo_conv0 cold/hitk: reinforcement HURTS (-0.0839, CI95 [-0.1040, -0.0671]; control 0.3893, chance 0.011933)",
   "TRANSFER CEILING locomo_conv0: 9.6% of held-out questions have a gold record that training could have carried a prior about; for the rest, warming can only add noise",
-  "DIVERGENCE locomo_conv0: read-purity(c, reinforce=True)=0.3778  insert-order(b, BY DESIGN)=0.4497  run-to-run(a)=0.0000  admit-write-path(d)=0.0000 [excess over its time-matched control; raw 0.0000, control 0.0000]  carrier=b_insert_order_BY_DESIGN",
+  "DIVERGENCE locomo_conv0: read-purity(c, reinforce=True)=0.3778  insert-order(b, BY DESIGN)=0.4497  run-to-run(a)=0.0000  admit-write-path(d)=0.0125 [excess over its time-matched control; raw 0.1000, control 0.0875]  carrier=b_insert_order_BY_DESIGN",
   "PRIMARY locomo_conv1 warm/uniform/hit1: reinforcement HURTS (-0.2073, CI95 [-0.2358, -0.1870]; control 0.2724, chance 0.002710)",
   "ORACLE(upper bound, gold-only bump) locomo_conv1 warm/uniform/hit1: reinforcement NO EFFECT detected (-0.0081, CI95 [-0.0447, +0.0285]; control 0.2724, chance 0.002710)",
   "PRIMARY locomo_conv1 warm/uniform/hitk: reinforcement HURTS (-0.2114, CI95 [-0.2276, -0.1992]; control 0.4512, chance 0.013550)",
@@ -1853,14 +1853,14 @@
   "CONTROL(known negative) locomo_conv1 cold/hitk: reinforcement HURTS (-0.0700, CI95 [-0.0803, -0.0597]; control 0.4568, chance 0.013550)",
   "TRANSFER CEILING locomo_conv1: 4.5% of held-out questions have a gold record that training could have carried a prior about; for the rest, warming can only add noise",
   "DIVERGENCE locomo_conv1: read-purity(c, reinforce=True)=0.3245  insert-order(b, BY DESIGN)=0.4268  run-to-run(a)=0.0000  admit-write-path(d)=0.0000 [excess over its time-matched control; raw 0.0000, control 0.0000]  carrier=b_insert_order_BY_DESIGN",
-  "PRIMARY locomo_conv2 warm/uniform/hit1: reinforcement HURTS (-0.2215, CI95 [-0.2346, -0.2039]; control 0.2588, chance 0.001508)",
-  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/uniform/hit1: reinforcement HURTS (-0.0724, CI95 [-0.1250, -0.0241]; control 0.2588, chance 0.001508)",
-  "PRIMARY locomo_conv2 warm/uniform/hitk: reinforcement HURTS (-0.3136, CI95 [-0.3443, -0.2873]; control 0.4408, chance 0.007541)",
-  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/uniform/hitk: reinforcement NO EFFECT detected (+0.0219, CI95 [-0.0022, +0.0461]; control 0.4408, chance 0.007541)",
-  "PRIMARY locomo_conv2 warm/zipf/hit1: reinforcement HURTS (-0.1278, CI95 [-0.2374, -0.0531]; control 0.1587, chance 0.001508)",
-  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/zipf/hit1: reinforcement NO EFFECT detected (-0.0545, CI95 [-0.1850, +0.0269]; control 0.1587, chance 0.001508)",
-  "PRIMARY locomo_conv2 warm/zipf/hitk: reinforcement HURTS (-0.2658, CI95 [-0.4371, -0.1305]; control 0.4037, chance 0.007541)",
-  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/zipf/hitk: reinforcement NO EFFECT detected (-0.0074, CI95 [-0.0604, +0.0298]; control 0.4037, chance 0.007541)",
+  "PRIMARY locomo_conv2 warm/uniform/hit1: reinforcement HURTS (-0.2215, CI95 [-0.2390, -0.1996]; control 0.2588, chance 0.001508)",
+  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/uniform/hit1: reinforcement HURTS (-0.0724, CI95 [-0.1316, -0.0197]; control 0.2588, chance 0.001508)",
+  "PRIMARY locomo_conv2 warm/uniform/hitk: reinforcement HURTS (-0.3136, CI95 [-0.3399, -0.2895]; control 0.4408, chance 0.007541)",
+  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/uniform/hitk: reinforcement HELPS (+0.0219, CI95 [+0.0044, +0.0373]; control 0.4408, chance 0.007541)",
+  "PRIMARY locomo_conv2 warm/zipf/hit1: reinforcement HURTS (-0.1278, CI95 [-0.2377, -0.0530]; control 0.1587, chance 0.001508)",
+  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/zipf/hit1: reinforcement NO EFFECT detected (-0.0545, CI95 [-0.1850, +0.0270]; control 0.1587, chance 0.001508)",
+  "PRIMARY locomo_conv2 warm/zipf/hitk: reinforcement HURTS (-0.2658, CI95 [-0.4369, -0.1292]; control 0.4038, chance 0.007541)",
+  "ORACLE(upper bound, gold-only bump) locomo_conv2 warm/zipf/hitk: reinforcement NO EFFECT detected (-0.0075, CI95 [-0.0588, +0.0283]; control 0.4038, chance 0.007541)",
   "CONTROL(known negative) locomo_conv2 cold/hit1: reinforcement HURTS (-0.1678, CI95 [-0.1842, -0.1513]; control 0.2697, chance 0.001508)",
   "CONTROL(known negative) locomo_conv2 cold/hitk: reinforcement HURTS (-0.1414, CI95 [-0.1502, -0.1305]; control 0.4539, chance 0.007541)",
   "TRANSFER CEILING locomo_conv2: 18.0% of held-out questions have a gold record that training could have carried a prior about; for the rest, warming can only add noise",
@@ -1878,5 +1878,5 @@
   "TRANSFER CEILING locomo_conv3: 16.7% of held-out questions have a gold record that training could have carried a prior about; for the rest, warming can only add noise",
   "DIVERGENCE locomo_conv3: read-purity(c, reinforce=True)=0.6045  insert-order(b, BY DESIGN)=0.3589  run-to-run(a)=0.0000  admit-write-path(d)=0.0000 [excess over its time-matched control; raw 0.0875, control 0.0875]  carrier=c_query_order_reinforce_true"
  ],
- "seconds_total": 163.5
+ "seconds_total": 195.0
 }

@@ -1,3 +1,80 @@
+## 2.24.0 - AFFECTS NOBODY'S CODE: a timestamp you can check the standing of, and a log a stranger can watch
+
+**NOTHING BREAKS.** Every surface behaves as before. One response shape changed and it was wrong
+until now: `/.well-known/scitt-keys` served the public key hex in `kid` with no `x` at COSE label
+-2, so a client following RFC 9052 found a plausible 200 with nothing in it to verify with. It now
+serves a real COSE_Key. A client reading `kid` still finds the same hex there.
+
+### A timestamp says WHEN. This says whether the authority was allowed to.
+
+`stamp()` gets a token from any RFC 3161 authority, and every one of them returns the same
+PKIStatus 0. Nothing in a token says whether the authority is QUALIFIED under eIDAS, and the word is
+not decoration: Article 41 gives a qualified timestamp a rebuttable presumption of the date it
+shows, and an ordinary one none.
+
+The investigation inverted the task. The EU Trusted List does not publish TSA endpoints: across the
+42 qualified timestamp services in the first three national lists, zero carry a `ServiceSupplyPoint`.
+You cannot use it to FIND a qualified authority, only to CHECK one you were handed.
+
+    inspeximus timestamp trusted-lists --out lists.json
+    inspeximus timestamp qualified head.tsr --trusted-list lists.json --when <the date it was made>
+
+Pass the date the token was made. Qualified standing is granted and withdrawn over time: of the 1477
+qualified timestamp services published across 25 territories on 2026-08-31, **570, or 39 percent,
+have held both a qualified and a non-qualified status**. One Austrian service returns four different
+verdicts from one certificate with only the date changing. Exit 0 qualified, 1 not, 2 undetermined.
+
+Proven in both directions on live authorities rather than mocks: Izenpe, a Spanish QTSP, signs a
+token that reads QUALIFIED_AT_THE_TIME, and DigiCert's equally genuine granted token reads
+NOT_ON_ANY_LIST_LOADED. Both are test fixtures.
+
+Four refusals, stated in every verdict rather than in a footnote. It does not verify the XAdES
+signature on the list. It says nothing about whether the token is authentic. Before a list's earliest
+record it answers UNKNOWN, never "no". And it will not judge the pre-eIDAS supervision statuses,
+`accredited` and `undersupervision`, which are 220 of 1190 status instances: whether a token of that
+vintage carries the Article 41 presumption is a question of law, and a library answering it would be
+a legal opinion wearing a boolean.
+
+### A log served as static files, and a witness anyone can run against it
+
+`tools/publish_static_log.py` writes a transparency log as ordinary files: the head, the COSE key
+set, every leaf hash, every receipt, the text of every entry, and a `verify.py` that uses the
+standard library only. This is where the ecosystem went, not a compromise: C2SP's static-ct-api
+serves a log as cacheable files because that is cheaper to run and harder to equivocate with.
+
+What it cannot do, said plainly: there is no endpoint that accepts a registration. Writing happens
+where the signing key is. `scrapi.py` and the container images in `deploy/` remain for a live one.
+
+`tools/witness_static_log.py` is the other half. It watches a log it does not operate, RECOMPUTES the
+root from the leaves rather than reading it out of the head, and refuses to sign when the history it
+already saw has changed. Verdicts: EXTENDS, FIRST_CONTACT (which says out loud that it proves nothing
+yet), FORK, ROLLBACK, and MALFORMED for a log that contradicts itself. `deploy/witness-template.yml`
+runs it from a public repository for nothing.
+
+A refusal does NOT update the remembered head, and that is the design rather than an oversight: a
+witness that saves state while refusing forgets what it just caught, and its next run reports EXTENDS
+on the rewritten log.
+
+### Two things a hosted service was giving away
+
+`--secret` put the signing key in the process table, where any local user reads it with one command.
+Measured on a running server rather than assumed. The service and the witness now read
+`INSPEXIMUS_SERVICE_SECRET` / `INSPEXIMUS_WITNESS_SECRET` or a `--secret-file`, preferring the file
+because an environment is inherited by every child process. The flag still works and says what it
+costs.
+
+And the key set defect above. An undecodable key now omits `x` and says so: a key set carrying a
+WRONG key is worse than one carrying none, because the first makes a verifier reject good receipts.
+
+### New
+
+- `inspeximus.trusted_list`: `TrustedList`, `parse_trusted_list`, `classify_status`, `fetch`.
+- `inspeximus.timestamp`: `qualified_status`, `signer_certificate`, `certificates_in`; `stamp_head`
+  takes an optional trusted list and records the standing at stamping time, while it is still certain.
+- `inspeximus timestamp` CLI, with three exit codes so a gate can stop rather than guess.
+- `deploy/`: container images for the service and a SEPARATE witness, a compose file that keeps them
+  apart, and `azure_up.py` for a one-command Container Apps deployment.
+
 ## 2.23.0 - AFFECTS NOBODY'S CODE unless you call cose.inclusion_receipt directly: a transparency service in four IETF standards
 
 **NOTHING BREAKS.** Every surface that existed still behaves the same way. One default changed inside

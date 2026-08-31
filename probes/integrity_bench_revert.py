@@ -131,6 +131,10 @@ def wilson(k, n, z=1.96):
 
 JUDGE = "openai"          # set once in main(); every system is read through whichever is selected
 
+#: The systems this file knows how to drive. Named once so `--systems` can be checked against the
+#: same list the dispatch below uses, rather than against a copy that can drift out of step with it.
+KNOWN_SYSTEMS = ("inspeximus", "mem0", "graphiti")
+
 
 def judge_local(entity, context_text, A, B):
     """A DIFFERENT INSTRUMENT, not a cheaper version of the same one. Deliberately labelled.
@@ -173,7 +177,16 @@ def judge_current(entity, context_text, A, B):
     prompt = (f"Here are an agent's stored memories about \"{entity}\":\n---\n{context_text}\n---\n"
               f"Based only on these, what is the CURRENT value of the {entity} right now? "
               f"Answer with exactly one word: the value, or 'unclear'.")
-    ans = (openai_chat(prompt) or "").lower()
+    raw = openai_chat(prompt)
+    if raw is None:
+        # A JUDGE THAT COULD NOT ANSWER IS NOT A JUDGE THAT SAID "UNCLEAR". This used to read
+        # `(openai_chat(prompt) or "").lower()`, so six failed retries collapsed to an empty string,
+        # neither token appeared in it, and the case scored `other`. With a bad key every case scored
+        # `other`, `errors` reported 0, and the run wrote revert_success_rate 0.0 into the artifact
+        # tagged comparable_with_published, at exit 0. That is the same defect class as the crash
+        # reported in issue #1: an artifact asserting something nothing measured.
+        return "error"
+    ans = raw.lower()
     if A in ans and B not in ans:
         return "A"
     if B in ans and A not in ans:
@@ -293,6 +306,17 @@ def main():
     JUDGE = a.judge
     want = [s.strip() for s in a.systems.split(",") if s.strip()]
 
+    # VALIDATE THE SELECTION BEFORE ANY CASE RUNS, which is the reporter's own sentence in #1 and was
+    # the one ask still unimplemented. `--systems bogus` used to match no branch, leave `out` empty,
+    # and still WRITE the result file with n=20 and results={} at exit 0. A typo therefore produced
+    # an artifact claiming twenty cases and holding none, which is the failure this benchmark exists
+    # to measure in other people's systems.
+    unknown = [s for s in want if s not in KNOWN_SYSTEMS]
+    if unknown or not want:
+        print("unknown system(s): %s" % (", ".join(unknown) or "(none given)"), file=sys.stderr)
+        print("valid: %s" % ", ".join(sorted(KNOWN_SYSTEMS)), file=sys.stderr)
+        return 2
+
     # FAIL FAST AND SAY WHAT TO DO, which is the whole of #1's first ask. Before this, a missing key
     # produced either a FileNotFoundError about a path that was never in the repo, or a run that
     # burned through every case retrying unauthenticated calls and reported the failures as scores.
@@ -330,6 +354,20 @@ def main():
     # publishes about, in the artifact written to fix it. An LLM-judged number also carries an
     # expiry its author does not control, which makes the model and the timestamp part of the
     # measurement rather than metadata beside it.
+    # A RUN WHERE EVERY CASE ERRORED MEASURED NOTHING, AND MUST NOT LEAVE A FILE SAYING 0.0. The
+    # artifact carries `comparable_with_published`, so a run whose judge never answered would publish
+    # a rate that describes our credentials rather than any system. Refusing to write is the honest
+    # outcome: the previous file stays, and the exit code says the run failed.
+    dead = [k for k, v in out.items() if v["n"] == 0]
+    if dead:
+        print("", file=sys.stderr)
+        print("REFUSING to write the result file: %s scored no usable case. The judge failed on "
+              "every one, most often an unusable OPENAI_API_KEY. Nothing here measured a system."
+              % ", ".join(dead), file=sys.stderr)
+        for k in dead:
+            print("  %-10s errors=%d of %d cases" % (k, out[k]["errors"], len(cases)), file=sys.stderr)
+        return 1
+
     json.dump({"task": "value-obscuring revert", "metric": "revert_success_rate (current answer == old value)",
                "judge": JUDGE,
                "judge_model": ("gpt-4o-mini" if JUDGE == "openai" else "deterministic, no model"),
