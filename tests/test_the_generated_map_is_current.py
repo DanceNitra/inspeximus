@@ -14,7 +14,20 @@ import os
 import subprocess
 import sys
 
+import pytest
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+#: BOTH TESTS TOUCH ONE TRACKED FILE, so they must not run at the same time.
+#:
+#: The control below edits docs/CORE_MAP.md and restores it. Under pytest-xdist the other test runs on
+#: a different worker and can read the file mid-edit, which fails it for a reason that has nothing to
+#: do with the code it guards. Measured: the pair went red locally under -n 3 while `--check` on its
+#: own said the map was current.
+#:
+#: A shared group serialises them onto one worker. The alternative, giving the generator a --root so
+#: the control could work on a copy, is the better shape and a larger change than this file's subject.
+pytestmark = pytest.mark.xdist_group("core_map_file")
 
 
 def test_docs_core_map_matches_core_py():
