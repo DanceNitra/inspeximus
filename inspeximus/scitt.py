@@ -42,7 +42,7 @@ from .cose import (ALG_EDDSA, ALG_ES256, COSE_SIGN1_TAG, CBORTag, HDR_ALG,  # no
 
 __all__ = ["signed_statement", "verify_signed_statement", "transparent_statement",
            "verify_transparent_statement",
-           "receipts_of", "statement_digest",
+           "receipts_of", "statement_digest", "without_receipts",
            "HDR_CWT_CLAIMS", "HDR_RECEIPTS", "CWT_ISSUER", "CWT_SUBJECT"]
 
 #: RFC 9597 section 2 registers the CWT Claims header parameter at label 15.
@@ -232,3 +232,23 @@ def verify_transparent_statement(statement: bytes, verify_statement, verify_rece
 def statement_digest(statement: bytes) -> str:
     """SHA-256 of the statement bytes — a stable id for an audit bundle or a log line."""
     return hashlib.sha256(bytes(statement)).hexdigest()
+
+
+def without_receipts(statement: bytes) -> bytes:
+    """The Signed Statement as the Issuer made it, with any Receipts removed.
+
+    A Transparency Service registers the ISSUER'S statement and records its digest. Receipts are then
+    attached to the unprotected header by other parties, which changes the bytes. So the artifact that
+    travels never hashes to the value the log recorded, and a verifier comparing the two finds a
+    mismatch that means nothing.
+
+    Stripping is the right direction rather than recording the digest of the transparent form: a
+    statement can collect a SECOND receipt from another log, and any identity that changes when
+    somebody else countersigns is not an identity.
+    """
+    tagged = decode(statement)
+    if not isinstance(tagged, CBORTag) or tagged.tag != COSE_SIGN1_TAG:
+        return bytes(statement)
+    protected, unprotected, payload, sig = tagged.value
+    up = {k: v for k, v in (unprotected or {}).items() if k != HDR_RECEIPTS}
+    return encode(CBORTag(COSE_SIGN1_TAG, [protected, up, payload, sig]))

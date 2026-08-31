@@ -65,7 +65,7 @@ whose meaning comes from us.
 |---|---|---|---|---|
 | 1 | **RFC 9942** COSE Receipts | Proposed Standard, June 2026 | an inclusion proof any implementation reads | **done** |
 | 2 | **RFC 9943** SCITT Signed Statements | Proposed Standard, June 2026 | WHO said it and WHAT it is about | **done** |
-| 3 | Registration Policy + service identity | RFC 9943 section 5.1.1 | the right to call it a Transparency Service | next |
+| 3 | Registration Policy + service identity | RFC 9943 section 5.1.1 | the right to call it a Transparency Service | **done** |
 | 4 | **RFC 3161** timestamp from an EU Trusted List QTSP | ETSI EN 319 422 | eIDAS Article 41 presumption of time | after |
 | 5 | Rekor v2 or Tessera as an external witness | GA October 2025 | a log we do not control | optional |
 | 6 | DSSE / in-toto for release provenance | in-toto 1.2.0, SLSA 1.1 | provenance of the library itself | optional |
@@ -83,8 +83,11 @@ and the ecosystem follows RFC 6962 plus C2SP static-ct-api), W3C VC 2.0.
 4. Export the surface from `inspeximus` and give it CLI verbs, because a capability reachable only by
    writing Python against internals is one a stranger evaluating the package never finds.
 5. Name the subject properly: the record's key, not `write:0`.
-6. A Registration Policy, published and applied at registration time. This is the last thing standing
-   between us and honestly saying "Transparency Service".
+6. A Registration Policy, published and applied at registration time. Done: `transparency.py` holds
+   the policy as ENTRY 0 of the log it governs, applies the policy in force at call time, records
+   which policy admitted each entry, and appends before it receipts. Two bindings now exist and are
+   NOT interchangeable: a store-issued pair binds payload to sha256(leaf); a service-issued pair
+   binds the entry's `statement_sha256` to the issuer's statement with its receipts stripped.
 7. Documentation that states the honest scope, including everything in the section above that argues
    against the product.
 8. Release.
