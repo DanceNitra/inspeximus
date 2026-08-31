@@ -18,18 +18,6 @@ import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#: BOTH TESTS TOUCH ONE TRACKED FILE, so they must not run at the same time.
-#:
-#: The control below edits docs/CORE_MAP.md and restores it. Under pytest-xdist the other test runs on
-#: a different worker and can read the file mid-edit, which fails it for a reason that has nothing to
-#: do with the code it guards. Measured: the pair went red locally under -n 3 while `--check` on its
-#: own said the map was current.
-#:
-#: A shared group serialises them onto one worker. The alternative, giving the generator a --root so
-#: the control could work on a copy, is the better shape and a larger change than this file's subject.
-pytestmark = pytest.mark.xdist_group("core_map_file")
-
-
 def test_docs_core_map_matches_core_py():
     r = subprocess.run([sys.executable, os.path.join("tools", "gen_core_map.py"), "--check"],
                        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
@@ -38,18 +26,39 @@ def test_docs_core_map_matches_core_py():
 
 
 def test_the_checker_can_actually_fail():
-    """CONTROL. Without it, a green result above is equally consistent with a checker that exits 0 on
-    everything, which is exactly what a generated-file guard tends to decay into."""
-    path = os.path.join(ROOT, "docs", "CORE_MAP.md")
-    original = open(path, encoding="utf-8").read()
-    try:
-        with open(path, "w", encoding="utf-8") as fh:
-            fh.write(original + "\nan edit the generator would never make\n")
-        r = subprocess.run([sys.executable, os.path.join("tools", "gen_core_map.py"), "--check"],
-                           cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
-        assert r.returncode != 0, "the checker passed a file it did not generate"
-    finally:
-        with open(path, "w", encoding="utf-8", newline="") as fh:
-            fh.write(original)
-    # and the file is back exactly as it was, or this test would leave the repo dirty
-    assert open(path, encoding="utf-8").read() == original
+    """CONTROL, run on a COPY. Without it, a green result above is equally consistent with a checker
+    that exits 0 on everything, which is what a generated-file guard tends to decay into.
+
+    The first version edited the tracked docs/CORE_MAP.md and restored it. That raced any other test
+    reading the file under pytest-xdist, and left the repository dirty if it crashed: a guard that
+    has to damage the repository to prove it works is one nobody runs twice. --src and --out exist
+    so it does not have to.
+    """
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp()
+    src = os.path.join(d, "core_copy.py")
+    out = os.path.join(d, "map_copy.md")
+    shutil.copy(os.path.join(ROOT, "inspeximus", "core.py"), src)
+
+    def check():
+        return subprocess.run([sys.executable, os.path.join("tools", "gen_core_map.py"),
+                               "--src", src, "--out", out, "--check"],
+                              cwd=ROOT, capture_output=True, text=True,
+                              encoding="utf-8", errors="replace")
+
+    subprocess.run([sys.executable, os.path.join("tools", "gen_core_map.py"),
+                    "--src", src, "--out", out], cwd=ROOT, check=True, capture_output=True)
+    assert check().returncode == 0, "a freshly generated map must satisfy its own checker"
+
+    with open(out, "a", encoding="utf-8") as fh:
+        fh.write(chr(10) + "an edit the generator would never make" + chr(10))
+    r = check()
+    assert r.returncode != 0, "the checker passed a file it did not generate"
+    assert "an edit the generator would never make" in r.stdout, (
+        "the diff must NAME what differs; 'stale' alone costs a round trip per guess")
+
+    # The repository's own map was never touched, which is the point of doing this on a copy.
+    status = subprocess.run(["git", "status", "--short", "docs/CORE_MAP.md"], cwd=ROOT,
+                            capture_output=True, text=True)
+    assert status.stdout.strip() == "", "the control modified the tracked map"

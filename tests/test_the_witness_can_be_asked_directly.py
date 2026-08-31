@@ -210,16 +210,16 @@ def test_a_remote_witness_can_actually_be_asked():
     import time
     import urllib.request
 
-    import inspeximus.witness_server as wsrv
+    from inspeximus.witness_server import make_server
 
     d = tempfile.mkdtemp()
     sp = os.path.join(d, "w.json")
     w = Witness(state_path=sp)
-    port = 9741
-    threading.Thread(target=wsrv.serve,
-                     kwargs={"port": port, "state_path": sp, "secret_hex": w._secret},
-                     daemon=True).start()
-    time.sleep(1.2)
+    # PORT 0: a fixed number collides under pytest-xdist, and the sleep that used to follow was a
+    # guess about whether the thread had bound yet. make_server returns already bound.
+    srv, _w = make_server(port=0, state_path=sp, secret_hex=w._secret)
+    port = srv.server_address[1]
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
 
     def get(path):
         with urllib.request.urlopen(f"http://127.0.0.1:{port}{path}", timeout=10) as r:

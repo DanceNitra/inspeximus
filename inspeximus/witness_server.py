@@ -149,6 +149,24 @@ def _make_handler(witness: Witness, bootstrap_token: str | None = None):
     return Handler
 
 
+def make_server(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = None,
+                secret_hex: str | None = None, strict: bool = False,
+                require_authenticated_state: bool = False, bootstrap_token: str | None = None):
+    """BUILD the witness server without starting it, and return (server, witness).
+
+    `serve()` binds and blocks, so a caller can never learn which port it got. That is fine for an
+    operator who chose the number and fatal for anything running several witnesses at once: the tests
+    picked fixed ports, collided under pytest-xdist, and then slept 1.2 seconds hoping the thread had
+    bound. Both problems are the same missing capability.
+
+    Pass port=0 to let the OS choose and read `server.server_address[1]`. The socket is already bound
+    when this returns, so there is nothing to wait for.
+    """
+    w = Witness(secret_hex=secret_hex, state_path=state_path, strict=strict,
+                require_authenticated_state=require_authenticated_state)
+    return ThreadingHTTPServer((host, port), _make_handler(w, bootstrap_token)), w
+
+
 def serve(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = None,
           secret_hex: str | None = None, strict: bool = False,
           require_authenticated_state: bool = False, bootstrap_token: str | None = None):
@@ -164,9 +182,11 @@ def serve(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = No
     switches the code argues for at length were available only to someone importing the library.
     The same shape as `attest()` one round earlier: implemented, documented, unreachable.
     """
-    w = Witness(secret_hex=secret_hex, state_path=state_path, strict=strict,
-                require_authenticated_state=require_authenticated_state)
-    httpd = ThreadingHTTPServer((host, port), _make_handler(w, bootstrap_token))
+    httpd, w = make_server(port=port, host=host, state_path=state_path, secret_hex=secret_hex,
+                           strict=strict,
+                           require_authenticated_state=require_authenticated_state,
+                           bootstrap_token=bootstrap_token)
+    port = httpd.server_address[1]
     print(f"inspeximus witness on http://{host}:{port}  pubkey={w.public}", flush=True)
     print(f"  add to a client allowlist as: {w.public}", flush=True)
     try:

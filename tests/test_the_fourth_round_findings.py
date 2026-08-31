@@ -113,15 +113,18 @@ def test_control_a_rollback_is_still_refused(scene):
 
 
 # ═══════════════════════════════════ H2: the same declaration, over the wire
-def _serve(d, strict=True, token=None, port=9771):
+def _serve(d, strict=True, token=None, port=0):
+    """PORT 0, and no sleep. A fixed number collides the moment pytest-xdist runs two of these at
+    once, and sleeping 1.2 seconds afterwards is a guess about a race rather than a fix for it.
+    make_server() returns with the socket already bound, so the port is known and there is nothing
+    to wait for."""
     sp = os.path.join(d, "w.json")
     w = Witness(state_path=sp)
-    import inspeximus.witness_server as wsrv
-    threading.Thread(target=wsrv.serve,
-                     kwargs={"port": port, "state_path": sp, "secret_hex": w._secret,
-                             "strict": strict, "bootstrap_token": token}, daemon=True).start()
-    time.sleep(1.2)
-    return sp, w, port
+    from inspeximus.witness_server import make_server
+    srv, _w = make_server(port=port, state_path=sp, secret_hex=w._secret,
+                          strict=strict, bootstrap_token=token)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return sp, w, srv.server_address[1]
 
 
 def _post(port, path, body, token=None):
@@ -142,7 +145,7 @@ def test_the_strict_server_can_be_bootstrapped_only_with_the_token():
     write endpoint that is authenticated, because it is the only one that can WEAKEN the witness --
     /cosign can only record facts."""
     d = tempfile.mkdtemp()
-    sp, w, port = _serve(d, token="s3cret", port=9771)
+    sp, w, port = _serve(d, token="s3cret")
     ix = Inspeximus(path=os.path.join(d, "s.json"), receipts=True)
     for i in range(3):
         ix.remember(f"r{i}", key=f"k{i}", object=str(i))
@@ -164,7 +167,7 @@ def test_an_early_refusal_reaches_the_client_instead_of_resetting_the_connection
     entire value of that branch -- was never delivered. A helpful error nobody receives is a hang
     with extra steps."""
     d = tempfile.mkdtemp()
-    _sp, _w, port = _serve(d, token=None, port=9772)
+    _sp, _w, port = _serve(d, token=None)
     code, body = _post(port, "/bootstrap", {"store_id": "insp1:whatever"})
     assert code == 403 and "bootstrap-token" in json.dumps(body), body
 
@@ -177,7 +180,7 @@ def test_a_malformed_body_is_a_400_and_not_a_500():
     On the one endpoint a stranger can reach, that is a free error-shaped oracle and an ops alarm
     they can pull at will -- and it is simply the wrong code, since the fault is the caller's."""
     d = tempfile.mkdtemp()
-    _sp, _w, port = _serve(d, token="tok", port=9774)
+    _sp, _w, port = _serve(d, token="tok")
 
     def raw(path, body, token=None):
         req = urllib.request.Request(f"http://127.0.0.1:{port}{path}", data=body,
@@ -198,6 +201,6 @@ def test_a_malformed_body_is_a_400_and_not_a_500():
 def test_bootstrap_on_a_non_strict_witness_says_it_is_a_no_op():
     """Accepting a call that changes nothing is how an operator concludes they are protected."""
     d = tempfile.mkdtemp()
-    _sp, _w, port = _serve(d, strict=False, token="s3cret", port=9773)
+    _sp, _w, port = _serve(d, strict=False, token="s3cret")
     code, body = _post(port, "/bootstrap", {"store_id": "insp1:x"}, token="s3cret")
     assert code == 400 and "no-op" in json.dumps(body), body

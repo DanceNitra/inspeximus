@@ -1,7 +1,7 @@
 {
   "probe": "dogfood_cross_session",
   "question": "does inspeximus return the facts an agent needs to resume work after a session boundary?",
-  "generated_utc": "2026-08-31T06:14:53Z",
+  "generated_utc": "2026-08-31T07:31:05Z",
   "inspeximus_version": "2.23.0",
   "operating_point": {
     "store_records": 2571,
