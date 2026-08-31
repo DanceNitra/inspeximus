@@ -1,0 +1,56 @@
+# Is every published number in the transparency log?
+#
+# THIS JOB CANNOT SIGN, AND THAT IS THE DESIGN. `--check` compares the claim registry against the log
+# using payload digests, which are SHA-256 of the claim text and need no key. The Ed25519 secret that
+# appends entries stays on one machine and never reaches a runner, so the party enforcing the rule is
+# not a party that can quietly break it.
+#
+# A failure here means a number was added to or edited in claims_audit.py without being recorded. The
+# fix is to run the seeder where the key is; the job prints the exact command.
+
+name: transparency
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'claims_audit.py'
+      - 'transparency/**'
+      - 'tools/seed_claims_log.py'
+      - 'tools/publish_static_log.py'
+      - '.github/workflows/transparency.yml'
+  pull_request:
+    paths:
+      - 'claims_audit.py'
+      - 'transparency/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Every claim in the registry is in the log
+        run: python tools/seed_claims_log.py --log transparency/claims.log --check
+
+      - name: The published log verifies with the checker readers are given
+        # Run the SHIPPED verify.py rather than a copy of its logic. A reader who follows the
+        # instructions on the page runs this exact file, so this is the same check they get, and a
+        # verifier that broke would fail here rather than in front of them.
+        working-directory: transparency
+        run: python verify.py
+
+      - name: The site still offers what its own instructions ask for
+        run: |
+          cd transparency
+          for f in head.json log.jsonl verify.py keys.json keys.cbor payloads.json index.html; do
+            test -s "$f" || { echo "missing or empty: $f"; exit 1; }
+          done
+          echo "all seven published files are present and non-empty"

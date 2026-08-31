@@ -322,6 +322,20 @@ SURFACE = ("README.md", "docs/DEEP_DIVE.md", "MCP_LISTINGS.md", "index.html",
            # page outside the audit is exactly the hole the tests badge sat in.
            "compare.html", "claude-code.html", "quickstart.html")
 
+#: `transparency/index.html` is published and is DELIBERATELY not in SURFACE. Declared here rather
+#: than left silent, because "not in the table" and "not looked at" are different statements.
+#:
+#: Every number on that page is generated from the files published beside it: the entry count, the
+#: Merkle root and the head hash. It carries no assertion about the world. And it is checked by a
+#: stronger instrument than this registry, which is a hand-maintained list we could edit: the
+#: `verify.py` shipped next to it RE-DERIVES the root from the published leaves and the head hash
+#: from the head's own fields, so a wrong number there fails a cryptographic check rather than a
+#: reviewer's attention. Registering those tokens would also break the audit on every publish, since
+#: they change whenever the log grows.
+#:
+#: The rule this bends is real, so the trade is written down: a page whose numbers cannot be
+#: re-derived from adjacent bytes does NOT get this exemption.
+
 #: statuses a quantitative claim can carry.
 STATUSES = (
     "REPRODUCIBLE",            # a committed command in THIS repo reproduces it, no external service

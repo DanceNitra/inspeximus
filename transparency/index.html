@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>inspeximus published claims</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+ body{max-width:46rem;margin:3rem auto;padding:0 1.2rem;font:16px/1.6 system-ui,sans-serif;color:#1a1a1a}
+ h1{font-size:1.5rem;margin:0 0 .3rem} h2{font-size:1.05rem;margin:2.2rem 0 .6rem}
+ code,pre{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86em}
+ pre{background:#f6f6f4;padding:.8rem 1rem;overflow-x:auto;border-left:2px solid #d8d8d2}
+ table{border-collapse:collapse;width:100%;font-size:.9em} td,th{text-align:left;padding:.35rem .6rem .35rem 0;border-bottom:1px solid #eee}
+ .m{color:#666} a{color:#0645ad}
+ @media(prefers-color-scheme:dark){body{background:#141414;color:#e6e6e6}pre{background:#1e1e1e;border-color:#333}
+  td,th{border-color:#2a2a2a}.m{color:#999}a{color:#8ab4f8}}
+</style>
+<h1>inspeximus published claims</h1>
+<p class="m">114 entries &middot; published 2026-08-31</p>
+
+<p>This is an append-only log of signed statements. It is served as static files so you can check it
+without trusting whoever published it, and without asking anything of us.</p>
+
+<h2>Check it yourself</h2>
+<pre>curl -sO https://dancenitra.github.io/inspeximus/transparency/head.json
+curl -sO https://dancenitra.github.io/inspeximus/transparency/log.jsonl
+curl -sO https://dancenitra.github.io/inspeximus/transparency/verify.py
+python verify.py</pre>
+<p><code>verify.py</code> uses the standard library only. It rebuilds the Merkle root from the
+published leaves and compares it with the published root, then re-derives <code>sth_hash</code> from
+the head's own fields. A root that does not follow from the leaves is what it catches.</p>
+
+<h2>Head</h2>
+<pre>{
+  &quot;kind&quot;: &quot;scitt-transparency-log&quot;,
+  &quot;n_tombstones&quot;: 0,
+  &quot;n_writes&quot;: 114,
+  &quot;sth_hash&quot;: &quot;77c163b5085cf26e2ba096d64e50b2c5e3a609d557e255301fc3e5ddab7015df&quot;,
+  &quot;store_id&quot;: &quot;scitt:4367a1480474b121&quot;,
+  &quot;tombstones_tip&quot;: &quot;&quot;,
+  &quot;writes_tip&quot;: &quot;ef8f3b1bc3b0bc6b9f3b3876bb9e3b1b6e97c10cf701443f5cf8d0e6c84b8d8d&quot;
+}</pre>
+
+<h2>Files</h2>
+<table>
+<tr><th>file</th><th>what it is</th></tr>
+<tr><td><a href="head.json">head.json</a></td><td>entry count, Merkle root, and the hash over both</td></tr>
+<tr><td><a href="keys.json">keys.json</a></td><td>the Ed25519 key that signs receipts, as JSON</td></tr>
+<tr><td><a href="keys.cbor">keys.cbor</a></td><td>the same key as a COSE Key Set (RFC 9052)</td></tr>
+<tr><td><a href="log.jsonl">log.jsonl</a></td><td>one line per entry: index, leaf hash, statement digest</td></tr>
+<tr><td>entries/&lt;n&gt;.cose</td><td>the RFC 9942 inclusion receipt for entry n</td></tr>
+<tr><td><a href="verify.py">verify.py</a></td><td>the checker above</td></tr>
+</table>
+
+<h2>What this does not prove</h2>
+<p>It does not prove any entry is TRUE. A log records what was said, never that it was right.</p>
+<p>It does not prove we have shown you the same log we showed somebody else. A static file is easy to
+serve in two versions, and only an independent WITNESS that remembers a previous head can catch that.
+No witness has co-signed this log yet. Running one is the most useful thing an outsider can do here, and inspeximus ships the witness server to do it with.</p>
+<p>Registration happens where the signing key is, not over this address. There is no endpoint here
+that accepts an entry.</p>

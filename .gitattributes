@@ -1,0 +1,19 @@
+# The transparency log is HASHED, so its bytes must survive a checkout unchanged.
+#
+# Without this, git rewrites LF to CRLF in the working tree on Windows. The log's leaves are the
+# file's bytes, so two extra characters per line change every leaf hash, change the Merkle root, and
+# make `verify.py` report FAILED on an honest log for anyone who cloned on Windows. CI runs on Linux
+# and would never see it, which is the worst shape a defect can have: invisible to us, visible to the
+# reader we asked to check us.
+#
+# `-text` means "never translate". Not `binary`, which would also suppress diffs: an append-only log
+# is exactly the thing whose diffs are worth reading.
+transparency/claims.log   -text
+transparency/log.jsonl    -text
+transparency/payloads.json -text
+transparency/head.json    -text
+transparency/keys.json    -text
+transparency/verify.py    -text
+
+# Receipts are COSE, so they are binary in fact as well as in name.
+transparency/entries/*.cose binary
