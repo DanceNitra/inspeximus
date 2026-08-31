@@ -235,3 +235,77 @@ def test_the_statement_carries_a_digest_and_not_the_memory(signer):
     st = signed_statement(hashlib.sha256(secret.encode()).digest(), ISSUER, SUBJECT, sign)
     assert secret.encode() not in st
     assert b"db-7" not in st
+
+
+# ---------------------------------------------------------------------------------------------------
+# The store surface: both halves built from one inclusion bundle, so they cannot be about two records.
+# ---------------------------------------------------------------------------------------------------
+
+def _store(n=3):
+    import tempfile
+    from inspeximus import Inspeximus, new_receipt_keypair
+    sk, pk = new_receipt_keypair()
+    path = os.path.join(tempfile.mkdtemp(), "m.json")
+    m = Inspeximus(path=path, receipts=True, receipt_key=sk)
+    for i in range(n):
+        m.remember("fact number %d" % i, key="k%d" % i)
+    m.flush()
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey as PK
+    pub = PK.from_public_bytes(bytes.fromhex(pk))
+
+    def verify(msg, sig):
+        try:
+            pub.verify(sig, msg)
+            return True
+        except Exception:
+            return False
+    return m, verify
+
+
+def test_the_store_emits_a_pair_that_verifies_end_to_end():
+    from inspeximus import verify_transparent_statement
+    m, verify = _store()
+    d = m.transparent_statement(0, issuer=ISSUER)
+    out = verify_transparent_statement(bytes.fromhex(d["statement"]), verify, verify,
+                                       d["leaf"].encode(), bytes.fromhex(d["root"]),
+                                       expected_issuer=ISSUER)
+    assert out["ok"], out["problems"]
+    assert out["bound"] is True
+
+
+def test_a_statement_and_a_receipt_about_different_records_do_not_pass():
+    """THE check the pair exists for. Both artifacts verify on their own; nothing inside either one
+    connects them, so an assembled pair would otherwise prove something about nothing."""
+    from inspeximus import verify_transparent_statement
+    m, verify = _store()
+    a, b = m.transparent_statement(0, issuer=ISSUER), m.transparent_statement(1, issuer=ISSUER)
+    out = verify_transparent_statement(bytes.fromhex(a["statement"]), verify, verify,
+                                       b["leaf"].encode(), bytes.fromhex(b["root"]))
+    assert out["bound"] is False and not out["ok"]
+    assert any("different records" in p for p in out["problems"])
+
+
+def test_the_subject_names_the_record_and_not_the_key_or_the_position():
+    """Two writes under one key are two records. A subject of "staging-db" would not say which value
+    it vouches for, and "write:0" means something else once the log grows."""
+    m, _verify = _store(n=0)
+    m.remember("v1", key="staging-db")
+    m.remember("v2", key="staging-db")
+    m.flush()
+    a = m.transparent_statement(0, issuer=ISSUER)["subject"]
+    b = m.transparent_statement(1, issuer=ISSUER)["subject"]
+    assert a != b, "one key, two records, two subjects"
+    assert a not in ("staging-db", "write:0") and b != "write:1"
+
+
+def test_an_issuer_is_required_and_a_signer_must_exist():
+    import tempfile
+    from inspeximus import Inspeximus
+    m, _verify = _store()
+    with pytest.raises(ValueError):
+        m.transparent_statement(0, issuer="")
+    unsigned = Inspeximus(path=os.path.join(tempfile.mkdtemp(), "u.json"))
+    unsigned.remember("x")
+    unsigned.flush()
+    with pytest.raises(RuntimeError):
+        unsigned.transparent_statement(0, issuer=ISSUER)

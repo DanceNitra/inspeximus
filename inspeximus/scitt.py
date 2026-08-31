@@ -41,6 +41,7 @@ from .cose import (ALG_EDDSA, ALG_ES256, COSE_SIGN1_TAG, CBORTag, HDR_ALG,  # no
                    _sig_structure, decode, encode)
 
 __all__ = ["signed_statement", "verify_signed_statement", "transparent_statement",
+           "verify_transparent_statement",
            "receipts_of", "statement_digest",
            "HDR_CWT_CLAIMS", "HDR_RECEIPTS", "CWT_ISSUER", "CWT_SUBJECT"]
 
@@ -180,6 +181,52 @@ def receipts_of(statement: bytes) -> list:
         return []
     _protected, unprotected, _payload, _sig = tagged.value
     return [bytes(r) for r in (unprotected or {}).get(HDR_RECEIPTS, [])]
+
+
+def verify_transparent_statement(statement: bytes, verify_statement, verify_receipt_sig,
+                                 leaf: bytes, expected_root: bytes,
+                                 expected_issuer: str | None = None,
+                                 expected_subject: str | None = None) -> dict:
+    """Check a Signed Statement AND its Receipt AND that the two are about the same record.
+
+    That third check is the one worth writing down. A statement and a receipt verify independently:
+    the first says an Issuer vouched for a digest, the second says a leaf sits in a log. Nothing in
+    either connects them, so a pair assembled from two unrelated records passes both checks and means
+    nothing. The link is that the statement's payload MUST be the SHA-256 of the leaf the receipt
+    covers, and this is where it is enforced.
+
+    `leaf` and `expected_root` come from the verifier, not from the artifact. A receipt checked
+    against the root it carries proves nothing, and the same is true of a binding checked against a
+    leaf the artifact supplied.
+
+    Returns {ok, statement, receipt, bound, problems}.
+    """
+    from . import cose
+    out = {"ok": False, "statement": None, "receipt": None, "bound": None, "problems": []}
+
+    st = verify_signed_statement(statement, verify_statement,
+                                 expected_issuer=expected_issuer, expected_subject=expected_subject)
+    out["statement"] = st
+    out["problems"] += ["statement: " + p for p in st["problems"]]
+
+    receipts = receipts_of(statement)
+    if not receipts:
+        out["problems"].append("no Receipt: this is a Signed Statement, not a Transparent one")
+        return out
+    rc = cose.verify_receipt(receipts[0], verify_receipt_sig, leaf_data=bytes(leaf),
+                             expected_root=bytes(expected_root))
+    out["receipt"] = rc
+    out["problems"] += ["receipt: " + p for p in rc["problems"]]
+
+    expected_payload = hashlib.sha256(bytes(leaf)).digest()
+    out["bound"] = st.get("payload") == expected_payload
+    if not out["bound"]:
+        out["problems"].append(
+            "the statement's payload is not the SHA-256 of the leaf this receipt covers, so the two "
+            "are about different records and neither one supports the other")
+
+    out["ok"] = bool(st["ok"] and rc["ok"] and out["bound"])
+    return out
 
 
 def statement_digest(statement: bytes) -> str:

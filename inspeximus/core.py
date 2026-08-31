@@ -8436,6 +8436,67 @@ class Inspeximus:
                 "audit_path": [h.hex() for h in path],
                 "root": self.merkle_root(kind), "merkle": "rfc6962-sha256"}
 
+    def transparent_statement(self, index: int, issuer: str, subject: str | None = None,
+                              kind: str = "write", sign=None) -> dict:
+        """Emit an RFC 9943 Transparent Statement about one entry: WHO says it, WHAT it is, and a
+        Receipt that it is in the log.
+
+        This is the artifact to hand an auditor, and the reason it is one call is that assembling it
+        by hand invites the mistake `verify_transparent_statement` exists to catch: a statement about
+        one record paired with a receipt about another. Here both are built from the same inclusion
+        bundle, so they cannot disagree.
+
+        The statement's payload is the SHA-256 of the canonical leaf, never the record's text. A
+        Transparent Statement is made to travel, and the content this store governs does not travel
+        with it.
+
+        `issuer` is required and is not defaulted from the store: only the operator knows which
+        identity they are willing to be held to, and inventing one produces an artifact that looks
+        attributable and is not. `subject` defaults to the record's key, or its id when it has none.
+
+        Returns {statement (hex), leaf, root, index, tree_size, issuer, subject, pubkey, verify_with}.
+        """
+        from . import cose, scitt
+        if not isinstance(issuer, str) or not issuer.strip():
+            raise ValueError("a Transparent Statement needs an Issuer; pass the identity you sign as")
+        if sign is None:
+            if not (self._receipt_sk and _HAVE_ED):
+                raise RuntimeError(
+                    "no signer: construct with receipt_key=... (see new_receipt_keypair) or pass "
+                    "sign=. An unsigned statement is not a statement.")
+            _sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._receipt_sk))
+            sign = _sk.sign
+
+        bundle = self.inclusion_proof(index, kind=kind)
+        leaf = str(bundle["leaf"]).encode("utf-8")
+        if subject is None:
+            # THE RECORD ID, not the key, and not the position.
+            #
+            # "write:0" names a position in a log, and a position means something different the
+            # moment the log grows. The KEY is worse for this purpose than it looks: a key is a slot
+            # that holds different values over time, so a statement about "staging-db" would not say
+            # WHICH value it vouches for. Two writes under one key produce two memory_ids, and a
+            # Signed Statement is about exactly one record. The leaf is a write receipt and carries
+            # no key at all, so reading one would be a branch that never fires.
+            try:
+                subject = json.loads(bundle["leaf"]).get("memory_id") or ("%s:%d" % (kind, index))
+            except Exception:
+                subject = "%s:%d" % (kind, index)
+
+        st = scitt.signed_statement(hashlib.sha256(leaf).digest(), issuer, str(subject), sign)
+        receipt = cose.inclusion_receipt(
+            int(bundle["tree_size"]), int(bundle["index"]),
+            [bytes.fromhex(h) for h in bundle["audit_path"]],
+            bytes.fromhex(str(bundle["root"])), sign)
+        ts = scitt.transparent_statement(st, [receipt])
+        return {
+            "statement": ts.hex(), "leaf": bundle["leaf"], "root": bundle["root"],
+            "index": bundle["index"], "tree_size": bundle["tree_size"], "kind": kind,
+            "issuer": issuer, "subject": subject, "pubkey": self.receipt_pubkey,
+            "verify_with": ("inspeximus.scitt.verify_transparent_statement(bytes.fromhex(d['statement']), "
+                            "verify, verify, d['leaf'].encode(), bytes.fromhex(d['root']))"),
+        }
+
     @staticmethod
     def verify_inclusion(bundle: dict, expected_root: str | None = None) -> bool:
         """Check an inclusion_proof() bundle offline. Pass the root YOU witnessed, not the one in the

@@ -44,6 +44,18 @@ from .erasure_residue import (
     certificate_summary,
 )
 
+# 2.23.0. The auditor-facing pair: RFC 9943 Signed Statements over the RFC 9942 Receipts already
+# emitted by cose.py. Exported because a capability reachable only as inspeximus.scitt.signed_statement
+# is one a reader following the obvious import does not find.
+from .scitt import (
+    signed_statement,
+    verify_signed_statement,
+    transparent_statement,
+    verify_transparent_statement,
+    receipts_of,
+    statement_digest,
+)
+
 __all__ = [
     "Inspeximus",
     "AmbiguousSubject",
@@ -60,6 +72,12 @@ __all__ = [
     "verify_residue_certificate",
     "certificate_drift",
     "certificate_summary",
+    "signed_statement",
+    "verify_signed_statement",
+    "transparent_statement",
+    "verify_transparent_statement",
+    "receipts_of",
+    "statement_digest",
     "attest",
     "derive_key",
     "regex_extractor",
