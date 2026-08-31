@@ -6876,6 +6876,26 @@ class Inspeximus:
         # And demoting same-VALUE rows destroyed restatements that _supersede_by_key deliberately keeps
         # ("a restatement is not a supersession"), so reload() was not state-preserving where flush()+reopen
         # is. Mirror the store's own rule instead of inventing a second one.
+        demoted = self._reapply_key_lww(
+            "reload_merge_lww", "reload merge: a newer value for this key won")
+        self._file_sig = self._stat_sig()
+        self._items_view_rev = None
+        self._save(force=True)
+        return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
+                "kept_buried": len(resurrected)}
+
+    CHANGESET_FORMAT = "inspeximus-changeset/1"
+
+    def _reapply_key_lww(self, policy: str, reason: str) -> int:
+        """Re-apply the store's own supersession rule across every (tenant, key) group; returns demoted.
+
+        EXTRACTED FROM reload(), NOT REWRITTEN. Two recovery paths now have to settle the same question
+        -- a merge left two active records under one key, which is current -- and the answer was
+        expensive to get right. Keying on `key` alone retires another tenant's value; demoting
+        same-VALUE rows destroys the restatements `_supersede_by_key` deliberately keeps. Both defects
+        were paid for once on the reload path. A second copy of this loop would be a second chance to
+        reintroduce them, and the copies would drift apart silently because each is self-consistent.
+        """
         by_key: dict = {}
         for r in self._items:
             if r.get("key") and r.get("status") == "active":
@@ -6890,14 +6910,68 @@ class Inspeximus:
                 if Inspeximus._obj_sig(r) == newest_sig:
                     continue                      # a restatement of the same value, kept by design
                 r["status"] = "superseded"
-                r.setdefault("meta", {})["superseded_by_policy"] = "reload_merge_lww"
-                self._declare_retired(r, "reload merge: a newer value for this key won")
+                r.setdefault("meta", {})["superseded_by_policy"] = policy
+                self._declare_retired(r, reason)
                 demoted += 1
-        self._file_sig = self._stat_sig()
+        return demoted
+
+    def export_changeset(self) -> dict:
+        """A portable copy of what this handle may see, for another writer to import.
+
+        SCOPED, NOT WHOLE-STORE, which is the opposite of what `_save` does and deliberately so. A save
+        must write every tenant's rows or it destroys the ones it cannot see. An export LEAVES THE
+        MACHINE, so writing the whole store there hands a peer every tenant's records. Scope at the
+        boundary that leaves; write everything to the boundary that stays.
+
+        Embedding vectors are stripped, as in `_save`: they are a re-derivable cache, they dominate the
+        byte size, and the receiver re-embeds on load anyway.
+
+        `digest` is the EXPORTER's state at export time. It is a claim about the sender, not a checksum
+        of this payload, so a receiver must not read a match as proof of convergence: `import_changeset`
+        legitimately ends elsewhere when the receiver holds records the sender never saw.
+        """
+        rows = [{k: v for k, v in r.items() if k != "vec"} for r in self.items]
+        return {"format": self.CHANGESET_FORMAT, "records": rows,
+                "tombstones": [dict(t) for t in (self._tombstones or [])],
+                "digest": self.state_digest(), "count": len(rows)}
+
+    def import_changeset(self, bundle: dict) -> dict:
+        """Merge another writer's changeset in. Returns {added, demoted, skipped_buried}.
+
+        Append-only union by id, then the store's own last-write-wins rule per (tenant, key) -- the same
+        `_reapply_key_lww` that `reload()` runs, so the two paths cannot drift.
+
+        ERASURE WINS OVER THE UNION, IN BOTH DIRECTIONS. A record either side has tombstoned is never
+        added and is dropped if held. The peer's copy predates its erasure, so a plain union silently
+        undoes a deletion while every integrity check still passes -- the defect `reload()` had to fix on
+        its own path, and a GDPR erasure that a teammate's next sync reverses is worse than one that
+        never ran, because the audit says it did.
+
+        This does not make the store multi-writer. Each writer still owns its file; this is how two
+        owned files reconcile.
+        """
+        if not isinstance(bundle, dict) or bundle.get("format") != self.CHANGESET_FORMAT:
+            got = bundle.get("format") if isinstance(bundle, dict) else type(bundle).__name__
+            raise ValueError(f"not an {self.CHANGESET_FORMAT} payload: got format={got!r}")
+        buried = {t.get("memory_id") for t in (self._tombstones or [])}
+        buried |= {t.get("memory_id") for t in (bundle.get("tombstones") or [])}
+        have = {r.get("id") for r in self._items}
+        added = 0
+        for r in bundle.get("records") or []:
+            rid = r.get("id")
+            if not rid or rid in have or rid in buried:
+                continue
+            self._items.append({k: v for k, v in r.items() if k != "vec"})
+            have.add(rid)
+            added += 1
+        before = len(self._items)
+        self._items = [r for r in self._items if r.get("id") not in buried]
+        skipped_buried = before - len(self._items)
+        demoted = self._reapply_key_lww(
+            "import_merge_lww", "changeset import: a newer value for this key won")
         self._items_view_rev = None
         self._save(force=True)
-        return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
-                "kept_buried": len(resurrected)}
+        return {"added": added, "demoted": demoted, "skipped_buried": skipped_buried}
 
     @property
     def items(self) -> list:
@@ -13978,6 +14052,15 @@ class _TenantView:
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
+        # `import_changeset` sits beside `reload` because it is the same act: reconciling this
+        # file with records it did not write. Both union by id and then re-run the store's own
+        # per-key rule over every tenant's rows, and neither can be narrowed without breaking
+        # what it is for -- a changeset carries each record's OWN tenant, so importing it under
+        # one binding would either drop the other tenants' rows or silently re-stamp them.
+        # It is store-level as a WRITE, not as a read: it returns counts, never record text, so
+        # the leak tests sweep it and find nothing to narrow. `export_changeset`, which does
+        # return text, is REBOUND rather than listed here.
+        "import_changeset",
         # `transparent_statement` is OPERATOR-ONLY for the same reason `erasure_certificate` is: it
         # builds its Receipt from inclusion_proof(), which walks the whole write log. On a
         # tenant-bound view that would put another tenant's leaf in the audit path of a proof handed
@@ -14154,6 +14237,8 @@ class _TenantView:
     def decisions_in_force(self, *a, **k): return Inspeximus.decisions_in_force(self, *a, **k)
     def supersession_report(self, *a, **k): return Inspeximus.supersession_report(self, *a, **k)
     def state_digest(self, *a, **k):        return Inspeximus.state_digest(self, *a, **k)
+    def export_changeset(self, *a, **k):    return Inspeximus.export_changeset(self, *a, **k)
+    def _reapply_key_lww(self, *a, **k):    return Inspeximus._reapply_key_lww(self, *a, **k)
     # NOT REBOUND UNTIL NOW, AND SHIPPED THAT WAY. `state_digest` was rebound and `witness`, which
     # wraps it, was not -- so on a tenant view the whole method ran PARENT-bound and a tenant's
     # hydration receipt attested the WHOLE store: measured, acme.witness() reported records=2 and

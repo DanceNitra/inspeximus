@@ -175,6 +175,15 @@ _ARGS = {
     # the whole write log, so the sweep drives it with a real index and lets the leak check decide.
     # Exempting it would exempt the one method here that reads every tenant's leaves by design.
     "transparent_statement": (0, "did:web:sweep.example"),
+    # import_changeset takes a PEER'S changeset, so the sweep hands it a hand-built one whose
+    # record text carries the other side's secret. An import is the method most tempted to echo
+    # what it just merged -- a summary of "what came in" is the obvious thing to return -- and
+    # that echo would hand tenant A the content of a record it is not allowed to read. It must
+    # return counts only, and this is where that is checked rather than assumed.
+    "import_changeset": ({"format": "inspeximus-changeset/1", "count": 1, "digest": "",
+                          "tombstones": [],
+                          "records": [{"id": "sweep-import-1", "text": SECRET, "ts": 1.0,
+                                       "status": "active"}]},),
     # remember_certificate() takes a residue certificate. The sweep hands it a HAND-BUILT one whose
     # root_label carries the other side's secret, because the label becomes the record KEY: if the
     # method ever echoed its input, or wrote under a key it was handed rather than one it derived, this
