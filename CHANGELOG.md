@@ -1,3 +1,28 @@
+## 2.24.1 - UPGRADE IF you parse integrity_bench_revert_result*.json: the guard shipped in 2.24.0 checked the boundary, not the class
+
+**The top-level `"n"` field is gone**, replaced by `cases_requested`, `cases_measured` and
+`errors_total`. Nothing else changes for anyone: the library API, the CLI and every other artifact
+behave exactly as before.
+
+2.24.0 stopped `probes/integrity_bench_revert.py` writing a result file when EVERY case errored. A
+red-team pass on the comment announcing that fix found the same lie one case further along: with 19
+of 20 cases erroring, the run wrote `revert_success_rate: 1.0` from a single usable case, alongside
+`errors: 19`, a top-level `"n": 20`, and `comparable_with_published: true`, at exit 0. The boundary
+was guarded. The class was not.
+
+The artifact now reports what it MEASURED rather than what it was asked for. `n` is replaced by
+`cases_requested`, `cases_measured` (per system) and `errors_total`, and
+`comparable_with_published` is false whenever any judge call failed, instead of depending only on
+which judge was named. A run that measured nothing still refuses to write and exits 1, and a run
+with one usable case still publishes, correctly labelled.
+
+`--out-dir` was added for a related reason, and this one had already reached main. The good-path test
+added in 2.24.0 ran the probe with `--n 3` and wrote into the probe's own directory, so
+`probes/integrity_bench_revert_result_localjudge.json` was published saying n=3 while the figure it
+backs is measured at n=20. A test that publishes its own fixture over a real one is worse than no
+test. The receipt is regenerated from a real 20-case run, and a control now fails if a test run ever
+touches the committed file again.
+
 ## 2.24.0 - AFFECTS NOBODY'S CODE: a timestamp you can check the standing of, and a log a stranger can watch
 
 **NOTHING BREAKS.** Every surface behaves as before. One response shape changed and it was wrong

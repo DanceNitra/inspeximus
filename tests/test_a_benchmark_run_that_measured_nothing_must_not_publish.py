@@ -133,15 +133,73 @@ def test_a_run_where_every_case_errored_refuses_to_write(monkeypatch, capsys):
                 "the published artifact was overwritten by a run whose judge never answered")
 
 
-def test_the_good_path_still_writes_and_exits_zero(monkeypatch, capsys):
-    """The control that keeps the two guards above from being a way to never publish anything."""
+def test_the_good_path_still_writes_and_exits_zero(monkeypatch, tmp_path, capsys):
+    """The control that keeps the guards above from becoming a way to never publish anything.
+
+    --out-dir is not decoration. Without it this test ran the probe with --n 3 and REWROTE the
+    committed receipt, so `probes/integrity_bench_revert_result_localjudge.json` went to public main
+    saying n=3 while the figure it backs was measured at n=20. A test that publishes its own fixture
+    over a real one is worse than no test.
+    """
     module = _probe(monkeypatch)
-    code = _run_with_argv(module, ["--systems", "inspeximus", "--judge", "local", "--n", "3"])
+    code = _run_with_argv(module, ["--systems", "inspeximus", "--judge", "local", "--n", "3",
+                                   "--out-dir", str(tmp_path)])
     assert code == 0, capsys.readouterr().err
-    with open(_artifact(module, local=True), encoding="utf-8") as fh:
+    with open(tmp_path / "integrity_bench_revert_result_localjudge.json", encoding="utf-8") as fh:
         got = json.load(fh)
     assert got["results"]["inspeximus"]["n"] == 3
     assert got["comparable_with_published"] is False
+
+
+def test_the_committed_receipt_is_not_touched_by_a_test_run(monkeypatch, tmp_path):
+    """The control for the control. If --out-dir stopped being honoured, the test above would still
+    pass while quietly rewriting the published artifact again."""
+    module = _probe(monkeypatch)
+    published = _artifact(module, local=True)
+    before = open(published, "rb").read() if os.path.exists(published) else None
+    _run_with_argv(module, ["--systems", "inspeximus", "--judge", "local", "--n", "2",
+                            "--out-dir", str(tmp_path)])
+    if before is not None:
+        assert open(published, "rb").read() == before, "a test run rewrote the committed receipt"
+
+
+def test_a_partly_failed_run_reports_what_it_measured(monkeypatch, tmp_path):
+    """THE CASE THE FIRST VERSION OF THIS GUARD MISSED, and the reason it is here.
+
+    The guard fired only at n == 0. With 19 of 20 erroring it wrote revert_success_rate 1.0 from a
+    single case, errors 19, a top-level n of 20 and comparable_with_published true, at exit 0. The
+    boundary was guarded; the class was not.
+    """
+    module = _probe(monkeypatch, key="sk-not-a-real-key")
+    calls = {"n": 0}
+
+    def flaky(*a, **k):
+        calls["n"] += 1
+        return "osaka" if calls["n"] == 1 else None
+
+    monkeypatch.setattr(module, "openai_chat", flaky)
+    code = _run_with_argv(module, ["--systems", "inspeximus", "--n", "5",
+                                   "--out-dir", str(tmp_path)])
+    assert code == 0, "one usable case is still a measurement; it must not be blocked"
+    with open(tmp_path / "integrity_bench_revert_result.json", encoding="utf-8") as fh:
+        got = json.load(fh)
+    assert got["cases_requested"] == 5
+    assert got["cases_measured"] == {"inspeximus": 1}, "the artifact claimed cases it never scored"
+    assert got["errors_total"] == 4
+    assert got["comparable_with_published"] is False, (
+        "a run with four failed judge calls was labelled comparable with the published figures")
+
+
+def test_a_clean_run_is_still_marked_comparable(monkeypatch, tmp_path):
+    """The other direction. If every run were now incomparable, the field would carry no information
+    and the openai arm could never publish."""
+    module = _probe(monkeypatch, key="sk-not-a-real-key")
+    monkeypatch.setattr(module, "openai_chat", lambda *a, **k: "osaka")
+    _run_with_argv(module, ["--systems", "inspeximus", "--n", "3", "--out-dir", str(tmp_path)])
+    with open(tmp_path / "integrity_bench_revert_result.json", encoding="utf-8") as fh:
+        got = json.load(fh)
+    assert got["errors_total"] == 0
+    assert got["comparable_with_published"] is True
 
 
 # -- helpers ------------------------------------------------------------------------------------------

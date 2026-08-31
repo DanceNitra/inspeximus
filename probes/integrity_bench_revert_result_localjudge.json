@@ -4,21 +4,25 @@
   "judge": "local",
   "judge_model": "deterministic, no model",
   "judge_temperature": null,
-  "measured_at": "2026-08-31T13:54:58Z",
-  "n": 3,
+  "measured_at": "2026-08-31T14:40:50Z",
+  "cases_requested": 20,
+  "cases_measured": {
+    "inspeximus": 20
+  },
+  "errors_total": 0,
   "fixture": "ENTS/REVERTS in this file, deterministic and committed",
   "comparable_with_published": false,
   "results": {
     "inspeximus": {
       "system": "inspeximus",
-      "n": 3,
-      "revert_honored_A": 3,
+      "n": 20,
+      "revert_honored_A": 20,
       "kept_new_B": 0,
       "other": 0,
       "errors": 0,
       "revert_success_rate": 1.0,
       "ci95": [
-        0.438,
+        0.839,
         1.0
       ]
     }

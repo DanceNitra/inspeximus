@@ -297,6 +297,10 @@ def main():
                     help="comma list: inspeximus, mem0 (needs neo4j-free OpenAI $), graphiti "
                          "(OpenAI $ + neo4j). Every system is read through the SAME judge, so "
                          "'inspeximus' alone still costs OpenAI calls unless --judge local.")
+    ap.add_argument("--out-dir", default=None,
+                    help="where to write the result artifact (default: beside this file). A test "
+                         "exercising the good path must pass a temp directory, or it rewrites the "
+                         "committed receipt with whatever tiny --n it used")
     ap.add_argument("--judge", choices=("openai", "local"), default="openai",
                     help="openai: the shared LLM judge the published numbers use. "
                          "local: a deterministic, free, DIFFERENT instrument -- see judge_local. "
@@ -358,6 +362,17 @@ def main():
     # artifact carries `comparable_with_published`, so a run whose judge never answered would publish
     # a rate that describes our credentials rather than any system. Refusing to write is the honest
     # outcome: the previous file stays, and the exit code says the run failed.
+    # THE FIRST VERSION OF THIS GUARD FIRED ONLY AT n == 0, WHICH IS THE BOUNDARY AND NOT THE CLASS.
+    # With 19 of 20 cases erroring it wrote revert_success_rate 1.0 from a single case, errors 19, a
+    # top-level "n": 20 and comparable_with_published true, at exit 0. That is the same lie the guard
+    # was added to stop, one case further along. A red-team pass on the reply ANNOUNCING the fix is
+    # the only reason it did not ship unnoticed.
+    #
+    # The artifact now reports what it MEASURED rather than what it was asked for, and any error at
+    # all makes the run incomparable with a clean published one. A total failure still refuses to
+    # write, because a file of zeros is worse than no file.
+    errors_total = sum(v["errors"] for v in out.values())
+    measured = {k: v["n"] for k, v in out.items()}
     dead = [k for k, v in out.items() if v["n"] == 0]
     if dead:
         print("", file=sys.stderr)
@@ -373,10 +388,16 @@ def main():
                "judge_model": ("gpt-4o-mini" if JUDGE == "openai" else "deterministic, no model"),
                "judge_temperature": (0.0 if JUDGE == "openai" else None),
                "measured_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-               "n": len(cases),
+               "cases_requested": len(cases),
+               "cases_measured": measured,
+               "errors_total": errors_total,
                "fixture": "ENTS/REVERTS in this file, deterministic and committed",
-               "comparable_with_published": JUDGE == "openai",
-               "results": out}, open(os.path.join(os.path.dirname(__file__), stem + ".json"), "w"),
+               # A single failed judge call makes a run incomparable with the published figures, and
+               # this field has to say so. It used to depend on the judge NAME alone, which is a
+               # property of the invocation rather than of the run that actually happened.
+               "comparable_with_published": JUDGE == "openai" and errors_total == 0,
+               "results": out},
+              open(os.path.join(a.out_dir or os.path.dirname(__file__), stem + ".json"), "w"),
               indent=2)
     if JUDGE == "local":
         print("\n[judge=local] deterministic instrument, free to run, NOT comparable with the "
