@@ -1047,6 +1047,15 @@ NON_CLAIM_TOKENS = {
     "README.md": {
         # Declared, with the reason, because a token nobody claims is not the same as a token nobody
         # looked at -- and this file was briefly outside SURFACE, where the audit passed by not reading it.
+        # RFC and draft NUMBERS. A standard's number is a citation, in the same class as a citation
+        # year or an article number: it names a document a reader can fetch, and there is nothing to
+        # measure or reproduce about it. Registering them here rather than widening the extractor
+        # keeps the audit reading every number and deciding about each one.
+        "9942": (1, "RFC 9942, COSE Receipts -- a citation"),
+        "9943": (2, "RFC 9943, SCITT architecture -- a citation, named twice"),
+        "3161": (2, "RFC 3161, time-stamp protocol -- a citation, named twice"),
+        "0,": (1, "'Two signers, two claims, one artifact' prose; the digit is part of a sentence, "
+               "not a measurement"),
         "30": (1, "the rhetorical heading 'The 30 seconds that matter', not a quantity"),
         "01": (1, "example FILENAME 01_basics.py, not a quantity"),
         "02": (1, "example FILENAME 02_correction_and_erasure.py, not a quantity"),
@@ -1055,8 +1064,10 @@ NON_CLAIM_TOKENS = {
         "5": (2, "twice, both parameters a reader changes rather than results we claim: the --n 5 "
               "argument in the offered local-judge command, and k=5 in the next-five-minutes recall "
               "snippet"),
-        "0": (5, "Python list indices [0] in the code examples, not measurements. Was 3 until the "
-              "tamper-detection example landed, which reads verify_writes()[0] and [1][0]"),
+        "0": (6, "Python list indices [0] in the code examples, not measurements. Was 3 until the "
+              "tamper-detection example landed, which reads verify_writes()[0] and [1][0]; 6 since "
+              "the audit-trail example, whose transparent_statement(0, ...) names the record's "
+              "position in the log"),
         "1": (3, "index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
               "tamper-detection example. None is a measurement"),
         "12": (2, "EU AI Act ARTICLE number, not a quantity: once in the docs table, once in the "

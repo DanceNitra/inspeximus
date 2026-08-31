@@ -13,7 +13,7 @@
       "name": "inspeximus",
       "source": "./",
       "description": "Persistent memory for Claude Code that corrects itself: write a new value for a fact and the old one is retired, revert() puts it back, and forget leaves a signed, content-free receipt. Deterministic and zero-dependency — no LLM call when storing, so the same input always produces the same store. Plus erasure_residue: point it at any directory and it tells you whether a value you deleted is still on disk, separating a retained row from an unreclaimed page.",
-      "version": "2.22.0",
+      "version": "2.23.0",
       "author": {
         "name": "Rastislav Drahos",
         "url": "https://github.com/DanceNitra"

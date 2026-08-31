@@ -1,3 +1,60 @@
+## 2.23.0 - AFFECTS NOBODY'S CODE unless you call cose.inclusion_receipt directly: a transparency service in four IETF standards
+
+**NOTHING BREAKS.** Every surface that existed still behaves the same way. One default changed inside
+a format: COSE Receipts now detach their payload, which RFC 9942 section 4.4 says they SHOULD, and
+receipts issued before this still verify. If you built against `cose.inclusion_receipt` and need the
+old bytes, pass `detached=False`.
+
+### What is new, and why each piece exists
+
+A hash chain proves records were not edited. It does not tell a third party WHO wrote them, WHAT they
+are about, or WHEN. Those are the three questions somebody auditing your system asks, and answering
+them in our own format would only move the problem: an artifact whose meaning comes from us is one
+they still have to trust us about.
+
+| artifact | question it answers | standard |
+|---|---|---|
+| Receipt of Inclusion | is this record in the log | RFC 9942 |
+| Signed Statement | who says so, and about what | RFC 9943 |
+| Registration Policy, as entry 0 | under which published rules | RFC 9943 s5.1.1 |
+| RFC 3161 token | at what time, per a third party | RFC 3161 |
+
+- `inspeximus.scitt` emits Signed Statements: a COSE_Sign1 whose protected header carries CWT Claims
+  with an Issuer and a Subject, both mandatory. Receipts ride in the UNPROTECTED header, so a log can
+  attach one after the issuer signed, without invalidating the issuer's signature. Two signers, two
+  claims, one artifact.
+- `Inspeximus.transparent_statement(index, issuer=...)` builds the statement and its receipt from ONE
+  inclusion bundle, so they cannot end up describing different records.
+- `inspeximus.transparency.TransparencyService` registers statements from other parties. Its policy is
+  ENTRY 0 of the log it governs: a policy served beside the log can be edited afterwards, which leaves
+  every receipt ambiguous about the rules it was admitted under. Each entry records which policy digest
+  admitted it. Registration writes to disk BEFORE a receipt is released.
+- `python -m inspeximus.scrapi` serves draft-ietf-scitt-scrapi-11 over stdlib HTTP, in the draft's
+  media types, including `application/concise-problem-details+cbor` for errors.
+- `inspeximus.timestamp` builds RFC 3161 requests. Proven against a production authority rather than a
+  mock: DigiCert granted a token over our head digest, and it ships as a test fixture.
+
+### The parts that say no
+
+- `witnessed_head()` offers the log head to independent witnesses and reports REFUSALS rather than
+  raising them. An honest witness refuses exactly one thing, a head that forks or rolls back what it
+  already signed, so that field is the most informative one in the result. A test forks the log at a
+  witnessed size and requires the refusal; its control shows a FRESH witness signing the same fork,
+  because the guarantee comes from continuity of memory and not from the signature.
+- `verify_transparent_statement` and `verify_registered_statement` are two DIFFERENT bindings and are
+  not interchangeable. A statement and a receipt verify perfectly well on their own, and nothing inside
+  either connects them, so a pair assembled from unrelated records would otherwise prove nothing.
+- `verify_with_openssl` reports UNVERIFIED, never FAILED, when it cannot check. openssl exits non-zero
+  for a missing CA file exactly as it does for a forged token.
+
+### What this is not
+
+Full RFC 3161 token verification is delegated to `openssl ts -verify` rather than hand-rolled: a
+partial CMS parser answering "valid" would pass tokens a real verifier rejects. The service points at
+a public TSA, not a QTSP on the EU Trusted List, so eIDAS Article 41's presumption does not attach
+yet. And none of this is compliance. No regulation requires a signed ledger; this is evidentiary
+quality for a duty to demonstrate, and it is worded that way throughout.
+
 ## 2.22.0 - UPGRADE IF YOU READ check_sources()["counts"]["ORPHANED"]: it stopped reporting your working directory
 
 **BEHAVIOUR CHANGE: a relative source locator that does not resolve is no longer ORPHANED.** It is
