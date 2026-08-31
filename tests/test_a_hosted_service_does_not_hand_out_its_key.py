@@ -142,3 +142,57 @@ def test_the_deployment_files_keep_the_witness_a_separate_container():
             "%s passes a signing key on the command line, which is the leak these files exist to "
             "avoid" % name)
         assert "USER " in text, "%s runs as root" % name
+
+
+# -- the deployment document, which only Azure would otherwise validate ------------------------------
+def _azure_module():
+    import importlib.util
+    path = os.path.join(os.path.dirname(__file__), "..", "deploy", "azure_up.py")
+    spec = importlib.util.spec_from_file_location("azure_up", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize("with_secret", [True, False])
+def test_the_generated_container_app_document_parses(with_secret):
+    """Indentation in this document is load-bearing and was wrong once.
+
+    `secrets` sat two columns left, which made it a sibling of `properties` and turned the `ingress:`
+    line after it into a member of the secrets SEQUENCE. Nothing local caught it, because nothing
+    local read it: the first reader would have been Azure, nine steps into a deployment, reporting
+    something else.
+    """
+    yaml = pytest.importorskip("yaml")
+    import types
+    module = _azure_module()
+    cfg = types.SimpleNamespace(env_id="/subscriptions/x/rg/g/env/e",
+                                image=module.DEFAULTS["image"],
+                                policy=module.DEFAULTS["policy"],
+                                storage_link=module.DEFAULTS["storage_link"])
+    doc = yaml.safe_load(module.app_yaml(cfg, "ab" * 32 if with_secret else None))
+    props = doc["properties"]
+    container = props["template"]["containers"][0]
+
+    assert props["configuration"]["ingress"]["targetPort"] == 9800
+    assert props["configuration"]["ingress"]["allowInsecure"] is False
+    # The log lives on a mounted share. A container's own disk does not survive a revision, and
+    # losing this one loses every receipt the service ever issued.
+    assert container["volumeMounts"][0]["mountPath"] == "/data"
+    assert props["template"]["volumes"][0]["storageType"] == "AzureFile"
+    assert props["template"]["scale"]["minReplicas"] == 1
+
+    if with_secret:
+        assert container["env"][0]["secretRef"] == props["configuration"]["secrets"][0]["name"]
+    else:
+        assert "env" not in container and "secrets" not in props["configuration"]
+
+
+def test_the_deploy_script_checks_the_session_with_a_real_call():
+    """`az account show` reads a local cache. On 2026-08-31 it reported this subscription as Enabled
+    while its refresh token had been dead for months, so the liveness check must be a call that
+    reaches the API."""
+    source = open(os.path.join(os.path.dirname(__file__), "..", "deploy", "azure_up.py"),
+                  encoding="utf-8").read()
+    probe = source[source.index("def require_live_session"):source.index("def ensure_providers")]
+    assert "group\", \"list\"" in probe, "the liveness probe must call the API, not read a cache"
