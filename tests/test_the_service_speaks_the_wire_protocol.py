@@ -110,7 +110,14 @@ def test_the_key_set_is_cbor_and_carries_the_policy_and_the_scope(wired):
     with urllib.request.urlopen(base + "/.well-known/scitt-keys", timeout=10) as r:
         assert r.status == 200 and r.headers["Content-Type"] == CBOR
         ks = cose.decode(r.read())
-    assert ks["keys"][0]["alg"] == "EdDSA" and ks["keys"][0]["kid"]
+    # A COSE_Key, RFC 9052 section 7: kty=OKP(1), alg=EdDSA(-8), crv=Ed25519(6), and the key itself
+    # at label -2. Asserting on `x` is the point of the test: the earlier shape carried the key hex
+    # in `kid` with no `x` at all, so a client following the RFC found nothing to verify with, and an
+    # assertion on `alg` and `kid` alone passed over it.
+    key = ks["keys"][0]
+    assert key[1] == 1 and key[3] == -8 and key[-1] == 6, key
+    assert isinstance(key[-2], (bytes, bytearray)) and len(key[-2]) == 32, key
+    assert key[-2].hex() == key[2].decode("ascii"), "kid must address the key it carries"
     assert ks["policy"]["name"] == "scrapi-test"
     assert "NON-EQUIVOCATION is not" in ks["scope"], (
         "a reader must be told that a root from the audited party proves self-consistency only")

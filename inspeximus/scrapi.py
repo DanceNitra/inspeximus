@@ -9,7 +9,7 @@ is the difference between a library somebody has to learn and a service somebody
 THE ENDPOINTS, read from draft-ietf-scitt-scrapi-11, not remembered:
 
     GET  /.well-known/scitt-keys              -> application/cbor, a COSE Key Set (200)
-    GET  /.well-known/scitt-keys/{kid}        -> application/cbor, one key (200 / 404)
+    GET  /.well-known/scitt-keys/{kid}        -> application/cbor, the same document (200 / 404)
     POST /entries          application/cose   -> application/cose, the Receipt (201 / 400 / 429)
     GET  /entries/{EntryID} Accept: cose      -> application/cose, the Receipt (200 / 204 / 404)
 
@@ -57,6 +57,40 @@ def _problem(title: str, detail: str = "") -> bytes:
     if detail:
         body[_PROBLEM_DETAIL] = detail
     return cose.encode(body)
+
+
+#: COSE_Key labels, RFC 9052 section 7, and the OKP values from RFC 9053 section 7.1.
+_KTY, _KID, _ALG, _CRV, _X = 1, 2, 3, -1, -2
+_KTY_OKP, _ALG_EDDSA, _CRV_ED25519 = 1, -8, 6
+
+
+def _cose_key(pubkey_hex):
+    """The service's verification key as a COSE_Key.
+
+    This used to be `{"kid": <hex>, "alg": "EdDSA"}`, which put the key material in the identifier
+    field and left the key itself absent. Nothing failed: the endpoint answered 200, a reader saw a
+    plausible key set, and a client following RFC 9052 found no `x` at label -2 and so could verify
+    nothing. The docstring at the top of this module warns against exactly that shape, and this was
+    an instance of it.
+
+    `kid` stays the ASCII hex of the public key, because `/.well-known/scitt-keys/{kid}` addresses it
+    that way and changing it would break every stored reference to a key that has not changed.
+
+    An undecodable public key omits `x` and says so, rather than emitting zeros. A key set carrying
+    a wrong key is worse than one carrying none: the first makes a verifier reject good receipts.
+    """
+    key = {_KTY: _KTY_OKP, _ALG: _ALG_EDDSA, _CRV: _CRV_ED25519,
+           _KID: (pubkey_hex or "").encode("ascii", "replace")}
+    try:
+        raw = bytes.fromhex(pubkey_hex or "")
+    except ValueError:
+        raw = b""
+    if len(raw) == 32:
+        key[_X] = raw
+    else:
+        key["problem"] = ("this service has no usable Ed25519 public key, so nothing here can "
+                          "verify a receipt it issued")
+    return key
 
 
 def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int = 9800,
@@ -119,6 +153,10 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
                 kid = path.rsplit("/", 1)[-1]
                 if kid != (service.service_pubkey or ""):
                     return self._send(404, PROBLEM, _problem("unknown kid", kid))
+                # The same document as the unaddressed endpoint, because this service holds exactly
+                # one key, so narrowing the set would remove nothing and drop the policy and scope a
+                # reader needs beside it. A service that ever rotates keys must narrow here, or a
+                # client asking for one kid gets back several and picks by position.
                 return self._send(200, CBOR, cose.encode(self._key_set()))
 
             if path.startswith("/entries/"):
@@ -194,7 +232,7 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
                 if w.get("refused"):
                     witnessed["alarm"] = ("a witness REFUSED this head. An honest witness refuses "
                                           "only a fork or a rollback.")
-            return {"keys": [{"kid": service.service_pubkey, "alg": "EdDSA"}],
+            return {"keys": [_cose_key(service.service_pubkey)],
                     "policy": d["policy"], "policy_sha256": d["policy_sha256"],
                     "entries": d["entries"], "root": d["root"], "scope": d["scope"],
                     "witnessed": witnessed}
@@ -202,12 +240,39 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
     return ThreadingHTTPServer((host, port), Handler)
 
 
+def _service_secret(a):
+    """The service signing key, from a file, the environment, or (loudly) the command line.
+
+    `--secret` puts the SIGNING KEY of the transparency service into the process table, where any
+    local user reads it with one command. Measured on 2026-08-31 rather than assumed: a running
+    server started that way returned its own key in `Win32_Process.CommandLine`, and `ps` on Linux
+    is no different. Whoever holds it can mint receipts this service will be blamed for.
+
+    The flag still works, because removing it silently would break a running deployment, and it now
+    says what it costs. A file is preferred over the environment in turn, because an environment is
+    inherited by every child process and appears in a crash report.
+    """
+    if a.secret_file:
+        with open(a.secret_file, encoding="utf-8") as fh:
+            return fh.read().strip()
+    if a.secret:
+        print("WARNING: --secret puts this service's SIGNING KEY in the process table, readable by "
+              "any local user. Use --secret-file or INSPEXIMUS_SERVICE_SECRET.", file=sys.stderr)
+        return a.secret
+    return (os.environ.get("INSPEXIMUS_SERVICE_SECRET") or "").strip() or None
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="python -m inspeximus.scrapi", description=__doc__.splitlines()[0])
     ap.add_argument("--port", type=int, default=9800)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--log", required=True, help="path to the append-only registration log")
-    ap.add_argument("--secret", help="the SERVICE Ed25519 secret (hex); minted and printed if absent")
+    ap.add_argument("--secret", help="DISCOURAGED: the SERVICE Ed25519 secret (hex) on the command "
+                                     "line, where every local user can read it. Prefer "
+                                     "INSPEXIMUS_SERVICE_SECRET or --secret-file")
+    ap.add_argument("--secret-file", help="a file holding the SERVICE Ed25519 secret (hex). Also "
+                                          "read from INSPEXIMUS_SERVICE_SECRET if neither flag is "
+                                          "given")
     ap.add_argument("--issuer-pubkey", action="append", default=[],
                     help="an Ed25519 public key (hex) this service accepts statements from; "
                          "repeatable. REQUIRED: a service that cannot authenticate an issuer is "
@@ -230,10 +295,11 @@ def main(argv=None) -> int:
     from cryptography.hazmat.primitives.asymmetric.ed25519 import (Ed25519PrivateKey as SK,
                                                                    Ed25519PublicKey as PK)
     from . import new_receipt_keypair
-    secret = a.secret
+    secret = _service_secret(a)
     if not secret:
         secret, pub = new_receipt_keypair()
-        print("minted a service key. KEEP IT: --secret %s" % secret, file=sys.stderr)
+        print("minted a service key. KEEP IT, in a file or the environment and NOT on a command "
+              "line: INSPEXIMUS_SERVICE_SECRET=%s" % secret, file=sys.stderr)
     sk = SK.from_private_bytes(bytes.fromhex(secret))
     pub = sk.public_key().public_bytes_raw().hex()
 

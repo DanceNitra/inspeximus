@@ -1,0 +1,66 @@
+# A transparency service and a witness that does not trust it.
+#
+#   docker compose -f deploy/compose.yaml up --build
+#
+# THE WITNESS IS A SEPARATE CONTAINER BECAUSE THAT IS THE ENTIRE GUARANTEE. A witness in the service's
+# own process shares its memory, its disk and its operator, so it co-signs whatever it is shown. Here
+# it has its own image, its own volume and its own key, and the service reaches it over the network
+# like any other client. Run it on another machine, under another account, for the property to mean
+# what it says: this file makes the separation visible, and your deployment is what makes it real.
+#
+# What a witness catches, and it is narrow: a FORK or a ROLLBACK of a log it has already signed. It
+# holds its own copy of the last head, so a service that later serves a different history is refused
+# by a party that remembers. It does not check that entries are true, and it cannot see anything
+# about a log it has never signed.
+#
+# A REFUSAL DOES NOT BLOCK REGISTRATION, by design. Making a witness a veto hands anyone who can
+# reach it a way to stop the service. The refusal is published instead, where a dishonest operator
+# cannot quietly drop it.
+
+name: inspeximus-transparency
+
+services:
+  witness:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.witness
+    # No published port. The witness is reachable from the service and from nowhere else, which is
+    # the smallest surface that still lets it do its job. Publish it when auditors need to ask it
+    # directly, and understand that you are then exposing a signing service.
+    expose:
+      - "9810"
+    volumes:
+      - witness-data:/data
+    environment:
+      # Minted on first start and printed if absent. In a real deployment this comes from a secret
+      # store, and it MUST NOT be the same key as the service's: a witness that shares the service's
+      # key is the service, wearing a second name.
+      INSPEXIMUS_WITNESS_SECRET: ${INSPEXIMUS_WITNESS_SECRET:-}
+    restart: unless-stopped
+
+  scitt:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    depends_on:
+      - witness
+    ports:
+      - "127.0.0.1:9800:9800"
+    volumes:
+      - scitt-data:/data
+    environment:
+      INSPEXIMUS_SERVICE_SECRET: ${INSPEXIMUS_SERVICE_SECRET:-}
+    # --accept-any-issuer is the DEVELOPMENT setting and says so in the published policy: every
+    # receipt then means only that something was recorded, not that a known party said it. For a
+    # real deployment, replace it with one --issuer-pubkey per client you actually accept.
+    command:
+      - --accept-any-issuer
+      - --policy-name
+      - compose-development
+      - --witness
+      - http://witness:9810
+    restart: unless-stopped
+
+volumes:
+  scitt-data:
+  witness-data:

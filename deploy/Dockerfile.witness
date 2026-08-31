@@ -1,0 +1,37 @@
+# An independent witness. A separate image because it must be a separate PARTY.
+#
+# The witness holds the last head it signed for each store and REFUSES a fork or a rollback of that
+# history. That refusal is the only thing standing between a hosted service and equivocation, so it
+# is worth nothing if the witness shares the service's process, its disk, its key or its operator.
+# Its own image and its own volume make that separation visible. Running it on another machine, under
+# another account, is what makes the separation real, and only you can do that part.
+#
+# What it does NOT do: check that anything registered is true, or say anything about a log it has
+# never signed. It remembers, and it refuses to forget.
+#
+# Build:  docker build -f deploy/Dockerfile.witness -t inspeximus-witness .
+# Run:    docker run -p 9810:9810 -v witness:/data -e INSPEXIMUS_WITNESS_SECRET=... inspeximus-witness
+
+FROM python:3.12-slim
+
+RUN pip install --no-cache-dir "cryptography>=42"
+
+WORKDIR /app
+COPY inspeximus/ /app/inspeximus/
+
+RUN useradd --create-home --uid 10002 witness \
+    && mkdir -p /data && chown witness:witness /data
+USER witness
+VOLUME ["/data"]
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+EXPOSE 9810
+
+# The state file is the memory that makes a refusal possible. Lose it and the witness forgets every
+# head it ever signed, then co-signs a fork without complaint: it has no way to know it is one. That
+# is why /data is a volume and not a layer.
+ENTRYPOINT ["python", "-m", "inspeximus.witness_server", "--host", "0.0.0.0", "--port", "9810", \
+            "--state", "/data/witness_state.json"]
+CMD []

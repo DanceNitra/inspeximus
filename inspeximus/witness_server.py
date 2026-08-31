@@ -26,7 +26,7 @@ last-signed head to `--state` so the refusal survives a restart. Bind to 127.0.0
 your own TLS/reverse-proxy for a real deployment.
 """
 from __future__ import annotations
-import json, argparse
+import json, argparse, os, sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from .witness_pool import Witness
 
@@ -195,14 +195,38 @@ def serve(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = No
         httpd.shutdown()
 
 
-def main():
+def _witness_secret(a):
+    """The witness signing key, from a file, the environment, or (loudly) the command line.
+
+    A witness whose key is readable is not an independent party: whoever holds it co-signs whatever
+    they like under the witness's name, and the refusal that makes a witness worth having can be
+    manufactured or suppressed. `--secret` puts it in the process table, where any local user reads
+    it; measured 2026-08-31 on a running server, which returned its own key in the command line a
+    second process could see.
+    """
+    if a.secret_file:
+        with open(a.secret_file, encoding="utf-8") as fh:
+            return fh.read().strip()
+    if a.secret:
+        print("WARNING: --secret puts this witness's SIGNING KEY in the process table, readable by "
+              "any local user. Use --secret-file or INSPEXIMUS_WITNESS_SECRET.", file=sys.stderr)
+        return a.secret
+    return (os.environ.get("INSPEXIMUS_WITNESS_SECRET") or "").strip() or None
+
+
+def main(argv=None):
     ap = argparse.ArgumentParser(description="inspeximus reference witness server")
     ap.add_argument("--port", type=int, default=9700)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--state", default=None, help="json file persisting the per-store last-signed head")
-    ap.add_argument("--secret", default=None, help="Ed25519 secret hex (omit to mint a fresh key)")
-    a = ap.parse_args()
-    serve(a.port, a.host, a.state, a.secret)
+    ap.add_argument("--secret", default=None,
+                    help="DISCOURAGED: Ed25519 secret hex on the command line, where every local "
+                         "user can read it. Prefer INSPEXIMUS_WITNESS_SECRET or --secret-file")
+    ap.add_argument("--secret-file", default=None,
+                    help="a file holding the Ed25519 secret hex. Also read from "
+                         "INSPEXIMUS_WITNESS_SECRET if neither flag is given")
+    a = ap.parse_args(argv)
+    serve(a.port, a.host, a.state, _witness_secret(a))
 
 
 if __name__ == "__main__":
