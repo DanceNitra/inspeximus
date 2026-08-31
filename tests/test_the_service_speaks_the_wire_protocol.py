@@ -35,7 +35,6 @@ from inspeximus.scrapi import CBOR, COSE, PROBLEM, main, make_server
 from inspeximus.transparency import RegistrationPolicy, TransparencyService
 
 ISSUER = "did:web:agora.example"
-_PORT = [9821]
 
 
 def _keypair():
@@ -60,9 +59,12 @@ def wired():
     ts = TransparencyService(os.path.join(tempfile.mkdtemp(), "log.jsonl"),
                              RegistrationPolicy("scrapi-test", accepted_issuers=[ISSUER]),
                              ssign, iverify, service_pubkey=spub)
-    _PORT[0] += 1
-    port = _PORT[0]
-    srv = make_server(ts, port=port)
+    # PORT 0 lets the OS pick a free one. A counter cannot: pytest-xdist runs several workers at
+    # once, each with its own copy of this module and its own counter, so they hand out the same
+    # numbers and the second binder gets EADDRINUSE. CI caught it on every runner; locally with -n 0
+    # it passed, which is the shape of a defect that only appears where you are not looking.
+    srv = make_server(ts, port=0)
+    port = srv.server_address[1]
     t = threading.Thread(target=srv.serve_forever, daemon=True)
     t.start()
     try:
@@ -166,6 +168,6 @@ def test_the_server_refuses_to_start_without_an_issuer_key(capsys):
     """A service that cannot authenticate an issuer is recording bytes, not statements. Starting
     anyway would fill a log with entries whose signatures were never checked."""
     log = os.path.join(tempfile.mkdtemp(), "l.jsonl")
-    assert main(["--log", log, "--port", "9899"]) == 2
+    assert main(["--log", log, "--port", "0"]) == 2
     assert "refusing to start" in capsys.readouterr().err
     assert not os.path.exists(log), "a refused start must not create a log"
