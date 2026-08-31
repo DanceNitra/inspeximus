@@ -209,8 +209,8 @@
   {
     "name": "skip_dirs goes back to being unioned (caller cannot opt out)",
     "file": "inspeximus/erasure_residue.py",
-    "old": "    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)",
-    "new": "    skip = set(skip_dirs or ()) | _SKIP_DIRS",
+    "old": "    return set(_SKIP_DIRS) if skip_dirs is None else set(skip_dirs)",
+    "new": "    return set(skip_dirs or ()) | _SKIP_DIRS",
     "tests": [
       "tests/test_erasure_residue.py"
     ]

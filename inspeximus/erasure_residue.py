@@ -164,6 +164,17 @@ def _live_rows(path: str, value: str) -> list[dict]:
     return hits
 
 
+def _resolve_skip(skip_dirs) -> set:
+    """REPLACE, not union. `None` means the default; any other value is the caller's whole answer.
+
+    One function rather than the same line in two places: a caller who passes `skip_dirs=set()` is
+    asking to look everywhere, and a rule about that which lives in two functions can come to mean two
+    different things. It also keeps the mutation target unambiguous, since a spec entry that matches
+    twice is silently SKIPPED and inflates the score by exactly the checks it drops.
+    """
+    return set(_SKIP_DIRS) if skip_dirs is None else set(skip_dirs)
+
+
 def scan_residue(root: str, values, max_file_mb: float = 512.0,
                  skip_dirs=None, follow_symlinks: bool = False,
                  manifest: bool = False) -> dict:
@@ -190,7 +201,7 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
     # REPLACE, not union. The default prunes .git/.venv/node_modules because they are usually noise, but a
     # caller who passes skip_dirs=set() is asking to look everywhere and used to be overruled silently --
     # there was no way to scan the one directory where a deleted store most reliably survives forever.
-    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)
+    skip = _resolve_skip(skip_dirs)
 
     # A path that is not there searches nothing and used to answer "clean": ok=True, 0 files, no problems --
     # byte-identical to a real all-clear. That is how a typo in a DSAR runbook becomes a clean bill of
@@ -344,7 +355,7 @@ def residue_certificate(root: str, values, signing_key: str | None = None, *,
     if signing_key is not None and not _HAVE_ED:
         raise RuntimeError("signing a residue certificate needs the `cryptography` package "
                            "(pip install cryptography). Omit signing_key for an unsigned document.")
-    skip = _SKIP_DIRS if skip_dirs is None else set(skip_dirs)
+    skip = _resolve_skip(skip_dirs)
     scan = scan_residue(root, values, max_file_mb=max_file_mb, skip_dirs=skip,
                         follow_symlinks=follow_symlinks, manifest=True)
     vals = [v for v in (values or []) if isinstance(v, str) and v]
