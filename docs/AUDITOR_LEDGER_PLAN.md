@@ -66,7 +66,7 @@ whose meaning comes from us.
 | 1 | **RFC 9942** COSE Receipts | Proposed Standard, June 2026 | an inclusion proof any implementation reads | **done** |
 | 2 | **RFC 9943** SCITT Signed Statements | Proposed Standard, June 2026 | WHO said it and WHAT it is about | **done** |
 | 3 | Registration Policy + service identity | RFC 9943 section 5.1.1 | the right to call it a Transparency Service | **done** |
-| 4 | **RFC 3161** timestamp from an EU Trusted List QTSP | ETSI EN 319 422 | eIDAS Article 41 presumption of time | after |
+| 4 | **RFC 3161** timestamp from an EU Trusted List QTSP | ETSI EN 319 422 | eIDAS Article 41 presumption of time | **client done, QTSP pending** |
 | 5 | Rekor v2 or Tessera as an external witness | GA October 2025 | a log we do not control | optional |
 | 6 | DSSE / in-toto for release provenance | in-toto 1.2.0, SLSA 1.1 | provenance of the library itself | optional |
 
@@ -97,9 +97,13 @@ and the ecosystem follows RFC 6962 plus C2SP static-ct-api), W3C VC 2.0.
 
 ## What we still do not have, and will build
 
-- **RFC 3161 timestamps** from an EU Trusted List QTSP over the log root. eIDAS Article 41 gives a
-  qualified timestamp a rebuttable presumption of time, which is the cheapest credibility an auditor
-  recognises.
+- ~~RFC 3161 timestamps.~~ Done: `timestamp.py` builds the DER request, posts it, and refuses to
+  file a rejection as evidence. Proven against a production authority rather than a mock: DigiCert
+  granted a 6,008-byte token over our head digest on 2026-08-31, and it is kept as a test fixture.
+  Full token verification is DELEGATED to `openssl ts -verify` and says so; a hand-rolled partial CMS
+  parser reporting "valid" would pass tokens a real verifier rejects. Still to do: point it at a
+  QTSP on the EU Trusted List, since eIDAS Article 41's presumption attaches to a QUALIFIED timestamp
+  and DigiCert's public TSA is not one.
 - ~~An external witness in the loop.~~ Done: `TransparencyService.head()` emits the anchor shape the
   existing witnesses already understand, and `witnessed_head()` collects k-of-n co-signatures and
   reports refusals rather than raising them. A test forks the log at a witnessed size and requires the
