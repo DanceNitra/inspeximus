@@ -221,12 +221,38 @@ def verify_transparent_statement(statement: bytes, verify_statement, verify_rece
     expected_payload = hashlib.sha256(bytes(leaf)).digest()
     out["bound"] = st.get("payload") == expected_payload
     if not out["bound"]:
-        out["problems"].append(
-            "the statement's payload is not the SHA-256 of the leaf this receipt covers, so the two "
-            "are about different records and neither one supports the other")
+        # NAME THE LIKELY CAUSE BEFORE ACCUSING THE ARTIFACT. There are two bindings in this package,
+        # and a caller who reaches for the wrong one used to be told the pair was "about different
+        # records" -- which can simply be untrue. A service-issued pair IS about one record; its leaf
+        # is a registration entry rather than the record, so this rule asks the wrong question of it.
+        # Asserting a falsehood is worse than refusing, so look before saying it.
+        if _looks_like_a_registration_entry(leaf):
+            out["problems"].append(
+                "this leaf is a Transparency Service registration entry, not the record itself, so "
+                "the store-issued binding does not apply. Use "
+                "inspeximus.transparency.verify_registered_statement for a service-issued pair.")
+        else:
+            out["problems"].append(
+                "the statement's payload is not the SHA-256 of the leaf this receipt covers, so the "
+                "two are about different records and neither one supports the other")
 
     out["ok"] = bool(st["ok"] and rc["ok"] and out["bound"])
     return out
+
+
+def _looks_like_a_registration_entry(leaf: bytes) -> bool:
+    """Is this leaf a Transparency Service log entry rather than a record?
+
+    Used only to improve a refusal message, never to decide whether something verifies. A shape test
+    that changed a VERDICT would be a way to talk the verifier into the answer you wanted; changing
+    only the explanation cannot be exploited into a pass.
+    """
+    try:
+        import json as _json
+        entry = _json.loads(bytes(leaf).decode("utf-8"))
+    except Exception:
+        return False
+    return isinstance(entry, dict) and "statement_sha256" in entry and "kind" in entry
 
 
 def statement_digest(statement: bytes) -> str:

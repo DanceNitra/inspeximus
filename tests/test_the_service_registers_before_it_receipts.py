@@ -283,3 +283,39 @@ def test_a_witness_that_never_saw_the_log_is_not_evidence_of_anything(service):
     fresh = _witness(tmp, "amnesiac")
     out = ts.witnessed_head([fresh], threshold=1)
     assert out["met"] is True and out["refused"] == []
+
+
+def test_the_wrong_verifier_names_the_right_one_instead_of_accusing_the_artifact(service):
+    """Two bindings live in this package and a caller WILL reach for the wrong one.
+
+    Before this, the store-issued verifier told them the pair was "about different records", which
+    can simply be untrue: a service-issued pair is about one record, and its leaf is a registration
+    entry rather than the record itself, so that rule asks the wrong question of it. Asserting a
+    falsehood is worse than refusing.
+    """
+    from inspeximus import verify_transparent_statement
+    ts, isign, iverify, sverify = service
+    tr = ts.register_transparent(_statement(isign))
+
+    out = verify_transparent_statement(tr, iverify, sverify, ts.entry_leaf(1), ts.root())
+    assert not out["ok"], "the wrong binding must still refuse"
+    assert any("verify_registered_statement" in p for p in out["problems"]), (
+        "the refusal has to name the verifier that does apply")
+    assert not any("different records" in p for p in out["problems"]), (
+        "it must not accuse the artifact of something the evidence does not show")
+
+
+def test_naming_the_other_binding_never_turns_a_refusal_into_a_pass(service):
+    """CONTROL. The shape test exists to improve a MESSAGE. If it could move a verdict it would be a
+    way to talk the verifier into the answer you wanted, so both wrong-binding paths stay refusals."""
+    from inspeximus import verify_transparent_statement
+    ts, isign, iverify, sverify = service
+    tr = ts.register_transparent(_statement(isign))
+    assert verify_transparent_statement(tr, iverify, sverify, ts.entry_leaf(1), ts.root())["ok"] is False
+    assert verify_transparent_statement(tr, iverify, sverify, ts.entry_leaf(1),
+                                        ts.root())["bound"] is False
+    # and a genuinely mismatched service pair still gets the ordinary refusal, not the hint
+    ts.register_transparent(_statement(isign, b"two", "memory:two"))
+    other = verify_registered_statement(tr, iverify, sverify, ts.entry_leaf(2), ts.root())
+    assert any("different registration" in p for p in other["problems"])
+    assert not any("verify_transparent_statement" in p for p in other["problems"])

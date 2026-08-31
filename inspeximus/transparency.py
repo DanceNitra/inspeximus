@@ -347,9 +347,18 @@ def verify_registered_statement(statement: bytes, verify_issuer, verify_service,
     out["bound"] = (entry.get("statement_sha256")
                 == scitt.statement_digest(scitt.without_receipts(statement)))
     if not out["bound"]:
-        out["problems"].append(
-            "the log entry this Receipt proves does not name this statement, so the Receipt is about "
-            "a different registration")
+        # The mirror of the check in scitt.py: a store-issued pair reaching this verifier is a caller
+        # mistake, not a forged artifact, and saying "a different registration" about it would be an
+        # accusation the evidence does not support.
+        if entry.get("statement_sha256") is None:
+            out["problems"].append(
+                "this leaf is not a Transparency Service registration entry, so the service-issued "
+                "binding does not apply. Use inspeximus.verify_transparent_statement for a pair "
+                "issued by a store.")
+        else:
+            out["problems"].append(
+                "the log entry this Receipt proves does not name this statement, so the Receipt is "
+                "about a different registration")
 
     out["ok"] = bool(st["ok"] and rc["ok"] and out["bound"])
     return out
