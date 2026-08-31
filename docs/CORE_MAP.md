@@ -26,20 +26,20 @@ the file's own. Public methods are named, private ones counted; `*` marks a prop
 
 | block | lines | bytes | public methods |
 |---:|---|---:|---|
-| 1 | 1546–2216 | 61,155 | _1 private only_ |
-| 2 | 2228–3075 | 64,983 | `remember`, `admissibility_preconditions` _(+7 private)_ |
-| 3 | 3077–4168 | 69,636 | `audit_the_audits` |
-| 4 | 4170–5233 | 73,856 | `identifier_contract`, `commitment_supports`, `check_sources`, `verify_attestations`, `verify_writes` |
-| 5 | 5235–6124 | 60,655 | `recommit`, `verify_attribution`, `provisional`, `confirm`, `discard_provisional`, `candidates`, `promote_candidate`, +8 more _(+11 private)_ |
-| 6 | 6126–6969 | 60,652 | `forget`, `register_erasure_target`, `forget_subject`, `reload`, `items*` _(+16 private)_ |
-| 7 | 6971–7903 | 61,075 | `pii_report`, `forget_pii`, `for_tenant`, `grant`, `revoke`, `can_read`, `grants`, +6 more _(+12 private)_ |
-| 8 | 7905–8784 | 60,566 | `verify_witness`, `index_coherence`, `erasure_certificate`, `remember_certificate`, `governance_report`, `explain_growth`, `anchor`, +10 more _(+3 private)_ |
-| 9 | 8786–9669 | 60,361 | `revert_challenge`, `revert_capability`, `revert`, `revert_intent`, `restore_intent`, `submit_revert`, `restore_now`, +7 more _(+9 private)_ |
-| 10 | 9671–10872 | 87,917 | `decisions_in_force`, `supersession_report`, `recall` _(+14 private)_ |
-| 11 | 10874–11781 | 62,576 | `influence_gate_report`, `credit`, `propagate_outcome`, `ratify`, `grade`, `convergence_report`, `slash`, +1 more _(+20 private)_ |
-| 12 | 11783–12785 | 69,021 | `monitor`, `spend_irreversible`, `irreversible_budget_report`, `recall_iterative`, `recall_iterative_start`, `recall_iterative_followup`, `admit`, +5 more _(+8 private)_ |
-| 13 | 12788–13799 | 65,384 | `consolidate_clusters`, `apply_retention`, `sleep`, `session_salience`, `open_session`, `close_session`, `session_context`, +10 more _(+11 private)_ |
-| 14 | 13801–13813 | 716 | `flush` |
+| 1 | 1546–2227 | 62,079 | _1 private only_ |
+| 2 | 2228–3076 | 65,111 | `remember`, `admissibility_preconditions` _(+7 private)_ |
+| 3 | 3077–4169 | 69,637 | `audit_the_audits` |
+| 4 | 4170–5234 | 76,404 | `identifier_contract`, `commitment_supports`, `check_sources`, `verify_attestations`, `verify_writes` |
+| 5 | 5235–6109 | 61,535 | `recommit`, `verify_attribution`, `provisional`, `confirm`, `discard_provisional`, `candidates`, `promote_candidate`, +7 more _(+11 private)_ |
+| 6 | 6110–6955 | 60,880 | `remember_dedup`, `forget`, `register_erasure_target`, `forget_subject`, `reload`, `items*` _(+15 private)_ |
+| 7 | 6956–7849 | 60,886 | `pii_report`, `forget_pii`, `for_tenant`, `grant`, `revoke`, `can_read`, `grants`, +6 more _(+12 private)_ |
+| 8 | 7850–8785 | 63,644 | `verify_witness`, `index_coherence`, `erasure_certificate`, `remember_certificate`, `governance_report`, `explain_growth`, `anchor`, +10 more _(+4 private)_ |
+| 9 | 8786–9670 | 64,104 | `revert_challenge`, `revert_capability`, `revert`, `revert_intent`, `restore_intent`, `submit_revert`, `restore_now`, +7 more _(+9 private)_ |
+| 10 | 9671–10873 | 88,112 | `decisions_in_force`, `supersession_report`, `recall` _(+14 private)_ |
+| 11 | 10874–11782 | 63,996 | `influence_gate_report`, `credit`, `propagate_outcome`, `ratify`, `grade`, `convergence_report`, `slash`, +1 more _(+20 private)_ |
+| 12 | 11783–12652 | 60,788 | `monitor`, `spend_irreversible`, `irreversible_budget_report`, `recall_iterative`, `recall_iterative_start`, `recall_iterative_followup`, `admit`, +4 more _(+8 private)_ |
+| 13 | 12653–13558 | 61,787 | `consolidate`, `consolidate_clusters`, `apply_retention`, `sleep`, `session_salience`, `open_session`, `close_session`, +5 more _(+9 private)_ |
+| 14 | 13560–13813 | 17,514 | `check_self_narration`, `value_by_cohort`, `graph`, `subgraph`, `shred`, `reembed`, `flush` _(+2 private)_ |
 
 **225 methods** on `Inspeximus`: 113 public, 112 private. Top-level functions outside the class: **56**. Other classes: **5** (AmbiguousSubject, StoreChangedOnDisk, _StoreLock, _TenantBucket, _TenantView).
 

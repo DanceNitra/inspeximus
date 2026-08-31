@@ -67,11 +67,31 @@ def build() -> str:
     if cls is None:
         raise SystemExit("REFUSED: class Inspeximus not found; the map would describe nothing")
 
+    # EXTENTS FROM THE SOURCE, NOT FROM end_lineno.
+    #
+    # This file is committed and checked on a version matrix, so its content has to be identical on
+    # every interpreter. `end_lineno` is not: PEP 701 changed f-string parsing in 3.12, and 59 of the
+    # methods here contain a multi-line f-string. The check passed on 3.10 through 3.12 and failed on
+    # 3.9, which is a generated artifact that cannot be right everywhere at once rather than a file
+    # somebody forgot to regenerate.
+    #
+    # A method runs from its `def` to the line before the next sibling starts, and the next sibling
+    # starts at its first DECORATOR, not at its `def`. That is a property of the text, and every
+    # parser that accepts this file agrees about it.
+    def _starts_at(node):
+        return min([node.lineno] + [d.lineno for d in getattr(node, "decorator_list", [])])
+
+    siblings = [n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    starts = sorted(_starts_at(n) for n in siblings)
+    class_end = max((getattr(n, "end_lineno", n.lineno) for n in cls.body), default=len(lines))
+
     methods = []
     for node in cls.body:
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
-        end = getattr(node, "end_lineno", node.lineno)
+        here = _starts_at(node)
+        later = [s for s in starts if s > here]
+        end = (later[0] - 1) if later else min(class_end, len(lines))
         size = sum(len(lines[i].encode("utf-8")) + 1
                    for i in range(node.lineno - 1, min(end, len(lines))))
         # A property getter and its setter share a name. Listing both made `items` appear twice in
