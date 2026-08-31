@@ -59,8 +59,30 @@ def _problem(title: str, detail: str = "") -> bytes:
     return cose.encode(body)
 
 
-def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int = 9800):
-    """Build (but do not start) a SCRAPI server over an existing Transparency Service."""
+def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int = 9800,
+                witnesses=None, threshold: int = 1):
+    """Build (but do not start) a SCRAPI server over an existing Transparency Service.
+
+    `witnesses` wires in the one check the service cannot perform on itself. Everything this server
+    proves otherwise comes from bytes one operator produced; showing two histories to two readers is
+    invisible from inside either one, and only somebody else's memory of the head catches it.
+
+    A REFUSAL DOES NOT BLOCK A REGISTRATION. An honest witness refuses only a fork or a rollback, and
+    making that a veto would hand anyone who can reach a witness a way to stop the service. The
+    refusal is EVIDENCE: it is recorded and served, which is what an auditor needs and what a
+    dishonest operator cannot quietly drop, because the witness holds its own copy.
+    """
+    state = {"witnessed": None}
+
+    def refresh_witnesses():
+        if not witnesses:
+            return
+        try:
+            state["witnessed"] = service.witnessed_head(witnesses, threshold=threshold)
+        except Exception as e:                                    # noqa: BLE001
+            # Never let witnessing failure take the service down: it is an added assurance, not a
+            # dependency, and a client can see that it did not happen.
+            state["witnessed"] = {"error": type(e).__name__, "met": False}
 
     class Handler(BaseHTTPRequestHandler):
         server_version = "inspeximus-scrapi/1.0"
@@ -145,6 +167,7 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
                 return self._send(400, PROBLEM, _problem("registration refused", str(e)))
             except Exception as e:                                    # noqa: BLE001
                 return self._send(400, PROBLEM, _problem("malformed statement", type(e).__name__))
+            refresh_witnesses()
             self.send_response(201)
             self.send_header("Content-Type", COSE)
             self.send_header("Location", "/entries/%d" % (service.size() - 1))
@@ -154,9 +177,27 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
 
         def _key_set(self):
             d = service.describe()
+            w = state["witnessed"]
+            # ABSENCE MUST NOT LOOK LIKE AGREEMENT. "no witnesses configured" and "every witness
+            # co-signed" are opposite facts, and a field that is simply missing in the first case
+            # reads as the second to anyone scanning the response.
+            witnessed = {"configured": bool(witnesses), "threshold": int(threshold)}
+            if not witnesses:
+                witnessed["note"] = ("no witnesses are configured, so nothing here is evidence "
+                                     "against equivocation: this service has not been checked by "
+                                     "anyone but itself")
+            elif w is None:
+                witnessed["note"] = "witnesses are configured but have not been asked yet"
+            else:
+                witnessed.update(met=w.get("met"), signers=w.get("witnesses"),
+                                 refused=w.get("refused"), head=w.get("head"))
+                if w.get("refused"):
+                    witnessed["alarm"] = ("a witness REFUSED this head. An honest witness refuses "
+                                          "only a fork or a rollback.")
             return {"keys": [{"kid": service.service_pubkey, "alg": "EdDSA"}],
                     "policy": d["policy"], "policy_sha256": d["policy_sha256"],
-                    "entries": d["entries"], "root": d["root"], "scope": d["scope"]}
+                    "entries": d["entries"], "root": d["root"], "scope": d["scope"],
+                    "witnessed": witnessed}
 
     return ThreadingHTTPServer((host, port), Handler)
 
@@ -172,6 +213,10 @@ def main(argv=None) -> int:
                          "repeatable. REQUIRED: a service that cannot authenticate an issuer is "
                          "recording bytes, not statements")
     ap.add_argument("--policy-name", default="scrapi-default")
+    ap.add_argument("--witness", action="append", default=[],
+                    help="URL of an independent witness to co-sign the log head; repeatable. Without "
+                         "one, nothing this service serves is evidence against equivocation")
+    ap.add_argument("--witness-threshold", type=int, default=1)
     ap.add_argument("--accept-any-issuer", action="store_true",
                     help="admit statements from any issuer. The policy then SAYS so, and every "
                          "receipt means only that something was recorded")
@@ -207,7 +252,11 @@ def main(argv=None) -> int:
 
     policy = RegistrationPolicy(a.policy_name, accepted_issuers=[] if a.accept_any_issuer else None)
     service = TransparencyService(a.log, policy, sk.sign, verify_issuer, service_pubkey=pub)
-    httpd = make_server(service, a.host, a.port)
+    wits = []
+    if a.witness:
+        from .witness_pool import http_witness
+        wits = [http_witness(u) for u in a.witness]
+    httpd = make_server(service, a.host, a.port, witnesses=wits, threshold=a.witness_threshold)
     print("SCRAPI on http://%s:%d  log=%s  entries=%d  service_pubkey=%s"
           % (a.host, a.port, a.log, service.size(), pub), file=sys.stderr)
     try:

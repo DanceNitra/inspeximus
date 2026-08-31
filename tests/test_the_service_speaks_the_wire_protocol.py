@@ -171,3 +171,83 @@ def test_the_server_refuses_to_start_without_an_issuer_key(capsys):
     assert main(["--log", log, "--port", "0"]) == 2
     assert "refusing to start" in capsys.readouterr().err
     assert not os.path.exists(log), "a refused start must not create a log"
+
+
+# ---------------------------------------------------------------------------------------------------
+# The witness, reachable. It shipped for weeks and only tests called it: implemented, documented,
+# unreachable -- the exact pattern witness_server.py's own docstring complains about having had.
+# ---------------------------------------------------------------------------------------------------
+
+def _witness_server():
+    from inspeximus.witness_pool import Witness, http_witness
+    from inspeximus.witness_server import make_server as wmake
+    d = tempfile.mkdtemp()
+    sp = os.path.join(d, "w.json")
+    w = Witness(state_path=sp)
+    srv, _w = wmake(port=0, state_path=sp, secret_hex=w._secret)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, http_witness("http://127.0.0.1:%d" % srv.server_address[1])
+
+
+def _wired_with(witnesses, threshold=1):
+    isign, iverify, _ip = _keypair()
+    ssign, _sv, spub = _keypair()
+    ts = TransparencyService(os.path.join(tempfile.mkdtemp(), "log.jsonl"),
+                             RegistrationPolicy("w-test", accepted_issuers=[ISSUER]),
+                             ssign, iverify, service_pubkey=spub)
+    srv = make_server(ts, port=0, witnesses=witnesses, threshold=threshold)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return ts, isign, srv, "http://127.0.0.1:%d" % srv.server_address[1]
+
+
+def _keyset(base):
+    with urllib.request.urlopen(base + "/.well-known/scitt-keys", timeout=10) as r:
+        return cose.decode(r.read())
+
+
+def test_no_witnesses_configured_does_not_look_like_agreement():
+    """THE failure this field exists to prevent. "nobody checked us" and "everybody agreed" are
+    opposite facts, and a missing field reads as the second to anyone scanning the response."""
+    _ts, _isign, srv, base = _wired_with(None)
+    try:
+        w = _keyset(base)["witnessed"]
+        assert w["configured"] is False
+        assert "not been checked by anyone but itself" in w["note"]
+        assert "met" not in w, "an unasked question must not carry a verdict"
+    finally:
+        srv.shutdown()
+        srv.server_close()
+
+
+def test_a_registration_refreshes_the_witnessed_head_over_http():
+    wsrv, witness = _witness_server()
+    _ts, isign, srv, base = _wired_with([witness])
+    try:
+        before = _keyset(base)["witnessed"]
+        assert before["configured"] is True and "not been asked yet" in before["note"]
+        _post(base, _statement(isign)).read()
+        after = _keyset(base)["witnessed"]
+        assert after["met"] is True
+        assert len(after["signers"]) == 1 and after["refused"] == []
+        assert after["head"]["n_writes"] == 2
+    finally:
+        srv.shutdown()
+        srv.server_close()
+        wsrv.shutdown()
+        wsrv.server_close()
+
+
+def test_an_unreachable_witness_is_reported_and_does_not_take_the_service_down():
+    """Witnessing is added assurance, not a dependency. A service that dies because a witness is
+    offline hands anyone who can reach that witness a way to stop it."""
+    from inspeximus.witness_pool import http_witness
+    _ts, isign, srv, base = _wired_with([http_witness("http://127.0.0.1:9")])
+    try:
+        with _post(base, _statement(isign)) as r:
+            assert r.status == 201, "a registration must still succeed"
+        w = _keyset(base)["witnessed"]
+        assert w["met"] is False
+        assert w.get("refused") or w.get("error"), "the failure has to be visible, not silent"
+    finally:
+        srv.shutdown()
+        srv.server_close()
