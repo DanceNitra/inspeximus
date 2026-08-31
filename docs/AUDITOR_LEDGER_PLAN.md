@@ -88,9 +88,22 @@ and the ecosystem follows RFC 6962 plus C2SP static-ct-api), W3C VC 2.0.
    which policy admitted each entry, and appends before it receipts. Two bindings now exist and are
    NOT interchangeable: a store-issued pair binds payload to sha256(leaf); a service-issued pair
    binds the entry's `statement_sha256` to the issuer's statement with its receipts stripped.
-7. Documentation that states the honest scope, including everything in the section above that argues
+7. **SCRAPI.** Done: `scrapi.py` serves the four endpoints of draft-ietf-scitt-scrapi-11 over the
+   service, in the draft's media types. This is what a SCITT client can point at without knowing
+   anything about us.
+8. Documentation that states the honest scope, including everything in the section above that argues
    against the product.
-8. Release.
+9. Release.
+
+## What we still do not have, and will build
+
+- **RFC 3161 timestamps** from an EU Trusted List QTSP over the log root. eIDAS Article 41 gives a
+  qualified timestamp a rebuttable presumption of time, which is the cheapest credibility an auditor
+  recognises.
+- **An external witness in the loop.** `witness_server.py` exists and nothing in the Transparency
+  Service calls it, so non-equivocation is still an instruction in a docstring rather than a property
+  of the running system.
+- **A hosted instance.** Every artifact so far is something an operator runs themselves.
 
 ## Two competitors found late and not yet examined
 

@@ -215,6 +215,23 @@ class TransparencyService:
         return cose.inclusion_receipt(len(leaves), index, inclusion_proof(leaves, index),
                                       root(leaves), self._sign)
 
+    def receipt_for(self, index: int) -> bytes | None:
+        """A Receipt for an entry, proved against the CURRENT root.
+
+        Generated on demand rather than stored, because an inclusion proof is a function of the tree
+        and the tree only grows. Handing back the receipt issued at registration would tie a reader
+        to a root that is now historical, and they would need a consistency proof before they could
+        use it. This way the proof and the root a reader can fetch today agree.
+
+        Returns None for an index that is not there, so a caller can tell "not yet" from "never",
+        which is exactly the 204-versus-404 distinction SCRAPI draws.
+        """
+        if not 0 <= index < len(self._entries):
+            return None
+        leaves = self._leaves()
+        return cose.inclusion_receipt(len(leaves), index, inclusion_proof(leaves, index),
+                                      root(leaves), self._sign)
+
     def register_transparent(self, statement: bytes) -> bytes:
         """Register and return the TRANSPARENT statement: the caller's statement carrying its Receipt."""
         return scitt.transparent_statement(statement, [self.register(statement)])
