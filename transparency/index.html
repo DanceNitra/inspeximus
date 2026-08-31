@@ -44,7 +44,8 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <tr><td><a href="head.json">head.json</a></td><td>entry count, Merkle root, and the hash over both</td></tr>
 <tr><td><a href="keys.json">keys.json</a></td><td>the Ed25519 key that signs receipts, as JSON</td></tr>
 <tr><td><a href="keys.cbor">keys.cbor</a></td><td>the same key as a COSE Key Set (RFC 9052)</td></tr>
-<tr><td><a href="log.jsonl">log.jsonl</a></td><td>one line per entry: index, leaf hash, statement digest</td></tr>
+<tr><td><a href="log.jsonl">log.jsonl</a></td><td>one line per entry: index, leaf hash, and the entry record</td></tr>
+<tr><td><a href="payloads.json">payloads.json</a></td><td>the text of each entry, so you can hash it and match what the log recorded</td></tr>
 <tr><td>entries/&lt;n&gt;.cose</td><td>the RFC 9942 inclusion receipt for entry n</td></tr>
 <tr><td><a href="verify.py">verify.py</a></td><td>the checker above</td></tr>
 </table>
@@ -52,7 +53,22 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <h2>What this does not prove</h2>
 <p>It does not prove any entry is TRUE. A log records what was said, never that it was right.</p>
 <p>It does not prove we have shown you the same log we showed somebody else. A static file is easy to
-serve in two versions, and only an independent WITNESS that remembers a previous head can catch that.
-No witness has co-signed this log yet. Running one is the most useful thing an outsider can do here, and inspeximus ships the witness server to do it with.</p>
+serve in two versions, and only an independent WITNESS that remembers a previous head can catch that.</p>
+
+<h2>Witnesses</h2>
+<p>No witness has co-signed this log yet, so nothing here is evidence against equivocation. Running one is the most useful thing an outsider can do.</p>
+<p>To become one, run this against this log from a machine we do not control. It remembers the head it
+last accepted and refuses to sign if the history it already saw has changed:</p>
+<pre>curl -sSfO https://raw.githubusercontent.com/DanceNitra/inspeximus/main/tools/witness_static_log.py
+pip install inspeximus cryptography
+python witness_static_log.py --url https://dancenitra.github.io/inspeximus/transparency --state my_state.json --out cosignatures/</pre>
+<p>To keep it running for nothing, copy <a
+href="https://github.com/DanceNitra/inspeximus/blob/main/deploy/witness-template.yml">this GitHub
+Actions workflow</a> into a repository of your own. Actions minutes are free on a public repository
+and the job takes seconds.</p>
+<p>Running it commits you to nothing. You are not vouching that any entry here is true. You are
+recording whether the history we showed you today extends the one we showed you before.</p>
+<p>Keep the state file. It is the memory that makes a refusal possible, and a witness without one
+signs anything.</p>
 <p>Registration happens where the signing key is, not over this address. There is no endpoint here
 that accepts an entry.</p>

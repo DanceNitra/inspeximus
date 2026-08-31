@@ -1,0 +1,77 @@
+# Copy this into YOUR repository as .github/workflows/witness.yml to witness a log you do not operate.
+#
+# WHY YOU, AND NOT US. A witness under the same operator as the log is the operator wearing a second
+# name: it co-signs whatever it is shown. The value comes entirely from your memory of what you saw
+# living somewhere the log's publisher cannot reach. Your repository is such a place, and a public
+# GitHub repository is a good one: your state file's history is visible, and a force-push that
+# rewrote it would be visible too.
+#
+# It costs nothing. Actions minutes are free on a public repository, and this job runs for seconds.
+#
+# WHAT YOU ARE PROMISING BY RUNNING IT: nothing. You are not vouching that any entry is true, and you
+# are not liable for the log's contents. You are recording that on a given day the log showed you a
+# history that extended the one it showed you before, or that it did not.
+#
+# SETUP
+#   1. Mint a key and add it as a repository secret named INSPEXIMUS_WITNESS_SECRET:
+#        pip install inspeximus
+#        python -c "from inspeximus import new_receipt_keypair; print(new_receipt_keypair()[0])"
+#   2. Set WITNESS_NAME below to whatever you want recorded beside your public key.
+#   3. Commit this file. The first run establishes a baseline and proves nothing; the second run
+#      onwards is where a rewrite would be caught.
+#
+# IF IT FAILS, that is the point. The job exits non-zero on a FORK or a ROLLBACK and does NOT update
+# its memory, so the evidence survives. Tell people. A refusal nobody hears is a witness nobody has.
+
+name: witness
+
+on:
+  schedule:
+    # Once a day. More often catches a shorter-lived rewrite; less often is still far better than
+    # nobody watching. Pick what you will actually keep running.
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write          # only to commit this witness's own state and co-signature
+
+env:
+  LOG_URL: https://dancenitra.github.io/inspeximus/transparency
+  WITNESS_NAME: ''         # your name or handle, recorded beside your public key
+
+jobs:
+  witness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install inspeximus cryptography
+
+      - name: Fetch the witness script from the package repository
+        run: |
+          curl -sSfO https://raw.githubusercontent.com/DanceNitra/inspeximus/main/tools/witness_static_log.py
+          # Pin this to a commit rather than main if you would rather not run whatever we push. The
+          # script is short enough to read in one sitting, and reading it is encouraged.
+
+      - name: Look at the log and refuse it if the history changed
+        env:
+          INSPEXIMUS_WITNESS_SECRET: ${{ secrets.INSPEXIMUS_WITNESS_SECRET }}
+        run: |
+          python witness_static_log.py \
+            --url "$LOG_URL" \
+            --state witness/state.json \
+            --out witness/cosignatures \
+            --name "$WITNESS_NAME"
+
+      - name: Commit what this witness saw
+        # Runs only on success. A refusal must NOT be committed as if it were an observation, and the
+        # script has already left the remembered head untouched so the next run still catches it.
+        run: |
+          git config user.name  "witness"
+          git config user.email "witness@users.noreply.github.com"
+          git add witness/
+          git diff --staged --quiet || git commit -m "witness: $LOG_URL at $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push

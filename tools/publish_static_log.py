@@ -193,7 +193,8 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <tr><td><a href="head.json">head.json</a></td><td>entry count, Merkle root, and the hash over both</td></tr>
 <tr><td><a href="keys.json">keys.json</a></td><td>the Ed25519 key that signs receipts, as JSON</td></tr>
 <tr><td><a href="keys.cbor">keys.cbor</a></td><td>the same key as a COSE Key Set (RFC 9052)</td></tr>
-<tr><td><a href="log.jsonl">log.jsonl</a></td><td>one line per entry: index, leaf hash, statement digest</td></tr>
+<tr><td><a href="log.jsonl">log.jsonl</a></td><td>one line per entry: index, leaf hash, and the entry record</td></tr>
+<tr><td><a href="payloads.json">payloads.json</a></td><td>the text of each entry, so you can hash it and match what the log recorded</td></tr>
 <tr><td>entries/&lt;n&gt;.cose</td><td>the RFC 9942 inclusion receipt for entry n</td></tr>
 <tr><td><a href="verify.py">verify.py</a></td><td>the checker above</td></tr>
 </table>
@@ -201,17 +202,71 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <h2>What this does not prove</h2>
 <p>It does not prove any entry is TRUE. A log records what was said, never that it was right.</p>
 <p>It does not prove we have shown you the same log we showed somebody else. A static file is easy to
-serve in two versions, and only an independent WITNESS that remembers a previous head can catch that.
-%(witness)s</p>
+serve in two versions, and only an independent WITNESS that remembers a previous head can catch that.</p>
+
+<h2>Witnesses</h2>
+%(witnesses)s
+<p>To become one, run this against this log from a machine we do not control. It remembers the head it
+last accepted and refuses to sign if the history it already saw has changed:</p>
+<pre>curl -sSfO https://raw.githubusercontent.com/DanceNitra/inspeximus/main/tools/witness_static_log.py
+pip install inspeximus cryptography
+python witness_static_log.py --url %(base)s --state my_state.json --out cosignatures/</pre>
+<p>To keep it running for nothing, copy <a
+href="https://github.com/DanceNitra/inspeximus/blob/main/deploy/witness-template.yml">this GitHub
+Actions workflow</a> into a repository of your own. Actions minutes are free on a public repository
+and the job takes seconds.</p>
+<p>Running it commits you to nothing. You are not vouching that any entry here is true. You are
+recording whether the history we showed you today extends the one we showed you before.</p>
+<p>Keep the state file. It is the memory that makes a refusal possible, and a witness without one
+signs anything.</p>
 <p>Registration happens where the signing key is, not over this address. There is no endpoint here
 that accepts an entry.</p>
 """
 
 
-def build(service: TransparencyService, out: str, base_url: str, title: str, witness_note: str):
+def read_cosignatures(directory, head):
+    """Load witness co-signatures and CHECK each one before showing it.
+
+    An unverified co-signature is worse than none: it is a claim that somebody vouched for this log,
+    made by the party the vouching is supposed to constrain. Each signature is verified against the
+    public key it names, and each is labelled with whether it covers the CURRENT head or an earlier
+    one. A co-signature of an older head is still real evidence, and presenting it as current would
+    not be.
+    """
+    if not directory or not os.path.isdir(directory):
+        return []
+    try:
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey as PK
+    except ImportError:
+        return []
+    out = []
+    for name in sorted(os.listdir(directory)):
+        if not name.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(directory, name), encoding="utf-8") as fh:
+                rec = json.load(fh)
+            PK.from_public_bytes(bytes.fromhex(rec["witness_pubkey"])).verify(
+                bytes.fromhex(rec["signature"]), rec["sth_hash"].encode("ascii"))
+        except Exception as e:                                          # noqa: BLE001
+            out.append({"file": name, "valid": False, "witness_pubkey": "",
+                        "problem": "signature did not verify (%s)" % type(e).__name__})
+            continue
+        out.append({"file": name, "valid": True,
+                    "witness_pubkey": rec["witness_pubkey"],
+                    "witness_name": rec.get("witness_name") or "",
+                    "n_writes": rec.get("n_writes"),
+                    "observed_utc": rec.get("observed_utc", ""),
+                    "current": rec.get("sth_hash") == head.get("sth_hash")})
+    return out
+
+
+def build(service: TransparencyService, out: str, base_url: str, title: str, witness_note: str,
+          cosignatures=None):
     os.makedirs(os.path.join(out, "entries"), exist_ok=True)
     head = service.head()
     n = service.size()
+    cosigs = read_cosignatures(cosignatures, head)
 
     with open(os.path.join(out, "head.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(head, fh, indent=2, sort_keys=True)
@@ -254,13 +309,47 @@ def build(service: TransparencyService, out: str, base_url: str, title: str, wit
     with open(os.path.join(out, "verify.py"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(VERIFIER)
 
+    if cosigs:
+        os.makedirs(os.path.join(out, "cosignatures"), exist_ok=True)
+        for name in sorted(os.listdir(cosignatures)):
+            if name.endswith(".json"):
+                with open(os.path.join(cosignatures, name), "rb") as src:
+                    data = src.read()
+                with open(os.path.join(out, "cosignatures", name), "wb") as dst:
+                    dst.write(data)
+        with open(os.path.join(out, "cosignatures", "index.json"), "w",
+                  encoding="utf-8", newline="") as fh:
+            json.dump(cosigs, fh, indent=2, sort_keys=True)
+
     with open(os.path.join(out, "index.html"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(PAGE % {"title": html.escape(title), "entries": n,
                          "when": time.strftime("%Y-%m-%d", time.gmtime()),
                          "base": html.escape(base_url.rstrip("/")),
-                         "head": html.escape(json.dumps(head, indent=2, sort_keys=True)),
-                         "witness": html.escape(witness_note)})
-    return {"entries": n, "receipts": written, "head": head}
+                         "witnesses": _witness_table(cosigs, witness_note),
+                         "head": html.escape(json.dumps(head, indent=2, sort_keys=True))})
+    return {"entries": n, "receipts": written, "head": head, "cosignatures": cosigs}
+
+
+def _witness_table(cosigs, note):
+    """What the page says about witnesses. With none, it says so in words rather than showing an
+    empty table, because a blank space reads as "fine" to a scanning reader."""
+    if not cosigs:
+        return "<p>%s</p>" % html.escape(note)
+    rows = []
+    for c in cosigs:
+        if not c["valid"]:
+            rows.append("<tr><td colspan=4>%s: %s</td></tr>"
+                        % (html.escape(c["file"]), html.escape(c["problem"])))
+            continue
+        rows.append("<tr><td><code>%s</code></td><td>%s</td><td>%s</td><td>%s</td></tr>" % (
+            html.escape(c["witness_pubkey"][:16]), html.escape(c["witness_name"] or "-"),
+            c["n_writes"], "current head" if c["current"] else "an earlier head"))
+    return ("<p>These are independent observers. Each signed the head it saw, and each is checked "
+            "here against the public key it names.</p>"
+            "<table><tr><th>witness</th><th>name</th><th>entries seen</th><th>covers</th></tr>"
+            + "".join(rows) + "</table>"
+            "<p><a href=\"cosignatures/index.json\">cosignatures/index.json</a> lists them, and "
+            "each signature file sits beside it.</p>")
 
 
 def main(argv=None):
@@ -270,6 +359,10 @@ def main(argv=None):
     ap.add_argument("--base-url", default=".", help="public URL of --out, used in the copy-paste block")
     ap.add_argument("--title", default="Transparency log")
     ap.add_argument("--policy-name", default="static-publication")
+    ap.add_argument("--cosignatures", default=None,
+                    help="directory of witness co-signature JSON files. Each is VERIFIED against the "
+                         "key it names before it is shown, because an unchecked co-signature is a "
+                         "claim that somebody vouched for us, made by us")
     ap.add_argument("--witness-note",
                     default="No witness has co-signed this log yet, so nothing here is evidence "
                             "against that. Running one is the most useful thing an outsider can do.")
@@ -289,9 +382,14 @@ def main(argv=None):
 
     service = TransparencyService(a.log, RegistrationPolicy(a.policy_name), sign,
                                   lambda *_: True, service_pubkey=pub)
-    got = build(service, a.out, a.base_url, a.title, a.witness_note)
+    got = build(service, a.out, a.base_url, a.title, a.witness_note, a.cosignatures)
+    good = sum(1 for c in got["cosignatures"] if c["valid"])
     print("wrote %s: %d entries, %d receipts, root %s"
           % (a.out, got["entries"], got["receipts"], got["head"]["writes_tip"][:16]), flush=True)
+    if got["cosignatures"]:
+        print("co-signatures: %d of %d verified" % (good, len(got["cosignatures"])), flush=True)
+    else:
+        print("co-signatures: none. Nothing here is evidence against equivocation yet.", flush=True)
     return 0
 
 
