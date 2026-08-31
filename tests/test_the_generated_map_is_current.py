@@ -60,5 +60,5 @@ def test_the_checker_can_actually_fail():
 
     # The repository's own map was never touched, which is the point of doing this on a copy.
     status = subprocess.run(["git", "status", "--short", "docs/CORE_MAP.md"], cwd=ROOT,
-                            capture_output=True, text=True)
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
     assert status.stdout.strip() == "", "the control modified the tracked map"
