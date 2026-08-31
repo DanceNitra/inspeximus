@@ -26,6 +26,10 @@ import sys
 import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#: These tests each spawn a subprocess with a wall-clock budget, so running several at once is
+#: load the suite created and then measured. One worker keeps the budget meaningful.
+pytestmark = pytest.mark.xdist_group("cited_probes")
+
 PROBES = os.path.join(ROOT, "probes")
 
 #: Cited probes that cannot run standalone, each with the reason. A probe here is still expected to EXIST
@@ -340,6 +344,33 @@ def _missing_module(stderr):
     return m.group(1).split(".")[0] if m else None
 
 
+def _run_probe(probe, extra_env=None):
+    """Run a probe as a subprocess, and tell a TIMEOUT apart from a FAILURE.
+
+    The budget is wall clock, and wall clock is not a property of the probe alone: under pytest-xdist
+    six of these run at once, each possibly parallel itself, so the box they are timed on is one the
+    tests loaded. Three cited probes failed that way in a -n 6 run and all 182 passed serially.
+
+    The module-level xdist_group keeps them on one worker, which is what makes the budget mean
+    anything. This function exists for the case that remains: a timeout now says the budget was
+    exceeded and names load as a cause, instead of surfacing as a bare exception that reads like a
+    broken probe.
+    """
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8",
+           "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep + os.environ.get("PYTHONPATH", "")}
+    env.update(extra_env or {})
+    try:
+        return subprocess.run([sys.executable, os.path.join("probes", probe)],
+                              cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", timeout=_budget(probe), env=env)
+    except subprocess.TimeoutExpired:
+        raise AssertionError(
+            "probes/%s did not finish inside its %s s budget. That is a statement about this "
+            "machine as much as about the probe: if the suite is running in parallel, the budget "
+            "was measured on a quieter box. Re-run it alone before treating this as a defect in "
+            "the probe." % (probe, _budget(probe)))
+
+
 @pytest.mark.parametrize("probe", _standalone())
 def test_a_standalone_cited_probe_still_runs(probe):
     """Against THIS repository, not whatever pip installed -- the same mistake that made the examples
@@ -349,11 +380,7 @@ def test_a_standalone_cited_probe_still_runs(probe):
     pydantic-ai and numpy installed and the CI base environment has none of them. Local green is not CI
     green whenever an optional dependency is in reach -- a lesson this repository had already written
     down and I repeated anyway. The skip below is therefore narrow and declared."""
-    r = subprocess.run([sys.executable, os.path.join("probes", probe)],
-                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=_budget(probe),
-                       env={**os.environ, "PYTHONIOENCODING": "utf-8",
-                            "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
-                            + os.environ.get("PYTHONPATH", "")})
+    r = _run_probe(probe)
 
     missing = _missing_module(r.stderr) if r.returncode != 0 else None
     if missing and missing in OPTIONAL_THIRD_PARTY:
@@ -486,11 +513,7 @@ def test_an_uncited_probe_still_runs(probe):
     """Same standard as the cited half, same skip rule: a declared optional dependency excuses the run,
     anything else is a defect. An uncited probe that fails is either rot or -- as it turned out twice --
     a live product bug wearing a rotten probe's clothes."""
-    r = subprocess.run([sys.executable, os.path.join("probes", probe)],
-                       cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=_budget(probe),
-                       env={**os.environ, "PYTHONIOENCODING": "utf-8",
-                            "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep
-                            + os.environ.get("PYTHONPATH", "")})
+    r = _run_probe(probe)
     missing = _missing_module(r.stderr) if r.returncode != 0 else None
     if missing and missing in OPTIONAL_THIRD_PARTY:
         pytest.skip(f"{probe} needs the optional third-party module {missing!r}")
