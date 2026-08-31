@@ -23,7 +23,7 @@
    "records_phase2": 9,
    "bytes_phase1": 2316,
    "bytes_phase2": 2870,
-   "seconds_both_phases": 0.0025
+   "seconds_both_phases": 0.0032
   },
   "n=4080": {
    "recall_calls_phase1": 1,
@@ -32,7 +32,7 @@
    "records_phase2": 9,
    "bytes_phase1": 2316,
    "bytes_phase2": 2870,
-   "seconds_both_phases": 0.0515
+   "seconds_both_phases": 0.0323
   }
  }
 }

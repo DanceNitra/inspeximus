@@ -13978,6 +13978,12 @@ class _TenantView:
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
+        # `transparent_statement` is OPERATOR-ONLY for the same reason `erasure_certificate` is: it
+        # builds its Receipt from inclusion_proof(), which walks the whole write log. On a
+        # tenant-bound view that would put another tenant's leaf in the audit path of a proof handed
+        # to this one. Scoping the proof is not an option either -- a Merkle path IS the neighbouring
+        # leaves, so a narrowed one is not a narrower proof, it is a broken one.
+        "transparent_statement",
         "verify_writes", "verify_consistency", "verify_witness", "verify_cosigned_anchor",
         "verify_attribution", "register_erasure_target", "explain_growth",
         # `verify_attestations` is store-level for a REASON, not by resemblance to its neighbours above.

@@ -12,8 +12,8 @@
       "cases_that_differ": 0,
       "differing_indexes": [],
       "model_calls_per_run": 0,
-      "seconds_run1": 0.001,
-      "seconds_run2": 0.002,
+      "seconds_run1": 0.002,
+      "seconds_run2": 0.003,
       "payloads_run1": [
         "correction: the cache region is now malmo",
         "correction: the primary shard is now sigma2",
@@ -59,7 +59,7 @@
         "correction: the feature flag is now stable"
       ],
       "example_diff": null,
-      "measured_utc": "2026-08-30T18:22Z"
+      "measured_utc": "2026-08-31T06:14Z"
     },
     "hindsight": {
       "system": "hindsight",

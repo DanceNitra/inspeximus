@@ -171,6 +171,10 @@ def test_issuing_a_grant_does_not_change_what_the_operator_reads():
 
 # ── THE SWEEP: every public method, not a curated list of read surfaces ──────────────────────────────
 _ARGS = {
+    # transparent_statement is operator-level: its Receipt comes from inclusion_proof(), which walks
+    # the whole write log, so the sweep drives it with a real index and lets the leak check decide.
+    # Exempting it would exempt the one method here that reads every tenant's leaves by design.
+    "transparent_statement": (0, "did:web:sweep.example"),
     # remember_certificate() takes a residue certificate. The sweep hands it a HAND-BUILT one whose
     # root_label carries the other side's secret, because the label becomes the record KEY: if the
     # method ever echoed its input, or wrote under a key it was handed rather than one it derived, this
