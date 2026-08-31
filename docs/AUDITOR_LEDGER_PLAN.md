@@ -139,7 +139,35 @@ and the ecosystem follows RFC 6962 plus C2SP static-ct-api), W3C VC 2.0.
   reports refusals rather than raising them. A test forks the log at a witnessed size and requires the
   refusal; its control shows a FRESH witness signing the same fork, because the guarantee comes from
   continuity of memory and not from the signature.
-- **A hosted instance.** Every artifact so far is something an operator runs themselves.
+- **A hosted instance.** Half built, and the half that is left is a decision rather than code.
+
+  Hosting is not a convenience here, it is the missing property. A log the audited party runs is not
+  evidence against that party. Everything else holds under an honest operator: the receipts verify,
+  the heads chain, the timestamps are real. None of it stops an operator keeping two histories and
+  showing each reader the one that suits.
+
+  Built and run end to end on 2026-08-31: `deploy/Dockerfile`, `deploy/Dockerfile.witness` and
+  `deploy/compose.yaml`. Both images build; the stack came up, registered a Signed Statement, and
+  returned a 124-byte receipt. The witness in the SEPARATE container co-signed the head, `met: true`,
+  one signer, no refusals. The witness is a separate image on purpose: one sharing the service's
+  process, disk, key or operator co-signs whatever it is shown.
+
+  Two defects were found while deploying it, both silent, both fixed:
+
+  - `/.well-known/scitt-keys` put the public key hex in `kid` and carried no `x` at COSE label -2.
+    The endpoint answered 200 with a plausible key set, and a client following RFC 9052 found
+    nothing to verify with. It now serves a real COSE_Key, and the test asserts on `x` rather than
+    on `alg` and `kid`, which is what let it pass before.
+  - `--secret` put the service's SIGNING key in the process table. Measured rather than assumed: a
+    running server returned its own key to a second process reading `Win32_Process.CommandLine`.
+    Both the service and the witness now read `INSPEXIMUS_SERVICE_SECRET` / `INSPEXIMUS_WITNESS_SECRET`
+    or a `--secret-file`, preferring the file because an environment is inherited by every child
+    process. The flag still works and now says what it costs, because removing it silently would
+    break a running deployment.
+
+  What remains is the owner's call and cannot be settled in code: where it runs, what it costs, who
+  holds the signing key, and what uptime we are willing to promise. Running a transparency service
+  makes us a party others rely on, and that is a commitment before it is a deployment.
 
 ## Two competitors found late and not yet examined
 

@@ -452,6 +452,20 @@ NUMBER_CLAIMS = [
     # ---- README.md "Two numbers you can check in three seconds" (added 2026-08-25) ----
     # ONE ROW PER LINE, as the header above says: the audit pins a claim to the source line its
     # tokens appear on, so a three-row table needs three rows here.
+    # ---- README.md "Proving when, and whether the clock belonged to anyone" (added 2026-08-31) ----
+    _c("readme-qualified-timestamp-drift", "README.md", ["1477", "25", "570", "39"],
+       "of the 1477 qualified timestamp services published across 25 territories, 570 (39%) have held",
+       "Parsed from the EU member states' own trusted lists, reached through the Commission's list "
+       "of trusted lists: 1477 services of type qualified timestamp across the 25 territories that "
+       "publish at least one, and 570 of them (39 percent) hold a `granted` status at one date and "
+       "a status that ends qualified standing at another. Measured 2026-08-31. The figure moves as "
+       "member states republish, which is the point of the claim rather than a caveat on it.",
+       "REPRODUCIBLE-WITH-DEPS",
+       "python tools/fetch_trusted_lists.py --out lists.json",
+       note="Needs the Commission's servers and 30 member-state endpoints, so it cannot run offline. "
+            "One territory (HU) served a certificate its own chain did not validate on the day of "
+            "measurement and is reported unreachable rather than dropped."),
+
     _c("readme-store-resolution", "README.md", ["20", "0", "1"],
        "| after a correction, recall returns the new value and **not** the old one | **20 / 20** | 0 / 20 | 1 / 20 |",
        "Cell 3 of the integrity benchmark, no judge involved: the raw recall payload is classified "
@@ -1053,7 +1067,9 @@ NON_CLAIM_TOKENS = {
         # keeps the audit reading every number and deciding about each one.
         "9942": (1, "RFC 9942, COSE Receipts -- a citation"),
         "9943": (2, "RFC 9943, SCITT architecture -- a citation, named twice"),
-        "3161": (2, "RFC 3161, time-stamp protocol -- a citation, named twice"),
+        "3161": (3, "RFC 3161, time-stamp protocol -- a citation, named three times"),
+        "41": (1, "eIDAS Article 41 -- an article number, in the same class as an RFC number: it "
+               "names a text a reader can fetch, and there is nothing to reproduce about it"),
         "0,": (1, "'Two signers, two claims, one artifact' prose; the digit is part of a sentence, "
                "not a measurement"),
         "30": (1, "the rhetorical heading 'The 30 seconds that matter', not a quantity"),

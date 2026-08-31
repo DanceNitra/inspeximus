@@ -115,6 +115,26 @@ trust us.
 `inspeximus compliance` prints the same evidence labelled by article, with its own scope attached:
 the agent-memory slice only, not the whole system, and not a certification.
 
+### Proving when, and whether the clock belonged to anyone
+
+Every clock in the system belongs to the operator being audited, so `timestamp.py` gets an RFC 3161
+token from a third party instead. Under eIDAS Article 41 a QUALIFIED timestamp carries a rebuttable
+presumption of the time it shows, and an ordinary one carries none. Nothing in a token says which
+you have.
+
+`inspeximus timestamp trusted-lists` builds an offline cache of the EU trusted lists, and
+`inspeximus timestamp qualified <token> --trusted-list <cache> --when <the date it was made>`
+answers for one token. The exit code separates qualified from not qualified from undetermined.
+
+Pass the date the token was made, not today. Qualified standing is granted and withdrawn over time:
+of the 1477 qualified timestamp services published across 25 territories, 570 (39%) have held both
+a qualified and a non-qualified status. One real Austrian service returns four different answers
+from one certificate with only the date changing.
+
+It reports membership and nothing else. It does not check the signature on the trusted list, it says
+nothing about whether the token is authentic (`verify_with_openssl` does that, and both must pass),
+and before a list's earliest record it answers UNKNOWN rather than "no".
+
 **What this is not.** It is not compliance, and none of it is due yet. When the EU AI Act's
 high-risk obligations take effect, on 2 December 2027 for standalone Annex III systems and 2 August
 2028 for those embedded in regulated products, the Act will ask for automatic event logging

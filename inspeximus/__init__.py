@@ -56,6 +56,13 @@ from .scitt import (
     statement_digest,
 )
 
+# The QUALIFIED half of a timestamp. `stamp()` gets a token from any authority; these say whether the
+# authority was a qualified EU service AT THE MOMENT it signed, which is a different question and the
+# one eIDAS Article 41 turns on. Exported for the same reason as the block above: a reader following
+# the obvious import does not find inspeximus.trusted_list.
+from .timestamp import qualified_status, signer_certificate, certificates_in
+from .trusted_list import TrustedList, parse_trusted_list, classify_status
+
 __all__ = [
     "Inspeximus",
     "AmbiguousSubject",
@@ -68,6 +75,12 @@ __all__ = [
     "erasure_challenge",
     "verify_erasure_certificate",
     "scan_residue",
+    "qualified_status",
+    "signer_certificate",
+    "certificates_in",
+    "TrustedList",
+    "parse_trusted_list",
+    "classify_status",
     "residue_certificate",
     "verify_residue_certificate",
     "certificate_drift",
