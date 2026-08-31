@@ -143,6 +143,45 @@ None of those articles names memory, provenance or tamper-evidence, so what is h
 text rather than implementing it. [docs/AI_ACT.md](docs/AI_ACT.md) maps what the store already keeps
 onto the logging duty, and says where the mapping stops.
 
+### A log the reader checks without asking you for anything
+
+Everything above holds while you are honest. None of it stops you keeping two histories and showing
+each reader the one that suits, because you serve the answer and you also wrote it.
+
+So `tools/publish_static_log.py` writes the log as ordinary files instead: the head, the COSE key
+set, every leaf hash, every receipt, the text of every entry, and a `verify.py` that runs on the
+standard library alone. A reader downloads four files and checks the Merkle root against the leaves
+themselves. This is where certificate transparency went, not a shortcut around it: C2SP's
+static-ct-api serves a log as cacheable files because that is cheaper to run and harder to equivocate
+with than an API.
+
+Ours is live at
+[dancenitra.github.io/inspeximus/transparency](https://dancenitra.github.io/inspeximus/transparency/),
+and what is in it is every number this project publishes, each with the sentence it appears in and
+the command that reproduces it.
+
+What a static log cannot do, said here rather than discovered later: nothing accepts a registration
+over HTTP. Writing happens where the signing key is. For a live endpoint, `scrapi.py` serves
+draft-ietf-scitt-scrapi-11 and `deploy/` has the container images.
+
+### The witness is the part you cannot run yourself
+
+A log tells you it is internally consistent. It cannot tell you it is the same log somebody else was
+shown, and no amount of signing by the operator fixes that. Only a party who REMEMBERS a previous
+head can catch a rewrite, and only if that memory lives somewhere the operator cannot reach.
+
+`tools/witness_static_log.py` is that party. It fetches a log it does not operate, recomputes the
+root from the leaves rather than reading it out of the head, and compares against the head it last
+accepted by rebuilding that head from the leaves published now. Verdicts are EXTENDS, FIRST_CONTACT
+(which says out loud that it proves nothing yet), FORK, ROLLBACK, and MALFORMED for a log that
+contradicts itself. A refusal does not update its memory, because a witness that forgets what it just
+caught reports EXTENDS on the rewritten log next time.
+
+`deploy/witness-template.yml` runs it from any public repository for nothing. Running one against our
+log is the most useful thing an outsider can do here, and it commits you to nothing: you are not
+vouching that any entry is true, only recording whether the history shown to you today extends the
+one shown to you before.
+
 ---
 
 ## The next five minutes
