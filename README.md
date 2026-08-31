@@ -286,6 +286,42 @@ Implements the vendor-neutral CML contract; two independent implementations agre
 **Multi-tenant isolation.** `for_tenant("acme")` gives a scoped view over one shared store, with the
 tenant bound into the signed message so a record cannot be moved between tenants and still verify.
 
+**An audit trail in formats an auditor already reads.** A hash chain proves your records were not
+edited. It does not tell a third party who wrote them, what they are about, or when, and those are the
+three things somebody checking your system actually asks. Four IETF standards answer them, and
+inspeximus emits all four with no dependencies:
+
+| you want to show | the artifact | the standard |
+|---|---|---|
+| this record is in the log | a Receipt of Inclusion | RFC 9942 (COSE Receipts) |
+| I said it, and it is about this | a Signed Statement | RFC 9943 (SCITT) |
+| under these published rules | a Registration Policy, as entry 0 of the log itself | RFC 9943 s5.1.1 |
+| at this time, per a third party | an RFC 3161 timestamp | RFC 3161 |
+
+```python
+from inspeximus import Inspeximus, new_receipt_keypair, verify_transparent_statement
+
+secret, public = new_receipt_keypair()
+m = Inspeximus("memory.json", receipts=True, receipt_key=secret)
+m.remember("The staging database is db-7.internal", key="staging-db")
+
+doc = m.transparent_statement(0, issuer="did:web:your-company.example")
+# -> a COSE_Sign1 carrying your claim AND its inclusion proof, checkable by anyone
+```
+
+`inspeximus.transparency.TransparencyService` registers statements from other parties under a policy
+it publishes inside its own log, and `python -m inspeximus.scrapi` serves that over the HTTP surface
+SCITT clients speak (draft-ietf-scitt-scrapi-11), so a tool nobody here wrote can use it.
+
+**What signing does not buy you, stated up front.** A Receipt proves inclusion in *a* log. It cannot
+prove that log is the only one you showed people; that needs independent witnesses, which is why
+`witnessed_head()` collects k-of-n co-signatures and treats a refusal as the alarm rather than an
+error. A timestamp says a third party saw a digest at a time; full verification of the token is
+delegated to `openssl ts -verify` rather than hand-rolled, because a partial CMS parser that answered
+"valid" would pass tokens a real verifier rejects. And none of this is compliance: no regulation
+requires a signed ledger. It is evidentiary quality for a duty to demonstrate, and it is worded that
+way everywhere.
+
 **Zero dependencies.** One file. Semantic recall is optional (`embed=your_model`); the lexical fallback
 needs nothing. The MCP server, encryption and framework adapters are all opt-in extras.
 

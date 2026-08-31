@@ -40,6 +40,10 @@ DOCS = os.path.join(ROOT, "docs")
 _SUBMODULES = (
     "audit_bundle", "code_guard", "compliance", "erasure_auditor", "erasure_residue",
     "witness_pool", "witness_server", "deletion_manifest", "claude_code", "install", "cli",
+    # The transparency stack. Shipped submodules, so their public functions are part of the surface a
+    # reader is entitled to find; leaving them out made the checker report a real capability as an
+    # invented one, which is the failure direction that teaches you to ignore the checker.
+    "merkle", "cose", "scitt", "transparency", "scrapi", "timestamp",
 )
 
 #: Identifiers that appear in the docs on purpose but belong to somebody ELSE's API. Each one is here
@@ -179,6 +183,14 @@ def public_surface():
         except Exception:                                     # optional dep, not a surface question
             continue
         names |= {n for n in dir(m) if not n.startswith("_")}
+        # AND THE METHODS OF THE CLASSES THEY EXPORT. `dir(module)` sees the class and stops, so any
+        # capability offered as a method on anything other than Inspeximus was invisible here and got
+        # reported as an invented name. A checker that calls a real feature a lie is the kind you
+        # learn to ignore, which costs more than the check was worth.
+        for obj_name in [n for n in dir(m) if not n.startswith("_")]:
+            obj = getattr(m, obj_name, None)
+            if inspect.isclass(obj) and getattr(obj, "__module__", "").startswith("inspeximus"):
+                names |= {n for n in dir(obj) if not n.startswith("_")}
     for n in list(names):
         try:
             f = getattr(Inspeximus, n, None)
