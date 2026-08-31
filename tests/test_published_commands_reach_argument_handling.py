@@ -149,3 +149,64 @@ def test_the_echo_cell_inherited_the_same_defect_and_the_same_fix(tree):
                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
     assert free.returncode == 0, (free.stdout + free.stderr)[-1200:]
     assert "resurrection" in free.stdout, free.stdout[-600:]
+
+
+def _resolved_key(tree_dir, dotenv_value=None, process_value=None):
+    """What the loader ACTUALLY resolves to, read out of the module rather than inferred.
+
+    Imports the probe in a subprocess so the module-level `_load_key()` runs under the environment
+    and the dotenv this call sets up. Asserting on a re-implementation of the loader would test the
+    re-implementation.
+    """
+    server = os.path.join(tree_dir, "server")
+    dotenv = os.path.join(server, ".env")
+    try:
+        if dotenv_value is None:
+            if os.path.exists(dotenv):
+                os.remove(dotenv)
+        else:
+            os.makedirs(server, exist_ok=True)
+            with open(dotenv, "w", encoding="utf-8", newline="") as fh:
+                fh.write("OPENAI_API_KEY=%s\n" % dotenv_value)
+        code = ("import importlib.util,sys;"
+                "s=importlib.util.spec_from_file_location('p',r'%s');"
+                "m=importlib.util.module_from_spec(s);s.loader.exec_module(m);"
+                "print(m.OPENAI_KEY)" % os.path.join(tree_dir, ENTRY).replace("\\", "\\\\"))
+        env = dict(os.environ)
+        env.pop("OPENAI_API_KEY", None)
+        if process_value is not None:
+            env["OPENAI_API_KEY"] = process_value
+        env["PYTHONIOENCODING"] = "utf-8"
+        p = subprocess.run([sys.executable, "-c", code], cwd=tree_dir, env=env,
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=300)
+        assert p.returncode == 0, p.stderr[:400]
+        return p.stdout.strip()
+    finally:
+        if os.path.exists(dotenv):
+            os.remove(dotenv)
+
+
+def test_a_process_key_wins_against_a_dotenv_holding_a_different_value(tree):
+    """The PRECEDENCE itself, which nothing pinned until now.
+
+    `test_an_existing_process_key_is_never_overwritten` asserts only that a process key stops the
+    refusal. It never puts a dotenv holding a COMPETING value against it, so the ordering the
+    reporter asked for in #1 was verified by hand and by nothing else. A comment claiming the case
+    was covered would have been false, which is how this test came to be written.
+    """
+    got = _resolved_key(tree, dotenv_value="from-the-dotenv", process_value="from-the-process")
+    assert got == "from-the-process", (
+        "the dotenv overwrote a real process key, which is the third defect reported in #1")
+
+
+def test_the_dotenv_is_still_read_when_the_process_says_nothing(tree):
+    """THE CONTROL. Without it, a loader that ignored the dotenv entirely would pass the test above
+    and the fallback the reporter asked to KEEP would be silently gone."""
+    got = _resolved_key(tree, dotenv_value="from-the-dotenv", process_value=None)
+    assert got == "from-the-dotenv", "the dotenv fallback stopped working"
+
+
+def test_no_key_anywhere_resolves_to_empty(tree):
+    """The third state. An absent key must be empty rather than a stale value from a previous run."""
+    assert _resolved_key(tree, dotenv_value=None, process_value=None) == ""
