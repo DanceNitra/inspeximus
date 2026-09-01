@@ -18,6 +18,13 @@ import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+def _map_bytes() -> bytes:
+    """The tracked map's exact contents, so the control can prove it changed nothing."""
+    with open(os.path.join(ROOT, "docs", "CORE_MAP.md"), "rb") as fh:
+        return fh.read()
+
+
 def test_docs_core_map_matches_core_py():
     r = subprocess.run([sys.executable, os.path.join("tools", "gen_core_map.py"), "--check"],
                        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
@@ -36,6 +43,8 @@ def test_the_checker_can_actually_fail():
     """
     import shutil
     import tempfile
+
+    before = _map_bytes()          # whatever state the tree is in, this control must not change it
     d = tempfile.mkdtemp()
     src = os.path.join(d, "core_copy.py")
     out = os.path.join(d, "map_copy.md")
@@ -59,6 +68,10 @@ def test_the_checker_can_actually_fail():
         "the diff must NAME what differs; 'stale' alone costs a round trip per guess")
 
     # The repository's own map was never touched, which is the point of doing this on a copy.
-    status = subprocess.run(["git", "status", "--short", "docs/CORE_MAP.md"], cwd=ROOT,
-                            capture_output=True, text=True, encoding="utf-8", errors="replace")
-    assert status.stdout.strip() == "", "the control modified the tracked map"
+    #
+    # ASSERT A DELTA, NOT AN ABSOLUTE. This read `git status` and required it to be EMPTY, which is a
+    # property of the whole working tree rather than of anything this control did. So a developer who
+    # legitimately regenerated CORE_MAP.md after editing core.py -- exactly what the sibling test
+    # tells them to do -- got a red control for someone else's uncommitted change. Found that way:
+    # a real core.py edit, a required regeneration, and then this control failed on it.
+    assert _map_bytes() == before, "the control modified the tracked map"

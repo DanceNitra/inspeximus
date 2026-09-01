@@ -1135,7 +1135,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.24.1"
+__version__ = "2.25.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5372,10 +5372,7 @@ class Inspeximus:
         # the EMPTY STRING and compared equal — observe() recorded a flat contradiction as agreement and
         # marked its support seen, so later corrections were discounted. Any script's letters and digits are
         # kept; only punctuation and spacing collapse, which was the point.
-        sig = re.sub(r"[\W_]+", " ", str(s).lower(), flags=re.UNICODE).strip()
-        # And if normalisation still leaves nothing while the value was non-empty, fall back to the raw
-        # value rather than returning a signature that matches every other unnormalisable value.
-        return sig or str(s).strip().lower()
+        return _norm_obj(s)   # one rule, shared with check_conflict's keyed comparison
 
     def _supersede_by_key(self, rec: dict, reaffirm: bool = False) -> list:
         """Deterministic (subject, relation, object) supersession: retire active records that share
@@ -13433,10 +13430,16 @@ class Inspeximus:
                 if r.get("key") != key or r["id"] in seen:
                     continue
                 if object is not None and r.get("object") is not None:
-                    conflict = (r["object"] != object)         # both objects known -> compare directly
-                else:
-                    conflict = inc(text, r["text"])            # missing an object -> fall back to text clash
-                if conflict:
+                    # NORMALISED, not raw. Same rule as supersession's _obj_sig.
+                    conflict = (_norm_obj(r["object"]) != _norm_obj(object))
+                    if conflict:
+                        hits.append((r, "keyed_value_change")); seen.add(r["id"])
+                elif r.get("object") is not None:
+                    # The record carries a value and the caller withheld one, so the comparison this
+                    # branch exists for DID NOT RUN. Returning clean here asserts "no conflict" on
+                    # evidence we never had -- a check that cannot fire reporting SAFE. Say so instead.
+                    hits.append((r, "keyed_value_unchecked")); seen.add(r["id"])
+                elif inc(text, r["text"]):                     # no stored value -> text clash is all there is
                     hits.append((r, "keyed_value_change")); seen.add(r["id"])
         tvec = self._qvec(text)                                # (2) clash among similar neighbours
         for r in active:
@@ -13924,6 +13927,23 @@ def _negation_clash(a: str, b: str) -> bool:
 
 
 _NUM = re.compile(r"-?\d+(?:\.\d+)?")
+
+
+def _norm_obj(v) -> str:
+    """The one normalisation for a managed key's VALUE, shared by supersession and conflict detection.
+
+    It was already here, buried inside `Inspeximus._obj_sig`, and `check_conflict` compared raw strings
+    instead. Two paths answering "is this the same value?" with different rules is how a store
+    supersedes a record it simultaneously reports as a contradiction. Measured before the change on
+    inspeximus 2.24.1: `Senior Data Analyst` against `senior data analyst`, and against the same string
+    with a trailing space, both returned `keyed_value_change`.
+
+    Unicode-aware: `[^a-z0-9]` deleted every non-Latin character, so a CJK value normalised to the empty
+    string and compared equal to every other one. Only punctuation and spacing collapse.
+    """
+    sig = re.sub(r"[\W_]+", " ", str(v).lower(), flags=re.UNICODE).strip()
+    # An unnormalisable non-empty value must not collapse onto every other unnormalisable value.
+    return sig or str(v).strip().lower()
 
 
 def _value_clash(a: str, b: str) -> bool:
