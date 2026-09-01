@@ -1,3 +1,36 @@
+## 2.25.0 - UPGRADE IF you call check_conflict with a `key`: it stops reporting case and spacing as a contradiction, and stops returning an empty list when it compared nothing
+
+Two defects in the keyed branch, both of which made it lie in a different direction.
+
+**The comparison was raw.** It ran `r["object"] != object` on the stored and supplied values while
+supersession compared `_obj_sig`, which lowercases and collapses punctuation and spacing. So the same
+store could supersede two records as one value and simultaneously report them as a contradiction.
+Measured on 2.24.1: `Senior Data Analyst` against `senior data analyst`, and against the same string
+with a trailing space, both returned `keyed_value_change`. The rule already existed inside `_obj_sig`;
+it is now the module-level `_norm_obj` and both paths call it, so one question has one answer.
+
+**An empty list meant two different things.** When the stored record carried an `object` and the
+caller supplied none, the branch fell through to a text clash that needs a number or a negation word,
+found neither, and returned `[]`. From a write gate that reads as "checked, clean". It had checked
+nothing. That case now returns the new conflict kind `keyed_value_unchecked`, which names the missing
+input rather than asserting an answer.
+
+**What breaks.** Callers filtering on `kind == "keyed_value_change"` are unaffected. Callers that
+treat any non-empty result as a conflict will see a hit where they previously saw none, and only when
+they pass a `key` while withholding a value the record already carries. Supplying the `object` is the
+fix and turns the hit into a real answer. The one in-tree consumer, `integrations/pydantic_ai`, takes
+`key` and `object` from the same extractor call and cannot reach the branch.
+
+**Measured on a live 578-record store**, 552 of which carry both a key and an object: with the value
+supplied, 200 of 200 unchanged; with it withheld, 200 of 200 previously returned a silent clean. That
+200 of 200 is a construction rather than an observed rate, because the sweep withheld the value on
+every call. How often real callers withhold it is not something this store can answer.
+
+Also here: `test_the_checker_can_actually_fail` asserted that `git status docs/CORE_MAP.md` was empty,
+which is a property of the working tree rather than of anything that control does. Regenerating the
+map after editing `core.py`, which its sibling test instructs you to do, turned it red. It now
+compares the map's bytes before and after itself.
+
 ## 2.24.1 - UPGRADE IF you parse integrity_bench_revert_result*.json: the guard shipped in 2.24.0 checked the boundary, not the class
 
 **The top-level `"n"` field is gone**, replaced by `cases_requested`, `cases_measured` and
