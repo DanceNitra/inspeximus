@@ -1,0 +1,33 @@
+{
+ "probe": "the_haystack_doc_example_runs_and_its_disk_claim_holds.py",
+ "pr": 554,
+ "pr_head_sha": "5ed457aa435579e4f1c79ec8e9b9f7406fe1fb1a",
+ "haystack": "3.0.0",
+ "python_blocks": 2,
+ "blocks_executed": 1,
+ "block_output": [
+  {
+   "block": 0,
+   "stdout": "['the invoice is due in March']"
+  }
+ ],
+ "erase_result_keys": [
+  "coverage",
+  "forgotten",
+  "ids",
+  "residue_in_store",
+  "scrubbed_links",
+  "tombstones"
+ ],
+ "victim_text_removed_from_disk": true,
+ "survivor_text_still_on_disk": true,
+ "store_after_erasure": [
+  "the manager is Rachel Tseng"
+ ],
+ "controls": {
+  "victim_text_confirmed_present_before_erasure": true,
+  "survivor_proves_the_file_was_not_truncated": true,
+  "page_pinned_to_pr_head_sha_not_a_branch": true,
+  "blocks_executed_rather_than_parsed": true
+ }
+}
