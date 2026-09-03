@@ -1,0 +1,40 @@
+{
+ "probe": "a_record_retired_by_consolidate_is_still_valid_to_an_as_of_query.py",
+ "when_utc": "2026-09-03T07:03:56Z",
+ "keep_budget_marker_sites": [
+  12847,
+  12925
+ ],
+ "control_keyed_invalidated_at": 1788419036.4819555,
+ "control_keyed_excludes_after": true,
+ "control_keyed_includes_before": true,
+ "arms": {
+  "consolidate": {
+   "keep_budget_line_executed": [
+    12847
+   ],
+   "evicted": 10,
+   "evicted_without_invalidated_at": 10,
+   "plain_recall_returns_them": 0,
+   "as_of_after_eviction_returns": 10,
+   "as_of_before_eviction_returns": 10
+  },
+  "consolidate_clusters": {
+   "keep_budget_line_executed": [
+    12925
+   ],
+   "evicted": 12,
+   "evicted_without_invalidated_at": 12,
+   "plain_recall_returns_them": 0,
+   "as_of_after_eviction_returns": 12,
+   "as_of_before_eviction_returns": 12
+  }
+ },
+ "verdict": "eviction is not invalidation, and both consolidate paths were executed",
+ "controls": {
+  "keep_budget_line_coverage_asserted_not_assumed": true,
+  "marker_located_by_string_so_edits_move_the_target": true,
+  "a_correctly_invalidating_path_measured_alongside": true,
+  "plain_recall_confirms_retirement_before_any_as_of_claim": true
+ }
+}
