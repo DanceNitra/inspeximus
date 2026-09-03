@@ -1,8 +1,10 @@
 """Does the Haystack integration doc still run, and is its one hard claim about disk bytes true?
 
-WHY. deepset-ai/haystack-integrations#554 has been open since 22 July. On 2 September the maintainer
-pushed a fix to our branch himself rather than closing it: he renamed `delete_documents` to
-`erase_documents` in one paragraph. He was right and the error was ours. That paragraph describes a
+WHY. deepset-ai/haystack-integrations#554 has been open since 22 July. Copilot's review found, on 29 July, that
+one paragraph named `delete_documents` for behaviour only `erase_documents` provides. The maintainer
+applied that autofix to our branch on 2 September rather than closing the PR. The error was ours; the
+catch was Copilot's, and this docstring said otherwise until a verification pass read the commit
+trailer. That paragraph describes a
 signed tombstone and a provable data-subject deletion, which is `erase_documents(request_id=...)`
 returning an erasure record. The protocol's `delete_documents` returns None and takes no request id.
 
@@ -17,11 +19,13 @@ CONTROLS, because a probe that only reports success has measured nothing:
     and the run is void.
   * A SURVIVING DOCUMENT MUST STILL BE PRESENT after the erasure, so "the bytes are gone" is not
     satisfied by an empty or truncated file.
-  * THE PAGE IS PINNED to the PR head sha, not to a branch name. A branch moves; a claim about what
-    reviewers will read must not.
-  * EVERY PYTHON BLOCK IS EXECUTED, not parsed. A block that only compiles is not a working example,
-    and the second block needs a real document id, so the probe substitutes one rather than skipping
-    it and calling the page verified.
+  * THE PAGE IS RESOLVED AT RUN TIME to the PR head sha and that sha is recorded, so the receipt says
+    which bytes were tested. A branch name moves; a claim about what reviewers will read must not.
+  * EVERY PYTHON BLOCK IS EXECUTED, not parsed. The second block carries the literal
+    `["<document-id>"]`, which no reader can run, so the probe substitutes a real id and runs it.
+    Skipping it and still calling the page verified is what an earlier version did.
+  * THE RECORDED CONTROLS ARE COMPUTED. They were hardcoded `True` literals, which is a receipt
+    asserting its own diligence. Each now carries the value the run produced.
 """
 from __future__ import annotations
 
@@ -78,7 +82,7 @@ def main():
         ran = []
         for i, b in enumerate(blocks):
             if "<document-id>" in b:
-                continue                                       # needs a real id; handled below
+                continue                    # substituted and run below, once an id exists
             p = os.path.join(tmp, "block_%d.py" % i)
             io.open(p, "w", encoding="utf-8").write(b)
             out = subprocess.run([sys.executable, "-X", "utf8", p],
@@ -110,6 +114,28 @@ def main():
         survivor_kept = survivor.content.encode("utf-8") in raw_after
         left = [d.content for d in InspeximusDocumentStore(path="documents.json").filter_documents({})]
 
+        # Now run the SECOND block for real, with the placeholder replaced. A page whose example
+        # cannot be executed by a reader is not a verified page.
+        placeholder_ran = False
+        for i, b in enumerate(blocks):
+            if "<document-id>" not in b:
+                continue
+            body = ("from inspeximus.integrations.haystack import InspeximusDocumentStore\n"
+                    "store = InspeximusDocumentStore(path='documents.json')\n"
+                    + b.replace("<document-id>", survivor.id))
+            p2 = os.path.join(tmp, "block_%d_substituted.py" % i)
+            io.open(p2, "w", encoding="utf-8").write(body)
+            o2 = subprocess.run([sys.executable, "-X", "utf8", p2],
+                                capture_output=True, text=True, timeout=600)
+            if o2.returncode != 0:
+                refuse("block %d fails once the placeholder is replaced with a real id:\n%s"
+                       % (i, (o2.stderr or "")[-500:]))
+            placeholder_ran = True
+            ran.append({"block": i, "stdout": (o2.stdout or "").strip()[:200], "substituted": True})
+        if not placeholder_ran:
+            refuse("the placeholder block was never executed, so the page is only half verified and "
+                   "this probe would be claiming more than it measured")
+
         if not survivor_kept:
             refuse("the surviving document is also gone from the bytes, so the file was truncated "
                    "rather than the value erased, and the page's claim is not what was measured")
@@ -135,10 +161,12 @@ def main():
                "survivor_text_still_on_disk": survivor_kept,
                "store_after_erasure": left,
                "controls": {
-                   "victim_text_confirmed_present_before_erasure": True,
-                   "survivor_proves_the_file_was_not_truncated": True,
-                   "page_pinned_to_pr_head_sha_not_a_branch": True,
-                   "blocks_executed_rather_than_parsed": True,
+                   "victim_text_confirmed_present_before_erasure":
+                       victim.content.encode("utf-8") in raw_before,
+                   "survivor_proves_the_file_was_not_truncated": survivor_kept,
+                   "page_sha_resolved_at_run_time_and_recorded": bool(re.fullmatch(r"[0-9a-f]{40}", sha)),
+                   "every_python_block_executed": len(ran) == len(blocks),
+                   "placeholder_block_substituted_and_run": placeholder_ran,
                }},
               io.open(OUT, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     return 0

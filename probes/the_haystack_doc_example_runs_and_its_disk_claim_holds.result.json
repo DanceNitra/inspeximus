@@ -4,11 +4,16 @@
  "pr_head_sha": "5ed457aa435579e4f1c79ec8e9b9f7406fe1fb1a",
  "haystack": "3.0.0",
  "python_blocks": 2,
- "blocks_executed": 1,
+ "blocks_executed": 2,
  "block_output": [
   {
    "block": 0,
    "stdout": "['the invoice is due in March']"
+  },
+  {
+   "block": 1,
+   "stdout": "",
+   "substituted": true
   }
  ],
  "erase_result_keys": [
@@ -27,7 +32,8 @@
  "controls": {
   "victim_text_confirmed_present_before_erasure": true,
   "survivor_proves_the_file_was_not_truncated": true,
-  "page_pinned_to_pr_head_sha_not_a_branch": true,
-  "blocks_executed_rather_than_parsed": true
+  "page_sha_resolved_at_run_time_and_recorded": true,
+  "every_python_block_executed": true,
+  "placeholder_block_substituted_and_run": true
  }
 }
