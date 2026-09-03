@@ -46,6 +46,14 @@ NOT_STANDALONE = {
         "needs OPENAI_API_KEY -- it replays one fixture through the judge 30 times",
     "does_the_headline_number_depend_on_who_judges_it.py":
         "needs OPENAI_API_KEY -- it replays the fixture through several paid judges",
+    # Two live dependencies, and CI has neither. It resolves the PR head sha through an
+    # authenticated `gh`, and it imports haystack to execute the page's own examples. On a
+    # runner without a token it refuses with "PR head sha looks wrong"; without the extra it
+    # raises ModuleNotFoundError. Both are correct outcomes for a probe whose subject is a
+    # third-party pull request, and neither is worth faking with a fixture: the point is that
+    # the page a reviewer will read still runs.
+    "the_haystack_doc_example_runs_and_its_disk_claim_holds.py":
+        "needs an authenticated gh (PR head sha) and the haystack extra -- it runs the doc page",
     "locomo_composed_soft_filters.py": "needs agora_output/lab/data/locomo10.json (LoCoMo, not redistributable)",
     "locomo_correlated_cue_composition.py": "needs the LoCoMo dataset",
     "locomo_metadata_prefilter.py": "needs locomo10.json",
@@ -293,6 +301,11 @@ KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
     # somebody hunting for a file that was never meant to exist.
     "mem0", "graphiti_core", "zep_python", "letta", "chromadb", "qdrant_client", "faiss",
     "requests", "httpx", "tqdm", "matplotlib", "seaborn", "sklearn", "scipy",
+    # Our own declared extra: pyproject.toml has haystack = ["haystack-ai>=2"], and the integration
+    # adapter, its parity script and two test modules import it. A probe that executes the published
+    # integration page has to import it too, and without this entry the guard reads somebody else's
+    # package as a module of ours that was never committed.
+    "haystack",
 }
 
 
