@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "inspeximus": {
+      "command": "uvx",
+      "args": ["--from", "inspeximus[mcp]", "inspeximus-mcp"],
+      "env": {
+        "INSPEXIMUS_PATH": "${CLAUDE_PROJECT_DIR}/.inspeximus/memory.json"
+      }
+    }
+  }
+}
