@@ -3,8 +3,9 @@
 **Your agent's most expensive failure is not forgetting. It is confidently remembering the old
 answer.**
 
-Long-term memory for AI agents in one zero-dependency Python file, plus an MCP server for any
-client and a one-line config install for Claude Code, Cursor, Windsurf, Codex and Cline.
+Long-term memory for AI agents in one zero-dependency Python file (`inspeximus/core.py` runs on
+its own), plus an opt-in MCP server for any client and a one-line config install for Claude Code,
+Cursor, Windsurf, Codex and Cline.
 
 Correcting a fact is not the hard part, and this field already does it. Graphiti invalidates facts
 and leads with it; cognee ships `forget` as one of its four operations. When we measured mem0 and
@@ -381,8 +382,9 @@ delegated to `openssl ts -verify` rather than hand-rolled, because a partial CMS
 requires a signed ledger. It is evidentiary quality for a duty to demonstrate, and it is worded that
 way everywhere.
 
-**Zero dependencies.** One file. Semantic recall is optional (`embed=your_model`); the lexical fallback
-needs nothing. The MCP server, encryption and framework adapters are all opt-in extras.
+**Zero dependencies.** One file for the core: copy `inspeximus/core.py` anywhere and it imports and
+runs with nothing installed. Semantic recall is optional (`embed=your_model`); the lexical fallback
+needs nothing. The MCP server, encryption and the framework adapters are separate modules, all opt-in.
 
 ---
 
