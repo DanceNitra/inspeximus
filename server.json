@@ -7,8 +7,24 @@
     "url": "https://github.com/DanceNitra/inspeximus",
     "source": "github"
   },
-  "version": "2.26.0",
+  "version": "2.26.1",
   "websiteUrl": "https://pypi.org/project/inspeximus/",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/DanceNitra/inspeximus/main/docs/assets/icon-512.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "512x512"
+      ]
+    },
+    {
+      "src": "https://raw.githubusercontent.com/DanceNitra/inspeximus/main/docs/assets/icon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    }
+  ],
   "packages": [
     {
       "registryType": "pypi",
@@ -27,7 +43,7 @@
           "value": "mcp"
         }
       ],
-      "version": "2.26.0",
+      "version": "2.26.1",
       "transport": {
         "type": "stdio"
       },

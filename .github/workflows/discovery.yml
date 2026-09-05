@@ -35,6 +35,24 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python -X utf8 probes/which_of_our_capabilities_a_searcher_can_actually_find.py
+      - name: every declared icon URL must actually serve bytes
+        # The offline test resolves these back to files in the repo. Only a network job can catch
+        # a URL that is right about the path and wrong about being published.
+        run: |
+          set -euo pipefail
+          python - <<'EOF' > urls.txt
+          import json
+          for i in json.load(open("server.json")).get("icons", []):
+              print(i["src"])
+          EOF
+          test -s urls.txt || { echo "server.json declares no icons"; exit 1; }
+          while read -r u; do
+            code=$(curl -sSL -o /dev/null -w "%{http_code}" "$u")
+            size=$(curl -sSL -o /dev/null -w "%{size_download}" "$u")
+            echo "$code  ${size}B  $u"
+            [ "$code" = "200" ] || { echo "^ not served"; exit 1; }
+            [ "$size" -gt 500 ] || { echo "^ served but suspiciously small"; exit 1; }
+          done < urls.txt
       - name: fail if fewer capabilities are reachable than last time
         run: python -X utf8 tools/discovery_floor.py
       - uses: actions/upload-artifact@v4

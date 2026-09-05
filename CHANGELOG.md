@@ -1,3 +1,40 @@
+## 2.26.1 - AFFECTS NOBODY'S CODE: metadata only, so that the project is findable by the things it does
+
+Nine of the capabilities inspeximus implements were documented only in the README, which is the one
+surface repository search does not read. Measured 2026-09-05: **2 of 15 implemented capabilities
+were reachable by GitHub search**, and the two that ranked were exactly the two carrying a topic.
+This ships as a patch because nothing about the code changed. What changed is whether you can find
+it.
+
+**The mechanism, established by control rather than assumed.** GitHub repository search reads the
+repository name, description and topics. It does not read the README. Both directions were tested:
+"windsurf" and "cline" appear only in the description and both queries return this repository, at
+positions 89 and 50; "supersede" is a topic and returns it at 16; "erasure" appears thirteen times
+in the README and was not in the top 300 of a query with **ten total results**, against a project
+shipping four `erasure_*` tools.
+
+**Twenty of twenty topics were in use, which looks like a used budget.** Six of those slots sat on
+`python` (860,748 repositories), `llm` (126,212), `ai-agents` (85,891), `rag` (45,065), `agents`
+(16,432) and `memory` (8,434). A six-star project cannot appear on any of those pages, and each
+duplicated a concept another topic already carried. Occupancy is not coverage. Those six were
+replaced with `erasure`, `data-erasure`, `right-to-be-forgotten`, `tamper-evident`, `witness` and
+`ai-agent-memory`.
+
+**In this release.** `server.json` fills the `title` field, which was empty and is capped at 100
+characters, and its description names `forget` and GDPR in place of "review". The PyPI keyword list
+goes from 12 to 27; unlike topics these have no cap, so nothing was removed.
+
+**`server.json` also declares `icons` for the first time.** The field has always existed in the
+registry schema and we left it empty, so MCP directories rendered a placeholder beside the name.
+
+Measured after the change, the same hour: **2 of 15 to 5 of 15**. `erasure` went from not-in-top-300
+to position 5, `revert` to 3, `witness` to 4. Stating the limit plainly, because it matters: those
+queries have 10, 7 and 9 total results. This is appearing in near-empty queries this project ships
+the answer to, not out-ranking a crowded one.
+
+`.github/workflows/discovery.yml` re-measures this weekly and `tools/discovery_floor.py` fails the
+build when a capability that used to be findable stops being findable.
+
 ## 2.26.0 - UPGRADE IF you install from an MCP directory: the command they built from our listing never started the server
 
 Glama emailed that the build for our listing had failed. `server.json` is the only thing an MCP

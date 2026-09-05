@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="wax" cx="0.4" cy="0.36" r="0.75">
+      <stop offset="0" stop-color="#1c1d21"/><stop offset="1" stop-color="#0e0f12"/>
+    </radialGradient>
+    <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="3" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="18" dy="26" stdDeviation="22" flood-color="#000" flood-opacity="0.7"/></filter>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="#050506"/>
+  <g filter="url(#sh)"><circle cx="512" cy="512" r="346" fill="#111215" filter="url(#rough)"/></g>
+  <circle cx="512" cy="512" r="334" fill="url(#wax)" filter="url(#rough)"/>
+  <circle cx="512" cy="512" r="328" fill="none" stroke="#2c2e34" stroke-width="4" stroke-dasharray="680 1400" transform="rotate(-135 512 512)"/>
+  <circle cx="512" cy="512" r="282" fill="none" stroke="#000" stroke-width="9" stroke-opacity="0.6"/>
+  <circle cx="512" cy="512" r="282" fill="none" stroke="#2a2c31" stroke-width="3" stroke-dasharray="600 1200" transform="rotate(-140 512 512)"/>
+  <rect x="310" y="347" width="405" height="90" rx="45" fill="#38f2d6"/>
+  <rect x="310" y="467" width="315" height="90" rx="45" fill="#929598"/>
+  <rect x="310" y="587" width="240" height="90" rx="45" fill="#525456"/>
+</svg>
