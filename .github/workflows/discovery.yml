@@ -1,0 +1,44 @@
+# Can somebody find this project by the things it does?
+#
+# Measured 2026-09-05: 2 of 15 implemented capabilities were reachable by GitHub search, and the two
+# that ranked were exactly the two carrying a topic. Nine lived only in the README, which is the one
+# surface repository search does not read.
+#
+# This runs WEEKLY rather than per push, for two reasons. Search rankings move over days, not
+# commits. And the probe spends about fifty calls on an API capped at thirty requests a minute, so
+# the three-version test matrix would hit that ceiling four times over on every push.
+name: discovery
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"      # Mondays, 06:17 UTC
+  workflow_dispatch:
+  push:
+    paths:                     # the metadata this probe measures, and the probe itself
+      - "server.json"
+      - "pyproject.toml"
+      - "probes/which_of_our_capabilities_a_searcher_can_actually_find.py"
+
+permissions:
+  contents: read
+
+jobs:
+  discovery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: measure what a searcher can reach
+        # `gh` needs a token even for public reads. The default job token has them.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -X utf8 probes/which_of_our_capabilities_a_searcher_can_actually_find.py
+      - name: fail if fewer capabilities are reachable than last time
+        run: python -X utf8 tools/discovery_floor.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: discovery-result
+          path: probes/which_of_our_capabilities_a_searcher_can_actually_find.result.json

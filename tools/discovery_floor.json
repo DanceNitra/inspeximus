@@ -1,0 +1,11 @@
+{
+ "_README": "A ratchet, not a target. Raise it when a run beats it; never lower it without a reason in the commit message.",
+ "measured": "2026-09-05",
+ "reachable": [
+  "erasure",
+  "forget",
+  "revert",
+  "supersede",
+  "witness"
+ ]
+}

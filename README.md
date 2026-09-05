@@ -1,5 +1,7 @@
 # inspeximus — the agent memory that takes it back
 
+<img alt="A dark archive hall of suspended glass record panels receding into haze. One panel is struck through by a line of amber light, which arcs forward to a later panel. A sealed paper receipt rests on the floor beneath it." src="https://raw.githubusercontent.com/DanceNitra/inspeximus/main/docs/assets/hero.jpg">
+
 **Your agent's most expensive failure is not forgetting. It is confidently remembering the old
 answer.**
 

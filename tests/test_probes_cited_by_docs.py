@@ -54,6 +54,15 @@ NOT_STANDALONE = {
     # the page a reviewer will read still runs.
     "the_haystack_doc_example_runs_and_its_disk_claim_holds.py":
         "needs an authenticated gh (PR head sha) and the haystack extra -- it runs the doc page",
+    # Not exempted for want of a token -- `.github/workflows/discovery.yml` gives it
+    # `GH_TOKEN: ${{ github.token }}` and runs it weekly, on demand, and whenever the metadata it
+    # measures changes. It is out of the PER-PUSH suite because it spends about fifty calls on a
+    # search API capped at thirty requests a minute, and this job runs on a three-version matrix:
+    # four concurrent copies would rate-limit each other into a flake. Search rankings also move
+    # over days rather than commits, so a per-push reading measures noise. `tools/discovery_floor.py`
+    # is the gate; it fails when a capability that used to be findable stops being findable.
+    "which_of_our_capabilities_a_searcher_can_actually_find.py":
+        "runs weekly in discovery.yml -- a rate-limited search API, measured on a slower clock",
     "locomo_composed_soft_filters.py": "needs agora_output/lab/data/locomo10.json (LoCoMo, not redistributable)",
     "locomo_correlated_cue_composition.py": "needs the LoCoMo dataset",
     "locomo_metadata_prefilter.py": "needs locomo10.json",
