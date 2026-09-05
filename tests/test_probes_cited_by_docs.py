@@ -63,6 +63,11 @@ NOT_STANDALONE = {
     # is the gate; it fails when a capability that used to be findable stops being findable.
     "which_of_our_capabilities_a_searcher_can_actually_find.py":
         "runs weekly in discovery.yml -- a rate-limited search API, measured on a slower clock",
+    # Same reason, same workflow. It reads about 150 repositories and their READMEs through an
+    # authenticated `gh`, which the per-push matrix has no token for and would rate-limit four ways
+    # if it did. Curated lists change over weeks, not commits.
+    "which_lists_carry_our_competitors_and_not_us.py":
+        "runs weekly in discovery.yml -- reads ~150 repos and READMEs through an authenticated gh",
     "locomo_composed_soft_filters.py": "needs agora_output/lab/data/locomo10.json (LoCoMo, not redistributable)",
     "locomo_correlated_cue_composition.py": "needs the LoCoMo dataset",
     "locomo_metadata_prefilter.py": "needs locomo10.json",

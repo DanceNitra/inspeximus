@@ -1,0 +1,270 @@
+[
+ {
+  "repo": "RyanAlberts/best-of-Agent-Harnesses",
+  "stars": 791,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "cognee",
+   "letta",
+   "claude-mem"
+  ],
+  "n_competitors": 6,
+  "url": "https://github.com/RyanAlberts/best-of-Agent-Harnesses",
+  "kind": "TOOLS",
+  "arxiv": 5,
+  "gh": 566,
+  "lang": "en",
+  "merged_90d": 20,
+  "open_prs": 23,
+  "last_merge": "2026-08-16"
+ },
+ {
+  "repo": "alvinreal/awesome-opensource-ai",
+  "stars": 4677,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "graphiti",
+   "cognee",
+   "letta",
+   "supermemory"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/alvinreal/awesome-opensource-ai",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 1020,
+  "lang": "en",
+  "merged_90d": 75,
+  "open_prs": 24,
+  "last_merge": "2026-09-03"
+ },
+ {
+  "repo": "0xNyk/awesome-agent-cortex",
+  "stars": 213,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "cognee",
+   "letta"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/0xNyk/awesome-agent-cortex",
+  "kind": "TOOLS",
+  "arxiv": 26,
+  "gh": 225,
+  "lang": "en",
+  "merged_90d": 21,
+  "open_prs": 19,
+  "last_merge": "2026-09-02"
+ },
+ {
+  "repo": "jihoo-kim/awesome-context-engineering",
+  "stars": 113,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "graphiti",
+   "cognee",
+   "letta",
+   "openmemory"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/jihoo-kim/awesome-context-engineering",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 35,
+  "lang": "en",
+  "merged_90d": 0,
+  "open_prs": 17,
+  "last_merge": "never"
+ },
+ {
+  "repo": "vonzosten/awesome-LangGraph",
+  "stars": 1992,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "letta"
+  ],
+  "n_competitors": 4,
+  "url": "https://github.com/vonzosten/awesome-LangGraph",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 160,
+  "lang": "en",
+  "merged_90d": 5,
+  "open_prs": 23,
+  "last_merge": "2026-07-10"
+ },
+ {
+  "repo": "slavakurilyak/awesome-ai-agents",
+  "stars": 2195,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "cognee"
+  ],
+  "n_competitors": 3,
+  "url": "https://github.com/slavakurilyak/awesome-ai-agents",
+  "kind": "TOOLS",
+  "arxiv": 3,
+  "gh": 471,
+  "lang": "en",
+  "merged_90d": 0,
+  "open_prs": 100,
+  "last_merge": "2024-04-12"
+ },
+ {
+  "repo": "awesome-opencode/awesome-opencode",
+  "stars": 10085,
+  "has_us": false,
+  "competitors": [
+   "letta",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/awesome-opencode/awesome-opencode",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 234,
+  "lang": "en",
+  "merged_90d": 73,
+  "open_prs": 100,
+  "last_merge": "2026-07-03"
+ },
+ {
+  "repo": "0xNyk/awesome-hermes-agent",
+  "stars": 5558,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/0xNyk/awesome-hermes-agent",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 297,
+  "lang": "en",
+  "merged_90d": 17,
+  "open_prs": 16,
+  "last_merge": "2026-09-02"
+ },
+ {
+  "repo": "rohitg00/awesome-claude-code-toolkit",
+  "stars": 2590,
+  "has_us": false,
+  "competitors": [
+   "claude-mem",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/rohitg00/awesome-claude-code-toolkit",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 406,
+  "lang": "en",
+  "merged_90d": 0,
+  "open_prs": 100,
+  "last_merge": "2026-04-18"
+ },
+ {
+  "repo": "quemsah/awesome-claude-plugins",
+  "stars": 1265,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/quemsah/awesome-claude-plugins",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 100,
+  "lang": "en",
+  "merged_90d": 35,
+  "open_prs": 2,
+  "last_merge": "2026-09-02"
+ },
+ {
+  "repo": "alvinreal/awesome-openclaw",
+  "stars": 732,
+  "has_us": false,
+  "competitors": [
+   "claude-mem",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/alvinreal/awesome-openclaw",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 177,
+  "lang": "en",
+  "merged_90d": 1,
+  "open_prs": 37,
+  "last_merge": "2026-07-04"
+ },
+ {
+  "repo": "tolkonepiu/best-of-mcp-servers",
+  "stars": 142,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "cognee"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/tolkonepiu/best-of-mcp-servers",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 769,
+  "lang": "en",
+  "merged_90d": 4,
+  "open_prs": 31,
+  "last_merge": "2026-09-02"
+ },
+ {
+  "repo": "NickCirv/engram",
+  "stars": 141,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/NickCirv/engram",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 6,
+  "lang": "en",
+  "merged_90d": 0,
+  "open_prs": 2,
+  "last_merge": "2026-05-02"
+ },
+ {
+  "repo": "subinium/awesome-claude-code",
+  "stars": 112,
+  "has_us": false,
+  "competitors": [
+   "claude-mem",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/subinium/awesome-claude-code",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 309,
+  "lang": "en",
+  "merged_90d": 0,
+  "open_prs": 33,
+  "last_merge": "never"
+ }
+]

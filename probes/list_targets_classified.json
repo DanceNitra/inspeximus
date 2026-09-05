@@ -1,0 +1,732 @@
+[
+ {
+  "repo": "TsinghuaC3I/Awesome-Memory-for-Agents",
+  "stars": 650,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "cognee",
+   "letta",
+   "claude-mem",
+   "openmemory"
+  ],
+  "n_competitors": 7,
+  "url": "https://github.com/TsinghuaC3I/Awesome-Memory-for-Agents",
+  "kind": "PAPERS",
+  "arxiv": 197,
+  "gh": 73,
+  "lang": "en"
+ },
+ {
+  "repo": "yzfly/Awesome-MCP-ZH",
+  "stars": 7629,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "cognee",
+   "supermemory",
+   "basic-memory"
+  ],
+  "n_competitors": 6,
+  "url": "https://github.com/yzfly/Awesome-MCP-ZH",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 775,
+  "lang": "zh"
+ },
+ {
+  "repo": "RyanAlberts/best-of-Agent-Harnesses",
+  "stars": 791,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "cognee",
+   "letta",
+   "claude-mem"
+  ],
+  "n_competitors": 6,
+  "url": "https://github.com/RyanAlberts/best-of-Agent-Harnesses",
+  "kind": "TOOLS",
+  "arxiv": 5,
+  "gh": 566,
+  "lang": "en"
+ },
+ {
+  "repo": "aristoapp/awesome-second-brain",
+  "stars": 527,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "cognee",
+   "supermemory",
+   "openmemory"
+  ],
+  "n_competitors": 6,
+  "url": "https://github.com/aristoapp/awesome-second-brain",
+  "kind": "PAPERS",
+  "arxiv": 0,
+  "gh": 0,
+  "lang": "en"
+ },
+ {
+  "repo": "XiaomingX/awesome-ai-memory",
+  "stars": 169,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "letta",
+   "supermemory",
+   "basic-memory"
+  ],
+  "n_competitors": 6,
+  "url": "https://github.com/XiaomingX/awesome-ai-memory",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 41,
+  "lang": "zh"
+ },
+ {
+  "repo": "alvinreal/awesome-opensource-ai",
+  "stars": 4677,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "graphiti",
+   "cognee",
+   "letta",
+   "supermemory"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/alvinreal/awesome-opensource-ai",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 1020,
+  "lang": "en"
+ },
+ {
+  "repo": "ai-boost/awesome-harness-engineering",
+  "stars": 3999,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "cognee",
+   "letta",
+   "claude-mem"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/ai-boost/awesome-harness-engineering",
+  "kind": "MIXED",
+  "arxiv": 62,
+  "gh": 238,
+  "lang": "en"
+ },
+ {
+  "repo": "DEEP-PolyU/Awesome-GraphMemory",
+  "stars": 343,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "memvid",
+   "openmemory"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/DEEP-PolyU/Awesome-GraphMemory",
+  "kind": "PAPERS",
+  "arxiv": 154,
+  "gh": 39,
+  "lang": "en"
+ },
+ {
+  "repo": "JSONbored/awesome-claude",
+  "stars": 294,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "cognee",
+   "letta",
+   "basic-memory"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/JSONbored/awesome-claude",
+  "kind": "MIXED",
+  "arxiv": 0,
+  "gh": 3,
+  "lang": "en"
+ },
+ {
+  "repo": "0xNyk/awesome-agent-cortex",
+  "stars": 213,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "cognee",
+   "letta"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/0xNyk/awesome-agent-cortex",
+  "kind": "TOOLS",
+  "arxiv": 26,
+  "gh": 225,
+  "lang": "en"
+ },
+ {
+  "repo": "jihoo-kim/awesome-context-engineering",
+  "stars": 113,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "graphiti",
+   "cognee",
+   "letta",
+   "openmemory"
+  ],
+  "n_competitors": 5,
+  "url": "https://github.com/jihoo-kim/awesome-context-engineering",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 35,
+  "lang": "en"
+ },
+ {
+  "repo": "Meirtz/Awesome-Context-Engineering",
+  "stars": 3293,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "letta"
+  ],
+  "n_competitors": 4,
+  "url": "https://github.com/Meirtz/Awesome-Context-Engineering",
+  "kind": "PAPERS",
+  "arxiv": 257,
+  "gh": 178,
+  "lang": "en"
+ },
+ {
+  "repo": "taishi-i/awesome-ChatGPT-repositories",
+  "stars": 3233,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "cognee",
+   "supermemory",
+   "openmemory"
+  ],
+  "n_competitors": 4,
+  "url": "https://github.com/taishi-i/awesome-ChatGPT-repositories",
+  "kind": "TOOLS",
+  "arxiv": 1,
+  "gh": 2710,
+  "lang": "zh"
+ },
+ {
+  "repo": "vonzosten/awesome-LangGraph",
+  "stars": 1992,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "letta"
+  ],
+  "n_competitors": 4,
+  "url": "https://github.com/vonzosten/awesome-LangGraph",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 160,
+  "lang": "en"
+ },
+ {
+  "repo": "jim-schwoebel/awesome_ai_agents",
+  "stars": 1964,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "cognee",
+   "letta"
+  ],
+  "n_competitors": 4,
+  "url": "https://github.com/jim-schwoebel/awesome_ai_agents",
+  "kind": "TOOLS",
+  "arxiv": 3,
+  "gh": 1791,
+  "lang": "zh"
+ },
+ {
+  "repo": "IAAR-Shanghai/Awesome-AI-Memory",
+  "stars": 1199,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "graphiti",
+   "letta"
+  ],
+  "n_competitors": 4,
+  "url": "https://github.com/IAAR-Shanghai/Awesome-AI-Memory",
+  "kind": "PAPERS",
+  "arxiv": 340,
+  "gh": 4,
+  "lang": "en"
+ },
+ {
+  "repo": "EvoMap/awesome-agent-evolution",
+  "stars": 212,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "cognee",
+   "letta",
+   "memvid"
+  ],
+  "n_competitors": 4,
+  "url": "https://github.com/EvoMap/awesome-agent-evolution",
+  "kind": "MIXED",
+  "arxiv": 42,
+  "gh": 129,
+  "lang": "en"
+ },
+ {
+  "repo": "slavakurilyak/awesome-ai-agents",
+  "stars": 2195,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "cognee"
+  ],
+  "n_competitors": 3,
+  "url": "https://github.com/slavakurilyak/awesome-ai-agents",
+  "kind": "TOOLS",
+  "arxiv": 3,
+  "gh": 471,
+  "lang": "en"
+ },
+ {
+  "repo": "yxf203/Awesome-Efficient-Agents",
+  "stars": 305,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep",
+   "letta"
+  ],
+  "n_competitors": 3,
+  "url": "https://github.com/yxf203/Awesome-Efficient-Agents",
+  "kind": "PAPERS",
+  "arxiv": 197,
+  "gh": 128,
+  "lang": "en"
+ },
+ {
+  "repo": "weiwei966/awesome-ai-harness",
+  "stars": 219,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "graphiti",
+   "letta"
+  ],
+  "n_competitors": 3,
+  "url": "https://github.com/weiwei966/awesome-ai-harness",
+  "kind": "MIXED",
+  "arxiv": 46,
+  "gh": 77,
+  "lang": "en"
+ },
+ {
+  "repo": "awesome-opencode/awesome-opencode",
+  "stars": 10085,
+  "has_us": false,
+  "competitors": [
+   "letta",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/awesome-opencode/awesome-opencode",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 234,
+  "lang": "en"
+ },
+ {
+  "repo": "WangRongsheng/awesome-LLM-resources",
+  "stars": 8915,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/WangRongsheng/awesome-LLM-resources",
+  "kind": "TOOLS",
+  "arxiv": 134,
+  "gh": 686,
+  "lang": "zh"
+ },
+ {
+  "repo": "0xNyk/awesome-hermes-agent",
+  "stars": 5558,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/0xNyk/awesome-hermes-agent",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 297,
+  "lang": "en"
+ },
+ {
+  "repo": "rohitg00/awesome-claude-code-toolkit",
+  "stars": 2590,
+  "has_us": false,
+  "competitors": [
+   "claude-mem",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/rohitg00/awesome-claude-code-toolkit",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 406,
+  "lang": "en"
+ },
+ {
+  "repo": "quemsah/awesome-claude-plugins",
+  "stars": 1265,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/quemsah/awesome-claude-plugins",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 100,
+  "lang": "en"
+ },
+ {
+  "repo": "alvinreal/awesome-openclaw",
+  "stars": 732,
+  "has_us": false,
+  "competitors": [
+   "claude-mem",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/alvinreal/awesome-openclaw",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 177,
+  "lang": "en"
+ },
+ {
+  "repo": "Dominic789654/awesome-deepseek-harness",
+  "stars": 221,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/Dominic789654/awesome-deepseek-harness",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 2381,
+  "lang": "zh"
+ },
+ {
+  "repo": "leenkcool/Blue-Whale-Harness",
+  "stars": 193,
+  "has_us": false,
+  "competitors": [
+   "zep",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/leenkcool/Blue-Whale-Harness",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 1966,
+  "lang": "zh"
+ },
+ {
+  "repo": "tolkonepiu/best-of-mcp-servers",
+  "stars": 142,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "cognee"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/tolkonepiu/best-of-mcp-servers",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 769,
+  "lang": "en"
+ },
+ {
+  "repo": "NickCirv/engram",
+  "stars": 141,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "claude-mem"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/NickCirv/engram",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 6,
+  "lang": "en"
+ },
+ {
+  "repo": "subinium/awesome-claude-code",
+  "stars": 112,
+  "has_us": false,
+  "competitors": [
+   "claude-mem",
+   "supermemory"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/subinium/awesome-claude-code",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 309,
+  "lang": "en"
+ },
+ {
+  "repo": "rdmgator12/awesome-claude-connectors",
+  "stars": 107,
+  "has_us": false,
+  "competitors": [
+   "mem0",
+   "zep"
+  ],
+  "n_competitors": 2,
+  "url": "https://github.com/rdmgator12/awesome-claude-connectors",
+  "kind": "TOOLS",
+  "arxiv": 1,
+  "gh": 24,
+  "lang": "zh"
+ },
+ {
+  "repo": "VoltAgent/awesome-agent-skills",
+  "stars": 33771,
+  "has_us": false,
+  "competitors": [
+   "claude-mem"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/VoltAgent/awesome-agent-skills",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 659,
+  "lang": "en"
+ },
+ {
+  "repo": "Arindam200/awesome-ai-apps",
+  "stars": 13690,
+  "has_us": false,
+  "competitors": [
+   "letta"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/Arindam200/awesome-ai-apps",
+  "kind": "MIXED",
+  "arxiv": 0,
+  "gh": 3,
+  "lang": "en"
+ },
+ {
+  "repo": "heilcheng/awesome-agent-skills",
+  "stars": 6173,
+  "has_us": false,
+  "competitors": [
+   "claude-mem"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/heilcheng/awesome-agent-skills",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 69,
+  "lang": "en"
+ },
+ {
+  "repo": "wesammustafa/Claude-Code-Everything-You-Need-to-Know",
+  "stars": 2957,
+  "has_us": false,
+  "competitors": [
+   "mem0"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 23,
+  "lang": "en"
+ },
+ {
+  "repo": "kyrolabs/awesome-agents",
+  "stars": 2800,
+  "has_us": false,
+  "competitors": [
+   "letta"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/kyrolabs/awesome-agents",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 171,
+  "lang": "en"
+ },
+ {
+  "repo": "ANative-Lab/Awesome-Self-Evolving-Agents",
+  "stars": 2471,
+  "has_us": false,
+  "competitors": [
+   "mem0"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/ANative-Lab/Awesome-Self-Evolving-Agents",
+  "kind": "PAPERS",
+  "arxiv": 197,
+  "gh": 142,
+  "lang": "en"
+ },
+ {
+  "repo": "study8677/awesome-architecture",
+  "stars": 2272,
+  "has_us": false,
+  "competitors": [
+   "zep"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/study8677/awesome-architecture",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 5,
+  "lang": "zh"
+ },
+ {
+  "repo": "caramaschiHG/awesome-ai-agents-2026",
+  "stars": 1769,
+  "has_us": false,
+  "competitors": [
+   "mem0"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/caramaschiHG/awesome-ai-agents-2026",
+  "kind": "TOOLS",
+  "arxiv": 8,
+  "gh": 134,
+  "lang": "en"
+ },
+ {
+  "repo": "0xsline/awesome-deepseek-harness",
+  "stars": 995,
+  "has_us": false,
+  "competitors": [
+   "supermemory"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/0xsline/awesome-deepseek-harness",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 706,
+  "lang": "en"
+ },
+ {
+  "repo": "ccplugins/awesome-claude-code-plugins",
+  "stars": 931,
+  "has_us": false,
+  "competitors": [
+   "claude-mem"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/ccplugins/awesome-claude-code-plugins",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 98,
+  "lang": "en"
+ },
+ {
+  "repo": "MobinX/awesome-mcp-list",
+  "stars": 881,
+  "has_us": false,
+  "competitors": [
+   "cognee"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/MobinX/awesome-mcp-list",
+  "kind": "TOOLS",
+  "arxiv": 0,
+  "gh": 506,
+  "lang": "en"
+ },
+ {
+  "repo": "ai-boost/awesome-a2a",
+  "stars": 681,
+  "has_us": false,
+  "competitors": [
+   "zep"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/ai-boost/awesome-a2a",
+  "kind": "TOOLS",
+  "arxiv": 2,
+  "gh": 567,
+  "lang": "en"
+ },
+ {
+  "repo": "PipedreamHQ/awesome-mcp-servers",
+  "stars": 282,
+  "has_us": false,
+  "competitors": [
+   "zep"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/PipedreamHQ/awesome-mcp-servers",
+  "kind": "PAPERS",
+  "arxiv": 1,
+  "gh": 0,
+  "lang": "en"
+ },
+ {
+  "repo": "yyyujintang/Awesome-Agent-Memory-Papers",
+  "stars": 232,
+  "has_us": false,
+  "competitors": [
+   "mem0"
+  ],
+  "n_competitors": 1,
+  "url": "https://github.com/yyyujintang/Awesome-Agent-Memory-Papers",
+  "kind": "PAPERS",
+  "arxiv": 86,
+  "gh": 27,
+  "lang": "en"
+ }
+]

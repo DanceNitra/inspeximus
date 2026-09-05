@@ -35,6 +35,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python -X utf8 probes/which_of_our_capabilities_a_searcher_can_actually_find.py
+      - name: which curated lists carry our competitors and not us
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -X utf8 probes/which_lists_carry_our_competitors_and_not_us.py
       - name: every declared icon URL must actually serve bytes
         # The offline test resolves these back to files in the repo. Only a network job can catch
         # a URL that is right about the path and wrong about being published.

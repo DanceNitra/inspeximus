@@ -1,0 +1,1036 @@
+{
+ "verdict": "GAPS_FOUND",
+ "lists_examined": 47,
+ "lists_naming_us": 1,
+ "lists_naming_a_competitor_but_not_us": 46,
+ "unreadable_or_uninformative": [
+  {
+   "repo": "f/prompts.chat",
+   "stars": 169356,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Shubhamsaboo/awesome-llm-apps",
+   "stars": 136113,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "punkpeye/awesome-mcp-servers",
+   "stars": 94211,
+   "why": "no readme via the API"
+  },
+  {
+   "repo": "ruvnet/RuView",
+   "stars": 92514,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "ComposioHQ/awesome-claude-skills",
+   "stars": 74494,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "hesreallyhim/awesome-claude-code",
+   "stars": 53536,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "sickn33/agentic-awesome-skills",
+   "stars": 45996,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "github/awesome-copilot",
+   "stars": 38651,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "anthropics/claude-plugins-official",
+   "stars": 35921,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "e2b-dev/awesome-ai-agents",
+   "stars": 29888,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "enescingoz/awesome-n8n-templates",
+   "stars": 25163,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "VoltAgent/awesome-claude-code-subagents",
+   "stars": 24867,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "travisvn/awesome-claude-skills",
+   "stars": 14970,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "EmbraceAGI/awesome-chatgpt-zh",
+   "stars": 11676,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "BehiSecc/awesome-claude-skills",
+   "stars": 10099,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "friuns2/BlackFriday-GPTs-Prompts",
+   "stars": 9722,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "WenyuChiou/awesome-agentic-ai-zh",
+   "stars": 6665,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "punkpeye/awesome-mcp-clients",
+   "stars": 6579,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "dontriskit/awesome-ai-system-prompts",
+   "stars": 6197,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "ikaijua/Awesome-AITools",
+   "stars": 6168,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "appcypher/awesome-mcp-servers",
+   "stars": 5764,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "langgptai/awesome-claude-prompts",
+   "stars": 5463,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "nibzard/awesome-agentic-patterns",
+   "stars": 4943,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "homeassistant-ai/ha-mcp",
+   "stars": 4626,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "AlexAnys/awesome-openclaw-usecases-zh",
+   "stars": 4438,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "vijaythecoder/awesome-claude-agents",
+   "stars": 4386,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "wong2/awesome-mcp-servers",
+   "stars": 4293,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "mergisi/awesome-openclaw-agents",
+   "stars": 3952,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "liyupi/free-programming-resources",
+   "stars": 3683,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "VoltAgent/awesome-claude-design",
+   "stars": 3651,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "fantastic-admin/basic",
+   "stars": 3386,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "cirosantilli/china-dictatorship",
+   "stars": 3183,
+   "why": "no readme via the API"
+  },
+  {
+   "repo": "L1Xu4n/Awesome-ChatGPT-prompts-ZH_CN",
+   "stars": 3181,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "open-free-llm-api/awesome-freellm-apis",
+   "stars": 2728,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "bergside/awesome-design-skills",
+   "stars": 2675,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "agentuniverse-ai/agentUniverse",
+   "stars": 2350,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "AmoyLab/Unla",
+   "stars": 2222,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "chatmcp/mcpso",
+   "stars": 2105,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "yaklang/hack-skills",
+   "stars": 2065,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "gege-circle/.github",
+   "stars": 1997,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "composio-community/awesome-claude-plugins",
+   "stars": 1930,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "VoltAgent/awesome-ai-agent-papers",
+   "stars": 1749,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Prat011/awesome-llm-skills",
+   "stars": 1722,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "webfuse-com/awesome-claude",
+   "stars": 1664,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "taielab/awesome-hacking-lists",
+   "stars": 1383,
+   "why": "no readme via the API"
+  },
+  {
+   "repo": "mohitagw15856/pm-claude-skills",
+   "stars": 1336,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "jaw9c/awesome-remote-mcp-servers",
+   "stars": 1110,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "brycewang-stanford/Awesome-Journal-Skills",
+   "stars": 1064,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "YuzeHao2023/Awesome-MCP-Servers",
+   "stars": 1061,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "rohitg00/awesome-devops-mcp-servers",
+   "stars": 1021,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "milisp/codexia",
+   "stars": 910,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "ASCIT31/Dark-Moon",
+   "stars": 890,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "maxbogo/awesome-ai-tools-for-ui",
+   "stars": 857,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "TensorBlock/awesome-mcp-servers",
+   "stars": 838,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Storybloq/storybloq",
+   "stars": 713,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Canner/wren-engine",
+   "stars": 663,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "DasterProkio/awesome-ai-companion",
+   "stars": 623,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "demcp/awesome-web3-mcp-servers",
+   "stars": 611,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "wanghuan9/skilldock",
+   "stars": 510,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "ZeroPointRepo/awesome-hermes-skills",
+   "stars": 509,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "punkpeye/awesome-mcp-devtools",
+   "stars": 482,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "soxoj/awesome-osint-mcp-servers",
+   "stars": 475,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "marianfoo/sap-ai-mcp-servers",
+   "stars": 459,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "LLMQuant/awesome-trading-agents",
+   "stars": 445,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "lissy93/bug-bounties",
+   "stars": 417,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "RichardHan/mssql_mcp_server",
+   "stars": 386,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "MorDavid/BloodHound-MCP-AI",
+   "stars": 374,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "zhuyansen/agent-skills-hub",
+   "stars": 355,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "capture0x/AdStrike",
+   "stars": 350,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "kleneway/awesome-cursor-mpc-server",
+   "stars": 337,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "milisp/mcp-linker",
+   "stars": 322,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "metorial/metorial-index",
+   "stars": 280,
+   "why": "no readme via the API"
+  },
+  {
+   "repo": "8b-is/smart-tree",
+   "stars": 266,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "darjeeling/awesome-mcp-korea",
+   "stars": 239,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "sing1ee/a2a-directory",
+   "stars": 239,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "hanishrao/collective-ai-tools",
+   "stars": 233,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "alvinreal/awesome-openclaw-tips",
+   "stars": 229,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "cursor/mcp-servers",
+   "stars": 228,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "AgentMemoryWorld/Awesome-Agent-Memory",
+   "stars": 227,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Vaquill-AI/awesome-legaltech",
+   "stars": 216,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "BlockRunAI/awesome-finance-mcp",
+   "stars": 208,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "pab1it0/awesome-a2a",
+   "stars": 187,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Shiyao-Huang/awesome-agent-evolution",
+   "stars": 182,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "seb1n/awesome-ai-agent-skills",
+   "stars": 173,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "aashari/mcp-server-atlassian-bitbucket",
+   "stars": 161,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "cporter202/coreclaw-api-directory",
+   "stars": 161,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Untru/1c-mcp",
+   "stars": 155,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "Don-No7/Hack-SQL",
+   "stars": 147,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "ayush-that/sub-agents.directory",
+   "stars": 144,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "crowdere/Awesome-RE-MCP",
+   "stars": 113,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "borgius/jobspy-mcp-server",
+   "stars": 111,
+   "why": "names no competitor either, so our absence is uninformative"
+  },
+  {
+   "repo": "ever-works/awesome-mcp-servers",
+   "stars": 100,
+   "why": "no readme via the API"
+  }
+ ],
+ "gaps": [
+  {
+   "repo": "TsinghuaC3I/Awesome-Memory-for-Agents",
+   "stars": 650,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "cognee",
+    "letta",
+    "claude-mem",
+    "openmemory"
+   ],
+   "n_competitors": 7,
+   "url": "https://github.com/TsinghuaC3I/Awesome-Memory-for-Agents"
+  },
+  {
+   "repo": "yzfly/Awesome-MCP-ZH",
+   "stars": 7629,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "cognee",
+    "supermemory",
+    "basic-memory"
+   ],
+   "n_competitors": 6,
+   "url": "https://github.com/yzfly/Awesome-MCP-ZH"
+  },
+  {
+   "repo": "RyanAlberts/best-of-Agent-Harnesses",
+   "stars": 791,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "cognee",
+    "letta",
+    "claude-mem"
+   ],
+   "n_competitors": 6,
+   "url": "https://github.com/RyanAlberts/best-of-Agent-Harnesses"
+  },
+  {
+   "repo": "aristoapp/awesome-second-brain",
+   "stars": 527,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "cognee",
+    "supermemory",
+    "openmemory"
+   ],
+   "n_competitors": 6,
+   "url": "https://github.com/aristoapp/awesome-second-brain"
+  },
+  {
+   "repo": "XiaomingX/awesome-ai-memory",
+   "stars": 169,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "letta",
+    "supermemory",
+    "basic-memory"
+   ],
+   "n_competitors": 6,
+   "url": "https://github.com/XiaomingX/awesome-ai-memory"
+  },
+  {
+   "repo": "alvinreal/awesome-opensource-ai",
+   "stars": 4677,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "graphiti",
+    "cognee",
+    "letta",
+    "supermemory"
+   ],
+   "n_competitors": 5,
+   "url": "https://github.com/alvinreal/awesome-opensource-ai"
+  },
+  {
+   "repo": "ai-boost/awesome-harness-engineering",
+   "stars": 3999,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "cognee",
+    "letta",
+    "claude-mem"
+   ],
+   "n_competitors": 5,
+   "url": "https://github.com/ai-boost/awesome-harness-engineering"
+  },
+  {
+   "repo": "DEEP-PolyU/Awesome-GraphMemory",
+   "stars": 343,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "memvid",
+    "openmemory"
+   ],
+   "n_competitors": 5,
+   "url": "https://github.com/DEEP-PolyU/Awesome-GraphMemory"
+  },
+  {
+   "repo": "JSONbored/awesome-claude",
+   "stars": 294,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "cognee",
+    "letta",
+    "basic-memory"
+   ],
+   "n_competitors": 5,
+   "url": "https://github.com/JSONbored/awesome-claude"
+  },
+  {
+   "repo": "0xNyk/awesome-agent-cortex",
+   "stars": 213,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "cognee",
+    "letta"
+   ],
+   "n_competitors": 5,
+   "url": "https://github.com/0xNyk/awesome-agent-cortex"
+  },
+  {
+   "repo": "jihoo-kim/awesome-context-engineering",
+   "stars": 113,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "graphiti",
+    "cognee",
+    "letta",
+    "openmemory"
+   ],
+   "n_competitors": 5,
+   "url": "https://github.com/jihoo-kim/awesome-context-engineering"
+  },
+  {
+   "repo": "Meirtz/Awesome-Context-Engineering",
+   "stars": 3293,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "letta"
+   ],
+   "n_competitors": 4,
+   "url": "https://github.com/Meirtz/Awesome-Context-Engineering"
+  },
+  {
+   "repo": "taishi-i/awesome-ChatGPT-repositories",
+   "stars": 3233,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "cognee",
+    "supermemory",
+    "openmemory"
+   ],
+   "n_competitors": 4,
+   "url": "https://github.com/taishi-i/awesome-ChatGPT-repositories"
+  },
+  {
+   "repo": "vonzosten/awesome-LangGraph",
+   "stars": 1992,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "letta"
+   ],
+   "n_competitors": 4,
+   "url": "https://github.com/vonzosten/awesome-LangGraph"
+  },
+  {
+   "repo": "jim-schwoebel/awesome_ai_agents",
+   "stars": 1964,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "cognee",
+    "letta"
+   ],
+   "n_competitors": 4,
+   "url": "https://github.com/jim-schwoebel/awesome_ai_agents"
+  },
+  {
+   "repo": "IAAR-Shanghai/Awesome-AI-Memory",
+   "stars": 1199,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "letta"
+   ],
+   "n_competitors": 4,
+   "url": "https://github.com/IAAR-Shanghai/Awesome-AI-Memory"
+  },
+  {
+   "repo": "EvoMap/awesome-agent-evolution",
+   "stars": 212,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "cognee",
+    "letta",
+    "memvid"
+   ],
+   "n_competitors": 4,
+   "url": "https://github.com/EvoMap/awesome-agent-evolution"
+  },
+  {
+   "repo": "slavakurilyak/awesome-ai-agents",
+   "stars": 2195,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "cognee"
+   ],
+   "n_competitors": 3,
+   "url": "https://github.com/slavakurilyak/awesome-ai-agents"
+  },
+  {
+   "repo": "yxf203/Awesome-Efficient-Agents",
+   "stars": 305,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep",
+    "letta"
+   ],
+   "n_competitors": 3,
+   "url": "https://github.com/yxf203/Awesome-Efficient-Agents"
+  },
+  {
+   "repo": "weiwei966/awesome-ai-harness",
+   "stars": 219,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "graphiti",
+    "letta"
+   ],
+   "n_competitors": 3,
+   "url": "https://github.com/weiwei966/awesome-ai-harness"
+  },
+  {
+   "repo": "awesome-opencode/awesome-opencode",
+   "stars": 10085,
+   "has_us": false,
+   "competitors": [
+    "letta",
+    "claude-mem"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/awesome-opencode/awesome-opencode"
+  },
+  {
+   "repo": "WangRongsheng/awesome-LLM-resources",
+   "stars": 8915,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "supermemory"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/WangRongsheng/awesome-LLM-resources"
+  },
+  {
+   "repo": "0xNyk/awesome-hermes-agent",
+   "stars": 5558,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "supermemory"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/0xNyk/awesome-hermes-agent"
+  },
+  {
+   "repo": "rohitg00/awesome-claude-code-toolkit",
+   "stars": 2590,
+   "has_us": false,
+   "competitors": [
+    "claude-mem",
+    "supermemory"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/rohitg00/awesome-claude-code-toolkit"
+  },
+  {
+   "repo": "quemsah/awesome-claude-plugins",
+   "stars": 1265,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "claude-mem"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/quemsah/awesome-claude-plugins"
+  },
+  {
+   "repo": "alvinreal/awesome-openclaw",
+   "stars": 732,
+   "has_us": false,
+   "competitors": [
+    "claude-mem",
+    "supermemory"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/alvinreal/awesome-openclaw"
+  },
+  {
+   "repo": "Dominic789654/awesome-deepseek-harness",
+   "stars": 221,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "claude-mem"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/Dominic789654/awesome-deepseek-harness"
+  },
+  {
+   "repo": "leenkcool/Blue-Whale-Harness",
+   "stars": 193,
+   "has_us": false,
+   "competitors": [
+    "zep",
+    "claude-mem"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/leenkcool/Blue-Whale-Harness"
+  },
+  {
+   "repo": "tolkonepiu/best-of-mcp-servers",
+   "stars": 142,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "cognee"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/tolkonepiu/best-of-mcp-servers"
+  },
+  {
+   "repo": "NickCirv/engram",
+   "stars": 141,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "claude-mem"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/NickCirv/engram"
+  },
+  {
+   "repo": "subinium/awesome-claude-code",
+   "stars": 112,
+   "has_us": false,
+   "competitors": [
+    "claude-mem",
+    "supermemory"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/subinium/awesome-claude-code"
+  },
+  {
+   "repo": "rdmgator12/awesome-claude-connectors",
+   "stars": 107,
+   "has_us": false,
+   "competitors": [
+    "mem0",
+    "zep"
+   ],
+   "n_competitors": 2,
+   "url": "https://github.com/rdmgator12/awesome-claude-connectors"
+  },
+  {
+   "repo": "VoltAgent/awesome-agent-skills",
+   "stars": 33771,
+   "has_us": false,
+   "competitors": [
+    "claude-mem"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/VoltAgent/awesome-agent-skills"
+  },
+  {
+   "repo": "Arindam200/awesome-ai-apps",
+   "stars": 13690,
+   "has_us": false,
+   "competitors": [
+    "letta"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/Arindam200/awesome-ai-apps"
+  },
+  {
+   "repo": "heilcheng/awesome-agent-skills",
+   "stars": 6173,
+   "has_us": false,
+   "competitors": [
+    "claude-mem"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/heilcheng/awesome-agent-skills"
+  },
+  {
+   "repo": "wesammustafa/Claude-Code-Everything-You-Need-to-Know",
+   "stars": 2957,
+   "has_us": false,
+   "competitors": [
+    "mem0"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know"
+  },
+  {
+   "repo": "kyrolabs/awesome-agents",
+   "stars": 2800,
+   "has_us": false,
+   "competitors": [
+    "letta"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/kyrolabs/awesome-agents"
+  },
+  {
+   "repo": "ANative-Lab/Awesome-Self-Evolving-Agents",
+   "stars": 2471,
+   "has_us": false,
+   "competitors": [
+    "mem0"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/ANative-Lab/Awesome-Self-Evolving-Agents"
+  },
+  {
+   "repo": "study8677/awesome-architecture",
+   "stars": 2272,
+   "has_us": false,
+   "competitors": [
+    "zep"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/study8677/awesome-architecture"
+  },
+  {
+   "repo": "caramaschiHG/awesome-ai-agents-2026",
+   "stars": 1769,
+   "has_us": false,
+   "competitors": [
+    "mem0"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/caramaschiHG/awesome-ai-agents-2026"
+  },
+  {
+   "repo": "0xsline/awesome-deepseek-harness",
+   "stars": 995,
+   "has_us": false,
+   "competitors": [
+    "supermemory"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/0xsline/awesome-deepseek-harness"
+  },
+  {
+   "repo": "ccplugins/awesome-claude-code-plugins",
+   "stars": 931,
+   "has_us": false,
+   "competitors": [
+    "claude-mem"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/ccplugins/awesome-claude-code-plugins"
+  },
+  {
+   "repo": "MobinX/awesome-mcp-list",
+   "stars": 881,
+   "has_us": false,
+   "competitors": [
+    "cognee"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/MobinX/awesome-mcp-list"
+  },
+  {
+   "repo": "ai-boost/awesome-a2a",
+   "stars": 681,
+   "has_us": false,
+   "competitors": [
+    "zep"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/ai-boost/awesome-a2a"
+  },
+  {
+   "repo": "PipedreamHQ/awesome-mcp-servers",
+   "stars": 282,
+   "has_us": false,
+   "competitors": [
+    "zep"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/PipedreamHQ/awesome-mcp-servers"
+  },
+  {
+   "repo": "yyyujintang/Awesome-Agent-Memory-Papers",
+   "stars": 232,
+   "has_us": false,
+   "competitors": [
+    "mem0"
+   ],
+   "n_competitors": 1,
+   "url": "https://github.com/yyyujintang/Awesome-Agent-Memory-Papers"
+  }
+ ],
+ "lists_naming_us_detail": [
+  {
+   "repo": "TeleAI-UAGI/Awesome-Agent-Memory",
+   "stars": 622,
+   "has_us": true,
+   "competitors": [
+    "mem0",
+    "zep",
+    "graphiti",
+    "cognee",
+    "letta",
+    "claude-mem",
+    "supermemory",
+    "memvid",
+    "openmemory"
+   ],
+   "n_competitors": 9,
+   "url": "https://github.com/TeleAI-UAGI/Awesome-Agent-Memory"
+  }
+ ]
+}
