@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "inspeximus"
-version = "2.25.0"
+version = "2.26.0"
 description = "The agent memory that takes it back: correct a fact once and the retired value stops coming back, by key, with no LLM in the loop. Long-term memory for AI agents in a zero-dependency single file + MCP server, with value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
 requires-python = ">=3.9"

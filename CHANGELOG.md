@@ -1,3 +1,38 @@
+## 2.26.0 - UPGRADE IF you install from an MCP directory: the command they built from our listing never started the server
+
+Glama emailed that the build for our listing had failed. `server.json` is the only thing an MCP
+directory reads, and ours declared `pypi: inspeximus` with no runtime fields at all.
+
+A client composes its command as `<runtime> <runtimeArguments> <identifier> <packageArguments>`, so
+with nothing set the best available command was `uvx inspeximus`, which starts the CLI and exits 2
+asking for a subcommand. The other natural reading, `pip install inspeximus` followed by
+`inspeximus-mcp`, dies with `ModuleNotFoundError: No module named 'mcp'`, because the SDK lives in
+the optional `[mcp]` extra. Both measured in clean virtual environments; either is a failed build.
+
+**Two constraints pull against each other**, which is why this is not a one-line change. The
+identifier has to stay `inspeximus`, because the registry verifies package ownership against an
+`mcp-name:` marker in that package's PyPI description and `inspeximus-mcp` is not a package that
+exists. But `uvx inspeximus` runs the console script named after the package, which is the CLI.
+
+**New: `inspeximus mcp`.** The CLI gained a subcommand that starts the MCP server and passes any
+further arguments through to it. `server.json` now names the extra in `runtimeArguments`, so the
+composed command is:
+
+```
+uvx --from "inspeximus[mcp]" inspeximus mcp
+```
+
+Verified end to end: wheel built, installed with the extra into a fresh venv, `initialize` fed on
+stdin, `{"name": "inspeximus", "version": "2.26.0"}` read back. `inspeximus-mcp` still works and is
+unchanged; this adds a second door that a directory can actually describe.
+
+**A validator that blessed the wrong fix.** The first attempt set `identifier` to `inspeximus-mcp`,
+and the registry's own `/v0.1/validate` returned `{"valid": true, "issues": []}`. It returned exactly
+the same for `zzz-not-a-real-package-4f9a`. That endpoint checks the shape of the JSON, not whether
+the package exists or is yours, so its approval carries no information about ownership.
+
+**What breaks.** Nothing. No API changed, and both entry points work.
+
 ## 2.25.0 - UPGRADE IF you call check_conflict with a `key`: it stops reporting case and spacing as a contradiction, and stops returning an empty list when it compared nothing
 
 Two defects in the keyed branch, both of which made it lie in a different direction.

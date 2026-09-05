@@ -6,7 +6,7 @@
     "url": "https://github.com/DanceNitra/inspeximus",
     "source": "github"
   },
-  "version": "2.25.0",
+  "version": "2.26.0",
   "websiteUrl": "https://pypi.org/project/inspeximus/",
   "packages": [
     {
@@ -26,7 +26,7 @@
           "value": "mcp"
         }
       ],
-      "version": "2.25.0",
+      "version": "2.26.0",
       "transport": {
         "type": "stdio"
       },
