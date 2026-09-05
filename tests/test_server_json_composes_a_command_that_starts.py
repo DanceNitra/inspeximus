@@ -83,7 +83,7 @@ def test_the_composed_command_is_the_documented_one():
 def test_the_cli_exposes_the_subcommand_the_composition_relies_on():
     from inspeximus import cli
     parser_help = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--help"],
-                                 capture_output=True, text=True, cwd=str(ROOT))
+                                 capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=str(ROOT))
     assert " mcp" in parser_help.stdout or "mcp" in parser_help.stdout, (
         "`inspeximus mcp` is not a subcommand, so the composed command exits 2")
 
@@ -94,7 +94,7 @@ def test_the_composed_command_speaks_mcp():
     """Run the tail of the composed command (everything after uvx resolves the package) and check
     the server answers `initialize`. This is the assertion that would have caught the Glama failure."""
     cmd = [sys.executable, "-m", "inspeximus.cli", "mcp"]
-    p = subprocess.run(cmd, input=INIT, capture_output=True, text=True, timeout=120,
+    p = subprocess.run(cmd, input=INIT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
                        cwd=str(ROOT), env=dict(os.environ, INSPEXIMUS_PATH=""))
     line = next((l for l in p.stdout.splitlines() if l.strip().startswith("{")), "")
     assert line, "the server produced no JSON on stdout; stderr: %s" % p.stderr[-400:]
@@ -108,6 +108,6 @@ def test_CONTROL_the_sdk_is_what_makes_it_work(tmp_path):
     (tmp_path / "mcp.py").write_text("raise ImportError('shadowed for the control')\n",
                                      encoding="utf-8")
     p = subprocess.run([sys.executable, "-m", "inspeximus.cli", "mcp"], input=INIT,
-                       capture_output=True, text=True, timeout=120, cwd=str(ROOT), env=env)
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120, cwd=str(ROOT), env=env)
     ok = any(l.strip().startswith("{") and "serverInfo" in l for l in p.stdout.splitlines())
     assert not ok, "the server started with the SDK shadowed, so this suite proves nothing"
