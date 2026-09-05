@@ -12,6 +12,20 @@
     {
       "registryType": "pypi",
       "identifier": "inspeximus",
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "--from",
+          "value": "inspeximus[mcp]"
+        }
+      ],
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp"
+        }
+      ],
       "version": "2.25.0",
       "transport": {
         "type": "stdio"

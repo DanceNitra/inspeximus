@@ -774,6 +774,19 @@ def main(argv=None):
                      help="the state file this witness persists to; defaults to <key>.state.json, "
                           "and must be the SAME file the witness serves from")
 
+    # `inspeximus mcp` starts the MCP server, so a directory can run it as `uvx --from
+    # "inspeximus[mcp]" inspeximus mcp`. The MCP registry composes a client's command from
+    # server.json as `<runtime> <runtimeArguments> <identifier> <packageArguments>`, and the
+    # identifier has to stay the REAL PyPI package because the registry verifies ownership against
+    # a `mcp-name:` marker in that package's description. Measured 2026-09-05: without this
+    # subcommand the only composable command was `uvx inspeximus`, which starts the CLI and exits 2
+    # asking for a subcommand, and `pip install inspeximus` then `inspeximus-mcp` dies with
+    # ModuleNotFoundError because the SDK lives in the optional [mcp] extra. Glama's build failed on
+    # exactly that. Arguments after `mcp` are handed to the server's own parser unchanged.
+    mc = sub.add_parser("mcp", help="start the MCP server (needs the [mcp] extra)")
+    mc.add_argument("mcp_args", nargs=argparse.REMAINDER,
+                    help="arguments passed through to the MCP server")
+
     ins = sub.add_parser("install", help="register the MCP server in an editor's own config file")
     ins.add_argument("--ide", required=True,
                      help="host to configure: " + ", ".join(sorted(_install.HOSTS)))
@@ -788,6 +801,10 @@ def main(argv=None):
 
     # `install` edits an editor's config; it must never touch a memory store. Opening one here would
     # create inspeximus_memory.json in the working directory as a side effect of asking for help.
+    if a.cmd == "mcp":
+        from . import mcp_server
+        return mcp_server.main(a.mcp_args)
+
     if a.cmd == "install":
         p = _install.plan(a.ide, scope=a.scope, project=a.project, store_path=a.store, name=a.name)
         print(_install.render(p, dry_run=a.dry_run))
