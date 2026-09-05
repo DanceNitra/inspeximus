@@ -16,8 +16,33 @@ license = { text = "MIT" }
 # terms nobody types when a corrected fact comes back. "stale" alone is five times more common
 # than "supersede", and it appeared nowhere in our metadata.
 keywords = [
-    "stale-data", "outdated", "forget", "supersede", "conflict-resolution",
-    "llm", "agent", "memory", "agent-memory", "recall", "mcp", "rag",
+  "stale-data",
+  "outdated",
+  "forget",
+  "supersede",
+  "conflict-resolution",
+  "llm",
+  "agent",
+  "memory",
+  "agent-memory",
+  "ai-agent-memory",
+  "recall",
+  "mcp",
+  "model-context-protocol",
+  "claude-code",
+  "rag",
+  "erasure",
+  "data-erasure",
+  "gdpr",
+  "right-to-be-forgotten",
+  "provenance",
+  "audit-log",
+  "tamper-evident",
+  "revert",
+  "retention",
+  "compliance",
+  "witness",
+  "attestation",
 ]
 authors = [{ name = "Rastislav Drahoš (Agora)" }]
 # PyPI's own browse and filter surface runs on these, and we shipped three. Every entry below is a

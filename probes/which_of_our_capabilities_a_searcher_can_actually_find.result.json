@@ -1,0 +1,202 @@
+{
+ "verdict": "CAPABILITIES_ARE_INVISIBLE_TO_SEARCH",
+ "repo": "DanceNitra/inspeximus",
+ "tools": 73,
+ "capabilities": 15,
+ "findable_by_search": 5,
+ "documented_only_in_the_readme": [
+  "compliance",
+  "governance",
+  "provenance",
+  "recall",
+  "retention"
+ ],
+ "topics_used": 20,
+ "topic_budget": 20,
+ "topic_slots_free": 0,
+ "description_chars": 349,
+ "rows": [
+  {
+   "capability": "access-control",
+   "tools": [
+    "grant",
+    "grants",
+    "grant_log"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 0,
+   "search_position": null,
+   "search_total": 33
+  },
+  {
+   "capability": "anchor",
+   "tools": [
+    "anchor",
+    "verify_cosigned_anchor"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 0,
+   "search_position": null,
+   "search_total": 95
+  },
+  {
+   "capability": "audit",
+   "tools": [
+    "audit_the_audits",
+    "audit_bundle",
+    "verify_audit_bundle",
+    "erasure_audit"
+   ],
+   "in_topics": false,
+   "in_description": true,
+   "in_readme": 13,
+   "search_position": null,
+   "search_total": 737
+  },
+  {
+   "capability": "compliance",
+   "tools": [
+    "compliance_report",
+    "compliance_check"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 3,
+   "search_position": null,
+   "search_total": 92
+  },
+  {
+   "capability": "conflict",
+   "tools": [
+    "check_conflict"
+   ],
+   "in_topics": true,
+   "in_description": false,
+   "in_readme": 1,
+   "search_position": null,
+   "search_total": 154
+  },
+  {
+   "capability": "consolidation",
+   "tools": [
+    "consolidate",
+    "consolidate_clusters"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 0,
+   "search_position": null,
+   "search_total": 383
+  },
+  {
+   "capability": "erasure",
+   "tools": [
+    "erasure_residue",
+    "erasure_report",
+    "erasure_certificate",
+    "erasure_audit"
+   ],
+   "in_topics": true,
+   "in_description": true,
+   "in_readme": 13,
+   "search_position": 5,
+   "search_total": 11
+  },
+  {
+   "capability": "forget",
+   "tools": [
+    "forget",
+    "forget_subject",
+    "forget_pii"
+   ],
+   "in_topics": true,
+   "in_description": true,
+   "in_readme": 6,
+   "search_position": 237,
+   "search_total": 354
+  },
+  {
+   "capability": "governance",
+   "tools": [
+    "governance_report"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 1,
+   "search_position": null,
+   "search_total": 434
+  },
+  {
+   "capability": "provenance",
+   "tools": [
+    "provenance"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 4,
+   "search_position": null,
+   "search_total": 324
+  },
+  {
+   "capability": "recall",
+   "tools": [
+    "recall",
+    "recall_iterative",
+    "recall_followup",
+    "why_recalled"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 10,
+   "search_position": null,
+   "search_total": 1059
+  },
+  {
+   "capability": "retention",
+   "tools": [
+    "retention"
+   ],
+   "in_topics": false,
+   "in_description": false,
+   "in_readme": 1,
+   "search_position": null,
+   "search_total": 76
+  },
+  {
+   "capability": "revert",
+   "tools": [
+    "revert"
+   ],
+   "in_topics": false,
+   "in_description": true,
+   "in_readme": 5,
+   "search_position": 3,
+   "search_total": 8
+  },
+  {
+   "capability": "supersede",
+   "tools": [
+    "supersession_report"
+   ],
+   "in_topics": true,
+   "in_description": true,
+   "in_readme": 1,
+   "search_position": 17,
+   "search_total": 28
+  },
+  {
+   "capability": "witness",
+   "tools": [
+    "witness",
+    "verify_witness"
+   ],
+   "in_topics": true,
+   "in_description": false,
+   "in_readme": 6,
+   "search_position": 4,
+   "search_total": 10
+  }
+ ]
+}

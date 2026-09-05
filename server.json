@@ -1,7 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.DanceNitra/inspeximus",
-  "description": "Self-correcting agent memory + MCP server: recall, supersede/revert/review corrections, erasure.",
+  "title": "inspeximus: agent memory with provenance, GDPR erasure and a tamper-evident audit trail",
+  "description": "Self-correcting agent memory: recall, supersede, revert, forget, GDPR erasure, audit receipts.",
   "repository": {
     "url": "https://github.com/DanceNitra/inspeximus",
     "source": "github"
