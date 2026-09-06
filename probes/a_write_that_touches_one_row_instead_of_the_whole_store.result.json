@@ -1,0 +1,15 @@
+{
+ "corpus": "a copy of the live coding store",
+ "records": 32547,
+ "megabytes": 20.5,
+ "whole_file_rewrite_s": 0.7522,
+ "one_row_s": 0.0349,
+ "speedup": 21.6,
+ "migration_seconds": 10.4,
+ "first_attempt_was_slower": {
+  "sqlite_full_diff_s": 0.5131,
+  "json_s": 0.35,
+  "diff_cost_s": 0.3933,
+  "insert_cost_s": 0.007
+ }
+}
