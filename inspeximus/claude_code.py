@@ -42,7 +42,7 @@ or a per-project .inspeximus/config.json: {"embed": {"url": "http://localhost:11
 "model": "nomic-embed-text"}}. Writes stay verbatim, keyed and no-LLM; the embedder only builds a retrieval
 index and fails open (a down endpoint silently degrades to lexical, never drops a capture).
 """
-import sys, os, re, json, hashlib
+import sys, os, re, json, hashlib, io, datetime
 
 
 def _cfg(cwd):
@@ -108,7 +108,7 @@ def _make_embedder(cwd):
     return _embed, None, model
 
 
-def agent_id() -> str:
+def agent_id(ev=None) -> str:
     """WHICH coding agent is writing. Without it a shared store cannot answer "who wrote this".
 
     Measured 2026-09-06 on this project's own store, which Claude Code and Codex have both been
@@ -125,13 +125,29 @@ def agent_id() -> str:
     dropping the field, so the gap stays visible in the data instead of looking like an agent that
     never wrote anything.
     """
+    # THE EVENT DECIDES, NOT THE ENVIRONMENT. Environment variables leak downward: launching
+    # Codex from a Claude Code shell puts CLAUDE_CODE_* into every Codex child, so a hook fired by
+    # Codex read itself as claude-code. Measured 2026-09-06 -- three real Codex turns were captured
+    # and stamped `claude-code`, and their Codex session ids (01a077b0..., 01a077b1...) are the only
+    # reason the mislabelling was visible at all. An hour went into looking for writes that were
+    # already there under the wrong name.
+    #
+    # `transcript_path` cannot leak: the harness writes its own sessions under its own directory,
+    # and it is in every event. Fall back to the environment only when no event is available, and
+    # check CODEX first there, because it is the one that loses a tie it should win.
+    tp = ((ev or {}).get("transcript_path") or "").replace("\\", "/").lower()
+    if tp:
+        if "/.codex/" in tp:
+            return "codex"
+        if "/.claude/" in tp:
+            return "claude-code"
     explicit = (os.environ.get("INSPEXIMUS_AGENT_ID") or "").strip()
     if explicit:
         return explicit[:40]
-    if any(k.startswith("CLAUDE_CODE_") for k in os.environ):
-        return "claude-code"
     if os.environ.get("CODEX_HOME") or os.environ.get("CODEX_CLI_PATH"):
         return "codex"
+    if any(k.startswith("CLAUDE_CODE_") for k in os.environ):
+        return "claude-code"
     return "unknown"
 
 
@@ -562,14 +578,14 @@ def capture(ev):
             return
         new = ti.get("new_string") or ti.get("content") or ""
         m.remember(f"{fp} :: current state -> {_excerpt(new)}", key=f"file:{fp}", object=_excerpt(new, 80),
-                   mtype="semantic", tags=["file", "edit"], session_id=sid, agent_id=agent_id())
+                   mtype="semantic", tags=["file", "edit"], session_id=sid, agent_id=agent_id(ev))
         did = True
     elif tool == "Bash":
         raw = ti.get("command", "")
         cmd = _excerpt(raw, 200)
         if cmd:
             m.remember(f"ran: {cmd}", key=f"cmd:{hashlib.sha1(cmd.encode()).hexdigest()[:10]}",
-                       object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid, agent_id=agent_id())
+                       object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid, agent_id=agent_id(ev))
             did = True
         # A COMMIT IS A DECISION THAT IS ALREADY WRITTEN DOWN. Everything above this line is mechanics:
         # which command ran, which file holds which bytes. Measured on this plugin's own dogfood store,
@@ -584,8 +600,44 @@ def capture(ev):
         if raw:
             _capture_commit(m, raw, cwd, sid) and (did := True)
     m._save()
+    # A HOOK THAT CANNOT WRITE MUST SAY SO. `_save()` records a failure in `_persist_error` and
+    # returns quietly, by design, so one unserialisable value cannot kill a running agent. Nothing
+    # read that field, so the hook stayed cheerful while writing nothing at all.
+    #
+    # Measured 2026-09-06 under Codex on Windows: the hook fired on every event, received the
+    # correct payload, printed its digest and exited 0, and the store gained no record for seven
+    # weeks. Handed the same payload outside that environment it wrote correctly, so the capture
+    # logic was never the problem. Six hours went into finding a failure the process already knew
+    # about and would not mention.
+    #
+    # Reported two ways, and neither aborts the turn: a line on stderr for whoever is watching, and
+    # a sidecar beside the store for whoever is not. The sidecar matters more, because a hook's
+    # stderr is exactly what a harness discards.
+    err = getattr(m, "_persist_error", None)
+    if err:
+        _report_write_failure(cwd, err)
     if did:
         _bump_writes(cwd)
+
+
+def _report_write_failure(cwd, err):
+    """Leave evidence that a capture was lost, without killing the agent that lost it."""
+    try:
+        line = "%s  %s  %s\n" % (datetime.datetime.now().isoformat(timespec="seconds"),
+                                  err.get("error", "?"), err.get("path", "?"))
+    except Exception:
+        line = "%r\n" % (err,)
+    try:
+        sys.stderr.write("[inspeximus] WRITE FAILED, this event was not recorded: " + line)
+    except Exception:
+        pass
+    try:
+        d = _store_dir(cwd)
+        os.makedirs(d, exist_ok=True)
+        with io.open(os.path.join(d, "WRITE-FAILURES.log"), "a", encoding="utf-8") as fh:
+            fh.write(line)
+    except Exception:
+        pass                                   # the reporter must never be the thing that crashes
 
 
 def recall(ev):

@@ -1,0 +1,19 @@
+{
+ "name": "inspeximus-local",
+ "interface": {
+  "displayName": "inspeximus"
+ },
+ "plugins": [
+  {
+   "name": "inspeximus",
+   "source": {
+    "source": "local",
+    "path": "./plugins/inspeximus"
+   },
+   "policy": {
+    "installation": "AVAILABLE"
+   },
+   "category": "Developer Tools"
+  }
+ ]
+}

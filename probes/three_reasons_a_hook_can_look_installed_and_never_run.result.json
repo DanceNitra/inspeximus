@@ -1,0 +1,58 @@
+{
+ "identity": [
+  {
+   "case": "codex transcript",
+   "got": "codex",
+   "want": "codex",
+   "ok": true
+  },
+  {
+   "case": "claude transcript",
+   "got": "claude-code",
+   "want": "claude-code",
+   "ok": true
+  },
+  {
+   "case": "codex transcript beats a leaked CLAUDE_CODE_ var",
+   "got": "codex",
+   "want": "codex",
+   "ok": true
+  },
+  {
+   "case": "no event, explicit override",
+   "got": "cursor",
+   "want": "cursor",
+   "ok": true
+  },
+  {
+   "case": "no event, codex env",
+   "got": "codex",
+   "want": "codex",
+   "ok": true
+  },
+  {
+   "case": "no event, claude env",
+   "got": "claude-code",
+   "want": "claude-code",
+   "ok": true
+  },
+  {
+   "case": "CONTROL neither event nor env",
+   "got": "unknown",
+   "want": "unknown",
+   "ok": true
+  }
+ ],
+ "write_failure": {
+  "records_when_writable": 1,
+  "silent_when_writable": true,
+  "reported_when_read_only": true,
+  "raised": null
+ },
+ "harness_facts_2026_09_06": {
+  "codex_reads_hooks_only_from_plugins": true,
+  "codex_runs_hook_command_without_a_shell": true,
+  "weeks_codex_contributed_nothing": 7,
+  "records_in_shared_store": 32467
+ }
+}
