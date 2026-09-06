@@ -9601,9 +9601,17 @@ class Inspeximus:
         policy adjudicated the retirement (meta['superseded_by_policy']). The audit trail behind as_of()."""
         recs = [r for r in self._tenant_rows() if r.get("key") == key]
         recs.sort(key=lambda r: r.get("valid_from", r["ts"]))
+        # WHO WROTE EACH VERSION, and from which session. A shared store's whole point is the
+        # cross-writer timeline: "Codex changed this file after Claude Code recorded it" is the
+        # question a linked-session memory exists to answer, and the projection dropped both
+        # fields, so the answer was None for every row however carefully the write stamped them.
+        # Measured 2026-09-06 against a store both agents write. Added rather than exposing the
+        # whole record, because the projection is a contract and callers rely on its shape.
         return [{"object": r.get("object"), "text": r.get("text"), "status": r.get("status"),
                  "valid_from": r.get("valid_from", r["ts"]), "invalidated_at": r.get("invalidated_at"),
                  "policy": (r.get("meta") or {}).get("superseded_by_policy"),
+                 "agent": (r.get("meta") or {}).get("aid"),
+                 "session": (r.get("meta") or {}).get("sid"),
                  "id": r["id"]} for r in recs]
 
     def provenance(self, key: str | None = None, id: str | None = None) -> dict:

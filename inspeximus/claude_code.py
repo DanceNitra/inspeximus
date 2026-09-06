@@ -108,6 +108,33 @@ def _make_embedder(cwd):
     return _embed, None, model
 
 
+def agent_id() -> str:
+    """WHICH coding agent is writing. Without it a shared store cannot answer "who wrote this".
+
+    Measured 2026-09-06 on this project's own store, which Claude Code and Codex have both been
+    writing since 18 July: 32,305 records, `sid` stamped on 27,134 of them across 448 sessions, and
+    `aid` on ZERO. Sessions were distinguished; the agents behind them were not. So "one memory
+    shared by both agents" was true of the file and false of anything you could ask it.
+
+    The discriminator needs no configuration change in either harness. Claude Code exports
+    CLAUDE_CODE_* into a hook's environment; Codex carries CODEX_HOME and CODEX_CLI_PATH through
+    its `[shell_environment_policy]`. An explicit override still wins, because a harness that
+    exports neither should be nameable rather than guessed at.
+
+    Returns a stable slug, never None: an unattributable write is recorded as "unknown" rather than
+    dropping the field, so the gap stays visible in the data instead of looking like an agent that
+    never wrote anything.
+    """
+    explicit = (os.environ.get("INSPEXIMUS_AGENT_ID") or "").strip()
+    if explicit:
+        return explicit[:40]
+    if any(k.startswith("CLAUDE_CODE_") for k in os.environ):
+        return "claude-code"
+    if os.environ.get("CODEX_HOME") or os.environ.get("CODEX_CLI_PATH"):
+        return "codex"
+    return "unknown"
+
+
 def _store_dir(cwd):
     """Where this project's coding memory lives: the PROJECT ROOT, not the current directory.
 
@@ -505,7 +532,7 @@ def _capture_commit(m, raw_cmd, cwd, sid):
         text += " -- because: " + _excerpt(body, 600)
     try:
         m.remember(text, key="commit::" + sha[:12], object=subject[:80], mtype="semantic",
-                   tags=["decision", "commit"], session_id=sid,
+                   tags=["decision", "commit"], session_id=sid, agent_id=agent_id(),
                    source={"doc": "git:" + sha[:12]},
                    meta={"files": files[:20], "sha": sha})
     except TypeError:                                   # older signature: no meta/source kwargs
@@ -535,14 +562,14 @@ def capture(ev):
             return
         new = ti.get("new_string") or ti.get("content") or ""
         m.remember(f"{fp} :: current state -> {_excerpt(new)}", key=f"file:{fp}", object=_excerpt(new, 80),
-                   mtype="semantic", tags=["file", "edit"], session_id=sid)
+                   mtype="semantic", tags=["file", "edit"], session_id=sid, agent_id=agent_id())
         did = True
     elif tool == "Bash":
         raw = ti.get("command", "")
         cmd = _excerpt(raw, 200)
         if cmd:
             m.remember(f"ran: {cmd}", key=f"cmd:{hashlib.sha1(cmd.encode()).hexdigest()[:10]}",
-                       object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid)
+                       object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid, agent_id=agent_id())
             did = True
         # A COMMIT IS A DECISION THAT IS ALREADY WRITTEN DOWN. Everything above this line is mechanics:
         # which command ran, which file holds which bytes. Measured on this plugin's own dogfood store,

@@ -1,0 +1,61 @@
+{
+ "detection": [
+  {
+   "case": "claude code",
+   "got": "claude-code",
+   "want": "claude-code",
+   "ok": true
+  },
+  {
+   "case": "codex, home",
+   "got": "codex",
+   "want": "codex",
+   "ok": true
+  },
+  {
+   "case": "codex, cli path",
+   "got": "codex",
+   "want": "codex",
+   "ok": true
+  },
+  {
+   "case": "override wins",
+   "got": "cursor",
+   "want": "cursor",
+   "ok": true
+  },
+  {
+   "case": "CONTROL neither",
+   "got": "unknown",
+   "want": "unknown",
+   "ok": true
+  }
+ ],
+ "timeline": [
+  {
+   "status": "superseded",
+   "agent": "claude-code",
+   "session": "s-claude-1",
+   "text": "the retry loop lives in the core save path"
+  },
+  {
+   "status": "superseded",
+   "agent": "codex",
+   "session": "s-codex-1",
+   "text": "the core save path now reloads before retryi"
+  },
+  {
+   "status": "active",
+   "agent": null,
+   "session": null,
+   "text": "an unattributed note"
+  }
+ ],
+ "live_store_when_written": {
+  "records": 32305,
+  "sid_stamped": 27134,
+  "aid_stamped": 0,
+  "distinct_sessions": 448,
+  "sessions_matched_to_a_claude_transcript": 22
+ }
+}
