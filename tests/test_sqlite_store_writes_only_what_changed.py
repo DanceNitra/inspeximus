@@ -140,3 +140,81 @@ def test_concurrent_processes_lose_nothing(workers):
     got = len(ss.load(db))
     assert got == workers * per, "%d of %d records lost with %d concurrent writers" % (
         workers * per - got, workers * per, workers)
+
+
+def test_an_undeclared_record_forces_the_complete_diff():
+    """A record nobody marked must not be able to hide, and this check must cost no serialising.
+
+    `_touch` is called from 16 places in core.py and that set goes stale as the file grows, so the
+    design makes an omission COST rather than CORRUPT. The cheap half of the net is a set
+    difference: any live id that is neither in the on-disk baseline nor in the touched set means
+    something was added without declaring it, and the next save takes the complete path.
+
+    The first version of this check compared record COUNTS, which fires on every append because an
+    append changes the count by definition. The full diff then ran on every write and the row store
+    measured 1.0x against JSON. Set membership answers the question that was meant.
+    """
+    from inspeximus import Inspeximus
+    d = tempfile.mkdtemp()
+    db = os.path.join(d, "s.db")
+    ss.save(db, [], {})
+    m = Inspeximus(path=db)
+    m._save_min_s = 0
+    m.remember("first", key="k1", mtype="fact")
+    m.flush()
+
+    # A record that appeared without anything marking it.
+    m._items.append({"id": "ghost", "text": "nobody declared me", "ts": 1.0, "status": "active"})
+    m._touched.clear()
+    m._dirty = True
+    m._save(force=False)
+
+    ids = {r["id"] for r in Inspeximus(path=db)._items}
+    assert "ghost" in ids, "an undeclared record never reached disk, so the set check does not fire"
+
+
+def test_an_ordinary_append_does_not_trigger_the_complete_diff():
+    """CONTROL. If a normal write reconciled too, the optimisation would be decorative.
+
+    Measured through the counts the row store returns: a declared append writes exactly one row.
+    """
+    from inspeximus import Inspeximus
+    d = tempfile.mkdtemp()
+    db = os.path.join(d, "s.db")
+    ss.save(db, [_rec(i) for i in range(200)], {})
+    m = Inspeximus(path=db)
+    m._save_min_s = 0
+    seen = {}
+    real_save = ss.save
+
+    def spy(path, items, before, dirty=None):
+        res = real_save(path, items, before, dirty=dirty)
+        seen["dirty_was_none"] = dirty is None
+        return res
+
+    ss.save = spy
+    try:
+        m.remember("an ordinary write", key="k", mtype="fact")
+        m.flush()
+    finally:
+        ss.save = real_save
+    assert seen.get("dirty_was_none") is False, (
+        "a declared append still took the complete diff, so every write pays for the safety net")
+
+
+def test_close_session_asks_for_the_complete_diff():
+    """The other half of the net: an in-place edit nothing marked is invisible to a set check,
+    so the one full reconcile a session pays for happens when the session ends."""
+    from inspeximus import Inspeximus
+    d = tempfile.mkdtemp()
+    db = os.path.join(d, "s.db")
+    ss.save(db, [], {})
+    m = Inspeximus(path=db)
+    m._save_min_s = 0
+    m.remember("original", key="k", mtype="fact")
+    m.flush()
+    assert m._full_reconcile is False
+    m.open_session("s1")
+    m.close_session("s1")
+    assert m._full_reconcile is True or m._touched == set(), (
+        "close_session neither asked for a reconcile nor had already saved one")
