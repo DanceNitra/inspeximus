@@ -599,7 +599,18 @@ def capture(ev):
         # supersession is for values that change, and a commit does not retract its predecessor.
         if raw:
             _capture_commit(m, raw, cwd, sid) and (did := True)
-    m._save()
+    # SAVE ONLY WHAT CHANGED. This was unconditional, and `capture` handles exactly two tool
+    # families: Edit/MultiEdit/Write and Bash. Every other tool -- Read, Grep, Glob, WebFetch, Task
+    # -- fell through with nothing remembered and still rewrote the entire store.
+    #
+    # Measured 2026-09-06 against this project's live 20.3 MB coding store: a Read event took
+    # 1.589s and a Grep 1.893s, each rewriting 20.3 MB to add zero records. The `_dirty` flag does
+    # not prevent it. A hook fires on EVERY tool call, so an ordinary session spent minutes and
+    # gigabytes of disk writes persisting nothing.
+    #
+    # `did` is already computed for exactly this question, and was only used to bump a counter.
+    if did:
+        m._save()
     # A HOOK THAT CANNOT WRITE MUST SAY SO. `_save()` records a failure in `_persist_error` and
     # returns quietly, by design, so one unserialisable value cannot kill a running agent. Nothing
     # read that field, so the hook stayed cheerful while writing nothing at all.
@@ -849,6 +860,67 @@ def _atomic_write_json(path, obj):
         fh.flush()
         os.fsync(fh.fileno())
     os.replace(tmp, path)
+
+
+def install_codex(root=None) -> str:
+    """Write a Codex plugin for this machine, and return the marketplace path to register.
+
+    THE PATH MUST BE GENERATED, NOT COMMITTED. Codex runs a hook command WITHOUT a shell, so a
+    quoted interpreter path is never resolved, and on this machine the bare word `python` resolves
+    to a Microsoft Store alias that cannot execute. The only form that runs is an absolute path
+    behind `cmd /c` -- which is correct for one machine and wrong for every other, so it is written
+    at install time from `sys.executable` rather than shipped in the repository.
+
+    Codex reads hooks ONLY from plugins. A loose `.codex/hooks.json` is inert: ours named this
+    module on five events since 2026-07-18 and never once ran, and nothing reported that, because a
+    hook that does not start is silent.
+
+    After this, register it once:
+        codex plugin marketplace add <the path this returns>
+        codex plugin add inspeximus@inspeximus-local
+    """
+    import shutil
+    root = root or os.path.join(os.path.expanduser("~"), ".inspeximus", "codex-marketplace")
+    pdir = os.path.join(root, "plugins", "inspeximus", ".codex-plugin")
+    os.makedirs(pdir, exist_ok=True)
+    os.makedirs(os.path.join(root, ".agents", "plugins"), exist_ok=True)
+
+    exe = sys.executable or "python"
+    if os.name == "nt":
+        cmd = "cmd /c " + exe.replace("\\", "/") + " -m inspeximus.claude_code"
+    else:
+        cmd = "sh -c '%s -m inspeximus.claude_code'" % exe
+    events = ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "SessionEnd"]
+    plugin = {
+        "name": "inspeximus",
+        "version": _version(),
+        "description": ("Deterministic, no-LLM coding memory shared with other agents. Captures "
+                        "tool events into a keyed store, so a corrected fact supersedes the stale "
+                        "one and cannot be resurrected by an echo. Every write carries the agent "
+                        "that made it, so one file's timeline reads across agents."),
+        "hooks": {"hooks": {e: [{"hooks": [{"type": "command", "command": cmd}]}] for e in events}},
+    }
+    _atomic_write_json(os.path.join(pdir, "plugin.json"), plugin)
+    _atomic_write_json(os.path.join(root, ".agents", "plugins", "marketplace.json"), {
+        "name": "inspeximus-local",
+        "interface": {"displayName": "inspeximus"},
+        "plugins": [{"name": "inspeximus",
+                     "source": {"source": "local", "path": "./plugins/inspeximus"},
+                     "policy": {"installation": "AVAILABLE"},
+                     "category": "Developer Tools"}],
+    })
+    print("inspeximus: wrote a Codex plugin for %s" % exe)
+    print("  codex plugin marketplace add %s" % root)
+    print("  codex plugin add inspeximus@inspeximus-local")
+    return root
+
+
+def _version() -> str:
+    try:
+        from inspeximus import __version__
+        return __version__
+    except Exception:
+        return "0"
 
 
 def install(cwd=None):
@@ -1142,6 +1214,8 @@ def main():
         sys.stdout.reconfigure(errors="replace")
     except Exception:
         pass
+    if "--install-codex" in sys.argv:
+        install_codex(); return
     if "--install" in sys.argv:
         install(); return
     if "--uninstall" in sys.argv:

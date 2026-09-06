@@ -39,3 +39,4 @@ benchmarks/locomo/.cache/
 # Run artifacts. `<subset>.json` is the committed baseline; `<subset>.latest.json` is whatever the last
 # re-run produced and exists only to be diffed against it.
 benchmarks/locomo/results/*.latest.json
+codex-marketplace/
