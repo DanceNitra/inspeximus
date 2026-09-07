@@ -29,9 +29,12 @@ WHY SEPARATE PROCESSES. Threads would be serialised by the interpreter lock for 
 so a thread-based version measures the GIL and reports the store as safe.
 
 THE CONTROLS, because each half can pass for the wrong reason:
-  - a single writer must land every record, or a shortfall in either arm says nothing about locking;
-  - every worker must report success, or the arms differ in what they ATTEMPTED rather than in what
-    survived, and a loss that raises is a different and much easier defect;
+  - a single writer must land every record it claims, or a shortfall in either arm says nothing;
+  - the comparison is against what the workers CLAIMED, never against what they attempted. On a
+    two-core CI runner eight processes exhaust their retries and the first version called that an
+    84-of-96 loss in the SHIPPED arm. A writer that gives up and says so has lost nothing; a writer
+    told its write succeeded whose record is absent is the whole point;
+  - no worker may raise, or the arms differ in an error path rather than in a silent loss;
   - the unlocked arm must actually be unlocked, asserted in the child rather than assumed.
 
 WHAT IT DOES NOT CLAIM. No arm here is a bug report against a released version: no release ever
@@ -132,6 +135,10 @@ def _trial(src, writers, arm):
         reports.append({"ok": 0, "refused": 0, "raised": "store unreadable: %s" % e})
     return {"landed": landed,
             "attempted": writers * PER,
+            # WHAT THE WORKERS BELIEVE THEY WROTE. The store is compared against THIS. A writer that
+            # exhausted its retries and said so has lost nothing; a writer told its write succeeded
+            # whose record is absent is the silent loss this probe exists to find.
+            "claimed": sum(r["ok"] for r in reports),
             "workers_reporting_success": sum(1 for r in reports if r["ok"] == PER),
             "any_worker_raised": next((r["raised"] for r in reports if r["raised"]), None)}
 
@@ -153,8 +160,9 @@ def main():
         for t in range(TRIALS):
             r = _trial(src, WRITERS, arm)
             arms[name].append(r)
-            print("  %-14s trial %d/%d: %d of %d landed, %d/%d workers reported success%s"
-                  % (name, t + 1, TRIALS, r["landed"], r["attempted"],
+            print("  %-14s trial %d/%d: %d landed of %d claimed (%d attempted), %d/%d workers "
+                  "reported success%s"
+                  % (name, t + 1, TRIALS, r["landed"], r["claimed"], r["attempted"],
                      r["workers_reporting_success"], WRITERS,
                      "" if not r["any_worker_raised"] else ", raised: " + r["any_worker_raised"]))
 
@@ -163,31 +171,39 @@ def main():
            "control_single_writer_landed": control["landed"],
            "control_single_writer_attempted": control["attempted"], "arms": {}}
     for name, rs in arms.items():
-        losses = [r["attempted"] - r["landed"] for r in rs]
+        losses = [r["claimed"] - r["landed"] for r in rs]
         out["arms"][name] = {
             "landed": [r["landed"] for r in rs],
+            "claimed": [r["claimed"] for r in rs],
+            "gave_up": [r["attempted"] - r["claimed"] for r in rs],
             "losses": losses,
             "clean_trials": sum(1 for l in losses if l == 0),
             "worst_loss": max(losses),
             "trials_where_every_worker_reported_success":
                 sum(1 for r in rs if r["workers_reporting_success"] == WRITERS),
             "any_worker_raised": [r["any_worker_raised"] for r in rs if r["any_worker_raised"]]}
-        print("  %-14s: lost %s of %d, clean in %d of %d trials"
-              % (name, losses, WRITERS * PER, out["arms"][name]["clean_trials"], TRIALS))
+        gave_up = out["arms"][name]["gave_up"]
+        print("  %-14s: silently lost %s of what was claimed, clean in %d of %d trials%s"
+              % (name, losses, out["arms"][name]["clean_trials"], TRIALS,
+                 "" if not any(gave_up) else "; %s writes gave up after exhausting their retries, "
+                                             "which is load and not loss" % (gave_up,)))
 
     held = out["arms"]["lock held"]
     degraded = out["arms"]["lock degraded"]
     prefix = out["arms"]["degraded, pre-fix"]
-    assert control["landed"] == control["attempted"], (
-        "the single-writer control lost records, so neither arm below means anything")
+    assert control["landed"] == control["claimed"] == control["attempted"], (
+        "the single-writer control did not land every record it claimed, so neither arm below means "
+        "anything: landed %d, claimed %d, attempted %d"
+        % (control["landed"], control["claimed"], control["attempted"]))
     assert not held["any_worker_raised"], (
         "a worker raised in the locked arm: %s" % held["any_worker_raised"])
     assert not degraded["any_worker_raised"], (
         "a worker raised in the unlocked arm, so this measures an error path rather than a silent "
         "loss: %s" % degraded["any_worker_raised"])
     assert held["clean_trials"] == TRIALS, (
-        "the LOCKED arm lost records, which is a defect in the shipped path rather than a "
-        "counterfactual: %s" % held["losses"])
+        "the LOCKED arm lost records a writer was TOLD had been written, which is a defect in the "
+        "shipped path rather than a counterfactual: %s. Writes that gave up after exhausting their "
+        "retries are counted separately and are not this: %s" % (held["losses"], held["gave_up"]))
     assert not prefix["any_worker_raised"], (
         "a worker raised in the pre-fix arm, so it measures an error path rather than a silent "
         "loss: %s" % prefix["any_worker_raised"])

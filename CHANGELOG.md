@@ -92,11 +92,16 @@ from memory, and was deleted in the same transaction that reported a successful 
 Measured by `probes/what_the_lock_is_actually_holding_back.py`, eight separate processes writing one
 store, twelve records each, four trials per arm. Three arms differing by one thing each:
 
-| arm | records lost, of 96 |
+| arm | records lost that a writer was told had been written |
 |---|---|
 | what ships | 0, 0, 0, 0 |
 | the inter-process lock disabled | 0, 0, 0, 0 |
-| the lock disabled and the second read restored | 5, 14, 0, 30 |
+| the lock disabled and the second read restored | 0, 0, 24, 6 |
+
+The comparison is against what the workers CLAIMED, not against what they attempted. A writer that
+exhausts its retries and says so has lost nothing, and counting those as losses made a two-core CI
+runner report 84 of 96 lost in the SHIPPED arm. How much the third arm loses varies from run to run;
+what does not vary is which arm loses anything at all.
 
 Every worker in every trial reported all twelve of its writes successful, and no exception was raised
 anywhere, which is the part that matters: the records were gone and both sides had been told the save
