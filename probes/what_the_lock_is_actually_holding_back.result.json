@@ -67,10 +67,10 @@
   },
   "degraded, pre-fix": {
    "landed": [
+    70,
+    80,
     96,
-    96,
-    72,
-    90
+    87
    ],
    "claimed": [
     96,
@@ -85,13 +85,13 @@
     0
    ],
    "losses": [
+    26,
+    16,
     0,
-    0,
-    24,
-    6
+    9
    ],
-   "clean_trials": 2,
-   "worst_loss": 24,
+   "clean_trials": 1,
+   "worst_loss": 26,
    "trials_where_every_worker_reported_success": 4,
    "any_worker_raised": []
   }
