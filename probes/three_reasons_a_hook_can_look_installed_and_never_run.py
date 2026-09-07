@@ -107,6 +107,11 @@ def write_failure_arm():
     So the denial now takes both away, and the arm VERIFIES the denial before judging the report: if
     the record count grew, the write was never refused and no conclusion about reporting is available.
 
+    RESTORING THE MODE MEANS THE MODE, NOT A CONSTANT. The first version put `stat.S_IWRITE` back,
+    which is 0o200: owner write and nothing else. Windows `chmod` only toggles the read-only
+    attribute, so the file stayed readable there and the probe passed; on Linux the next read raised
+    PermissionError, one commit after the denial started working on that platform.
+
     A read-only directory also takes away the failure LOG, which is written beside the store. That is
     not a defect in the reporter: it reports to stderr first and to the log second, on purpose, so
     that the case where the whole directory is gone still says something. The assertion is therefore
@@ -121,11 +126,13 @@ def write_failure_arm():
     store = os.path.join(d, "coding_memory.json")
     log = os.path.join(d, "WRITE-FAILURES.log")
     dir_mode = os.stat(d).st_mode
+    file_mode = None
     try:
         cc.capture(ev)
         wrote = _count(store)
         quiet = not os.path.exists(log)
 
+        file_mode = os.stat(store).st_mode
         os.chmod(store, stat.S_IREAD)
         os.chmod(d, stat.S_IREAD | stat.S_IEXEC)        # the rename, which the file mode cannot stop
         raised, err = None, io.StringIO()
@@ -136,12 +143,21 @@ def write_failure_arm():
             raised = "%s: %s" % (type(e).__name__, e)
         finally:
             os.chmod(d, dir_mode)
-            os.chmod(store, stat.S_IWRITE)
+            os.chmod(store, file_mode)
+        assert os.access(store, os.R_OK), (
+            "the store is not readable after the modes were restored, so the count below cannot "
+            "run. Restoring stat.S_IWRITE rather than the mode found is what caused this: on "
+            "POSIX that constant is 0o200, write and nothing else.")
         on_stderr = "WRITE FAILED" in err.getvalue()
         in_log = os.path.exists(log)
         denied = _count(store) == wrote
     finally:
         os.chmod(d, dir_mode)
+        if file_mode is not None:
+            try:
+                os.chmod(store, file_mode)
+            except OSError:
+                pass
         if saved is None:
             os.environ.pop("INSPEXIMUS_CODING_STORE", None)
         else:
