@@ -134,7 +134,8 @@ def _uid_for(ev: dict, by_id: dict) -> str | None:
 
 
 def migrate(events: list[dict], current: list[dict], store_path: str, *,
-            value: float = 2.0, mtype: str = "semantic", force: bool = False) -> dict:
+            value: float = 2.0, mtype: str = "semantic", force: bool = False,
+            receipts: bool = False) -> dict:
     """Replay mem0's ledger into inspeximus, then reconcile against the live export."""
     target = Path(store_path)
     if target.exists() and target.stat().st_size > 0 and not force:
@@ -143,7 +144,7 @@ def migrate(events: list[dict], current: list[dict], store_path: str, *,
         target.unlink()
 
     from inspeximus import Inspeximus
-    store = Inspeximus(store_path)
+    store = Inspeximus(store_path, receipts=receipts)
 
     by_id = {c["id"]: c for c in current if c.get("id")}
     chains: dict[str, list[dict]] = {}
@@ -260,6 +261,7 @@ def main() -> None:
     ap.add_argument("--mtype", default="semantic", choices=["episodic", "semantic", "procedural"])
     ap.add_argument("--report", help="write the migration report JSON here")
     ap.add_argument("--force", action="store_true", help="allow writing an existing store")
+    ap.add_argument("--receipts", action="store_true", help="enable the tamper-evident write chain on the migrated store")
     a = ap.parse_args()
 
     if a.history:
@@ -267,7 +269,7 @@ def main() -> None:
     else:
         events, notes = [], ["--history not given: importing unkeyed"]
     current, cnotes = load_current(a.current)
-    report = migrate(events, current, a.store, value=a.value, mtype=a.mtype, force=a.force)
+    report = migrate(events, current, a.store, value=a.value, mtype=a.mtype, force=a.force, receipts=a.receipts)
     report["notes"] = notes + cnotes + report["notes"]
     print(json.dumps(report, indent=2, ensure_ascii=False))
     if a.report:
@@ -277,5 +279,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
 
 
