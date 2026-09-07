@@ -124,6 +124,14 @@ def main():
     disputed = [c for c in out["cells"] if not c["all_trials_agree_on_direction"]]
     print("\n  cells where the three trials disagree on the direction: %d" % len(disputed))
     print("  total %.0f s" % (time.time() - started))
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        # UNDER THE SUITE THIS IS A SMOKE TEST, NOT A MEASUREMENT. Every uncited probe is executed
+        # in parallel with several thousand tests, and those numbers are 20% slower with the
+        # smallest cell reversed. One such run was committed because it looked like an ordinary
+        # change to the working tree. The assertions above still ran; only the receipt is spared.
+        print("  running under pytest, so the receipt is NOT rewritten: these numbers describe a "
+              "saturated machine.")
+        return 0
     path = os.path.splitext(os.path.abspath(__file__))[0] + ".result.json"
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(json.dumps(out, indent=1))

@@ -126,9 +126,9 @@ One persisted write, both formats, three independent trials of thirty writes eac
 
 | records in the store | whole file | one row | |
 |---|---|---|---|
-| 1,000 | 0.0077 s | 0.0071 s | rows about 1.1x faster |
-| 10,000 | 0.0800 s | 0.0441 s | rows about 1.8x faster |
-| 30,000 | 0.2330 s | 0.1320 s | rows about 1.8x faster |
+| 1,000 | 0.0075 s | 0.0071 s | rows about 1.1x faster |
+| 10,000 | 0.0818 s | 0.0422 s | rows about 1.9x faster |
+| 30,000 | 0.2334 s | 0.1292 s | rows about 1.8x faster |
 
 The gap is a function of file size: rewriting a file gets more expensive as the file grows and
 writing one row does not, so the gain arrives with the records. Take the smallest row as the least
@@ -137,7 +137,7 @@ come out both ways, and in the run behind this table one of the three trials sti
 the probe reports every trial rather than an average and says so when the direction is not stable. The table above is generated from the receipt the probe writes
 (`tools/sync_store_format_table.py`), so it is what one run measured rather than what we remember.
 
-With twelve processes writing at once, the JSON store landed 63 of 96 records in its worst trial and never landed all of them, while the row store landed every record in 4 of 4 trials at both widths tested.
+With twelve processes writing at once, the JSON store landed 56 of 96 records in its worst trial and never landed all of them, while the row store landed every record in 4 of 4 trials at both widths tested.
 See `probes/twelve_writers_and_the_one_that_stopped_writing.py`. Both probes re-measure the
 whole-file baseline on the machine they run on rather than quoting ours, so a slower machine reports
 a smaller gap instead of a false one.

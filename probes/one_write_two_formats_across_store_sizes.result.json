@@ -6,21 +6,21 @@
    "records": 1000,
    "flush_every_write": true,
    "json_s": [
-    0.009,
-    0.00922,
-    0.00951
+    0.00751,
+    0.00752,
+    0.00752
    ],
    "rows_s": [
-    0.01,
-    0.01,
-    0.01
+    0.00726,
+    0.00707,
+    0.00677
    ],
-   "json_median": 0.00922,
-   "rows_median": 0.01,
+   "json_median": 0.00752,
+   "rows_median": 0.00707,
    "ratio_json_over_rows": [
-    0.9,
-    0.92,
-    0.95
+    1.03,
+    1.06,
+    1.11
    ],
    "all_trials_agree_on_direction": true
   },
@@ -28,109 +28,109 @@
    "records": 1000,
    "flush_every_write": false,
    "json_s": [
-    0.01,
-    0.011,
-    0.011
+    0.00752,
+    0.00752,
+    0.00858
    ],
    "rows_s": [
-    0.00975,
-    0.008,
-    0.00775
+    0.00651,
+    0.007,
+    0.00901
    ],
-   "json_median": 0.011,
-   "rows_median": 0.008,
+   "json_median": 0.00752,
+   "rows_median": 0.007,
    "ratio_json_over_rows": [
-    1.03,
-    1.38,
-    1.42
+    1.15,
+    1.07,
+    0.95
    ],
-   "all_trials_agree_on_direction": true
+   "all_trials_agree_on_direction": false
   },
   {
    "records": 10000,
    "flush_every_write": true,
    "json_s": [
-    0.07627,
-    0.07794,
-    0.07694
+    0.0798,
+    0.08183,
+    0.0823
    ],
    "rows_s": [
-    0.043,
-    0.04252,
-    0.04551
+    0.04218,
+    0.04375,
+    0.0418
    ],
-   "json_median": 0.07694,
-   "rows_median": 0.043,
+   "json_median": 0.08183,
+   "rows_median": 0.04218,
    "ratio_json_over_rows": [
-    1.77,
-    1.83,
-    1.69
-   ],
-   "all_trials_agree_on_direction": true
-  },
-  {
-   "records": 10000,
-   "flush_every_write": false,
-   "json_s": [
-    0.08026,
-    0.08078,
-    0.07451
-   ],
-   "rows_s": [
-    0.04327,
-    0.044,
-    0.04302
-   ],
-   "json_median": 0.08026,
-   "rows_median": 0.04327,
-   "ratio_json_over_rows": [
-    1.85,
-    1.84,
-    1.73
-   ],
-   "all_trials_agree_on_direction": true
-  },
-  {
-   "records": 30000,
-   "flush_every_write": true,
-   "json_s": [
-    0.25242,
-    0.24054,
-    0.24192
-   ],
-   "rows_s": [
-    0.1293,
-    0.13338,
-    0.1316
-   ],
-   "json_median": 0.24192,
-   "rows_median": 0.1316,
-   "ratio_json_over_rows": [
-    1.95,
-    1.8,
-    1.84
-   ],
-   "all_trials_agree_on_direction": true
-  },
-  {
-   "records": 30000,
-   "flush_every_write": false,
-   "json_s": [
-    0.23606,
-    0.24905,
-    0.24333
-   ],
-   "rows_s": [
-    0.13268,
-    0.1317,
-    0.132
-   ],
-   "json_median": 0.24333,
-   "rows_median": 0.132,
-   "ratio_json_over_rows": [
-    1.78,
     1.89,
-    1.84
+    1.87,
+    1.97
+   ],
+   "all_trials_agree_on_direction": true
+  },
+  {
+   "records": 10000,
+   "flush_every_write": false,
+   "json_s": [
+    0.08144,
+    0.07953,
+    0.08253
+   ],
+   "rows_s": [
+    0.03946,
+    0.04233,
+    0.04391
+   ],
+   "json_median": 0.08144,
+   "rows_median": 0.04233,
+   "ratio_json_over_rows": [
+    2.06,
+    1.88,
+    1.88
+   ],
+   "all_trials_agree_on_direction": true
+  },
+  {
+   "records": 30000,
+   "flush_every_write": true,
+   "json_s": [
+    0.22515,
+    0.23344,
+    0.23977
+   ],
+   "rows_s": [
+    0.12921,
+    0.12724,
+    0.13112
+   ],
+   "json_median": 0.23344,
+   "rows_median": 0.12921,
+   "ratio_json_over_rows": [
+    1.74,
+    1.83,
+    1.83
+   ],
+   "all_trials_agree_on_direction": true
+  },
+  {
+   "records": 30000,
+   "flush_every_write": false,
+   "json_s": [
+    0.2415,
+    0.24892,
+    0.24425
+   ],
+   "rows_s": [
+    0.12626,
+    0.12969,
+    0.12952
+   ],
+   "json_median": 0.24425,
+   "rows_median": 0.12952,
+   "ratio_json_over_rows": [
+    1.91,
+    1.92,
+    1.89
    ],
    "all_trials_agree_on_direction": true
   }

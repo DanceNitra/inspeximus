@@ -33,13 +33,13 @@
    "writers": 12,
    "attempted": 96,
    "landed": [
-    48,
-    48,
-    71,
-    56
+    56,
+    56,
+    64,
+    64
    ],
    "clean_trials": 0,
-   "worst_loss": 48
+   "worst_loss": 40
   },
   {
    "format": "rows",

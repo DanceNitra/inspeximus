@@ -6,8 +6,8 @@ the record shape and every method are unchanged, so a downgrade is a file rename
 change: `memory.json.pre-rows.bak` is the store as it was before the conversion.
 
 **Every write used to rewrite the whole file.** One persisted write, three independent trials of
-thirty writes on an idle machine: 0.0800 s against 0.0441 s at 10,000 records, and 0.2330 s against
-0.1320 s at 30,000, so about 1.8x at both. At 1,000 records the two are close enough that separate
+thirty writes on an idle machine: 0.0818 s against 0.0422 s at 10,000 records, and 0.2334 s against
+0.1292 s at 30,000, so about 1.9x and 1.8x. At 1,000 records the two are close enough that separate
 runs have come out both ways and one trial in this run still did, so there is nothing to claim there.
 The cost of rewriting a file grows with the file and the cost of writing one row does not, which is
 why the gain arrives with the records. `sqlite3` ships with Python, so "zero dependencies" is intact.
@@ -27,6 +27,13 @@ was not AVAILABLE. A row write touches only the ids it names, so the two sides d
 the save now performs that union itself instead of refusing. Measured through the library with
 twelve concurrent processes: the JSON store landed 63 of 96 records in its worst trial and never
 landed all of them, the row store landed every record in 4 of 4 trials.
+
+**How much the JSON store loses is load-dependent, and the worst-trial figure is not stable.** Four
+runs of that probe put it at 53, 56 and 63 records landed on an idle machine and 48 under a loaded
+one, which is why the sentence above is generated from the receipt of one run rather than typed, and
+why a re-measurement moves it. What is stable across every run is the part the claim rests on: the
+JSON store landed all 96 in none of its trials, at either width, and the row store landed all 96 in
+every one.
 
 The refusal is unchanged for JSON and encrypted stores, where merging is not available.
 

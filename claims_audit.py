@@ -485,8 +485,8 @@ NUMBER_CLAIMS = [
     # concurrency result are separate sentences on separate lines and separate probes, and they were
     # nearly published as one claim: the concurrency figure had been measured against
     # `sqlite_store.save` directly rather than through the library, where the answer was the opposite.
-    _c("readme-row-write-cost-10k", "README.md", ["10,000", "0.0800", "0.0441", "1.8"],
-       "| 10,000 | 0.0800 s | 0.0441 s | rows about 1.8x faster |",
+    _c("readme-row-write-cost-10k", "README.md", ["10,000", "0.0818", "0.0422", "1.9"],
+       "| 10,000 | 0.0818 s | 0.0422 s | rows about 1.9x faster |",
        "One persisted write to a 10,000-record store, median of thirty, three independent trials: "
        "0.0831 s to rewrite the file against 0.0437 s to write the row that changed. The probe "
        "re-measures the whole-file baseline on the machine it runs on rather than quoting ours, and "
@@ -496,14 +496,14 @@ NUMBER_CLAIMS = [
        "python probes/one_write_two_formats_across_store_sizes.py",
        note="The same probe reports 1,000 records, where its three trials disagree about the "
             "direction. Nothing is claimed at that size, and the probe prints the disagreement."),
-    _c("readme-row-write-cost-30k", "README.md", ["30,000", "0.2330", "0.1320", "1.8"],
-       "| 30,000 | 0.2330 s | 0.1320 s | rows about 1.8x faster |",
+    _c("readme-row-write-cost-30k", "README.md", ["30,000", "0.2334", "0.1292", "1.8"],
+       "| 30,000 | 0.2334 s | 0.1292 s | rows about 1.8x faster |",
        "The same measurement at 30,000 records: 0.2487 s to rewrite the file, 0.1340 s to write one "
        "row. Measured 2026-09-07.",
        "REPRODUCIBLE",
        "python probes/one_write_two_formats_across_store_sizes.py"),
-    _c("readme-row-write-cost-1k", "README.md", ["1,000", "0.0077", "0.0071", "1.1"],
-       "| 1,000 | 0.0077 s | 0.0071 s | rows about 1.1x faster |",
+    _c("readme-row-write-cost-1k", "README.md", ["1,000", "0.0075", "0.0071", "1.1"],
+       "| 1,000 | 0.0075 s | 0.0071 s | rows about 1.1x faster |",
        "At 1,000 records the three trials give 0.91, 1.32 and 1.21 as the ratio, so the direction is "
        "not stable and the row is published as a non-claim: the numbers are what one run produced, "
        "not a result. Measured 2026-09-07.",
@@ -511,8 +511,8 @@ NUMBER_CLAIMS = [
        "python probes/one_write_two_formats_across_store_sizes.py",
        note="Carried in the registry BECAUSE it is unstable: a number in a published table needs a "
             "row here whether or not we are willing to stand behind its direction."),
-    _c("readme-concurrent-writers", "README.md", ["63", "96", "12", "4", "4"],
-       "the JSON store landed 63 of 96 records in its worst trial",
+    _c("readme-concurrent-writers", "README.md", ["56", "96", "12", "4", "4"],
+       "the JSON store landed 56 of 96 records in its worst trial",
        "Twelve separate OS processes writing one store through the library, four trials per format, "
        "at two writers and at twelve. The published line above carries the figures and is generated "
        "from the receipt by tools/sync_store_format_table.py; this description deliberately does not "
