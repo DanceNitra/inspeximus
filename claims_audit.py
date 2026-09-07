@@ -513,11 +513,13 @@ NUMBER_CLAIMS = [
             "row here whether or not we are willing to stand behind its direction."),
     _c("readme-concurrent-writers", "README.md", ["63", "96", "12", "4", "4"],
        "the JSON store landed 63 of 96 records in its worst trial",
-       "Twelve separate OS processes writing one store through the library, eight records each, "
-       "four trials per format. The JSON store landed 56 of 96 records in its worst trial and never "
-       "landed all 96; the row store landed every record in 4 of 4 trials, at two writers and at "
-       "twelve. The JSON arm is the control: if it lost nothing the run would be too quiet for the "
-       "row result to mean anything, and the receipt records whether it fired. Measured 2026-09-06.",
+       "Twelve separate OS processes writing one store through the library, four trials per format, "
+       "at two writers and at twelve. The published line above carries the figures and is generated "
+       "from the receipt by tools/sync_store_format_table.py; this description deliberately does not "
+       "restate them, because it was the third copy of the same number and the only one nothing "
+       "regenerated, so it still carried a figure that two re-measurements had moved. The JSON arm is "
+       "the control: if it lost nothing the run would be too quiet for the row result to mean anything, "
+       "and the receipt records whether it fired.",
        "REPRODUCIBLE",
        "python probes/twelve_writers_and_the_one_that_stopped_writing.py",
        note="Loss is load-dependent. The receipt carries every trial rather than a summary, and the "
@@ -1141,7 +1143,7 @@ NON_CLAIM_TOKENS = {
               "tamper-detection example landed, which reads verify_writes()[0] and [1][0]; 6 since "
               "the audit-trail example, whose transparent_statement(0, ...) names the record's "
               "position in the log"),
-        "1": (3, "index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
+        "1": (4, "the INSPEXIMUS_KEEP_CONVERSION_BACKUP=1 example, index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
               "tamper-detection example. None is a measurement"),
         "12": (2, "EU AI Act ARTICLE number, not a quantity: once in the docs table, once in the "
                "scope note under 'When someone asks you to prove it'. That section states which "

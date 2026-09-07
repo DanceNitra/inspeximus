@@ -1,17 +1,17 @@
 {
  "probe": "a_record_retired_by_consolidate_is_still_valid_to_an_as_of_query.py",
- "when_utc": "2026-09-07T08:47:12Z",
+ "when_utc": "2026-09-07T10:13:51Z",
  "keep_budget_marker_sites": [
-  13373,
-  13452
+  13480,
+  13559
  ],
- "control_keyed_invalidated_at": 1788770832.561882,
+ "control_keyed_invalidated_at": 1788776031.0057893,
  "control_keyed_excludes_after": true,
  "control_keyed_includes_before": true,
  "arms": {
   "consolidate": {
    "keep_budget_line_executed": [
-    13373
+    13480
    ],
    "evicted": 10,
    "evicted_without_invalidated_at": 10,
@@ -21,7 +21,7 @@
   },
   "consolidate_clusters": {
    "keep_budget_line_executed": [
-    13452
+    13559
    ],
    "evicted": 12,
    "evicted_without_invalidated_at": 12,

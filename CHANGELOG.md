@@ -82,14 +82,32 @@ recovery path merged with disk, which reads the store, then read the store a SEC
 the baseline. A row another process committed between those two reads was in the baseline, was absent
 from memory, and was deleted in the same transaction that reported a successful save to both writers.
 
-Measured with eight concurrent writers, changing nothing but the inter-process lock: with the lock
-held, 0 of 96 records lost in 4 of 4 trials; with it degraded, 17, 6, 28 and 47 lost, every worker
-reporting all twelve of its writes successful and no exception raised anywhere.
+Measured by `probes/what_the_lock_is_actually_holding_back.py`, eight separate processes writing one
+store, twelve records each, four trials per arm. Three arms differing by one thing each:
+
+| arm | records lost, of 96 |
+|---|---|
+| what ships | 0, 0, 0, 0 |
+| the inter-process lock disabled | 0, 0, 0, 0 |
+| the lock disabled and the second read restored | 5, 14, 0, 30 |
+
+Every worker in every trial reported all twelve of its writes successful, and no exception was raised
+anywhere, which is the part that matters: the records were gone and both sides had been told the save
+worked.
+
+The first version of that probe had only the first two arms, came back clean in both, and its own
+note read that as a quiet machine. That reading was not available, because a clean second arm is
+exactly what a working fix looks like. The third arm is what separates them, and the two readings
+point in opposite directions.
 
 The baseline now comes from the read that filled memory, so a row committed after it is not in the
 baseline, and a row that is not in the baseline can never be computed as a deletion. The removed line
 carried the opposite reasoning, that a stale baseline is the danger. It is backwards: a baseline taken
 earlier can only omit ids, and only a baseline taken later can invent a deletion.
+
+This release had recorded a loss of 9 records in 96 as unexplained, on the grounds that it never
+reproduced. It reproduces on demand, and the reason it did not before is that both mechanisms behind
+it are silent by construction.
 
 **The lock gave up while the holder was still working.** A writer holds the inter-process lock across
 SQLite's own busy wait, so the wait for the lock must outlast the longest a holder can legally block.

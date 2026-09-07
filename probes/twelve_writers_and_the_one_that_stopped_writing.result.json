@@ -7,12 +7,12 @@
    "writers": 2,
    "attempted": 16,
    "landed": [
-    16,
     8,
     8,
-    15
+    8,
+    8
    ],
-   "clean_trials": 1,
+   "clean_trials": 0,
    "worst_loss": 8
   },
   {
@@ -33,13 +33,13 @@
    "writers": 12,
    "attempted": 96,
    "landed": [
-    64,
-    64,
-    64,
-    63
+    48,
+    48,
+    71,
+    56
    ],
    "clean_trials": 0,
-   "worst_loss": 33
+   "worst_loss": 48
   },
   {
    "format": "rows",

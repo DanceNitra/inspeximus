@@ -6,21 +6,21 @@
    "records": 1000,
    "flush_every_write": true,
    "json_s": [
-    0.00751,
-    0.00775,
-    0.00771
+    0.009,
+    0.00922,
+    0.00951
    ],
    "rows_s": [
-    0.00706,
-    0.00727,
-    0.00675
+    0.01,
+    0.01,
+    0.01
    ],
-   "json_median": 0.00771,
-   "rows_median": 0.00706,
+   "json_median": 0.00922,
+   "rows_median": 0.01,
    "ratio_json_over_rows": [
-    1.06,
-    1.07,
-    1.14
+    0.9,
+    0.92,
+    0.95
    ],
    "all_trials_agree_on_direction": true
   },
@@ -28,43 +28,43 @@
    "records": 1000,
    "flush_every_write": false,
    "json_s": [
-    0.0075,
-    0.00763,
-    0.00751
+    0.01,
+    0.011,
+    0.011
    ],
    "rows_s": [
-    0.00701,
-    0.00653,
-    0.00851
+    0.00975,
+    0.008,
+    0.00775
    ],
-   "json_median": 0.00751,
-   "rows_median": 0.00701,
+   "json_median": 0.011,
+   "rows_median": 0.008,
    "ratio_json_over_rows": [
-    1.07,
-    1.17,
-    0.88
+    1.03,
+    1.38,
+    1.42
    ],
-   "all_trials_agree_on_direction": false
+   "all_trials_agree_on_direction": true
   },
   {
    "records": 10000,
    "flush_every_write": true,
    "json_s": [
-    0.07782,
-    0.08235,
-    0.08002
+    0.07627,
+    0.07794,
+    0.07694
    ],
    "rows_s": [
-    0.0444,
-    0.04411,
-    0.03402
+    0.043,
+    0.04252,
+    0.04551
    ],
-   "json_median": 0.08002,
-   "rows_median": 0.04411,
+   "json_median": 0.07694,
+   "rows_median": 0.043,
    "ratio_json_over_rows": [
-    1.75,
-    1.87,
-    2.35
+    1.77,
+    1.83,
+    1.69
    ],
    "all_trials_agree_on_direction": true
   },
@@ -72,21 +72,21 @@
    "records": 10000,
    "flush_every_write": false,
    "json_s": [
-    0.07468,
-    0.08925,
-    0.07981
+    0.08026,
+    0.08078,
+    0.07451
    ],
    "rows_s": [
-    0.03828,
-    0.04785,
-    0.03131
+    0.04327,
+    0.044,
+    0.04302
    ],
-   "json_median": 0.07981,
-   "rows_median": 0.03828,
+   "json_median": 0.08026,
+   "rows_median": 0.04327,
    "ratio_json_over_rows": [
-    1.95,
-    1.87,
-    2.55
+    1.85,
+    1.84,
+    1.73
    ],
    "all_trials_agree_on_direction": true
   },
@@ -94,19 +94,19 @@
    "records": 30000,
    "flush_every_write": true,
    "json_s": [
-    0.22211,
-    0.25452,
-    0.23304
+    0.25242,
+    0.24054,
+    0.24192
    ],
    "rows_s": [
-    0.13203,
-    0.1415,
-    0.12632
+    0.1293,
+    0.13338,
+    0.1316
    ],
-   "json_median": 0.23304,
-   "rows_median": 0.13203,
+   "json_median": 0.24192,
+   "rows_median": 0.1316,
    "ratio_json_over_rows": [
-    1.68,
+    1.95,
     1.8,
     1.84
    ],
@@ -116,21 +116,21 @@
    "records": 30000,
    "flush_every_write": false,
    "json_s": [
-    0.24678,
-    0.24612,
-    0.24104
+    0.23606,
+    0.24905,
+    0.24333
    ],
    "rows_s": [
-    0.12351,
-    0.11312,
-    0.13286
+    0.13268,
+    0.1317,
+    0.132
    ],
-   "json_median": 0.24612,
-   "rows_median": 0.12351,
+   "json_median": 0.24333,
+   "rows_median": 0.132,
    "ratio_json_over_rows": [
-    2.0,
-    2.18,
-    1.81
+    1.78,
+    1.89,
+    1.84
    ],
    "all_trials_agree_on_direction": true
   }

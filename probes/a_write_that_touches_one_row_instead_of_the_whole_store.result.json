@@ -1,11 +1,11 @@
 {
  "corpus": "a copy of the live coding store (already converted; the JSON baseline below is re-created from its records)",
- "records": 33624,
- "megabytes": 22.1,
- "whole_file_rewrite_s": 0.5752,
- "one_row_s": 0.0276,
- "speedup": 20.9,
- "migration_seconds": 10.1,
+ "records": 33906,
+ "megabytes": 22.3,
+ "whole_file_rewrite_s": 0.8199,
+ "one_row_s": 0.0395,
+ "speedup": 20.7,
+ "migration_seconds": 13.2,
  "first_attempt_was_slower": {
   "sqlite_full_diff_s": 0.5131,
   "json_s": 0.35,
