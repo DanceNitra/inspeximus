@@ -227,6 +227,10 @@ def parity_check(store, mem0_memory, queries: list[str], user_id: str, top_k: in
     def norm(s: str) -> str:
         return _re.sub(r"[^a-z0-9 ]", "", (s or "").lower()).strip()
 
+    stop = {"the", "a", "an", "is", "was", "at", "of", "and", "to", "in", "on", "for",
+            "their", "his", "her", "its", "with", "that", "this", "my", "your", "our"}
+    def tokens(s: str) -> set:
+        return {w for w in norm(s).split() if w not in stop and len(w) > 2}
     rows = []
     for q in queries:
         try:
@@ -236,8 +240,14 @@ def parity_check(store, mem0_memory, queries: list[str], user_id: str, top_k: in
             m0 = f"<mem0 error: {e}>"
         hits = store.recall(q, k=top_k, user_id=user_id)
         ix = (hits[0].get("text") if hits and isinstance(hits[0], dict) else "").strip()
+        m0t, ixt = tokens(m0), tokens(ix)
+        overlap = len(m0t & ixt) / len(m0t) if m0t else 0.0
         rows.append({"query": q, "mem0_top1": m0, "inspeximus_top1": ix,
-                     "match": bool(norm(m0)) and norm(m0) == norm(ix)})
+                     "exact_match": bool(norm(m0)) and norm(m0) == norm(ix),
+                     "keyphrase_overlap": round(overlap, 2),
+                     "keyphrase_match": overlap >= 0.5,
+                     "note": "exact match is strict; keyphrase_match answers "
+                             "'same fact, different wording' (both stores word facts differently)"})
     return rows
 
 
@@ -267,4 +277,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 
