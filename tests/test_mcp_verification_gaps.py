@@ -22,6 +22,8 @@ import tempfile
 
 import pytest
 
+from _store_io import load_store, save_store
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 pytest.importorskip("mcp")
@@ -42,14 +44,11 @@ def _edit_on_disk(path, new_text):
     Mutating `_MEM.items` in memory and flushing does not persist here, and a test that tampered that way
     would assert nothing while looking thorough — the file still held the honest text.
     """
-    with open(path, encoding="utf-8") as fh:
-        data = json.load(fh)
-    recs = data["items"] if isinstance(data, dict) else data
+    recs = load_store(path)
     recs[0]["text"] = new_text
-    with open(path, "w", encoding="utf-8") as fh:
-        json.dump(data, fh)
-    with open(path, encoding="utf-8") as fh:
-        assert new_text in fh.read(), "the tamper did not reach the file"
+    save_store(path, recs)
+    with open(path, "rb") as fh:
+        assert new_text.encode("utf-8") in fh.read(), "the tamper did not reach the file"
 
 
 # ── verify_audit_bundle: the content check ────────────────────────────────────────────────────────────

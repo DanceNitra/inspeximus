@@ -8,6 +8,7 @@ is genuinely gone. Then we tamper (flip a tombstone, hide an un-erased id) and c
 import sys, pathlib, tempfile, os, json, copy
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from inspeximus import Inspeximus, new_receipt_keypair, sign_erasure, verify_erasure_certificate
+from inspeximus import sqlite_store as _rows            # noqa: E402
 
 SECRET = "Alice Meyer SSN 441-90-2277"
 
@@ -48,7 +49,8 @@ def run():
 
     # ADVERSARY 2: operator claims an id erased but it is STILL in the store -> must go INVALID
     bad2 = copy.deepcopy(cert)
-    items = json.loads(pathlib.Path(tmp).read_text(encoding="utf-8"))
+    items = (_rows.load(tmp) if _rows.looks_like_sqlite(tmp)
+             else json.loads(pathlib.Path(tmp).read_text(encoding="utf-8")))
     live_id = next((r["id"] for r in items), None)
     if live_id:
         bad2["erased_memory_ids"] = list(bad2.get("erased_memory_ids", [])) + [live_id]

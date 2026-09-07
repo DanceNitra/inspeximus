@@ -25,6 +25,8 @@ from haystack.document_stores.types import DuplicatePolicy         # noqa: E402
 
 from inspeximus.integrations.haystack import InspeximusDocumentStore  # noqa: E402
 
+from _store_io import store_text
+
 
 def _path():
     return os.path.join(tempfile.mkdtemp(), "docs.json")
@@ -92,12 +94,12 @@ def test_erase_removes_the_content_from_the_bytes_on_disk():
     store.write_documents([Document(content="alice@example.com signed the NDA", meta={"kind": "pii"})])
     victim = store.filter_documents()[0]
 
-    raw_before = io.open(p, encoding="utf-8").read()
+    raw_before = store_text(p)
     assert "alice@example.com" in raw_before, "precondition: the value must be on disk to begin with"
 
     res = store.erase_documents([victim.id], request_id="DSAR-1")
 
-    raw_after = io.open(p, encoding="utf-8").read()
+    raw_after = store_text(p)
     assert "alice@example.com" not in raw_after, \
         f"erase must remove the value from the file, not just drop a reference: {res}"
     assert store.count_documents() == 0

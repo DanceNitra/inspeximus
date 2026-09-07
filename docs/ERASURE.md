@@ -153,11 +153,16 @@ person's data:
 ```console
 $ inspeximus residue --root ./dsar --value bob@example.com
 checked 3 file(s) under ./dsar
-  PLAIN        store.json   fp=5ff860bf1190
-  ! a plain file still contains the value; nothing reclaims this automatically
+  LIVE         store.json [records.doc x1]   fp=5ff860bf1190
+  ! the value is still held in a LIVE row: the system retained it, and this is a retention question for whoever wrote that store
 RESULT: residue found (listed earlier)
 # exit status: 1
 ```
+
+`LIVE` rather than `PLAIN` because the store is written as rows: the value sits in a table the
+system still holds, which is a retention question rather than a leftover-bytes one. A store written
+as JSON reports `PLAIN` for the same value. The finding is the same either way, and that is what the
+exit status reports.
 
 Found, in the same three files that came back clean for Alice. The scanner is reading the right file
 and can detect presence in it, so "clean for Alice" is a measurement rather than a silence. And Bob's

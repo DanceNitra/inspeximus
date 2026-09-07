@@ -33,6 +33,8 @@ import tempfile
 
 import pytest
 
+from _store_io import load_store
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 WORKER = '''
@@ -70,8 +72,7 @@ def _run(db, workers, per, mode):
     for p in procs:
         p.communicate()
     try:
-        with open(db, encoding="utf-8") as fh:
-            return len(json.load(fh))
+        return len(load_store(db))
     except Exception:
         return -1
 

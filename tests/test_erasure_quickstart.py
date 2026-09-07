@@ -191,7 +191,10 @@ def test_positive_control_a_different_record_is_still_there(replay):
     """THE SECOND HALF. Without it a store that silently wiped everything scores a perfect pass."""
     _, code, out = _step(replay, "--value bob@example.com")
     assert code == 1, f"the scanner found nothing for the record that must still exist:\n{out}"
-    assert "PLAIN" in out and "residue found" in out, out
+    # The LABEL depends on the container: a row store reports LIVE (the value is in a table the
+    # system still holds), a JSON store reports PLAIN (a file contains it). The FINDING is what this
+    # control is about, and pinning one label made it fail on a store that answered correctly.
+    assert ("PLAIN" in out or "LIVE" in out) and "residue found" in out, out
     # sha256("bob@example.com")[:12] -- deterministic, so this pins that the finding is about the value
     # asked for and not some other hit. Values are never echoed; the fingerprint is what correlates.
     assert "fp=5ff860bf1190" in out, out

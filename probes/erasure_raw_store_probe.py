@@ -12,6 +12,7 @@ Three settings:
 import sys, pathlib, tempfile, os, json
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from inspeximus import Inspeximus, new_encryption_key
+from inspeximus import sqlite_store as _rows            # noqa: E402
 
 SECRET = "SSN-441-90-2277 (Alice Meyer medical record)"
 
@@ -21,8 +22,14 @@ def raw_bytes(path):
 
 
 def has_vec_for(path, rec_id):
+    """Whether the record's vector is in the store on disk, in whatever format the store is in.
+
+    `raw_bytes` above is deliberately format-blind: the question there is whether a value's BYTES
+    survived, and bytes are bytes. This one needs the records, so it asks the store.
+    """
     try:
-        data = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+        data = (_rows.load(path) if _rows.looks_like_sqlite(path)
+                else json.loads(pathlib.Path(path).read_text(encoding="utf-8")))
         return any(r.get("id") == rec_id and r.get("vec") for r in data)
     except Exception:
         return False

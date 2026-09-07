@@ -98,13 +98,63 @@ m.remember("The staging database is db-7.internal", key="staging-db")
 m.verify_writes()[0]        # nothing has been touched yet
 # True
 
-# now somebody edits memory.json directly, turning db-7 into db-9
-raw = open("memory.json", encoding="utf-8").read()
-open("memory.json", "w", encoding="utf-8").write(raw.replace("db-7", "db-9"))
+# now somebody edits the store directly, turning db-7 into db-9
+from inspeximus import sqlite_store
+items = sqlite_store.load("memory.json")
+before = sqlite_store.snapshot(items)
+edited = next(r for r in items if "db-7" in r["text"])
+edited["text"] = edited["text"].replace("db-7", "db-9")
+sqlite_store.save("memory.json", items, before)
 
 Inspeximus("memory.json", receipts=True).verify_writes()[1][0].split(": ", 1)[1]
 # 'its TEXT or KEY no longer matches its write receipt (edited after write)'
 ```
+
+### Where the store is written
+
+You do not pick a storage format. A new store is written as rows, and an existing JSON store is
+converted the first time this version opens it: the conversion re-reads what it wrote and refuses
+unless the record count and the id order both survive, and it leaves the original beside the store as
+`memory.json.pre-rows.bak`. Encrypted stores stay a single encrypted blob, because at-rest encryption
+covers the whole file.
+
+Rows are there because every write used to rewrite the whole file, and because two writers could not
+share one.
+
+One persisted write, both formats, three independent trials of thirty writes each
+(`probes/one_write_two_formats_across_store_sizes.py`):
+
+| records in the store | whole file | one row | |
+|---|---|---|---|
+| 1,000 | 0.0077 s | 0.0071 s | rows about 1.1x faster |
+| 10,000 | 0.0800 s | 0.0441 s | rows about 1.8x faster |
+| 30,000 | 0.2330 s | 0.1320 s | rows about 1.8x faster |
+
+The gap is a function of file size: rewriting a file gets more expensive as the file grows and
+writing one row does not, so the gain arrives with the records. Take the smallest row as the least
+reliable one. At a thousand records the two are close enough that separate runs of this probe have
+come out both ways, and in the run behind this table one of the three trials still did, which is why
+the probe reports every trial rather than an average and says so when the direction is not stable. The table above is generated from the receipt the probe writes
+(`tools/sync_store_format_table.py`), so it is what one run measured rather than what we remember.
+
+With twelve processes writing at once, the JSON store landed 63 of 96 records in its worst trial and never landed all of them, while the row store landed every record in 4 of 4 trials at both widths tested.
+See `probes/twelve_writers_and_the_one_that_stopped_writing.py`. Both probes re-measure the
+whole-file baseline on the machine they run on rather than quoting ours, so a slower machine reports
+a smaller gap instead of a false one.
+
+Two things to know before you upgrade:
+
+- **A store written by this version cannot be read by 2.26.1 or earlier.** Those versions decode the
+  file as UTF-8 and raise `UnicodeDecodeError`. To go back, rename `memory.json.pre-rows.bak` over
+  the store and pin the older release.
+- **The rollback copy is deleted by the first erasure.** `forget`, `forget_subject` and `forget_pii`
+  remove it, because a copy this library made without being asked is not somewhere personal data gets
+  to survive a deletion request. `erasure_certificate()` reports what happened to that file by name,
+  so the end of your rollback window is recorded rather than silent. To keep the copy, set
+  `INSPEXIMUS_KEEP_CONVERSION_BACKUP=1`: the certificate then declares the backup as data the erasure
+  did not reach, which is the trade you are making.
+
+`INSPEXIMUS_STORE_FORMAT=json` keeps the old format, for a store that other tooling reads directly.
 
 `provenance(key=...)` answers the rest in one call: every value the key has held and the policy that
 retired each one, where the current value came from including taint inherited through summaries,

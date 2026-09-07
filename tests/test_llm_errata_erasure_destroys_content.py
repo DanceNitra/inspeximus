@@ -21,6 +21,8 @@ import pytest
 from inspeximus import Inspeximus
 from inspeximus.integrations.llm_errata import InspeximusErrataAdapter
 
+from _store_io import load_store, store_text
+
 
 def _store():
     path = os.path.join(tempfile.mkdtemp(), "m.json")
@@ -37,8 +39,8 @@ def _target(mem):
 def test_erasure_removes_the_content_from_the_persisted_state():
     mem, path = _store()
     InspeximusErrataAdapter(mem).retire(_target(mem))
-    assert "is vegetarian" not in open(path, encoding="utf-8").read()
-    assert "prefers quiet restaurants" in open(path, encoding="utf-8").read()
+    assert "is vegetarian" not in store_text(path)
+    assert "prefers quiet restaurants" in store_text(path)
 
 
 def test_supersession_keeps_the_history_it_is_for():
@@ -46,9 +48,9 @@ def test_supersession_keeps_the_history_it_is_for():
     which would break supersession -- the operation whose entire purpose is retaining what was true."""
     mem, path = _store()
     InspeximusErrataAdapter(mem).retire(_target(mem), superseded_at="2026-08-01T00:00:00Z")
-    raw = open(path, encoding="utf-8").read()
+    raw = store_text(path)
     assert "is vegetarian" in raw, "a supersession must keep the proposition that was true"
-    assert json.loads(raw) or True
+    assert load_store(path), "the store must still read back after a supersession"
     demoted = [r for r in mem.items if r.get("text") == "is vegetarian"]
     assert demoted and demoted[0]["status"] == "superseded"
 
@@ -81,7 +83,7 @@ def test_a_surviving_derived_copy_blocks_a_verified_claim():
     adapter = InspeximusErrataAdapter(mem)
     adapter.retire(_target(mem))
     assert adapter._erasure_residue, "a surviving copy must be recorded, not ignored"
-    assert "is vegetarian" in open(path, encoding="utf-8").read()
+    assert "is vegetarian" in store_text(path)
     # _coverage() degrades to a bare string when the spec package is absent, and it must:
     # importing inspeximus may never require llm-errata to be installed.
     cov = adapter.coverage("fact:diet")
@@ -136,7 +138,7 @@ def test_an_erasure_destroys_the_mixed_descendant_and_keeps_the_collateral():
         valid_from="2026-08-01T00:00:00Z",
         postconditions={"negative": "vegetarian", "preserve": "quiet restaurants"})))
 
-    raw = open(path, encoding="utf-8").read()
+    raw = store_text(path)
     assert "is vegetarian" not in raw, "the descendant kept a verbatim copy of the erased fact"
     assert "prefers quiet restaurants" in raw, "the collateral was destroyed with it"
     assert receipt.aggregate.value == "verified"

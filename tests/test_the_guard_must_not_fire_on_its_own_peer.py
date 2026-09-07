@@ -65,9 +65,21 @@ def test_a_second_handle_on_the_same_file_is_still_refused(tmp_path):
     b.remember("from B", key="b")
     b.flush()
 
-    with pytest.raises(StoreChangedOnDisk):
+    # THE LOSS IS WHAT IS FORBIDDEN, NOT THE EXCEPTION. A JSON save rewrites the whole file, so
+    # refusing is the only way to keep B's record and it costs A its write. A row write touches only
+    # the ids it names, so the save merges and both survive. Either way "from B" must still be there,
+    # which is the sentence this test is about.
+    if (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() == "json":
+        with pytest.raises(StoreChangedOnDisk):
+            a.remember("A again", key="a2")
+            a.flush()
+    else:
         a.remember("A again", key="a2")
         a.flush()
+        _texts = [r["text"] for r in Inspeximus(path=path).items]
+        assert "A again" in _texts, "the second writer's own record was lost: %r" % _texts
+    _left = [r["text"] for r in Inspeximus(path=path).items]
+    assert "from B" in _left, "the other handle's record was erased: %r" % _left
 
 
 def test_the_file_signature_is_refreshed_before_the_lock_is_released(tmp_path):

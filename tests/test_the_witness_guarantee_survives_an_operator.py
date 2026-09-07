@@ -25,6 +25,8 @@ from inspeximus.core import new_ed25519_keypair
 from conftest import fork_of
 from inspeximus.witness_pool import Witness
 
+from _store_io import load_store, save_store
+
 SK, PK = new_ed25519_keypair()
 EVIL_SK, EVIL_PK = new_ed25519_keypair()
 
@@ -69,8 +71,7 @@ def test_copying_a_rolled_back_store_does_not_buy_a_fresh_witness():
     keep = {r["memory_id"] for r in rows[:2]}
     del rows[2:]
     json.dump(rec, open(rp, "w", encoding="utf-8"))
-    json.dump([r for r in json.load(open(p, encoding="utf-8")) if r["id"] in keep],
-              open(p, "w", encoding="utf-8"))
+    save_store(p, [r for r in load_store(p) if r["id"] in keep])
 
     B = os.path.join(d, "B")
     shutil.copytree(os.path.join(d, "A"), B)
@@ -214,8 +215,7 @@ def test_rewrite_then_grow_is_a_fork_not_staleness():
     keep = {r["memory_id"] for r in rows[:1]}
     del rows[1:]
     json.dump(rec, open(rp, "w", encoding="utf-8"))
-    json.dump([r for r in json.load(open(p, encoding="utf-8")) if r["id"] in keep],
-              open(p, "w", encoding="utf-8"))
+    save_store(p, [r for r in load_store(p) if r["id"] in keep])
     forged = Inspeximus(path=p, receipts=True, receipt_key=SK)
     for i in range(4):
         forged.remember(f"rewritten {i}", key=f"z{i}", object=str(i))

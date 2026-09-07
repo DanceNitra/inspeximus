@@ -47,9 +47,11 @@ import logging
 import sys
 import math
 import os
+import shutil
 import random as _random
 import re
 import threading
+import weakref as _weakref
 import tempfile
 import time
 import uuid
@@ -97,8 +99,10 @@ _INSPEXIMUS_ENC_MAGIC = b"INSP\x01"        # versioned so the on-disk format can
 
 try:
     from . import sqlite_store as _rows
+    _rows_mod_doc = _rows._doc
 except Exception:                                  # a partial install must not break the JSON path
     _rows = None
+    _rows_mod_doc = None
 
 def new_encryption_key() -> bytes:
     """A fresh random 32-byte (AES-256) key for Inspeximus(encrypt_key=...). Store it yourself (a secrets manager /
@@ -948,7 +952,8 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
          expected_pubkey if you pass one);
       3. the anchor commits to the tombstone-chain tip (a rewrite that re-signs internally still fails this if
          you pinned the anchor against an externally-witnessed one);
-      4. GIVEN the store (store_path to the JSON/encrypted file, or store_items as a decrypted list), every
+      4. GIVEN the store (store_path to the store file in any format it is written in, or store_items as a
+         decrypted list), every
          erased memory id is genuinely ABSENT from it — the 'read the raw store' proof soft-delete systems fail;
       5. the certificate ATTESTS TO AT LEAST ONE ERASURE. Checks 1-4 are consistency checks and all of them
          pass vacuously on an empty scope, so a certificate for a request that erased nothing used to verify
@@ -1094,12 +1099,22 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     store_requested = store_items is not None or bool(store_path)
     if store_items is None and store_path:
         try:
-            raw = Path(store_path).read_bytes()
-            if raw[:5] == _INSPEXIMUS_ENC_MAGIC:
-                problems.append("store is encrypted — supply decrypted store_items to check id-absence, "
-                                "or rely on shred() (crypto-erasure) for the encrypted case")
+            # A ROW STORE IS STILL A STORE, and this is the check that must not be the one to
+            # miss that. Reading the bytes and calling json.loads on them was correct while every
+            # store was JSON; after the row format shipped, a migrated store made this append
+            # "cannot read store" and quietly downgraded the strongest proof in the library -- the
+            # one that reads the raw file to show an id is really gone -- to "not performed".
+            # Measured on a migrated store before this line existed: UnicodeDecodeError, and the
+            # certificate came back without its id-absence evidence.
+            if _rows is not None and _rows.looks_like_sqlite(store_path):
+                store_items = _rows.load(store_path)
             else:
-                store_items = json.loads(raw.decode("utf-8"))
+                raw = Path(store_path).read_bytes()
+                if raw[:5] == _INSPEXIMUS_ENC_MAGIC:
+                    problems.append("store is encrypted — supply decrypted store_items to check id-absence, "
+                                    "or rely on shred() (crypto-erasure) for the encrypted case")
+                else:
+                    store_items = json.loads(raw.decode("utf-8"))
         except Exception as e:
             problems.append(f"cannot read store at {store_path}: {repr(e)[:80]}")
     if store_items is not None:
@@ -1140,7 +1155,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.26.1"
+__version__ = "3.0.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1224,6 +1239,223 @@ class AmbiguousSubject(ValueError):
     'crm.example.com/alice' and 'crm.example.com/bob' resolve alike; before this, a DSAR for Alice erased
     Bob and the preview reported no collateral. Subclasses ValueError so existing `except ValueError`
     handlers keep working."""
+
+
+_MISSING = object()
+
+
+def _plain(v):
+    """A record as ordinary containers, sharing nothing with the tracked original.
+
+    Detaching only the wrapped children was not enough. A nested container is wrapped LAZILY, on the
+    read that returns it, so a record whose `meta` nobody had read yet handed the copy the original's
+    own dict: writing to the copy changed the record and marked the store. A copy that depends on
+    which keys the caller happened to read is not a copy.
+
+    `dict.items` and `list.__iter__` are used directly so this walks the stored values rather than
+    the wrapped views the subclasses return, which would wrap on the way out and undo the point.
+    """
+    if isinstance(v, dict):
+        return {k: _plain(x) for k, x in dict.items(v)}
+    if isinstance(v, list):
+        return [_plain(x) for x in list.__iter__(v)]
+    return v
+
+
+class _TrackedDict(dict):
+    """A record that says when it changes, so nothing has to compare the store to find out.
+
+    WHY. A row store writes the ids a caller declares through `_touch`, and that made completeness a
+    rule sixteen call sites had to remember. Measured on 2026-09-06, nine of them did not: `slash`
+    lost its flags, `credit` its counter, `observe` its marker, `restore` and `ratify` the same one
+    function over, and a recipe change lost every vector it had just rebuilt. The safety net was to
+    re-serialise the whole store on `flush()` -- 0.18 s per flush on 30,000 records, which is most of
+    what the row format was supposed to save.
+
+    So the rule moves into the data. A record marks itself on any mutation, nested containers mark
+    their record, and `_touched` is complete by construction: no sweep of the store, no discipline at
+    the call site, and a `flush()` that costs one row instead of thirty thousand.
+
+    NO CLOSURE PER RECORD. The first version gave every record its own `mark()` function, which is a
+    function object and a cell each: 631 bytes per record, 19 MB on a 32,000-record store, for a
+    value the record already carries. A record holds a reference to its store, a nested container
+    holds one to its record, and the id is read at the moment it fires.
+
+    WHAT IT IS NOT. It does not track a record replaced wholesale in `_items` (`m._items[0] = {...}`)
+    or appended without going through `remember()`; the id-set check in `_save` covers those, and the
+    sweep in `test_every_mutating_call_reaches_the_store_file.py` is what proves the pair is enough.
+    """
+    __slots__ = ("_store", "_root")
+
+    def __init__(self, data=(), store=None, root=None):
+        super().__init__(data)
+        # WEAK, OR A RETURNED RECORD PINS THE WHOLE STORE. `recall()` hands records back, and a
+        # caller that keeps one would otherwise keep every record beside it alive through this
+        # reference. Measured before the weakref: workers in the test suite died under load while
+        # the same files passed alone, because each held stores that could no longer be collected.
+        # A memory library that cannot release its own memory is the wrong shape of thing.
+        self._store = _weakref.ref(store) if store is not None else None
+        self._root = root
+        # Nested containers are wrapped on first access, not here. Walking every key of every record
+        # at load turned opening a 30,000-record store from 0.5 s into 6.2 s, and this library is
+        # opened once per tool call by its own hook.
+
+    def _fire(self):
+        root = self._root if self._root is not None else self
+        ref = root._store if isinstance(root, _TrackedDict) else None
+        store = ref() if ref is not None else None
+        if store is None:                             # the store is gone; nothing to declare to
+            return
+        rid = dict.get(root, "id")
+        if rid:
+            store._touched.add(rid)
+        store._dirty = True
+
+    def _child(self, v):
+        root = self._root if self._root is not None else self
+        if type(v) is dict:
+            return _TrackedDict(v, None, root)
+        if type(v) is list:
+            return _TrackedList(v, root)
+        return v
+
+    def __getitem__(self, k):
+        v = super().__getitem__(k)
+        if type(v) is dict or type(v) is list:
+            v = self._child(v)
+            dict.__setitem__(self, k, v)
+        return v
+
+    def get(self, k, default=None):
+        # ONE LOOKUP, NOT THREE. The first version asked `k in self`, then went through
+        # `__getitem__`, which is a Python-level call: measured, 3.6 million of these in twenty
+        # writes to a 30,000-record store, because the save path scans every record.
+        v = dict.get(self, k, _MISSING)
+        if v is _MISSING:
+            return default
+        if type(v) is dict or type(v) is list:
+            v = self._child(v)
+            dict.__setitem__(self, k, v)
+        return v
+
+    def __setitem__(self, k, v):
+        self._fire()
+        super().__setitem__(k, self._child(v))
+
+    def __delitem__(self, k):
+        self._fire()
+        super().__delitem__(k)
+
+    def update(self, *a, **kw):
+        self._fire()
+        for k, v in dict(*a, **kw).items():
+            super().__setitem__(k, self._child(v))
+
+    def setdefault(self, k, default=None):
+        if k in self:
+            return self[k]
+        self[k] = default
+        return self[k]
+
+    def pop(self, *a):
+        self._fire()
+        return super().pop(*a)
+
+    def popitem(self):
+        self._fire()
+        return super().popitem()
+
+    def clear(self):
+        self._fire()
+        super().clear()
+
+    def __ior__(self, other):
+        # `rec |= {...}` USES A C SLOT THAT DOES NOT GO THROUGH `update`. Without this the record is
+        # mutated in memory and nothing declares it: measured, 77.0 in memory, `_touched` empty, and
+        # 1.0 after a flush and reload. That is exactly the silent loss this class exists to remove,
+        # and it worked on 2.26.1 only because a JSON save rewrote the whole file regardless.
+        self.update(other)
+        return self
+
+    def copy(self):
+        """A PLAIN dict, deeply detached. A copy is not the stored record.
+
+        `dict(self)` was not enough: a nested container wrapped by an earlier read is shared with the
+        original, so editing `copy()["meta"]` marked the store dirty and the value survived a reload.
+        A copy that can write to the store is worse than no copy method.
+        """
+        return _plain(self)
+
+    def __reduce__(self):
+        return (dict, (dict(self),))              # pickle/deepcopy as a plain dict
+
+
+class _TrackedList(list):
+    """The list half: `rec["tags"].append(...)` must mark the record that holds it."""
+    __slots__ = ("_root",)
+
+    def __init__(self, data=(), root=None):
+        super().__init__(data)
+        self._root = root
+
+    def _fire(self):
+        if isinstance(self._root, _TrackedDict):
+            self._root._fire()
+
+    def _child(self, v):
+        if type(v) is dict:
+            return _TrackedDict(v, None, self._root)
+        if type(v) is list:
+            return _TrackedList(v, self._root)
+        return v
+
+    def __getitem__(self, i):
+        v = super().__getitem__(i)
+        if type(v) is dict or type(v) is list:
+            v = self._child(v)
+            list.__setitem__(self, i, v)
+        return v
+
+    def append(self, v):
+        self._fire(); super().append(self._child(v))
+
+    def extend(self, it):
+        self._fire(); super().extend(self._child(v) for v in it)
+
+    def insert(self, i, v):
+        self._fire(); super().insert(i, self._child(v))
+
+    def __setitem__(self, i, v):
+        self._fire(); super().__setitem__(i, self._child(v))
+
+    def __delitem__(self, i):
+        self._fire(); super().__delitem__(i)
+
+    def __iadd__(self, other):
+        self._fire(); return super().__iadd__([self._child(v) for v in other])
+
+    def __imul__(self, n):
+        # `tags *= 2` is the list half of the `|=` hole above: an in-place C slot that never reaches
+        # a method this class overrides.
+        self._fire(); return super().__imul__(n)
+
+    def remove(self, v):
+        self._fire(); super().remove(v)
+
+    def pop(self, *a):
+        self._fire(); return super().pop(*a)
+
+    def clear(self):
+        self._fire(); super().clear()
+
+    def sort(self, **kw):
+        self._fire(); super().sort(**kw)
+
+    def reverse(self):
+        self._fire(); super().reverse()
+
+    def __reduce__(self):
+        return (list, (list(self),))
 
 
 class StoreChangedOnDisk(RuntimeError):
@@ -1403,6 +1635,11 @@ def _lock_primitive():
 _LOCK_PRIMITIVE = _lock_primitive()
 
 
+#: How long a writer waits for the store lock before writing unprotected. It must exceed
+#: `sqlite_store.BUSY_TIMEOUT_S`, or a waiter gives up while the holder is still working.
+LOCK_WAIT_S = 60.0
+
+
 class _StoreLock:
     """A real inter-process lock around the read-modify-write of one store file.
 
@@ -1457,6 +1694,10 @@ class _StoreLock:
         self._tl = None
         self._locker = _LOCK_PRIMITIVE
 
+    #: path -> how many times this process wrote to it WITHOUT the lock. Never reset; a non-zero
+    #: entry is the one thing that explains a loss nothing else recorded.
+    DEGRADED: dict = {}
+
     def __enter__(self):
         kind, mod = self._locker
         if kind is None:
@@ -1468,7 +1709,15 @@ class _StoreLock:
                 _StoreLock._CACHE[self._path] = ent
         self._tl = ent[0]
         self._tl.acquire()                   # in-process first: one handle, so the OS lock cannot
-        deadline = time.time() + 20.0        # separate two threads of ours
+        # THIS DEADLINE MUST OUTLAST THE LONGEST A HOLDER CAN LEGALLY HOLD THE LOCK, and it did not.
+        # A writer inside the lock may wait out a busy database for `sqlite_store.BUSY_TIMEOUT_S`, so
+        # a waiter that gives up sooner unlocks itself while the holder is still doing exactly what it
+        # is supposed to do. It was 20 s against a 30 s busy timeout, and `msvcrt.locking` blocks
+        # about 9 s per attempt, so three attempts overran the deadline and the lock degraded at
+        # roughly 27 s under ordinary contention rather than under a wedged process.
+        # `test_the_lock_outlasts_a_busy_database` pins the ordering, because the two numbers live in
+        # different files and nothing else connects them.
+        deadline = time.time() + LOCK_WAIT_S # separate two threads of ours
         while True:
             try:
                 fh = _StoreLock._CACHE[self._path][1]
@@ -1485,6 +1734,19 @@ class _StoreLock:
             except OSError:
                 _StoreLock._CACHE[self._path] = (self._tl, None)
                 if time.time() >= deadline:
+                    # DEGRADING IS NO LONGER SILENT. Unlocked concurrent writes are how eight
+                    # writers lost 17, 6, 28 and 47 of 96 records while every one of them reported
+                    # success, and the only reason nobody could explain it for a day is that this
+                    # branch left no trace of having been taken.
+                    _StoreLock.DEGRADED[self._path] = _StoreLock.DEGRADED.get(self._path, 0) + 1
+                    if _StoreLock.DEGRADED[self._path] == 1:
+                        try:
+                            sys.stderr.write(
+                                "[inspeximus] waited %.0fs for the store lock on %s and gave up; "
+                                "this write is not protected against another process\n"
+                                % (LOCK_WAIT_S, self._path))
+                        except Exception:                        # noqa: BLE001
+                            pass
                     return self              # degrade to unlocked rather than lose the write
                 time.sleep(0.05)
 
@@ -2098,6 +2360,12 @@ class Inspeximus:
         self._touched = set()          # ids changed since the last successful save
         self._full_reconcile = False   # ask the next save for the complete diff
         self._row_snapshot = None      # id -> serialised row, when the store is a row store
+        #: what the last hard erasure did with the pre-conversion JSON copy, reported by
+        #: `erasure_certificate()` so removing a user's rollback file is never silent
+        self._conversion_backup: dict = {"state": "no erasure has run on this handle"}
+        self._rewrite_all = False      # write every row again (a store in an older row encoding)
+        self._migration = None         # what a JSON->rows conversion did on open, if it ran
+        self._migration_error = None   # why it did not, if it was tried and refused
         self._persist_error = None   # last _save() failure, surfaced by verify_writes() and raised by flush()
         # Sidecar failures live SEPARATELY: a successful main-store save must not erase the fact that the
         # receipt or tombstone chain never reached disk. (It did, in the first version of this fix.)
@@ -2153,6 +2421,7 @@ class Inspeximus:
                                      f"the space deliberately with reembed() / `inspeximus reembed`, or raise the cap.\n")
                     for r in _stale:
                         r["vec"] = None
+                        self._touch(r)                              # a row store writes what is declared
                 else:
                     sys.stderr.write(f"[inspeximus] embed recipe changed ({_prev!r} -> {_cur!r}); re-embedding "
                                      f"{len(_stale)} persisted vectors to realign the space\n")
@@ -2161,6 +2430,7 @@ class Inspeximus:
                             r["vec"] = list(self.embed(r["text"]))
                         except Exception:
                             r["vec"] = None
+                        self._touch(r)                              # a row store writes what is declared
                 self._mat = None                                    # invalidate the cached matrix
                 self._realigned = True                              # -> persisted ONCE at the end of __init__
         # OPT-IN write receipts (default OFF -> zero behavior change; no sidecar created)
@@ -2717,6 +2987,7 @@ class Inspeximus:
                 rec["vec"] = list(self.embed(text))
             except Exception:
                 rec["vec"] = None
+        rec = self._track(rec)                    # edits to it from here on declare themselves
         self._items.append(rec)
         self._touch(rec)
         # Cleared BEFORE the supersession pass, which is the only thing that can set it. A verdict left
@@ -3444,7 +3715,11 @@ class Inspeximus:
                             "why": f"the fixture for this surface could not be built: "
                                    f"{type(ex).__name__}: {ex}"})
                         continue
-                    rows = _json.loads(open(path, encoding="utf-8").read())
+                    # The fixture is written by this library, so it is in whatever format this
+                    # library writes -- reading it as JSON crashed with UnicodeDecodeError the moment
+                    # new stores became row stores, and took every surface in this audit with it.
+                    rows = (_rows.load(path) if _rows is not None and _rows.looks_like_sqlite(path)
+                            else _json.loads(open(path, encoding="utf-8").read()))
                     open_fn = lambda p, _s=shape: _open_copy(p, _s)         # noqa: E731
             # A PROBE THAT NEEDS AN INDEX NEEDS THE COPY TO CARRY ONE. Without this the precondition
             # passes on the caller's store and the surface is then handed a copy with no embedder,
@@ -4910,6 +5185,66 @@ class Inspeximus:
         from the attack by construction. Pass False to restore the previous, quieter behaviour."""
         problems: list[str] = []
         legacy_flagged: set = set()
+        # IN-MEMORY STATE THAT NEVER REACHED DISK IS AN INTEGRITY PROBLEM, and on a row store it is
+        # one this function has to look for. A row write serialises only the ids the caller declared,
+        # so a record edited in place that nothing marked stays in memory and never lands: measured,
+        # a NaN planted straight into `_items` was absent from the file, `flush()` returned clean and
+        # nothing anywhere said the two disagreed. The JSON path reports it for free, because a save
+        # there rewrites the whole file and so fails loudly on the record it cannot serialise. This
+        # is the surface that reads the store, so it is the one that must not have a blind spot the
+        # other format does not have.
+        # ONLY WHEN THE STORE BELIEVES IT IS SAVED. A pending throttled write is memory and disk
+        # legitimately disagreeing -- `_save()` coalesces, `flush()` finishes the job -- and reporting
+        # that as an integrity problem made `verify_writes` fail after an ordinary `credit()`. The
+        # case worth reporting is the other one: `_dirty` is False, so the library thinks everything
+        # reached disk, and it did not.
+        if (not self._dirty) and self._rows_available() and self.path and self.path.exists():
+            try:
+                _disk = {r["id"]: _rows_mod_doc(r) for r in _rows.load(self.path)
+                         if isinstance(r, dict) and r.get("id")}
+                # COMPARE WHAT THE WRITER WRITES. `_save` strips the `vec` embedding cache unless
+                # the store persists vectors, so comparing the raw in-memory record against the
+                # stored row reported every embedded record as unpersisted -- a false alarm on a
+                # healthy store, raised by the surface whose whole job is to be trusted about this.
+                _mem = {}
+                for _r in self._items:
+                    if isinstance(_r, dict) and _r.get("id"):
+                        _keep = {_k: _v for _k, _v in _r.items()
+                                 if _k != "vec" or self._persist_vectors}
+                        # Underscore-prefixed keys are annotations a READER attaches
+                        # (`_stale_derived` is set by recall on the records it returns). They are
+                        # not stored state, and requiring a write for them would make every read
+                        # dirty the store.
+                        _mem[_r["id"]] = {_k: _v for _k, _v in _keep.items()
+                                          if not _k.startswith("_")}
+                _diverged = []
+                for _rid, _rec in _mem.items():
+                    try:
+                        _here = _rows_mod_doc(_rec)
+                    except ValueError as _e:      # a value that cannot be serialised at all
+                        _diverged.append("%s (%s)" % (_rid, _e))
+                        continue
+                    if _rid not in _disk:
+                        _diverged.append("%s (absent from the store file)" % _rid)
+                    elif _disk[_rid] != _here:
+                        # NAME THE FIELDS. "differs from the stored row" tells an operator that
+                        # something is wrong and nothing about what, and the same message reaching a
+                        # developer costs a debugging session to answer a question the check already
+                        # knows the answer to.
+                        try:
+                            _a = json.loads(_disk[_rid])
+                            _b = json.loads(_here)
+                            _keys = sorted(k for k in set(_a) | set(_b) if _a.get(k) != _b.get(k))
+                        except Exception:                          # noqa: BLE001
+                            _keys = []
+                        _diverged.append("%s (differs in %s)" % (_rid, ", ".join(_keys) or "content"))
+                if _diverged:
+                    problems.append(
+                        "store not persisted: %d record(s) in memory do not match the store file: %s "
+                        "(in-memory state has not reached disk)"
+                        % (len(_diverged), ", ".join(_diverged[:3])))
+            except Exception:                      # noqa: BLE001 -- never let the audit itself fail
+                pass
         if self.receipts_enabled and not self._receipts and self.items:
             problems.append(f"receipts are enabled but the chain is EMPTY while the store holds "
                             f"{len(self.items)} record(s) -- nothing here is covered by a write receipt")
@@ -6047,6 +6382,7 @@ class Inspeximus:
             m["reopened_contradiction"] = contra_object
         if meta:
             m.setdefault("reopened_meta", {}).update(meta)
+        self._touch(rec)
         self._dirty = True
 
     def _do_reopen(self, cur: dict, prior, reason: str, contra_object, meta) -> dict:
@@ -6055,6 +6391,7 @@ class Inspeximus:
         # guess (an agent left with nothing is worse), it is only surfaced by reopened() for steward review.
         cur["reopened"] = True
         cur["reopened_ts"] = time.time()
+        self._touch(cur)
         m["reopened_reason"] = reason
         m["reopened_surfaced_prior"] = prior
         if contra_object is not None:
@@ -6344,6 +6681,14 @@ class Inspeximus:
             t["pubkey"] = self.receipt_pubkey
             t["sig"] = sk.sign(bytes.fromhex(t["hash"])).hex()
         self._tombstones.append(t)
+        # ERASURE HAS TO REACH THE COPY WE MADE OURSELVES. Converting a JSON store to rows leaves the
+        # original beside it so the upgrade can be undone, and that backup is a full copy of the records
+        # -- including the ones a subject later asks us to erase. Measured before this call existed: after
+        # `forget_subject`, the erased text was gone from the store and from the tombstone chain, and
+        # still sat in `memory.json.pre-rows.bak`, where nothing in the erasure path could see it. A file
+        # this library created without being asked is not somewhere personal data gets to survive a
+        # deletion request. The rollback window ends at the first erasure, which is the right trade.
+        self._drop_pre_rows_backup()
         # `defer` is for a BATCH erasure, which is the only caller that emits more than one: it writes the
         # chain once at the end instead of once per tombstone. The default stays False so a single emit is
         # durable the moment it returns, exactly as before.
@@ -6766,6 +7111,170 @@ class Inspeximus:
         return man.execute(subject, values, request_id=request_id, basis=basis,
                            authorized_by=authorized_by)
 
+    def _merge_rows_from_disk(self) -> bool:
+        """Union this handle's records with what is on disk now. Returns False if it cannot.
+
+        Only for a row store: the write that follows names the ids it touches, so the other writer's
+        rows are left alone rather than overwritten, which is exactly the property the JSON path
+        cannot offer. The union is the one `reload()` already defines: disk wins for records this
+        handle does not have, this handle's records are re-applied by id, and anything this handle
+        tombstoned stays buried rather than being resurrected by its own recovery.
+
+        A deletion this handle made and could not persist is not re-applied, which is the same limit
+        `reload()` documents. Returns False rather than raising, so the caller keeps the refusal it
+        had before for every store this cannot serve.
+        """
+        if _rows is None or not self._rows_available() or not self.path or not self.path.exists():
+            return False
+        try:
+            self._merge_with_disk()
+        except Exception:                                        # noqa: BLE001
+            return False
+        # NO SECOND READ. `_load_from_disk`, inside the merge above, already built the baseline from
+        # the read that produced `_items`, and taking a fresher one HERE is what destroyed another
+        # writer's records. Deletions are `baseline - memory`, so a row a concurrent writer commits
+        # between the two reads is in the baseline, is not in memory, and is deleted as though this
+        # handle had erased it. Both writers then report success.
+        #
+        # The line removed here carried the opposite reasoning: that a stale baseline removes the
+        # other writer's rows. That is backwards. A baseline taken EARLIER can only omit ids, and an
+        # omitted id is never in `baseline - memory`, so it is never deleted. Only a baseline taken
+        # later than the records can invent a deletion.
+        #
+        # Measured 2026-09-07 with eight concurrent writers, changing nothing but the inter-process
+        # lock: held, 0 of 96 records lost in 4 of 4 trials; degraded, 17, 6, 28 and 47 lost, with
+        # every worker reporting all twelve writes successful and no exception raised anywhere. The
+        # 9 of 96 this project could not explain for a day sits inside that range.
+        self._mat = None
+        return True
+
+    def _track(self, rec, is_rows=None):
+        """Wrap a record so any edit to it, at any depth, lands in `_touched`.
+
+        Only for a row store: the JSON path rewrites the whole file and does not care which record
+        moved, so paying for the wrapper there would be cost with no benefit.
+        """
+        if not isinstance(rec, dict) or isinstance(rec, _TrackedDict):
+            return rec
+        # ASK ONCE PER STORE, NOT ONCE PER RECORD. `_rows_available()` reads the file header, so
+        # calling it per record opened the store 30,000 times while loading it: 2.8 s of `open` plus
+        # 1.6 s of `stat`, and opening a 30,000-record store went from 0.5 s to 6.8 s. The caller
+        # that already knows passes the answer in.
+        if is_rows is None:
+            is_rows = self._rows_available()
+        if not is_rows:
+            return rec
+
+        return _TrackedDict(rec, self)
+
+    def _track_all(self) -> None:
+        """Wrap every record currently in `_items`. Called once per load, not per write."""
+        if not self._rows_available():
+            return
+        self._items = [self._track(r, True) for r in self._items]
+
+    def _drop_pre_rows_backup(self) -> dict:
+        """Remove the JSON copy the format conversion left behind. Called on every hard erasure.
+
+        Never raises: an erasure that already removed the record from the store must not fail because
+        a backup file was read-only or already gone. What it must not do is leave the copy in place,
+        which it did until this existed.
+
+        IT IS NO LONGER SILENT, and the silence was the defect rather than the deletion. Removing the
+        file is right: it is a full copy of the records, this library made it without being asked, and
+        personal data does not get to survive a deletion request inside a file the user never chose to
+        create. But an erasure that quietly removes someone's rollback copy gives them no way to know
+        their upgrade is no longer reversible. So the outcome is recorded, `erasure_certificate()`
+        reports it, and `INSPEXIMUS_KEEP_CONVERSION_BACKUP=1` keeps the file for an operator who has
+        decided the rollback matters more.
+
+        Keeping it is an honest scope reduction, not a free option: the certificate then declares the
+        backup as data the erasure did NOT reach, which is the fact an auditor needs and the operator
+        chose.
+        """
+        if not self.path:
+            return {"state": "no store path"}
+        backup = self.path.with_suffix(self.path.suffix + ".pre-rows.bak")
+        try:
+            if not backup.exists():
+                state = {"state": "none"}
+            elif (os.environ.get("INSPEXIMUS_KEEP_CONVERSION_BACKUP") or "").strip() in ("1", "true", "yes"):
+                state = {"state": "kept", "path": str(backup),
+                         "erasure_reached_it": False,
+                         "note": "INSPEXIMUS_KEEP_CONVERSION_BACKUP is set, so the pre-conversion "
+                                 "copy was left in place. It still holds the erased records."}
+            else:
+                backup.unlink()
+                state = {"state": "removed", "path": str(backup), "erasure_reached_it": True}
+        except OSError as e:                                     # noqa: BLE001
+            state = {"state": "could not remove", "path": str(backup),
+                     "erasure_reached_it": False, "error": str(e)}
+        self._conversion_backup = state
+        return state
+
+    def _rows_available(self) -> bool:
+        """Whether this store is written as rows. NOBODY CHOOSES THIS, which is the point.
+
+        The first cut shipped the row format and left it reachable only by a manual migration, so the
+        format was selected by the bytes already in the file: a new store came out as JSON and a user
+        got the faster, concurrency-safe path only if they knew the row store existed and converted by
+        hand. That is a choice between two words most users have no reason to know, presented as a
+        default. A storage format is the library's job.
+
+        So: a new store is written as rows, an existing row store stays rows, and an existing JSON store
+        is converted on open (see `_migrate_json_store`). Encrypted stores stay JSON, because at-rest
+        encryption covers the whole blob and splitting it per row is a different design rather than a
+        faster one. `INSPEXIMUS_STORE_FORMAT=json` pins the old format for an operator who needs to keep
+        a file readable by an older release; it is an escape hatch, not a question anyone is asked.
+        """
+        if _rows is None or self._encrypted or not self.path:
+            return False
+        if (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() == "json":
+            return False
+        if self.path.exists():
+            return _rows.looks_like_sqlite(self.path)
+        return True                       # a store that does not exist yet is created as rows
+
+    def _migrate_json_store(self) -> dict | None:
+        """Convert an existing JSON store to rows, in place, keeping the original beside it.
+
+        REFUSES RATHER THAN LOSES: `migrate_from_json` re-reads what it wrote and raises unless the
+        record count AND the id order both survive. Any failure here leaves the JSON file exactly as it
+        was and the caller keeps reading it, so the worst case is the speed we had yesterday.
+
+        THE BACKUP IS NOT DECORATION. A store written as rows cannot be read by inspeximus 2.26.1 or
+        earlier: those versions decode the file as UTF-8 and raise UnicodeDecodeError on the SQLite
+        header. Renaming the backup back over the store is the whole rollback.
+        """
+        if _rows is None or not self.path or not self.path.exists():
+            return None
+        backup = self.path.with_suffix(self.path.suffix + ".pre-rows.bak")
+        tmp = str(self.path) + ".rows-tmp"
+        try:
+            if not backup.exists():
+                shutil.copy2(str(self.path), str(backup))
+            # WRITE WHAT THIS VERSION READ, not the bytes on disk. Re-reading the source file here
+            # skipped the normalisation that had just run, so a legacy record with no `status` went
+            # into the row store exactly as it was found and then came back out that way -- a bare
+            # `KeyError: 'status'` in six methods, which is the defect the normalisation exists to
+            # prevent. The records in memory are the migrated ones.
+            _out = _rows.save(tmp, self._items, {})
+            _back = _rows.load(tmp)
+            if len(_back) != len(self._items):
+                raise RuntimeError("migration lost records: %d in, %d out"
+                                   % (len(self._items), len(_back)))
+            if [r.get("id") for r in _back] != [r.get("id") for r in self._items]:
+                raise RuntimeError("migration changed record order or identity")
+            os.replace(tmp, str(self.path))
+            return {"records": len(_back), "backup": str(backup)}
+        except Exception as e:                                        # noqa: BLE001
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+            self._migration_error = "%s: %s" % (type(e).__name__, e)
+            return None
+
     def _load_from_disk(self) -> None:
         """Read the store file into `_items` and record the file fingerprint we loaded from.
 
@@ -6774,8 +7283,36 @@ class Inspeximus:
         if self.path and self.path.exists() and _rows is not None                 and _rows.looks_like_sqlite(self.path):
             # A ROW STORE, detected by its 16-byte header rather than its name, because a store
             # migrated in place keeps whatever filename it had.
-            self._items = _rows.load(self.path)
-            self._row_snapshot = _rows.snapshot(self._items)
+            try:
+                self._items = _rows.load(self.path)
+                # A store written by an older row writer holds bytes this version would not write.
+                # The rows only change when something rewrites them, so ask for one full reconcile
+                # rather than leaving a subset of the store in the old encoding indefinitely.
+                _behind = _rows.needs_rewrite(self.path)
+            except Exception as e:
+                # SAME REFUSAL, SAME ADVICE. A damaged row store already refused to open -- sqlite
+                # raises rather than returning half a file, and the bytes are left untouched -- but
+                # it said "database disk image is malformed", which tells an operator nothing about
+                # what to do next. The plaintext branch below has said the useful thing since the
+                # day a truncated store was loaded as [] and saved over it. One store, one message.
+                raise ValueError(
+                    f"cannot parse the store at {self.path} ({e}). Refusing to open it, because "
+                    f"continuing would overwrite the file with an empty store. Restore a backup, or "
+                    f"move the file aside if you meant to start fresh.") from None
+            self._track_all()
+            self._row_snapshot = _rows.snapshot(self._items, self._persist_vectors)
+            if _behind:
+                # ASK FOR A REWRITE, DO NOT EMPTY THE BASELINE. The snapshot above is built from the
+                # PARSED records, so it already holds what this version would write and an ordinary
+                # diff finds nothing to change -- the store stayed in the old encoding while
+                # reporting it had been brought forward. The first fix for that emptied the baseline,
+                # which forced the rewrite and ALSO removed every row's on-disk twin from the
+                # comparison, so `removed` computed nothing: a GDPR erasure printed "erased 1" and
+                # left the record in the file. `rewrite_all` says "write every row again" without
+                # touching the baseline that deletions are derived from.
+                self._rewrite_all = True
+                self._full_reconcile = True
+                self._dirty = True
             self._touched = set()
             self._file_sig = self._stat_sig()
             return
@@ -6815,10 +7352,29 @@ class Inspeximus:
                     # wrote that empty list over it: 5 records in, 0 loaded, 1 on disk after the next write.
                     # The encrypted branch above has always raised here; the plaintext branch silently
                     # destroyed the store instead. Refuse to open rather than overwrite what we cannot read.
-                    raise ValueError(
-                        f"cannot parse the store at {self.path} ({e}). Refusing to open it, because "
-                        f"continuing would overwrite the file with an empty store. Restore a backup, or "
-                        f"move the file aside if you meant to start fresh.") from None
+                    # A STORE BEING CREATED IS NOT A CORRUPT STORE. A row store is created by
+                    # sqlite in place, so between the file appearing and its 16-byte header being
+                    # written there is a window where the file exists, is shorter than that header,
+                    # and is not JSON either. Measured: two processes starting together on a store
+                    # that does not exist yet -- the ordinary case for two agents sharing one -- and
+                    # the second one raised this refusal and died, taking every record it had to
+                    # write. The JSON path never had the window, because it writes through a temp
+                    # file and one atomic replace.
+                    #
+                    # The refusal itself is right and stays: a truncated store loaded as [] and then
+                    # saved over is how five records became one, and `test_an_unparseable_store_
+                    # refuses_to_open_instead_of_overwriting_it` exists to keep it. So the exception
+                    # is the narrowest one that covers the race: an EMPTY file. That is what the
+                    # creation window produces (the parse error names char 0), it is the only content
+                    # that cannot be a damaged store, and ten bytes of garbage is still refused.
+                    if not raw.strip():
+                        self._items = []
+                    else:
+                        raise ValueError(
+                            f"cannot parse the store at {self.path} ({e}). Refusing to open it, "
+                            f"because continuing would overwrite the file with an empty store. "
+                            f"Restore a backup, or move the file aside if you meant to start "
+                            f"fresh.") from None
         for r in self._items:
             # A record missing a field newer code assumes crashed six methods with a bare KeyError — and made
             # index_coherence report `coherent: true` with an undercount, which is worse than crashing. Foreign,
@@ -6838,6 +7394,17 @@ class Inspeximus:
             r.setdefault("valid_from", r["ts"])
             r.setdefault("mtype", _infer_type(r.get("text") or ""))
             r.setdefault("iso", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(r["ts"])))
+        # AN EXISTING JSON STORE IS CONVERTED HERE, not left for the user to discover. Runs after the
+        # records are normalised, so what lands in the row store is what this version reads back.
+        if (self.path and self.path.exists() and not self._encrypted and _rows is not None
+                and not _rows.looks_like_sqlite(self.path)
+                and (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() != "json"):
+            self._migration = self._migrate_json_store()
+            if self._migration:
+                self._items = _rows.load(self.path)
+                self._track_all()
+                self._row_snapshot = _rows.snapshot(self._items, self._persist_vectors)
+                self._touched = set()
         self._file_sig = self._stat_sig()
 
     @staticmethod
@@ -6877,6 +7444,20 @@ class Inspeximus:
         A record this handle TOMBSTONED is not resurrected, and where the merge leaves two active records
         under one key the store's own last-write-wins rule is re-applied rather than left contradictory.
         Returns {reloaded, readded, demoted, kept_buried}."""
+        out = self._merge_with_disk()
+        self._save(force=True)
+        return out
+
+    def _merge_with_disk(self) -> dict:
+        """The union `reload()` performs, without the save. Both callers use THIS, and only this.
+
+        The save path needs the same merge while it already holds the store lock, so it cannot call
+        `reload()`, which ends in a save. The first attempt at the row-store merge therefore wrote a
+        SECOND, shorter union next to this one -- and the two disagreed on the parts that are easy to
+        forget: a record this handle tombstoned came back from disk, and two active records under one
+        key were left contradicting each other while `verify_writes()` still reported True. Both were
+        already solved here. One merge, two callers.
+        """
         mine = {r["id"]: r for r in self._items}
         self._items = []
         self._file_sig = None
@@ -6906,7 +7487,6 @@ class Inspeximus:
             "reload_merge_lww", "reload merge: a newer value for this key won")
         self._file_sig = self._stat_sig()
         self._items_view_rev = None
-        self._save(force=True)
         return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
                 "kept_buried": len(resurrected)}
 
@@ -6988,7 +7568,7 @@ class Inspeximus:
             rid = r.get("id")
             if not rid or rid in have or rid in buried:
                 continue
-            self._items.append({k: v for k, v in r.items() if k != "vec"})
+            self._items.append(self._track({k: v for k, v in r.items() if k != "vec"}))
             have.add(rid)
             added += 1
         before = len(self._items)
@@ -8233,6 +8813,12 @@ class Inspeximus:
             "pubkey": self.receipt_pubkey,
             "anchor": self.anchor(),
             "self_check": {"verified": ok, "problems": problems},
+            # THE COPY THIS LIBRARY MADE ITSELF. Converting a JSON store to rows leaves the original
+            # beside it, and that file holds the records a subject asked to have erased. An erasure
+            # removes it, which ends the rollback window; an operator can keep it with
+            # INSPEXIMUS_KEEP_CONVERSION_BACKUP=1, and then this field is where an auditor reads that
+            # the erasure did not reach it.
+            "conversion_backup": dict(self._conversion_backup),
             "scope": _CERT_SCOPE,
             "verify_with": "inspeximus.verify_erasure_certificate(cert, store_path=<file>)  # or store_items=<list>",
         }
@@ -11501,6 +12087,7 @@ class Inspeximus:
             rec[key] = float(rec.get(key, 0) or 0) + float(weight)
             if good and self._warrant_is_exogenous(rec, warrant):
                 rec["good_warranted"] = float(rec.get("good_warranted", 0) or 0) + float(weight)
+            self._touch(rec)                     # a row store writes only what is declared
             updated.append(i)
         if updated:
             self._save()
@@ -11610,6 +12197,7 @@ class Inspeximus:
             return {"ok": False, "reason": "duplicate (by_key, kind, lens) -- does not stack",
                     "grade": g["grade"], "novel": g["novel"]}
         rats.append({"kind": kind, "by_key": by_key, "lens": lens, "note": note, "ts": time.time()})
+        self._touch(rec)                          # a row store writes only what is declared
         self._save(force=True)
         g = self.grade(rec)
         return {"ok": True, "grade": g["grade"], "novel": g["novel"], "reason": f"{kind} recorded"}
@@ -11792,6 +12380,7 @@ class Inspeximus:
                 r["mtype"] = "episodic"          # revoke graduation, else it still passes _is_corroborated
                 _mtype_changed = True
             meta["slashed"] = True
+            self._touch(r)                       # a row store writes only what is declared
             slashed.append(r["id"])
             if _mtype_changed and self.receipts_enabled:
                 # AMEND THE CHAIN. `mtype` is a committed field, so revoking graduation made verify_writes()
@@ -11876,6 +12465,7 @@ class Inspeximus:
                 r["mtype"] = prev.get("mtype", r.get("mtype", "episodic"))
             else:                                 # no record -> clean slate (must re-earn, don't snap to trusted)
                 r["good"] = 0.0; r["bad"] = 0.0
+            self._touch(r)                        # a row store writes only what is declared
             meta["slashed"] = False
             restored.append(r["id"])
             if r.get("mtype") != _mtype_before and self.receipts_enabled:
@@ -12757,6 +13347,8 @@ class Inspeximus:
         # the one that corrected the record.
         older["bad"] = float(older.get("bad", 0) or 0) + 1.0
         newer["good"] = float(newer.get("good", 0) or 0) + 1.0
+        self._touch(older)
+        self._touch(newer)
         self._declare_retired(older, f"state toggle: contradicted by {newer['id']}")
         return ("toggled", older)
 
@@ -13823,6 +14415,7 @@ class Inspeximus:
                 r["vec"] = list(self.embed(r["text"])); done += 1
             except Exception:
                 r["vec"] = None; failed += 1
+            self._touch(r)                                          # a row store writes what is declared
         self._mat = None
         self._save(force=True)
         out = {"reembedded": done, "failed": failed,
@@ -13888,14 +14481,30 @@ class Inspeximus:
             # between them is exactly the race the check exists to report.
             with _StoreLock(self.path):
                 if self._file_sig is not None and self._stat_sig() != self._file_sig:
-                    # Another handle wrote this file since we loaded or last saved it. Writing now replaces its
-                    # records with ours -- measured: B's committed, flush()ed record erased by A's next save,
-                    # with verify_writes() still True on both sides because each chain was self-consistent.
-                    # inspeximus is a SINGLE-WRITER store; refuse rather than lose the other writer's work.
-                    raise StoreChangedOnDisk(
-                        f"{self.path} changed on disk since this handle loaded it (another process or another "
-                        f"Inspeximus() on the same path). Saving would erase its records. Call reload() to merge "
-                        f"the two and retry, or give each writer its own store file.")
+                    # A ROW STORE CAN MERGE, SO IT DOES. The refusal below exists because a JSON save
+                    # rewrites the whole file, so writing over a changed file replaces the other
+                    # writer's records with ours. A row write touches only the ids the caller names, so
+                    # the two sides do not collide: re-reading the current rows and re-applying ours by
+                    # id is the same union `reload()` performs, and it can be done here instead of
+                    # being left to a caller who mostly does not do it.
+                    #
+                    # THE FIRST VERSION OF THE ROW STORE DID NOT DO THIS, AND MEASURING IT IS WHAT
+                    # FOUND IT. The concurrency result the row store was built for -- "loses nothing
+                    # where JSON lost a whole worker" -- had been measured against `sqlite_store.save`
+                    # directly, which no application calls. Measured through the product instead, with
+                    # twelve writers: JSON landed 54 to 64 records of 96 and the row store landed 32 to
+                    # 40, so the new format was WORSE at the thing it was chosen for, because both were
+                    # refused by this guard and only the loss pattern differed.
+                    if self._merge_rows_from_disk():
+                        rows = self._items
+                        slim = (list(rows) if self._persist_vectors
+                                else [{k: v for k, v in r.items() if k != "vec"} for r in rows])
+                    else:
+                        raise StoreChangedOnDisk(
+                            f"{self.path} changed on disk since this handle loaded it (another process "
+                            f"or another Inspeximus() on the same path). Saving would erase its records. "
+                            f"Call reload() to merge the two and retry, or give each writer its own "
+                            f"store file.")
                 # allow_nan=False: a caller-supplied NaN/Infinity was written as a bare literal, which
                 # Python re-reads but every STRICT JSON parser (jq, JS, Rust/serde) rejects — so the
                 # store silently stopped being valid JSON for the audit bundle and any non-Python reader,
@@ -13905,9 +14514,24 @@ class Inspeximus:
                 # 20.5 MB per write against 0.0217 s for one INSERT. Encrypted stores keep the JSON
                 # path, because at-rest encryption covers the whole blob and splitting it per row is
                 # a different design, not a faster one.
-                if not self._encrypted and _rows is not None and _rows.looks_like_sqlite(self.path):
+                if self._rows_available():
                     if self._row_snapshot is None:
-                        self._row_snapshot = _rows.snapshot(rows)
+                        # THE BASELINE IS WHAT IS ON DISK, and this line used to set it to what is in
+                        # MEMORY. `None` here means no row store was ever loaded, so disk holds nothing
+                        # -- but seeding the baseline from the current records made every one of them
+                        # look already-written, and the diff then had nothing to do. Measured the moment
+                        # new stores started being written as rows: a first `remember()` returned an id,
+                        # `flush()` succeeded, and reopening the store read zero records. While only a
+                        # manual migration could produce a row store this branch was unreachable, which
+                        # is why a wrong baseline sat here harmlessly.
+                        # AN EMPTY BASELINE, EVEN WHEN THE FILE EXISTS. `None` here means no read
+                        # ever filled `_items` from this file, so every row in it is a row this
+                        # handle has never seen -- and reading them now to serve as the baseline
+                        # makes `baseline - memory` name all of them, which DELETES a store another
+                        # process created after this one opened an absent path. An empty baseline
+                        # cannot delete anything: the writer inserts this handle's rows and leaves
+                        # every other row alone, which is the union the recovery path wants.
+                        self._row_snapshot = {}
                     # WHEN TO PAY FOR A FULL RECONCILE. The complete diff serialises every
                     # record to find what moved, which costs 0.393 s on this store against 0.007 s
                     # for the INSERT it produces. Doing it on every `flush()` was the first design
@@ -13926,34 +14550,46 @@ class Inspeximus:
                     # append, because an append changes the count by definition -- so the full diff
                     # ran on every write and the row store measured 1.0x against JSON. Set
                     # membership costs no serialisation and answers the question that was meant.
-                    _live = {_r["id"] for _r in slim if isinstance(_r, dict) and _r.get("id")}
+                    _live = {_r["id"] for _r in rows if isinstance(_r, dict) and _r.get("id")}
                     _undeclared = _live - set(self._row_snapshot) - self._touched
                     _reconcile = self._full_reconcile or bool(_undeclared)
                     self._full_reconcile = False
-                    _res = _rows.save(self.path, slim, self._row_snapshot,
-                                      dirty=None if _reconcile else self._touched)
+                    # `rows`, not `slim`: building the stripped copy costs one dict per record on
+                    # every save, and the row writer only serialises what changed, so the copy was
+                    # thrown away almost entirely. `keep_vec` tells it to drop the key instead.
+                    _res = _rows.save(self.path, rows, self._row_snapshot,
+                                      dirty=None if _reconcile else self._touched,
+                                      rewrite_all=self._rewrite_all,
+                                      keep_vec=self._persist_vectors)
+                    self._rewrite_all = False
                     self._row_snapshot = _res["snapshot"]
                     self._touched = set()
                     self._file_sig = self._stat_sig()
-                    self._last_save = now
-                    self._dirty = False
-                    self._persist_error = None
-                    return
-                data = _dump_store(slim)
-                if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
-                    key = self._resolve_key()                         # sets self._enc_salt on first save
-                    payload = _encrypt_blob(key, data.encode("utf-8"), self._enc_salt)
+                    _wrote_rows = True
                 else:
-                    payload = data
-                _durable_replace(self.path, payload)
-                # INSIDE the lock, and that is the whole point. The check and the write already shared
-                # one critical section, but this line sat outside it, so the window simply moved: A
-                # writes, releases, and before it stamps its own signature B takes the lock, compares
-                # the file against a signature that predates A's write, and reports a competing PROCESS.
-                # LangGraph calls a checkpointer from its executor, so an ordinary app.invoke was enough
-                # to hit it -- 3 to 15 failures in 40 runs, load-dependent, which is why it read as
-                # flaky rather than broken. A guard that fires on its own peer is not protecting anyone.
-                self._file_sig = self._stat_sig()
+                    _wrote_rows = False
+                # THE TAIL BELOW IS SHARED, and the row branch used to `return` before it.
+                # `.embedid` -- the sidecar recording which embed recipe the
+                # persisted vectors were made with -- was therefore never
+                # written on a row store, so the next open with a different
+                # recipe had nothing to compare against. Three probes cited by
+                # the docs caught it; nothing in the store itself would have.
+                if not _wrote_rows:
+                    data = _dump_store(slim)
+                    if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
+                        key = self._resolve_key()                         # sets self._enc_salt on first save
+                        payload = _encrypt_blob(key, data.encode("utf-8"), self._enc_salt)
+                    else:
+                        payload = data
+                    _durable_replace(self.path, payload)
+                    # INSIDE the lock, and that is the whole point. The check and the write already shared
+                    # one critical section, but this line sat outside it, so the window simply moved: A
+                    # writes, releases, and before it stamps its own signature B takes the lock, compares
+                    # the file against a signature that predates A's write, and reports a competing PROCESS.
+                    # LangGraph calls a checkpointer from its executor, so an ordinary app.invoke was enough
+                    # to hit it -- 3 to 15 failures in 40 runs, load-dependent, which is why it read as
+                    # flaky rather than broken. A guard that fires on its own peer is not protecting anyone.
+                    self._file_sig = self._stat_sig()
             # record the embed recipe the persisted vectors were made with (only when vectors are actually
             # persisted) so a later open with a different recipe re-embeds instead of silently mismatching.
             # embed_id None means THIS opener has no recipe (e.g. a lexical hook run on a semantic store) —
@@ -13985,7 +14621,17 @@ class Inspeximus:
         """Force-persist any pending throttled changes (call on clean shutdown).
 
         RAISES if persistence fails. This is the explicit "make sure it is written" call, so a caller that
-        gets no exception is entitled to believe the store is on disk."""
+        gets no exception is entitled to believe the store is on disk.
+
+        IT NO LONGER PAYS FOR THE COMPLETE DIFF, because it no longer has to. A row write serialises
+        the ids that were declared, and for a while the only way to be sure that set was complete was
+        to re-serialise the whole store here: 0.18 s per flush on 30,000 records, which was most of
+        what the row format saves. Records now declare their own edits (`_TrackedDict`), so the set is
+        complete by construction and this call writes what changed. The store is still asked to write
+        whatever is outstanding, which is the part of the contract that matters.
+        """
+        if self._rows_available() and self._touched:
+            self._dirty = True
         if self._dirty:
             self._save(force=True)
         if self._persist_error:

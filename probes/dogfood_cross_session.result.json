@@ -1,8 +1,8 @@
 {
   "probe": "dogfood_cross_session",
   "question": "does inspeximus return the facts an agent needs to resume work after a session boundary?",
-  "generated_utc": "2026-08-31T13:43:55Z",
-  "inspeximus_version": "2.24.0",
+  "generated_utc": "2026-09-07T08:48:07Z",
+  "inspeximus_version": "3.0.0",
   "operating_point": {
     "store_records": 2571,
     "active_records": 2570,
@@ -490,25 +490,28 @@
           "query": "how does a release get published these days?",
           "age_days": 2,
           "recency": false,
-          "rank": 25,
+          "rank": null,
           "hit@1": false,
           "hit@5": false,
-          "hit@25": true,
+          "hit@25": false,
           "own_siblings_in_top5": 0,
           "own_siblings_in_top25": 0,
           "query_overlap_with_decision": 0.0,
-          "top1_text": "draft: a short summary of how release, closed and correctly interact today"
+          "top1_text": "draft: a short summary of how release, closed and correctly interact today",
+          "deep_rank": 26,
+          "diagnosis": "ranked below k=25 but present at 26"
         }
       ],
       "hit@1": 0.6923,
       "hit@5": 0.8462,
-      "hit@25": 0.9231,
+      "hit@25": 0.8462,
       "missed_at_5": [
         "reinforce_order",
         "release_channel_current"
       ],
       "missed_at_25": [
-        "reinforce_order"
+        "reinforce_order",
+        "release_channel_current"
       ],
       "control_rank": 1,
       "control_top1_text": "CONTROL RECORD: the nightly consolidation pass merges near-duplicate summary records and writes one consolidat",
@@ -557,14 +560,8 @@
     "hit@5_reinforce_on": 0.8462,
     "hit@5_reinforce_off": 0.8462,
     "hit@25_reinforce_on": 0.8462,
-    "hit@25_reinforce_off": 0.9231,
-    "facts_whose_rank_moved": [
-      {
-        "fact": "release_channel_current",
-        "rank_reinforce_on": null,
-        "rank_reinforce_off": 25
-      }
-    ],
+    "hit@25_reinforce_off": 0.8462,
+    "facts_whose_rank_moved": [],
     "note": "reinforce=True is the library default and rewrites the value and decay clock of every record it returns, so each query changes the ranking the NEXT query sees. Any fact listed in facts_whose_rank_moved is that effect measured on this corpus; both arms read the same bytes from disk, and the only difference is the default. The off arm is the order-independent number and is the one to compare across releases."
   },
   "caveats": [

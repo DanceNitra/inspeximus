@@ -19,6 +19,8 @@ import shutil
 
 from inspeximus import Inspeximus
 
+from _store_io import load_store, save_store
+
 
 def fork_of(ix, dest, records, receipt_key=None, keep=1):
     """A real fork of `ix` at `dest`: same genesis receipt, divergent history from `keep` onwards.
@@ -34,8 +36,7 @@ def fork_of(ix, dest, records, receipt_key=None, keep=1):
     kept = {r["memory_id"] for r in rows[:keep]}
     del rows[keep:]
     json.dump(rec, open(rp, "w", encoding="utf-8"))
-    json.dump([r for r in json.load(open(p, encoding="utf-8")) if r["id"] in kept],
-              open(p, "w", encoding="utf-8"))
+    save_store(p, [r for r in load_store(p) if r["id"] in kept])
 
     f = Inspeximus(path=p, receipts=True, receipt_key=receipt_key)
     for text, key, obj in records:

@@ -165,7 +165,10 @@ def test_art12_a_tampered_record_is_caught_through_MCP(monkeypatch, tmp_path):
     st = store_of(os.environ["INSPEXIMUS_PATH"])
     rec = next(r for r in st.items if r["id"] == rid)
     rec["text"] = "revenue is 900M"
-    st._save(force=True)
+    # `flush()`, not the private `_save(force=True)`. The edit above reaches into the record, so
+    # nothing declares it and a row store writes what is declared. `flush()` is the public call whose
+    # contract is that everything is on disk, and it takes the complete diff for that reason.
+    st.flush()
     m2 = importlib.reload(sys.modules["inspeximus.mcp_server"])
     assert m2.verify_writes()["ok"] is False, "an out-of-band edit was not detected"
 

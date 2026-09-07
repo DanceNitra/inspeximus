@@ -57,7 +57,12 @@ m4.remember("has a vector", key="v")
 for i in range(50):                                  # vec-less records (an embedder-down capture, or lexical era)
     m4.remember(f"no vector {i}", key=f"n{i}")
     m4.items[-1]["vec"] = None
-m4._save(force=True)
+# `flush()`, not `_save(force=True)`. The lines above reach into the records and clear a field
+# without going through any method, so nothing declares the change -- and a row store writes what is
+# declared. `flush()` is the documented "make sure it is written" call and takes the complete diff
+# for exactly this reason. On a whole-file store the difference never showed, because every save
+# rewrote everything whether or not anyone said what had changed.
+m4.flush()
 
 calls["n"] = 0
 m5 = Inspeximus(path=p3, embed=embC, persist_vectors=True, embed_id="C")

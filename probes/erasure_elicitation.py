@@ -39,6 +39,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from inspeximus import Inspeximus  # noqa: E402
+from inspeximus import sqlite_store as _rows            # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "erasure_elicitation.result.json")
@@ -232,7 +233,8 @@ def main():
     # THE VECTOR QUESTION PROPERLY PUT. A vector does not contain its text, so it cannot leak a value
     # by substring; it leaks by SURVIVING its record. "Deleting from the store left the embedding in
     # the index" is the classic form, so count what is on disk against what is still active.
-    on_disk = json.load(open(path, encoding="utf-8"))
+    on_disk = _rows.load(path) if _rows.looks_like_sqlite(path) else json.load(
+        open(path, encoding="utf-8"))
     live_ids = {it["id"] for it in m.items if it.get("status") != "erased"}
     n_vec = sum(1 for r in on_disk if r.get("vec"))
     orphan_vecs = [r.get("id") for r in on_disk if r.get("vec") and r.get("id") not in live_ids]

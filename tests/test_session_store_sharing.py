@@ -22,6 +22,8 @@ from inspeximus import Inspeximus
 from inspeximus.core import StoreChangedOnDisk
 from inspeximus.integrations.openai_agents import InspeximusSession
 
+import pytest
+
 
 def _path():
     return os.path.join(tempfile.mkdtemp(), "m.json")
@@ -70,24 +72,38 @@ def test_an_explicit_store_is_still_honoured():
     assert InspeximusSession(session_id="s1", store=st).store is st
 
 
-def test_the_single_writer_guard_is_not_disabled():
+@pytest.mark.parametrize("fmt", ["json", "rows"])
+def test_two_handles_on_one_file_never_erase_each_other(fmt, monkeypatch):
     """Sharing the handle must not be mistaken for switching the guard off — two independent handles on one
-    file is still the case where a save erases the other's records."""
+    file is still the case where a save can erase the other's records.
+
+    THE PROPERTY IS THAT NOTHING IS ERASED, and the two formats reach it differently. A JSON save
+    rewrites the whole file, so the only safe answer is to refuse the second writer, which costs that
+    writer its work. A row write touches only the ids it names, so the save merges and every record
+    survives. This asserted the refusal, which pinned the JSON mechanism rather than the guarantee.
+    """
+    if fmt == "json":
+        monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    else:
+        monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
     p = _path()
     a, ops = Inspeximus(path=p), 0
     a.remember("x")
     a.flush()
     b = Inspeximus(path=p)
-    # Assert the PROPERTY (two independent handles cannot both keep writing), not the exact call that
-    # raises. My first version pinned it to a's second flush and failed — the guard fired one step earlier.
     try:
         for handle, text in ((b, "y"), (a, "z"), (b, "w")):
             handle.remember(text)
             handle.flush()
             ops += 1
-        raise AssertionError("the single-writer guard stopped firing")
+        landed = {r["text"] for r in Inspeximus(path=p).items}
+        assert fmt == "rows", "a JSON store let both handles keep writing; the guard is off"
+        assert {"x", "y", "z", "w"} <= landed, (
+            "a row store merges instead of refusing, so nothing may be lost: %r" % landed)
     except StoreChangedOnDisk:
+        assert fmt == "json", "a row store refused a write it can merge"
         assert ops < 3
+        assert any(r["text"] == "x" for r in Inspeximus(path=p).items),             "the first handle's record was erased despite the refusal"
 
 
 def test_the_handle_is_released_when_the_last_session_goes():

@@ -1,3 +1,126 @@
+## 3.0.0 - UPGRADE IF YOU SHARE ONE STORE BETWEEN PROCESSES, OR HOLD MORE THAN A FEW THOUSAND RECORDS: the store writes rows, and you do not choose that
+
+BREAKING, ON DISK ONLY: a store written by this version cannot be read by 2.26.1 or earlier. Those
+versions decode the store as UTF-8 and raise `UnicodeDecodeError` on the SQLite header. The API,
+the record shape and every method are unchanged, so a downgrade is a file rename rather than a code
+change: `memory.json.pre-rows.bak` is the store as it was before the conversion.
+
+**Every write used to rewrite the whole file.** One persisted write, three independent trials of
+thirty writes on an idle machine: 0.0800 s against 0.0441 s at 10,000 records, and 0.2330 s against
+0.1320 s at 30,000, so about 1.8x at both. At 1,000 records the two are close enough that separate
+runs have come out both ways and one trial in this run still did, so there is nothing to claim there.
+The cost of rewriting a file grows with the file and the cost of writing one row does not, which is
+why the gain arrives with the records. `sqlite3` ships with Python, so "zero dependencies" is intact.
+
+**THE FIRST NUMBER PUBLISHED HERE WAS 16x, AND IT WAS MEASURED ON THE WRONG THING.** It timed
+`sqlite_store.save(dirty=[id])`, a helper no application calls. Through the library the same change
+was 1.8x SLOWER at every size, because `flush()` re-serialised the whole store to catch a record
+edited in place that nothing had declared. Records now declare their own edits, which is both the
+speed and the reason nine call sites no longer have to remember to. The lesson is the one this
+project keeps relearning: measure the layer a caller actually reaches.
+
+**Two writers can now share a store, and that is the change worth reading twice.** A save refuses
+when the file changed underneath it, because a JSON save rewrites the whole file and would replace
+the other writer's records. `reload()` is the documented recovery and almost nobody calls it, so a
+refused writer's handle stayed stale and failed for every remaining write: the store was SAFE and it
+was not AVAILABLE. A row write touches only the ids it names, so the two sides do not collide, and
+the save now performs that union itself instead of refusing. Measured through the library with
+twelve concurrent processes: the JSON store landed 63 of 96 records in its worst trial and never
+landed all of them, the row store landed every record in 4 of 4 trials.
+
+The refusal is unchanged for JSON and encrypted stores, where merging is not available.
+
+**That result was nearly published as a property it did not have.** The first measurement of it
+called `sqlite_store.save` directly, which no application does, and it reported the row store losing
+nothing. Measured through the library instead, before the merge existed, the row store landed 32 to
+40 records of 96 against JSON's 54 to 64: WORSE at the thing it was chosen for, because both were
+refused by the same guard and only the loss pattern differed. The number was right about the
+function and wrong about the product.
+
+**A SMALL STORE USED TO WRITE SLOWER, AND THAT SENTENCE IS WITHDRAWN.** An earlier draft of this
+entry said the whole-file write is cheaper below a few thousand records and cited one of this
+project's own probes at 123 s against 70 s on 2.26.1. That was measured before the work described in
+the next paragraph, and it no longer describes this release: re-measured on an idle machine, the row
+store is at least as fast at every size tested, including a thousand records. The 123 s figure is
+removed rather than restated, because nothing here re-derives it and a number without a live artifact
+is not evidence.
+
+Three changes account for it. `flush()` no longer re-serialises the whole store to catch an
+undeclared edit, because records declare their own. The format decision is made once per handle
+instead of once per record, which was opening the store file 30,003 times on a 30,000-record save.
+And the writer no longer builds a stripped copy of every record to write the few that changed.
+
+**NOBODY PICKS A FORMAT.** The first cut of this shipped the row store reachable only by a manual
+migration, which made the format a choice between two words most users have no reason to know, and
+handed the faster path only to whoever already knew it existed. A new store is written as rows. An
+existing JSON store is converted the first time this version opens it, and the conversion re-reads
+what it wrote and refuses unless the record count and the id order both survive. Encrypted stores
+stay a single encrypted blob. `INSPEXIMUS_STORE_FORMAT=json` keeps the old format for a store other
+tooling reads directly.
+
+**Five defects were found by asking what this does to the product, and all five are fixed here.**
+Four of them existed only between the first row-store commit and this release, so no released
+version ever carried them. They are written down because the class is what matters: a storage change
+reaches surfaces that have nothing to do with storage.
+
+| defect | what it did |
+|---|---|
+| `verify_erasure_certificate` read the store as JSON | on a converted store it reported `cannot read store` and the id-absence proof, the strongest check in this library, silently stopped running |
+| the save path seeded its on-disk baseline from memory | the first record written to a new store never reached disk: `remember()` returned an id, `flush()` succeeded, and the store read back empty |
+| sqlite does not zero a deleted row | after `forget_subject`, the erased text was still readable in the store file with `strings`, which is the soft-delete failure the erasure certificate exists to disprove. `PRAGMA secure_delete=ON` |
+| the conversion backup outlived an erasure | `.pre-rows.bak` held every record including erased ones, and nothing in the erasure path could see it. Hard erasure now deletes it |
+| `audit_the_audits` read its fixture as JSON | `UnicodeDecodeError`, taking every audited surface with it |
+
+Erasure reaching the copy this library made itself is the one worth restating: a file we created
+without being asked is not somewhere personal data gets to survive a deletion request. The rollback
+window therefore ends at the first erasure.
+
+**A CONCURRENT WRITER'S COMMITTED RECORD COULD BE DELETED, and this is the one to read.** The row
+writer derives its deletions: whatever is in the baseline and not in memory is treated as erased. That
+is only sound while the baseline describes the same read that filled memory, and it did not. The
+recovery path merged with disk, which reads the store, then read the store a SECOND time to refresh
+the baseline. A row another process committed between those two reads was in the baseline, was absent
+from memory, and was deleted in the same transaction that reported a successful save to both writers.
+
+Measured with eight concurrent writers, changing nothing but the inter-process lock: with the lock
+held, 0 of 96 records lost in 4 of 4 trials; with it degraded, 17, 6, 28 and 47 lost, every worker
+reporting all twelve of its writes successful and no exception raised anywhere.
+
+The baseline now comes from the read that filled memory, so a row committed after it is not in the
+baseline, and a row that is not in the baseline can never be computed as a deletion. The removed line
+carried the opposite reasoning, that a stale baseline is the danger. It is backwards: a baseline taken
+earlier can only omit ids, and only a baseline taken later can invent a deletion.
+
+**The lock gave up while the holder was still working.** A writer holds the inter-process lock across
+SQLite's own busy wait, so the wait for the lock must outlast the longest a holder can legally block.
+It was 20 s against a 30 s busy timeout, and `msvcrt.locking` blocks about 9 s per attempt, so
+ordinary contention degraded the lock at roughly 27 s rather than a wedged process doing it. The lock
+now waits 60 s and the busy timeout is 10 s. Degrading is also no longer silent: it is counted per
+path and reported once to stderr, because a loss nothing recorded is a loss nobody can explain.
+
+**`rec |= {...}` was lost, and so was `tags *= 2`.** Records handed back from a row store are wrapped
+so an edit declares itself. `__ior__` and `__imul__` are C-level slots that do not route through
+`update` or `extend`, so both changed the record in memory and wrote nothing: 77.0 in memory, 1.0
+after a flush and reopen. On a whole-file store this class of defect cannot arise, which is why it
+shipped. Every mutation route the dict and list protocols offer is now swept by a test, so a route
+nobody thought of fails without anyone adding a case.
+
+**`copy()` was not a copy.** Nested containers are wrapped lazily, on the read that returns them, so a
+record whose `meta` nobody had read yet handed the copy the original's own dict: writing to the copy
+changed the record and marked the store dirty. A copy that depends on which keys the caller happened
+to read is not a copy. It now detaches at every depth.
+
+**Deleting the rollback copy is no longer silent, and you can decline it.** Hard erasure removes
+`memory.json.pre-rows.bak`, because a file this library created without being asked is not somewhere
+personal data survives a deletion request. What was missing is that the operator was never told their
+upgrade had stopped being reversible. `erasure_certificate()` now reports what happened to that file
+by name, and `INSPEXIMUS_KEEP_CONVERSION_BACKUP=1` keeps it. Keeping it is an honest scope reduction
+rather than a free option: the certificate then declares the backup as data the erasure did not reach.
+
+Tamper evidence is unchanged and was re-measured on the new format: an out-of-band edit to a row is
+still reported as `its TEXT or KEY no longer matches its write receipt`. The README example that
+demonstrated it by editing the file as text now edits it through `sqlite_store`, and runs verbatim.
+
 ## 2.26.1 - AFFECTS NOBODY'S CODE: metadata only, so that the project is findable by the things it does
 
 Nine of the capabilities inspeximus implements were documented only in the README, which is the one

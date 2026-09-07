@@ -15,6 +15,8 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import Inspeximus
 
+from _store_io import store_text
+
 
 def _path():
     return os.path.join(tempfile.mkdtemp(), "m.json")
@@ -139,7 +141,7 @@ def test_langchain_clear_actually_erases_and_persists():
 
     h.clear()
     assert len(h.messages) == 0
-    assert "4111-1111" not in open(p, encoding="utf-8").read(), "content survived a user-visible clear"
+    assert "4111-1111" not in store_text(p), "content survived a user-visible clear"
 
 
 def test_crewai_reset_actually_erases_and_persists():
@@ -149,7 +151,7 @@ def test_crewai_reset_actually_erases_and_persists():
     s = InspeximusStorage(path=p)
     s.save("secret abc123", {})
     s.reset()
-    assert "abc123" not in open(p, encoding="utf-8").read()
+    assert "abc123" not in store_text(p)
 
 
 def test_a_langgraph_namespace_can_be_erased_as_a_subject():

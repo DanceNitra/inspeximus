@@ -422,6 +422,18 @@ _PRIVATE_UNREBOUND_BY_DECISION = {
     "_retired_values",
     "_revert_authorized",
     "_verified_support_classes",
+    # THE WHOLE-STORE WRITE PATH, deliberately parent-bound. `_save` persists every tenant's rows on
+    # purpose -- serialising a bound handle's view once wrote only that tenant and dropped the rest
+    # (projA 3 records, a projB flush, projA left with 0), and the comment in `_save` says so. The
+    # two merges are the same operation seen from the other side: reconciling with what another
+    # process wrote is about the file, not about one tenant's slice, and a merge scoped to a slice
+    # would drop the other tenants' rows exactly as that bug did.
+    "_save",
+    "_merge_with_disk",
+    "_merge_rows_from_disk",
+    # Handed the record it is to flag, by a caller that already scoped it -- the same reasoning as
+    # `_resolve_subject` above.
+    "_do_reopen",
 }
 
 

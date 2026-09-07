@@ -29,6 +29,8 @@ import pytest
 from inspeximus import Inspeximus
 from inspeximus.compliance import compliance_check, retention_sweep
 
+from _store_io import load_store, store_text
+
 
 def _store(**kw):
     return Inspeximus(path=os.path.join(tempfile.mkdtemp(), "s.json"), **kw)
@@ -58,7 +60,7 @@ def test_a_second_writer_cannot_publish_a_torn_store():
     for i in range(30):
         s.remember(f"record number {i} with some text", key=f"k::{i}")
         s.flush()
-        json.loads(open(s.path, encoding="utf-8").read())      # raises if torn
+        load_store(s.path)                                    # raises if torn
 
 
 def test_the_lock_does_not_litter_the_data_directory():
@@ -197,7 +199,7 @@ def test_discarded_pii_is_stored_pii():
     s._items[0]["ts"] = 1.0
     s.flush()
 
-    assert "carol@example.com" in open(s.path, encoding="utf-8").read()
+    assert "carol@example.com" in store_text(s.path)
     assert retention_sweep(s, max_age_days=1)["eligible"] == 1
     out = compliance_check(s, max_pii_age_days=1)
     assert out["ok"] is False and [v["code"] for v in out["violations"]] == ["pii_over_retention"]

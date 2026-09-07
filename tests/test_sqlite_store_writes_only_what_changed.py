@@ -1,6 +1,6 @@
 """The row store must be faster AND lossless, and the second is the one that can hurt.
 
-A store that writes one row instead of 20.3 MB is worth having only if every record survives the
+A store that writes one row instead of the whole file is worth having only if every record survives the
 trip. This project's coding store has been corrupted three times in ten days, so the migration
 checks its own count and identity rather than trusting that it worked.
 
@@ -23,6 +23,18 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def _rec(i, text=None):
     return {"id": "r%03d" % i, "text": text or ("record %d" % i), "ts": 1000.0 + i,
             "status": "active", "meta": {"sid": "s1"}, "tags": ["t"]}
+
+
+#: Held in a separate PROCESS: a sqlite connection cannot be used from another thread, so a releaser
+#: thread dies silently and the lock is never let go.
+HOLDER_SRC = """
+import sqlite3, sys, time
+c = sqlite3.connect(sys.argv[1], timeout=30, isolation_level=None)
+c.execute('BEGIN IMMEDIATE')
+print('locked', flush=True)
+time.sleep(0.6)
+c.execute('COMMIT')
+"""
 
 
 def _db():
@@ -125,7 +137,13 @@ for i in range(n):
 
 @pytest.mark.parametrize("workers", [2, 8])
 def test_concurrent_processes_lose_nothing(workers):
-    """The JSON store lost a whole worker's output in 8 of 8 trials at this width."""
+    """This exercises `sqlite_store.save` DIRECTLY, which is not how an application writes.
+
+    Read `probes/twelve_writers_and_the_one_that_stopped_writing.py` for the number that means
+    something: measured through the library, the row store lost MORE than JSON until the save path
+    learned to merge, because both writers were refused by the same guard. This test pins that the
+    row layer itself does not lose a write; it does not pin the product's concurrency.
+    """
     db = _db()
     ss.save(db, [], {})
     src = os.path.join(tempfile.mkdtemp(prefix="sqlw_"), "w.py")
@@ -184,21 +202,25 @@ def test_an_ordinary_append_does_not_trigger_the_complete_diff():
     ss.save(db, [_rec(i) for i in range(200)], {})
     m = Inspeximus(path=db)
     m._save_min_s = 0
-    seen = {}
+    calls = []
     real_save = ss.save
 
-    def spy(path, items, before, dirty=None):
-        res = real_save(path, items, before, dirty=dirty)
-        seen["dirty_was_none"] = dirty is None
-        return res
+    def spy(path, items, before, dirty=None, **kw):
+        calls.append(dirty is None)
+        return real_save(path, items, before, dirty=dirty, **kw)
 
     ss.save = spy
     try:
-        m.remember("an ordinary write", key="k", mtype="fact")
-        m.flush()
+        m.remember("an ordinary write", key="k", mtype="fact")   # the write under test
+        m.flush()                                                # reconciles on purpose
     finally:
         ss.save = real_save
-    assert seen.get("dirty_was_none") is False, (
+    # RECORD EVERY CALL, NOT THE LAST ONE. `flush()` asks for the complete diff deliberately: it is
+    # the durability barrier, and a record edited in place that nothing declared is invisible to the
+    # fast path. Keeping only the last call measured the flush and then reported that an ordinary
+    # append pays for the safety net.
+    assert calls, "no save happened at all, so this measures nothing"
+    assert calls[0] is False, (
         "a declared append still took the complete diff, so every write pays for the safety net")
 
 
@@ -218,3 +240,83 @@ def test_close_session_asks_for_the_complete_diff():
     m.close_session("s1")
     assert m._full_reconcile is True or m._touched == set(), (
         "close_session neither asked for a reconcile nor had already saved one")
+
+
+def test_a_format_rewrite_still_deletes_what_is_gone():
+    """Rewriting every row must not cost the store its deletions.
+
+    Moving a store to a new row encoding needs every row written again. The first attempt did that by
+    emptying the diff baseline, which forces every record to look new -- and `removed` is computed
+    from that same baseline, so nothing looked deleted. Measured through the CLI: `forget-subject`
+    printed "erased 1 record(s)" and the record was still in the file afterwards. `rewrite_all` says
+    what it means and leaves the baseline alone.
+    """
+    db = _db()
+    items = [_rec(i) for i in range(5)]
+    snap = ss.save(db, items, {})["snapshot"]
+    gone = items.pop(2)
+
+    res = ss.save(db, items, snap, rewrite_all=True)
+    assert res["removed"] == 1, "the rewrite did not notice the deletion: %r" % res
+    assert res["changed"] == 4, "the rewrite did not rewrite the surviving rows: %r" % res
+    left = {r["id"] for r in ss.load(db)}
+    assert gone["id"] not in left, "the deleted record survived the rewrite"
+    assert len(left) == 4
+
+
+def test_a_new_store_is_marked_current_however_it_was_written():
+    """CONTROL on the marker. An unmarked store is treated as out of date, so a store this version
+    creates must be marked whichever writer created it -- otherwise every open triggers a rewrite,
+    and the rewrite path is the one that used to lose deletions."""
+    a = _db()
+    ss.save(a, [_rec(1)], {})                                  # the full-diff writer
+    assert not ss.needs_rewrite(a)
+
+    b = _db()
+    ss.save(b, [], {})
+    snap = ss.snapshot([])
+    ss.save(b, [_rec(1)], snap, dirty=["r001"])                # the declared-ids writer
+    assert not ss.needs_rewrite(b), (
+        "a store created by a declared write is not marked, so every open thinks it is out of date")
+
+
+def test_a_busy_database_is_waited_out_not_lost():
+    """A write that finds the database locked waits for it instead of losing the record.
+
+    THIS TEST REFUTED TWO FIXES AND FOUND NEITHER A CAUSE. A full-suite run lost 9 of 96 records
+    with eight concurrent writers, once, and has never reproduced. The first response was a retry
+    loop around the write; written, it blocked for six attempts times sqlite's own thirty-second
+    busy timeout, which is the "a retry turns a problem into a hang" failure its own docstring
+    warned about. The second was to stop re-declaring `journal_mode` on every connect, with a story
+    about exclusive locks -- and this test passes with that change reverted, so the story is not
+    established and the comment in `_connect` now says so. What this test does pin is the property
+    itself: a locked database costs the writer latency, not its record.
+
+    THE LOCK IS HELD BY ANOTHER PROCESS, not another thread: a sqlite connection cannot be used from
+    a thread other than the one that made it, and the first version of this test released the lock
+    from a thread that had therefore already died. The write then waited the full timeout and the
+    test reported a defect that was its own.
+    """
+    import subprocess
+    import time as _t
+
+    db = _db()
+    snap = ss.save(db, [_rec(1)], {})["snapshot"]
+
+    holder_src = os.path.join(tempfile.mkdtemp(), "hold.py")
+    with open(holder_src, "w", encoding="utf-8") as fh:
+        fh.write(HOLDER_SRC)
+    holder = subprocess.Popen([sys.executable, holder_src, db], stdout=subprocess.PIPE, text=True)
+    assert holder.stdout.readline().strip() == "locked", "the holder never took the lock"
+
+    t0 = _t.time()
+    res = ss.save(db, [_rec(1), _rec(2)], snap, dirty=["r002"])
+    waited = _t.time() - t0
+    holder.wait(timeout=30)
+
+    assert waited >= 0.2, "the write did not wait at all, so the lock was not real: %.2f s" % waited
+    assert waited < 10, (
+        "the write waited far longer than the lock was held (%.2f s). A busy database must cost "
+        "latency, not a retry loop multiplied by sqlite's own timeout." % waited)
+    assert res["added"] == 1
+    assert {r["id"] for r in ss.load(db)} == {"r001", "r002"}

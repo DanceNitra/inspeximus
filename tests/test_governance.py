@@ -5,6 +5,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import (Inspeximus, new_receipt_keypair, new_source_keypair, sign_erasure, erasure_challenge)
 from inspeximus.core import _sha256_hex, _canon, _GENESIS
 
+from _store_io import edit_store
+
 
 def test_anchor_verifies_append_only_extension():
     m = Inspeximus(receipts=True)
@@ -101,6 +103,9 @@ def test_tamper_detection_still_fires_after_the_derivation_fix(tmp_path):
     m = Inspeximus(path=str(p), receipts=True, receipt_key=sk)
     m.remember("the invoice is 100 EUR")
     m._save(force=True)
-    p.write_text(p.read_text(encoding="utf-8").replace("100 EUR", "900 EUR"), encoding="utf-8")
+    def _bump(rows):
+        for r in rows:
+            r["text"] = r["text"].replace("100 EUR", "900 EUR")
+    edit_store(p, _bump)
     ok, problems = Inspeximus(path=str(p), receipts=True, receipt_key=sk).verify_writes()
     assert ok is False and problems

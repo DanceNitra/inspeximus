@@ -1,0 +1,138 @@
+{
+ "trials": 3,
+ "samples_per_trial": 30,
+ "cells": [
+  {
+   "records": 1000,
+   "flush_every_write": true,
+   "json_s": [
+    0.00751,
+    0.00775,
+    0.00771
+   ],
+   "rows_s": [
+    0.00706,
+    0.00727,
+    0.00675
+   ],
+   "json_median": 0.00771,
+   "rows_median": 0.00706,
+   "ratio_json_over_rows": [
+    1.06,
+    1.07,
+    1.14
+   ],
+   "all_trials_agree_on_direction": true
+  },
+  {
+   "records": 1000,
+   "flush_every_write": false,
+   "json_s": [
+    0.0075,
+    0.00763,
+    0.00751
+   ],
+   "rows_s": [
+    0.00701,
+    0.00653,
+    0.00851
+   ],
+   "json_median": 0.00751,
+   "rows_median": 0.00701,
+   "ratio_json_over_rows": [
+    1.07,
+    1.17,
+    0.88
+   ],
+   "all_trials_agree_on_direction": false
+  },
+  {
+   "records": 10000,
+   "flush_every_write": true,
+   "json_s": [
+    0.07782,
+    0.08235,
+    0.08002
+   ],
+   "rows_s": [
+    0.0444,
+    0.04411,
+    0.03402
+   ],
+   "json_median": 0.08002,
+   "rows_median": 0.04411,
+   "ratio_json_over_rows": [
+    1.75,
+    1.87,
+    2.35
+   ],
+   "all_trials_agree_on_direction": true
+  },
+  {
+   "records": 10000,
+   "flush_every_write": false,
+   "json_s": [
+    0.07468,
+    0.08925,
+    0.07981
+   ],
+   "rows_s": [
+    0.03828,
+    0.04785,
+    0.03131
+   ],
+   "json_median": 0.07981,
+   "rows_median": 0.03828,
+   "ratio_json_over_rows": [
+    1.95,
+    1.87,
+    2.55
+   ],
+   "all_trials_agree_on_direction": true
+  },
+  {
+   "records": 30000,
+   "flush_every_write": true,
+   "json_s": [
+    0.22211,
+    0.25452,
+    0.23304
+   ],
+   "rows_s": [
+    0.13203,
+    0.1415,
+    0.12632
+   ],
+   "json_median": 0.23304,
+   "rows_median": 0.13203,
+   "ratio_json_over_rows": [
+    1.68,
+    1.8,
+    1.84
+   ],
+   "all_trials_agree_on_direction": true
+  },
+  {
+   "records": 30000,
+   "flush_every_write": false,
+   "json_s": [
+    0.24678,
+    0.24612,
+    0.24104
+   ],
+   "rows_s": [
+    0.12351,
+    0.11312,
+    0.13286
+   ],
+   "json_median": 0.24612,
+   "rows_median": 0.12351,
+   "ratio_json_over_rows": [
+    2.0,
+    2.18,
+    1.81
+   ],
+   "all_trials_agree_on_direction": true
+  }
+ ]
+}

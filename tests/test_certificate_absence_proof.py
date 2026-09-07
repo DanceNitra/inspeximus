@@ -29,6 +29,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import inspeximus.core as core
 from inspeximus import Inspeximus
 
+from _store_io import load_store, save_store
+
 
 @pytest.fixture()
 def erased():
@@ -105,7 +107,7 @@ def test_the_proof_reads_the_file_on_disk_not_the_live_store(erased):
     import json
 
     m, cert, p, rid, _d = erased
-    raw = json.loads(open(p, encoding="utf-8").read())
+    raw = load_store(p)
     rows = raw if isinstance(raw, list) else raw.get("items", raw.get("records"))
     assert isinstance(rows, list), f"unexpected store layout: {type(raw)}"
     rows.append({"id": rid, "text": "alice lives at 12 Oak St", "status": "active", "ts": 0.0})

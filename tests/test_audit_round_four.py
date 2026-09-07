@@ -22,28 +22,60 @@ from inspeximus.core import StoreChangedOnDisk
 from inspeximus.deletion_manifest import DeletionManifest, ErasureTarget
 from inspeximus.erasure_auditor import ErasureAuditor
 
+from _store_io import load_store
+
 
 def _path():
     return os.path.join(tempfile.mkdtemp(), "m.json")
 
 
 # ── regressions from the 1.58.0 concurrency work ────────────────────────────────────────────────────
-def test_two_handles_bootstrapping_a_fresh_store_do_not_clobber_each_other():
+@pytest.mark.parametrize("fmt", ["json", "rows"])
+def test_two_handles_bootstrapping_a_fresh_store_do_not_clobber_each_other(fmt, monkeypatch):
     """`_file_sig` was None both when the store had no path AND when the file did not exist yet, and `_save`
     skipped the guard on None — so the FIRST write from each handle was ungated. Two workers starting
-    together on a new store is the commonest concurrency case there is."""
+    together on a new store is the commonest concurrency case there is.
+
+    What must never happen is A's record disappearing. The JSON store achieves that by refusing B,
+    which costs B's write; the row store achieves it by keeping both. The stronger outcome is
+    asserted where it is available rather than demanded of both.
+    """
+    if fmt == "json":
+        monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    else:
+        monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
     p = _path()
     a, b = Inspeximus(path=p), Inspeximus(path=p)      # neither has seen a file
     a.remember("A-record")
-    with pytest.raises(StoreChangedOnDisk):
+    if fmt == "json":
+        with pytest.raises(StoreChangedOnDisk):
+            b.remember("B-record")
+        assert [r["text"] for r in load_store(p)] == ["A-record"]
+    else:
         b.remember("B-record")
-    assert [r["text"] for r in json.load(open(p, encoding="utf-8"))] == ["A-record"]
+        b.flush()
+        texts = [r["text"] for r in load_store(p)]
+        assert "A-record" in texts, "the first handle's record was clobbered: %r" % texts
+        assert "B-record" in texts, "the second handle's record was lost: %r" % texts
 
 
-def test_reload_does_not_leave_two_active_records_under_one_key():
+@pytest.mark.parametrize("fmt", ["json", "rows"])
+def test_a_concurrent_supersession_leaves_one_active_record_under_the_key(fmt, monkeypatch):
     """The recovery path took the DISK copy of a record this handle had superseded, so the merged store held
     two contradictory active values for one key — and `verify_writes()` returned True on it. The store's
-    headline property, broken by the thing meant to repair it."""
+    headline property, broken by the thing meant to repair it.
+
+    THE PROPERTY IS ONE ACTIVE RECORD, NOT ONE PARTICULAR EXCEPTION. This used to require
+    `StoreChangedOnDisk` and then call `reload()`. A row store merges instead of refusing, because a
+    row write only touches the ids it names, so the exception is now the JSON path's answer and the
+    merge is the row path's. Both must end with the same store, and this asserts that rather than the
+    mechanism that got there. The JSON arm keeps the refusal, which is still the right answer for a
+    format whose save rewrites the whole file.
+    """
+    if fmt == "json":
+        monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    else:
+        monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
     p = _path()
     a = Inspeximus(path=p, receipts=True)
     a.remember("salary is 100", key="pay")
@@ -51,18 +83,34 @@ def test_reload_does_not_leave_two_active_records_under_one_key():
     b = Inspeximus(path=p, receipts=True)
     b.remember("city is Rome", key="city")
     b.flush()
-    with pytest.raises(StoreChangedOnDisk):
-        a.remember("salary is 200", key="pay")
 
-    res = a.reload()
-    assert res["demoted"] == 1
-    rows = json.load(open(p, encoding="utf-8"))
+    if fmt == "json":
+        with pytest.raises(StoreChangedOnDisk):
+            a.remember("salary is 200", key="pay")
+        assert a.reload()["demoted"] == 1
+    else:
+        a.remember("salary is 200", key="pay")
+        a.flush()
+
+    rows = load_store(p)
     active_pay = [r["text"] for r in rows if r.get("key") == "pay" and r["status"] == "active"]
     assert active_pay == ["salary is 200"], rows
+    assert any(r.get("key") == "city" and r["status"] == "active" for r in rows), (
+        "the other writer's record was lost: %r" % rows)
 
 
-def test_reload_does_not_resurrect_a_record_this_handle_tombstoned():
-    """Union-by-id brought a deliberately erased record back from disk."""
+@pytest.mark.parametrize("fmt", ["json", "rows"])
+def test_a_concurrent_erasure_does_not_leave_the_record_behind(fmt, monkeypatch):
+    """Union-by-id brought a deliberately erased record back from disk.
+
+    Parametrised for the same reason as the test above: the row store merges where the JSON store
+    refuses, and an erased record must be gone either way. This is the arm that would catch a merge
+    written without the tombstone filter, which is what the first row-store merge was.
+    """
+    if fmt == "json":
+        monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    else:
+        monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
     p = _path()
     a = Inspeximus(path=p, receipts=True)
     a.remember("alice ssn 123", source={"doc": "alice"})
@@ -70,11 +118,19 @@ def test_reload_does_not_resurrect_a_record_this_handle_tombstoned():
     b = Inspeximus(path=p, receipts=True)
     b.remember("unrelated", source={"doc": "other"})
     b.flush()
-    with pytest.raises(StoreChangedOnDisk):          # the erasure runs in memory, the save conflicts
-        a.forget_subject("alice", request_id="DSAR-1", basis="gdpr-art17")
 
-    a.reload()
-    assert not any("alice ssn" in r["text"] for r in json.load(open(p, encoding="utf-8")))
+    if fmt == "json":
+        with pytest.raises(StoreChangedOnDisk):      # the erasure runs in memory, the save conflicts
+            a.forget_subject("alice", request_id="DSAR-1", basis="gdpr-art17")
+        a.reload()
+    else:
+        a.forget_subject("alice", request_id="DSAR-1", basis="gdpr-art17")
+        a.flush()
+
+    rows = load_store(p)
+    assert not any("alice ssn" in r["text"] for r in rows), rows
+    assert any("unrelated" in r["text"] for r in rows), (
+        "the other writer's record was lost by the erasure's recovery: %r" % rows)
 
 
 def test_state_digest_is_stable_across_two_opens_of_identical_bytes():

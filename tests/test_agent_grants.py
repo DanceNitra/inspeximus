@@ -26,6 +26,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import Inspeximus
 from inspeximus.core import _ACL_PREFIX, _TenantView, _is_acl_record
 
+from _store_io import load_store
+
 SECRET = "sk-alice-777-DO-NOT-LEAK"
 
 
@@ -658,9 +660,7 @@ def test_revoking_something_never_granted_is_recorded_and_still_denies():
 
 # ── composition with the persist path (a sibling unit measured data loss here) ──────────────────────
 def _on_disk(path):
-    with open(path, encoding="utf-8") as fh:
-        d = json.load(fh)
-    return [r["text"] for r in (d if isinstance(d, list) else d.get("items", []))]
+    return [r["text"] for r in load_store(path)]
 
 
 def test_a_grant_scoped_handle_does_not_drop_anyone_elses_rows_on_save():

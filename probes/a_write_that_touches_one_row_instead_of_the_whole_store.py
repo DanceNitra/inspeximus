@@ -1,11 +1,12 @@
-"""One write, one row: 0.35 s and 20.3 MB becomes 0.030 s, measured on the live store.
+"""One write, one row: 0.54 s over 21.5 MB becomes 0.03 s, measured on the live store.
 
 WHAT THIS MEASURES. The JSON store is rewritten in full on every save. This project's coding store
-holds 32,538 records in 20.3 MB, a hook fires on every tool call, and two agents share it. So the
+holds tens of thousands of records in tens of megabytes, a hook fires on every tool call, and two
+agents share it. So the
 cost of one write is paid hundreds of times a session, and it is paid against the whole file.
 
 THE FIRST VERSION OF THIS WAS SLOWER THAN WHAT IT REPLACED, and that is the useful part. Moving to
-sqlite3 gave 0.5131 s against JSON's 0.35 s, while inserting exactly one row. Splitting the time
+sqlite3 was SLOWER than the JSON store it replaced, while inserting exactly one row. Splitting the time
 found 98% of it in the diff: serialising all 32,539 records to discover which one moved cost
 0.3933 s, and the INSERT it produced cost 0.0070 s. The engine was never the problem; deciding what
 to write was. `save(..., dirty=[id])` lets a caller name what it touched, which it already knows.
@@ -57,10 +58,17 @@ def _median(xs):
 def main():
     d = tempfile.mkdtemp()
     src, what = _corpus(d)
-    with open(src, encoding="utf-8") as fh:
-        raw = json.load(fh)
-    items = raw if isinstance(raw, list) else raw.get("records") or []
-    mb = os.path.getsize(src) / 1e6
+    # THE LIVE STORE IS NOW A ROW STORE, which this probe caused, and it crashed here reading it as
+    # JSON. A measurement of the JSON baseline still needs the records, whatever they are stored in.
+    if ss.looks_like_sqlite(src):
+        items = ss.load(src)
+        what += " (already converted; the JSON baseline below is re-created from its records)"
+        mb = sum(len(json.dumps(r, ensure_ascii=False).encode("utf-8")) for r in items) / 1e6
+    else:
+        with open(src, encoding="utf-8") as fh:
+            raw = json.load(fh)
+        items = raw if isinstance(raw, list) else raw.get("records") or []
+        mb = os.path.getsize(src) / 1e6
     print("  corpus: %s, %d records, %.1f MB\n" % (what, len(items), mb))
 
     # BASELINE, re-measured rather than quoted: rewrite the whole file, as the JSON store does.
@@ -78,9 +86,16 @@ def main():
     for i in range(3):
         items.pop()
 
+    # The migration is timed from a JSON file, because that is what a user upgrading actually has.
+    # When the source is already converted, one is written out first and the write is not timed.
+    mig_src = src
+    if ss.looks_like_sqlite(src):
+        mig_src = os.path.join(d, "as_json.json")
+        with open(mig_src, "w", encoding="utf-8") as fh:
+            json.dump(items, fh, ensure_ascii=False)
     db = os.path.join(d, "store.db")
     t0 = time.time()
-    mig = ss.migrate_from_json(src, db)
+    mig = ss.migrate_from_json(mig_src, db)
     t_mig = time.time() - t0
 
     loaded = ss.load(db)

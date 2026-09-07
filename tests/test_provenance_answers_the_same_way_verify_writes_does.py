@@ -27,6 +27,8 @@ import pytest
 
 from inspeximus import Inspeximus
 
+from _store_io import load_store, save_store
+
 MUTATIONS = {
     "object": lambda rows: rows[0].update(object="30d"),
     "text": lambda rows: rows[0].update(text="the retention policy is 3650 days"),
@@ -49,9 +51,9 @@ def _store():
 
 def _tamper(mut):
     p, rid = _store()
-    rows = json.load(open(p, encoding="utf-8"))
+    rows = load_store(p)
     mut(rows)
-    json.dump(rows, open(p, "w", encoding="utf-8"), ensure_ascii=False)
+    save_store(p, rows)
     ix = Inspeximus(path=p, receipts=True)
     return ix, rid
 

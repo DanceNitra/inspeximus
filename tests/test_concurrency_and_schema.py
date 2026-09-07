@@ -19,6 +19,23 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import Inspeximus
 from inspeximus.core import StoreChangedOnDisk
 
+from _store_io import load_store, save_store
+import sqlite3
+from inspeximus import sqlite_store as ss
+
+
+def _pin(fmt, monkeypatch):
+    if fmt == "json":
+        monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    else:
+        monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
+
+
+def _rows_default() -> bool:
+    """Whether a store created right now is a row store, which decides how a conflict resolves."""
+    return (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() != "json"
+
+
 
 def _path():
     return os.path.join(tempfile.mkdtemp(), "m.json")
@@ -37,11 +54,15 @@ def test_a_second_handle_cannot_silently_erase_the_first_ones_records():
     b.remember("B-only fact")
     b.flush()
 
-    with pytest.raises(StoreChangedOnDisk):
-        a.remember("A-only fact critical")
+    if _rows_default():
+        a.remember("A-only fact critical")        # a row store merges instead of refusing
+        a.flush()
+    else:
+        with pytest.raises(StoreChangedOnDisk):
+            a.remember("A-only fact critical")
 
-    on_disk = [r["text"] for r in json.load(open(p, encoding="utf-8"))]
-    assert "B-only fact" in on_disk, "the other writer's record must survive the refusal"
+    on_disk = [r["text"] for r in load_store(p)]
+    assert "B-only fact" in on_disk, "the other writer's record must survive the conflict"
 
 
 def test_reload_merges_both_writers_rather_than_picking_one():
@@ -53,12 +74,15 @@ def test_reload_merges_both_writers_rather_than_picking_one():
     b = Inspeximus(path=p, receipts=True)
     b.remember("B-only fact")
     b.flush()
-    with pytest.raises(StoreChangedOnDisk):
-        a.remember("A-only fact")
-
-    res = a.reload()
-    assert res["reloaded"] == 2 and res["readded"] >= 1
-    on_disk = [r["text"] for r in json.load(open(p, encoding="utf-8"))]
+    if _rows_default():
+        a.remember("A-only fact")                 # the save performs the same merge itself
+        a.flush()
+    else:
+        with pytest.raises(StoreChangedOnDisk):
+            a.remember("A-only fact")
+        res = a.reload()
+        assert res["reloaded"] == 2 and res["readded"] >= 1
+    on_disk = [r["text"] for r in load_store(p)]
     assert {"base fact", "B-only fact", "A-only fact"} <= set(on_disk)
 
 
@@ -69,12 +93,12 @@ def test_a_single_writer_is_never_told_it_conflicts_with_itself():
     for i in range(25):
         m.remember(f"record {i}")
     m.flush()
-    assert len(json.load(open(p, encoding="utf-8"))) == 25
+    assert len(load_store(p)) == 25
 
     reopened = Inspeximus(path=p, receipts=True)   # sequential handles are not concurrent ones
     reopened.remember("after reopen")
     reopened.flush()
-    assert len(json.load(open(p, encoding="utf-8"))) == 26
+    assert len(load_store(p)) == 26
 
 
 # ── the store file must stay valid JSON ─────────────────────────────────────────────────────────────
@@ -101,15 +125,30 @@ def test_a_non_finite_value_that_bypassed_the_write_guard_still_cannot_reach_the
     assert ok is False and any("not persisted" in x for x in problems)   # ...it reports
     with pytest.raises(OSError):                                          # ...and flush() raises
         m.flush()
-    assert "NaN" not in open(m.path, encoding="utf-8").read()             # nothing invalid reached the file
+    with open(m.path, "rb") as _fh:                                       # bytes: a row store is not text
+        assert b"NaN" not in _fh.read()                                   # nothing invalid reached the file
 
 
-def test_the_store_file_parses_under_a_strict_json_reader():
+@pytest.mark.parametrize("fmt", ["json", "rows"])
+def test_the_store_file_parses_under_a_strict_json_reader(fmt, monkeypatch):
+    """A row store is not one JSON document, but every row's payload is, so the property survives:
+    nothing a strict reader rejects may be written, whichever container holds it."""
+    _pin(fmt, monkeypatch)
     m = Inspeximus(path=_path())
     m.remember("ordinary record", value=2.5)
     m.flush()
-    raw = open(m.path, encoding="utf-8").read()
-    json.loads(raw, parse_constant=lambda c: (_ for _ in ()).throw(ValueError(f"non-finite: {c}")))
+    strict = lambda c: (_ for _ in ()).throw(ValueError(f"non-finite: {c}"))   # noqa: E731
+    if ss.looks_like_sqlite(m.path):
+        con = sqlite3.connect(str(m.path))
+        try:
+            docs = [d for (d,) in con.execute("SELECT doc FROM records").fetchall()]
+        finally:
+            con.close()
+        assert docs, "the fixture stored nothing, so the reader below checks nothing"
+        for doc in docs:
+            json.loads(doc, parse_constant=strict)
+    else:
+        json.loads(open(m.path, encoding="utf-8").read(), parse_constant=strict)
 
 
 # ── foreign / older records ─────────────────────────────────────────────────────────────────────────

@@ -46,7 +46,9 @@
  "write_failure": {
   "records_when_writable": 1,
   "silent_when_writable": true,
+  "write_was_actually_denied": true,
   "reported_when_read_only": true,
+  "channel": "stderr+log",
   "raised": null
  },
  "harness_facts_2026_09_06": {

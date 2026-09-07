@@ -36,6 +36,8 @@ import tempfile
 
 from inspeximus import Inspeximus
 
+from _store_io import load_store, save_store
+
 
 def _corrected():
     d = tempfile.mkdtemp()
@@ -48,9 +50,9 @@ def _corrected():
 
 
 def _edit(p, fn):
-    rows = json.load(open(p, encoding="utf-8"))
+    rows = load_store(p)
     fn(rows)
-    json.dump(rows, open(p, "w", encoding="utf-8"), ensure_ascii=False)
+    save_store(p, rows)
 
 
 def test_the_correction_cannot_be_undone_on_disk():

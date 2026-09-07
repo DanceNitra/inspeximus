@@ -55,7 +55,7 @@ def _legacy_receipt_store(tamper: bool):
         r["prev"] = prev
         r["hash"] = core._sha256_hex(core._canon(Inspeximus._chain_core(r, "write")))
         prev = r["hash"]
-    m._save(force=True)
+    m.flush()
 
     if tamper:
         next(x for x in m.items if x["id"] == rid)["text"] = "Revenue is 900M"
@@ -78,7 +78,7 @@ def _legacy_receipt_store(tamper: bool):
               "commit": commit, "prev": m._receipts[-1]["hash"]}
     second["hash"] = core._sha256_hex(core._canon(Inspeximus._chain_core(second, "write")))
     m._receipts.append(second)
-    m._save(force=True)
+    m.flush()
     return m, rid
 
 

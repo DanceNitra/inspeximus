@@ -32,6 +32,8 @@ import pytest
 
 from inspeximus import Inspeximus
 
+from _store_io import load_store, save_store
+
 T24 = time.mktime((2024, 1, 1, 0, 0, 0, 0, 1, -1))
 T25 = time.mktime((2025, 1, 1, 0, 0, 0, 0, 1, -1))
 Q24 = time.mktime((2024, 6, 1, 0, 0, 0, 0, 1, -1))
@@ -53,9 +55,9 @@ def _obj(a):
 
 
 def _edit(p, fn):
-    rows = json.load(open(p, encoding="utf-8"))
+    rows = load_store(p)
     fn(rows)
-    json.dump(rows, open(p, "w", encoding="utf-8"), ensure_ascii=False)
+    save_store(p, rows)
     return Inspeximus(path=p, receipts=True)
 
 
@@ -86,7 +88,7 @@ def test_rewriting_where_that_time_came_from_is_caught():
     ix = Inspeximus(path=p, receipts=True)
     ix.remember("terms are net30", key="terms", object="net30", valid_from=T24)
     ix.flush()
-    assert json.load(open(p, encoding="utf-8"))[0].get("valid_from_source") == "declared", \
+    assert load_store(p)[0].get("valid_from_source") == "declared", \
         "the fixture no longer produces the field this test is about"
     ix2 = _edit(p, lambda rows: rows[0].pop("valid_from_source", None))
     ok, problems = ix2.verify_writes()

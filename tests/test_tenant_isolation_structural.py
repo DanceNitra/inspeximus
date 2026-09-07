@@ -20,6 +20,8 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import Inspeximus, new_encryption_key
 
+from _store_io import load_store
+
 SECRET = "sk-globex-999-DO-NOT-LEAK"
 
 
@@ -292,7 +294,7 @@ def test_a_whole_list_assignment_cannot_silently_drop_other_tenants():
 
 def _rows_on_disk(path):
     import io, json
-    return json.load(io.open(path, encoding="utf-8", errors="replace"))
+    return load_store(path)
 
 
 def _count(path, tenant):

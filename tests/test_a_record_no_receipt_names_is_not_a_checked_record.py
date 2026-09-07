@@ -29,6 +29,8 @@ import pytest
 
 from inspeximus import Inspeximus
 
+from _store_io import load_store, save_store
+
 FORGED = "the deploy key rotates every 3650 days"
 
 
@@ -43,9 +45,9 @@ def _mk(n=2):
 
 
 def _edit(p, fn):
-    rows = json.load(open(p, encoding="utf-8"))
+    rows = load_store(p)
     fn(rows)
-    json.dump(rows, open(p, "w", encoding="utf-8"), ensure_ascii=False)
+    save_store(p, rows)
 
 
 @pytest.mark.parametrize("status", ["active", "superseded", "hub", "provisional"])
@@ -81,7 +83,7 @@ def test_control_the_same_edit_with_the_receipt_left_in_place_was_always_caught(
     """POSITIVE CONTROL. If this did not fire, the test above would be showing that receipts are
     broken generally rather than that the sweep closed a specific hole."""
     p, _ = _mk(3)
-    rows = json.load(open(p, encoding="utf-8"))
+    rows = load_store(p)
     victim = rows[-1]["id"]
     _edit(p, lambda rr: [r.update(text="rewritten out of band") for r in rr if r["id"] == victim])
     ok, problems = Inspeximus(path=p, receipts=True).verify_writes()

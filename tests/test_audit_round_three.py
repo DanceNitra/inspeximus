@@ -60,12 +60,19 @@ def test_an_unparseable_store_refuses_to_open_instead_of_overwriting_it():
     m = Inspeximus(path=p)
     for i in range(5):
         m.remember(f"record {i}")
-    raw = open(p, encoding="utf-8").read()
-    open(p, "w", encoding="utf-8").write(raw[:len(raw) // 2])
+    m.flush()
+    # Truncate the BYTES. A store is not necessarily a text file, and reading it as one is what this
+    # test is about: half a store must be refused whatever container it is in.
+    with open(p, "rb") as fh:
+        raw = fh.read()
+    half = raw[:len(raw) // 2]
+    with open(p, "wb") as fh:
+        fh.write(half)
 
     with pytest.raises(ValueError, match="Refusing to open"):
         Inspeximus(path=p)
-    assert open(p, encoding="utf-8").read() == raw[:len(raw) // 2],         "the unreadable file must be left exactly as found, not overwritten"
+    with open(p, "rb") as fh:
+        assert fh.read() == half,             "the unreadable file must be left exactly as found, not overwritten"
 
 
 # ── the collision class, on the levers round two missed ─────────────────────────────────────────────

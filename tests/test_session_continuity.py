@@ -157,6 +157,8 @@ import inspeximus.claude_code as cc                     # noqa: E402
 from inspeximus import Inspeximus                       # noqa: E402
 from inspeximus.core import StoreChangedOnDisk          # noqa: E402
 
+from _store_io import load_store
+
 
 # ── how a false property is marked ──────────────────────────────────────────────────────────────────
 _STRICT = os.environ.get("INSPEXIMUS_CONFORMANCE_STRICT", "").strip().lower() in ("1", "true", "yes")
@@ -200,6 +202,9 @@ def _path(name="m.json"):
 
 
 def _read_json(path):
+    """Plain JSON, for settings and sidecars. A STORE is read with `load_store`, which knows the
+    format the library actually wrote; replacing this function wholesale broke every caller that
+    reads `.claude/settings.json` and expects a dict."""
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
 
@@ -410,9 +415,20 @@ def test_p2b_the_divergence_is_detected_on_the_WRITE_path_only():
                   f"w.flush()\n").returncode == 0
 
     session1.recall("bravo sequencer", k=5, reinforce=False)     # a read: silent, no signal of any kind
-    with pytest.raises(StoreChangedOnDisk):
+    # THE WRITE PATH KNOWS. What it does about it depends on the format, and the property that
+    # matters is the same either way: the other session's record is not erased. A JSON save rewrites
+    # the whole file, so refusing is the only safe answer; a row write touches only the ids it names,
+    # so the save merges and both sessions keep their records.
+    if (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() == "json":
+        with pytest.raises(StoreChangedOnDisk):
+            session1.remember("charlie", key="k:c")
+            session1.flush()
+    else:
         session1.remember("charlie", key="k:c")
         session1.flush()
+        texts = [r["text"] for r in load_store(p)]
+        assert any("bravo" in t for t in texts),             "the other session's record was erased by this one's write: %r" % texts
+        assert any("charlie" in t for t in texts), "and our own write must land: %r" % texts
 
 
 # ════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -608,7 +624,7 @@ def test_p4_a_second_projects_save_cannot_destroy_the_firsts_records():
     b.remember("project B fact about the release cadence", key="b::0")
     b.flush()
 
-    on_disk = _read_json(p)
+    on_disk = load_store(p)
     survived = [r for r in on_disk if r.get("tenant") == "proj-a"]
     assert len(survived) == 3, \
         f"project B's save destroyed project A's records: {len(survived)} of 3 left on disk"
@@ -628,7 +644,7 @@ def test_p4_control_two_unbound_handles_do_not_destroy_each_others_records():
     b.remember("project B fact about the release cadence", key="b::0")
     b.flush()
 
-    on_disk = _read_json(p)
+    on_disk = load_store(p)
     assert len(on_disk) == 2, f"two unbound handles already lose records ({len(on_disk)} of 2 on disk)"
 
 

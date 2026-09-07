@@ -113,7 +113,11 @@ def test_an_attacker_who_rewrites_the_sidecar_too_is_NOT_caught():
     rec["source"] = {"doc": "forged-source"}
     m._receipts = []
     m._emit_write_receipt(rec)
-    m._save(force=True)
+    # `flush()`, not `_save(force=True)`. The relabel above edits the record directly, so nothing
+    # declared the change and a row store writes what is declared. `flush()` is the documented
+    # "make sure it is written" call and takes the complete diff; an attacker with file access has
+    # the store on disk either way, which is the situation this negative control describes.
+    m.flush()
 
     p = Inspeximus(path=path, receipts=True).provenance(key="billing::auth")
     assert p["integrity"]["attribution_matches_receipt"] is True    # NOT caught — this is the point

@@ -429,6 +429,33 @@ def check_audits(rep, root=ROOT):
     rep.add("audits", PASS, "%s audits pass; the GOV_FALSIFY control failed as it must" % "+".join(legs))
 
 
+def check_published_table_matches_its_receipt(rep, root=ROOT):
+    """A table of measured numbers in README.md must equal the receipt it came from.
+
+    The store-format table was typed from one run of its probe and the receipt was later overwritten
+    by another run of the SAME probe, taken while the test suite was saturating the machine: every
+    figure slower, and the smallest size reversed. Nothing failed. The README said one thing and the
+    artifact beside it said another, and the only reason it was caught is that someone compared them
+    by hand. `claims_audit.py` checks that every number is REGISTERED and that its command exists; it
+    does not re-derive the value from the receipt, which is what this leg adds.
+    """
+    tool = root / "tools" / "sync_store_format_table.py"
+    if not tool.exists():
+        rep.add("published-table", FAIL,
+                "tools/sync_store_format_table.py is missing; the README table has nothing "
+                "holding it to its receipt")
+        return
+    proc = subprocess.run([sys.executable, str(tool)], cwd=str(root),
+                          capture_output=True, text=True, errors="replace")
+    if proc.returncode == 0:
+        rep.add("published-table", PASS, "the README store-format table matches its receipt")
+        return
+    rep.add("published-table", FAIL,
+            "the README store-format table does not match "
+            "probes/one_write_two_formats_across_store_sizes.result.json. Re-run the probe on an "
+            "idle machine, then `python tools/sync_store_format_table.py --write`.")
+
+
 # --------------------------------------------------------------------------- probe receipts
 
 def _probe_snapshot(root):
@@ -640,6 +667,7 @@ def run(root=ROOT, skip_tests=False):
         check_zero_dependencies(rep, root)
         check_mcp_server(rep, root)
         check_audits(rep, root)
+        check_published_table_matches_its_receipt(rep, root)
         check_release_notes(rep, root)
         check_tests(rep, root, skip=skip_tests)
         check_ci_on_head(rep, root)

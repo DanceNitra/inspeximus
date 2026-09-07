@@ -1,0 +1,60 @@
+{
+ "per_writer": 8,
+ "trials": 4,
+ "arms": [
+  {
+   "format": "json",
+   "writers": 2,
+   "attempted": 16,
+   "landed": [
+    16,
+    8,
+    8,
+    15
+   ],
+   "clean_trials": 1,
+   "worst_loss": 8
+  },
+  {
+   "format": "rows",
+   "writers": 2,
+   "attempted": 16,
+   "landed": [
+    16,
+    16,
+    16,
+    16
+   ],
+   "clean_trials": 4,
+   "worst_loss": 0
+  },
+  {
+   "format": "json",
+   "writers": 12,
+   "attempted": 96,
+   "landed": [
+    64,
+    64,
+    64,
+    63
+   ],
+   "clean_trials": 0,
+   "worst_loss": 33
+  },
+  {
+   "format": "rows",
+   "writers": 12,
+   "attempted": 96,
+   "landed": [
+    96,
+    96,
+    96,
+    96
+   ],
+   "clean_trials": 4,
+   "worst_loss": 0
+  }
+ ],
+ "control_the_race_is_real_here": true,
+ "rows_lost_nothing": true
+}

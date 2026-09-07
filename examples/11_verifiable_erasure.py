@@ -49,8 +49,26 @@ def run(*args, env=None, cwd=None):
     install step; the two are the same program.
     """
     proc = subprocess.run([sys.executable, "-m", "inspeximus.cli", *args],
-                          capture_output=True, text=True, env=env, cwd=cwd)
-    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+                          capture_output=True, env=env, cwd=cwd)
+    return proc.returncode, _text(proc.stdout) + _text(proc.stderr)
+
+
+def _text(raw: bytes) -> str:
+    """Decode CLI output without assuming which encoding it came out in.
+
+    `text=True` decodes with the console's code page and RAISES on anything it cannot map: this CLI
+    prints an em dash, so on a cp1250 console the reader thread died, the output came back EMPTY,
+    and every check here failed while the command had answered correctly. Decoding as UTF-8 with
+    `errors="replace"` then moved the failure one step later, to printing: U+FFFD is not encodable
+    in cp1250 either. So try UTF-8, and fall back to the console's own encoding, which is what the
+    bytes are in when the fallback is needed.
+    """
+    for enc in ("utf-8", sys.stdout.encoding or "cp1252", "latin-1"):
+        try:
+            return (raw or b"").decode(enc)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    return (raw or b"").decode("ascii", "backslashreplace")
 
 
 def show(label, code, out):
@@ -176,8 +194,13 @@ def main() -> int:
 
     check("HALF 1 - the erased subject is GONE from every file in the directory",
           code_gone == 0 and "clean - no residue found" in out_gone)
+    # The LABEL depends on the container, the FINDING does not. A store written as rows reports
+    # LIVE (the value sits in a table row the system still holds); a JSON store reports PLAIN (a
+    # file contains it). Requiring PLAIN pinned the old format rather than the property, and the
+    # control started failing on a store that was answering correctly.
     check("HALF 2 - the neighbour is STILL PRESENT, so the scan can detect presence at all",
-          code_here == 1 and "PLAIN" in out_here and "residue found" in out_here)
+          code_here == 1 and "residue found" in out_here
+          and ("PLAIN" in out_here or "LIVE" in out_here))
 
     code, out = run("--path", store, "list", "-n", "5", env=env)
     check("HALF 2 - and the neighbour's memory still answers",

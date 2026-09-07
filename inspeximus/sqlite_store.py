@@ -1,11 +1,16 @@
 """Row-level persistence for the store, on `sqlite3` from the standard library.
 
 WHY. The JSON store is rewritten in full on every save. Measured 2026-09-06 on this project's live
-coding store, 32,538 records and 20.3 MB: one write costs 0.35 s and rewrites the whole file, and
-12 concurrent writers lost a whole worker's output in 8 of 8 trials. The same workload on sqlite3
-costs 0.001 s and lost nothing in 8 of 8. The receipt cost has the same shape, 0.017 s at 500
-records rising to 0.283 s at 16,000, because the Merkle tree is rebuilt on every save too. One
-cause underneath all three: every event touches the whole store instead of one row.
+coding store, 32,643 records and 21.5 MB: one write costs 0.5431 s and rewrites the whole file,
+against 0.0341 s to write one row. The receipt cost has the same shape, 0.017 s at 500 records
+rising to 0.283 s at 16,000, because the Merkle tree is rebuilt on every save too. One cause
+underneath both: every event touches the whole store instead of one row.
+
+CONCURRENCY IS THE OTHER HALF, AND IT DOES NOT LIVE IN THIS FILE. Writing rows is what makes two
+writers able to share a store, but the merge that delivers it is in `Inspeximus._save`: this module
+was measured alone and reported losing nothing, while the library around it still refused the second
+writer. `probes/twelve_writers_and_the_one_that_stopped_writing.py` measures the product, which is
+the number that means anything.
 
 WHAT THIS DOES NOT CHANGE. `Inspeximus._items` stays an in-memory list of dicts, so the 44 call
 sites in core.py that read it are untouched and the data model is identical. Only the disk format
@@ -17,11 +22,12 @@ intact. It is still one file; it is a file that can write a row.
 
 THE WRITE IS A DIFF, WHICH IS THE ENTIRE POINT. `snapshot()` records what was on disk at load.
 `save()` compares the current list against it and issues only what actually changed. A hook that
-appends one record performs one INSERT rather than serialising 32,538.
+appends one record performs one INSERT rather than serialising the whole store.
 """
 import json
 import os
 import sqlite3
+import time
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS records (
@@ -32,6 +38,13 @@ CREATE TABLE IF NOT EXISTS records (
 CREATE INDEX IF NOT EXISTS records_ord ON records(ord);
 CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT);
 """
+
+#: Bumped when the BYTES a record turns into change, not when the schema does. A store written by an
+#: older writer keeps those bytes until something rewrites the row, so a fix to the encoding does not
+#: reach the rows already on disk: `doc_format` 1 escaped non-ASCII, which hid names with diacritics
+#: from the residue scanner. `needs_rewrite()` reports a store that is behind, and the library takes
+#: one full reconcile to bring it forward.
+DOC_FORMAT = 2
 
 MAGIC = b"SQLite format 3\x00"
 
@@ -49,11 +62,65 @@ def looks_like_sqlite(path) -> bool:
         return False
 
 
+#: How long a writer waits out a busy database. It must stay BELOW `core.LOCK_WAIT_S`: the
+#: caller holds the inter-process lock across this wait, so a holder that can block longer
+#: than a waiter is willing to wait makes the waiter give up on the lock and write
+#: unprotected. It was 30 against a 20 s lock wait, which is the wrong way round.
+BUSY_TIMEOUT_S = 10
+
+
 def _connect(path):
-    con = sqlite3.connect(str(path), timeout=30, isolation_level=None)
-    con.execute("PRAGMA journal_mode=WAL")        # real concurrency, not a lock file
+    # A BUSY DATABASE IS ALREADY WAITED OUT, by `timeout=30` below: sqlite blocks the writer until
+    # the lock frees or thirty seconds pass. A retry loop was added on top of that after a full-suite
+    # run lost 9 of 96 records with eight concurrent writers -- a failure that never reproduced, in
+    # four solo runs or three under sixteen processes of load. The loop was then refuted by its own
+    # test: six attempts times a thirty-second wait is three minutes of blocking, which is the "a
+    # retry turns a problem into a hang" failure the loop's own docstring warned about. One wait,
+    # and it is this one.
+    # "IS THE FILE THERE" IS ASKED BEFORE SQLITE CREATES IT. A store gets its format marker the
+    # moment it is created, so an absent marker means one thing only: written before the marker
+    # existed. Stamping it from the full-diff writer alone left a store created by a declared write
+    # unmarked, every later open judged it out of date, and the upgrade path then emptied the diff
+    # baseline -- which silently disabled DELETES. A GDPR erasure reported "erased 1" and the record
+    # stayed in the file.
+    _fresh = not os.path.exists(str(path))
+    con = sqlite3.connect(str(path), timeout=BUSY_TIMEOUT_S, isolation_level=None)
+    # NOT WAL, AND THE REASON IS THE FILE. WAL keeps recent writes in a `-wal` sidecar and folds
+    # them back when the last connection closes, so it is only fast if a connection stays open --
+    # and a held connection means the store cannot be renamed on Windows, which breaks the documented
+    # rollback (`rename the backup over the store`) and any tool that moves the file. Measured, 300
+    # open-write-close cycles: WAL 1.98 s, DELETE 1.13 s. The concurrency this store gains does not
+    # come from WAL anyway; it comes from the merge in `Inspeximus._save`, which works whatever the
+    # journal does.
+    if _fresh:
+        # SET ONCE, AT CREATION, because `journal_mode` is a property of the FILE and re-declaring it
+        # on every connect is a write the store does not need.
+        #
+        # IT IS NOT A FIX FOR THE CONCURRENCY LOSS, and the first version of this comment said it
+        # was. A full-suite run lost 9 of 96 records with eight concurrent writers, once; the story
+        # written here was that changing a journal mode takes an exclusive lock which ignores the
+        # busy timeout, so a second writer failed immediately. Two things refuted it: the failure it
+        # cited was a thirty-second timeout misread as an immediate one, and the test built to prove
+        # the fix passes with the fix reverted. The loss remains unexplained and unreproduced -- in
+        # four solo runs, three under sixteen processes of load, and every full-suite run since.
+        con.execute("PRAGMA journal_mode=DELETE")
     con.execute("PRAGMA synchronous=NORMAL")      # durable across a crash, not across a power cut
-    con.executescript(SCHEMA)
+    # A DELETE HAS TO REMOVE THE BYTES, NOT ONLY THE ROW. By default sqlite marks a deleted row's
+    # pages free and leaves their content in the file until something reuses them, so an erased
+    # record stays readable with `strings`. That is precisely the failure this library's erasure
+    # surfaces exist to disprove: measured before this pragma, `forget_subject` then a byte search
+    # for the erased text found it in the row store and did NOT find it in the JSON store, because
+    # the JSON path rewrites the whole file. `secure_delete` zeroes freed content instead.
+    con.execute("PRAGMA secure_delete=ON")
+    # RUN THE SCHEMA ONCE, NOT ON EVERY WRITE. `CREATE TABLE IF NOT EXISTS` is cheap to satisfy and
+    # not free to parse: measured, 300 connections cost 0.55 s with the script and 0.07 s without it,
+    # so a quarter of a small store's write time was spent re-declaring tables that already existed.
+    if _fresh or not con.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='records'").fetchone():
+        con.executescript(SCHEMA)
+    if _fresh:
+        con.execute("INSERT INTO meta(k, v) VALUES('doc_format', ?) "
+                    "ON CONFLICT(k) DO UPDATE SET v=excluded.v", (str(DOC_FORMAT),))
     return con
 
 
@@ -78,13 +145,80 @@ def load(path):
     return out
 
 
-def snapshot(items) -> dict:
-    """id -> serialised row, as it stands. The baseline `save` diffs against."""
-    return {r["id"]: json.dumps(r, sort_keys=True, default=str)
-            for r in items if isinstance(r, dict) and r.get("id")}
+def _doc(rec, keep_vec: bool = True) -> str:
+    """One record as the JSON text stored in its row.
+
+    `allow_nan=False` for the same reason the whole-file writer has it: Python emits a bare `NaN` or
+    `Infinity` literal that it can read back and every STRICT reader rejects, so the store quietly
+    stops being valid JSON for `jq`, for a non-Python reader, and for the audit bundle, while
+    `state_digest` and `verify_writes` both still report healthy. The row writer shipped without it,
+    so a planted NaN reached the file on the new format and not on the old one.
+
+    `ensure_ascii=False` IS A COMPLIANCE REQUIREMENT HERE, not a formatting preference. With the
+    default, `Drahosova` keeps its diacritics as `š` escapes, so the name is not in the file as
+    UTF-8 and a byte scan cannot find it. Measured: `erasure_residue.scan_residue` found the value in
+    the JSON store and MISSED it in the row store, which means a residue report would state that a
+    subject's data is not present while it is sitting in the file. The scanner reads arbitrary files
+    and cannot parse every format, so the store is what has to hold the literal text.
+    """
+    # STRIP `vec` HERE RATHER THAN COPYING THE STORE TO STRIP IT. The caller used to build a whole
+    # second list of dicts on every save just to drop one key -- 30,000 dict copies per write on this
+    # project's store, 0.057 s of pure copying that the row path then threw away, because it only
+    # serialises the ids that changed. Dropping it at the one place that serialises a record costs
+    # nothing when the key is absent, which is the common case.
+    # UNDERSCORE KEYS ARE A READER'S NOTES, NOT STORED STATE. `recall` tags the records it returns
+    # with `_stale_derived`; once records declare their own edits, that tag counted as a change and
+    # was written to disk, so a READ dirtied the store and `verify_writes` then reported memory and
+    # disk disagreeing about a field neither of them should keep. Dropping them here lets a reader
+    # annotate freely: the serialised row is unchanged, so the diff finds nothing to write.
+    if (not keep_vec and "vec" in rec) or any(k[:1] == "_" for k in rec):
+        rec = {k: v for k, v in rec.items()
+               if k[:1] != "_" and (keep_vec or k != "vec")}
+    return json.dumps(rec, sort_keys=True, default=str, allow_nan=False, ensure_ascii=False)
 
 
-def save(path, items, before: dict, dirty=None) -> dict:
+def doc_format(path) -> int:
+    """The doc_format the store on disk was written with. 1 for a store that predates the marker."""
+    if not os.path.exists(str(path)):
+        return DOC_FORMAT
+    con = _connect(path)
+    try:
+        row = con.execute("SELECT v FROM meta WHERE k='doc_format'").fetchone()
+    except Exception:                                             # noqa: BLE001
+        return 1
+    finally:
+        con.close()
+    try:
+        return int(row[0]) if row else 1
+    except (TypeError, ValueError):
+        return 1
+
+
+def needs_rewrite(path) -> bool:
+    """Whether every row has to be written again to reach the current encoding."""
+    return looks_like_sqlite(path) and doc_format(path) < DOC_FORMAT
+
+
+#: Read a record's field WITHOUT going through a subclass's accessor. Records in a live store are
+#: `_TrackedDict`, which wraps nested containers on access so an edit declares itself -- useful to
+#: the library, pure overhead to this module, which only ever reads ids. Measured: the save path
+#: scans every record, so twenty writes to a 30,000-record store made 5.4 million wrapped lookups
+#: and spent 2.1 s in them. This module reads through `dict` directly and mutates nothing.
+_field = dict.get
+
+
+def snapshot(items, keep_vec: bool = True) -> dict:
+    """id -> serialised row, as it stands. The baseline `save` diffs against.
+
+    `keep_vec` must match what the writer does, or every record with an embedding looks changed on
+    every comparison and the diff degenerates into a full rewrite.
+    """
+    return {_field(r, "id"): _doc(r, keep_vec)
+            for r in items if isinstance(r, dict) and _field(r, "id")}
+
+
+def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
+         keep_vec: bool = True) -> dict:
     """Write only what changed since `before`. Returns the new snapshot and what it did.
 
     `dirty` IS THE DIFFERENCE BETWEEN FAST AND POINTLESS. Without it this has to serialise every
@@ -99,12 +233,16 @@ def save(path, items, before: dict, dirty=None) -> dict:
     The counts are returned rather than logged, because a caller that cannot tell an append from a
     rewrite cannot tell this is working.
     """
-    if dirty is not None:
-        return _save_known(path, items, before, set(dirty))
-    now = snapshot(items)
-    order = {r["id"]: i for i, r in enumerate(items) if isinstance(r, dict) and r.get("id")}
+    if dirty is not None and not rewrite_all:
+        return _save_known(path, items, before, set(dirty), keep_vec)
+    now = snapshot(items, keep_vec)
+    order = {_field(r, "id"): i for i, r in enumerate(items)
+             if isinstance(r, dict) and _field(r, "id")}
     added = [k for k in now if k not in before]
-    changed = [k for k in now if k in before and now[k] != before[k]]
+    # `rewrite_all` re-writes every row that already exists, which is how a store moves to a new
+    # encoding. It deliberately does NOT touch `before`: `removed` is computed from it, and emptying
+    # the baseline to force the rewrite is what made deletions vanish.
+    changed = [k for k in now if k in before and (rewrite_all or now[k] != before[k])]
     removed = [k for k in before if k not in now]
 
     con = _connect(path)
@@ -123,6 +261,14 @@ def save(path, items, before: dict, dirty=None) -> dict:
         if stale_order:
             con.executemany("UPDATE records SET ord=? WHERE id=? AND ord<>?",
                             [(o, k, o) for o, k in stale_order])
+        # ONLY THE FULL DIFF MAY STAMP THIS. The marker says "every row in this file is in the
+        # current encoding", and only a write that considered every row can honestly claim it.
+        # Stamped from the declared-ids writer as well, it marked a store current after a single
+        # row was rewritten: measured on this project's live store, which reported doc_format 2
+        # with almost every row still escaped. A marker that can be set without checking its
+        # subject is the same defect as a guard that never sees its target.
+        con.execute("INSERT INTO meta(k, v) VALUES('doc_format', ?) "
+                    "ON CONFLICT(k) DO UPDATE SET v=excluded.v", (str(DOC_FORMAT),))
         con.execute("COMMIT")
     except Exception:
         try:
@@ -156,13 +302,14 @@ def migrate_from_json(json_path, db_path) -> dict:
     return {"records": len(back), "written": res["added"]}
 
 
-def _save_known(path, items, before: dict, dirty: set) -> dict:
+def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True) -> dict:
     """The caller named what it touched, so serialise only those, plus anything that vanished."""
     order, live = {}, set()
     for i, r in enumerate(items):
-        if isinstance(r, dict) and r.get("id"):
-            order[r["id"]] = i
-            live.add(r["id"])
+        rid = _field(r, "id") if isinstance(r, dict) else None
+        if rid:
+            order[rid] = i
+            live.add(rid)
     removed = [k for k in before if k not in live]
     now = dict(before)
     for k in removed:
@@ -170,11 +317,12 @@ def _save_known(path, items, before: dict, dirty: set) -> dict:
 
     touched = []
     for r in items:
-        if isinstance(r, dict) and r.get("id") in dirty:
-            doc = json.dumps(r, sort_keys=True, default=str)
-            if before.get(r["id"]) != doc:
-                touched.append((r["id"], order[r["id"]], doc))
-                now[r["id"]] = doc
+        rid = _field(r, "id") if isinstance(r, dict) else None
+        if rid in dirty:
+            doc = _doc(r, keep_vec)
+            if before.get(rid) != doc:
+                touched.append((rid, order[rid], doc))
+                now[rid] = doc
 
     con = _connect(path)
     try:

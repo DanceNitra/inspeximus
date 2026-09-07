@@ -41,6 +41,8 @@ CONTROLS, because each assertion can pass vacuously:
   - and with NEITHER an event nor an environment, the answer must be "unknown" rather than a
     default agent name, or detection is a constant wearing a verdict.
 """
+import contextlib
+import io
 import os
 import sys
 import json
@@ -49,6 +51,7 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import claude_code as cc              # noqa: E402
+from inspeximus import sqlite_store as _rows          # noqa: E402
 
 CODEX_TP = r"C:\Users\D\.codex\sessions\2026\09\06\rollout-2026-09-06T18-36-26-01a077b3.jsonl"
 CLAUDE_TP = r"C:\Users\D\.claude\projects\C--Users-D-agora\5d882efe.jsonl"
@@ -82,8 +85,33 @@ def identity_arm():
     return out
 
 
+def _count(store):
+    if not os.path.exists(store):
+        return 0
+    if _rows.looks_like_sqlite(store):
+        return len(_rows.load(store))
+    with io.open(store, encoding="utf-8") as fh:
+        return len(json.load(fh))
+
+
 def write_failure_arm():
-    """A capture that cannot be persisted must leave evidence and must not raise."""
+    """A capture that cannot be persisted must leave evidence and must not raise.
+
+    DENYING THE WRITE IS ITSELF PLATFORM WORK, and the first version of this arm got it wrong.
+    `chmod` on the store FILE denies the row store, which writes in place, on every OS. It does not
+    deny the JSON store on POSIX: that path writes a temp file and calls `os.replace`, and a rename
+    is governed by the DIRECTORY, so the read-only file was replaced and the capture succeeded. The
+    arm then asserted that a lost capture leaves evidence while nothing had been lost. It passed on
+    Windows, where replacing a read-only file fails, and CI on Linux caught it.
+
+    So the denial now takes both away, and the arm VERIFIES the denial before judging the report: if
+    the record count grew, the write was never refused and no conclusion about reporting is available.
+
+    A read-only directory also takes away the failure LOG, which is written beside the store. That is
+    not a defect in the reporter: it reports to stderr first and to the log second, on purpose, so
+    that the case where the whole directory is gone still says something. The assertion is therefore
+    on the report, not on one of its two channels, and the channel that carried it is recorded.
+    """
     d = tempfile.mkdtemp()
     saved = os.environ.get("INSPEXIMUS_CODING_STORE")
     os.environ["INSPEXIMUS_CODING_STORE"] = d
@@ -92,26 +120,36 @@ def write_failure_arm():
           "transcript_path": CODEX_TP}
     store = os.path.join(d, "coding_memory.json")
     log = os.path.join(d, "WRITE-FAILURES.log")
+    dir_mode = os.stat(d).st_mode
     try:
         cc.capture(ev)
-        wrote = len(json.load(open(store, encoding="utf-8"))) if os.path.exists(store) else 0
+        wrote = _count(store)
         quiet = not os.path.exists(log)
 
         os.chmod(store, stat.S_IREAD)
-        raised = None
+        os.chmod(d, stat.S_IREAD | stat.S_IEXEC)        # the rename, which the file mode cannot stop
+        raised, err = None, io.StringIO()
         try:
-            cc.capture(dict(ev, tool_input={"command": "echo denied"}))
+            with contextlib.redirect_stderr(err):
+                cc.capture(dict(ev, tool_input={"command": "echo denied"}))
         except Exception as e:                          # noqa: BLE001
             raised = "%s: %s" % (type(e).__name__, e)
-        reported = os.path.exists(log)
-        os.chmod(store, stat.S_IWRITE)
+        finally:
+            os.chmod(d, dir_mode)
+            os.chmod(store, stat.S_IWRITE)
+        on_stderr = "WRITE FAILED" in err.getvalue()
+        in_log = os.path.exists(log)
+        denied = _count(store) == wrote
     finally:
+        os.chmod(d, dir_mode)
         if saved is None:
             os.environ.pop("INSPEXIMUS_CODING_STORE", None)
         else:
             os.environ["INSPEXIMUS_CODING_STORE"] = saved
     return {"records_when_writable": wrote, "silent_when_writable": quiet,
-            "reported_when_read_only": reported, "raised": raised}
+            "write_was_actually_denied": denied, "reported_when_read_only": on_stderr or in_log,
+            "channel": ("stderr" if on_stderr else "") + ("+log" if in_log else ""),
+            "raised": raised}
 
 
 def main():
@@ -125,13 +163,18 @@ def main():
     print("\n  a capture that cannot be persisted")
     print("    writable store   -> %d record(s), failure log absent: %s"
           % (w["records_when_writable"], w["silent_when_writable"]))
-    print("    read-only store  -> failure reported: %s, hook raised: %s"
-          % (w["reported_when_read_only"], w["raised"] or "no"))
+    print("    read-only store  -> write denied: %s, failure reported: %s (%s), hook raised: %s"
+          % (w["write_was_actually_denied"], w["reported_when_read_only"],
+             w["channel"] or "nowhere", w["raised"] or "no"))
 
     bad = [c for c in ident if not c["ok"]]
     assert not bad, "agent identity wrong in %d case(s): %s" % (len(bad), bad)
     assert w["records_when_writable"] > 0, "the writable control captured nothing, so the arm is void"
     assert w["silent_when_writable"], "a healthy write reported a failure, so the report means nothing"
+    assert w["write_was_actually_denied"], (
+        "the store accepted the write after both the file and its directory were made read-only, so "
+        "nothing was lost and the report assertion below would be judging an event that never "
+        "happened")
     assert w["reported_when_read_only"], "a lost capture left no evidence, which is the whole defect"
     assert w["raised"] is None, "the reporter raised; a silent loss must not become a dead agent"
 

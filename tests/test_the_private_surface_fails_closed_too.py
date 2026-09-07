@@ -44,6 +44,13 @@ CORE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 _STORE_WIDE_PRIVATE = {
     "__init__", "_save", "_load_from_disk", "_atomic_write",
     "_vec_matrix", "_null_context",
+    # THE FILE-LEVEL HALF OF THE ROW STORE, declared here for the same reason `_save` and
+    # `_load_from_disk` are. `_merge_with_disk` reconciles this handle with what another PROCESS
+    # wrote: scoped to one tenant it would drop every other tenant's rows, which is the exact bug
+    # `_save` carries a comment about. `_migrate_json_store` converts the file's format, and a file
+    # has one format. `_track_all` attaches the change-declaring wrapper to the records that were
+    # loaded, and hands each one back unchanged.
+    "_merge_with_disk", "_migrate_json_store", "_track_all",
     # `_evict_to_capacity` WAS here, declared store-wide on the reasoning that capacity is a property
     # of the file. That reasoning was wrong and the test did its job by forcing the decision into
     # writing where it could be read and refuted: on a shared store at capacity=10, one tenant writing

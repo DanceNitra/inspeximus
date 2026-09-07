@@ -24,47 +24,47 @@
    "tokens_out": 41,
    "calls": 20,
    "temperature": 0.0,
-   "seconds": 17.8
+   "seconds": 15.6
   },
   "gpt-5.4-nano": {
-   "rate": 0.75,
-   "A": 15,
+   "rate": 0.65,
+   "A": 13,
    "B": 0,
-   "other": 5,
+   "other": 7,
    "errors": 0,
    "error_note": "",
    "tokens_in": 1155,
-   "tokens_out": 100,
+   "tokens_out": 99,
    "calls": 20,
    "temperature": 0.0,
-   "seconds": 16.6
+   "seconds": 16.9
   },
   "gpt-5.4-mini": {
-   "rate": 0.85,
-   "A": 17,
+   "rate": 0.9,
+   "A": 18,
    "B": 0,
-   "other": 3,
+   "other": 2,
    "errors": 0,
    "error_note": "",
    "tokens_in": 1155,
    "tokens_out": 100,
    "calls": 20,
    "temperature": 0.0,
-   "seconds": 17.6
+   "seconds": 12.6
   },
   "gpt-5.5": {
-   "rate": 0.95,
-   "A": 19,
+   "rate": 1.0,
+   "A": 20,
    "B": 0,
-   "other": 1,
+   "other": 0,
    "errors": 0,
    "error_note": "",
    "tokens_in": 1155,
-   "tokens_out": 677,
+   "tokens_out": 805,
    "calls": 20,
    "temperature": "default (model refused 0.0)",
-   "seconds": 35.7
+   "seconds": 31.5
   }
  },
- "total_seconds": 87.6
+ "total_seconds": 76.6
 }

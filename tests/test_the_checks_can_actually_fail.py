@@ -272,15 +272,7 @@ def test_deleting_a_receipted_record_leaves_verify_attribution_ok_true():
     before = ix.verify_attribution()
     assert before["ok"] is True and not before["missing"], before
 
-    rows = json.loads(open(ix.path, encoding="utf-8").read())
-    items = rows["items"] if isinstance(rows, dict) and "items" in rows else rows
-    keep = items[1:]
-    if isinstance(rows, dict) and "items" in rows:
-        rows["items"] = keep
-    else:
-        rows = keep
-    with open(ix.path, "w", encoding="utf-8") as fh:
-        json.dump(rows, fh, default=str)
+    save_store(ix.path, load_store(ix.path)[1:])       # drop the first record out of band
 
     after = Inspeximus(path=ix.path, receipts=True).verify_attribution()
     assert len(after["missing"]) == 1, after
@@ -325,6 +317,8 @@ def test_the_attribution_probe_is_unaskable_without_receipts_and_says_so():
 
 # ───────────────────────────── PURE surfaces: the four that never read the store
 import inspeximus.core as _core
+
+from _store_io import load_store, save_store
 
 
 PURE_SURFACES = [

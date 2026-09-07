@@ -29,6 +29,8 @@ import unicodedata
 
 import pytest
 
+from _store_io import load_store
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NFD = unicodedata.normalize("NFD", "sedácia-klúč")
 NFC = unicodedata.normalize("NFC", "sedácia-klúč")
@@ -53,7 +55,7 @@ def test_an_unrenderable_key_still_exits_zero_and_is_stored(store, key):
     r = _run(store, "remember", "a value", "--key", key, "--object", "x")
     assert r.returncode == 0, (r.stderr or b"").decode("utf-8", "replace")[-400:]
 
-    rows = json.load(open(store, encoding="utf-8"))
+    rows = load_store(store)
     assert len(rows) == 1
     assert rows[0]["key"] == key, "the console fix must not touch what reaches the store"
 

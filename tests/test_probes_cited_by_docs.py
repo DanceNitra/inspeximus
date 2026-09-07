@@ -345,8 +345,21 @@ _SLOW_PROBES = {
     # (A first pass blamed the lock and cached its file handle for 2.6 ms/save. The profile then
     # showed 19.3s in importlib: `import msvcrt` was inside the lock's __init__ and ran on every
     # save. Both are fixed, and the residue below is fsync alone.)
-    "identity_gate_supersession_probe.py": 400,     # 66.1s idle
+    # 123s idle on 3.0.0, against 70s on 2.26.1 measured back-to-back on the same idle machine. The
+    # probe writes many times to a SMALL store, which is the workload the row format loses: the table
+    # in README.md measures the whole-file write as the cheaper one below a few thousand records.
+    # This is the cost of that choice showing up in our own suite, not a defect. It still fits the
+    # budget alone; it exceeded 400 s under eight-way parallelism, which is what the budget is for.
+    # (An earlier measurement said 153s vs 177s -- the other way round. It was taken while the
+    # baseline suite was running. Measure one thing at a time.)
+    "identity_gate_supersession_probe.py": 700,     # 123s idle
     "recall_iterative_surface_multihop.py": 400,    # 91.7s idle
+    # 120.4s idle. It performs 540 persisted writes on purpose: three independent trials of thirty
+    # appends, at three store sizes, in both formats, because one run of ten writes is a number
+    # rather than a result -- the direction it reports flipped between two of its own early runs at
+    # the smallest size. The seeding is already amortised (one template store per format and size,
+    # copied per trial); what is left is the measurement itself.
+    "one_write_two_formats_across_store_sizes.py": 500,
 }
 _DEFAULT_PROBE_TIMEOUT = 180
 

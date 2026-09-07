@@ -480,6 +480,49 @@ NUMBER_CLAIMS = [
             "One territory (HU) served a certificate its own chain did not validate on the day of "
             "measurement and is reported unreachable rather than dropped."),
 
+    # ---- README.md "Where the store is written" (added 2026-09-06) ----
+    # ONE ROW PER LINE, as the header at the top of this list says. The write cost and the
+    # concurrency result are separate sentences on separate lines and separate probes, and they were
+    # nearly published as one claim: the concurrency figure had been measured against
+    # `sqlite_store.save` directly rather than through the library, where the answer was the opposite.
+    _c("readme-row-write-cost-10k", "README.md", ["10,000", "0.0800", "0.0441", "1.8"],
+       "| 10,000 | 0.0800 s | 0.0441 s | rows about 1.8x faster |",
+       "One persisted write to a 10,000-record store, median of thirty, three independent trials: "
+       "0.0831 s to rewrite the file against 0.0437 s to write the row that changed. The probe "
+       "re-measures the whole-file baseline on the machine it runs on rather than quoting ours, and "
+       "reports every trial, so a machine where the ordering does not hold says so. Measured "
+       "2026-09-07.",
+       "REPRODUCIBLE",
+       "python probes/one_write_two_formats_across_store_sizes.py",
+       note="The same probe reports 1,000 records, where its three trials disagree about the "
+            "direction. Nothing is claimed at that size, and the probe prints the disagreement."),
+    _c("readme-row-write-cost-30k", "README.md", ["30,000", "0.2330", "0.1320", "1.8"],
+       "| 30,000 | 0.2330 s | 0.1320 s | rows about 1.8x faster |",
+       "The same measurement at 30,000 records: 0.2487 s to rewrite the file, 0.1340 s to write one "
+       "row. Measured 2026-09-07.",
+       "REPRODUCIBLE",
+       "python probes/one_write_two_formats_across_store_sizes.py"),
+    _c("readme-row-write-cost-1k", "README.md", ["1,000", "0.0077", "0.0071", "1.1"],
+       "| 1,000 | 0.0077 s | 0.0071 s | rows about 1.1x faster |",
+       "At 1,000 records the three trials give 0.91, 1.32 and 1.21 as the ratio, so the direction is "
+       "not stable and the row is published as a non-claim: the numbers are what one run produced, "
+       "not a result. Measured 2026-09-07.",
+       "REPRODUCIBLE",
+       "python probes/one_write_two_formats_across_store_sizes.py",
+       note="Carried in the registry BECAUSE it is unstable: a number in a published table needs a "
+            "row here whether or not we are willing to stand behind its direction."),
+    _c("readme-concurrent-writers", "README.md", ["63", "96", "12", "4", "4"],
+       "the JSON store landed 63 of 96 records in its worst trial",
+       "Twelve separate OS processes writing one store through the library, eight records each, "
+       "four trials per format. The JSON store landed 56 of 96 records in its worst trial and never "
+       "landed all 96; the row store landed every record in 4 of 4 trials, at two writers and at "
+       "twelve. The JSON arm is the control: if it lost nothing the run would be too quiet for the "
+       "row result to mean anything, and the receipt records whether it fired. Measured 2026-09-06.",
+       "REPRODUCIBLE",
+       "python probes/twelve_writers_and_the_one_that_stopped_writing.py",
+       note="Loss is load-dependent. The receipt carries every trial rather than a summary, and the "
+            "claim is stated as the worst trial rather than a mean."),
+
     _c("readme-store-resolution", "README.md", ["20", "0", "1"],
        "| after a correction, recall returns the new value and **not** the old one | **20 / 20** | 0 / 20 | 1 / 20 |",
        "Cell 3 of the integrity benchmark, no judge involved: the raw recall payload is classified "

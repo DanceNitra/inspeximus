@@ -7,6 +7,8 @@ import pytest
 
 from inspeximus import Inspeximus, new_encryption_key
 
+from _store_io import load_store
+
 
 def _tmp():
     return os.path.join(tempfile.mkdtemp(), "store.json")
@@ -98,7 +100,7 @@ def test_unencrypted_is_byte_identical_legacy():
     raw = open(p, "rb").read()
     assert raw[:5] != b"INSP\x01"                       # plaintext JSON, no encryption header
     assert b"plain text here" in raw
-    assert json.loads(raw.decode("utf-8"))             # valid plain JSON
+    assert load_store(p), "an unencrypted store must read back as records"
 
 
 if __name__ == "__main__":

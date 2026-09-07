@@ -162,7 +162,7 @@ def test_capture_writes_a_tool_event_into_the_project_store(project, capsys):
     assert os.path.exists(store), "the capture hook must persist to ./.inspeximus/coding_memory.json"
     # The store normalises the path to the OS separator (`file:src\app.py` on Windows), so a test
     # written with forward slashes fails there for a reason that has nothing to do with the behaviour.
-    assert "app.py" in _read(store)
+    assert "app.py" in store_text(store)   # bytes: the store is not necessarily a text file
 
 
 def test_capture_supersedes_the_earlier_state_of_the_same_file(project, capsys):
@@ -171,8 +171,7 @@ def test_capture_supersedes_the_earlier_state_of_the_same_file(project, capsys):
                     "tool_input": {"file_path": "src/app.py", "content": content}})
     capsys.readouterr()
 
-    rows = json.loads(_read(os.path.join(project, ".inspeximus", "coding_memory.json")))
-    rows = rows if isinstance(rows, list) else rows.get("items", rows.get("records", []))
+    rows = load_store(os.path.join(project, ".inspeximus", "coding_memory.json"))
     active = [r for r in rows if r.get("status") == "active" and "app.py" in str(r.get("text", ""))]
     assert len(active) == 1, f"the same file must be keyed, not appended twice: {len(active)} active"
 
@@ -263,6 +262,8 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import pytest  # noqa: E402
+
+from _store_io import load_store, store_text
 
 
 # THE PreToolUse GUARD TESTS USED TO BE DUPLICATED HERE, VERBATIM, AND THAT IS WHY THEY ARE NOT.
