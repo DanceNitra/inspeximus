@@ -1,0 +1,39 @@
+{
+ "description": "The self-correcting memory layer for AI agents. Zero-dependency Python memory and MCP server. Supersede, revert, or forget a value deterministically. Verifiable erasure, witness-backed tamper-evident receipts, EU AI Act ready.",
+ "topics": [
+  "agent-memory",
+  "ai-agent-memory",
+  "claude-code",
+  "conflict-resolution",
+  "data-erasure",
+  "erasure",
+  "eu-ai-act",
+  "forget",
+  "gdpr",
+  "llm-memory",
+  "mcp",
+  "mcp-server",
+  "model-context-protocol",
+  "revert",
+  "right-to-be-forgotten",
+  "self-correcting",
+  "supersede",
+  "tamper-evident",
+  "witness",
+  "zero-dependency"
+ ],
+ "why": {
+  "measured": "2026-09-07. Repository counts per topic, so a slot is judged by whether a six-star project can appear on that page at all.",
+  "dropped": {
+   "python": "865,124 repositories; a slot spent on a page we cannot appear on",
+   "ai-memory": "1,924, and a synonym of agent-memory, ai-agent-memory and llm-memory which we already hold",
+   "long-term-memory": "797, the same synonym group"
+  },
+  "added": {
+   "witness": "53 repositories",
+   "revert": "44",
+   "forget": "16"
+  },
+  "what_went_wrong": "These three were replaced by python and two synonyms at some point after 2026-09-05. forget, revert and witness then fell out of the top 300 of the search that finds us, and discovery_floor caught it two days later. Nothing declared the intended set, so nothing could catch it sooner."
+ }
+}

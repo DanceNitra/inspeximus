@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "inspeximus"
-version = "3.0.0"
+version = "2.27.0"
 description = "The agent memory that takes it back: correct a fact once and the retired value stops coming back, by key, with no LLM in the loop. Long-term memory for AI agents in a zero-dependency single file + MCP server, with value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -127,7 +127,7 @@ crewai = ["crewai"]
 # is a broken adapter for anyone who did not read the CI file.
 # `>=2` is a FLOOR and it is the API GENERATION the adapter targets: the 2.x reorganisation is where
 # `haystack.document_stores.types.DocumentStore` / `DuplicatePolicy` live, and 1.x has neither. No upper
-# bound -- 3.0.0 is what the conformance round trip is verified against (docs/integration_conformance.json)
+# bound -- 2.27.0 is what the conformance round trip is verified against (docs/integration_conformance.json)
 # and it passes, so there is no observed breakage to cap on.
 haystack = ["haystack-ai>=2"]
 

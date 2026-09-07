@@ -64,7 +64,7 @@
       "source": "haystack.py",
       "status": "verified",
       "upstream_dist": "haystack-ai",
-      "verified_against": "3.0.0"
+      "verified_against": "2.27.0"
     },
     "langchain": {
       "adapter": "inspeximus.integrations.langchain:InspeximusRetriever + InspeximusChatMessageHistory",

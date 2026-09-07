@@ -5,6 +5,7 @@
  "capabilities": 15,
  "findable_by_search": 5,
  "documented_only_in_the_readme": [
+  "audit",
   "compliance",
   "governance",
   "provenance",
@@ -14,7 +15,7 @@
  "topics_used": 20,
  "topic_budget": 20,
  "topic_slots_free": 0,
- "description_chars": 349,
+ "description_chars": 226,
  "rows": [
   {
    "capability": "access-control",
@@ -39,7 +40,7 @@
    "in_description": false,
    "in_readme": 0,
    "search_position": null,
-   "search_total": 95
+   "search_total": 98
   },
   {
    "capability": "audit",
@@ -50,10 +51,10 @@
     "erasure_audit"
    ],
    "in_topics": false,
-   "in_description": true,
+   "in_description": false,
    "in_readme": 13,
    "search_position": null,
-   "search_total": 737
+   "search_total": 748
   },
   {
    "capability": "compliance",
@@ -65,7 +66,7 @@
    "in_description": false,
    "in_readme": 3,
    "search_position": null,
-   "search_total": 92
+   "search_total": 93
   },
   {
    "capability": "conflict",
@@ -76,7 +77,7 @@
    "in_description": false,
    "in_readme": 1,
    "search_position": null,
-   "search_total": 154
+   "search_total": 160
   },
   {
    "capability": "consolidation",
@@ -88,7 +89,7 @@
    "in_description": false,
    "in_readme": 0,
    "search_position": null,
-   "search_total": 383
+   "search_total": 387
   },
   {
    "capability": "erasure",
@@ -100,9 +101,9 @@
    ],
    "in_topics": true,
    "in_description": true,
-   "in_readme": 13,
-   "search_position": 5,
-   "search_total": 11
+   "in_readme": 16,
+   "search_position": 2,
+   "search_total": 13
   },
   {
    "capability": "forget",
@@ -113,9 +114,9 @@
    ],
    "in_topics": true,
    "in_description": true,
-   "in_readme": 6,
-   "search_position": 237,
-   "search_total": 354
+   "in_readme": 9,
+   "search_position": 108,
+   "search_total": 352
   },
   {
    "capability": "governance",
@@ -126,7 +127,7 @@
    "in_description": false,
    "in_readme": 1,
    "search_position": null,
-   "search_total": 434
+   "search_total": 441
   },
   {
    "capability": "provenance",
@@ -137,7 +138,7 @@
    "in_description": false,
    "in_readme": 4,
    "search_position": null,
-   "search_total": 324
+   "search_total": 327
   },
   {
    "capability": "recall",
@@ -151,7 +152,7 @@
    "in_description": false,
    "in_readme": 10,
    "search_position": null,
-   "search_total": 1059
+   "search_total": 1066
   },
   {
    "capability": "retention",
@@ -169,10 +170,10 @@
    "tools": [
     "revert"
    ],
-   "in_topics": false,
+   "in_topics": true,
    "in_description": true,
    "in_readme": 5,
-   "search_position": 3,
+   "search_position": 1,
    "search_total": 8
   },
   {
@@ -183,7 +184,7 @@
    "in_topics": true,
    "in_description": true,
    "in_readme": 1,
-   "search_position": 17,
+   "search_position": 6,
    "search_total": 28
   },
   {
@@ -193,7 +194,7 @@
     "verify_witness"
    ],
    "in_topics": true,
-   "in_description": false,
+   "in_description": true,
    "in_readme": 6,
    "search_position": 4,
    "search_total": 10

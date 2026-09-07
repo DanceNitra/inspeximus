@@ -59,6 +59,11 @@ jobs:
           done < urls.txt
       - name: fail if fewer capabilities are reachable than last time
         run: python -X utf8 tools/discovery_floor.py
+
+      - name: The storefront must match what this repository declares
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -X utf8 tools/declared_surface.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

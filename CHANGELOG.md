@@ -1,9 +1,15 @@
-## 3.0.0 - UPGRADE IF YOU SHARE ONE STORE BETWEEN PROCESSES, OR HOLD MORE THAN A FEW THOUSAND RECORDS: the store writes rows, and you do not choose that
+## 2.27.0 - UPGRADE IF YOU SHARE ONE STORE BETWEEN PROCESSES, OR HOLD MORE THAN A FEW THOUSAND RECORDS: the store writes rows, and you do not choose that
 
 BREAKING, ON DISK ONLY: a store written by this version cannot be read by 2.26.1 or earlier. Those
 versions decode the store as UTF-8 and raise `UnicodeDecodeError` on the SQLite header. The API,
 the record shape and every method are unchanged, so a downgrade is a file rename rather than a code
 change: `memory.json.pre-rows.bak` is the store as it was before the conversion.
+
+WHY THIS IS A MINOR NUMBER AND NOT 3.0.0, since an on-disk change usually earns a major. The
+format work is not finished: the audit that cleared this release also left the store-format
+questions open, and a major number should announce a settled format rather than the first release
+that changes one. Read the version as "nothing you call has changed" and this paragraph as the
+warning a major number would otherwise carry.
 
 **Every write used to rewrite the whole file.** One persisted write, three independent trials of
 thirty writes on an idle machine: 0.0818 s against 0.0422 s at 10,000 records, and 0.2334 s against

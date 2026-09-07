@@ -80,7 +80,7 @@ The guard is an enforcement, not a solution, even between matching versions: two
 the conflict and `reload()` merges them, but they still cannot proceed concurrently. A real fix is a lock
 or a different storage format.
 
-**3.0.0 took the second of those, for stores written as rows.** A JSON save rewrites the whole file, so
+**2.27.0 took the second of those, for stores written as rows.** A JSON save rewrites the whole file, so
 refusing is the only safe answer there and the guard is unchanged. A row write touches only the ids it
 names, so the save performs the union `reload()` defines and both writers keep their records: no
 exception, and nothing to recover from. Measured with twelve concurrent processes, eight records each:
@@ -90,7 +90,7 @@ landed every record in 4 of 4 trials
 the refusal.
 
 The version-mixing exposure above changes shape rather than going away, and in a direction that helps:
-a pre-3.0.0 handle opening a row store raises `UnicodeDecodeError` instead of reading it, so it fails
+a handle older than 2.27.0 opening a row store raises `UnicodeDecodeError` instead of reading it, so it fails
 loudly at open rather than clobbering at save. Do not rely on that as a safety mechanism. Pin one
 version per store.
 
