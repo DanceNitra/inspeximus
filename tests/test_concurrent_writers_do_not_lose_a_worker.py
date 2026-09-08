@@ -55,11 +55,14 @@ from inspeximus.core import StoreChangedOnDisk
 path, wid, n, retry = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), sys.argv[4] == "retry"
 m = Inspeximus(path=path)
 ok = 0
+wrote = []
 for i in range(n):
     for attempt in range(12 if retry else 1):
         try:
-            m.remember("w%%d r%%d uniq-%%d-%%d" %% (wid, i, wid, i), mtype="fact")
+            text = "w%%d r%%d uniq-%%d-%%d" %% (wid, i, wid, i)
+            m.remember(text, mtype="fact")
             ok += 1
+            wrote.append(text)
             break
         except StoreChangedOnDisk:
             if not retry:
@@ -68,7 +71,12 @@ for i in range(n):
             m = Inspeximus(path=path)          # the documented recovery: reload, then retry
         except Exception:
             break
-print(ok)          # what this worker BELIEVES it wrote; the test compares the store against this
+# WHAT it believes it wrote, one text per line, then the count. A count cannot be diagnosed
+# after a rare failure; the shape of the missing set can, and it separates "a whole worker was
+# lost" from "single records went missing".
+for t in wrote:
+    print("WROTE\t" + t)
+print(ok)
 '''
 
 
@@ -79,17 +87,44 @@ def _run(db, workers, per, mode):
     procs = [subprocess.Popen([sys.executable, src, db, str(w), str(per), mode],
                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
              for w in range(workers)]
-    claimed = 0
+    claimed, texts = 0, []
     for p in procs:
         out, _ = p.communicate()
+        lines = (out or "").splitlines()
+        texts += [l.split("\t", 1)[1] for l in lines if l.startswith("WROTE\t") and "\t" in l]
         try:
-            claimed += int((out or "0").strip().splitlines()[-1])
+            claimed += int(lines[-1].strip())
         except Exception:                                        # noqa: BLE001
             pass
     try:
-        return len(load_store(db)), claimed
+        return len(load_store(db)), claimed, texts, db
     except Exception:                                            # noqa: BLE001
-        return -1, claimed
+        return -1, claimed, texts, db
+
+
+def _missing(db, texts):
+    """The claimed records that are not in the store, grouped by writer.
+
+    Reads the file as BYTES. The store is not guaranteed to be decodable text on every path, and a
+    UnicodeDecodeError while diagnosing a rare race would replace the finding with an unrelated
+    traceback.
+    """
+    try:
+        with open(db, "rb") as fh:
+            blob = fh.read()
+    except OSError as exc:
+        return {"error": "could not read the store: %s" % exc}
+    gone = [t for t in texts if t.encode("utf-8") not in blob]
+    by_writer = {}
+    for t in gone:
+        wid = t.split(" ", 1)[0]
+        by_writer.setdefault(wid, []).append(t.split(" ")[1])
+    return {"missing_total": len(gone), "by_writer": by_writer,
+            "claimed_total": len(texts),
+            # The shape is the diagnosis. A whole worker points at a handle that never reloaded; a
+            # scattered single points at the change guard missing a write.
+            "shape": ("a whole worker" if any(len(v) == PER for v in by_writer.values())
+                      else "scattered singles" if gone else "nothing missing")}
 
 
 PER = 12
@@ -98,7 +133,7 @@ PER = 12
 def test_single_writer_lands_every_record():
     """The control. Without this, a shortfall below says nothing about concurrency."""
     db = os.path.join(tempfile.mkdtemp(), "s.json")
-    landed, claimed = _run(db, 1, PER * 4, "retry")
+    landed, claimed, _, _ = _run(db, 1, PER * 4, "retry")
     assert claimed == PER * 4, "the single writer could not even complete its own writes"
     assert landed == PER * 4
 
@@ -107,12 +142,16 @@ def test_single_writer_lands_every_record():
 def test_no_writer_is_told_a_record_landed_that_did_not(workers):
     """The silent loss. A record someone was told they wrote must be in the store."""
     db = os.path.join(tempfile.mkdtemp(), "s.json")
-    landed, claimed = _run(db, workers, PER, "retry")
+    landed, claimed, texts, store = _run(db, workers, PER, "retry")
     assert landed >= claimed, (
         "%d of %d records that a writer was TOLD had been written are not in the store, with %d "
         "concurrent writers. A save that reports success and does not persist is the failure this "
-        "file exists to catch, and no amount of machine load excuses it."
-        % (claimed - landed, claimed, workers))
+        "file exists to catch, and no amount of machine load excuses it.\n"
+        "WHICH ONES: %s\n"
+        "The shape is the diagnosis: a whole worker means the losing handle never reloaded; "
+        "scattered singles mean the change guard missed a write, whose signature is (mtime_ns, "
+        "size) and cannot see a same-size write inside one mtime tick."
+        % (claimed - landed, claimed, workers, _missing(store, texts)))
     assert landed == claimed, (
         "the store holds %d records and the writers claimed %d; a store larger than what anyone "
         "claims to have written means the counting is wrong, not the store" % (landed, claimed))
@@ -131,6 +170,6 @@ def test_the_race_is_real_here():
     losses = []
     for _ in range(3):
         db = os.path.join(tempfile.mkdtemp(), "s.json")
-        losses.append(8 * PER - _run(db, 8, PER, "noretry")[0])
+        losses.append(8 * PER - _run(db, 8, PER, "noretry")[0])   # [0] is landed
     assert min(losses) >= 0, "negative loss means the counter is wrong, not the store"
     print("no-retry losses over 3 runs at 8 writers: %s" % losses)
