@@ -269,6 +269,49 @@ _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_I
                   observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
                   persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)
 
+
+def _recover_from_concurrent_writes(store, methods=(
+        "remember", "remember_decision", "forget", "forget_subject", "forget_pii", "revert",
+        "consolidate", "consolidate_clusters", "apply_retention", "observe", "credit", "grant",
+        "revoke", "deprecate_symbol", "set_index_line", "resolve_reopened", "sleep")):
+    """Let a write reload once and retry after another process wrote first.
+
+    THE GUARD IS CORRECT AND THE CLIENT COULD NOT GET PAST IT. `StoreChangedOnDisk` says "Call
+    reload() to merge the two and retry", `reload` is not an MCP tool, and this handle is a
+    module-level singleton, so one stale handle locked every write tool on the server until the
+    process restarted. Measured on our own store on 2026-09-08: three servers on one file, four
+    consecutive refusals, and a store whose last write was the previous evening.
+
+    `reload()` is the documented recovery and it MERGES, keeping the other writer's records and
+    re-adding this handle's by id, so neither side loses a write. The retry then goes through the
+    same guard against freshly-loaded state, which is why this cannot become a way to overwrite.
+
+    ONE retry. A second failure propagates: a genuinely contended store must still say so rather
+    than spin, and the caller must still learn that another writer is active.
+    """
+    def wrap(name):
+        fn = getattr(store, name, None)
+        if fn is None or getattr(fn, "_reload_wrapped", False):
+            return
+        def guarded(*a, **k):
+            try:
+                return fn(*a, **k)
+            except StoreChangedOnDisk:
+                store.reload()
+                return fn(*a, **k)
+        guarded._reload_wrapped = True
+        guarded.__name__ = name
+        guarded.__doc__ = fn.__doc__
+        setattr(store, name, guarded)
+
+    for n in methods:
+        wrap(n)
+    return store
+
+
+_recover_from_concurrent_writes(_MEM)
+
+from inspeximus.core import StoreChangedOnDisk  # noqa: E402  (used by the wrap above)
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
 
 mcp = FastMCP("inspeximus")
