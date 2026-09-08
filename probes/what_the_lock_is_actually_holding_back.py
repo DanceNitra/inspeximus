@@ -110,6 +110,9 @@ print(json.dumps({"ok": ok, "refused": refused, "raised": raised}))
 WRITERS = max(2, min(8, (os.cpu_count() or 2)))
 PER = 12
 TRIALS = 4
+# An arm that keeps only one usable trial is not a measurement. The code below already refused
+# an arm where EVERY trial was void; this refuses the case just above it.
+MIN_USABLE = 2
 
 
 def _load(path):
@@ -183,9 +186,10 @@ def main():
         if void:
             print("  %-14s: %d of %d trials void, a worker produced no output on this machine"
                   % (name, len(void), len(void) + len(rs)))
-        if not rs:
-            print("  VOID ARM: every trial of '%s' lost a worker to the machine, so this run measures "
-                  "nothing. Re-run where %d processes fit." % (name, WRITERS))
+        if len(rs) < MIN_USABLE:
+            print("  VOID ARM: only %d of %d trials of '%s' produced a measurement, under the %d "
+                  "this needs. Re-run where %d processes fit."
+                  % (len(rs), TRIALS, name, MIN_USABLE, WRITERS))
             out["verdict"] = "void_no_usable_trial"
             path = os.path.splitext(os.path.abspath(__file__))[0] + ".result.json"
             with open(path, "w", encoding="utf-8", newline="\n") as fh:
@@ -197,14 +201,19 @@ def main():
             "claimed": [r["claimed"] for r in rs],
             "gave_up": [r["attempted"] - r["claimed"] for r in rs],
             "losses": losses,
+            # Against the trials that produced a measurement, never against TRIALS. Comparing
+            # a count of usable trials with the constant is what made a void trial read as a lossy
+            # one, and printed [0, 0, 0] under the words "lost records".
+            "usable_trials": len(rs),
+            "void_trials": len(void),
             "clean_trials": sum(1 for l in losses if l == 0),
             "worst_loss": max(losses),
             "trials_where_every_worker_reported_success":
                 sum(1 for r in rs if r["workers_reporting_success"] == WRITERS),
             "any_worker_raised": [r["any_worker_raised"] for r in rs if r["any_worker_raised"]]}
         gave_up = out["arms"][name]["gave_up"]
-        print("  %-14s: silently lost %s of what was claimed, clean in %d of %d trials%s"
-              % (name, losses, out["arms"][name]["clean_trials"], TRIALS,
+        print("  %-14s: silently lost %s of what was claimed, clean in %d of %d usable trials%s"
+              % (name, losses, out["arms"][name]["clean_trials"], len(rs),
                  "" if not any(gave_up) else "; %s writes gave up after exhausting their retries, "
                                              "which is load and not loss" % (gave_up,)))
 
@@ -224,10 +233,13 @@ def main():
     assert not degraded["any_worker_raised"], (
         "a worker raised in the unlocked arm, so this measures an error path rather than a silent "
         "loss: %s" % degraded["any_worker_raised"])
-    assert held["clean_trials"] == TRIALS, (
+    assert held["clean_trials"] == held["usable_trials"], (
         "the LOCKED arm lost records a writer was TOLD had been written, which is a defect in the "
         "shipped path rather than a counterfactual: %s. Writes that gave up after exhausting their "
-        "retries are counted separately and are not this: %s" % (held["losses"], held["gave_up"]))
+        "retries are counted separately and are not this: %s. Clean in %d of %d usable trials; %d "
+        "further trial(s) were void and are excluded rather than counted as lossy."
+        % (held["losses"], held["gave_up"], held["clean_trials"], held["usable_trials"],
+           held["void_trials"]))
     assert not prefix["any_worker_raised"], (
         "a worker raised in the pre-fix arm, so it measures an error path rather than a silent "
         "loss: %s" % prefix["any_worker_raised"])
@@ -237,7 +249,7 @@ def main():
         print("  THE SECOND READ IS THE LOSS. With the lock degraded and the pre-fix line restored, "
               "%s of %d records were lost across %d trials, and every worker reported success in %d "
               "of them. On the shipped code the same arm lost %s."
-              % (prefix["losses"], WRITERS * PER, TRIALS,
+              % (prefix["losses"], WRITERS * PER, prefix["usable_trials"],
                  prefix["trials_where_every_worker_reported_success"], degraded["losses"]))
     else:
         print("  NOTHING REPRODUCED, INCLUDING THE DEFECT. The pre-fix arm lost nothing either, so "
