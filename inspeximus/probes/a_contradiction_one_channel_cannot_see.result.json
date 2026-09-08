@@ -1,0 +1,169 @@
+{
+ "probe": "a_contradiction_one_channel_cannot_see.py",
+ "embed_model": "nomic-embed-text",
+ "query": "which region does production deploy to",
+ "stale": "Production deploys go to the us-east-1 region.",
+ "fresh": "We moved the live cluster to Frankfurt; eu-central-1 now serves all customer traffic.",
+ "pool": 22,
+ "conditions": {
+  "stale_only": {
+   "arms": {
+    "lexical": {
+     "mode_asked": "lexical",
+     "mode_used": "lexical",
+     "stale_rank": 1,
+     "fresh_rank": null,
+     "returned": 1
+    },
+    "semantic": {
+     "mode_asked": "semantic",
+     "mode_used": "semantic",
+     "stale_rank": 1,
+     "fresh_rank": null,
+     "returned": 5
+    },
+    "hybrid": {
+     "mode_asked": "hybrid",
+     "mode_used": "hybrid",
+     "stale_rank": 1,
+     "fresh_rank": null,
+     "returned": 5
+    }
+   },
+   "positive_fresh": true,
+   "positive_stale": true,
+   "negative_hits": 0,
+   "auto_picked": "lexical",
+   "semantic_threshold": 300
+  },
+  "keyed": {
+   "arms": {
+    "lexical": {
+     "mode_asked": "lexical",
+     "mode_used": "lexical",
+     "stale_rank": null,
+     "fresh_rank": null,
+     "returned": 0
+    },
+    "semantic": {
+     "mode_asked": "semantic",
+     "mode_used": "semantic",
+     "stale_rank": null,
+     "fresh_rank": 1,
+     "returned": 3
+    },
+    "hybrid": {
+     "mode_asked": "hybrid",
+     "mode_used": "hybrid",
+     "stale_rank": null,
+     "fresh_rank": 2,
+     "returned": 3
+    }
+   },
+   "positive_fresh": true,
+   "positive_stale": true,
+   "negative_hits": 0,
+   "auto_picked": "lexical",
+   "semantic_threshold": 300
+  },
+  "unkeyed": {
+   "arms": {
+    "lexical": {
+     "mode_asked": "lexical",
+     "mode_used": "lexical",
+     "stale_rank": 1,
+     "fresh_rank": null,
+     "returned": 1
+    },
+    "semantic": {
+     "mode_asked": "semantic",
+     "mode_used": "semantic",
+     "stale_rank": 1,
+     "fresh_rank": 2,
+     "returned": 4
+    },
+    "hybrid": {
+     "mode_asked": "hybrid",
+     "mode_used": "hybrid",
+     "stale_rank": 1,
+     "fresh_rank": 3,
+     "returned": 4
+    }
+   },
+   "positive_fresh": true,
+   "positive_stale": true,
+   "negative_hits": 0,
+   "auto_picked": "lexical",
+   "semantic_threshold": 300
+  }
+ },
+ "keyed_channels_that_return_neither": [
+  "lexical"
+ ],
+ "unkeyed_summary": {
+  "saw_stale": {
+   "lexical": true,
+   "semantic": true,
+   "hybrid": true
+  },
+  "saw_correction": {
+   "lexical": false,
+   "semantic": true,
+   "hybrid": true
+  },
+  "saw_both": {
+   "lexical": false,
+   "semantic": true,
+   "hybrid": true
+  },
+  "channels_disagree": true
+ },
+ "checks": [
+  {
+   "check": "CONTROL_every_arm_used_the_mode_it_asked_for",
+   "pass": true,
+   "got": "{'lexical': ['lexical', 'lexical', 'lexical'], 'semantic': ['semantic', 'semantic', 'semantic'], 'hybrid': ['hybrid', 'hybrid', 'hybrid']}"
+  },
+  {
+   "check": "CONTROL_auto_mode_picks_lexical_at_this_pool_size",
+   "pass": true,
+   "got": "auto=lexical, threshold=300 active memories, pool=22"
+  },
+  {
+   "check": "CONTROL_both_records_are_findable_by_their_own_wording",
+   "pass": true,
+   "got": ""
+  },
+  {
+   "check": "CONTROL_a_phrase_never_written_returns_nothing",
+   "pass": true,
+   "got": "(0, 0)"
+  },
+  {
+   "check": "KEYED_the_superseded_value_is_hidden_from_EVERY_channel",
+   "pass": true,
+   "got": "{'lexical': None, 'semantic': None, 'hybrid': None}"
+  },
+  {
+   "check": "CONTROL_at_least_one_channel_reaches_the_correction",
+   "pass": true,
+   "got": "a store where no channel finds it would make the row above meaningless"
+  },
+  {
+   "check": "MEASURED_lexical_answered_before_the_correction_was_written",
+   "pass": true,
+   "got": "stale at rank 1"
+  }
+ ],
+ "all_passed": true,
+ "lexical_before_and_after": {
+  "before_correction": {
+   "stale_rank": 1
+  },
+  "after_correction": {
+   "stale_rank": null,
+   "fresh_rank": null
+  }
+ },
+ "finding": "Writing the correction turned an answer into no answer on the LEXICAL channel, which is what `auto` selects below 300 active memories: before the correction the stale record came back at rank 1, and after it that channel returns neither record. The supersession is working and the correction is out of lexical reach, so the reader is left with nothing. With the contradiction UNDECLARED, the channels disagree on what the reader is shown: lexical returns the stale value alone while semantic and hybrid show both."
+}
