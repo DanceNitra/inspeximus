@@ -30,6 +30,34 @@ import os, sys, json, re, time, urllib.request, argparse
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from inspeximus import Inspeximus
 
+#: WHERE A KEY MAY COME FROM, named once so the refusal message prints the SAME list the loader
+#: reads. Our 2026-08-31 reply on #1 said the dotenv is resolved relative to this file, then admitted
+#: a third candidate under the CURRENT DIRECTORY that the message never named: run the published
+#: command from a project of your own holding `server/.env` and it reads a key from a file we told
+#: you we do not read. Measured 2026-09-10 from a scratch directory: the loader took
+#: `sk-THIS-IS-A-STRANGERS-KEY` and said nothing.
+#:
+#: The candidate stays, because the repository this benchmark was written in keeps its key exactly
+#: there and removing it would break the reproduction we publish. What changes is that a key from a
+#: FILE is now announced with its absolute path, so a key picked up from someone else's directory
+#: cannot be silent.
+def KEY_CANDIDATES():
+    """(label, absolute path) pairs. The label matters: run this FROM the repository root and
+    the first and third resolve to the SAME file, so an unlabelled list prints one path twice
+    and tells the reader nothing about which rule put it there."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    return (("beside this repository",
+             os.path.abspath(os.path.join(here, "..", "server", ".env"))),
+            ("beside this repository",
+             os.path.abspath(os.path.join(here, "..", ".env"))),
+            ("under your CURRENT DIRECTORY",
+             os.path.abspath(os.path.join(os.getcwd(), "server", ".env"))))
+
+
+#: Filled by _load_key(); one entry, the process or an absolute path.
+KEY_SOURCE = []
+
+
 def _load_key():
     """The process environment first, a dotenv only as a fallback, and never the other way round.
 
@@ -49,11 +77,9 @@ def _load_key():
     """
     key = os.environ.get("OPENAI_API_KEY", "")
     if key:
+        KEY_SOURCE.append("the process environment")
         return key
-    here = os.path.dirname(os.path.abspath(__file__))
-    for cand in (os.path.join(here, "..", "server", ".env"),
-                 os.path.join(here, "..", ".env"),
-                 os.path.join(os.getcwd(), "server", ".env")):
+    for _label, cand in KEY_CANDIDATES():
         if not os.path.exists(cand):
             continue
         try:
@@ -63,6 +89,7 @@ def _load_key():
                     if line and not line.startswith("#") and "=" in line:
                         k, v = line.split("=", 1)
                         if k.strip() == "OPENAI_API_KEY":
+                            KEY_SOURCE.append(os.path.abspath(cand))
                             return v.strip().strip('"').strip("'")
         except OSError:
             continue
@@ -72,6 +99,12 @@ def _load_key():
 OPENAI_KEY = _load_key()
 if OPENAI_KEY:
     os.environ["OPENAI_API_KEY"] = OPENAI_KEY
+
+#: A KEY FROM A FILE IS ANNOUNCED. A key from the process environment is not: the caller put it
+#: there. A key from a file is one the caller may not know they supplied, and the third candidate
+#: sits under the CURRENT DIRECTORY, so it can belong to a project that is not this one.
+if OPENAI_KEY and KEY_SOURCE and KEY_SOURCE[0] != "the process environment":
+    print("OPENAI_API_KEY read from %s" % KEY_SOURCE[0], file=sys.stderr)
 
 ENTS = [("cache region", "osaka", "malmo"), ("primary shard", "delta7", "sigma2"),
         ("build target", "arm64", "riscv"), ("default currency", "forint", "guarani"),
@@ -102,6 +135,11 @@ REVERTS = ["go back to what we had for the {e}.", "revert that last {e} change."
            "put the {e} back the way it was.", "roll back the {e} change."]
 
 
+#: Statuses no amount of waiting fixes: the credential is wrong, the caller is not permitted, the
+#: request is malformed, or the model does not exist. 429 and every 5xx stay retryable.
+_FATAL_HTTP = frozenset({400, 401, 403, 404})
+
+
 def openai_chat(prompt, model="gpt-4o-mini", temp=0.0):
     body = json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}],
                        "temperature": temp, "max_tokens": 60}).encode()
@@ -113,6 +151,14 @@ def openai_chat(prompt, model="gpt-4o-mini", temp=0.0):
                 timeout=60)
             return json.loads(r.read())["choices"][0]["message"]["content"].strip()
         except Exception as e:
+            # A KEY THAT IS REFUSED IS REFUSED SIX TIMES IN A ROW, AND WE WAITED FOR ALL OF THEM.
+            # @mioimotoai-lgtm asked for an actionable error rather than retried unauthenticated
+            # calls; our 2026-08-31 reply admitted this half was not written. Measured 2026-09-10
+            # against a 401: 6 attempts, 45.0 s for ONE case, 15.0 minutes at the published --n 20,
+            # on a key that cannot start working. The bare `except Exception` treated 401 exactly
+            # like 429, and only the second one is worth waiting for.
+            if getattr(e, "code", None) in _FATAL_HTTP:
+                return None
             if a == 5:
                 return None
             time.sleep(3 * (a + 1))   # linear-growing backoff; rate limits accumulate on long runs
@@ -329,7 +375,10 @@ def main():
               "  * export OPENAI_API_KEY=...   to reproduce the published numbers, or\n"
               "  * add --judge local           for a free deterministic run, which is a DIFFERENT\n"
               "                                instrument and is not comparable with them.\n"
-              "A dotenv at server/.env or .env beside the repo root is read only as a fallback.",
+              "A dotenv is read only as a fallback, and ONLY from these paths, in this order:\n"
+              + "".join("      %-30s %s\n" % (lab, path) for lab, path in KEY_CANDIDATES())
+              + "The last one is under your CURRENT DIRECTORY, so a project of your own holding\n"
+                "server/.env supplies the key. A key read from a file is announced with its path.",
               file=sys.stderr)
         return 2
     cases = []
