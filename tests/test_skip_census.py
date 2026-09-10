@@ -85,7 +85,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: the bug shipped. The `integrations` CI job installs .[mcp,...] and runs all four under
 #: --require-all, where a SKIP is a failure rather than an acceptable outcome.
 #: Exactly +4, no slack: 152 + 4 = 156.
-MAX_HIDDEN_IN_BASE_ENV = 166
+#:
+#: +3 on 2026-09-10 for test_mcp_recovers_from_a_concurrent_write.py, which reaches
+#: inspeximus.mcp_server and so needs the MCP SDK. It shipped on 2026-09-08 with no guard, and the
+#: base job went red at COLLECTION rather than skipping -- CI stayed broken for two days. The guard
+#: is the fix; this pin is what stops the guard from being a quiet way to lose the tests. They still
+#: RUN in the `integrations` job, which installs .[mcp,...], so the coverage moves job rather than
+#: disappearing. Exactly +3, no slack: 166 + 3 = 169.
+MAX_HIDDEN_IN_BASE_ENV = 169
 
 
 def _base_env_census():

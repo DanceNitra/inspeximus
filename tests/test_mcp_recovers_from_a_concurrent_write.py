@@ -26,6 +26,13 @@ import tempfile
 
 import pytest
 
+# EVERY test here reaches `inspeximus.mcp_server`, which needs the MCP SDK, and CI installs it in
+# only one job. Without this the whole file errors at COLLECTION, and a collection error is not a
+# failed assertion, so the three tests would go missing rather than red. The guard belongs to the
+# dependency it guards, so it sits at module level here where all three tests need it, and never in
+# a file whose other tests need nothing optional.
+pytest.importorskip("mcp")
+
 from inspeximus.core import Inspeximus, StoreChangedOnDisk
 
 
