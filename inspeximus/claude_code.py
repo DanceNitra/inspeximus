@@ -732,8 +732,33 @@ def recall(ev):
         out.append("recent mechanics (files/commands):")
         out += [f"  - {_injected(mm['text'])}" for mm in mechanics]
     if out:
-        print("[inspeximus] relevant project memory (deterministic, corrections already applied):\n" + "\n".join(out))
+        _emit("UserPromptSubmit",
+              "[inspeximus] relevant project memory (deterministic, corrections already applied):\n"
+              + "\n".join(out))
     _maybe_nudge(cwd)   # visible slot: UserPromptSubmit stdout is shown to the user
+
+
+def _emit(event, *blocks):
+    """One JSON envelope per hook run, never bare text, and never more than one object.
+
+    BOTH HOSTS TAKE THIS SHAPE; ONLY ONE OF THEM TAKES ANYTHING ELSE. Claude Code injects a hook's
+    raw stdout as context, so `print(text)` worked and this module grew three of them in
+    session_start alone. Codex parses stdout as JSON and refuses what it cannot parse:
+
+        hook returned invalid session start JSON output
+
+    Measured 2026-09-10 on Codex 0.154.0: `hookSpecificOutput` and `additionalContext` are the field
+    names Codex's own binary carries, so this envelope is not a translation layer. It is the format
+    both hosts document, and raw text was the host-specific special case all along.
+
+    ONE object, so the pieces are joined here rather than printed as they are produced: two JSON
+    objects on one stdout is not JSON either, and session_start emitted up to three blocks.
+    """
+    text = chr(10).join(b for b in blocks if b)
+    if not text:
+        return
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": event, "additionalContext": text}}))
 
 
 def session_start(ev):
@@ -764,6 +789,7 @@ def session_start(ev):
         return
     cfg = _session_cfg(cwd)
     m = _store(cwd)
+    emit = []          # every block this handler would have printed, joined into ONE envelope below
     if cfg["enabled"]:
         # A `compact` SessionStart is the SAME session continuing after a context compaction, not a new
         # one. Opening a boundary there would split one session into two digests and orphan the first.
@@ -777,22 +803,25 @@ def session_start(ev):
                                 max_entry_chars=int(cfg["max_entry_chars"]),
                                 threshold=cfg["salience"])
         if ctx.get("text"):
-            print(ctx["text"])
+            emit.append(ctx["text"])
     files = [it for it in getattr(m, "items", []) if "file" in (it.get("tags") or [])
              and it.get("status") != "superseded"][:int(cfg["files"])]
     if files:
         lines = "\n".join(f"- {_injected(it['text'])}" for it in files)
         block = f"[inspeximus] this project's current known files (mechanics, latest state only):\n{lines}"
-        print(block[:int(cfg["files_max_chars"])])
+        emit.append(block[:int(cfg["files_max_chars"])])
     # once-a-day, opt-out "newer version exists" courtesy (stdout is injected as context here)
     try:
         from inspeximus import __version__
         from inspeximus._update import check_for_update
         note = check_for_update(__version__, cache_dir=os.path.join(cwd, ".inspeximus"))
         if note:
-            print(note)
+            emit.append(note)
     except Exception:
         pass
+    # COLLECTED, THEN EMITTED ONCE. These were three separate print() calls, which is three lines of
+    # bare text on one stdout -- fine for a host that injects stdout, refused by one that parses it.
+    _emit("SessionStart", *emit)
 
 
 def session_end(ev):
@@ -871,9 +900,15 @@ def install_codex(root=None) -> str:
     behind `cmd /c` -- which is correct for one machine and wrong for every other, so it is written
     at install time from `sys.executable` rather than shipped in the repository.
 
-    Codex reads hooks ONLY from plugins. A loose `.codex/hooks.json` is inert: ours named this
-    module on five events since 2026-07-18 and never once ran, and nothing reported that, because a
-    hook that does not start is silent.
+    CORRECTED 2026-09-10, and the old line is left visible because it is the more dangerous half.
+    It read: "Codex reads hooks ONLY from plugins. A loose `.codex/hooks.json` is inert." That was
+    true when it was written and is not true of Codex 0.154.0, which reads `~/.codex/hooks.json`,
+    runs what it finds there, and says so:
+
+        clamping SessionEnd hook timeout to 3s in C:\\Users\\<you>\\.codex\\hooks.json
+
+    A plugin is still the supported path. What changed is that a hooks.json beside it now ALSO runs,
+    so the two together fire every hook twice. Install one or the other, never both.
 
     After this, register it once:
         codex plugin marketplace add <the path this returns>
