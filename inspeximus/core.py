@@ -7375,6 +7375,29 @@ class Inspeximus:
                             f"because continuing would overwrite the file with an empty store. "
                             f"Restore a backup, or move the file aside if you meant to start "
                             f"fresh.") from None
+        # PARSING IS NOT LOADING. Everything below assumes a LIST of record dicts. A file that is
+        # valid JSON but shaped as an object got assigned here unchecked, and the loop below then
+        # iterated its KEYS: `AttributeError: 'str' object has no attribute 'setdefault'`, thrown
+        # from inside the library, with nothing naming the file or the shape.
+        #
+        # `{"memories": [...]}` is the shape a stranger actually pointed at us, and garbage gets a
+        # clean refusal naming the path while this got an internal crash. The worse error was on the
+        # nearer-miss input.
+        #
+        # It REFUSES rather than unwrapping. Guessing which key holds the records means guessing
+        # that a foreign file is a store at all, and being wrong there means saving over it.
+        if not isinstance(self._items, list):
+            found = type(self._items).__name__
+            hint = ""
+            if isinstance(self._items, dict):
+                lists = [k for k, v in self._items.items() if isinstance(v, list)]
+                if len(lists) == 1:
+                    hint = (f" It looks like a wrapper: the key {lists[0]!r} holds a list. If those "
+                            f"are the records, save that list as the whole file and open it again.")
+            raise ValueError(
+                f"the store at {self.path} parses as JSON but is a {found}, and a store is a list "
+                f"of records. Refusing to open it, because continuing would overwrite the file."
+                f"{hint}")
         for r in self._items:
             # A record missing a field newer code assumes crashed six methods with a bare KeyError — and made
             # index_coherence report `coherent: true` with an undercount, which is worse than crashing. Foreign,
