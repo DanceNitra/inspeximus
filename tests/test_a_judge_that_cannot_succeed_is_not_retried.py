@@ -48,11 +48,22 @@ def _load(monkeypatch, cwd=None, key=None):
     return m
 
 
-def _raises(module, code, counter):
+def _raises(monkeypatch, module, code, counter):
+    """THROUGH monkeypatch, NEVER a bare assignment.
+
+    `module.urllib.request` is the SHARED urllib.request module object, not a private copy, so
+    `module.urllib.request.urlopen = fake` replaces it for the WHOLE process and nothing puts it
+    back. The first version of this file did exactly that. It passed alone, and CI came back with
+    `AttributeError: 'str' object has no attribute 'full_url'` and `assert 401 == 400` in four
+    unrelated HTTP tests: they had reached this fake, several test files later. A full local run
+    had shown nine such failures and I read them as pre-existing flakes, because they moved between
+    runs. They moved because test ORDER moved.
+    """
     def fake(req, timeout=None):
         counter.append(1)
-        raise urllib.error.HTTPError(req.full_url, code, "x", {}, io.BytesIO(b"{}"))
-    module.urllib.request.urlopen = fake
+        raise urllib.error.HTTPError(getattr(req, "full_url", str(req)), code, "x", {},
+                                     io.BytesIO(b"{}"))
+    monkeypatch.setattr(module.urllib.request, "urlopen", fake)
 
 
 # -- the retry ------------------------------------------------------------------------------------
@@ -62,7 +73,7 @@ def test_a_status_that_cannot_succeed_is_attempted_once(monkeypatch, code):
     m = _load(monkeypatch, key="sk-bogus")
     monkeypatch.setattr(m.time, "sleep", lambda s: None)
     n = []
-    _raises(m, code, n)
+    _raises(monkeypatch, m, code, n)
     assert m.openai_chat("x") is None
     assert len(n) == 1, "HTTP %d was attempted %d times; it cannot start working" % (code, len(n))
 
@@ -74,7 +85,7 @@ def test_a_status_that_might_succeed_is_still_retried(monkeypatch, code):
     m = _load(monkeypatch, key="sk-bogus")
     monkeypatch.setattr(m.time, "sleep", lambda s: None)
     n = []
-    _raises(m, code, n)
+    _raises(monkeypatch, m, code, n)
     assert m.openai_chat("x") is None
     assert len(n) == 6, "HTTP %d was attempted %d times; it is worth waiting for" % (code, len(n))
 
@@ -95,7 +106,7 @@ def test_a_transient_failure_still_lands(monkeypatch):
             raise urllib.error.HTTPError(req.full_url, 429, "rate limited", {}, io.BytesIO(b"{}"))
         return _Ok()
 
-    m.urllib.request.urlopen = flaky
+    monkeypatch.setattr(m.urllib.request, "urlopen", flaky)
     assert m.openai_chat("x") == "A"
     assert len(calls) == 3
 
@@ -107,7 +118,7 @@ def test_the_control_the_old_loop_retried_a_bad_key_six_times(monkeypatch):
     monkeypatch.setattr(m.time, "sleep", lambda s: None)
     monkeypatch.setattr(m, "_FATAL_HTTP", frozenset())      # the old `except Exception`
     n = []
-    _raises(m, 401, n)
+    _raises(monkeypatch, m, 401, n)
     m.openai_chat("x")
     assert len(n) == 6, "the control did not reproduce the defect, so the tests above measure nothing"
 
