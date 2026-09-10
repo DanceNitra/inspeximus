@@ -43,3 +43,62 @@ def fork_of(ix, dest, records, receipt_key=None, keep=1):
         f.remember(text, key=key, object=obj)
     f.flush()
     return f
+
+
+# -- process-global state must be put back --------------------------------------------------------
+#
+# WHY THIS EXISTS. On 2026-09-10 one line in a new test file -- `module.urllib.request.urlopen =
+# fake` -- replaced urlopen for the WHOLE process, because `urllib.request` is the shared module and
+# not a private copy. Seventeen tests in four unrelated files then reached that fake, several test
+# files later, and failed with `AttributeError: 'str' object has no attribute 'full_url'` and
+# `assert 401 == 400`. Nothing caught it until CI.
+#
+# The local runs were worse than useless: the failure SET moved between runs, because test order
+# moved, and that was read as flakiness. A failing set that changes per run is the signature of a
+# shared-state leak, not noise, and two 17-minute runs were spent learning that.
+#
+# monkeypatch already restores what it patches. This catches the bare assignment that does not, and
+# it names the test that did it instead of the test that tripped over it.
+import builtins as _builtins
+import socket as _socket
+import subprocess as _subprocess
+import time as _time
+import urllib.request as _urllib_request
+
+import pytest as _pytest
+
+#: (module, attribute) pairs a test may legitimately want to fake, and must therefore put back.
+#: Deliberately short: each entry costs one identity comparison per test, and a long list of things
+#: nobody patches would be cost without cover.
+_GLOBALS_THAT_MUST_SURVIVE_A_TEST = (
+    (_urllib_request, "urlopen"),
+    (_socket, "socket"),
+    (_socket, "create_connection"),
+    (_subprocess, "run"),
+    (_subprocess, "Popen"),
+    (_time, "sleep"),
+    (_builtins, "open"),
+)
+
+
+@_pytest.fixture(autouse=True)
+def _no_test_leaves_a_global_patched():
+    before = [getattr(mod, attr) for mod, attr in _GLOBALS_THAT_MUST_SURVIVE_A_TEST]
+    yield
+    leaked = []
+    for (mod, attr), was in zip(_GLOBALS_THAT_MUST_SURVIVE_A_TEST, before):
+        now = getattr(mod, attr)
+        if now is not was:
+            leaked.append(("%s.%s" % (mod.__name__, attr), was, now))
+            # PUT IT BACK, not only report it. Without this the guard names the culprit and the
+            # cascade still happens: measured on the incident this was written for, one leak took
+            # 17 tests in four later files with it. Restoring turns that into one error on the test
+            # that did it, which is the only place the fix belongs.
+            setattr(mod, attr, was)
+    if leaked:
+        raise AssertionError(
+            "this test left process-global state patched, so every test that runs after it in this "
+            "worker sees the fake:\n"
+            + "".join("  %s is now %r, was %r\n" % (name, now, was) for name, was, now in leaked)
+            + "Use monkeypatch.setattr, which restores it. A bare assignment to a module attribute "
+              "is a process-wide change, and the test that BREAKS is never the test that did it.")
