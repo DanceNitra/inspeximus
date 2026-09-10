@@ -190,10 +190,26 @@ def main():
             print("  VOID ARM: only %d of %d trials of '%s' produced a measurement, under the %d "
                   "this needs. Re-run where %d processes fit."
                   % (len(rs), TRIALS, name, MIN_USABLE, WRITERS))
+            # A RUN THAT MEASURED NOTHING MUST NOT OVERWRITE THE RUN THAT DID.
+            #
+            # This wrote the real receipt and returned 0. The guard that spares the receipt under
+            # pytest sits at the OTHER exit, 70 lines below, so the suite executing this probe on a
+            # two-core runner replaced a measurement with `"arms": {}` and reported success. That is
+            # what was committed: the receipt in git said void_no_usable_trial, with no arms, while
+            # the same probe on this machine measures [0, 0, 14, 24] of 96 lost in the control arm
+            # and 0 on the shipped path.
+            #
+            # The void outcome is still worth recording, because "this machine could not run it" is
+            # information. It goes to its own file, where it cannot be mistaken for a measurement.
             out["verdict"] = "void_no_usable_trial"
-            path = os.path.splitext(os.path.abspath(__file__))[0] + ".result.json"
-            with open(path, "w", encoding="utf-8", newline="\n") as fh:
+            out["why"] = ("only %d of %d trials of %r produced a measurement, under the %d needed. "
+                          "%d writers did not fit on this machine (%d cores)."
+                          % (len(rs), TRIALS, name, MIN_USABLE, WRITERS, os.cpu_count() or 0))
+            void_path = os.path.splitext(os.path.abspath(__file__))[0] + ".void.json"
+            with open(void_path, "w", encoding="utf-8", newline="\n") as fh:
                 fh.write(json.dumps(out, indent=1))
+            print("  the receipt is NOT rewritten. This run measured nothing; it is recorded in %s"
+                  % os.path.basename(void_path))
             return 0
         losses = [r["claimed"] - r["landed"] for r in rs]
         out["arms"][name] = {
