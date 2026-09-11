@@ -23,6 +23,7 @@ from __future__ import annotations
 import os
 import pathlib
 import subprocess
+import sys
 
 import pytest
 
@@ -44,9 +45,12 @@ KNOWN_DIRTYING = {
 
 
 def _tracked_probe_receipts():
-    out = subprocess.run(["git", "ls-files", "probes/*.json"], cwd=ROOT,
-                         capture_output=True, text=True).stdout
-    return {ln.strip() for ln in out.splitlines() if ln.strip()}
+    # encoding= is not optional here, and this repo has a test that says so: text=True without it
+    # decodes with the machine's locale codec, so a child printing UTF-8 returns stdout=None and the
+    # assertion below reports a defect it never measured. That test caught this file in CI.
+    out = subprocess.run(["git", "ls-files", "probes/*.json"], cwd=ROOT, capture_output=True,
+                         text=True, encoding="utf-8", errors="replace").stdout
+    return {ln.strip() for ln in (out or "").splitlines() if ln.strip()}
 
 
 def test_the_known_dirtying_receipts_are_all_real_tracked_files():
@@ -86,7 +90,8 @@ def test_a_guarded_probe_really_honours_it(probe, monkeypatch):
     if not before:
         pytest.skip("no receipt on disk")
     env = dict(os.environ, PYTEST_CURRENT_TEST="guard::check")
-    subprocess.run([os.sys.executable, str(src)], cwd=ROOT, env=env,
+    # bytes on purpose: nothing here reads the child's stdout, and not decoding it cannot be wrong.
+    subprocess.run([sys.executable, str(src)], cwd=ROOT, env=env,
                    capture_output=True, timeout=900)
     after = {r: (ROOT / r).read_bytes() for r in before}
     changed = [r for r in before if before[r] != after[r]]
