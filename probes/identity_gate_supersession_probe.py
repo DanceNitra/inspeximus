@@ -141,14 +141,28 @@ def main():
           f"({(1-mu_g/mu_u)*100:.0f}% reduction) at the cost of a review queue.")
     print("Residual gated corruption = misresolutions that scored ABOVE the threshold (the gate is only as good "
           "as the confidence signal; Fellegi-Sunter's clerical-review zone, not a proof).")
-    json.dump({"inspeximus": __version__, "E": E, "rounds": ROUNDS, "p_miss": P_MISS, "fork_below": FORK_BELOW,
-               "seeds": SEEDS,                                  # the artifact states its own trial count
-               "ungated_corruption": round(mu_u, 3), "gated_corruption": round(mu_g, 3),
-               "ungated_sd": round(sd_u, 4), "gated_sd": round(sd_g, 4),
-               "sd_rel_error": round(rel, 3),                   # this estimator's own +/- at this n
-               "ungated_range": [round(min(ung), 3), round(max(ung), 3)],
-               "gated_range": [round(min(gat), 3), round(max(gat), 3)],
-               "candidates_per_run": round(cand_per_run, 1)},
+    out = {"inspeximus": __version__, "E": E, "rounds": ROUNDS, "p_miss": P_MISS,
+           "fork_below": FORK_BELOW,
+           "seeds": SEEDS,                                  # the artifact states its own trial count
+           "ungated_corruption": round(mu_u, 3), "gated_corruption": round(mu_g, 3),
+           "ungated_sd": round(sd_u, 4), "gated_sd": round(sd_g, 4),
+           "sd_rel_error": round(rel, 3),                   # this estimator's own +/- at this n
+           "ungated_range": [round(min(ung), 3), round(max(ung), 3)],
+           "gated_range": [round(min(gat), 3), round(max(gat), 3)],
+           "candidates_per_run": round(cand_per_run, 1)}
+    # A RUN INSIDE THE SUITE MUST NOT REWRITE THE RECEIPT, and this one did. The suite executes
+    # every uncited probe as a smoke test, in parallel on a saturated machine, so its numbers
+    # describe a different machine than the committed ones. CI caught the effect rather than the
+    # cause: `running an example dirtied tracked files:
+    # ['probes/identity_gate_supersession_result.json']`.
+    #
+    # The guard is the one 07b281c already put on two other probes. That it had to be added a third
+    # time by hand is the actual finding: the rule lives in each probe instead of under them.
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        print("  running under pytest, so the receipt is NOT rewritten: these numbers describe a "
+              "saturated machine.")
+        return
+    json.dump(out,
               open(os.path.join(os.path.dirname(__file__), "identity_gate_supersession_result.json"), "w"), indent=2)
 
 
