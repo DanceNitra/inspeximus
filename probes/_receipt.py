@@ -46,6 +46,29 @@ def receipt_path(probe_file: str, name: str | None = None) -> str:
     return os.path.splitext(os.path.abspath(probe_file))[0] + ".result.json"
 
 
+def write_json(path: str, obj, **dump_kwargs) -> str | None:
+    """Write `obj` as JSON to an EXPLICIT path, unless this run must not persist a receipt.
+
+    `write_receipt` derives the path from the probe's `__file__`, which covers the probes that name
+    their receipt after themselves. It does not cover the ones that choose the path at runtime: a
+    `--out` argument, a name that does not match the module, a second receipt beside the first.
+    Those wrote through a bare `json.dump(obj, open(path, "w"))`, so the suppression had nowhere to
+    live except beside each call, which is the shape this module exists to remove.
+
+    Keyword arguments pass through to `json.dump` unchanged, so converting a call site cannot
+    reformat the committed file and show up as a diff that has nothing to do with the measurement.
+
+    Returns the path written, or None when suppressed.
+    """
+    if suppressed():
+        print("  running under the suite, so %s is NOT rewritten: these numbers describe a "
+              "saturated machine, not the committed measurement." % os.path.basename(path))
+        return None
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(obj, fh, **dump_kwargs)
+    return path
+
+
 def write_receipt(probe_file: str, obj, name: str | None = None, indent: int = 1) -> str | None:
     """Write `obj` as the probe's receipt, unless this run must not persist one.
 

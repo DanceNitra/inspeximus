@@ -40,6 +40,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from inspeximus import Inspeximus  # noqa: E402
 from inspeximus import sqlite_store as _rows            # noqa: E402
+from _receipt import write_json  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "erasure_elicitation.result.json")
@@ -264,8 +265,7 @@ def main():
                "store_path_on_disk": True,
                "vectors_on_disk": sum(1 for r in on_disk if r.get("vec")),
                "orphan_vectors_after_erasure": orphan_vecs}
-    with open(OUT, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=1, default=str)
+    write_json(OUT, payload, indent=1, default=str)
     print(f"\nwrote {OUT}")
     return 0 if ctl_ok else 2
 

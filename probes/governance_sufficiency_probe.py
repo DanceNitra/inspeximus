@@ -28,6 +28,7 @@ import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from inspeximus import Inspeximus, new_receipt_keypair  # noqa: E402
+from _receipt import write_json  # noqa: E402
 
 
 def run_lifecycle():
@@ -147,8 +148,7 @@ def main():
         print("  to an authenticated principal; publish an external chain-head anchor (Certificate-Transparency-style).")
     # persist the exact bytes scored, for reproducibility
     out = os.path.join(os.path.dirname(__file__), "governance_sufficiency_bytes.json")
-    with open(out, "w", encoding="utf-8") as f:
-        json.dump(bytes_out, f, indent=1, default=str)
+    write_json(out, bytes_out, indent=1, default=str)
     print(f"\n(scored bytes written to {os.path.basename(out)})")
 
 

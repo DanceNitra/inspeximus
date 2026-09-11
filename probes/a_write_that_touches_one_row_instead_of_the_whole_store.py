@@ -31,6 +31,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import sqlite_store as ss                    # noqa: E402
+from _receipt import write_json  # noqa: E402
 
 LIVE = r"C:/Users/Danculus/agora/.inspeximus/coding_memory.json"
 N = 32538
@@ -129,8 +130,7 @@ def main():
            "first_attempt_was_slower": {"sqlite_full_diff_s": 0.5131, "json_s": 0.35,
                                         "diff_cost_s": 0.3933, "insert_cost_s": 0.0070}}
     path = os.path.splitext(os.path.abspath(__file__))[0] + ".result.json"
-    with open(path, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(json.dumps(out, indent=1))
+    write_json(path, out, indent=1)
     print("\n  receipt: %s" % os.path.basename(path))
     return 0
 

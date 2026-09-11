@@ -54,6 +54,7 @@ NL = chr(10)
 
 
 import re
+from _receipt import write_json  # noqa: E402
 
 # TIMESTAMPS ARE NOT NON-DETERMINISM, and the first run of this cell counted them as if they were.
 # Hindsight stamps each extracted fact with a wall-clock time, so two passes minutes apart differ
@@ -179,12 +180,12 @@ def main() -> int:
     for k in out:
         out[k]["measured_utc"] = stamp
     merged = {**prev, **out}
-    json.dump({"task": "is the resulting state reproducible across identical runs",
+    write_json(p, {"task": "is the resulting state reproducible across identical runs",
                "metric": "byte_identical recall payloads across two passes on a fresh store",
                "caveat": "non-determinism is the price of LLM extraction, not a defect. Extraction "
                          "buys absorbing a fact from prose without a key. What it costs is the "
                          "ability to re-derive a past state by re-running its writes.",
-               "results": merged}, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+               "results": merged}, ensure_ascii=False, indent=2)
 
     print("\n=== REPRODUCIBLE STATE ===")
     # A READER RUNNING ONE ARM SEES ALL OF THEM, because results are merged and the shipped

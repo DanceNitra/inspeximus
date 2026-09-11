@@ -31,17 +31,32 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 #: Probes measured to rewrite a TRACKED receipt when the suite runs them. Shrinking this list is
 #: the work; growing it without a line here is the regression.
-KNOWN_DIRTYING = {
-    "probes/a_record_retired_by_consolidate_is_still_valid_to_an_as_of_query.result.json",
-    "probes/a_write_that_touches_one_row_instead_of_the_whole_store.result.json",
-    "probes/dogfood_cross_session.result.json",
-    "probes/erasure_elicitation.result.json",
-    "probes/governance_sufficiency_bytes.json",
-    "probes/integrity_bench_determinism_result.json",
-    "probes/integrity_bench_store_resolves_result.json",
-    "probes/recall_iterative_surface_multihop_result.json",
-    "probes/reinforce_accuracy_ablation.result.json",
-}
+#:
+#: MEASURED 2026-09-11, twice, one serial run of tests/test_probes_cited_by_docs.py each time on a
+#: clean tree: NINE receipts dirty before, ZERO after. The nine are now empty because they were
+#: converted, not because the list was edited.
+KNOWN_DIRTYING: set[str] = set()
+
+#: Every probe that owns a tracked receipt and is executed by the suite. Each must route its write
+#: through probes/_receipt.py or carry the inline guard; the static test below names whichever one
+#: stops doing so. An empty KNOWN_DIRTYING measures nothing on its own, so this is what replaces it:
+#: a property checked cheaply on every run, rather than a list that is true only until someone adds
+#: a probe.
+MUST_NOT_WRITE_UNDER_THE_SUITE = (
+    "a_record_retired_by_consolidate_is_still_valid_to_an_as_of_query.py",
+    "a_write_that_touches_one_row_instead_of_the_whole_store.py",
+    "dogfood_cross_session.py",
+    "erasure_elicitation.py",
+    "governance_sufficiency_probe.py",
+    "identity_gate_supersession_probe.py",
+    "integrity_bench_determinism.py",
+    "integrity_bench_store_resolves.py",
+    "one_write_two_formats_across_store_sizes.py",
+    "recall_iterative_surface_multihop.py",
+    "reinforce_accuracy_ablation.py",
+    "twelve_writers_and_the_one_that_stopped_writing.py",
+    "what_the_lock_is_actually_holding_back.py",
+)
 
 
 def _tracked_probe_receipts():
@@ -63,16 +78,74 @@ def test_the_known_dirtying_receipts_are_all_real_tracked_files():
         "measuring nothing: %s" % missing)
 
 
-def test_the_guard_is_spelled_the_same_way_everywhere():
-    """Three probes carry the guard. If a fourth spells it differently, a grep-based audit of this
-    class silently under-counts, which is how the third instance went unnoticed."""
-    guarded = []
-    for p in sorted((ROOT / "probes").glob("*.py")):
+def test_the_helper_is_not_counted_as_one_of_its_own_callers():
+    """THE PREVIOUS VERSION OF THIS TEST COUNTED probes/_receipt.py.
+
+    It globbed probes/*.py for the string PYTEST_CURRENT_TEST and required at least three hits. The
+    helper's own docstring and its `suppressed()` both contain that string, so the helper matched
+    itself. On 2026-09-11 the helper had ZERO call sites and nine probes were rewriting tracked
+    receipts, and this test was green throughout: a grep whose subject includes the thing it is
+    grepping for cannot report an adoption of nothing.
+    """
+    helper = ROOT / "probes" / "_receipt.py"
+    assert helper.exists(), "the helper this class depends on is gone"
+    assert "PYTEST_CURRENT_TEST" in helper.read_text(encoding="utf-8", errors="replace"), (
+        "the helper no longer mentions the variable, so a string audit of probes/ would now miss it "
+        "rather than double-count it -- either way, count callers, not matches")
+
+
+def test_every_probe_that_must_not_write_routes_through_the_helper_or_guards_itself():
+    """The property, checked on every run, instead of a list that is true until someone adds a probe.
+
+    Two spellings are accepted because both are real: a call into probes/_receipt.py, which is where
+    the rule now lives, and the inline `if os.environ.get("PYTEST_CURRENT_TEST")` that four probes
+    carried before the helper existed. What is NOT accepted is neither.
+    """
+    unprotected = []
+    for name in MUST_NOT_WRITE_UNDER_THE_SUITE:
+        p = ROOT / "probes" / name
+        if not p.exists():
+            unprotected.append("%s (missing: the pin is naming a file that is gone)" % name)
+            continue
         s = p.read_text(encoding="utf-8", errors="replace")
-        if "PYTEST_CURRENT_TEST" in s:
-            guarded.append(p.name)
-    assert len(guarded) >= 3, (
-        "expected at least the three probes known to carry the guard, found %s" % guarded)
+        routed = "write_json(" in s or "write_receipt(" in s
+        inline = 'os.environ.get("PYTEST_CURRENT_TEST")' in s
+        if not (routed or inline):
+            unprotected.append(name)
+    assert not unprotected, (
+        "these probes own a tracked receipt, are executed by the suite, and neither route their "
+        "write through probes/_receipt.py nor guard it inline: %s" % unprotected)
+
+
+def test_the_helper_actually_suppresses_and_leaves_the_file_alone():
+    """The guard is one boolean. This is the mutation that proves it load-bearing rather than decorative.
+
+    Measured by hand on 2026-09-11 before it was written down: with `suppressed()` forced to False,
+    running governance_sufficiency_probe.py under PYTEST_CURRENT_TEST changed its tracked receipt;
+    with the guard in place, the same run left it byte-identical.
+    """
+    sys.path.insert(0, str(ROOT / "probes"))
+    try:
+        import _receipt
+    finally:
+        sys.path.pop(0)
+
+    target = ROOT / "probes" / "_guard_probe_scratch.json"
+    try:
+        os.environ.pop("PYTEST_CURRENT_TEST", None)
+        assert _receipt.write_json(str(target), {"n": 1}, indent=1) is not None, \
+            "a person running a probe must still get a receipt"
+        first = target.read_bytes()
+
+        os.environ["PYTEST_CURRENT_TEST"] = "guard::check"
+        assert _receipt.write_json(str(target), {"n": 2}, indent=1) is None, \
+            "under the suite the write must be refused"
+        assert target.read_bytes() == first, \
+            "the write was reported as refused and the file changed anyway"
+    finally:
+        os.environ["PYTEST_CURRENT_TEST"] = "restored::by_finally"
+        if target.exists():
+            target.unlink()
 
 
 @pytest.mark.parametrize("probe", ["what_the_lock_is_actually_holding_back.py",

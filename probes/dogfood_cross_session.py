@@ -117,6 +117,7 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from inspeximus import Inspeximus, __version__ as INSPEXIMUS_VERSION  # noqa: E402
+from _receipt import write_json  # noqa: E402
 
 DAY = 86400.0
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -969,8 +970,7 @@ def main(argv=None) -> int:
         else:
             shutil.rmtree(work, ignore_errors=True)
 
-    with open(a.out, "w", encoding="utf-8") as fh:
-        json.dump(doc, fh, indent=2)
+    write_json(a.out, doc, indent=2)
     sys.stdout.write(render(doc))
     print("written: %s" % a.out)
 

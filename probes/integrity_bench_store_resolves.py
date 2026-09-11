@@ -46,6 +46,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
 from inspeximus import Inspeximus                    # noqa: E402
 import integrity_bench_revert as rev                 # noqa: E402
+from _receipt import write_json                      # noqa: E402
 
 ENTS = rev.ENTS
 
@@ -233,13 +234,13 @@ def main() -> int:
         out[k]["measured_utc"] = stamp
     merged = {**prev, **out}
 
-    json.dump({"task": "who resolves the correction, the store or the reader",
+    write_json(p, {"task": "who resolves the correction, the store or the reader",
                "metric": "store_resolution_rate = recall returns the corrected value and NOT the "
                          "retired one; no judge involved",
                "caveat": "returning both is not automatically worse -- a bitemporal store doing it "
                          "with validity markers is being honest. It does mean disambiguation is "
                          "the caller's job, which is a different promise from ours.",
-               "results": merged}, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+               "results": merged}, ensure_ascii=False, indent=2)
 
     print("\n=== WHO RESOLVES IT ===")
     # A READER RUNNING ONE ARM SEES ALL OF THEM, because results are merged and the shipped

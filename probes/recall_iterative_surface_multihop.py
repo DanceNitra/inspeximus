@@ -50,6 +50,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))                    # the repo under test, not pip's copy
 
 from inspeximus import Inspeximus                            # noqa: E402
+from _receipt import write_json  # noqa: E402
 
 # ── the caller's-model stand-in ───────────────────────────────────────────────────────────────────────
 # Defined ONCE, before either fixture is written, and applied unchanged to both. A reader tuned per fixture
@@ -356,16 +357,14 @@ def main(argv=None):
     print("  reproduced above: this probe runs lexical recall at k=6 with a mechanical reader, which is a")
     print("  different and much weaker operating point. The numbers above are this probe's own.")
 
-    with open(os.path.join(HERE, "recall_iterative_surface_multihop_result.json"), "w",
-              encoding="utf-8") as f:
-        json.dump({k: v for k, v in report.items() if k != "locomo"}, f, indent=1)
+    write_json(os.path.join(HERE, "recall_iterative_surface_multihop_result.json"),
+               {k: v for k, v in report.items() if k != "locomo"}, indent=1)
     # The LoCoMo receipt goes in its OWN file. The corpus is not shipped, so the standard run cannot produce
     # this arm -- and if it shared the file above, every ordinary run (including CI's) would silently
     # overwrite the receipt that the docs' 19/394 claim rests on.
     if "locomo" in report:
-        with open(os.path.join(HERE, "recall_iterative_surface_multihop_locomo_result.json"), "w",
-                  encoding="utf-8") as f:
-            json.dump(report["locomo"], f, indent=1)
+        write_json(os.path.join(HERE, "recall_iterative_surface_multihop_locomo_result.json"),
+                   report["locomo"], indent=1)
 
     ok = syn["controls_ok"] and syn["bridged"] > 0
     if not syn["controls_ok"]:

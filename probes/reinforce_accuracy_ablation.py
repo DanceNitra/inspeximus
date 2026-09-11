@@ -76,6 +76,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 
 from inspeximus import Inspeximus  # noqa: E402
+from _receipt import write_json  # noqa: E402
 
 RESULT_PATH = os.path.join(HERE, "reinforce_accuracy_ablation.result.json")
 
@@ -1009,7 +1010,7 @@ def main(argv=None):
         "verdicts": verdicts,
         "seconds_total": round(time.time() - t_all, 1),
     }
-    json.dump(result, open(a.out, "w", encoding="utf-8"), indent=1)
+    write_json(a.out, result, indent=1)
 
     print("\nVERDICTS")
     for v in verdicts:

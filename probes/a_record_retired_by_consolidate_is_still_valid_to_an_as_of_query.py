@@ -44,6 +44,7 @@ import json
 import os
 import sys
 import time
+from _receipt import write_json  # noqa: E402
 
 sys.stdout.reconfigure(line_buffering=True)
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +56,7 @@ MARKER = 'superseded_by_policy"] = "keep_budget"'
 
 def refuse(why):
     print("REFUSED: " + why)
-    json.dump({"verdict": "REFUSED", "why": why}, io.open(OUT, "w", encoding="utf-8"), indent=1)
+    write_json(OUT, {"verdict": "REFUSED", "why": why}, indent=1)
     raise SystemExit(2)
 
 
@@ -176,7 +177,7 @@ def main():
     print("  -> pinned: keep-budget eviction retires without an invalidation time, and an as_of "
           "query still counts the record. Supersession is the path that invalidates.")
 
-    json.dump({"probe": os.path.basename(__file__),
+    write_json(OUT, {"probe": os.path.basename(__file__),
                "when_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "keep_budget_marker_sites": markers,
                "control_keyed_invalidated_at": a_ret[0].get("invalidated_at"),
@@ -190,7 +191,7 @@ def main():
                    "a_correctly_invalidating_path_measured_alongside": True,
                    "plain_recall_confirms_retirement_before_any_as_of_claim": True,
                }},
-              io.open(OUT, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+              indent=1, ensure_ascii=False)
     return 0
 
 
