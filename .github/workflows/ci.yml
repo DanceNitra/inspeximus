@@ -27,6 +27,26 @@ jobs:
       # default silently drops 31 tests from CI while the run stays green.
       - name: mutation set (serial)
         run: python -m pytest tests/ -n 0 -m mutation -q
+      # IS THE CONCURRENT-WRITER FAILURE RARE, OR IS IT THIS PLATFORM? On 2026-09-10 attempt 1 of
+      # run 34519754923 failed here with "12 of 12 records that a writer was TOLD had been written
+      # are not in the store, with 2 concurrent writers", on 3.12 while 3.11 passed. Attempt 2 was
+      # green with no change, so the view that reports CI (latest attempt only) erased it.
+      #
+      # Ten runs, pinned to two real cores locally, did NOT reproduce it, which rules out plain
+      # machine starvation and leaves platform or rarity. This loop separates them: ten serial runs
+      # here, on the leg that failed. A pass says rarer than 1 in 10 on this platform; a failure is
+      # the reproduction, with the seed of the run that produced it.
+      #
+      # continue-on-error, deliberately: this step exists to MEASURE the rate, not to gate. A flake
+      # hunt that turns main red is a flake hunt nobody runs twice.
+      - name: concurrent-writer repeat (measuring a flake, does not gate)
+        continue-on-error: true
+        run: |
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            echo "--- attempt $i"
+            python -m pytest tests/test_concurrent_writers_do_not_lose_a_worker.py -q -n 0 \
+              || echo "REPRODUCED on attempt $i"
+          done
 
   # 102 tests across 11 modules sit behind MODULE-LEVEL import guards, so in the base job a 15-test module
   # collects as ONE skip line. The suite reported "993 passed, 43 skipped" and read as healthy while the
