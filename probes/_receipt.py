@@ -39,6 +39,25 @@ def suppressed() -> bool:
     return bool(os.environ.get("PYTEST_CURRENT_TEST") or os.environ.get("INSPEXIMUS_NO_RECEIPT"))
 
 
+def is_committed_receipt(path: str) -> bool:
+    """True when `path` is a receipt this repository commits, rather than a caller's own file.
+
+    THE RULE PROTECTS COMMITTED RECEIPTS, NOT EVERY JSON WRITE, and the first version of this
+    module got that wrong. It suppressed by `suppressed()` alone, so a probe invoked with
+    `--out <pytest tmp dir>/r.json` wrote nothing and the CLI test that asked for that file failed
+    on a missing path. CI caught it; the local suite did not, because the local suite is what
+    sets PYTEST_CURRENT_TEST and the tracked receipts were all that anyone had checked.
+
+    A path under this repository's `probes/` directory is a receipt somebody cites. Anywhere else
+    is the caller's business: a temp directory, a scratch file, an output the caller named.
+    """
+    probes_dir = os.path.dirname(os.path.abspath(__file__))
+    try:
+        return os.path.commonpath([probes_dir, os.path.abspath(path)]) == probes_dir
+    except ValueError:                    # different drives on Windows: not our directory
+        return False
+
+
 def receipt_path(probe_file: str, name: str | None = None) -> str:
     """The receipt path for a probe, derived from the probe's own __file__."""
     if name:
@@ -60,7 +79,7 @@ def write_json(path: str, obj, **dump_kwargs) -> str | None:
 
     Returns the path written, or None when suppressed.
     """
-    if suppressed():
+    if suppressed() and is_committed_receipt(path):
         print("  running under the suite, so %s is NOT rewritten: these numbers describe a "
               "saturated machine, not the committed measurement." % os.path.basename(path))
         return None

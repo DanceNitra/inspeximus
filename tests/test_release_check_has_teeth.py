@@ -268,8 +268,16 @@ def test_the_run_leaves_no_probe_churn_in_the_working_tree():
     receipt = root / "probes" / "governance_sufficiency_bytes.json"
     probe = root / "probes" / "governance_sufficiency_probe.py"
     original = receipt.read_bytes()
+    # THE CHILD MUST NOT INHERIT THE SUITE MARKER. probes/_receipt.py refuses to rewrite a committed
+    # receipt while PYTEST_CURRENT_TEST is set, and a subprocess started from a test inherits it. That
+    # is the right behaviour for an ordinary suite run and the wrong one here: this test is about the
+    # release check's snapshot and restore, so it needs the writer to actually write. Without this the
+    # fixture control below fires, which is exactly what it is for.
+    writes = dict(os.environ)
+    writes.pop("PYTEST_CURRENT_TEST", None)
+    writes.pop("INSPEXIMUS_NO_RECEIPT", None)
     try:
-        assert subprocess.run([sys.executable, str(probe)], cwd=ROOT,
+        assert subprocess.run([sys.executable, str(probe)], cwd=ROOT, env=writes,
                               capture_output=True, text=True, encoding="utf-8", errors="replace").returncode == 0
         assert receipt.read_bytes() != original, \
             "the probe no longer rewrites its receipt; this fixture has nothing to restore and the " \
@@ -277,7 +285,8 @@ def test_the_run_leaves_no_probe_churn_in_the_working_tree():
         receipt.write_bytes(original)
 
         snapshot = release_check._probe_snapshot(root)
-        subprocess.run([sys.executable, str(probe)], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        subprocess.run([sys.executable, str(probe)], cwd=ROOT, env=writes,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace")
         assert receipt.name in release_check.restore_probe_snapshot(snapshot)
         assert receipt.read_bytes() == original, "the snapshot did not restore the receipt"
     finally:

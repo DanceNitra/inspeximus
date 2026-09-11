@@ -148,6 +148,34 @@ def test_the_helper_actually_suppresses_and_leaves_the_file_alone():
             target.unlink()
 
 
+def test_the_suite_does_not_suppress_a_file_the_caller_asked_for(tmp_path):
+    """THE ARM THE FIRST VERSION OF THE GUARD BROKE, and that nothing here was measuring.
+
+    `write_json` suppressed on `suppressed()` alone, so a probe invoked with `--out <tmp>/r.json`
+    under the suite wrote nothing, and tests/test_dogfood_cross_session.py failed in CI on a missing
+    file. Every local check had looked at tracked receipts, which is what the guard protects: the
+    arm meant to stay untouched had no test at all.
+
+    The rule is about COMMITTED receipts. A path the caller named is the caller's business.
+    """
+    sys.path.insert(0, str(ROOT / "probes"))
+    try:
+        import _receipt
+    finally:
+        sys.path.pop(0)
+
+    os.environ["PYTEST_CURRENT_TEST"] = "guard::check"
+    mine = tmp_path / "r.json"
+    assert _receipt.write_json(str(mine), {"n": 1}, indent=1) is not None, \
+        "a path the caller named must still be written under the suite"
+    assert mine.exists(), "write_json reported success and wrote nothing"
+
+    assert not _receipt.is_committed_receipt(str(mine)), \
+        "a temp directory is not a committed receipt"
+    assert _receipt.is_committed_receipt(str(ROOT / "probes" / "anything.json")), \
+        "a path under probes/ is a committed receipt and must be recognised as one"
+
+
 @pytest.mark.parametrize("probe", ["what_the_lock_is_actually_holding_back.py",
                                    "identity_gate_supersession_probe.py"])
 def test_a_guarded_probe_really_honours_it(probe, monkeypatch):
