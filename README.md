@@ -118,8 +118,8 @@ unless the record count and the id order both survive, and it leaves the origina
 `memory.json.pre-rows.bak`. Encrypted stores stay a single encrypted blob, because at-rest encryption
 covers the whole file.
 
-Rows are there because every write used to rewrite the whole file, and because two writers could not
-share one.
+Rows are there because every write used to rewrite the whole file, and because a rewrite cannot merge
+a concurrent writer's records the way a row write can.
 
 One persisted write, both formats, three independent trials of thirty writes each
 (`probes/one_write_two_formats_across_store_sizes.py`):
@@ -137,7 +137,7 @@ come out both ways, and in the run behind this table one of the three trials sti
 the probe reports every trial rather than an average and says so when the direction is not stable. The table above is generated from the receipt the probe writes
 (`tools/sync_store_format_table.py`), so it is what one run measured rather than what we remember.
 
-With twelve processes writing at once, the JSON store landed 56 of 96 records in its worst trial and never landed all of them, while the row store landed every record in 4 of 4 trials at both widths tested.
+Under concurrent writers, a caller that drops the store's own StoreChangedOnDisk instead of retrying landed 199 of 384 records in its worst trial at 48 processes, while the row store landed every record in 4 of 4 trials at every width tested. That gap belongs to the caller and not to the format: given the retry the error prescribes, the whole-file store keeps up (`probes/what_a_concurrent_writer_is_told_against_what_the_store_keeps.py`).
 See `probes/twelve_writers_and_the_one_that_stopped_writing.py`. Both probes re-measure the
 whole-file baseline on the machine they run on rather than quoting ours, so a slower machine reports
 a smaller gap instead of a false one.

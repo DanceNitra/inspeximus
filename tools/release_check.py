@@ -51,6 +51,12 @@ REQUIRED_CARRIERS = (
     # version: its PyPI badge is live, so it cannot go stale and there is nothing to pin.
     # The long-form document is the carrier, and the reader moved with it.
     "docs/DEEP_DIVE.md",
+    # THE HOMEPAGE, ADDED 2026-09-12 BECAUSE IT WENT STALE TWICE WITHOUT THIS LIST NOTICING. It was
+    # left at 3.0.0 once (fixed in 59a427f) and at 2.27.0 during the 2.27.1 bump. A test caught the
+    # second one, 20 minutes into the suite, which is the slowest place to learn it. The file carries
+    # the version in two shapes: the structured-data `softwareVersion` that search engines read, and
+    # the eyebrow line a human reads.
+    "index.html",
     "glama.json",
 )
 
@@ -131,6 +137,15 @@ def _read_carrier(root, rel):
                 # version at all -- the same failure shape the glama.json note below is about.
                 return [], "declares no version, but it is required to carry one"
             return [("badge[%d]" % i, v) for i, v in enumerate(toks)], None
+        if rel == "index.html":
+            text = path.read_text(encoding="utf-8")
+            found = []
+            m = re.search(r'"softwareVersion":\s*"([^"]+)"', text)
+            if m:
+                found.append(("softwareVersion", m.group(1)))
+            found += [("eyebrow[%d]" % i, v) for i, v in
+                      enumerate(re.findall(r'(?<![\w.])v(\d+\.\d+\.\d+)(?![\w.])', text))]
+            return found, None
         if rel == "glama.json":
             # It declares no version today. That is fine and it is REPORTED rather than passed over in
             # silence: a check that reads an absent field and says nothing has measured nothing. The

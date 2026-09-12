@@ -33,7 +33,10 @@ CLAIM_IDS = {1000: "readme-row-write-cost-1k", 10000: "readme-row-write-cost-10k
 #: 53, and a re-measurement after the lock fix moved it again to 63. One sentence, two drifts, and
 #: nothing failed either time.
 CONC_RECEIPT = ROOT / "probes" / "twelve_writers_and_the_one_that_stopped_writing.result.json"
-CONC_START = "With twelve processes writing at once,"
+#: THE OPENER MUST NOT NAME A WIDTH. It read "With twelve processes writing at once," while the probe
+#: had been extended to 24 and 48, so the anchor described a run that was no longer the widest one in
+#: the receipt it quotes. The count belongs in the derived part of the sentence, not in the anchor.
+CONC_START = "Under concurrent writers,"
 CONC_CLAIM_ID = "readme-concurrent-writers"
 
 
@@ -70,24 +73,34 @@ def _arm(receipt, fmt, writers):
 
 
 def conc_sentence(receipt):
-    """The concurrency claim, derived rather than remembered."""
+    """The concurrency claim, derived rather than remembered, and attributed to the right party.
+
+    IT USED TO SAY "the JSON store landed 56 of 96", WHICH BLAMED THE FORMAT. The JSON arm of that
+    probe catches `StoreChangedOnDisk` and drops the record, while the store's own error text says
+    "Call reload() to merge the two and retry" and the row path performs that union itself. Given the
+    retry its error prescribes, the JSON store lands as much as the row store, measured side by side
+    in `what_a_concurrent_writer_is_told_against_what_the_store_keeps.py`. So the sentence names the
+    CALLER, and points at the fair comparison, because the README is where a stranger reads this.
+    """
     wide = max(a["writers"] for a in receipt["arms"])
     js, rw = _arm(receipt, "json", wide), _arm(receipt, "rows", wide)
-    narrow = _arm(receipt, "rows", min(a["writers"] for a in receipt["arms"]))
     trials = receipt["trials"]
+    rows_clean = all(a["clean_trials"] == trials for a in receipt["arms"] if a["format"] == "rows")
 
     if js["clean_trials"] == trials:
         # THE CONTROL FAILED. If the whole-file arm loses nothing, the run was too quiet to say
         # anything about the row arm, and the sentence must not claim a win it did not observe.
-        return ("With %d processes writing at once, the whole-file store lost nothing in any of %d "
-                "trials on this machine, so this run cannot separate the two formats." % (wide, trials))
-    rows_clean = rw["clean_trials"] == trials and narrow["clean_trials"] == trials
-    tail = ("while the row store landed every record in %d of %d trials at both widths tested."
+        return ("%s at %d processes the whole-file store lost nothing in any of %d trials on this "
+                "machine, so this run cannot separate the two callers." % (CONC_START, wide, trials))
+    tail = ("the row store landed every record in %d of %d trials at every width tested."
             % (rw["clean_trials"], trials) if rows_clean else
-            "while the row store landed %d of %d in its worst trial at the same width."
+            "the row store landed %d of %d in its worst trial at the same width."
             % (min(rw["landed"]), rw["attempted"]))
-    return ("%s the JSON store landed %d of %d records in its worst trial and never landed all of "
-            "them, %s" % (CONC_START, min(js["landed"]), js["attempted"], tail))
+    return ("%s a caller that drops the store's own StoreChangedOnDisk instead of retrying landed %d "
+            "of %d records in its worst trial at %d processes, while %s That gap belongs to the "
+            "caller and not to the format: given the retry the error prescribes, the whole-file store "
+            "keeps up (`probes/what_a_concurrent_writer_is_told_against_what_the_store_keeps.py`)."
+            % (CONC_START, min(js["landed"]), js["attempted"], wide, tail))
 
 
 def _conc_tokens(receipt):

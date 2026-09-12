@@ -15,8 +15,8 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **443** numeric tokens are published across the 7 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html.
-- **241** of those are quantitative claims, in **117** registry rows below.
+- **444** numeric tokens are published across the 7 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html.
+- **242** of those are quantitative claims, in **117** registry rows below.
 - **91** rows (91/117) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
@@ -42,7 +42,7 @@ Counts by status:
 | 3 | `MCP_LISTINGS.md` | `73` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 4 | `README.md` | `13` `13` `0` | Framework adapters: 13 of 13 verified against current upstream, 0 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 5 | `README.md` | `20` | Sample size for cells 3 and 4. | **REPRODUCIBLE** | `python probes/integrity_bench_store_resolves.py --systems inspeximus` |
-| 6 | `README.md` | `56` `96` `12` `4` `4` | Twelve separate OS processes writing one store through the library, four trials per format, at two writers and at twelve. The published line above carries the figures and is generated from the receipt by tools/sync_store_format_table.py; this description deliberately does not restate them, because it was the third copy of the same number and the only one nothing regenerated, so it still carried a figure that two re-measurements had moved. The JSON arm is the control: if it lost nothing the run would be too quiet for the row result to mean anything, and the receipt records whether it fired. | **REPRODUCIBLE** | `python probes/twelve_writers_and_the_one_that_stopped_writing.py` |
+| 6 | `README.md` | `199` `384` `48` `4` `4` | Twelve separate OS processes writing one store through the library, four trials per format, at two writers and at twelve. The published line above carries the figures and is generated from the receipt by tools/sync_store_format_table.py; this description deliberately does not restate them, because it was the third copy of the same number and the only one nothing regenerated, so it still carried a figure that two re-measurements had moved. The JSON arm is the control: if it lost nothing the run would be too quiet for the row result to mean anything, and the receipt records whether it fired. | **REPRODUCIBLE** | `python probes/twelve_writers_and_the_one_that_stopped_writing.py` |
 | 7 | `README.md` | `20` | Cell 4: the same fixture run twice against a fresh store, timestamps and ordering normalised out. inspeximus byte-identical; Hindsight differs on all 20. | **REPRODUCIBLE** | `python probes/integrity_bench_determinism.py --systems inspeximus` |
 | 8 | `README.md` | `0` | The control: with the guard off we score zero, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 9 | `README.md` | `0` `86.7` `13.3` `95` `3.3` `26.7` | Graphiti keeps the correction 86.7% of the time; resurrection 13.3%, 95% CI [3.3, 26.7] | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |

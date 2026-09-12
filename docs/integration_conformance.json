@@ -4,7 +4,7 @@
     "autogen": {
       "adapter": "inspeximus.integrations.autogen:InspeximusMemory",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -17,7 +17,7 @@
     "crewai": {
       "adapter": "inspeximus.integrations.crewai:InspeximusMemoryBackend + InspeximusStorage",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -30,7 +30,7 @@
     "google-adk": {
       "adapter": "inspeximus.integrations.google_adk:InspeximusMemoryService",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": "adk_audit.py",
       "detail": null,
       "note": null,
@@ -43,7 +43,7 @@
     "governance": {
       "adapter": "inspeximus.integrations.governance:ComplianceMixin",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": "framework-free by design; no upstream to skip on",
@@ -56,7 +56,7 @@
     "haystack": {
       "adapter": "inspeximus.integrations.haystack:InspeximusDocumentStore",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": "haystack_audit.py",
       "detail": null,
       "note": null,
@@ -64,12 +64,12 @@
       "source": "haystack.py",
       "status": "verified",
       "upstream_dist": "haystack-ai",
-      "verified_against": "2.27.0"
+      "verified_against": "3.0.0"
     },
     "langchain": {
       "adapter": "inspeximus.integrations.langchain:InspeximusRetriever + InspeximusChatMessageHistory",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -82,7 +82,7 @@
     "langgraph-checkpointer": {
       "adapter": "inspeximus.integrations.langgraph:InspeximusSaver",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": "checkpointer_conformance.py",
       "detail": null,
       "note": null,
@@ -95,7 +95,7 @@
     "langgraph-store": {
       "adapter": "inspeximus.integrations.langgraph:InspeximusStore",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": "store_audit.py",
       "detail": null,
       "note": null,
@@ -108,7 +108,7 @@
     "llamaindex": {
       "adapter": "inspeximus.integrations.llamaindex:InspeximusMemoryBlock",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -121,7 +121,7 @@
     "llm-errata": {
       "adapter": "inspeximus.integrations.llm_errata:InspeximusErrataAdapter",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": "drives the protocol directly; prototype/ is not on PyPI so importing it would make this check permanently skipped, which is worse than no check",
@@ -134,7 +134,7 @@
     "memoryagentbench": {
       "adapter": "inspeximus.integrations.memoryagentbench:InspeximusMABMemory",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": "duck-typed on mem0's Memory shape; MemoryAgentBench is a research repo, not a PyPI distribution, so this suite cannot date an upstream breakage for it",
@@ -147,7 +147,7 @@
     "openai-agents": {
       "adapter": "inspeximus.integrations.openai_agents:InspeximusSession",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": "session_audit.py",
       "detail": null,
       "note": null,
@@ -160,7 +160,7 @@
     "pydantic-ai": {
       "adapter": "inspeximus.integrations.pydantic_ai:inspeximus_toolset",
       "broken_against": null,
-      "checked": "2026-08-28",
+      "checked": "2026-09-12",
       "deep_audit": null,
       "detail": null,
       "note": null,
@@ -171,5 +171,5 @@
       "verified_against": "2.18.0"
     }
   },
-  "updated": "2026-08-28"
+  "updated": "2026-09-12"
 }

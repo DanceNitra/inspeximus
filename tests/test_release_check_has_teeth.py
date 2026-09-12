@@ -30,8 +30,16 @@ import release_notes  # noqa: E402
 
 
 # ── a minimal but REAL tree ─────────────────────────────────────────────────────────────────────────
-CARRIER_FILES = ("pyproject.toml", "CITATION.cff", "server.json", "glama.json",
-                 "docs/DEEP_DIVE.md", "CHANGELOG.md")
+#: DERIVED FROM THE TOOL'S OWN LIST, because a hand-kept copy of it drifted the day index.html was
+#: added as a carrier: the checker read a file this fixture never wrote, and the CONTROL below failed
+#: with "missing: index.html" while nothing was wrong with the checker. A second list of the same
+#: thing is the defect, not the missing entry.
+#: `.claude-plugin/*` and `inspeximus/core.py` are excluded here only because the lines below copy
+#: them by other means; CHANGELOG.md is added because other checks in this file read it.
+CARRIER_FILES = tuple(
+    rel for rel in release_check.REQUIRED_CARRIERS
+    if not rel.startswith(".claude-plugin/") and rel != "inspeximus/core.py"
+) + ("CHANGELOG.md",)
 
 
 def _tree(tmp_path):
@@ -85,6 +93,12 @@ def test_the_carrier_check_passes_on_a_consistent_tree(tmp_path):
     ("docs/DEEP_DIVE.md", lambda t: re.sub(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', "v1.85.0", t, count=1)),
     ("server.json", lambda t: t.replace('"version": "', '"version": "0.0.0-', 1)),
     (".claude-plugin/plugin.json", lambda t: t.replace('"version": "', '"version": "0.0.0-', 1)),
+    # The homepage, which went stale twice: left at 3.0.0 once and at the previous version during the
+    # 2.27.1 bump. Both shapes it carries are mutated, one per case, because the structured-data field
+    # and the visible eyebrow drifted independently.
+    ("index.html", lambda t: re.sub(r'"softwareVersion":\s*"[^"]+"',
+                                    '"softwareVersion": "1.26.0"', t, count=1)),
+    ("index.html", lambda t: re.sub(r'(?<![\w.])v\d+\.\d+\.\d+(?![\w.])', "v1.26.0", t, count=1)),
 ])
 def test_the_carrier_check_fails_when_one_file_disagrees(tmp_path, rel, mangle):
     root = _tree(tmp_path)

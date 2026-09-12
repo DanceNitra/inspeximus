@@ -1,3 +1,66 @@
+## 2.27.1 - UPGRADE IF TWO PROCESSES SHARE ONE STORE: a write that landed while a handle was loading could be silently overwritten
+
+A concurrent writer could be told `remember()` succeeded and find its record gone. `_load_from_disk`
+read the store file and stamped the change signature AFTERWARDS, and nothing holds the store lock
+across those two steps: the lock covers `_save`, not the load. A writer that replaced the file in
+between left the loading handle holding the OLD records under the NEW signature, so the guard in
+`_save` compared them, saw no change, and rewrote the whole store from the stale view. A JSON store
+cannot merge, so the other writer's record was erased.
+
+The signature is now taken BEFORE the read, which can only fail the safe way: a change during the
+read makes the stored signature older than the file, `_save` reports a difference that is not there,
+and the caller gets a `StoreChangedOnDisk` it can retry. A false refusal is recoverable; a silent
+overwrite is not.
+
+Measured with 30 interleaved rounds of 12 writers, 8 records each:
+
+| change signature taken | records lost, of records a writer was told were stored |
+|---|---|
+| after the read (2.27.0) | 9 of 2,880 |
+| before the read (2.27.1) | 0 of 2,864 |
+| before the read, plus `st_ino` | 0 of 2,840 |
+
+WHO IS AFFECTED. Any setup where two processes write one store: two agents, an MCP server beside a
+CLI, or a coding assistant whose hook fires on every tool call. A row store (the default since
+2.27.0) is affected far less, because it merges by id rather than rewriting the file, and the
+measurement above is on the JSON path. The loss was rare, roughly one record in 320 under twelve
+writers, and it always reported success, so an affected store shows no error anywhere.
+
+TWO EXPLANATIONS THAT WERE TESTED AND ARE WRONG, recorded because both are plausible and both cost a
+day. It is not the platform lock: the loss appears with the lock held on every write. And it is not
+the signature's fields, although `(mtime_ns, size)` really does collide, at 119 of 1,500 same-length
+writes on NTFS where mtime advances in steps of 0.5 to 1.5 ms. Adding `st_ino` removes that collision
+and removed no loss, so the signature is unchanged and the store pays nothing for a field it does not
+need.
+
+**A store that parses as JSON but is not a list now refuses to open, naming the file.** It used to be
+assigned unchecked, and the loader then iterated a dict's KEYS and raised `AttributeError: 'str'
+object has no attribute 'setdefault'` from inside the library, naming neither the file nor the shape.
+`{"memories": [...]}` is the shape someone actually pointed at us: outright garbage got a clean
+refusal and the near miss got an internal crash. When exactly one key holds a list, the error says so
+and tells you to save that list as the whole file. It refuses rather than unwrapping, because
+guessing which key holds the records means guessing that a foreign file is a store, and being wrong
+there means saving over it.
+
+**The MCP server can recover from a refused write.** `StoreChangedOnDisk` appeared nowhere in
+`mcp_server.py`, and the handle is a module-level singleton opened at import, so one stale handle
+locked every write tool on that server until the process was restarted. Found by dogfooding: four
+consecutive `remember_decision` calls were refused, the guard was right and nothing was lost, but the
+write path had been dead for about a day and showed only as a tool error a caller can move past.
+
+**An unlocked write says so.** There are two ways a write can go out without the inter-process lock,
+and only one of them left a trace. The branch taken when no platform primitive is available now
+records itself and prints the reason, so a loss that nothing else explains can be told apart from a
+loss under a lock that was held. `_StoreLock.DEGRADED` counts them per store path and `DEGRADED_WHY`
+keeps the first reason.
+
+**Claude Code and Codex hooks emit one JSON envelope.** Claude Code injects raw stdout as context, so
+plain `print()` worked and three of them accumulated in `session_start`. Codex parses stdout as JSON
+and refuses what it cannot parse (`hook returned invalid session start JSON output`), and two objects
+on one stream is not JSON either, so the blocks are joined into a single
+`{"hookSpecificOutput": {"hookEventName": ..., "additionalContext": ...}}`. Both hosts document that
+shape; raw text was the host-specific special case.
+
 ## 2.27.0 - UPGRADE IF YOU SHARE ONE STORE BETWEEN PROCESSES, OR HOLD MORE THAN A FEW THOUSAND RECORDS: the store writes rows, and you do not choose that
 
 BREAKING, ON DISK ONLY: a store written by this version cannot be read by 2.26.1 or earlier. Those

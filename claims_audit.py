@@ -511,8 +511,8 @@ NUMBER_CLAIMS = [
        "python probes/one_write_two_formats_across_store_sizes.py",
        note="Carried in the registry BECAUSE it is unstable: a number in a published table needs a "
             "row here whether or not we are willing to stand behind its direction."),
-    _c("readme-concurrent-writers", "README.md", ["56", "96", "12", "4", "4"],
-       "the JSON store landed 56 of 96 records in its worst trial",
+    _c("readme-concurrent-writers", "README.md", ["199", "384", "48", "4", "4"],
+       "a caller that drops the store's own StoreChangedOnDisk instead of retrying landed 199 of 384 records in its worst trial at 48 processes, while the row store landed every record in 4 of 4 trials at every width tested. That gap belongs to the caller and not to the format: given the retry the error prescribes, the whole-file store keeps up (`probes/what_a_concurrent_writer_is_told_against_what_the_store_keeps.py`).",
        "Twelve separate OS processes writing one store through the library, four trials per format, "
        "at two writers and at twelve. The published line above carries the figures and is generated "
        "from the receipt by tools/sync_store_format_table.py; this description deliberately does not "
