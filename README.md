@@ -209,9 +209,17 @@ static-ct-api serves a log as cacheable files because that is cheaper to run and
 with than an API.
 
 Ours is live at
-[dancenitra.github.io/inspeximus/transparency](https://dancenitra.github.io/inspeximus/transparency/),
-and what is in it is every number this project publishes, each with the sentence it appears in and
-the command that reproduces it.
+[dancenitra.github.io/inspeximus/transparency](https://dancenitra.github.io/inspeximus/transparency/).
+Each entry is one number this project publishes, with the sentence it appears in and the command that
+reproduces it.
+
+WHETHER IT HOLDS ALL OF THEM IS A THING YOU CHECK, NOT A THING WE ASSERT, and this paragraph used to
+assert it. `python tools/seed_claims_log.py --log transparency/claims.log --check` compares the
+registry against the log and names anything not yet recorded; it needs no key, and CI runs it on
+every push, so a gap is visible to you at the same moment it is visible to us. There is a gap now:
+four claims are registered and unlogged, because appending needs the signing key and the key is not
+where the seeding happens. A log that is behind and says so is the point of the exercise; a log
+described as complete while it is behind is the failure it exists to prevent.
 
 What a static log cannot do, said here rather than discovered later: nothing accepts a registration
 over HTTP. Writing happens where the signing key is. For a live endpoint, `scrapi.py` serves
