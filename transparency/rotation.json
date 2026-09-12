@@ -1,0 +1,17 @@
+{
+  "note": "The key that signs this log changed. The LOG did not. Read this before concluding that a receipt you hold is invalid.",
+  "rotations": [
+    {
+      "date": "2026-09-12",
+      "previous_pubkey": "f045986caee7b2dd72546513fb53287286178d838b5283ad181072004414e457",
+      "new_pubkey": "c27193c871df159353a1d8b78b53c339ff48d4b9a619f3e7b3949b1e6f2dad3d",
+      "entries_at_rotation": 114,
+      "reason": "The secret that seeded the log on 2026-08-31 was not saved and could not be found on the machine where signing happens. Appending needs it, so the log stopped at 114 entries while the claim registry grew to 117, and the check in CI failed on every push from 2026-09-07. Signing with a different key was refused by the tool rather than done quietly, which is why the gap stayed open and visible instead of being papered over.",
+      "what_changed": "Receipts and the signed head are produced at publish time, so every one of them is now signed by the new key. Nothing else moved.",
+      "what_did_not_change": "Every one of the first 114 entries. Checked, not asserted: comparing the log.jsonl published before this rotation against the one published after it gives 0 differences in leaf_hash and 0 differences in the entry record, across all 114 indices. The four new entries are appended after them at indices 114 to 117.",
+      "how_to_check_that_yourself": "Fetch the log.jsonl from a copy published before 2026-09-12 (the repository history has one at commit fa021ae) and compare rows 0 to 113 field by field with the current one. Their leaf hashes are what the Merkle root is built from, so identical leaves mean the recorded history is identical.",
+      "if_you_hold_an_older_receipt": "Verify it against previous_pubkey above. It remains a true statement about what this log held on the day it was issued.",
+      "what_this_costs": "Cryptographic continuity between the two keys. A rotation is normally signed by the outgoing key, so a reader can follow the handover without trusting the operator. That signature is impossible here because the outgoing secret is gone, so this record is our word plus an unchanged Merkle root, and it is weaker than a signed handover. Said plainly because a log whose purpose is to be believed by someone who does not trust us cannot quietly downgrade its own guarantee."
+    }
+  ]
+}

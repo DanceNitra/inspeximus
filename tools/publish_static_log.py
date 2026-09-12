@@ -197,7 +197,8 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <tr><td><a href="payloads.json">payloads.json</a></td><td>the text of each entry, so you can hash it and match what the log recorded</td></tr>
 <tr><td>entries/&lt;n&gt;.cose</td><td>the RFC 9942 inclusion receipt for entry n</td></tr>
 <tr><td><a href="verify.py">verify.py</a></td><td>the checker above</td></tr>
-</table>
+%(rotation_row)s</table>
+%(rotation_note)s
 
 <h2>What this does not prove</h2>
 <p>It does not prove any entry is TRUE. A log records what was said, never that it was right.</p>
@@ -321,11 +322,37 @@ def build(service: TransparencyService, out: str, base_url: str, title: str, wit
                   encoding="utf-8", newline="") as fh:
             json.dump(cosigs, fh, indent=2, sort_keys=True)
 
+    # A KEY ROTATION MUST SURVIVE THE NEXT PUBLISH. This page is regenerated every time, so a note
+    # added to the HTML by hand disappears on the following run, exactly when a reader holding an old
+    # receipt would need it. If rotation.json is present it is announced here instead.
+    rotation_row, rotation_note = "", ""
+    rot_path = os.path.join(out, "rotation.json")
+    if os.path.exists(rot_path):
+        rotation_row = ('<tr><td><a href="rotation.json">rotation.json</a></td><td>every time the '
+                        'signing key changed, and what stayed the same across it</td></tr>\n')
+        try:
+            with open(rot_path, encoding="utf-8") as rf:
+                last = (json.load(rf).get("rotations") or [])[-1]
+            rotation_note = (
+                '<h2>The signing key changed on %s</h2>\n'
+                '<p>Receipts issued before that date verify against the earlier key '
+                '<code>%s</code>, not the one in keys.json. The entries themselves did not move: '
+                'the first %s are byte-identical to what was published before. '
+                '<a href="rotation.json">rotation.json</a> says what was lost by rotating, which is '
+                'the cryptographic handover an outgoing key would normally sign.</p>\n'
+                % (html.escape(str(last.get("date", ""))),
+                   html.escape(str(last.get("previous_pubkey", ""))),
+                   html.escape(str(last.get("entries_at_rotation", "")))))
+        except Exception:                                               # noqa: BLE001
+            rotation_note = ('<h2>The signing key changed</h2>\n<p>See '
+                             '<a href="rotation.json">rotation.json</a>.</p>\n')
+
     with open(os.path.join(out, "index.html"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(PAGE % {"title": html.escape(title), "entries": n,
                          "when": time.strftime("%Y-%m-%d", time.gmtime()),
                          "base": html.escape(base_url.rstrip("/")),
                          "witnesses": _witness_table(cosigs, witness_note),
+                         "rotation_row": rotation_row, "rotation_note": rotation_note,
                          "head": html.escape(json.dumps(head, indent=2, sort_keys=True))})
     return {"entries": n, "receipts": written, "head": head, "cosignatures": cosigs}
 

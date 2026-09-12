@@ -13,7 +13,7 @@
   td,th{border-color:#2a2a2a}.m{color:#999}a{color:#8ab4f8}}
 </style>
 <h1>inspeximus published claims</h1>
-<p class="m">114 entries &middot; published 2026-08-31</p>
+<p class="m">118 entries &middot; published 2026-09-12</p>
 
 <p>This is an append-only log of signed statements. It is served as static files so you can check it
 without trusting whoever published it, and without asking anything of us.</p>
@@ -31,11 +31,11 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <pre>{
   &quot;kind&quot;: &quot;scitt-transparency-log&quot;,
   &quot;n_tombstones&quot;: 0,
-  &quot;n_writes&quot;: 114,
-  &quot;sth_hash&quot;: &quot;77c163b5085cf26e2ba096d64e50b2c5e3a609d557e255301fc3e5ddab7015df&quot;,
+  &quot;n_writes&quot;: 118,
+  &quot;sth_hash&quot;: &quot;464fd2d47f4533f7fc92b6e46a694a9b8e983383993048f0777f7f6101ec88b5&quot;,
   &quot;store_id&quot;: &quot;scitt:4367a1480474b121&quot;,
   &quot;tombstones_tip&quot;: &quot;&quot;,
-  &quot;writes_tip&quot;: &quot;ef8f3b1bc3b0bc6b9f3b3876bb9e3b1b6e97c10cf701443f5cf8d0e6c84b8d8d&quot;
+  &quot;writes_tip&quot;: &quot;aa8f9fb18ba5821316c8f1c9166f8fd8c0e210a8e65758892a43d087a8e29e99&quot;
 }</pre>
 
 <h2>Files</h2>
@@ -48,7 +48,11 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <tr><td><a href="payloads.json">payloads.json</a></td><td>the text of each entry, so you can hash it and match what the log recorded</td></tr>
 <tr><td>entries/&lt;n&gt;.cose</td><td>the RFC 9942 inclusion receipt for entry n</td></tr>
 <tr><td><a href="verify.py">verify.py</a></td><td>the checker above</td></tr>
+<tr><td><a href="rotation.json">rotation.json</a></td><td>every time the signing key changed, and what stayed the same across it</td></tr>
 </table>
+<h2>The signing key changed on 2026-09-12</h2>
+<p>Receipts issued before that date verify against the earlier key <code>f045986caee7b2dd72546513fb53287286178d838b5283ad181072004414e457</code>, not the one in keys.json. The entries themselves did not move: the first 114 are byte-identical to what was published before. <a href="rotation.json">rotation.json</a> says what was lost by rotating, which is the cryptographic handover an outgoing key would normally sign.</p>
+
 
 <h2>What this does not prove</h2>
 <p>It does not prove any entry is TRUE. A log records what was said, never that it was right.</p>
@@ -56,7 +60,7 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 serve in two versions, and only an independent WITNESS that remembers a previous head can catch that.</p>
 
 <h2>Witnesses</h2>
-<p>No witness has co-signed this log yet, so nothing here is evidence against equivocation. Running one is the most useful thing an outsider can do.</p>
+<p>No witness has co-signed this log yet, so nothing here is evidence against that. Running one is the most useful thing an outsider can do.</p>
 <p>To become one, run this against this log from a machine we do not control. It remembers the head it
 last accepted and refuses to sign if the history it already saw has changed:</p>
 <pre>curl -sSfO https://raw.githubusercontent.com/DanceNitra/inspeximus/main/tools/witness_static_log.py
