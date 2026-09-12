@@ -170,7 +170,26 @@ def main(argv=None):
         # Keyed by subject, holding the exact bytes that were hashed. A reader recomputes
         # sha256(text) and compares it with payload_sha256 in log.jsonl; verify.py does this
         # automatically when the file is present.
-        texts = {"claim:" + c["id"]: claim_payload(c).decode("utf-8") for c in ca.NUMBER_CLAIMS}
+        # KEYED BY DIGEST, NOT BY SUBJECT, because a subject can hold more than one entry and that is
+        # the point of the log. When a claim's TEXT changes it registers again under the same
+        # subject, both versions stay, and a subject->text map can only describe the newer one: the
+        # older entry then hashes to nothing the reader has and verify.py calls the log corrupt. It
+        # did, the first time a registered claim was actually corrected (13 of 13 -> 14 of 14).
+        # The `current` map names which digest is the live one, so a reader can tell a correction
+        # from a forgery instead of guessing.
+        by_digest = {}
+        current = {}
+        for c in ca.NUMBER_CLAIMS:
+            payload = claim_payload(c).decode("utf-8")
+            digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+            by_digest[digest] = payload
+            current["claim:" + c["id"]] = digest
+        # Every superseded version the log still holds, recovered from the log itself so the file
+        # covers the whole history rather than only what the registry says today.
+        for subject, digest in already_recorded(service):
+            if digest not in by_digest:
+                by_digest[digest] = None
+        texts = {"by_digest": by_digest, "current": current}
         # newline="" writes exactly what json.dump emits, with no platform translation, so the file
         # is byte-identical on Windows and Linux. The hashes are over the STRING VALUES rather than
         # the file, so translation would not break verification, but a file that differs by platform

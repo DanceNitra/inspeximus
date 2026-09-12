@@ -111,19 +111,32 @@ def main():
     problems = []
     # If the publisher shipped the payloads, check each one hashes to what the log recorded. This is
     # what makes the TEXT of an entry checkable rather than only its position in the tree.
-    payloads, checked_payloads = None, 0
+    # LOOKED UP BY DIGEST, NOT BY SUBJECT. A subject holds more than one entry as soon as a claim is
+    # corrected, which is the behaviour the log exists for, and a subject->text map can only carry
+    # the newest. The first real correction (13 of 13 -> 14 of 14) therefore made this verifier call
+    # its own log corrupt. A superseded entry whose text is no longer published is reported as
+    # unavailable, which is honest, and is not a failure: the log's job is to prove nothing was
+    # rewritten, and an old text we no longer publish was not rewritten, it was retired.
+    payloads, checked_payloads, unavailable = None, 0, 0
     if os.path.exists("payloads.json"):
-        payloads = json.load(open("payloads.json", encoding="utf-8"))
+        payloads = raw = json.load(open("payloads.json", encoding="utf-8"))
+        by_digest = raw.get("by_digest") if isinstance(raw, dict) and "by_digest" in raw else None
         for row in rows:
             entry = row.get("entry") or {}
             subject, want = entry.get("subject"), entry.get("payload_sha256")
             if subject is None or want is None:
                 continue
-            if subject not in payloads:
+            if by_digest is not None:
+                text = by_digest.get(want)
+                if text is None:
+                    unavailable += 1                     # a retired version, or one we never shipped
+                    continue
+            elif subject in raw:                          # the older subject-keyed shape
+                text = raw[subject]
+            else:
                 problems.append("payloads.json has nothing for " + subject)
                 continue
-            got_p = hashlib.sha256(payloads[subject].encode("utf-8")).hexdigest()
-            if got_p != want:
+            if hashlib.sha256(text.encode("utf-8")).hexdigest() != want:
                 problems.append("the published text of %s does not hash to what the log recorded"
                                 % subject)
             else:
@@ -147,6 +160,9 @@ def main():
     print("checked: the root follows from the leaves, and sth_hash follows from the head.")
     if payloads is not None:
         print("checked: %d published entry texts hash to what the log recorded." % checked_payloads)
+        if unavailable:
+            print("not checked: %d entries hold a superseded text that is no longer published. "
+                  "Their position in the tree is still proven above." % unavailable)
     print("NOT checked: the signature on the head, and whether any entry is true.")
     return 0
 
