@@ -1,5 +1,19 @@
 """Two formats, the same twelve writers: how much of what they wrote survives.
 
+READ THIS BEFORE QUOTING THE JSON NUMBER. Corrected 2026-09-12, and the correction is larger than
+the finding. THE JSON ARM HERE IS A NAIVE CALLER, NOT A FAIR BASELINE: its workers catch
+`StoreChangedOnDisk` and drop the record, while the product's own error text says "Call reload() to
+merge the two and retry" and the row path performs that union automatically. Given the retry its own
+error prescribes, JSON lands 336 of 336 at widths 2 and 12, the same as the row store. So the loss
+measured below belongs to a caller who ignores the recovery path, not to the format, and any
+"the row store is more durable" reading of this file is wrong.
+`what_a_concurrent_writer_is_told_against_what_the_store_keeps.py` runs both callers side by side
+and is the file to cite.
+
+ALSO REFUTED BY THIS FILE'S OWN RECEIPT: the line below claiming every loss is a multiple of one
+writer's output. At eight records per writer the receipt holds losses of 41, 75, 82, 89, 178, 181
+and 185. The whole-worker mechanism is real and is not the only one.
+
 WHY THIS EXISTS. The row store was built for write cost, and the concurrency result was the reason it
 had to ship rather than a bonus. Claude Code and Codex write this project's coding store, a hook
 fires on every tool call, so two processes writing at once is the normal condition. Under JSON the

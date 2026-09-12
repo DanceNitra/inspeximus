@@ -1,0 +1,368 @@
+{
+ "probe": "what_a_concurrent_writer_is_told_against_what_the_store_keeps.py",
+ "question": "of the records a concurrent writer was TOLD were stored, how many are there",
+ "per_writer": 8,
+ "trials": 4,
+ "widths": [
+  2,
+  12
+ ],
+ "mem0_arm_ran": true,
+ "results": [
+  {
+   "arm": "rows",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.8
+  },
+  {
+   "arm": "rows",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 0.6
+  },
+  {
+   "arm": "rows",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 0.5
+  },
+  {
+   "arm": "rows",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.5
+  },
+  {
+   "arm": "json-naive",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.4
+  },
+  {
+   "arm": "json-naive",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 0.5
+  },
+  {
+   "arm": "json-naive",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.5
+  },
+  {
+   "arm": "json-naive",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 0.5
+  },
+  {
+   "arm": "json-retry",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 0.5
+  },
+  {
+   "arm": "json-retry",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 0.5
+  },
+  {
+   "arm": "json-retry",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.5
+  },
+  {
+   "arm": "json-retry",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.5
+  },
+  {
+   "arm": "mem0",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 1,
+   "seconds": 9.6
+  },
+  {
+   "arm": "mem0",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 1,
+   "seconds": 6.3
+  },
+  {
+   "arm": "mem0",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 1,
+   "seconds": 6.3
+  },
+  {
+   "arm": "mem0",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 1,
+   "seconds": 6.3
+  },
+  {
+   "arm": "rows",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 3.9
+  },
+  {
+   "arm": "rows",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 2.8
+  },
+  {
+   "arm": "rows",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 4.9
+  },
+  {
+   "arm": "rows",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 2.9
+  },
+  {
+   "arm": "json-naive",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 52,
+   "on_disk": 52,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.8
+  },
+  {
+   "arm": "json-naive",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 56,
+   "on_disk": 56,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.8
+  },
+  {
+   "arm": "json-naive",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 56,
+   "on_disk": 56,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.8
+  },
+  {
+   "arm": "json-naive",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 56,
+   "on_disk": 56,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.8
+  },
+  {
+   "arm": "json-retry",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.8
+  },
+  {
+   "arm": "json-retry",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 80,
+   "on_disk": 80,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 2.8
+  },
+  {
+   "arm": "json-retry",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 1.8
+  },
+  {
+   "arm": "json-retry",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "seconds": 2.7
+  },
+  {
+   "arm": "mem0",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 11,
+   "seconds": 9.4
+  },
+  {
+   "arm": "mem0",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 11,
+   "seconds": 9.2
+  },
+  {
+   "arm": "mem0",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 11,
+   "seconds": 9.2
+  },
+  {
+   "arm": "mem0",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 11,
+   "seconds": 9.3
+  }
+ ],
+ "summary": {
+  "rows": {
+   "attempted": 448,
+   "claimed": 448,
+   "missing": 0,
+   "writers_blocked": 0,
+   "clean_trials": 8,
+   "trials": 8
+  },
+  "json-naive": {
+   "attempted": 448,
+   "claimed": 268,
+   "missing": 0,
+   "writers_blocked": 0,
+   "clean_trials": 8,
+   "trials": 8
+  },
+  "json-retry": {
+   "attempted": 448,
+   "claimed": 432,
+   "missing": 0,
+   "writers_blocked": 0,
+   "clean_trials": 8,
+   "trials": 8
+  },
+  "mem0": {
+   "attempted": 448,
+   "claimed": 64,
+   "missing": 0,
+   "writers_blocked": 48,
+   "clean_trials": 8,
+   "trials": 8
+  }
+ },
+ "retry_closed_records": 0
+}
