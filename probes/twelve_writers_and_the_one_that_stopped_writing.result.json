@@ -1,18 +1,24 @@
 {
  "per_writer": 8,
  "trials": 4,
+ "widths": [
+  2,
+  12,
+  24,
+  48
+ ],
  "arms": [
   {
    "format": "json",
    "writers": 2,
    "attempted": 16,
    "landed": [
-    8,
-    8,
-    8,
+    16,
+    16,
+    16,
     8
    ],
-   "clean_trials": 0,
+   "clean_trials": 3,
    "worst_loss": 8
   },
   {
@@ -33,13 +39,13 @@
    "writers": 12,
    "attempted": 96,
    "landed": [
-    56,
-    56,
     64,
-    64
+    55,
+    56,
+    56
    ],
    "clean_trials": 0,
-   "worst_loss": 40
+   "worst_loss": 41
   },
   {
    "format": "rows",
@@ -50,6 +56,58 @@
     96,
     96,
     96
+   ],
+   "clean_trials": 4,
+   "worst_loss": 0
+  },
+  {
+   "format": "json",
+   "writers": 24,
+   "attempted": 192,
+   "landed": [
+    103,
+    112,
+    117,
+    110
+   ],
+   "clean_trials": 0,
+   "worst_loss": 89
+  },
+  {
+   "format": "rows",
+   "writers": 24,
+   "attempted": 192,
+   "landed": [
+    192,
+    192,
+    192,
+    192
+   ],
+   "clean_trials": 4,
+   "worst_loss": 0
+  },
+  {
+   "format": "json",
+   "writers": 48,
+   "attempted": 384,
+   "landed": [
+    200,
+    199,
+    206,
+    203
+   ],
+   "clean_trials": 0,
+   "worst_loss": 185
+  },
+  {
+   "format": "rows",
+   "writers": 48,
+   "attempted": 384,
+   "landed": [
+    384,
+    384,
+    384,
+    384
    ],
    "clean_trials": 4,
    "worst_loss": 0

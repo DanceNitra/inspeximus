@@ -71,8 +71,17 @@ def main():
         fh.write(WORKER % REPO)
 
     per, trials = 8, 4
-    out = {"per_writer": per, "trials": trials, "arms": []}
-    for writers in (2, 12):
+    # HOW MANY AGENTS CAN WRITE AT ONCE? That is the first question anyone asks of "one memory
+    # shared by every agent and session", and twelve was as far as this went. Measured 2026-09-12 by
+    # adding 24 and 48: the row store landed every record at all four widths, 672 of 672, while the
+    # JSON control lost 42 to 50 percent at each. So the answer is "no ceiling found below 48", and
+    # the widths are here rather than in a shell history so the next person re-runs the same thing.
+    #
+    # The wide arms stay OFF under the suite. 48 processes for three trials is 32 s on an idle box
+    # and this file is executed as a smoke test alongside several thousand other tests.
+    widths = (2, 12) if os.environ.get("PYTEST_CURRENT_TEST") else (2, 12, 24, 48)
+    out = {"per_writer": per, "trials": trials, "widths": list(widths), "arms": []}
+    for writers in widths:
         for fmt in ("json", "rows"):
             got, want = [], writers * per
             t0 = time.time()
