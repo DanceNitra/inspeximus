@@ -40,7 +40,7 @@ Counts by status:
 | 1 | `MCP_LISTINGS.md` | `30` `26` `2026` | WITHDRAWN: the previous '30 tools' figure, kept as the record of the correction | **WITHDRAWN** | `python claims_audit.py --numbers` |
 | 2 | `MCP_LISTINGS.md` | `73` | The MCP server exposes 73 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 3 | `MCP_LISTINGS.md` | `73` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 4 | `README.md` | `13` `13` `0` | Framework adapters: 13 of 13 verified against current upstream, 0 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 4 | `README.md` | `14` `14` `0` | Framework adapters: 14 of 14 verified against current upstream, 0 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 5 | `README.md` | `20` | Sample size for cells 3 and 4. | **REPRODUCIBLE** | `python probes/integrity_bench_store_resolves.py --systems inspeximus` |
 | 6 | `README.md` | `199` `384` `48` `4` `4` | Twelve separate OS processes writing one store through the library, four trials per format, at two writers and at twelve. The published line above carries the figures and is generated from the receipt by tools/sync_store_format_table.py; this description deliberately does not restate them, because it was the third copy of the same number and the only one nothing regenerated, so it still carried a figure that two re-measurements had moved. The JSON arm is the control: if it lost nothing the run would be too quiet for the row result to mean anything, and the receipt records whether it fired. | **REPRODUCIBLE** | `python probes/twelve_writers_and_the_one_that_stopped_writing.py` |
 | 7 | `README.md` | `20` | Cell 4: the same fixture run twice against a fresh store, timestamps and ordering normalised out. inspeximus byte-identical; Hindsight differs on all 20. | **REPRODUCIBLE** | `python probes/integrity_bench_determinism.py --systems inspeximus` |
@@ -144,7 +144,7 @@ Counts by status:
 | 105 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 106 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 107 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 108 | `index.html` | `13` `13` `0` | 13 of 13 framework adapters verified against current upstream; 0 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
+| 108 | `index.html` | `14` `14` `0` | 14 of 14 framework adapters verified against current upstream; 0 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
 | 109 | `index.html` | `73` `0` | Homepage counter: 73 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 110 | `index.html` | `73` | Homepage heading: 73 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 111 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |

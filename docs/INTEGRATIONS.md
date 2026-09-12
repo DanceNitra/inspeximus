@@ -19,6 +19,7 @@ zero-dependency, and the framework is imported lazily only when you use its adap
 | [CrewAI](#current-truth-storage-for-crewai-inspeximusstorage-1120) | `InspeximusStorage` | `pip install "inspeximus[crewai]"` |
 | Haystack | `InspeximusDocumentStore` | `pip install "inspeximus[haystack]"` |
 | MemoryAgentBench | `InspeximusMABMemory` | no install — matches mem0's `Memory` shape structurally |
+| Hermes Agent | `InspeximusMemoryProvider` | no install --- `pip install inspeximus` publishes the provider, then set `memory.provider: inspeximus` |
 
 Details for each below.
 

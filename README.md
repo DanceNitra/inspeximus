@@ -460,9 +460,9 @@ needs nothing. The MCP server, encryption and the framework adapters are separat
 ## Works with
 
 `langchain` · `langgraph-store` · `llamaindex` · `haystack` · `autogen` · `pydantic-ai` ·
-`google-adk` · `memoryagentbench`
+`google-adk` · `memoryagentbench` · `hermes-agent`
 
-**13 of 13 verified against current upstream, 0 recorded broken.** Three were broken a day ago and
+**14 of 14 verified against current upstream, 0 recorded broken.** Three were broken a day ago and
 the list said so, which is the only reason you can believe this line: `openai-agents` was missing an
 attribute the SDK type-checks on, the store's single-writer guard was firing on this process's own
 threads under `langgraph-checkpointer`, and CrewAI replaced its storage protocol wholesale, so that

@@ -66,6 +66,19 @@
       "upstream_dist": "haystack-ai",
       "verified_against": "3.0.0"
     },
+    "hermes-agent": {
+      "adapter": "inspeximus.integrations.hermes_agent:register",
+      "broken_against": null,
+      "checked": "2026-09-12",
+      "deep_audit": null,
+      "detail": null,
+      "note": "Hermes Agent is a git-installed application rather than a PyPI distribution, so this suite cannot date an upstream breakage for it. The round trip drives the host's lifecycle against a stand-in for its MemoryProvider base class",
+      "python": "3.12",
+      "source": "hermes_agent.py",
+      "status": "verified",
+      "upstream_dist": null,
+      "verified_against": null
+    },
     "langchain": {
       "adapter": "inspeximus.integrations.langchain:InspeximusRetriever + InspeximusChatMessageHistory",
       "broken_against": null,

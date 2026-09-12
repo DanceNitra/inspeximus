@@ -137,5 +137,15 @@ haystack = ["haystack-ai>=2"]
 inspeximus = "inspeximus.cli:main"
 inspeximus-mcp = "inspeximus.mcp_server:main"
 
+# Hermes Agent discovers a memory provider from this entry-point group, so `pip install inspeximus`
+# is the whole install and no file is copied under $HERMES_HOME. The bundled provider directory in
+# that project is closed to new entries; this route is not, and needs nobody's permission.
+#
+# THE NAME ON THE LEFT IS WHAT A USER PUTS IN `memory.provider`. Hermes activates a provider by name,
+# so it must equal `hermes_agent.PROVIDER_NAME`; a mismatch is a provider that can be discovered and
+# never selected, and `tests/test_the_hermes_provider_answers_its_own_contract.py` pins the pair.
+[project.entry-points."hermes_agent.memory_providers"]
+inspeximus = "inspeximus.integrations.hermes_agent:register"
+
 [tool.setuptools]
 packages = ["inspeximus", "inspeximus.integrations"]

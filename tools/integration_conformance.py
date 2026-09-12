@@ -462,6 +462,59 @@ def _rt_memoryagentbench(tmp):
     assert "Kosice" not in texts, f"another user's context leaked in: {texts!r}"
 
 
+def _rt_hermes_agent(tmp):
+    """Hermes Agent's MemoryProvider lifecycle, against a stand-in for the host's base class.
+
+    Hermes is NOT a PyPI distribution, so there is nothing to import or to date a breakage against.
+    What can be exercised is the contract itself: the adapter builds its class against whatever
+    `agent.memory_provider.MemoryProvider` the host supplies, and the round trip drives the lifecycle
+    the host drives, initialize -> tool call -> prefetch. The property under test is the one no
+    retrieval-only provider offers: after a correction, prefetch must not hand the retired value back
+    as context.
+    """
+    import sys
+    import types
+    from abc import ABC, abstractmethod
+
+    class _MemoryProvider(ABC):
+        @property
+        @abstractmethod
+        def name(self): ...
+        @abstractmethod
+        def is_available(self): ...
+        @abstractmethod
+        def initialize(self, session_id, **kwargs): ...
+        @abstractmethod
+        def get_tool_schemas(self): ...
+
+    pkg, mod = types.ModuleType("agent"), types.ModuleType("agent.memory_provider")
+    mod.MemoryProvider = _MemoryProvider
+    pkg.memory_provider = mod
+    saved = {k: sys.modules.get(k) for k in ("agent", "agent.memory_provider")}
+    sys.modules["agent"], sys.modules["agent.memory_provider"] = pkg, mod
+    try:
+        from inspeximus.integrations.hermes_agent import register
+        p = register()
+        assert p is not None, "register() returned None with the host module present"
+        p.initialize("conformance", hermes_home=str(tmp))
+        assert p.is_available() is True
+        assert [t["name"] for t in p.get_tool_schemas()], "the provider offers no tools"
+        p.handle_tool_call("inspeximus_remember",
+                           {"text": "the release branch is release-1", "key": "repo::branch"})
+        assert "release-1" in p.prefetch("release branch")
+        p.handle_tool_call("inspeximus_correct",
+                           {"key": "repo::branch", "text": "the release branch is release-2"})
+        out = p.prefetch("release branch")
+        assert "release-2" in out, out
+        assert "release-1" not in out, f"the retired value came back as context: {out!r}"
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                sys.modules.pop(k, None)
+            else:
+                sys.modules[k] = v
+
+
 def _rt_governance(tmp):
     """ComplianceMixin is framework-free by design, so its round trip needs no upstream: attach it to a
     store, write through it, and the evidence report must reflect the write."""
@@ -624,6 +677,11 @@ CHECKS = [
           "memoryagentbench.py",
           note="duck-typed on mem0's Memory shape; MemoryAgentBench is a research repo, not a PyPI "
                "distribution, so this suite cannot date an upstream breakage for it"),
+    Check("hermes-agent", None, None,
+          "inspeximus.integrations.hermes_agent:register", _rt_hermes_agent, "hermes_agent.py",
+          note="Hermes Agent is a git-installed application rather than a PyPI distribution, so this "
+               "suite cannot date an upstream breakage for it. The round trip drives the host's "
+               "lifecycle against a stand-in for its MemoryProvider base class"),
     Check("governance", None, None,
           "inspeximus.integrations.governance:ComplianceMixin", _rt_governance, "governance.py",
           note="framework-free by design; no upstream to skip on"),
