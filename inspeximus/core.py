@@ -1698,9 +1698,40 @@ class _StoreLock:
     #: entry is the one thing that explains a loss nothing else recorded.
     DEGRADED: dict = {}
 
+    #: path -> the reason the FIRST degraded write on that path gave. A count says a write went
+    #: unprotected; it does not say whether the platform has no primitive at all or whether a
+    #: waiter timed out under contention, and those two call for opposite responses.
+    DEGRADED_WHY: dict = {}
+
+    def _degraded(self, why: str) -> None:
+        """Record, once per path, that writes here are going out unprotected, and say why.
+
+        Every path that returns from `__enter__` without the OS lock held comes through here. That
+        is the invariant worth keeping: a branch that skips it is a branch that will one day be
+        taken on somebody's machine and leave the same blank space this one did.
+        """
+        _StoreLock.DEGRADED[self._path] = _StoreLock.DEGRADED.get(self._path, 0) + 1
+        if _StoreLock.DEGRADED[self._path] == 1:
+            _StoreLock.DEGRADED_WHY[self._path] = why
+            try:
+                sys.stderr.write("[inspeximus] %s (%s)\n" % (why, self._path))
+            except Exception:                                    # noqa: BLE001
+                pass
+
     def __enter__(self):
         kind, mod = self._locker
         if kind is None:
+            # THE SECOND WAY TO DEGRADE, and until now the only one that left no trace at all.
+            # The timeout branch below counts itself and warns, because a loss nobody could explain
+            # for a day turned out to be unlocked writes. This branch does the same thing to every
+            # write in the process, from the first one, and recorded nothing: `DEGRADED` stayed
+            # empty, so the one field that explains such a loss said the lock had been held.
+            #
+            # It is reachable wherever neither fcntl nor msvcrt imports, which is not Linux or
+            # Windows but is a stripped or frozen runtime, and the point is that the evidence must
+            # not depend on guessing which platform we are on.
+            self._degraded("no platform lock primitive is available (neither fcntl nor msvcrt), so "
+                           "this write is not protected against another process")
             return self
         with _StoreLock._CACHE_GUARD:
             ent = _StoreLock._CACHE.get(self._path)
@@ -1738,15 +1769,8 @@ class _StoreLock:
                     # writers lost 17, 6, 28 and 47 of 96 records while every one of them reported
                     # success, and the only reason nobody could explain it for a day is that this
                     # branch left no trace of having been taken.
-                    _StoreLock.DEGRADED[self._path] = _StoreLock.DEGRADED.get(self._path, 0) + 1
-                    if _StoreLock.DEGRADED[self._path] == 1:
-                        try:
-                            sys.stderr.write(
-                                "[inspeximus] waited %.0fs for the store lock on %s and gave up; "
-                                "this write is not protected against another process\n"
-                                % (LOCK_WAIT_S, self._path))
-                        except Exception:                        # noqa: BLE001
-                            pass
+                    self._degraded("waited %.0fs for the store lock and gave up; this write is not "
+                                   "protected against another process" % LOCK_WAIT_S)
                     return self              # degrade to unlocked rather than lose the write
                 time.sleep(0.05)
 

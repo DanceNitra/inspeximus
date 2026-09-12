@@ -76,6 +76,17 @@ for i in range(n):
 # lost" from "single records went missing".
 for t in wrote:
     print("WROTE\t" + t)
+# WAS THE LOCK ACTUALLY HELD? This is the field that separates the two explanations for a silent
+# loss, and without it a failure here says only how many records went missing. Measured 2026-09-07
+# on this same harness: with the inter-process lock held, 0 of 96 lost in 4 of 4 trials; with it
+# degraded, 17, 6, 28 and 47 lost, every worker reporting success and no exception anywhere. So a
+# loss with DEGRADED=0 and a loss with DEGRADED>0 are different bugs and want different fixes.
+try:
+    from inspeximus.core import _StoreLock
+    print("DEGRADED\t%%d\t%%s" %% (sum(_StoreLock.DEGRADED.values()),
+                                 "; ".join(_StoreLock.DEGRADED_WHY.values()) or "-"))
+except Exception as _e:
+    print("DEGRADED\t-1\tcould not read the counter: %%r" %% (_e,))
 print(ok)
 '''
 
@@ -88,14 +99,17 @@ def _run(db, workers, per, mode):
                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
              for w in range(workers)]
     claimed, texts = 0, []
+    degraded = []
     for p in procs:
         out, _ = p.communicate()
         lines = (out or "").splitlines()
         texts += [l.split("\t", 1)[1] for l in lines if l.startswith("WROTE\t") and "\t" in l]
+        degraded += [l.split("\t", 1)[1] for l in lines if l.startswith("DEGRADED\t")]
         try:
             claimed += int(lines[-1].strip())
         except Exception:                                        # noqa: BLE001
             pass
+    _run.last_degraded = degraded                                # read by the failure message
     try:
         return len(load_store(db)), claimed, texts, db
     except Exception:                                            # noqa: BLE001
@@ -148,10 +162,19 @@ def test_no_writer_is_told_a_record_landed_that_did_not(workers):
         "concurrent writers. A save that reports success and does not persist is the failure this "
         "file exists to catch, and no amount of machine load excuses it.\n"
         "WHICH ONES: %s\n"
-        "The shape is the diagnosis: a whole worker means the losing handle never reloaded; "
-        "scattered singles mean the change guard missed a write, whose signature is (mtime_ns, "
-        "size) and cannot see a same-size write inside one mtime tick."
-        % (claimed - landed, claimed, workers, _missing(store, texts)))
+        "WAS THE LOCK HELD (per writer, count then reason): %s\n"
+        "Read the lock line FIRST. Measured 2026-09-07 on this harness: lock held, 0 of 96 lost in "
+        "4 of 4 trials; lock degraded, 17, 6, 28 and 47 lost with every writer reporting success. "
+        "So a non-zero count here is the whole explanation, and a zero means the loss is something "
+        "this project has not seen yet.\n"
+        "The shape is a second, WEAKER hint, and one of its readings has since been tested and did "
+        "not hold: a whole worker means the losing handle never reloaded; scattered singles were "
+        "attributed to the change guard missing a same-size write inside one mtime tick, but "
+        "probes/a_same_size_write_inside_one_mtime_tick_is_invisible.py forces exactly that "
+        "collision, up to a 60 s tick where mtime separates nothing at all, and loses no records. "
+        "Treat the mtime reading as refuted rather than as the diagnosis."
+        % (claimed - landed, claimed, workers, _missing(store, texts),
+           getattr(_run, "last_degraded", "not recorded")))
     assert landed == claimed, (
         "the store holds %d records and the writers claimed %d; a store larger than what anyone "
         "claims to have written means the counting is wrong, not the store" % (landed, claimed))
@@ -173,3 +196,40 @@ def test_the_race_is_real_here():
         losses.append(8 * PER - _run(db, 8, PER, "noretry")[0])   # [0] is landed
     assert min(losses) >= 0, "negative loss means the counter is wrong, not the store"
     print("no-retry losses over 3 runs at 8 writers: %s" % losses)
+
+
+def test_the_lock_diagnostic_can_report_a_degraded_write():
+    """The counter the failure message now leads with must be able to say something other than zero.
+
+    Every run so far reports `0 -`, which is the right answer and also exactly what a counter with
+    no reachable increment would print. Measured 2026-09-11: the no-primitive branch of
+    `_StoreLock.__enter__` returned without touching `DEGRADED` at all, so on a runtime with neither
+    fcntl nor msvcrt every write went out unprotected and the one field that explains such a loss
+    said the lock had been held. This drives that branch and requires it to leave a trace.
+    """
+    from inspeximus.core import _StoreLock
+
+    db = os.path.join(tempfile.mkdtemp(), "s.json")
+    before = dict(_StoreLock.DEGRADED)
+
+    lock = _StoreLock(db)
+    lock._locker = (None, None)              # the platform has no primitive
+    with lock:
+        pass
+
+    after = dict(_StoreLock.DEGRADED)
+    assert after != before, (
+        "a write went out with no lock held and the counter did not move, so a real loss would "
+        "again be reported against a store that looked protected")
+    assert _StoreLock.DEGRADED_WHY.get(lock._path), \
+        "the count says a write was unprotected but not why, and the two causes want opposite fixes"
+    assert "no platform lock primitive" in _StoreLock.DEGRADED_WHY[lock._path]
+
+    # THE CONTROL. With a primitive present the same path must leave the counter alone, or the
+    # assertion above would pass on a counter that increments unconditionally.
+    held = _StoreLock(db)
+    baseline = dict(_StoreLock.DEGRADED)
+    with held:
+        pass
+    assert dict(_StoreLock.DEGRADED) == baseline, \
+        "an ordinary locked write incremented the degraded counter, so the field means nothing"

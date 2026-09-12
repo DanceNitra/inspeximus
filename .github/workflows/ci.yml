@@ -39,12 +39,28 @@ jobs:
       #
       # continue-on-error, deliberately: this step exists to MEASURE the rate, not to gate. A flake
       # hunt that turns main red is a flake hunt nobody runs twice.
-      - name: concurrent-writer repeat (measuring a flake, does not gate)
+      # THIS STEP MEASURED THE WRONG CONFIGURATION FOR A DAY. It ran the file ALONE and SERIALLY
+      # (-n 0), and reported 10 of 10 green, which was read as "rarer than 1 in 10". But pytest.ini
+      # carries `addopts = -n auto`, so on CI this test never runs alone or serially: it runs inside
+      # the whole suite, under xdist, on a 2-to-4 core runner. The failures have all come from the
+      # `integrations` job, which installs the extras and therefore collects 1144 tests instead of
+      # 993 -- the most loaded leg of the four. A loop that removes both the parallelism and the
+      # load cannot see the thing it was added to count.
+      #
+      # It is also not reproducible off CI. Measured 2026-09-11 across four configurations, none of
+      # which lost a record: Windows/NTFS at 4 to 12 writers (0 of 288); a simulated coarse mtime at
+      # 1 s and 60 s, where the change guard can separate nothing (0 of 144); WSL/ext4 pinned to two
+      # cores, 37 trials (0 of 852); and the full suite under xdist on two ext4 cores, which passed.
+      #
+      # So this now runs the file WITH the suite's own parallelism, several times, which is the
+      # configuration that actually fails. The test itself was given the field that decides between
+      # the two known explanations: each writer now reports whether the inter-process lock was held.
+      - name: concurrent-writer repeat, WITH the suite's parallelism (measuring a flake, does not gate)
         continue-on-error: true
         run: |
-          for i in 1 2 3 4 5 6 7 8 9 10; do
+          for i in 1 2 3 4 5; do
             echo "--- attempt $i"
-            python -m pytest tests/test_concurrent_writers_do_not_lose_a_worker.py -q -n 0 \
+            python -m pytest tests/test_concurrent_writers_do_not_lose_a_worker.py -q \
               || echo "REPRODUCED on attempt $i"
           done
 
