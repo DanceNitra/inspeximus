@@ -68,6 +68,12 @@ import os
 os.environ["INSPEXIMUS_STORE_FORMAT"] = %(fmt)r
 from inspeximus import Inspeximus
 from inspeximus.core import StoreChangedOnDisk
+if os.environ.get("INSPEXIMUS_PROBE_FORCE_UNLOCKED"):
+    # THE CONTROL. Take the platform lock away so the run reproduces the one loss mechanism this
+    # project has already explained. If the DEGRADED line stays quiet here, the diagnostic below is
+    # blind and its silence on an ordinary run means nothing.
+    import inspeximus.core as _core
+    _core._LOCK_PRIMITIVE = (None, None)
 RETRY = %(retry)s
 path, wid, n = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
 m = Inspeximus(path=path)
@@ -93,6 +99,16 @@ for i in range(n):
             break
 for t in wrote:
     print("WROTE\\t" + t)
+# WAS THE LOCK HELD WHEN A RECORD WENT MISSING? That one field separates the two candidate
+# explanations, and without it every loss here looked alike. Measured on this harness: with the
+# lock held, 0 of 448 records went missing; with it degraded, writers report success and records
+# vanish. A MISSING count above zero while this reports 0 is a race this project cannot yet explain.
+try:
+    from inspeximus.core import _StoreLock
+    print("DEGRADED\\t%%d\\t%%s" %% (sum(_StoreLock.DEGRADED.values()),
+          "; ".join(_StoreLock.DEGRADED_WHY.values()) or "-"))
+except Exception as _e:
+    print("DEGRADED\\t-1\\t%%r" %% (_e,))
 '''
 
 MEM0 = '''
@@ -173,7 +189,7 @@ def _count_mem0(d: str) -> set:
     return {i.get("memory") or "" for i in items}
 
 
-def trial(arm: str, writers: int, per: int) -> dict:
+def trial(arm: str, writers: int, per: int, force_unlocked: bool = False) -> dict:
     work = tempfile.mkdtemp(prefix="cw_")
     src = os.path.join(work, "w.py")
     if arm == "mem0":
@@ -186,11 +202,15 @@ def trial(arm: str, writers: int, per: int) -> dict:
         fh.write(body)
 
     t0 = time.time()
+    env = dict(os.environ)
+    env.pop("INSPEXIMUS_PROBE_FORCE_UNLOCKED", None)
+    if force_unlocked:
+        env["INSPEXIMUS_PROBE_FORCE_UNLOCKED"] = "1"
     procs = [subprocess.Popen([sys.executable, src, target, str(w), str(per)],
                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                              text=True, encoding="utf-8", errors="replace")
+                              text=True, encoding="utf-8", errors="replace", env=env)
              for w in range(writers)]
-    claimed, init_failed = [], 0
+    claimed, init_failed, degraded, why = [], 0, 0, ""
     for p in procs:
         out, _ = p.communicate()
         for line in (out or "").splitlines():
@@ -198,12 +218,20 @@ def trial(arm: str, writers: int, per: int) -> dict:
                 claimed.append(line.split("\t", 1)[1])
             elif line.startswith("INIT_FAILED"):
                 init_failed += 1
+            elif line.startswith("DEGRADED\t"):
+                # ASK EVERY WORKER WHETHER THE LOCK HELD. Without this a loss is unattributable:
+                # a degraded lock and an unexplained race produce the same MISSING count.
+                parts = line.split("\t")
+                degraded += max(0, int(parts[1]))
+                if len(parts) > 2 and parts[2] not in ("-", ""):
+                    why = parts[2]
 
     on_disk = _count_mem0(target) if arm == "mem0" else _count_ours(target)
     missing = [t for t in claimed if t not in on_disk]
     return {"arm": arm, "writers": writers, "attempted": writers * per,
             "claimed": len(claimed), "on_disk": len(on_disk), "missing": len(missing),
-            "init_failed": init_failed, "seconds": round(time.time() - t0, 1)}
+            "init_failed": init_failed, "degraded_writes": degraded, "degraded_why": why,
+            "seconds": round(time.time() - t0, 1)}
 
 
 def main() -> int:
@@ -253,6 +281,9 @@ def main() -> int:
                         "claimed": sum(r["claimed"] for r in rs),
                         "missing": sum(r["missing"] for r in rs),
                         "writers_blocked": sum(r["init_failed"] for r in rs),
+                        "degraded_writes": sum(r.get("degraded_writes", 0) for r in rs),
+                        "degraded_why": next((r["degraded_why"] for r in rs
+                                              if r.get("degraded_why")), ""),
                         "clean_trials": sum(1 for r in rs if r["missing"] == 0),
                         "trials": len(rs)}
         s = summary[arm]
@@ -265,6 +296,23 @@ def main() -> int:
     print()
     print("  MISSING is a broken promise. REFUSED is an honest no. They are different failures and")
     print("  an arm with zero of the first and many of the second is not concurrent, only safe.")
+
+    # WHAT THE LOCK WAS DOING WHILE THE RECORDS WENT MISSING. Report it in both directions: a loss
+    # under a degraded lock is a known mechanism with a known remedy, and a loss under a held lock
+    # is the race this project has looked for since the first red CI run and has not reproduced.
+    print()
+    for arm in ("rows", "json-naive", "json-retry"):
+        s = summary.get(arm)
+        if not s:
+            continue
+        if s["degraded_writes"]:
+            print("  %-11s ran with a DEGRADED lock on %d writes: %s"
+                  % (arm, s["degraded_writes"], s["degraded_why"] or "reason not reported"))
+        elif s["missing"]:
+            print("  %-11s lost %d records with the lock HELD on every write. That is the "
+                  "unexplained race, not the known degraded-lock path." % (arm, s["missing"]))
+        else:
+            print("  %-11s lock held on every write, nothing missing." % arm)
 
     # THE CONTROL THE SKEPTIC ASKED FOR. If json-retry loses about as little as rows, then the
     # earlier 44 percent was the caller and not the format, and this receipt has to say it out loud
@@ -293,8 +341,30 @@ def main() -> int:
                   % (naive["missing"], retry["missing"]))
         print("  what the retry DOES fix is refusals: naive was told %d of %d were stored, retry %d."
               % (naive["claimed"], naive["attempted"], retry["claimed"]))
+    # THE CONTROL FOR THE DIAGNOSTIC ITSELF, and it runs on every invocation rather than on a flag,
+    # because a control you have to remember to pass is a control that is not run. The rows arm is
+    # repeated with the platform lock removed in the workers. If that run does not report a degraded
+    # write, the DEGRADED field above cannot see the one mechanism we already understand, and every
+    # "lock held on every write" line in this receipt is an artifact of a blind instrument.
+    print()
+    c = trial("rows", max(2, min(widths)), a.per, force_unlocked=True)
+    out["control_lock_removed"] = c
+    out["control_fired"] = c["degraded_writes"] > 0
+    if c["degraded_writes"] > 0:
+        # WHAT THIS CONTROL DOES AND DOES NOT SHOW. It proves the DEGRADED field reaches this
+        # summary, which is all it is for. It does NOT predict a loss: measured 2026-09-12, the rows
+        # arm lost 0 of 16 records with our lock removed entirely, because SQLite serialises the
+        # writers by itself. So on the rows arm our lock is a second line, not the only one, and a
+        # missing record there is not explained by pointing at the lock.
+        print("  CONTROL: with the platform lock removed, %d writes reported themselves unprotected, "
+              "so the diagnostic can fire. Records missing under that lock: %d of %d (SQLite "
+              "serialises the writers on its own, so this number is not expected to rise)."
+              % (c["degraded_writes"], c["missing"], c["claimed"]))
+    else:
+        print("  CONTROL DID NOT FIRE: the lock was removed and no writer noticed. Every lock line "
+              "above is void, not reassuring.")
     write_receipt(__file__, out)
-    return 0
+    return 0 if out["control_fired"] else 2
 
 
 if __name__ == "__main__":

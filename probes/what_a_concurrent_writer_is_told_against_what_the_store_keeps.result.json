@@ -17,7 +17,9 @@
    "on_disk": 16,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 1.8
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 0.7
   },
   {
    "arm": "rows",
@@ -27,16 +29,8 @@
    "on_disk": 16,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 0.6
-  },
-  {
-   "arm": "rows",
-   "writers": 2,
-   "attempted": 16,
-   "claimed": 16,
-   "on_disk": 16,
-   "missing": 0,
-   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 0.5
   },
   {
@@ -47,7 +41,33 @@
    "on_disk": 16,
    "missing": 0,
    "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 0.5
+  },
+  {
+   "arm": "rows",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 1.5
+  },
+  {
+   "arm": "json-naive",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 0.4
   },
   {
    "arm": "json-naive",
@@ -57,17 +77,21 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 1.4
   },
   {
    "arm": "json-naive",
    "writers": 2,
    "attempted": 16,
-   "claimed": 16,
-   "on_disk": 16,
+   "claimed": 8,
+   "on_disk": 8,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 0.5
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 1.4
   },
   {
    "arm": "json-naive",
@@ -77,16 +101,44 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 1.5
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 0.4
   },
   {
-   "arm": "json-naive",
+   "arm": "json-retry",
    "writers": 2,
    "attempted": 16,
    "claimed": 16,
    "on_disk": 16,
    "missing": 0,
    "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 0.4
+  },
+  {
+   "arm": "json-retry",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 0.4
+  },
+  {
+   "arm": "json-retry",
+   "writers": 2,
+   "attempted": 16,
+   "claimed": 16,
+   "on_disk": 16,
+   "missing": 0,
+   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 0.5
   },
   {
@@ -97,36 +149,8 @@
    "on_disk": 16,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 0.5
-  },
-  {
-   "arm": "json-retry",
-   "writers": 2,
-   "attempted": 16,
-   "claimed": 16,
-   "on_disk": 16,
-   "missing": 0,
-   "init_failed": 0,
-   "seconds": 0.5
-  },
-  {
-   "arm": "json-retry",
-   "writers": 2,
-   "attempted": 16,
-   "claimed": 16,
-   "on_disk": 16,
-   "missing": 0,
-   "init_failed": 0,
-   "seconds": 1.5
-  },
-  {
-   "arm": "json-retry",
-   "writers": 2,
-   "attempted": 16,
-   "claimed": 16,
-   "on_disk": 16,
-   "missing": 0,
-   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 1.5
   },
   {
@@ -137,7 +161,9 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 1,
-   "seconds": 9.6
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 9.5
   },
   {
    "arm": "mem0",
@@ -147,7 +173,9 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 1,
-   "seconds": 6.3
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 5.7
   },
   {
    "arm": "mem0",
@@ -157,7 +185,9 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 1,
-   "seconds": 6.3
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 5.6
   },
   {
    "arm": "mem0",
@@ -167,7 +197,9 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 1,
-   "seconds": 6.3
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 5.7
   },
   {
    "arm": "rows",
@@ -177,7 +209,9 @@
    "on_disk": 96,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 3.9
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 3.0
   },
   {
    "arm": "rows",
@@ -187,36 +221,44 @@
    "on_disk": 96,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 2.8
-  },
-  {
-   "arm": "rows",
-   "writers": 12,
-   "attempted": 96,
-   "claimed": 96,
-   "on_disk": 96,
-   "missing": 0,
-   "init_failed": 0,
-   "seconds": 4.9
-  },
-  {
-   "arm": "rows",
-   "writers": 12,
-   "attempted": 96,
-   "claimed": 96,
-   "on_disk": 96,
-   "missing": 0,
-   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 2.9
   },
   {
+   "arm": "rows",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 2.9
+  },
+  {
+   "arm": "rows",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 96,
+   "missing": 0,
+   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 4.5
+  },
+  {
    "arm": "json-naive",
    "writers": 12,
    "attempted": 96,
-   "claimed": 52,
-   "on_disk": 52,
-   "missing": 0,
+   "claimed": 64,
+   "on_disk": 63,
+   "missing": 1,
    "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 1.8
   },
   {
@@ -227,26 +269,32 @@
    "on_disk": 56,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 1.8
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 1.9
   },
   {
    "arm": "json-naive",
    "writers": 12,
    "attempted": 96,
-   "claimed": 56,
-   "on_disk": 56,
+   "claimed": 72,
+   "on_disk": 72,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 1.8
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 1.9
   },
   {
    "arm": "json-naive",
    "writers": 12,
    "attempted": 96,
-   "claimed": 56,
-   "on_disk": 56,
+   "claimed": 64,
+   "on_disk": 64,
    "missing": 0,
    "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 1.8
   },
   {
@@ -257,17 +305,9 @@
    "on_disk": 96,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 1.8
-  },
-  {
-   "arm": "json-retry",
-   "writers": 12,
-   "attempted": 96,
-   "claimed": 80,
-   "on_disk": 80,
-   "missing": 0,
-   "init_failed": 0,
-   "seconds": 2.8
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 2.1
   },
   {
    "arm": "json-retry",
@@ -277,7 +317,9 @@
    "on_disk": 96,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 1.8
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 1.9
   },
   {
    "arm": "json-retry",
@@ -287,7 +329,21 @@
    "on_disk": 96,
    "missing": 0,
    "init_failed": 0,
-   "seconds": 2.7
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 2.1
+  },
+  {
+   "arm": "json-retry",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 96,
+   "on_disk": 95,
+   "missing": 1,
+   "init_failed": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 2.0
   },
   {
    "arm": "mem0",
@@ -297,7 +353,9 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 11,
-   "seconds": 9.4
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 10.3
   },
   {
    "arm": "mem0",
@@ -307,6 +365,20 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 11,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "seconds": 10.0
+  },
+  {
+   "arm": "mem0",
+   "writers": 12,
+   "attempted": 96,
+   "claimed": 8,
+   "on_disk": 8,
+   "missing": 0,
+   "init_failed": 11,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 9.2
   },
   {
@@ -317,16 +389,8 @@
    "on_disk": 8,
    "missing": 0,
    "init_failed": 11,
-   "seconds": 9.2
-  },
-  {
-   "arm": "mem0",
-   "writers": 12,
-   "attempted": 96,
-   "claimed": 8,
-   "on_disk": 8,
-   "missing": 0,
-   "init_failed": 11,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "seconds": 9.3
   }
  ],
@@ -336,23 +400,29 @@
    "claimed": 448,
    "missing": 0,
    "writers_blocked": 0,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "clean_trials": 8,
    "trials": 8
   },
   "json-naive": {
    "attempted": 448,
-   "claimed": 268,
-   "missing": 0,
+   "claimed": 296,
+   "missing": 1,
    "writers_blocked": 0,
-   "clean_trials": 8,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "clean_trials": 7,
    "trials": 8
   },
   "json-retry": {
    "attempted": 448,
-   "claimed": 432,
-   "missing": 0,
+   "claimed": 448,
+   "missing": 1,
    "writers_blocked": 0,
-   "clean_trials": 8,
+   "degraded_writes": 0,
+   "degraded_why": "",
+   "clean_trials": 7,
    "trials": 8
   },
   "mem0": {
@@ -360,9 +430,24 @@
    "claimed": 64,
    "missing": 0,
    "writers_blocked": 48,
+   "degraded_writes": 0,
+   "degraded_why": "",
    "clean_trials": 8,
    "trials": 8
   }
  },
- "retry_closed_records": 0
+ "retry_closed_records": 0,
+ "control_lock_removed": {
+  "arm": "rows",
+  "writers": 2,
+  "attempted": 16,
+  "claimed": 16,
+  "on_disk": 16,
+  "missing": 0,
+  "init_failed": 0,
+  "degraded_writes": 16,
+  "degraded_why": "no platform lock primitive is available (neither fcntl nor msvcrt), so this write is not protected against another process",
+  "seconds": 0.6
+ },
+ "control_fired": true
 }

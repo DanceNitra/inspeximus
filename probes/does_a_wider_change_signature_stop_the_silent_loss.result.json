@@ -1,0 +1,758 @@
+{
+ "probe": "does_a_wider_change_signature_stop_the_silent_loss.py",
+ "question": "which of the two candidate causes accounts for the silent loss",
+ "writers": 12,
+ "per_writer": 8,
+ "trials": 30,
+ "arms": {
+  "old-order": {
+   "claimed": 2880,
+   "missing": 9,
+   "trials": [
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.7
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.7
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 2,
+     "seconds": 1.7
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.7
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.8
+    }
+   ]
+  },
+  "fixed": {
+   "claimed": 2864,
+   "missing": 0,
+   "trials": [
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.7
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.7
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.6
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.7
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.9
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.7
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    }
+   ]
+  },
+  "widened": {
+   "claimed": 2840,
+   "missing": 0,
+   "trials": [
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.9
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.9
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.7
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.7
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.6
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.8
+    },
+    {
+     "arm": "widened",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.7
+    }
+   ]
+  }
+ },
+ "signature_fields": {
+  "writes": 1500,
+  "collisions": {
+   "mtime+size": 211,
+   "mtime+size+ino": 0,
+   "mtime+size+sha256": 0
+  },
+  "mtime_tick_ns_min": 502700,
+  "mtime_tick_ns_median": 1518100
+ },
+ "verdict": "the read-and-stamp ordering accounts for the whole loss in this run; the signature's fields added nothing on top of it."
+}

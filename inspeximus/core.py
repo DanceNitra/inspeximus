@@ -7303,7 +7303,24 @@ class Inspeximus:
         """Read the store file into `_items` and record the file fingerprint we loaded from.
 
         The fingerprint is what makes concurrent writers detectable: `_save` compares it to the file's
-        current (mtime_ns, size) and refuses rather than overwriting another writer's work."""
+        current (mtime_ns, size) and refuses rather than overwriting another writer's work.
+
+        THE FINGERPRINT IS TAKEN BEFORE THE READ, AND THE ORDER IS THE WHOLE POINT. Nothing holds the
+        store lock across a load: the lock covers `_save`. Taken afterwards, a writer that replaced
+        the file while this handle was reading left it holding the OLD records under the NEW
+        signature, so the next `_save` compared them, found no change, and rewrote the whole file
+        from a stale view. The JSON path cannot merge, so the other writer's record was gone and
+        that writer had been told `remember()` succeeded.
+
+        Taken beforehand the error can only go the safe way. A change during the read makes the
+        stored signature older than the file, `_save` sees a difference that is not there, and the
+        caller gets a refusal it can retry. A false refusal is recoverable; a silent overwrite is
+        not. Reproduced by `tests/test_a_write_between_the_read_and_the_signature_is_invisible.py`,
+        which injects the competing write inside the read rather than waiting for the race.
+        """
+        # Read the fingerprint FIRST. See the docstring: after the read it describes a file this
+        # handle may never have seen.
+        sig_before_read = self._stat_sig()
         if self.path and self.path.exists() and _rows is not None                 and _rows.looks_like_sqlite(self.path):
             # A ROW STORE, detected by its 16-byte header rather than its name, because a store
             # migrated in place keeps whatever filename it had.
@@ -7338,7 +7355,7 @@ class Inspeximus:
                 self._full_reconcile = True
                 self._dirty = True
             self._touched = set()
-            self._file_sig = self._stat_sig()
+            self._file_sig = sig_before_read
             return
         if self.path and self.path.exists():
             raw = self.path.read_bytes()
@@ -7452,7 +7469,12 @@ class Inspeximus:
                 self._track_all()
                 self._row_snapshot = _rows.snapshot(self._items, self._persist_vectors)
                 self._touched = set()
-        self._file_sig = self._stat_sig()
+                # A MIGRATION WROTE THE FILE, so the pre-read fingerprint describes a store that no
+                # longer exists and every later save would be refused against it. This is the one
+                # path where a fresh reading is the correct one: the writer that changed the file is
+                # this handle, and the records above came from the file as it is now.
+                sig_before_read = self._stat_sig()
+        self._file_sig = sig_before_read
 
     @staticmethod
     def _atomic_write(path, text: str) -> None:

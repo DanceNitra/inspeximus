@@ -5,21 +5,32 @@ and has never failed on the machine this was written on. Its own message names t
 "scattered singles" loss shape means the change guard missed a write, and the guard's signature is
 `(st_mtime_ns, st_size)`.
 
-The reason it is a coin flip rather than a bug you can sit down and reproduce is the FILESYSTEM. A
-guard keyed on mtime can only separate two writes that the filesystem timestamps apart. NTFS on this
-machine gives every write its own mtime, so the collision essentially never happens here. ext4 on a
-GitHub runner updates mtime on a coarser tick, so two writes inside one tick share a timestamp, and
-if they also share a size the guard sees no change at all and the second write replaces the first.
-A writer is told `remember()` succeeded and its record is not in the store.
+A guard keyed on mtime can only separate two writes that the filesystem timestamps apart. Two writes
+inside one tick share a timestamp, and if they also share a size the guard sees no change at all and
+the second write replaces the first. A writer is told `remember()` succeeded and its record is not
+in the store.
+
+CORRECTED 2026-09-12, AND THE CORRECTION VOIDS THIS FILE'S CONTROL. This paragraph used to say NTFS
+"gives every write its own mtime, so the collision essentially never happens here", and treated the
+defect as something only a GitHub runner could show. Measured on this machine, 1,500 same-length
+atomic writes to a temp file: mtime_ns advances in steps of 0.50 to 1.52 ms, and 165 of those writes
+landed on a signature that already carried different content. So the collision happens here at
+roughly one write in nine, and the `--granularity-ns 1` arm below, offered as the control, rounds a
+clock that already ticks at 500,000 ns. It changes nothing, which makes it a no-op rather than a
+control: at native granularity both arms run in the same environment.
+
+The paired arm that IS a control lives in `does_a_wider_change_signature_stop_the_silent_loss.py`,
+which holds the environment fixed and changes the guard instead.
 
 WHAT THIS PROBE DOES. It stops waiting for the coincidence and produces it. `--granularity-ns`
 models the filesystem's timestamp resolution by rounding mtime down, exactly as a coarse-mtime
 filesystem does. At 1 ns it is this machine. At 1 s it is a filesystem that cannot separate any two
 writes in the same second, which is the worst case the guard has to survive.
 
-THE CONTROL IS THE POINT. Rounding mtime is a change to the ENVIRONMENT, not to the store, so the
-same run at 1 ns granularity must lose nothing. Without that arm a loss at 1 s would only show that
-this harness can break something, not that the guard is what broke.
+WHAT THE 1 ns ARM IS WORTH. It is a floor, not a control: it says the harness does not lose records
+on its own at whatever resolution the filesystem happens to offer. Read a loss at 1 s as the
+mechanism amplified, and read a clean 1 ns arm as "this workload is too quiet to show it", never as
+"the guard is sound here".
 
     python probes/a_same_size_write_inside_one_mtime_tick_is_invisible.py
     python probes/a_same_size_write_inside_one_mtime_tick_is_invisible.py --granularity-ns 1000000000
