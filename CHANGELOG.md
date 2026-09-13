@@ -1,3 +1,48 @@
+## 2.27.4 - UPGRADE IF YOU RUN HERMES AGENT: 2.27.3 was slower than 2.27.2 in Hermes' own flow, and a shared session can now forget one person
+
+Yesterday's release moved recall onto a background thread, because the base class asks for exactly
+that. Reading the host's own callers afterwards showed the win does not arrive, and the cost does.
+
+`run_agent.py` queues the text of the turn that just ENDED. `turn_context.py` then prefetches the NEW
+user message at the start of the next turn. The two strings differ on every turn that is not a
+literal repeat, so a result recalled for the queued text cannot answer the question asked. Serving it
+anyway is the one thing this store must not do: it would inject the previous question's memories as
+if they were this question's. What is left is a second scan of the same store, running while the turn
+does its own.
+
+Measured over 40 turns per arm in one interleaved run, median per turn
+(`probes/what_a_turn_pays_for_recall_before_and_after_the_queue.py`, which now carries the removed
+implementation so the comparison stays re-runnable):
+
+| records | as shipped now | speculating, as 2.27.3 did | penalty |
+|---|---|---|---|
+| 100 | 0.245 ms | 0.244 ms | -0.4% |
+| 1,000 | 2.340 ms | 2.251 ms | -3.8% |
+| 10,000 | 35.274 ms | 50.624 ms | **+43.5%** |
+
+The shape is the argument, and it is why this is a removal rather than a threshold. Speculation is
+free where a recall is already cheap enough that nobody notices it, and it costs 15 ms where a recall
+is slow enough to matter. Any rule that permits it only where it is safe permits it only where it
+cannot help.
+
+`queue_prefetch` now records the query and recalls nothing. If Hermes ever queues the UPCOMING
+question instead, the probe still holds the speculating variant and its `spec-hit` arm, which
+measured 0.003 ms against 35.274 ms.
+
+**A shared session now knows who wrote what, and `inspeximus_forget_me` uses it.** Hermes' base class
+says a shared session carries several participants and a provider keying durable state on identity
+must read it per turn. Until now every write carried only the session id, so "forget what you know
+about me" from one participant could be answered only by subject text: over-erase when the others
+mention the same subject, under-erase when they phrase it differently. `on_turn_start` now reads the
+turn's author and every write it causes carries `source.author`. The new tool takes no arguments,
+erases only rows that author wrote, leaves a tombstone per row, and refuses rather than guessing
+when the host named nobody. On the Hermes build installed here (0.21.1, 2026-09-10) the host passes
+no author yet and the field is simply absent; the upstream head of 2026-09-13 passes it.
+
+Everything else from 2.27.3 stands: `on_pre_compress`, `on_memory_write`, `on_session_switch` and
+`backup_paths`, and the corrected reading of what the eight bundled providers implement.
+
+
 ## 2.27.3 - UPGRADE IF YOU RUN HERMES AGENT: recall now happens between turns, and four more host hooks are answered
 
 The provider shipped in 2.27.2 did its recall on the hot path. Hermes' base class asks for the

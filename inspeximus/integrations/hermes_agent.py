@@ -21,6 +21,7 @@ is the thing a retrieval-only memory cannot offer at all:
     inspeximus_correct    supersede that key; the old value stops being recalled
     inspeximus_revert     put the previous value back, by key
     inspeximus_forget     erase a subject and leave a receipt saying so
+    inspeximus_forget_me  erase what the person speaking in THIS turn wrote, in a shared session
 
 KEYS ARE THE WHOLE MECHANISM. `key="user::timezone"` makes a later write for that key RETIRE the
 earlier one deterministically, with no model call and no similarity threshold. Without a key a write
@@ -34,7 +35,6 @@ from __future__ import annotations
 
 import json
 import os
-import threading
 from typing import Any, Dict, List, Optional
 
 from .._surface import open_store
@@ -103,6 +103,17 @@ _TOOLS = [
             "required": ["subject"],
         },
     },
+    {
+        "name": "inspeximus_forget_me",
+        "description": (
+            "Erase everything this memory holds from the person speaking in the current turn, and "
+            "record that the erasure happened. Use it when someone in a shared conversation asks "
+            "you to forget what you know about them. It needs no subject: the store knows who "
+            "wrote each memory. It refuses when the host did not say who is speaking, rather than "
+            "guessing."
+        ),
+        "parameters": {"type": "object", "properties": {}},
+    },
 ]
 
 
@@ -137,10 +148,8 @@ def _make_class(base):
             self._session_id = ""
             self._hermes_home = ""
             self._last_recalled = 0
-            self._prefetch_lock = threading.Lock()
-            self._prefetch_thread: Optional[threading.Thread] = None
-            self._prefetch_cache: Optional[tuple] = None
             self._prefetch_query = ""
+            self._author_id = ""
 
         @property
         def name(self) -> str:
@@ -198,70 +207,51 @@ def _make_class(base):
                 return []
             return [str(h.get("text", "")).strip() for h in hits if str(h.get("text", "")).strip()]
 
-        #: How long `prefetch` waits for a background recall of the SAME query before giving up and
-        #: recalling inline. Long enough to cover a slow store, short enough that a wedged one costs
-        #: a turn a visible pause rather than a hang.
-        PREFETCH_WAIT_S = 2.0
-
         def queue_prefetch(self, query: str, *, session_id: str = "") -> None:
-            """Recall in the background after a turn, so the next `prefetch` is a dictionary read.
+            """Records the query and recalls NOTHING. Speculating here was measured, and it lost.
 
-            THE BASE CLASS ASKS FOR THIS AND THE COST IS MEASURED. Recall is a scan, so it grows
-            with the store: 0.39 ms median at 100 records, 4.27 ms at 1,000, and 66 ms median with
-            123 ms at p90 at 10,000. Paid synchronously that is added to every turn, and an agent
-            memory that lives for months reaches the last row.
+            The hook reads as an obvious win, and for a network-backed provider it is one. It is not
+            one here, because of what the host actually queues. `run_agent.py` queues the text of the
+            turn that just ENDED, and `turn_context.py` then prefetches the NEW user message at the
+            start of the next turn. The two strings differ on every turn that is not a literal
+            repeat, so a result recalled for the queued text can never answer the question asked.
+
+            Serving it anyway is the one thing this store must not do: it would inject the previous
+            question's memories as if they were this question's.
+
+            So the only thing a speculative recall can produce is a second scan of the same store,
+            running while the turn does its own. Measured over 40 turns per arm
+            (`probes/what_a_turn_pays_for_recall_before_and_after_the_queue.py`), median per turn:
+
+                records   as shipped   speculating   penalty
+                    100        0.245         0.244     -0.4%
+                  1,000        2.340         2.251     -3.8%
+                 10,000       35.274        50.624    +43.5%
+
+            The shape is the argument. Speculation is free where a recall is already cheap enough
+            that nobody notices it, and it costs 15 ms where a recall is slow enough to matter. Any
+            rule that keeps it only where it is safe keeps it only where it cannot help. Version
+            2.27.3 shipped it and was slower than 2.27.2 in Hermes' own flow; this is that removal.
+
+            Both columns come from one interleaved run, because the baseline moves between runs on
+            a shared machine: an earlier pass measured the same penalty as +79.5% against a 30.1 ms
+            baseline. The comparison holds inside a run; the absolute numbers do not travel.
+
+            The query is kept so `recall_status` and a future host that queues the UPCOMING question
+            have something to read. If Hermes ever passes the next query here, restore the thread and
+            re-run the probe above: it still carries the speculating variant, and its `spec-hit` arm
+            measured 0.003 ms against 35.274 ms.
             """
-            if self._store is None or not (query or "").strip():
-                return
-            with self._prefetch_lock:
-                if self._prefetch_thread is not None and self._prefetch_thread.is_alive():
-                    return                                   # one in flight is enough
-                self._prefetch_query = query
-
-                def _work(q=query):
-                    lines = self._recall_lines(q)
-                    with self._prefetch_lock:
-                        # Only publish if nobody queued a different question meanwhile, or the
-                        # cache would answer the previous turn's query on this one.
-                        if self._prefetch_query == q:
-                            self._prefetch_cache = (q, lines)
-
-                self._prefetch_thread = threading.Thread(target=_work, daemon=True)
-                self._prefetch_thread.start()
+            self._prefetch_query = (query or "").strip()
 
         def prefetch(self, query: str, *, session_id: str = "") -> str:
             """Recall for the coming turn, with superseded values already excluded.
-
-            Uses the queued result when it answers THIS query, and otherwise recalls inline. A cache
-            keyed on nothing would serve the previous turn's context, which is the failure this
-            store exists to prevent, so the query is part of the key.
 
             Returns "" rather than a header with nothing under it: the base class treats "" as "no
             context", and an empty block still costs tokens while reading to the model as though
             memory had been consulted and had nothing, which is a different claim.
             """
-            lines, waitable = None, None
-            with self._prefetch_lock:
-                cached = self._prefetch_cache
-                if cached is not None and cached[0] == query:
-                    lines = cached[1]
-                self._prefetch_cache = None                  # a result is consumed once
-                if lines is None and self._prefetch_query == query:
-                    waitable = self._prefetch_thread          # this exact recall is already running
-
-            if lines is None and waitable is not None and waitable.is_alive():
-                # WAIT FOR IT RATHER THAN RACE IT, because two scans of one store are slower than
-                # one. Measured at 10,000 records: 37.1 ms inline, 64.2 ms when a second recall was
-                # started beside the queued one. The cap keeps a wedged store from holding a turn.
-                waitable.join(timeout=self.PREFETCH_WAIT_S)
-                with self._prefetch_lock:
-                    cached = self._prefetch_cache
-                    if cached is not None and cached[0] == query:
-                        lines = cached[1]
-                    self._prefetch_cache = None
-
-            if lines is None:
-                lines = self._recall_lines(query)
+            lines = self._recall_lines(query)
             self._last_recalled = len(lines)
             if not lines:
                 return ""
@@ -280,8 +270,18 @@ def _make_class(base):
         # -- what the agent writes -----------------------------------------------------
 
         def _source(self) -> Dict[str, str]:
-            """Where the record came from, carried on every write so erasure can reach it."""
-            return {"doc": "hermes-agent::" + (self._session_id or "session")}
+            """Where the record came from, carried on every write so erasure can reach it.
+
+            `author` is present only when the host said who wrote the turn. A shared session is
+            several people writing into one memory, and an erasure request comes from one of them.
+            Without this field, "forget what you know about me" in a shared session can only be
+            answered by subject text, and a subject the other participants also mention is then
+            either over-erased or not erased at all.
+            """
+            src = {"doc": "hermes-agent::" + (self._session_id or "session")}
+            if self._author_id:
+                src["author"] = self._author_id
+            return src
 
         def get_tool_schemas(self) -> List[Dict[str, Any]]:
             return list(_TOOLS)
@@ -310,6 +310,19 @@ def _make_class(base):
                 if tool_name == "inspeximus_forget":
                     out = self._store.forget_subject(args["subject"])
                     return json.dumps({"ok": True, "subject": args["subject"], "result": out})
+                if tool_name == "inspeximus_forget_me":
+                    # Refuses without an author rather than erasing by session, because a session
+                    # in a shared conversation holds several people's memories and this request
+                    # came from one of them. Erasing the others' would be the wrong kind of wrong.
+                    who = self._author_id
+                    if not who:
+                        return json.dumps({"ok": False, "error": (
+                            "the host did not say who is speaking in this turn, so there is "
+                            "nothing to scope the erasure to; use inspeximus_forget with a subject")})
+                    out = self._store.forget(
+                        where=lambda r: ((r.get("source") or {}).get("author") == who),
+                        basis="the author asked, in a shared session, to be forgotten")
+                    return json.dumps({"ok": True, "author": who, "result": out})
             except KeyError as e:
                 return json.dumps({"ok": False, "error": "missing argument %s" % e})
             except Exception as e:                           # noqa: BLE001
@@ -412,6 +425,20 @@ def _make_class(base):
 
         # -- session identity and backup ------------------------------------------------
 
+        def on_turn_start(self, turn_number: int, message: str, **kwargs) -> None:
+            """Read who wrote THIS turn, so the writes it causes are attributed to that person.
+
+            The base class is explicit that a shared session carries several participants and a
+            provider keying durable state on identity must read it per turn. Reading it once at
+            `initialize` would attribute every later write to whoever opened the session.
+
+            A host that does not pass the author (the build installed here, 0.21.1, does not; the
+            2026-09-13 upstream head does) leaves the field empty, and `_source` then omits it
+            rather than writing a placeholder that a later erasure would match by accident.
+            """
+            author = kwargs.get("author_id")
+            self._author_id = str(author).strip() if author else ""
+
         def on_session_switch(self, new_session_id: str, *, parent_session_id: str = "",
                               reset: bool = False, rewound: bool = False, **kwargs) -> None:
             """Rebind to the reassigned session, and drop anything recalled for the old one.
@@ -428,9 +455,8 @@ def _make_class(base):
             """
             self._session_id = new_session_id or ""
             self._last_recalled = 0
-            with self._prefetch_lock:
-                self._prefetch_query = ""
-                self._prefetch_cache = None
+            self._prefetch_query = ""
+            self._author_id = ""
 
         def backup_paths(self) -> List[str]:
             """Store files that `hermes backup` cannot find on its own.

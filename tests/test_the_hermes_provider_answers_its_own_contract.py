@@ -189,73 +189,44 @@ def test_is_available_makes_no_network_call(provider, monkeypatch):
     assert provider.is_available() is True
 
 
-# --- the background prefetch -------------------------------------------------------------
+# --- queue_prefetch recalls nothing, and that is the measured decision ---------------------
 
 
-def test_a_queued_result_is_served_without_touching_the_store(provider, monkeypatch):
-    """The point of the hook: after queue_prefetch, the hot path is a dictionary read.
+def test_queue_prefetch_does_not_touch_the_store(provider, monkeypatch):
+    """Speculating on the queued text lost a measurement, so the hook must not recall.
 
-    The store is replaced with one that refuses recall AFTER the queue has settled, so a prefetch
-    that reaches it fails loudly. A test that only timed the call would pass on a fast store and
-    prove nothing about whether the cache was used.
+    Hermes queues the text of the turn that just ENDED and then prefetches the NEW message, so a
+    speculative result can never answer the question asked, and the scan it costs runs beside the
+    turn's own. At 10,000 records that measured 54.1 ms against 30.1 ms.
     """
-    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
-    provider.queue_prefetch("where is the office")
-    provider._prefetch_thread.join(timeout=5)
-
     def refuse(*a, **k):
-        raise AssertionError("prefetch went to the store although a result was queued")
+        raise AssertionError("queue_prefetch recalled; the speculation was measured and removed")
 
+    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
     monkeypatch.setattr(provider._store, "recall", refuse)
-    assert "Nitra" in provider.prefetch("where is the office")
+    provider.queue_prefetch("where is the office")
+    assert provider._prefetch_query == "where is the office"
 
 
-def test_a_queued_result_is_not_served_for_a_different_question(provider):
-    """A cache keyed on nothing answers the previous turn's question, which is the whole failure."""
+def test_queue_prefetch_starts_no_thread(provider):
+    """A thread is the cost, so the control is the thread count rather than the recall count."""
+    import threading
+
+    before = threading.active_count()
+    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
+    for _ in range(5):
+        provider.queue_prefetch("where is the office")
+    assert threading.active_count() == before
+
+
+def test_prefetch_answers_the_question_it_was_given(provider):
+    """Whatever was queued, the answer belongs to THIS query. That is the whole reason to recall."""
     provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
     provider.handle_tool_call("inspeximus_remember", {"text": "The deploy window is Tuesday"})
     provider.queue_prefetch("where is the office")
-    provider._prefetch_thread.join(timeout=5)
     out = provider.prefetch("when is the deploy window")
     assert "Tuesday" in out
-    assert "Nitra" not in out
-
-
-def test_a_queued_result_is_consumed_once(provider, monkeypatch):
-    """A second turn must not be answered from the first turn's cache, even for the same words."""
-    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
-    provider.queue_prefetch("where is the office")
-    provider._prefetch_thread.join(timeout=5)
-    provider.prefetch("where is the office")
-
-    calls = []
-    real = provider._store.recall
-    monkeypatch.setattr(provider._store, "recall",
-                        lambda *a, **k: (calls.append(1), real(*a, **k))[1])
-    assert "Nitra" in provider.prefetch("where is the office")
-    assert calls, "the second prefetch was answered from a cache that should have been consumed"
-
-
-def test_queue_prefetch_does_not_block_the_caller(provider, monkeypatch):
-    """A queue that runs recall inline is the bug this hook exists to remove."""
-    import threading
-    import time
-
-    started, release = threading.Event(), threading.Event()
-
-    def slow(*a, **k):
-        started.set()
-        release.wait(timeout=5)
-        return []
-
-    monkeypatch.setattr(provider._store, "recall", slow)
-    t0 = time.perf_counter()
-    provider.queue_prefetch("anything at all")
-    elapsed = time.perf_counter() - t0
-    assert started.wait(timeout=5), "the background recall never started"
-    release.set()
-    provider._prefetch_thread.join(timeout=5)
-    assert elapsed < 0.5, "queue_prefetch blocked for %.3fs on a recall it should not wait for" % elapsed
+    assert "Nitra" not in out, "the previous turn's question was answered instead of this one"
 
 
 # --- on_pre_compress ---------------------------------------------------------------------
@@ -376,16 +347,6 @@ def test_a_session_switch_rebinds_the_source_so_forget_can_still_reach_the_write
         "a write after the switch was attributed to the session the user left")
 
 
-def test_a_session_switch_drops_a_recall_queued_for_the_old_conversation(provider):
-    """Serving it into the new session would present the old one's context as this one's."""
-    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
-    provider.queue_prefetch("where is the office")
-    provider._prefetch_thread.join(timeout=5)
-    assert provider._prefetch_cache is not None, "nothing was queued, so this proves nothing"
-    provider.on_session_switch("s2", reset=True)
-    assert provider._prefetch_cache is None
-    assert provider.recall_status() is None
-
 
 def test_backup_paths_names_only_a_store_the_host_cannot_find(provider, tmp_path):
     """The default store is inside hermes_home, which `hermes backup` already covers."""
@@ -399,50 +360,74 @@ def test_backup_paths_names_only_a_store_the_host_cannot_find(provider, tmp_path
         "a configured store outside hermes_home is invisible to the host's backup")
 
 
-def test_prefetch_waits_for_an_identical_recall_instead_of_starting_a_second_one(provider, monkeypatch):
-    """Two scans of one store are slower than one, so a turn that arrives early waits."""
-    import threading
 
-    calls, release = [], threading.Event()
-    real = provider._store.recall
 
-    def counted(*a, **k):
-        calls.append(1)
-        release.wait(timeout=5)
-        return real(*a, **k)
 
+# --- on_turn_start: who wrote this turn ---------------------------------------------------
+
+
+def _stored_with(provider, fragment):
+    """The source dicts of every record whose text contains the fragment, read by a dry-run scan."""
+    seen = []
+    provider._store.forget(
+        where=lambda r: (fragment in str(r.get("text", ""))
+                         and seen.append(dict(r.get("source") or {})) is None and False),
+        dry_run=True)
+    return seen
+
+
+def test_a_write_is_attributed_to_the_author_of_the_turn_that_caused_it(provider):
+    """A shared session is several people writing into one memory; the session id cannot tell them apart."""
+    provider.on_turn_start(1, "hi", author_id="u-alice", author_name="Alice", author_is_bot=False)
+    provider.handle_tool_call("inspeximus_remember", {"text": "Alice prefers tea"})
+    provider.on_turn_start(2, "hi", author_id="u-bob", author_name="Bob", author_is_bot=False)
+    provider.handle_tool_call("inspeximus_remember", {"text": "Bob prefers coffee"})
+    assert _stored_with(provider, "tea") == [{"doc": "hermes-agent::s1", "author": "u-alice"}]
+    assert _stored_with(provider, "coffee") == [{"doc": "hermes-agent::s1", "author": "u-bob"}]
+
+
+def test_a_host_that_names_nobody_leaves_the_author_out_rather_than_writing_a_placeholder(provider):
+    """The installed host (0.21.1) passes no author. A placeholder would match a later erasure by accident."""
+    provider.on_turn_start(1, "hi")
     provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
-    monkeypatch.setattr(provider._store, "recall", counted)
-    provider.queue_prefetch("where is the office")
-    while not calls:                                          # the background recall has started
-        pass
-    threading.Timer(0.05, release.set).start()
-    out = provider.prefetch("where is the office")
-    provider._prefetch_thread.join(timeout=5)
-    assert "Nitra" in out
-    assert len(calls) == 1, "prefetch started a second recall beside the one already running"
+    assert _stored_with(provider, "Nitra") == [{"doc": "hermes-agent::s1"}]
 
 
-def test_prefetch_does_not_wait_for_a_recall_of_a_different_question(provider, monkeypatch):
-    """Waiting on the wrong query would add the whole background cost to this turn for nothing."""
-    import threading
-    import time
+def test_forget_me_erases_only_what_the_speaker_wrote(provider):
+    """The point of the field. Alice's request must not reach Bob's memories, and vice versa."""
+    provider.on_turn_start(1, "hi", author_id="u-alice")
+    provider.handle_tool_call("inspeximus_remember", {"text": "Alice prefers tea"})
+    provider.handle_tool_call("inspeximus_remember", {"text": "Alice lives in Nitra"})
+    provider.on_turn_start(2, "hi", author_id="u-bob")
+    provider.handle_tool_call("inspeximus_remember", {"text": "Bob prefers coffee"})
+    provider.on_turn_start(3, "forget me", author_id="u-alice")
+    out = json.loads(provider.handle_tool_call("inspeximus_forget_me", {}))
+    assert out["ok"] is True and out["author"] == "u-alice", out
+    assert _stored_with(provider, "Alice") == []
+    assert _stored_with(provider, "Bob prefers coffee") == [{"doc": "hermes-agent::s1", "author": "u-bob"}]
 
-    release = threading.Event()
-    real = provider._store.recall
 
-    def slow(query, *a, **k):
-        if "office" in query:
-            release.wait(timeout=5)
-        return real(query, *a, **k)
+def test_forget_me_refuses_rather_than_erasing_by_session_when_nobody_is_named(provider):
+    """Erasing the whole session would take the other participants' memories with it."""
+    provider.on_turn_start(1, "hi", author_id="u-alice")
+    provider.handle_tool_call("inspeximus_remember", {"text": "Alice prefers tea"})
+    provider.on_turn_start(2, "forget me")                  # the host named nobody this turn
+    out = json.loads(provider.handle_tool_call("inspeximus_forget_me", {}))
+    assert out["ok"] is False
+    assert _stored_with(provider, "tea"), "the refusal erased something anyway"
 
+
+def test_forget_me_leaves_a_receipt(provider):
+    """An erasure that leaves no receipt is indistinguishable from a crash, and this one is a request."""
+    provider.on_turn_start(1, "hi", author_id="u-alice")
+    provider.handle_tool_call("inspeximus_remember", {"text": "Alice prefers tea"})
+    out = json.loads(provider.handle_tool_call("inspeximus_forget_me", {}))
+    assert out["result"]["forgotten"] == 1 and out["result"]["tombstones"] == 1, out
+
+
+def test_a_session_switch_forgets_the_author_until_the_next_turn_names_one(provider):
+    """/resume may hand the session to someone else; the old author must not sign their writes."""
+    provider.on_turn_start(1, "hi", author_id="u-alice")
+    provider.on_session_switch("s2")
     provider.handle_tool_call("inspeximus_remember", {"text": "The deploy window is Tuesday"})
-    monkeypatch.setattr(provider._store, "recall", slow)
-    provider.queue_prefetch("where is the office")
-    t0 = time.perf_counter()
-    out = provider.prefetch("when is the deploy window")
-    elapsed = time.perf_counter() - t0
-    release.set()
-    provider._prefetch_thread.join(timeout=5)
-    assert "Tuesday" in out
-    assert elapsed < 1.0, "the turn waited %.2fs on a recall for a different question" % elapsed
+    assert _stored_with(provider, "Tuesday") == [{"doc": "hermes-agent::s2"}]

@@ -4,16 +4,21 @@ THE CLAIM UNDER TEST is the one in the adapter's docstring: `queue_prefetch` tur
 a dictionary read. That is a performance claim, so it needs a number rather than an argument, and it
 needs the honest cases beside the flattering one.
 
-Four arms, interleaved at every store size so a busy machine cannot favour one:
+Five arms, interleaved at every store size so a busy machine cannot favour one:
 
-    inline        prefetch() with nothing queued -- what shipped before this change
-    queued-hit    queue_prefetch() after the previous turn, then prefetch() for the SAME query
-    queued-miss   a result queued for a DIFFERENT query; prefetch must fall back and must not
-                  serve the wrong one. This is the arm that can show a REGRESSION, because the
-                  turn pays the inline cost plus the lock.
-    racing        queue_prefetch() issued and NOT waited for, then prefetch() immediately. This is
-                  what a fast turn actually looks like, and it is the arm most likely to be slower
-                  than inline, because two threads then touch the store at once.
+    shipped         prefetch() as the library ships it: recall inline, no speculation.
+    spec-hit        the speculating variant, asked the SAME query it was queued with.
+    spec-miss       queued for a different query and already finished, so it falls back.
+    spec-racing     queued for the same query and still running when the turn asks.
+    spec-host-flow  WHAT HERMES ACTUALLY DOES. run_agent.py:897 queues the text of the turn that
+                    just ENDED; turn_context.py:762 then prefetches the NEW user message at the
+                    start of the next turn. The two queries differ, so the cache cannot hit, and
+                    the useless background recall is still running while the turn does its own.
+                    Serving the queued result anyway is not an option: it would inject the previous
+                    question's memories.
+
+The speculating variant lives in this file rather than in the library, because 2.27.3 shipped it
+and 2.27.4 took it out. The arm that decided it is the last one.
 
 A control runs at the end: the same measurement with a store of ONE record, where every arm must be
 indistinguishable. If the control shows a spread, the harness is measuring itself.
@@ -28,6 +33,7 @@ import pathlib
 import statistics
 import sys
 import tempfile
+import threading
 import time
 import types
 from abc import ABC, abstractmethod
@@ -78,27 +84,86 @@ def _ms(fn) -> float:
     return (time.perf_counter() - t0) * 1000.0
 
 
+def _speculate(p):
+    """Attach the speculating `queue_prefetch` that 2.27.3 shipped and 2.27.4 removed.
+
+    The probe carries it rather than the library, because the library no longer has it and the
+    number that justified taking it out has to stay re-runnable. This is the exact shape that
+    shipped: one background thread per queued query, and a cache keyed on the query text.
+    """
+    p._spec_lock = threading.Lock()
+    p._spec_thread = None
+    p._spec_cache = None
+    p._spec_query = ""
+
+    def queue(query):
+        with p._spec_lock:
+            if p._spec_thread is not None and p._spec_thread.is_alive():
+                return
+            p._spec_query = query
+
+            def _work(q=query):
+                lines = p._recall_lines(q)
+                with p._spec_lock:
+                    if p._spec_query == q:
+                        p._spec_cache = (q, lines)
+
+            p._spec_thread = threading.Thread(target=_work, daemon=True)
+            p._spec_thread.start()
+
+    def fetch(query):
+        lines, waitable = None, None
+        with p._spec_lock:
+            cached = p._spec_cache
+            if cached is not None and cached[0] == query:
+                lines = cached[1]
+            p._spec_cache = None
+            if lines is None and p._spec_query == query:
+                waitable = p._spec_thread
+        # 2.27.3 shipped this wait as well, so it is here: without it, a turn that repeats its
+        # question starts a second scan beside the running one. The wait cannot help the
+        # host-flow arm, where the queries differ by construction.
+        if lines is None and waitable is not None and waitable.is_alive():
+            waitable.join(timeout=2.0)
+            with p._spec_lock:
+                cached = p._spec_cache
+                if cached is not None and cached[0] == query:
+                    lines = cached[1]
+                p._spec_cache = None
+        if lines is None:
+            lines = p._recall_lines(query)
+        return lines
+
+    return queue, fetch
+
+
 def _arms(p, turn: int) -> dict:
     """One measured turn per arm, in an order that rotates so no arm always runs on a warm cache."""
     q = QUERIES[turn % len(QUERIES)]
     other = QUERIES[(turn + 1) % len(QUERIES)]
+    queue, fetch = _speculate(p)
     out = {}
 
-    p._prefetch_cache = None
-    out["inline"] = _ms(lambda: p.prefetch(q))
+    out["shipped"] = _ms(lambda: p.prefetch(q))
 
-    p.queue_prefetch(q)
-    p._prefetch_thread.join(timeout=30)
-    out["queued-hit"] = _ms(lambda: p.prefetch(q))
+    queue(q)
+    p._spec_thread.join(timeout=30)
+    out["spec-hit"] = _ms(lambda: fetch(q))
 
-    p.queue_prefetch(other)
-    p._prefetch_thread.join(timeout=30)
-    out["queued-miss"] = _ms(lambda: p.prefetch(q))
+    queue(other)
+    p._spec_thread.join(timeout=30)
+    out["spec-miss"] = _ms(lambda: fetch(q))
 
-    p._prefetch_cache = None
-    p.queue_prefetch(q)
-    out["racing"] = _ms(lambda: p.prefetch(q))
-    p._prefetch_thread.join(timeout=30)
+    p._spec_cache = None
+    queue(q)
+    out["spec-racing"] = _ms(lambda: fetch(q))
+    p._spec_thread.join(timeout=30)
+
+    # The real one. Queue the previous turn's question, do not wait, then serve THIS turn's.
+    p._spec_cache = None
+    queue(other)
+    out["spec-host-flow"] = _ms(lambda: fetch(q))
+    p._spec_thread.join(timeout=30)
     return out
 
 

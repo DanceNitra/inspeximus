@@ -508,13 +508,11 @@ def _rt_hermes_agent(tmp):
         assert "release-2" in out, out
         assert "release-1" not in out, f"the retired value came back as context: {out!r}"
 
-        # The background path serves the same answer as the inline one. A cache that diverges here
-        # would hand the agent a different memory depending on whether a turn had run before it.
-        p.queue_prefetch("release branch")
-        if p._prefetch_thread is not None:
-            p._prefetch_thread.join(timeout=10)
-        cached = p.prefetch("release branch")
-        assert cached == out, f"the queued result differs from the inline one: {cached!r} != {out!r}"
+        # queue_prefetch must recall NOTHING: Hermes queues the text of the turn that just ended and
+        # then prefetches the new message, so a speculative result answers the wrong question and
+        # its scan runs beside the turn's own. Measured at 54.1 ms against 30.1 ms inline.
+        p.queue_prefetch("something else entirely")
+        assert p.prefetch("release branch") == out, "the queued query changed this turn's answer"
 
         # Compaction is where a retired value comes back, because the transcript holds both.
         pre = p.on_pre_compress([{"role": "user", "content": "we deploy from the release branch"}])
@@ -537,6 +535,17 @@ def _rt_hermes_agent(tmp):
             "Tuesday" in str(r.get("text", ""))
             and seen.append((r.get("source") or {}).get("doc")) is None and False), dry_run=True)
         assert seen == ["hermes-agent::conformance-2"], seen
+
+        # A shared session: the turn's author signs the write, and forget_me reaches only theirs.
+        p.on_turn_start(1, "hi", author_id="u-alice")
+        p.handle_tool_call("inspeximus_remember", {"text": "Alice prefers tea"})
+        p.on_turn_start(2, "hi", author_id="u-bob")
+        p.handle_tool_call("inspeximus_remember", {"text": "Bob prefers coffee"})
+        p.on_turn_start(3, "forget me", author_id="u-alice")
+        out = json.loads(p.handle_tool_call("inspeximus_forget_me", {}))
+        assert out["ok"] and out["result"]["forgotten"] == 1, out
+        assert "coffee" in p.prefetch("what does Bob prefer")
+        assert "tea" not in p.prefetch("what does Alice prefer"), "the erasure missed the author's row"
     finally:
         for k, v in saved.items():
             if v is None:
