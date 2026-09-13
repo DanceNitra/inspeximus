@@ -1,0 +1,59 @@
+{
+  "steps": [
+    {
+      "name": "inspeximus importable in the host venv",
+      "ok": true,
+      "detail": "2.27.4"
+    },
+    {
+      "name": "listed by name",
+      "ok": true,
+      "detail": "['byterover', 'hindsight', 'holographic', 'honcho', 'inspeximus', 'mem0', 'openviking', 'retaindb', 'supermemory']"
+    },
+    {
+      "name": "discovered as available",
+      "ok": true,
+      "detail": "(True, '')"
+    },
+    {
+      "name": "loaded by the host loader",
+      "ok": true,
+      "detail": "InspeximusMemoryProvider"
+    },
+    {
+      "name": "isinstance of the HOST's MemoryProvider",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "five tools",
+      "ok": true,
+      "detail": "['inspeximus_remember', 'inspeximus_correct', 'inspeximus_revert', 'inspeximus_forget', 'inspeximus_forget_me']"
+    },
+    {
+      "name": "prefetch excludes the retired value",
+      "ok": true,
+      "detail": "What you remember:\n- the release branch is release-2"
+    },
+    {
+      "name": "recall_status is the host's RecallStatus",
+      "ok": true,
+      "detail": "RecallStatus(provider_label='inspeximus', count=1, glyph='\ud83e\udde0')"
+    },
+    {
+      "name": "on_pre_compress returns the current value",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "dashboard panel builds (legacy surface)",
+      "ok": true,
+      "detail": "['path']"
+    }
+  ],
+  "inspeximus_version": "2.27.4",
+  "description_in_list": "",
+  "provider_dir": "None",
+  "host": "C:\\Users\\Danculus\\AppData\\Local\\hermes\\hermes-agent",
+  "host_commit": "6e07eb4838 2026-09-10 01:14:30 -0500"
+}

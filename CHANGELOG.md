@@ -1,3 +1,27 @@
+## Unreleased
+
+**The Hermes provider was driven through the installed host for the first time, and two things the
+stand-in could not see came out.** Every test of the provider runs against a stand-in for Hermes' base
+class, because Hermes is not a PyPI distribution. `probes/does_the_installed_hermes_actually_load_our_provider.py`
+now runs the host's own loader, in the host's own venv, and records the host commit: 10 of 10 on
+0.21.1 (6e07eb48, 2026-09-10), including discovery by name, `isinstance` against the host's class,
+all five tools, prefetch, `recall_status`, `on_pre_compress` and the dashboard panel.
+
+What it found. `register()` satisfied only the loader's undocumented fallback: the host tries
+`loaded()` and accepts a returned instance, while the documented contract is `register(ctx)` calling
+`ctx.register_memory_provider(provider)`. It now does both. And `pip install inspeximus` in the
+user's shell never reaches Hermes: the desktop install runs from its own venv, ships `uv` rather
+than `pip`, and its runtime interpreter refuses `pip install` under PEP 668. The command that works
+is in docs/INTEGRATIONS.md, measured rather than assumed.
+
+Two limits of a pip-installed provider on 0.21.1 are documented rather than hidden: no
+`hermes inspeximus` subcommands and no description in the provider list, both because the host reads
+them from a directory beside a package and this provider is a single module. The dashboard panel is
+unaffected.
+
+docs/DEEP_DIVE.md carried a paragraph naming three adapters as broken. All three had been repaired
+and the paragraph had not, so it now defers to the ledger instead of restating a count.
+
 ## 2.27.4 - UPGRADE IF YOU RUN HERMES AGENT: 2.27.3 was slower than 2.27.2 in Hermes' own flow, and a shared session can now forget one person
 
 Yesterday's release moved recall onto a background thread, because the base class asks for exactly

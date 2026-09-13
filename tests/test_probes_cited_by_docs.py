@@ -54,6 +54,15 @@ NOT_STANDALONE = {
     # the page a reviewer will read still runs.
     "the_haystack_doc_example_runs_and_its_disk_claim_holds.py":
         "needs an authenticated gh (PR head sha) and the haystack extra -- it runs the doc page",
+    # Both read the Hermes Agent INSTALLED ON THE MACHINE: one runs the host's own provider loader in
+    # the host's venv, the other reads its bundled providers' source. Hermes is a desktop/git
+    # install, not a PyPI distribution, so a CI runner has none and there is nothing honest to
+    # fake: a stand-in host is what the unit tests already are, and the whole point of these two is
+    # to measure what the stand-in cannot. Each exits 3 with the paths it looked in.
+    "does_the_installed_hermes_actually_load_our_provider.py":
+        "needs a Hermes Agent install on this machine -- it drives the host's real loader",
+    "which_hermes_providers_implement_which_hooks.py":
+        "needs a Hermes Agent install on this machine -- it reads the bundled providers' source",
     # Not exempted for want of a token -- `.github/workflows/discovery.yml` gives it
     # `GH_TOKEN: ${{ github.token }}` and runs it weekly, on demand, and whenever the metadata it
     # measures changes. It is out of the PER-PUSH suite because it spends about fifty calls on a
@@ -320,6 +329,11 @@ KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
     # integration page has to import it too, and without this entry the guard reads somebody else's
     # package as a module of ours that was never committed.
     "haystack",
+    # Hermes Agent's own modules. Two probes drive the Hermes install on this machine, one by running
+    # a driver INSIDE the host's venv (so these never import here) and one by reading the bundled
+    # providers' source. They are the host's, not ours, and a scanner that reads them as an
+    # uncommitted module of ours sends somebody hunting for a file that lives in another project.
+    "plugins", "agent", "hermes_cli",
 }
 
 
@@ -452,6 +466,29 @@ def test_no_stale_entries_in_the_exclusion_list():
     assert not gone, f"NOT_STANDALONE names probes that are not in the repository: {gone}"
 
 
+def _top_level_imports(src):
+    r"""Names this file imports, read from the syntax tree rather than from lines.
+
+    The first version matched `^\s*(import|from)\s+(\w+)` across the raw text, which reported two
+    modules that were never imported: a docstring line that happened to begin "from an argument",
+    and `from plugins.memory import` inside a string that a probe hands to ANOTHER interpreter to run.
+    Both are text, not imports. The tree cannot be fooled by either, and it also sees an import
+    indented inside a function, which the old regex saw only by accident of the leading whitespace.
+    """
+    import ast
+    names = []
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return names
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names += [a.name.split(".")[0] for a in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module and node.level == 0:
+            names.append(node.module.split(".")[0])
+    return names
+
+
 def test_no_citation_rests_on_a_module_we_never_committed():
     """This test used to assert the OPPOSITE -- that three `MISSING DEPENDENCY` entries were present -- and
     it failed the moment they were fixed, which is what it was written to do.
@@ -465,7 +502,7 @@ def test_no_citation_rests_on_a_module_we_never_committed():
     for name in sorted(NOT_STANDALONE):
         with open(os.path.join(PROBES, name), encoding="utf-8") as fh:
             src = fh.read()
-        for sibling in re.findall(r"^\s*(?:import|from)\s+([a-z_][a-z_0-9]*)", src, re.M):
+        for sibling in _top_level_imports(src):
             if sibling in KNOWN_THIRD_PARTY or sibling == "inspeximus" or sibling in _STDLIB:
                 continue
             if os.path.exists(os.path.join(PROBES, sibling + ".py")):

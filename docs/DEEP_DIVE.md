@@ -722,12 +722,12 @@ page; everything else is there when you need it.
 Adapters for LangGraph, CrewAI, LangChain, LlamaIndex, AutoGen and the rest,
 with copy-paste snippets: **[docs/INTEGRATIONS.md](INTEGRATIONS.md)**.
 
-**Three of the twelve are currently BROKEN against current upstream**, and the ledger says so rather than
-this page implying otherwise: `crewai` (1.15.6 — missing the async `StorageBackend` methods),
-`openai-agents` (0.18.3 — the round trip works but the object no longer satisfies `agents.memory.Session`)
-and `langgraph-checkpointer` (1.2.9). Run `python tools/integration_conformance.py` for the live three
-counts; the ledger is `docs/integration_conformance.json`, and a test fails on drift in *either*
-direction — an adapter that stops conforming, and one recorded broken that starts.
+**The count of adapters that work is read from a ledger, not asserted here.** This paragraph once named
+three adapters as broken against upstream, and stayed that way after all three were repaired, which is
+the failure a hand-written count invites. Run `python tools/integration_conformance.py` for the live
+three counts (verified, skipped, broken); the ledger is `docs/integration_conformance.json`, README.md
+reads its numbers from it, and a test fails on drift in *either* direction: an adapter that stops
+conforming, and one recorded broken that starts.
 
 **Compliance-aware out of the box.** Every class-based adapter — LangGraph `InspeximusStore`, CrewAI
 `InspeximusStorage`, LangChain `InspeximusRetriever` / `InspeximusChatMessageHistory`, LlamaIndex

@@ -431,3 +431,19 @@ def test_a_session_switch_forgets_the_author_until_the_next_turn_names_one(provi
     provider.on_session_switch("s2")
     provider.handle_tool_call("inspeximus_remember", {"text": "The deploy window is Tuesday"})
     assert _stored_with(provider, "Tuesday") == [{"doc": "hermes-agent::s2"}]
+
+
+def test_register_honours_the_documented_contract_and_the_loader_fallback(hermes_stub):
+    """Hermes documents register(ctx) -> ctx.register_memory_provider(p); its loader also accepts a
+    returned instance. The first version satisfied only the second, undocumented path."""
+    from inspeximus.integrations import hermes_agent
+
+    class Ctx:
+        def __init__(self): self.got = []
+        def register_memory_provider(self, p): self.got.append(p)
+
+    ctx = Ctx()
+    returned = hermes_agent.register(ctx)
+    assert ctx.got == [returned], "register() did not hand the provider to ctx.register_memory_provider"
+    assert isinstance(returned, hermes_stub.MemoryProvider)
+    assert hermes_agent.register() is not None, "the no-context call the loader makes must still work"

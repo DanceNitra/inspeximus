@@ -19,7 +19,7 @@ zero-dependency, and the framework is imported lazily only when you use its adap
 | [CrewAI](#current-truth-storage-for-crewai-inspeximusstorage-1120) | `InspeximusStorage` | `pip install "inspeximus[crewai]"` |
 | Haystack | `InspeximusDocumentStore` | `pip install "inspeximus[haystack]"` |
 | MemoryAgentBench | `InspeximusMABMemory` | no install — matches mem0's `Memory` shape structurally |
-| Hermes Agent | `InspeximusMemoryProvider` | no install --- `pip install inspeximus` publishes the provider, then set `memory.provider: inspeximus` |
+| [Hermes Agent](#memory-provider-for-hermes-agent-inspeximusmemoryprovider-2272) | `InspeximusMemoryProvider` | install `inspeximus` into Hermes' own venv (see below), then set `memory.provider: inspeximus` |
 
 Details for each below.
 
@@ -268,6 +268,41 @@ For that to bite, carry a supersession key in the metadata (`storage.save(value,
 an `extractor=` so plain `save()` calls auto-key. Duck-typed: CrewAI is matched structurally and never
 imported, so the zero-dependency core is untouched (`import inspeximus` pulls nothing). Receipt:
 `probes/inspeximus_crewai_adapter_probe.py` (6/6, incl. "corrected value not returned").
+
+### Memory provider for Hermes Agent: `InspeximusMemoryProvider` (2.27.2+)
+
+Hermes Agent selects one external memory provider by name in `memory.provider`. inspeximus publishes
+itself through the `hermes_agent.memory_providers` entry point, so there is nothing to copy under
+`$HERMES_HOME`. What the provider adds over a retrieval-only one: `prefetch` returns recall minus
+what a correction retired, `on_pre_compress` hands the summariser the current values so compaction
+cannot carry a corrected one forward, `on_memory_write` mirrors the built-in memory tool with
+`replace` as keyed supersession, and in a shared session `inspeximus_forget_me` erases only the
+speaking author's rows, with a tombstone each.
+
+**Install it into the venv Hermes runs from, not into your shell's Python.** The desktop install
+(measured on 0.21.1, Windows, 2026-09-13) runs from `<hermes-agent>/venv`, ships `uv` rather than
+`pip`, and its runtime interpreter refuses `pip install` under PEP 668. The command that works there:
+
+```bat
+:: Windows desktop install; adjust the two paths for a source checkout
+%LOCALAPPDATA%\hermes\bin\uv.exe pip install --python %LOCALAPPDATA%\hermes\hermes-agent\venv\Scripts\python.exe inspeximus
+```
+
+```yaml
+# $HERMES_HOME/config.yaml
+memory:
+  provider: inspeximus
+```
+
+Then `hermes memory` lists `inspeximus` beside the bundled providers. The store lives at
+`<hermes_home>/inspeximus/memory.json`, so two profiles are two memories; a different path is a
+dashboard field.
+
+Two things a pip-installed provider does not get on 0.21.1, because the host reads them from a
+directory beside the package and this one is a single module: `hermes inspeximus` subcommands, and a
+description in the provider list. The dashboard config panel is unaffected; it is built from
+`get_config_schema()`. `probes/does_the_installed_hermes_actually_load_our_provider.py` drives the
+installed host's real loader and records its commit, so a breakage in a later Hermes can be dated.
 
 ### Make the governance layer key itself over free text: the `extractor` hook (0.7.5+)
 inspeximus's supersession, `echo_guard`, `check_conflict`, and `forget_subject` all key on the `(key, object)` of a

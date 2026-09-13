@@ -56,7 +56,7 @@ def main() -> int:
         for c in CANDIDATES:
             print("  " + str(c))
         print("A scan with no target reports zero for every hook, which is why this is a refusal.")
-        return 0 if os.environ.get("PYTEST_CURRENT_TEST") else 3
+        return 3
 
     base = (root / "agent" / "memory_provider.py").read_text(encoding="utf-8", errors="replace")
     declared = [h for h in HOOKS if re.search(r"^\s*def\s+%s\s*\(" % re.escape(h), base, re.M)]

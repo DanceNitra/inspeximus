@@ -515,10 +515,24 @@ def provider_class():
 def register(ctx=None):
     """Entry point for the `hermes_agent.memory_providers` group.
 
-    Hermes passes a context object; it is accepted and unused so a later Hermes that passes more
-    does not break this signature. Returns the provider INSTANCE, and returns None rather than
-    raising when Hermes is absent, because a plugin that raises during registration takes the host
-    down with it.
+    Hermes documents this as `register(ctx)` calling `ctx.register_memory_provider(provider)`, and
+    that is what it does when a context with that method is passed. It ALSO returns the instance,
+    because the host's loader (plugins/memory/__init__.py, read at 0.21.1) tries `loaded()` first
+    and accepts a returned MemoryProvider, and the first version of this function relied on that
+    fallback alone. A provider that satisfies only the undocumented path registers nothing the day
+    the documented one becomes the only one.
+
+    Returns None rather than raising when Hermes is absent, because a plugin that raises during
+    registration takes the host down with it.
     """
     cls = provider_class()
-    return None if cls is None else cls()
+    if cls is None:
+        return None
+    provider = cls()
+    hook = getattr(ctx, "register_memory_provider", None)
+    if callable(hook):
+        try:
+            hook(provider)
+        except Exception:                                   # noqa: BLE001 - never take the host down
+            pass
+    return provider
