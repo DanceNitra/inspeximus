@@ -63,6 +63,11 @@ NOT_STANDALONE = {
         "needs a Hermes Agent install on this machine -- it drives the host's real loader",
     "which_hermes_providers_implement_which_hooks.py":
         "needs a Hermes Agent install on this machine -- it reads the bundled providers' source",
+    # Builds Hermes' real summary prompt in the host venv and sends 336 calls to the cloud model, then
+    # reads each summary back. Neither the host nor the key is on a CI runner, and the result is on
+    # disk beside it as a receipt; `--rescore` re-judges the stored rows without a call.
+    "does_the_pre_compress_block_stop_the_summariser_carrying_a_retired_value.py":
+        "needs a Hermes Agent install and a cloud model key -- it runs the host's summariser 336 times",
     # Not exempted for want of a token -- `.github/workflows/discovery.yml` gives it
     # `GH_TOKEN: ${{ github.token }}` and runs it weekly, on demand, and whenever the metadata it
     # measures changes. It is out of the PER-PUSH suite because it spends about fifty calls on a

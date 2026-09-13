@@ -19,6 +19,26 @@ Two limits of a pip-installed provider on 0.21.1 are documented rather than hidd
 them from a directory beside a package and this provider is a single module. The dashboard panel is
 unaffected.
 
+**`on_pre_compress` was measured, and the claim it shipped with is withdrawn.** 2.27.3 said
+compaction is where a corrected value comes back, because the transcript holds both and nothing marks
+one as retired. Run through Hermes' own summary prompt on deepseek-v4-flash, 11 scenarios by 2
+repeats, judged by what a fresh reader of the summary answers
+(`probes/does_the_pre_compress_block_stop_the_summariser_carrying_a_retired_value.py`):
+
+| the summariser was given | current | stale |
+|---|---|---|
+| the transcript alone, with an explicit "Correction:" | 22 | 0 |
+| the transcript alone, with a plain restatement | 22 | 0 |
+| the transcript plus this block | 43 | 0 |
+| the transcript plus a block naming the retired value | 5 | 39 |
+
+The summariser needs no help from the block. What the block does is decide what the reader believes,
+in both directions: a block that names the wrong value beats a plain restatement in the transcript 22
+of 22 times. The hook stays, because with a true block it did no harm in 66 of 66 rows and this store
+keeps a retired value out of recall by key, but it is documented as an authority the store lends the
+summariser, never as a correction the summariser needed. One scenario was excluded and is kept in the
+file as such: a database user name reads as a credential, and the host prompt redacts credentials.
+
 docs/DEEP_DIVE.md carried a paragraph naming three adapters as broken. All three had been repaired
 and the paragraph had not, so it now defers to the ledger instead of restating a count.
 

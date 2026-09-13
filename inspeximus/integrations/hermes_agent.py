@@ -344,10 +344,27 @@ def _make_class(base):
         def on_pre_compress(self, messages: List[Dict[str, Any]]) -> str:
             """Hand the summariser the values that are CURRENT, just before the transcript goes.
 
-            Compaction is where a corrected value comes back. The summariser reads a transcript in
-            which the user said db-3 first and db-7 later, and it is free to carry either forward,
-            because nothing in that text marks one as retired. This store knows which is which, so
-            it says so at the one moment it can still matter.
+            MEASURED, AND THE ARGUMENT THIS DOCSTRING USED TO MAKE DID NOT SURVIVE IT. The claim was
+            that compaction is where a corrected value comes back, because the transcript holds both
+            values and nothing marks one as retired. Run through Hermes' own summary prompt on
+            deepseek-v4-flash, 11 scenarios x 2 repeats, judged by what a fresh reader of the summary
+            answers (probes/does_the_pre_compress_block_stop_the_summariser_carrying_a_retired_value.py,
+            2026-09-13):
+
+                transcript alone, explicit "Correction:"      22 of 22 current
+                transcript alone, plain restatement            22 of 22 current
+                transcript + this block                        43 of 44 current, 1 empty answer
+                transcript + a block naming the RETIRED value   5 of 44 current, 39 stale
+
+            So on this model the summariser needs no help, and the block is not a correction. It is
+            an authority: the reader believes it over the transcript, in both directions. With the
+            block naming the wrong value, a plain restatement in the transcript lost 22 of 22.
+
+            The hook stays, because with a true block it did no harm in 66 of 66 rows and this store
+            keeps a retired value out of recall by key. What it must never do is speak from a store
+            that is wrong, and the one path that can make it wrong is `on_memory_write` mirroring a
+            host `replace` that carries a stale value. That is the risk to hold in mind, not the one
+            the first version of this docstring described.
 
             Returns "" when nothing is known about what is being compressed, rather than a heading
             with nothing under it.
