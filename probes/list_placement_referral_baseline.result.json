@@ -1,0 +1,21 @@
+{
+ "captured_utc": "2026-09-13T07:46:59Z",
+ "why": "baseline the day punkpeye/awesome-mcp-servers (94,865 stars) merged our entry, so the referral effect of a list placement can be measured rather than assumed",
+ "views_14d": 56,
+ "unique_visitors_14d": 29,
+ "clones_14d": 3240,
+ "unique_cloners_14d": 232,
+ "referrers": [
+  {
+   "referrer": "github.com",
+   "count": 16,
+   "uniques": 7
+  },
+  {
+   "referrer": "dancenitra.github.io",
+   "count": 2,
+   "uniques": 2
+  }
+ ],
+ "stars": 6
+}
