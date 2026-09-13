@@ -1,5 +1,19 @@
 ## Unreleased
 
+**The Claude Code plugin now names the MEMORY.md pointers the loader dropped.** Claude Code loads
+the first 200 lines or 25,000 UTF-16 units of a project's auto-memory index and, over the cap, warns
+that the file was partly loaded. It never says which entries went, so a rule the session was supposed
+to honour can be missing and the session cannot know that it does not know. Measured on the Agora
+index on 2026-09-13: one added line pushed four pointers out, and the warning said "over the cap".
+
+`inspeximus.memory_index_receipt` applies the loader's cut rule (whole lines, UTF-16 units, carriage
+returns counted) and names the pointers outside the window. The plugin's SessionStart hook prints it
+into the session's context, after the digest and before the version note, and prints nothing when
+nothing was cut, so a healthy index pays nothing. It loads none of the dropped records, so the budget
+is unchanged, and it never raises. Standalone: `python -m inspeximus.memory_index_receipt [path]`.
+Eight tests; four mutations (a CR-blind read, a window that ignores the unit cap, a code-point count,
+and a SessionStart that never calls it) each fail the suite. Asked for on anthropics/claude-code#70555.
+
 **The Hermes provider was driven through the installed host for the first time, and two things the
 stand-in could not see came out.** Every test of the provider runs against a stand-in for Hermes' base
 class, because Hermes is not a PyPI distribution. `probes/does_the_installed_hermes_actually_load_our_provider.py`

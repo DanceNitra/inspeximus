@@ -810,6 +810,17 @@ def session_start(ev):
         lines = "\n".join(f"- {_injected(it['text'])}" for it in files)
         block = f"[inspeximus] this project's current known files (mechanics, latest state only):\n{lines}"
         emit.append(block[:int(cfg["files_max_chars"])])
+    # Which MEMORY.md pointers Claude Code's own loader dropped, by name. The loader warns only that
+    # the file was over the cap; this names what went. Empty when nothing was cut, so it costs the
+    # window nothing on a healthy index. Never raises (receipt_for swallows), so it cannot cost a
+    # session its start.
+    try:
+        from inspeximus.memory_index_receipt import receipt_for
+        note = receipt_for(cwd)
+        if note:
+            emit.append(note)
+    except Exception:
+        pass
     # once-a-day, opt-out "newer version exists" courtesy (stdout is injected as context here)
     try:
         from inspeximus import __version__
