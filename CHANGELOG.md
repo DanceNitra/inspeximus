@@ -1,3 +1,60 @@
+## 2.27.3 - UPGRADE IF YOU RUN HERMES AGENT: recall now happens between turns, and four more host hooks are answered
+
+The provider shipped in 2.27.2 did its recall on the hot path. Hermes' base class asks for the
+opposite in as many words: prefetch "must be fast -- recall in the background and return cached
+results". This release does that, and answers four hooks the first version left on the base class.
+
+**Recall moved off the turn.** `queue_prefetch` runs the recall on a background thread after a turn,
+and `prefetch` picks the result up. Measured over 40 turns per arm at three store sizes
+(`probes/what_a_turn_pays_for_recall_before_and_after_the_queue.py`), at 10,000 records:
+
+| what the turn does | median | p90 |
+|---|---|---|
+| recall inline, which is what 2.27.2 did | 32.7 ms | 40.7 ms |
+| pick up a queued result | 0.010 ms | 0.017 ms |
+| a queued result for a different question, so it falls back | 31.6 ms | 40.4 ms |
+| the turn arrives before the background recall finishes | 22.5 ms | 30.2 ms |
+
+The last row is the one worth reading, because the first version of this change made it WORSE: a
+turn that arrived early started a second recall beside the one already running, and two scans of one
+store measured 64.2 ms against 31.0 ms inline on the same probe before the fix. `prefetch` now waits
+for an in-flight recall of the same query instead of racing it, capped at two seconds so a wedged
+store costs a pause rather than a hang. A cached result is keyed by query text and consumed once, so
+the previous turn's context can never be served as this turn's. The control arm, one record, puts
+every arm within 0.045 ms.
+
+One number in that probe is about the store rather than the adapter, and it is the larger one: of
+its 253 seconds, 237 go on building the 10,000-record store one `remember` at a time, and 7 on the
+measurement. Every write persists the whole file.
+
+**`on_pre_compress` hands the summariser the values that are current.** Compaction is where a
+corrected value comes back: the transcript holds db-3 and then db-7, and nothing in that text marks
+the first as retired, so a summary is free to carry either forward. This provider now returns the
+current values into the summary prompt. Of the eight providers Hermes bundles, one implements this
+hook (read on 2026-09-13,
+`probes/which_hermes_providers_implement_which_hooks.py`), and it uses it in the other direction, to
+harvest the transcript into its own store, returning "" to the prompt.
+
+**`on_memory_write` mirrors the built-in memory tool.** `target` is a document bucket, `memory` or
+`user`, so a `replace` is a whole-document rewrite and is mirrored as keyed supersession: the new
+content retires the old, which stays in the history where `revert` reaches it. A `remove` hard-
+deletes, because a demoted row is still readable with `include_superseded`. The removal matches on
+this mirror's key AND on the provider's own source, so it cannot reach a record the agent stored
+through its own tools. Content over 8,000 characters is skipped rather than truncated: half a fact
+is a wrong fact.
+
+**`on_session_switch` rebinds the session.** `/resume`, `/branch` and `/reset` reassign the session
+id in the same process with no teardown. Every write carries the session in its source, so without
+this hook a record written after a switch was attributed to the session the user left, and
+`inspeximus_forget` could not reach it. A recall queued for the previous conversation is dropped
+rather than served into the new one.
+
+**`backup_paths` names a store the host cannot find.** The default store lives under `hermes_home`,
+which `hermes backup` already covers, so the honest answer there is an empty list. A path the user
+configured points elsewhere, and that is the one a backup misses.
+
+Conformance is 14 of 14 verified, 0 broken; the Hermes round trip now drives all of the above.
+
 ## 2.27.2 - UPGRADE IF YOU RUN HERMES AGENT: inspeximus is now a memory provider you can select by name
 
 Hermes Agent lets an install choose one external memory provider, named in `memory.provider`. This

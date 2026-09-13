@@ -1,0 +1,104 @@
+{
+  "when_utc": "2026-09-13T12:17:41Z",
+  "turns_per_arm": 40,
+  "sizes": {
+    "100": {
+      "inline": {
+        "median_ms": 0.255,
+        "p90_ms": 0.336,
+        "n": 40
+      },
+      "queued-hit": {
+        "median_ms": 0.005,
+        "p90_ms": 0.007,
+        "n": 40
+      },
+      "queued-miss": {
+        "median_ms": 0.251,
+        "p90_ms": 0.286,
+        "n": 40
+      },
+      "racing": {
+        "median_ms": 0.042,
+        "p90_ms": 0.055,
+        "n": 40
+      },
+      "_build_s": 0.8,
+      "_measure_s": 0.1
+    },
+    "1000": {
+      "inline": {
+        "median_ms": 2.693,
+        "p90_ms": 3.528,
+        "n": 40
+      },
+      "queued-hit": {
+        "median_ms": 0.007,
+        "p90_ms": 0.01,
+        "n": 40
+      },
+      "queued-miss": {
+        "median_ms": 2.549,
+        "p90_ms": 3.324,
+        "n": 40
+      },
+      "racing": {
+        "median_ms": 0.058,
+        "p90_ms": 0.074,
+        "n": 40
+      },
+      "_build_s": 7.4,
+      "_measure_s": 0.6
+    },
+    "10000": {
+      "inline": {
+        "median_ms": 32.707,
+        "p90_ms": 40.71,
+        "n": 40
+      },
+      "queued-hit": {
+        "median_ms": 0.01,
+        "p90_ms": 0.017,
+        "n": 40
+      },
+      "queued-miss": {
+        "median_ms": 31.596,
+        "p90_ms": 40.388,
+        "n": 40
+      },
+      "racing": {
+        "median_ms": 22.506,
+        "p90_ms": 30.242,
+        "n": 40
+      },
+      "_build_s": 237.4,
+      "_measure_s": 7.0
+    }
+  },
+  "control_one_record": {
+    "inline": {
+      "median_ms": 0.024,
+      "p90_ms": 0.061,
+      "n": 40
+    },
+    "queued-hit": {
+      "median_ms": 0.003,
+      "p90_ms": 0.006,
+      "n": 40
+    },
+    "queued-miss": {
+      "median_ms": 0.024,
+      "p90_ms": 0.058,
+      "n": 40
+    },
+    "racing": {
+      "median_ms": 0.048,
+      "p90_ms": 0.066,
+      "n": 40
+    },
+    "_build_s": 0.0,
+    "_measure_s": 0.0
+  },
+  "control_spread_ms": 0.045,
+  "elapsed_s": 253.3
+}

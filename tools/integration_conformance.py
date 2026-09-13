@@ -507,6 +507,36 @@ def _rt_hermes_agent(tmp):
         out = p.prefetch("release branch")
         assert "release-2" in out, out
         assert "release-1" not in out, f"the retired value came back as context: {out!r}"
+
+        # The background path serves the same answer as the inline one. A cache that diverges here
+        # would hand the agent a different memory depending on whether a turn had run before it.
+        p.queue_prefetch("release branch")
+        if p._prefetch_thread is not None:
+            p._prefetch_thread.join(timeout=10)
+        cached = p.prefetch("release branch")
+        assert cached == out, f"the queued result differs from the inline one: {cached!r} != {out!r}"
+
+        # Compaction is where a retired value comes back, because the transcript holds both.
+        pre = p.on_pre_compress([{"role": "user", "content": "we deploy from the release branch"}])
+        assert "release-2" in pre and "release-1" not in pre, pre
+
+        # A mirrored replace supersedes at document granularity, the way the built-in tool rewrites
+        # the document, and a mirrored remove deletes rather than demotes.
+        p.on_memory_write("replace", "user", "the reviewer is Elara")
+        p.on_memory_write("replace", "user", "the reviewer is Rooke")
+        who = p.prefetch("who is the reviewer")
+        assert "Rooke" in who and "Elara" not in who, who
+        p.on_memory_write("remove", "user", "")
+        assert p.prefetch("who is the reviewer") == "", "the mirrored removal left the row readable"
+
+        # A session switch rebinds the source, so a later erasure can still reach the writes.
+        p.on_session_switch("conformance-2")
+        p.handle_tool_call("inspeximus_remember", {"text": "the deploy window is Tuesday"})
+        seen = []
+        p._store.forget(where=lambda r: (
+            "Tuesday" in str(r.get("text", ""))
+            and seen.append((r.get("source") or {}).get("doc")) is None and False), dry_run=True)
+        assert seen == ["hermes-agent::conformance-2"], seen
     finally:
         for k, v in saved.items():
             if v is None:

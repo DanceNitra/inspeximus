@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 from typing import Any, Dict, List, Optional
 
 from .._surface import open_store
@@ -134,7 +135,12 @@ def _make_class(base):
             self._store = store
             self._k = k
             self._session_id = ""
+            self._hermes_home = ""
             self._last_recalled = 0
+            self._prefetch_lock = threading.Lock()
+            self._prefetch_thread: Optional[threading.Thread] = None
+            self._prefetch_cache: Optional[tuple] = None
+            self._prefetch_query = ""
 
         @property
         def name(self) -> str:
@@ -161,6 +167,7 @@ def _make_class(base):
             bug that isolation exists to prevent.
             """
             self._session_id = session_id or ""
+            self._hermes_home = str(kwargs.get("hermes_home") or "")
             if self._store is None:
                 path = self._explicit_path
                 if not path:
@@ -177,22 +184,84 @@ def _make_class(base):
                     "that can change. When the user corrects such a fact, call inspeximus_correct with "
                     "that key rather than storing a second, competing version.")
 
-        def prefetch(self, query: str, *, session_id: str = "") -> str:
-            """Recall for the coming turn, with superseded values already excluded.
+        def _recall_lines(self, query: str) -> List[str]:
+            """Current-truth lines for a query, or [] for anything that goes wrong.
 
-            Returns "" rather than a header with nothing under it: the base class treats "" as "no
-            context", and an empty block still costs tokens and still reads to the model as though
-            memory had been consulted and had nothing, which is a different claim.
+            Never raises. Everything that calls it sits on a turn boundary, and a memory provider
+            that can end a turn with a traceback is worse than one that returns nothing.
             """
             if self._store is None or not (query or "").strip():
-                self._last_recalled = 0
-                return ""
+                return []
             try:
                 hits = self._store.recall(query, k=self._k)
             except Exception:                                # noqa: BLE001 - never break a turn
-                self._last_recalled = 0
-                return ""
-            lines = [str(h.get("text", "")).strip() for h in hits if str(h.get("text", "")).strip()]
+                return []
+            return [str(h.get("text", "")).strip() for h in hits if str(h.get("text", "")).strip()]
+
+        #: How long `prefetch` waits for a background recall of the SAME query before giving up and
+        #: recalling inline. Long enough to cover a slow store, short enough that a wedged one costs
+        #: a turn a visible pause rather than a hang.
+        PREFETCH_WAIT_S = 2.0
+
+        def queue_prefetch(self, query: str, *, session_id: str = "") -> None:
+            """Recall in the background after a turn, so the next `prefetch` is a dictionary read.
+
+            THE BASE CLASS ASKS FOR THIS AND THE COST IS MEASURED. Recall is a scan, so it grows
+            with the store: 0.39 ms median at 100 records, 4.27 ms at 1,000, and 66 ms median with
+            123 ms at p90 at 10,000. Paid synchronously that is added to every turn, and an agent
+            memory that lives for months reaches the last row.
+            """
+            if self._store is None or not (query or "").strip():
+                return
+            with self._prefetch_lock:
+                if self._prefetch_thread is not None and self._prefetch_thread.is_alive():
+                    return                                   # one in flight is enough
+                self._prefetch_query = query
+
+                def _work(q=query):
+                    lines = self._recall_lines(q)
+                    with self._prefetch_lock:
+                        # Only publish if nobody queued a different question meanwhile, or the
+                        # cache would answer the previous turn's query on this one.
+                        if self._prefetch_query == q:
+                            self._prefetch_cache = (q, lines)
+
+                self._prefetch_thread = threading.Thread(target=_work, daemon=True)
+                self._prefetch_thread.start()
+
+        def prefetch(self, query: str, *, session_id: str = "") -> str:
+            """Recall for the coming turn, with superseded values already excluded.
+
+            Uses the queued result when it answers THIS query, and otherwise recalls inline. A cache
+            keyed on nothing would serve the previous turn's context, which is the failure this
+            store exists to prevent, so the query is part of the key.
+
+            Returns "" rather than a header with nothing under it: the base class treats "" as "no
+            context", and an empty block still costs tokens while reading to the model as though
+            memory had been consulted and had nothing, which is a different claim.
+            """
+            lines, waitable = None, None
+            with self._prefetch_lock:
+                cached = self._prefetch_cache
+                if cached is not None and cached[0] == query:
+                    lines = cached[1]
+                self._prefetch_cache = None                  # a result is consumed once
+                if lines is None and self._prefetch_query == query:
+                    waitable = self._prefetch_thread          # this exact recall is already running
+
+            if lines is None and waitable is not None and waitable.is_alive():
+                # WAIT FOR IT RATHER THAN RACE IT, because two scans of one store are slower than
+                # one. Measured at 10,000 records: 37.1 ms inline, 64.2 ms when a second recall was
+                # started beside the queued one. The cap keeps a wedged store from holding a turn.
+                waitable.join(timeout=self.PREFETCH_WAIT_S)
+                with self._prefetch_lock:
+                    cached = self._prefetch_cache
+                    if cached is not None and cached[0] == query:
+                        lines = cached[1]
+                    self._prefetch_cache = None
+
+            if lines is None:
+                lines = self._recall_lines(query)
             self._last_recalled = len(lines)
             if not lines:
                 return ""
@@ -256,6 +325,132 @@ def _make_class(base):
             the agent calls a tool when a fact is worth keeping, so what the store holds is what
             something decided to keep, not a transcript.
             """
+
+        # -- the two hooks that matter most to a store with a correction channel ---------
+
+        def on_pre_compress(self, messages: List[Dict[str, Any]]) -> str:
+            """Hand the summariser the values that are CURRENT, just before the transcript goes.
+
+            Compaction is where a corrected value comes back. The summariser reads a transcript in
+            which the user said db-3 first and db-7 later, and it is free to carry either forward,
+            because nothing in that text marks one as retired. This store knows which is which, so
+            it says so at the one moment it can still matter.
+
+            Returns "" when nothing is known about what is being compressed, rather than a heading
+            with nothing under it.
+
+            Read against the eight providers Hermes bundles (checked 2026-09-13): one implements
+            this hook, and it uses it in the other direction, harvesting the transcript into its own
+            store and returning "" to the summary prompt. Returning text into that prompt needs a
+            store that can say which of two values in the transcript is the retired one, which is
+            what supersession by key is.
+            """
+            if self._store is None or not messages:
+                return ""
+            text = " ".join(str(m.get("content", "")) for m in messages[-12:])[-2000:]
+            lines = self._recall_lines(text)
+            if not lines:
+                return ""
+            # No "above" or "below": the host decides where this block lands in the summary prompt,
+            # and a block that names its own position is wrong the first time that changes.
+            return ("Durable memory says these values are current. Where the conversation being "
+                    "summarized contains an earlier version of any of them, that version was "
+                    "corrected and must not be carried forward:\n"
+                    + "\n".join("- " + t for t in lines))
+
+        #: Namespace for rows this mirror wrote. It is part of the key AND checked against the
+        #: source on removal, so `remove` can never reach a record the agent stored through its own
+        #: tools.
+        MIRROR_KEY = "hermes-memory::"
+
+        #: Content longer than this is skipped rather than truncated. A truncated fact is a WRONG
+        #: fact, and a store whose pitch is that recall stays correct must not manufacture one.
+        MIRROR_MAX_CHARS = 8000
+
+        def on_memory_write(self, action: str, target: str, content: str,
+                            metadata: Optional[Dict[str, Any]] = None) -> None:
+            """Mirror a built-in memory-tool write, mapping its verb onto the correction channel.
+
+            `target` is a DOCUMENT BUCKET, `memory` or `user`, not a per-fact identifier, so
+            `replace` is a whole-document rewrite. Keying on the target reproduces exactly that: the
+            new content retires the previous content of the same document, and the old version stays
+            in the history where `revert` can reach it. Mirroring a replace as a plain append would
+            leave this store recalling a value the built-in memory has already dropped, which is the
+            divergence a user discovers months later through a stale recall.
+
+            `remove` hard-deletes, because the built-in tool removed the content and a demoted row
+            would still be readable with `include_superseded`. Only rows carrying this mirror's key
+            AND this provider's source are matched.
+
+            Failures are swallowed. This is a mirror, and a mirror that can break the write it
+            mirrors is worse than no mirror.
+            """
+            if self._store is None:
+                return
+            body = (content or "").strip()
+            key = self.MIRROR_KEY + (target or "memory")
+            try:
+                if action == "remove":
+                    # Matched on the source PREFIX, not on this session's full source. The built-in
+                    # memory is not session-scoped, so a removal in session B must still reach the
+                    # row session A mirrored, and an exact-source match would silently miss it.
+                    self._store.forget(
+                        where=lambda r: (
+                            r.get("key") == key
+                            and str(((r.get("source") or {}).get("doc") or ""))
+                            .startswith("hermes-agent::")
+                        ),
+                        basis="hermes built-in memory removed this content",
+                    )
+                    return
+                if not body or len(body) > self.MIRROR_MAX_CHARS:
+                    return
+                self._store.remember(body, key=key if action == "replace" else None,
+                                     mtype="fact", source=self._source())
+            except Exception:                                # noqa: BLE001 - a mirror never raises
+                pass
+
+        # -- session identity and backup ------------------------------------------------
+
+        def on_session_switch(self, new_session_id: str, *, parent_session_id: str = "",
+                              reset: bool = False, rewound: bool = False, **kwargs) -> None:
+            """Rebind to the reassigned session, and drop anything recalled for the old one.
+
+            `/resume`, `/branch`, `/reset` and compaction reassign the session id in the same
+            process, with no teardown. Two things go wrong without this hook, and both are silent.
+            Every write carries the session in its source, so later records would be attributed to
+            the session the user left, and `inspeximus_forget` would then miss them. And a recall
+            queued for the previous conversation would be served into the new one as though it had
+            been recalled for it.
+
+            An in-flight background recall is discarded rather than waited for: clearing the query
+            it was queued under makes its publish check fail, so it cannot land in the new session.
+            """
+            self._session_id = new_session_id or ""
+            self._last_recalled = 0
+            with self._prefetch_lock:
+                self._prefetch_query = ""
+                self._prefetch_cache = None
+
+        def backup_paths(self) -> List[str]:
+            """Store files that `hermes backup` cannot find on its own.
+
+            The default store lives under `hermes_home`, which the host already backs up, so the
+            honest answer there is an empty list. A path the user configured points somewhere else,
+            and that is the one a backup misses.
+
+            Must work before `initialize()` and without a network call, per the base class, so this
+            reads a configured path and never opens a store to find one.
+            """
+            path = self._explicit_path or getattr(self._store, "path", None)
+            if not path:
+                return []
+            full = os.path.abspath(str(path))
+            if self._hermes_home:
+                home = os.path.abspath(self._hermes_home)
+                if os.path.commonpath([full, home]) == home:
+                    return []                            # the host already backs this up
+            return [full]
 
         # -- config ---------------------------------------------------------------------
 

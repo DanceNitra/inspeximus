@@ -353,6 +353,12 @@ _SLOW_PROBES = {
     # (An earlier measurement said 153s vs 177s -- the other way round. It was taken while the
     # baseline suite was running. Measure one thing at a time.)
     "identity_gate_supersession_probe.py": 700,     # 123s idle
+    # 253 s idle, and the split is the reason it is here rather than trimmed: 237 s of that is
+    # BUILDING the 10,000-record store, one `remember` at a time, and 7 s is the measurement. Every
+    # write persists the whole file, so the build grows faster than the record count. Cutting turns
+    # would shrink the 7 s and leave the 237 s untouched, and cutting the 10,000 arm would remove
+    # the only size where the claim it is cited for is visible at all.
+    "what_a_turn_pays_for_recall_before_and_after_the_queue.py": 900,   # 253s idle, 237s of it build
     "recall_iterative_surface_multihop.py": 400,    # 91.7s idle
     # 120.4s idle. It performs 540 persisted writes on purpose: three independent trials of thirty
     # appends, at three store sizes, in both formats, because one run of ten writes is a number

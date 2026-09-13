@@ -187,3 +187,262 @@ def test_is_available_makes_no_network_call(provider, monkeypatch):
     monkeypatch.setattr(socket.socket, "connect", refuse)
     monkeypatch.setattr(socket, "create_connection", refuse)
     assert provider.is_available() is True
+
+
+# --- the background prefetch -------------------------------------------------------------
+
+
+def test_a_queued_result_is_served_without_touching_the_store(provider, monkeypatch):
+    """The point of the hook: after queue_prefetch, the hot path is a dictionary read.
+
+    The store is replaced with one that refuses recall AFTER the queue has settled, so a prefetch
+    that reaches it fails loudly. A test that only timed the call would pass on a fast store and
+    prove nothing about whether the cache was used.
+    """
+    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
+    provider.queue_prefetch("where is the office")
+    provider._prefetch_thread.join(timeout=5)
+
+    def refuse(*a, **k):
+        raise AssertionError("prefetch went to the store although a result was queued")
+
+    monkeypatch.setattr(provider._store, "recall", refuse)
+    assert "Nitra" in provider.prefetch("where is the office")
+
+
+def test_a_queued_result_is_not_served_for_a_different_question(provider):
+    """A cache keyed on nothing answers the previous turn's question, which is the whole failure."""
+    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
+    provider.handle_tool_call("inspeximus_remember", {"text": "The deploy window is Tuesday"})
+    provider.queue_prefetch("where is the office")
+    provider._prefetch_thread.join(timeout=5)
+    out = provider.prefetch("when is the deploy window")
+    assert "Tuesday" in out
+    assert "Nitra" not in out
+
+
+def test_a_queued_result_is_consumed_once(provider, monkeypatch):
+    """A second turn must not be answered from the first turn's cache, even for the same words."""
+    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
+    provider.queue_prefetch("where is the office")
+    provider._prefetch_thread.join(timeout=5)
+    provider.prefetch("where is the office")
+
+    calls = []
+    real = provider._store.recall
+    monkeypatch.setattr(provider._store, "recall",
+                        lambda *a, **k: (calls.append(1), real(*a, **k))[1])
+    assert "Nitra" in provider.prefetch("where is the office")
+    assert calls, "the second prefetch was answered from a cache that should have been consumed"
+
+
+def test_queue_prefetch_does_not_block_the_caller(provider, monkeypatch):
+    """A queue that runs recall inline is the bug this hook exists to remove."""
+    import threading
+    import time
+
+    started, release = threading.Event(), threading.Event()
+
+    def slow(*a, **k):
+        started.set()
+        release.wait(timeout=5)
+        return []
+
+    monkeypatch.setattr(provider._store, "recall", slow)
+    t0 = time.perf_counter()
+    provider.queue_prefetch("anything at all")
+    elapsed = time.perf_counter() - t0
+    assert started.wait(timeout=5), "the background recall never started"
+    release.set()
+    provider._prefetch_thread.join(timeout=5)
+    assert elapsed < 0.5, "queue_prefetch blocked for %.3fs on a recall it should not wait for" % elapsed
+
+
+# --- on_pre_compress ---------------------------------------------------------------------
+
+
+def test_pre_compress_hands_the_summariser_the_corrected_value_only(provider):
+    """Compaction is where a retired value comes back, and the transcript cannot tell them apart."""
+    provider.handle_tool_call("inspeximus_remember",
+                              {"text": "The staging database is db-3.internal", "key": "staging-db"})
+    provider.handle_tool_call("inspeximus_correct",
+                              {"key": "staging-db", "text": "The staging database is db-7.internal"})
+    out = provider.on_pre_compress([
+        {"role": "user", "content": "use db-3.internal for staging"},
+        {"role": "user", "content": "actually the staging database changed"},
+    ])
+    assert "db-7.internal" in out
+    assert "db-3.internal" not in out
+
+
+def test_pre_compress_returns_nothing_rather_than_an_empty_heading(provider):
+    """An empty block costs tokens and reads as though memory was consulted and had nothing."""
+    assert provider.on_pre_compress([]) == ""
+    assert provider.on_pre_compress([{"role": "user", "content": "an unrelated question"}]) == ""
+
+
+# --- on_memory_write ---------------------------------------------------------------------
+
+
+def test_a_mirrored_replace_retires_the_previous_document(provider):
+    """`replace` is a whole-document rewrite, so an append would leave us recalling a dropped value."""
+    provider.on_memory_write("add", "user", "The user prefers metric units")
+    provider.on_memory_write("replace", "user", "The user works in Bratislava")
+    provider.on_memory_write("replace", "user", "The user works in Nitra")
+    out = provider.prefetch("where does the user work")
+    assert "Nitra" in out
+    assert "Bratislava" not in out
+
+
+def test_a_mirrored_remove_deletes_rather_than_demotes(provider):
+    """The built-in tool removed the content, and a demoted row is still readable."""
+    provider.on_memory_write("replace", "memory", "The API token is rotated on Fridays")
+    assert "Fridays" in provider.prefetch("when is the token rotated")
+    provider.on_memory_write("remove", "memory", "The API token is rotated on Fridays")
+    assert provider.prefetch("when is the token rotated") == ""
+    left = provider._store.recall("when is the token rotated", k=5, include_superseded=True)
+    assert not [h for h in left if "Fridays" in h["text"]], "the removed content is still readable"
+
+
+def test_a_mirrored_remove_reaches_only_rows_this_mirror_wrote(provider):
+    """The mirror owns its own rows. Reaching anything else would be data loss through a side door.
+
+    Two rows are planted that a careless predicate would take with it: one the agent stored through
+    its own tool, and one carrying the mirror's exact key but a foreign source. The second is the
+    one that matters, because a predicate matching on the key alone passes without it and the
+    source clause would be untested decoration.
+    """
+    provider.handle_tool_call("inspeximus_remember",
+                              {"text": "The release manager is Voss", "key": "release-manager"})
+    provider._store.remember("The build server is in Kosice", key="hermes-memory::memory",
+                             mtype="fact", source={"doc": "somebody-else"})
+    provider.on_memory_write("replace", "memory", "The release manager is Rooke")
+    provider.on_memory_write("remove", "memory", "")
+
+    def stored(fragment):
+        out = provider._store.forget(
+            where=lambda r: fragment in str(r.get("text", "")), dry_run=True)
+        return out["would_forget"]
+
+    assert stored("Voss") == 1, "the removal reached a record the agent stored through its own tool"
+    assert stored("Kosice") == 1, "the removal reached a foreign row that shares the mirror's key"
+    assert stored("Rooke") == 0, "the mirror failed to remove its own row"
+
+
+def test_the_mirror_never_raises_and_never_truncates(provider, monkeypatch):
+    """A mirror that breaks the write it mirrors is worse than no mirror, and half a fact is wrong."""
+    def explode(*a, **k):
+        raise RuntimeError("the store is on fire")
+
+    monkeypatch.setattr(provider._store, "remember", explode)
+    provider.on_memory_write("add", "memory", "anything")        # must not raise
+    monkeypatch.undo()
+
+    # Counted through a dry-run scan of every stored record, NOT through recall. The first version
+    # of this assertion asked recall for the oversized text, recall never returns it whatever the
+    # code does, and the mutation control then showed the test could not fail.
+    def stored(prefix):
+        out = provider._store.forget(
+            where=lambda r: str(r.get("text", "")).startswith(prefix), dry_run=True)
+        return out["would_forget"]
+
+    provider.on_memory_write("add", "memory", "y" * 100)
+    assert stored("yyyy") == 1, "the scanner cannot see a record that was stored"   # control
+
+    provider.on_memory_write("add", "memory", "x" * 9000)
+    assert stored("xxxx") == 0, "oversized content was stored, and a truncated fact is a wrong fact"
+
+
+# --- session identity and backup ---------------------------------------------------------
+
+
+def test_a_session_switch_rebinds_the_source_so_forget_can_still_reach_the_writes(provider):
+    """/resume and /branch reassign the id in-process, and every write carries it in its source."""
+    provider.handle_tool_call("inspeximus_remember", {"text": "The first note is about Nitra"})
+    provider.on_session_switch("s2")
+    provider.handle_tool_call("inspeximus_remember", {"text": "The second note is about Kosice"})
+
+    def source_of(fragment):
+        seen = []
+        provider._store.forget(
+            where=lambda r: (fragment in str(r.get("text", ""))
+                             and seen.append((r.get("source") or {}).get("doc")) is None
+                             and False),
+            dry_run=True)
+        return seen
+
+    assert source_of("Nitra") == ["hermes-agent::s1"]
+    assert source_of("Kosice") == ["hermes-agent::s2"], (
+        "a write after the switch was attributed to the session the user left")
+
+
+def test_a_session_switch_drops_a_recall_queued_for_the_old_conversation(provider):
+    """Serving it into the new session would present the old one's context as this one's."""
+    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
+    provider.queue_prefetch("where is the office")
+    provider._prefetch_thread.join(timeout=5)
+    assert provider._prefetch_cache is not None, "nothing was queued, so this proves nothing"
+    provider.on_session_switch("s2", reset=True)
+    assert provider._prefetch_cache is None
+    assert provider.recall_status() is None
+
+
+def test_backup_paths_names_only_a_store_the_host_cannot_find(provider, tmp_path):
+    """The default store is inside hermes_home, which `hermes backup` already covers."""
+    from inspeximus.integrations import hermes_agent
+    assert provider.backup_paths() == [], "the in-home store was declared twice to the backup"
+
+    elsewhere = tmp_path / "outside" / "memory.json"
+    p = hermes_agent.register()
+    p._explicit_path = str(elsewhere)
+    assert p.backup_paths() == [str(elsewhere.resolve())], (
+        "a configured store outside hermes_home is invisible to the host's backup")
+
+
+def test_prefetch_waits_for_an_identical_recall_instead_of_starting_a_second_one(provider, monkeypatch):
+    """Two scans of one store are slower than one, so a turn that arrives early waits."""
+    import threading
+
+    calls, release = [], threading.Event()
+    real = provider._store.recall
+
+    def counted(*a, **k):
+        calls.append(1)
+        release.wait(timeout=5)
+        return real(*a, **k)
+
+    provider.handle_tool_call("inspeximus_remember", {"text": "The office is in Nitra"})
+    monkeypatch.setattr(provider._store, "recall", counted)
+    provider.queue_prefetch("where is the office")
+    while not calls:                                          # the background recall has started
+        pass
+    threading.Timer(0.05, release.set).start()
+    out = provider.prefetch("where is the office")
+    provider._prefetch_thread.join(timeout=5)
+    assert "Nitra" in out
+    assert len(calls) == 1, "prefetch started a second recall beside the one already running"
+
+
+def test_prefetch_does_not_wait_for_a_recall_of_a_different_question(provider, monkeypatch):
+    """Waiting on the wrong query would add the whole background cost to this turn for nothing."""
+    import threading
+    import time
+
+    release = threading.Event()
+    real = provider._store.recall
+
+    def slow(query, *a, **k):
+        if "office" in query:
+            release.wait(timeout=5)
+        return real(query, *a, **k)
+
+    provider.handle_tool_call("inspeximus_remember", {"text": "The deploy window is Tuesday"})
+    monkeypatch.setattr(provider._store, "recall", slow)
+    provider.queue_prefetch("where is the office")
+    t0 = time.perf_counter()
+    out = provider.prefetch("when is the deploy window")
+    elapsed = time.perf_counter() - t0
+    release.set()
+    provider._prefetch_thread.join(timeout=5)
+    assert "Tuesday" in out
+    assert elapsed < 1.0, "the turn waited %.2fs on a recall for a different question" % elapsed
