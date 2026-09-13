@@ -1,4 +1,52 @@
-## Unreleased
+## 2.27.5 - UPGRADE IF TWO PROCESSES SHARE ONE STORE: reload() repeated the 2.27.1 defect one call site over, and CI caught it
+
+**The concurrent-writer loss 2.27.1 fixed had a second instance, in `reload()`.** 2.27.1 moved
+`_load_from_disk`'s signature stamp to before its read, and the 30-round probe went from 9 lost to
+0. `reload()` calls `_load_from_disk`, merges this handle's own records back in, and then assigned
+`self._file_sig = self._stat_sig()` again: a fresh stat, after the read, outside the lock. A write
+landing between that read and that stat left the reloading handle holding records that predate the
+write under a signature that postdates it, and its next save rewrote the file from the stale view.
+The re-stamp is gone, and `reload()` now retries its own merge-and-save, bounded at eight, when the
+save is refused, so the recovery path does not hand the caller the exception they called it to
+get past.
+
+HOW IT SURVIVED. `reload()` runs only on the retry path after a refused save, so it is entered far
+less often than a plain load, and the probe that measured the 2.27.1 fix retried by OPENING A NEW
+HANDLE, which never enters `reload()` at all. The probe measured a path that did not lose records
+and reported 0. The CI harness retries the way the error message says to, through `reload()`, and
+on a 2-vCPU runner it lost `w7:r0` at 0a26545 with the lock held on every writer and the ordering
+already fixed: the third mechanism its own message said to look for. This is the class the 2.27.1
+notes warned about, a fix that lands at the reported instance while the class survives, and it
+landed on the release that carried the warning.
+
+MEASURED, on Linux pinned to 2 CPUs (the runner's shape), 80 rounds of 12 writers, five arms
+interleaved (`probes/does_a_wider_change_signature_stop_the_silent_loss.py`, receipt beside it as
+`.linux-2cpu.result.json`):
+
+| arm | records claimed stored | missing |
+|---|---|---|
+| signature after the read (2.27.0) | 7,680 | 50 |
+| signature before the read (2.27.1) | 7,680 | 0 |
+| before the read, plus `st_ino` | 7,676 | 0 |
+| 2.27.1 plus `reload()` re-stamping after its read (2.27.1 to 2.27.4, retry via reload) | 7,680 | 15 |
+| this release | 7,680 | 0 |
+
+The race is about five times more frequent on Linux than the Windows box the earlier receipt came
+from (50 against 5 to 9 per 2,880 on the old ordering), which is why CI saw it and the desk did not.
+`tests/test_a_reload_that_restamps_after_the_read_repeats_the_defect.py` pins the mechanism with a
+genuine second handle writing inside the reload's read: it fails on the old code, passes on the
+new, and restoring the re-stamp fails it again.
+
+**Also in this release:** the Claude Code plugin names the memory-index pointers the loader dropped,
+one Hermes claim is withdrawn after measurement, and a figure in the 2.27.1 notes is corrected.
+
+**A figure in the 2.27.1 notes was wrong, and the receipt beside it was right.** Those notes said the
+`(mtime_ns, size)` signature collides "at 119 of 1,500 same-length writes on NTFS". The committed
+receipt for that measurement, `probes/does_a_wider_change_signature_stop_the_silent_loss.result.json`
+at 2e8483a, records 211 of 1,500. The loss counts in the same table, 9 of 2,880 and 0 of 2,864, match
+the receipt; the collision count did not, and it was found only because a later piece was about to
+quote it. The conclusion is unchanged, since the collisions were refuted as the cause either way, but
+211 is the number the instrument produced and 119 is not.
 
 **The Claude Code plugin now names the MEMORY.md pointers the loader dropped.** Claude Code loads
 the first 200 lines or 25,000 UTF-16 units of a project's auto-memory index and, over the cap, warns
@@ -228,7 +276,7 @@ writers, and it always reported success, so an affected store shows no error any
 
 TWO EXPLANATIONS THAT WERE TESTED AND ARE WRONG, recorded because both are plausible and both cost a
 day. It is not the platform lock: the loss appears with the lock held on every write. And it is not
-the signature's fields, although `(mtime_ns, size)` really does collide, at 119 of 1,500 same-length
+the signature's fields, although `(mtime_ns, size)` really does collide, at 119 of 1,500 (CORRECTED in 2.27.5: the receipt says 211 of 1,500; 119 was never in it) same-length
 writes on NTFS where mtime advances in steps of 0.5 to 1.5 ms. Adding `st_ino` removes that collision
 and removed no loss, so the signature is unchanged and the store pays nothing for a field it does not
 need.

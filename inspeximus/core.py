@@ -1155,7 +1155,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.27.4"
+__version__ = "2.27.5"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -7512,9 +7512,24 @@ class Inspeximus:
         a deletion this handle made and could not save is simply not re-applied — so re-run it if it mattered.
         A record this handle TOMBSTONED is not resurrected, and where the merge leaves two active records
         under one key the store's own last-write-wins rule is re-applied rather than left contradictory.
-        Returns {reloaded, readded, demoted, kept_buried}."""
-        out = self._merge_with_disk()
-        self._save(force=True)
+        Returns {reloaded, readded, demoted, kept_buried}.
+
+        RETRIES ITS OWN SAVE. `_merge_with_disk` keeps the signature taken BEFORE its read, so the save
+        below refuses when another writer landed during that read. That refusal used to be impossible,
+        because the merge re-stamped a fresh signature after the read, which is the defect this method
+        repeated one call site away from the 2.27.1 fix. A refusal inside the recovery path would hand
+        the caller the exception they called reload() to get past, so the merge and save loop until the
+        save lands, bounded, and each pass re-adds this handle's own records from memory. Under twelve
+        contending writers a pass is refused about once in 320 loads, so eight attempts is generous;
+        if all eight are refused the last refusal propagates rather than being swallowed."""
+        for attempt in range(8):
+            out = self._merge_with_disk()
+            try:
+                self._save(force=True)
+                return out
+            except StoreChangedOnDisk:
+                if attempt == 7:
+                    raise
         return out
 
     def _merge_with_disk(self) -> dict:
@@ -7554,7 +7569,17 @@ class Inspeximus:
         # is. Mirror the store's own rule instead of inventing a second one.
         demoted = self._reapply_key_lww(
             "reload_merge_lww", "reload merge: a newer value for this key won")
-        self._file_sig = self._stat_sig()
+        # NO RE-STAMP HERE. `_load_from_disk` above set `_file_sig` to the signature it took BEFORE
+        # its read, and that is the value the next `_save` must compare against. This line used to
+        # assign a fresh `_stat_sig()`, taken after the read and after the merge, outside the lock:
+        # the same defect 2.27.1 fixed in `_load_from_disk`, one call site over. A write landing
+        # between that read and this stat left the handle holding records that predate the write
+        # under a signature that postdates it, and the next save rewrote the file from the stale
+        # view. It survived the 30-round probe because reload() runs only on the retry path, and CI
+        # caught it on 2026-09-13 as "1 of 96 records ... not in the store", lock held, ordering
+        # already fixed: the case the test file beside this fix pins deterministically. The merged
+        # records this handle re-added live in memory only, which is correct: if the file changed
+        # since the read, the next save refuses and the caller reloads again with them still held.
         self._items_view_rev = None
         return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
                 "kept_buried": len(resurrected)}

@@ -60,7 +60,13 @@ sys.path.insert(0, HERE)
 
 from _receipt import write_receipt  # noqa: E402
 
-ARMS = ("old-order", "fixed", "widened")
+#: Two arms added 2026-09-13, and the reason is the instrument itself. The three arms below retry a
+#: refused write by OPENING A NEW HANDLE, so they never enter `reload()`, and `reload()` was where
+#: the defect survived: it re-stamped the signature after its read, one call site over from the
+#: 2.27.1 fix. CI caught it (1 of 96, lock held, ordering fixed) while this probe kept reporting 0,
+#: because this probe never ran the code that lost the record. The two `reload-*` arms retry through
+#: `reload()`, which is what the CI harness and a real caller following the error message do.
+ARMS = ("old-order", "fixed", "widened", "reload-old", "reload-fixed")
 
 #: Records are padded to one length, so the size field can never rescue the guard and the question
 #: stays "can mtime separate these two writes". A varying length would measure the padding instead.
@@ -80,6 +86,15 @@ if ARM == "old-order":
         _orig_load(self)
         self._file_sig = self._stat_sig()
     Inspeximus._load_from_disk = _stamp_after_the_read
+if ARM == "reload-old":
+    # RESTORE reload()'s post-read re-stamp, and nothing else: the tree's _load_from_disk keeps
+    # the 2.27.1 ordering, so any loss here is reload()'s own.
+    _orig_merge = Inspeximus._merge_with_disk
+    def _merge_then_restamp(self):
+        out = _orig_merge(self)
+        self._file_sig = self._stat_sig()
+        return out
+    Inspeximus._merge_with_disk = _merge_then_restamp
 if ARM == "widened":
     # ONE EXTRA FIELD, from the stat call the guard already makes: same file, same bytes, same lock.
     def _wide(self):
@@ -108,8 +123,14 @@ for i in range(n):
             # Take the remedy the product's own error prescribes, so a refusal is never counted as
             # a silent loss. What is left over is only what a writer was TOLD had been stored.
             time.sleep(random.uniform(0.002, 0.02) * (attempt + 1))
-            m = Inspeximus(path=path)
-            m._save_min_s = 0
+            if ARM.startswith("reload"):
+                try:
+                    m.reload()                # the remedy the error message names
+                except StoreChangedOnDisk:
+                    pass                      # counted on the next attempt, never as a loss
+            else:
+                m = Inspeximus(path=path)
+                m._save_min_s = 0
         except Exception:
             break
 for t in wrote:
@@ -223,7 +244,12 @@ def main() -> int:
         print("  %-9s lost %2d of %d records a writer was told were stored"
               % (arm, s["missing"], s["claimed"]))
 
-    old, fixed, wide = (out["arms"][k]["missing"] for k in ARMS)
+    old, fixed, wide, rold, rfixed = (out["arms"][k]["missing"] for k in ARMS)
+    out["reload_verdict"] = (
+        "reload() re-stamp: lost %d with the re-stamp, %d without it" % (rold, rfixed)
+        + ("; the re-stamp is a live cause" if rold > 0 and rfixed == 0 else
+           "; VOID, the arm carrying the re-stamp lost nothing, raise --trials" if rold == 0 else
+           "; the fix did not remove all of it, look further"))
     if old == 0:
         out["verdict"] = ("VOID: the arm carrying the known defect lost nothing, so this run was too "
                           "quiet to rank anything. The loss is rare; raise --trials.")
