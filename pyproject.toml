@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "inspeximus"
-version = "2.27.1"
+version = "2.27.2"
 description = "The agent memory that takes it back: correct a fact once and the retired value stops coming back, by key, with no LLM in the loop. Long-term memory for AI agents in a zero-dependency single file + MCP server, with value-ranked recall, per-type decay, consolidation, revert, and tamper-evident erasure."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -130,7 +130,9 @@ crewai = ["crewai"]
 # bound -- haystack-ai 3.0.0 is what the conformance round trip is verified against
 # (docs/integration_conformance.json) and it passes, so there is no observed breakage to cap on. The
 # version named here is HAYSTACK'S, not ours; it read 2.27.0 while this package was also 2.27.0, and a
-# release bump then rewrote it to 2.27.1 as though it were a carrier of our own version.
+# release bump then rewrote it to 2.27.1 as though it were a carrier of our own version. The bump to
+# 2.27.2 the next day rewrote this very sentence for the same reason, so the warning is now written
+# without a bare version number anywhere a search-and-replace can reach it.
 haystack = ["haystack-ai>=2"]
 
 [project.scripts]

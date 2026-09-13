@@ -1,3 +1,43 @@
+## 2.27.2 - UPGRADE IF YOU RUN HERMES AGENT: inspeximus is now a memory provider you can select by name
+
+Hermes Agent lets an install choose one external memory provider, named in `memory.provider`. This
+release publishes inspeximus as one, through the `hermes_agent.memory_providers` entry point, so the
+install is `pip install inspeximus` and nothing is copied under `$HERMES_HOME`.
+
+```yaml
+memory:
+  provider: inspeximus
+```
+
+WHAT IT DOES THAT A RETRIEVAL-ONLY PROVIDER CANNOT. Hermes calls `prefetch(query)` before each turn
+and injects what comes back. Here that is retrieval minus what a correction retired, because
+`recall()` excludes superseded records by default. A value the user corrected three sessions ago
+cannot return as context. Four tools make the channel explicit rather than implicit:
+`inspeximus_remember` stores a fact under an optional stable key, `inspeximus_correct` supersedes
+that key, `inspeximus_revert` puts the previous value back, and `inspeximus_forget` erases a subject
+and leaves a receipt.
+
+The store lives under the profile Hermes hands the provider, so two profiles are two memories. Every
+write carries a source, which is what lets `inspeximus_forget` reach the records this provider wrote.
+Writes are explicit: `sync_turn` deliberately persists nothing, because deciding automatically what a
+turn was worth keeping needs a model call, and avoiding that call is the point of this store.
+
+Conformance is 14 of 14 verified, 0 broken. The round trip for this adapter drives the host's
+lifecycle against a stand-in for its base class and asserts the property above: store a value under a
+key, correct it, and the retired value must not come back as context. Hermes is not a PyPI
+distribution, so no upstream version can be recorded for it and a breakage there cannot be dated the
+way LangGraph's can. Importing the adapter never imports Hermes, and one of its tests asserts that.
+
+**The transparency log's verifier no longer calls a corrected claim a corrupt log.** The first time a
+registered claim's text actually changed, 13 of 13 became 14 of 14, `verify.py` reported that the
+published text did not hash to what the log recorded, for both entries. Nothing was corrupt: a claim
+whose text changes registers again under the same subject and both versions stay, which is the
+behaviour the log exists for. The verifier could not see that, because `payloads.json` mapped one
+text per subject and could only carry the newest. It is now keyed by payload digest, with a `current`
+map naming the live one, so every version the log holds stays checkable. An entry whose text is no
+longer published is reported as not checked rather than as a failure. The older subject-keyed shape
+is still accepted, because copies of it are already in readers' hands.
+
 ## 2.27.1 - UPGRADE IF TWO PROCESSES SHARE ONE STORE: a write that landed while a handle was loading could be silently overwritten
 
 A concurrent writer could be told `remember()` succeeded and find its record gone. `_load_from_disk`
