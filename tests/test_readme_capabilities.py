@@ -58,6 +58,8 @@ FOREIGN_API = {
     "update": "mem0 -- `update()` in its lifecycle",
     "invoke": "LangChain -- `.invoke()` on a runnable, called on our adapter, not defined by us",
     "save": "CrewAI storage protocol -- the method name their interface requires",
+    "get_config_schema": "Hermes Agent MemoryProvider ABC -- the method its dashboard reads to build a "
+                         "provider's config panel; our provider implements it, the name is theirs",
     "register": "framework registry calls shown in the integration snippets",
     "verify_chain": "Cognee -- the tamper check on the SHA-256 audit ledger it shipped in PR #4476 "
                     "(2026-08-14), named in docs/PRODUCT_PLAN.md where we compare their supersession "
