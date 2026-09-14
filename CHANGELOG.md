@@ -1,3 +1,48 @@
+## 2.27.6 - UPGRADE IF TWO PROCESSES CAN CREATE ONE STORE: a handle opening a store while a peer created it replaced the peer's file, and the 2.27.5 notes named the wrong cause for CI's loss
+
+**A writer's first record was lost when a second process opened the store during its creation.**
+`sqlite3.connect` creates the file before the first commit writes the SQLite header. A handle
+opening in that window saw a file that exists and does not look like rows, read it as a JSON store
+holding nothing, and converted that nothing to rows: `_migrate_json_store` wrote an empty row store
+to a temp file and `os.replace`d it over the path, outside any lock. The peer had already been told
+its first record was stored. CI reported it twice, as `w7:r0` at 0a26545 and `w1:r0` at 721c896,
+a writer's first record each time. The migration now runs under the store lock and reads the header
+again inside it: a store a peer has created since is loaded as rows and never replaced.
+`tests/test_a_peer_creating_the_store_is_not_migrated_over.py` reproduces the window without timing;
+it fails 2 of 3 on 2.27.5 and passes on this release, with a control that a real JSON store still
+migrates.
+
+MEASURED, `probes/is_the_first_write_of_a_fresh_handle_the_one_that_goes_missing.py`, 8 writers
+each writing one record, retry by reopening as the CI harness does, ext4 pinned to 4 CPUs, 200
+rounds per condition (receipts beside it):
+
+| condition | told-stored first writes | missing, 2.27.5 | missing, this release |
+|---|---|---|---|
+| the file did not exist when the writers started | 1,600 | 3 (`w1`, `w2`, `w2`) | 0 |
+| the file existed with one record | 1,600 | 0 | 0 |
+
+On the Windows box the same probe lost 0 of 800 in either condition on 2.27.5, which is the shape
+the reload loss had too: the desk is too quiet for this class, and the Linux run is the measurement.
+
+**CORRECTION TO THE 2.27.5 NOTES, which named `reload()` as what CI hit.** Three sentences there
+were wrong, found by a verify pass that read the CI harness instead of my account of it. (1) "The
+CI harness retries the way the error message says to, through `reload()`": it does not; it reopens,
+like the probe. (2) "on a 2-vCPU runner": `ubuntu-latest` is 4 vCPU for a public repository, per
+GitHub's runner documentation; 2 CPUs was the local pin, chosen from an earlier commit's guess about
+the runner. (3) The heading's "and CI caught it": CI caught a loss, and the re-stamp in
+`_merge_with_disk` was found while chasing it, but it was not what CI hit. The re-stamp is reached
+through `reload()` and through the row store's own save, and the row store writes only the ids it
+touched with deletions derived from a baseline read on the same open, so a stale signature there
+cannot delete a peer's row. Measured: the CI path (row store, reopen on refusal) with the re-stamp
+restored lost 0 of 7,548 at 2 CPUs and 0 of 7,248 at 4 CPUs over 80 rounds, while the old-ordering
+control lost 40 and 41 (`.rows-linux-2cpu.result.json`, `.rows-linux-4cpu.result.json`). The
+`reload()` defect and its fix stand as measured: 15 of 7,680 with the re-stamp, 0 without. What
+stands corrected is the claim that it explained CI. The creation race above is what did, and the
+lead was in the CI logs all along: both losses were `r0`.
+
+Also corrected in place: "about five times more frequent" is about four (50 in 80 rounds against 5
+in 30), and the 2.27.5 heading is left as written, with this note beside it.
+
 ## 2.27.5 - UPGRADE IF TWO PROCESSES SHARE ONE STORE: reload() repeated the 2.27.1 defect one call site over, and CI caught it
 
 **The concurrent-writer loss 2.27.1 fixed had a second instance, in `reload()`.** 2.27.1 moved
@@ -14,12 +59,13 @@ HOW IT SURVIVED. `reload()` runs only on the retry path after a refused save, so
 less often than a plain load, and the probe that measured the 2.27.1 fix retried by OPENING A NEW
 HANDLE, which never enters `reload()` at all. The probe measured a path that did not lose records
 and reported 0. The CI harness retries the way the error message says to, through `reload()`, and
-on a 2-vCPU runner it lost `w7:r0` at 0a26545 with the lock held on every writer and the ordering
+on a 2-vCPU runner it lost `w7:r0` at 0a26545 [CORRECTED in 2.27.6: the harness reopens, it never
+calls `reload()`; the runner is 4 vCPU; and the CI loss was a creation race, not this re-stamp] with the lock held on every writer and the ordering
 already fixed: the third mechanism its own message said to look for. This is the class the 2.27.1
 notes warned about, a fix that lands at the reported instance while the class survives, and it
 landed on the release that carried the warning.
 
-MEASURED, on Linux pinned to 2 CPUs (the runner's shape), 80 rounds of 12 writers, five arms
+MEASURED, on Linux pinned to 2 CPUs (not the runner's shape, see 2.27.6), 80 rounds of 12 writers, five arms
 interleaved (`probes/does_a_wider_change_signature_stop_the_silent_loss.py`, receipt beside it as
 `.linux-2cpu.result.json`):
 
@@ -29,10 +75,11 @@ interleaved (`probes/does_a_wider_change_signature_stop_the_silent_loss.py`, rec
 | signature before the read (2.27.1) | 7,680 | 0 |
 | before the read, plus `st_ino` | 7,676 | 0 |
 | 2.27.1 plus `reload()` re-stamping after its read (2.27.1 to 2.27.4, retry via reload) | 7,680 | 15 |
-| this release | 7,680 | 0 |
+| 2.27.5 | 7,680 | 0 |
 
-The race is about five times more frequent on Linux than the Windows box the earlier receipt came
-from (50 against 5 to 9 per 2,880 on the old ordering), which is why CI saw it and the desk did not.
+The race is about four times more frequent on Linux than the Windows box the earlier receipt came
+from (50 in 80 rounds against 5 in 30 on the old ordering; this said "five" until 2.27.6), which is
+why the desk stayed quiet.
 `tests/test_a_reload_that_restamps_after_the_read_repeats_the_defect.py` pins the mechanism with a
 genuine second handle writing inside the reload's read: it fails on the old code, passes on the
 new, and restoring the re-stamp fails it again.
