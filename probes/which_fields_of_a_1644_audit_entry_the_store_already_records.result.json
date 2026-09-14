@@ -1,0 +1,136 @@
+{
+ "probe": "which_fields_of_a_1644_audit_entry_the_store_already_records.py",
+ "issue": "deepseek-ai/DeepSeek-V3#1644 section 3.2 and 3.4",
+ "fields": {
+  "operation_id": {
+   "verdict": "PRESENT",
+   "where": "receipts sidecar: seq 0..2, each with memory_id and a hash chained to prev",
+   "example": {
+    "seq": 1,
+    "memory_id": "b9b0078527",
+    "prev": "cdadfacb2991...",
+    "hash": "641532277091..."
+   }
+  },
+  "timestamp_ms": {
+   "verdict": "PRESENT",
+   "where": "receipts sidecar ts (float seconds, sub-millisecond); history valid_from and invalidated_at",
+   "example": {
+    "ts": 1789390119.7289724,
+    "valid_from": 1789390119.7289724,
+    "invalidated_at": 1789390119.7359986
+   }
+  },
+  "operation_type": {
+   "verdict": "PARTIAL",
+   "where": "history policy labels the retirement (keyed_lww, keyed_reaffirm); the revert record carries meta.revert_of and meta.reverted_from; there is no single enum field named type",
+   "example": {
+    "policies": [
+     "keyed_lww",
+     "keyed_reaffirm",
+     null
+    ],
+    "revert_record_meta": {
+     "revert_of": "37c4810370",
+     "reverted_from": "b9b0078527"
+    }
+   }
+  },
+  "motive": {
+   "verdict": "MISSING",
+   "where": "no human-readable reason is stored with a correction or a revert; the policy label says WHAT rule retired a value, not WHY the caller wrote it",
+   "example": null
+  },
+  "content_snapshot": {
+   "verdict": "PRESENT",
+   "where": "every version keeps its full text; history returns all three versions verbatim, superseded ones included",
+   "example": [
+    "The staging database is db-7.internal",
+    "The staging database is db-9.internal",
+    "The staging database is db-7.internal"
+   ]
+  },
+  "alternatives": {
+   "verdict": "MISSING",
+   "where": "no record of what the store could have done and did not (for example: refused, queued for review, kept both)",
+   "example": null
+  },
+  "rollback_path": {
+   "verdict": "PRESENT",
+   "where": "revert(key) restores the prior value as a new record and retires the current one; both stay in history, so the rollback is itself auditable and reversible",
+   "example": {
+    "revert": {
+     "ok": true,
+     "restored": "cc65ad5f7f",
+     "superseded": "b9b0078527",
+     "reverted_to_object": null,
+     "reverted_to_text": "The staging database is db-7.internal"
+    },
+    "history_after": [
+     [
+      "superseded",
+      " db-7.internal"
+     ],
+     [
+      "superseded",
+      " db-9.internal"
+     ],
+     [
+      "active",
+      " db-7.internal"
+     ]
+    ]
+   }
+  },
+  "operator_identity": {
+   "verdict": "PARTIAL",
+   "where": "remember() records agent_id per version (history shows ops-bot then rasto) and source binds an origin document; the record a revert creates carries no agent_id",
+   "example": {
+    "history_agents": [
+     "ops-bot",
+     "rasto",
+     null
+    ],
+    "revert_record_agent": null
+   }
+  }
+ },
+ "counts": {
+  "PRESENT": 4,
+  "PARTIAL": 2,
+  "MISSING": 2
+ },
+ "lifecycle": {
+  "detect_only": "observe() counts contradicting observations with distinct support; one is pending (need 2), the second reopens the settled record into a review queue",
+  "first_observation": {
+   "reopened": false,
+   "key": "staging-db",
+   "pending": 1,
+   "need": 2,
+   "surfaced_prior": null,
+   "review_id": null
+  },
+  "second_observation": {
+   "reopened": true,
+   "key": "staging-db",
+   "pending": 2,
+   "need": 2,
+   "surfaced_prior": null,
+   "review_id": "ec21935e2a"
+  },
+  "queue": [
+   {
+    "id": "ec21935e2a",
+    "key": "staging-db",
+    "object": null,
+    "text": "The staging database is db-7.internal",
+    "reason": "novel_support_contradiction",
+    "surfaced_prior": null,
+    "contradiction": null,
+    "contested_by": null
+   }
+  ],
+  "human_step": "resolve_reopened(id, 'keep_current' | 'reaffirm_prior') is the only exit; the store never marks a reopened record resolved on its own",
+  "no_prescription": "contradictions() and check_conflict() return pairs and similarity; neither returns a recommendation"
+ }
+}
