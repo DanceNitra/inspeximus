@@ -26,11 +26,15 @@ was measuring, and they disagreed by an order of magnitude on the same arm.
     fixed       the code as it ships
     widened     the shipped code plus st_ino in the signature, so suspect 1 is removed as well
 
-WHAT IT FOUND. 30 interleaved rounds, 12 writers, 8 records each: old-order lost 9 of 2,880 records
-a writer had been told were stored, fixed lost 0 of 2,864, and widened lost 0 of 2,840. Suspect 2
-accounts for the loss; suspect 1 adds nothing on top of the fix, so `_stat_sig` is left alone and
-the store pays nothing for a field it does not need. The collision measured below is a real property
-of the guard and is NOT a measured loss rate: do not quote it as one.
+WHAT IT FOUND (the receipt at 2e8483a, three arms). 30 interleaved rounds, 12 writers, 8 records
+each: old-order lost 9 of 2,880 records a writer had been told were stored, fixed lost 0 of 2,864,
+and widened lost 0 of 2,840. The tracked receipt was re-recorded with five arms on 2026-09-13 and
+reads 5 of 2,864 for old-order. Suspect 2 accounts for the loss; suspect 1 adds nothing on top of
+the fix, so `_stat_sig` is left alone. The collision measured below is a real property of the guard
+and is NOT a measured loss rate: do not quote it as one. And "adds nothing" is scoped to THIS
+workload: every writer appends, so every landed write is larger than the file it was checked
+against, and (mtime_ns, size) cannot collide except through the ordering defect itself. Same-size
+rewrites inside one mtime tick are the regime where widening would matter, and it is unmeasured.
 
 WHY st_ino AND NOT A CONTENT HASH. A hash of the file is exact and costs a full read of the store on
 every save; on this project's own 32,545-record store that is tens of megabytes per write.
@@ -60,23 +64,31 @@ sys.path.insert(0, HERE)
 
 from _receipt import write_receipt  # noqa: E402
 
-#: Two arms added 2026-09-13, and the reason is the instrument itself. The three arms below retry a
-#: refused write by OPENING A NEW HANDLE, so they never enter `reload()`, and `reload()` was where
-#: the defect survived: it re-stamped the signature after its read, one call site over from the
-#: 2.27.1 fix. CI caught it (1 of 96, lock held, ordering fixed) while this probe kept reporting 0,
-#: because this probe never ran the code that lost the record. The two `reload-*` arms retry through
-#: `reload()`, which is what the CI harness and a real caller following the error message do.
-ARMS = ("old-order", "fixed", "widened", "reload-old", "reload-fixed")
+#: Two arms added 2026-09-13, and the reason is the instrument itself. The three arms above retry a
+#: refused write by OPENING A NEW HANDLE on a JSON store, so they never enter `_merge_with_disk`,
+#: and that is where the defect survived: it re-stamped the signature after its read, one call site
+#: over from the 2.27.1 fix. CI caught it (1 of 96, lock held, ordering fixed) while this probe kept
+#: reporting 0, because this probe never ran the code that lost the record. The two `reload-*` arms
+#: reach `_merge_with_disk` through `reload()`, the remedy the error message names.
+#:
+#: Two more arms added 2026-09-14, after a verify pass read the CI harness instead of my account of
+#: it. The CI test does NOT call `reload()`; it reopens, like the first three arms. What differs is
+#: the store: CI runs the default ROW store, whose `_save` merges through `_merge_with_disk` on its
+#: own when the signature is refused, so a reopening writer reaches the re-stamp without ever
+#: calling `reload()`. The `rows-*` arms run that path: default store format, reopen on refusal.
+ARMS = ("old-order", "fixed", "widened", "reload-old", "reload-fixed", "rows-old", "rows-fixed")
 
-#: Records are padded to one length, so the size field can never rescue the guard and the question
-#: stays "can mtime separate these two writes". A varying length would measure the padding instead.
+#: Records are padded to one length, so in the signature-field measurement below the size field
+#: cannot rescue the guard and the question stays "can mtime separate these two writes". In the
+#: concurrent arms the file still grows with every landed write, so size does separate states there.
 WORKER = '''
 import os, sys, time, random
 sys.path.insert(0, %(repo)r)
-os.environ["INSPEXIMUS_STORE_FORMAT"] = "json"
+ARM = %(arm)r
+if not ARM.startswith("rows"):
+    os.environ["INSPEXIMUS_STORE_FORMAT"] = "json"
 from inspeximus import Inspeximus
 from inspeximus.core import StoreChangedOnDisk
-ARM = %(arm)r
 if ARM == "old-order":
     # RESTORE THE PRE-FIX ORDERING, and nothing else. Until 2026-09-12 the loader stamped the file
     # signature AFTER reading the file, so a write landing during the read left the handle holding
@@ -86,9 +98,10 @@ if ARM == "old-order":
         _orig_load(self)
         self._file_sig = self._stat_sig()
     Inspeximus._load_from_disk = _stamp_after_the_read
-if ARM == "reload-old":
-    # RESTORE reload()'s post-read re-stamp, and nothing else: the tree's _load_from_disk keeps
-    # the 2.27.1 ordering, so any loss here is reload()'s own.
+if ARM in ("reload-old", "rows-old"):
+    # RESTORE _merge_with_disk's post-read re-stamp, and nothing else: the tree's _load_from_disk
+    # keeps the 2.27.1 ordering, so any loss here is the re-stamp's own. reload-old reaches it
+    # through reload(); rows-old reaches it through the row store's own save.
     _orig_merge = Inspeximus._merge_with_disk
     def _merge_then_restamp(self):
         out = _orig_merge(self)
@@ -208,7 +221,13 @@ def main() -> int:
     # test, which is what the suite needs; an investigation passes --trials and gets a sample.
     ap.add_argument("--trials", type=int,
                     default=1 if os.environ.get("PYTEST_CURRENT_TEST") else 24)
+    ap.add_argument("--arms", default=None,
+                    help="comma separated subset of arms to run; the others are recorded as not run")
+    ap.add_argument("--receipt", default=None,
+                    help="receipt file name beside this probe (default: <probe>.result.json)")
     a = ap.parse_args()
+    arms = tuple(x for x in a.arms.split(",") if x) if a.arms else ARMS
+    assert all(x in ARMS for x in arms), arms
 
     out = {"probe": os.path.basename(__file__),
            "question": "which of the two candidate causes accounts for the silent loss",
@@ -229,7 +248,7 @@ def main() -> int:
     # or a thermal change land on one arm and not the others, and two earlier runs of this file were
     # spoiled that way.
     for t in range(a.trials):
-        for arm in ARMS:
+        for arm in arms:
             r = run_trial(arm, a.writers, a.per)
             slot = out["arms"][arm]
             slot["trials"].append(r)
@@ -239,12 +258,18 @@ def main() -> int:
                   % (t + 1, a.trials, arm, r["claimed"], r["missing"], r["seconds"]), flush=True)
 
     print()
-    for arm in ARMS:
+    out["arms_run"] = list(arms)
+    for arm in arms:
         s = out["arms"][arm]
         print("  %-9s lost %2d of %d records a writer was told were stored"
               % (arm, s["missing"], s["claimed"]))
 
-    old, fixed, wide, rold, rfixed = (out["arms"][k]["missing"] for k in ARMS)
+    old, fixed, wide, rold, rfixed, wold, wfixed = (out["arms"][k]["missing"] for k in ARMS)
+    out["rows_verdict"] = (
+        "row store, reopen on refusal: lost %d with the re-stamp, %d without it" % (wold, wfixed)
+        + ("; the re-stamp is a live cause on the CI path" if wold > 0 and wfixed == 0 else
+           "; VOID, the arm carrying the re-stamp lost nothing, raise --trials" if wold == 0 else
+           "; the fix did not remove all of it, look further"))
     out["reload_verdict"] = (
         "reload() re-stamp: lost %d with the re-stamp, %d without it" % (rold, rfixed)
         + ("; the re-stamp is a live cause" if rold > 0 and rfixed == 0 else
@@ -265,7 +290,7 @@ def main() -> int:
     else:
         out["verdict"] = "inconclusive: old %d, fixed %d, widened %d" % (old, fixed, wide)
     print("  " + out["verdict"])
-    write_receipt(__file__, out)
+    write_receipt(__file__, out, name=a.receipt)
 
     # A finding goes to stderr too. The suite runs every uncited probe, keeps only the stderr tail on
     # a non-zero exit, and suppresses the receipt, so a stdout-only finding is lost exactly when it

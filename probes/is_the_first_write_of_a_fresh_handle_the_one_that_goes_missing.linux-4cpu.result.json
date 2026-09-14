@@ -1,0 +1,24 @@
+{
+ "probe": "is_the_first_write_of_a_fresh_handle_the_one_that_goes_missing.py",
+ "writers": 8,
+ "rounds": 200,
+ "conditions": {
+  "absent": {
+   "claimed": 1600,
+   "missing": 3,
+   "crashes": 0,
+   "which": [
+    "round 1: w1 r0 uniq-1-0",
+    "round 67: w2 r0 uniq-2-0",
+    "round 145: w2 r0 uniq-2-0"
+   ]
+  },
+  "present": {
+   "claimed": 1600,
+   "missing": 0,
+   "crashes": 0,
+   "which": []
+  }
+ },
+ "verdict": "a creation race: the first write is lost only when the file did not exist"
+}

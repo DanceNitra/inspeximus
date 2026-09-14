@@ -10,10 +10,12 @@ record is gone and that writer was told `remember()` succeeded.
 WHY THIS IS WORTH A DETERMINISTIC TEST. The same loss shows up in
 `probes/what_a_concurrent_writer_is_told_against_what_the_store_keeps.py` at roughly one record in
 900, with the lock held on every write, which ruled out the degraded-lock path. The next suspect was
-the signature's own fields: `(mtime_ns, size)` collides, measured here at 119 of 1,500 same-length
-writes. `probes/does_a_wider_change_signature_stop_the_silent_loss.py` tested that by adding
-`st_ino`, which changes on every atomic write, and the widened arm still lost a record while the
-current arm lost none. A guard that cannot collide still loses, so the fields were never the
+the signature's own fields: `(mtime_ns, size)` collides, measured at 211 of 1,500 same-length
+writes in the receipt at 2e8483a (this docstring said 119 until 2026-09-14; the number had been
+typed, not read). `probes/does_a_wider_change_signature_stop_the_silent_loss.py` tested that by
+adding `st_ino`, which changes on every atomic write: the widened arm lost nothing, and so did the
+arm that only fixed the ordering, while the arm carrying the old ordering lost 9 of 2,880. A guard
+that cannot collide gains nothing once the ordering is right, so the fields were never the
 mechanism. The ordering is, and unlike the race it can be reproduced exactly.
 
 The tests below inject the competing write inside the read, so there is no timing to get lucky with.

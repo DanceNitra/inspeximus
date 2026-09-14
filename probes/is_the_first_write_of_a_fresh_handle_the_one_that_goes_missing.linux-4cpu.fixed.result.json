@@ -1,0 +1,20 @@
+{
+ "probe": "is_the_first_write_of_a_fresh_handle_the_one_that_goes_missing.py",
+ "writers": 8,
+ "rounds": 200,
+ "conditions": {
+  "absent": {
+   "claimed": 1600,
+   "missing": 0,
+   "crashes": 0,
+   "which": []
+  },
+  "present": {
+   "claimed": 1600,
+   "missing": 0,
+   "crashes": 0,
+   "which": []
+  }
+ },
+ "verdict": "no first-write loss in this run; the r0 lead did not reproduce here"
+}

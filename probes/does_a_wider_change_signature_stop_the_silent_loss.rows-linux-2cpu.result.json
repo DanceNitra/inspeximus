@@ -1,0 +1,1985 @@
+{
+ "probe": "does_a_wider_change_signature_stop_the_silent_loss.py",
+ "question": "which of the two candidate causes accounts for the silent loss",
+ "writers": 12,
+ "per_writer": 8,
+ "trials": 80,
+ "arms": {
+  "old-order": {
+   "claimed": 7680,
+   "missing": 40,
+   "trials": [
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 2,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 2,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 0.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.8
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 2,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.2
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 2,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 5,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 2,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.1
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.7
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 1,
+     "seconds": 1.0
+    },
+    {
+     "arm": "old-order",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 0.9
+    }
+   ]
+  },
+  "fixed": {
+   "claimed": 0,
+   "missing": 0,
+   "trials": []
+  },
+  "widened": {
+   "claimed": 0,
+   "missing": 0,
+   "trials": []
+  },
+  "reload-old": {
+   "claimed": 0,
+   "missing": 0,
+   "trials": []
+  },
+  "reload-fixed": {
+   "claimed": 0,
+   "missing": 0,
+   "trials": []
+  },
+  "rows-old": {
+   "claimed": 7548,
+   "missing": 0,
+   "trials": [
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 87,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 95,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 64,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 80,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.7
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.4
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.5
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 63,
+     "missing": 0,
+     "seconds": 0.9
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 63,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-old",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    }
+   ]
+  },
+  "rows-fixed": {
+   "claimed": 7621,
+   "missing": 0,
+   "trials": [
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 87,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 87,
+     "missing": 0,
+     "seconds": 1.6
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.6
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.4
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 2.0
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.9
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.4
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.4
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 88,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.3
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 95,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.2
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.0
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    },
+    {
+     "arm": "rows-fixed",
+     "writers": 12,
+     "per_writer": 8,
+     "claimed": 96,
+     "missing": 0,
+     "seconds": 1.1
+    }
+   ]
+  }
+ },
+ "signature_fields": {
+  "writes": 1500,
+  "collisions": {
+   "mtime+size": 43,
+   "mtime+size+ino": 86,
+   "mtime+size+sha256": 0
+  },
+  "mtime_tick_ns_min": 3754011,
+  "mtime_tick_ns_median": 3754013
+ },
+ "arms_run": [
+  "old-order",
+  "rows-old",
+  "rows-fixed"
+ ],
+ "rows_verdict": "row store, reopen on refusal: lost 0 with the re-stamp, 0 without it; VOID, the arm carrying the re-stamp lost nothing, raise --trials",
+ "reload_verdict": "reload() re-stamp: lost 0 with the re-stamp, 0 without it; VOID, the arm carrying the re-stamp lost nothing, raise --trials",
+ "verdict": "the read-and-stamp ordering accounts for the whole loss in this run; the signature's fields added nothing on top of it."
+}

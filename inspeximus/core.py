@@ -1155,7 +1155,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.27.5"
+__version__ = "2.27.6"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -7269,11 +7269,33 @@ class Inspeximus:
         THE BACKUP IS NOT DECORATION. A store written as rows cannot be read by inspeximus 2.26.1 or
         earlier: those versions decode the file as UTF-8 and raise UnicodeDecodeError on the SQLite
         header. Renaming the backup back over the store is the whole rollback.
+
+        UNDER THE STORE LOCK, WITH THE HEADER READ AGAIN, since 2.27.6. This ran unlocked, and the
+        `os.replace` at its end put whatever this handle had parsed over whatever was on disk by then.
+        Two writers starting on a store that does not exist yet: the first creates the row store
+        inside its locked save, and `sqlite3.connect` creates the file before the first commit writes
+        the header, so for that window the file exists with no SQLite magic. A second handle opening
+        in the window read "an existing store that is not rows", parsed nothing, converted nothing,
+        and replaced the first writer's file with an empty row store. The first writer had been told
+        its record was stored. CI reported exactly this twice, `w7:r0` and `w1:r0`, a writer's first
+        record each time, and `probes/is_the_first_write_of_a_fresh_handle_the_one_that_goes_missing.py`
+        reproduced it: 3 of 1,600 first writes lost when the file did not exist at start, 0 of 1,600
+        when it did. The lock closes the window, and the header is read again inside it: a store a
+        peer has since created is loaded as rows, never replaced.
         """
         if _rows is None or not self.path or not self.path.exists():
             return None
         backup = self.path.with_suffix(self.path.suffix + ".pre-rows.bak")
         tmp = str(self.path) + ".rows-tmp"
+        with _StoreLock(self.path):
+            if _rows.looks_like_sqlite(self.path):
+                # A peer created the row store between this handle's read and this lock. There is
+                # nothing to convert; the caller reloads the rows the peer wrote.
+                return {"records": None, "backup": None, "created_by_peer": True}
+            return self._migrate_json_store_locked(backup, tmp)
+
+    def _migrate_json_store_locked(self, backup, tmp) -> dict | None:
+        """The body of `_migrate_json_store`, entered with the store lock held and the header checked."""
         try:
             if not backup.exists():
                 shutil.copy2(str(self.path), str(backup))
