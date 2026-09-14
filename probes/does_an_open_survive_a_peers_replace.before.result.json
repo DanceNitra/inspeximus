@@ -1,0 +1,50 @@
+{
+ "probe": "does_an_open_survive_a_peers_replace.py",
+ "platform": "win32",
+ "readers": 6,
+ "seconds_per_round": 20.0,
+ "rounds": 3,
+ "totals": {
+  "opens": 153305,
+  "permission_errors": 4,
+  "other_errors": 0,
+  "empty_loads": 0,
+  "landed": 54,
+  "reader_crashes": 0,
+  "other_kinds": {}
+ },
+ "per_round": [
+  {
+   "opens": 50821,
+   "permission_errors": 0,
+   "other_errors": 0,
+   "empty_loads": 0,
+   "landed": 16,
+   "other_kinds": {},
+   "reader_crashes": 0
+  },
+  {
+   "opens": 51354,
+   "permission_errors": 0,
+   "other_errors": 0,
+   "empty_loads": 0,
+   "landed": 14,
+   "other_kinds": {},
+   "reader_crashes": 0
+  },
+  {
+   "opens": 51130,
+   "permission_errors": 4,
+   "other_errors": 0,
+   "empty_loads": 0,
+   "landed": 24,
+   "other_kinds": {},
+   "reader_crashes": 0
+  }
+ ],
+ "per_thousand_opens": {
+  "permission_errors": 0.03,
+  "empty_loads": 0.0
+ },
+ "verdict": "an open can fail or read empty while a peer replaces the file: 4 PermissionError and 0 empty loads in 153305 opens against 54 replaces"
+}

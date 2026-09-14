@@ -1155,7 +1155,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.27.7"
+__version__ = "2.27.8"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -7378,9 +7378,10 @@ class Inspeximus:
         which injects the competing write inside the read rather than waiting for the race.
         """
         # Read the fingerprint FIRST. See the docstring: after the read it describes a file this
-        # handle may never have seen.
-        sig_before_read = self._stat_sig()
-        if self.path and self.path.exists() and _rows is not None                 and _rows.looks_like_sqlite(self.path):
+        # handle may never have seen. The three steps (stat, header, bytes) are retried as a unit
+        # across a peer's replace; see `_open_store_bytes`.
+        sig_before_read, is_rows, raw = self._open_store_bytes()
+        if is_rows:
             # A ROW STORE, detected by its 16-byte header rather than its name, because a store
             # migrated in place keeps whatever filename it had.
             try:
@@ -7416,8 +7417,7 @@ class Inspeximus:
             self._touched = set()
             self._file_sig = sig_before_read
             return
-        if self.path and self.path.exists():
-            raw = self.path.read_bytes()
+        if raw is not None:
             if raw[:5] == _INSPEXIMUS_ENC_MAGIC:                           # encrypted store -> decrypt or FAIL LOUD
                 if not self._encrypted:
                     raise ValueError("store is encrypted; pass encrypt_key= or encrypt_passphrase= to open it")
@@ -7519,8 +7519,9 @@ class Inspeximus:
             r.setdefault("iso", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(r["ts"])))
         # AN EXISTING JSON STORE IS CONVERTED HERE, not left for the user to discover. Runs after the
         # records are normalised, so what lands in the row store is what this version reads back.
-        if (self.path and self.path.exists() and not self._encrypted and _rows is not None
-                and not _rows.looks_like_sqlite(self.path)
+        # `raw` is set only when the open above found a plaintext file, so the format question is
+        # already answered; asking `exists()` and the header again here reopened the file twice more.
+        if (raw is not None and not self._encrypted and _rows is not None
                 and (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() != "json"):
             self._migration = self._migrate_json_store()
             if self._migration:
@@ -7548,8 +7549,54 @@ class Inspeximus:
 
     _ABSENT = ("absent",)          #: sentinel: the file did not exist when we looked
 
-    def _stat_sig(self):
+    _OPEN_ATTEMPTS = 40           #: same budget as `_durable_replace`: ~8 s of backoff before the error propagates
+
+    def _open_store_bytes(self):
+        """(signature before the read, whether it is a row store, the bytes or None), across a peer's replace.
+
+        THE READER SIDE OF A RETRY THE WRITER SIDE ALREADY HAD. `_durable_replace` retries `os.replace`
+        because Windows refuses to replace a file a reader holds open. Nothing retried the open. A
+        file that is mid-replace is briefly a name whose target cannot be opened, and Windows reports
+        that as access denied rather than not found, so a handle constructed on that instant raised
+        `PermissionError` out of `Inspeximus(path)`. Measured 2026-09-14 on the tree before this
+        method existed (probes/does_an_open_survive_a_peers_replace.py): 4 of 153,305 opens against 54
+        replaces, and about one open in a hundred under the twelve-writer harness that found it.
+
+        THE SILENT HALF IS WORSE THAN THE CRASH. `Path.exists()` and `_stat_sig()` both swallow that
+        error, as False and as ABSENT. An open that lost the stat instead of the read did not crash:
+        it loaded an EMPTY store from a file with records in it. A write from that handle is refused
+        by the signature guard, which is the safe direction, but a read-only handle served an empty
+        recall and never said why. So the stat is asked to raise here, and only here; `_save` keeps
+        the swallowing form, where ABSENT on a transient error produces a refusal, which is safe.
+
+        The three steps are retried as one unit, in order, so the signature stays older than the
+        bytes it describes. A file that is genuinely unreadable still raises, after the same budget
+        the writer spends.
+        """
+        if not self.path:
+            return None, False, None
+        last = None
+        for attempt in range(self._OPEN_ATTEMPTS):
+            try:
+                sig = self._stat_sig(raise_transient=True)
+                if sig is Inspeximus._ABSENT:
+                    return sig, False, None
+                if _rows is not None and _rows.looks_like_sqlite(self.path):
+                    return sig, True, None
+                return sig, False, self.path.read_bytes()
+            except (PermissionError, FileNotFoundError) as e:
+                # PermissionError: mid-replace on Windows. FileNotFoundError: replaced between the stat
+                # and the open on a platform where the old name is briefly gone. Same remedy: again.
+                last = e
+                time.sleep(0.01 * (attempt + 1))
+        raise last
+
+    def _stat_sig(self, raise_transient: bool = False):
         """(mtime_ns, size) of the store file, or the ABSENT sentinel if it is not there.
+
+        `raise_transient=True` lets a PermissionError propagate instead of reading as ABSENT. Only the
+        loader asks for that: a stat that fails because a peer is replacing the file is not an absent
+        file, and treating it as one loaded an empty store (see `_open_store_bytes`).
 
         A sentinel, not None. `None` meant "unknown" and `_save` skipped the guard on it, so two handles
         opening a path that does not exist yet BOTH had an ungated first write — and the second silently
@@ -7560,6 +7607,12 @@ class Inspeximus:
             return (st.st_mtime_ns, st.st_size)
         except AttributeError:
             return None                                   # no path: a RAM-only store, nothing to guard
+        except FileNotFoundError:
+            return Inspeximus._ABSENT
+        except PermissionError:
+            if raise_transient:
+                raise
+            return Inspeximus._ABSENT
         except OSError:
             return Inspeximus._ABSENT
 

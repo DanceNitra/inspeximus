@@ -12,6 +12,10 @@ THE TEST. The window is reproduced without timing: the file is created empty, th
 read of it is hooked so that the peer creates the real row store right after that read, and the
 second handle then carries on into its migration. On 2.27.5 the peer's record is gone. On 2.27.6
 the migration takes the store lock, reads the header again, finds a row store, and loads it.
+
+Since 2.27.8 the commit is injected as the read returns (see the fixture). The proof that the test
+can fail is a mutation rather than an old version: disabling the locked header re-read in
+`_migrate_json_store` on the 2.27.8 tree fails the two peer tests and leaves the control passing.
 """
 from __future__ import annotations
 
@@ -24,35 +28,43 @@ from inspeximus import Inspeximus
 
 
 def _open_in_the_creation_window(tmp_path, monkeypatch):
-    """The late handle reads the empty file, asks "is this rows?" and gets no; the peer's commit
-    lands between that answer and whatever the late handle does with it."""
+    """The late handle reads the empty file and has already been told "not rows" by the header; the
+    peer's commit lands between that read and whatever the late handle does with it.
+
+    The commit is injected as the read returns. Until 2.27.8 the loader asked the header a second
+    time before deciding to migrate, outside the lock, and the commit was injected there; that
+    second check is gone, and a commit injected from inside the locked re-read would deadlock on
+    the lock the late handle holds, which is not a state two processes can reach. The read is the
+    last unlocked step, so it is where the window is.
+    """
     from inspeximus import sqlite_store
     db = tmp_path / "s.json"
     peer = Inspeximus(path=str(db))            # opened on nothing: the creator-to-be
     db.write_bytes(b"")                        # what sqlite3.connect leaves before the first commit
     orig_read = pathlib.Path.read_bytes
     orig_looks = sqlite_store.looks_like_sqlite
-    state = {"read": False, "fired": False}
+    state = {"fired": False, "checked_after": False}
 
-    def read_marks(self):
-        if self == db:
-            state["read"] = True
-        return orig_read(self)
-
-    def header_check_then_the_peer_commits(path):
-        answer = orig_looks(path)
-        if state["read"] and not state["fired"] and pathlib.Path(path) == db:
+    def read_then_the_peer_commits(self):
+        raw = orig_read(self)
+        if self == db and not state["fired"]:
             state["fired"] = True
             os.remove(db)                      # the peer's connect has not committed yet ...
             peer.remember("peer r0", mtype="fact")   # ... and now it has: header, schema, row
-        return answer
+        return raw
 
-    monkeypatch.setattr(pathlib.Path, "read_bytes", read_marks)
-    monkeypatch.setattr(sqlite_store, "looks_like_sqlite", header_check_then_the_peer_commits)
+    def header_check_marks(path):
+        if state["fired"] and pathlib.Path(path) == db:
+            state["checked_after"] = True
+        return orig_looks(path)
+
+    monkeypatch.setattr(pathlib.Path, "read_bytes", read_then_the_peer_commits)
+    monkeypatch.setattr(sqlite_store, "looks_like_sqlite", header_check_marks)
     late = Inspeximus(path=str(db))
     monkeypatch.setattr(pathlib.Path, "read_bytes", orig_read)
     monkeypatch.setattr(sqlite_store, "looks_like_sqlite", orig_looks)
-    assert state["fired"], "the header check never ran after the read; the test measured nothing"
+    assert state["fired"], "the peer's commit never fired; the test measured nothing"
+    assert state["checked_after"], "the header was never re-read after the commit; the guard did not run"
     return db, peer, late
 
 

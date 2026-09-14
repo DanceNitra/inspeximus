@@ -1,3 +1,40 @@
+## 2.27.8 - UPGRADE IF SEVERAL PROCESSES OPEN ONE STORE ON WINDOWS: an open that lands on a peer's replace is retried, and never loads an empty store
+
+**The reader side of a retry the writer side already had.** `_durable_replace` retries `os.replace`
+because Windows refuses to replace a file a reader holds open. Nothing retried the open. A file that
+is mid-replace is briefly a name whose target cannot be opened, and Windows reports that as access
+denied rather than not found, so `Inspeximus(path)` raised `PermissionError` on that instant. The
+hostile re-run of the 2.27.5 race measurement saw it first: about one open in a hundred under twelve
+contending writers. Measured on 2.27.7 with one writer and six readers spinning on opens
+(`probes/does_an_open_survive_a_peers_replace.py`, receipt `.before.result.json`): 4 of 153,305 opens
+raised, against 54 replaces. With the fix: 0 of 261,751, against 251.
+
+**The silent half was worse than the crash.** `Path.exists()` and `_stat_sig()` both swallowed the
+same error, as False and as ABSENT. An open that lost the stat instead of the read did not crash: it
+loaded an EMPTY store from a file with records in it. A write from that handle was refused by the
+signature guard, which is the safe direction, but a read-only handle served an empty recall and never
+said why. The probe counted 0 of those on Windows in this run; the case is held by an injected test
+rather than by that zero.
+
+- `_open_store_bytes()` performs the stat, the header check and the read as one unit, in that order,
+  so the signature stays older than the bytes it describes, and retries the unit on `PermissionError`
+  or `FileNotFoundError` with the budget `_durable_replace` spends: 40 attempts, about 8 s. A file
+  that is genuinely unreadable still raises, after that budget.
+- `_stat_sig(raise_transient=True)` is the loader's form; `_save` keeps the swallowing one, where
+  ABSENT on a transient error produces a refusal.
+- The loader no longer asks `exists()` and reads the header a second time before deciding whether to
+  migrate; the open above already answered. Opens got cheaper as a side effect: the probe's readers
+  managed 261,751 opens in the window where 2.27.7 managed 153,305.
+- `tests/test_an_open_during_a_peers_replace_is_retried_not_empty.py`: the failing call is injected
+  a fixed number of times on the store's path, then behaves. Five tests, all fail on 2.27.7, two are
+  controls: the unreadable file still raises, and the save-side stat still reads a transient error as
+  absent.
+
+**What this does not fix.** A reader that holds the file open still blocks the writer's replace for
+as long as it holds it, because CPython opens without `FILE_SHARE_DELETE`. In the probe's window one
+writer landed 16 to 24 records in 20 s against six hot readers. That is a separate change to how the
+file is opened, and it is not in this release.
+
 ## 2.27.7 - UPGRADE IF YOU AUDIT ROLLBACKS OR THE REVIEW QUEUE: a rollback says who and why, and a closed review leaves a trace on both exits
 
 **Three gaps against the audit entry that deepseek-ai/DeepSeek-V3#1644 asks for.** That issue lists,
