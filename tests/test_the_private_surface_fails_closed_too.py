@@ -49,8 +49,9 @@ _STORE_WIDE_PRIVATE = {
     # wrote: scoped to one tenant it would drop every other tenant's rows, which is the exact bug
     # `_save` carries a comment about. `_migrate_json_store` converts the file's format, and a file
     # has one format. `_track_all` attaches the change-declaring wrapper to the records that were
-    # loaded, and hands each one back unchanged.
-    "_merge_with_disk", "_migrate_json_store", "_track_all",
+    # loaded, and hands each one back unchanged. `_migrate_json_store_locked` is the same conversion
+    # under the store lock (2.27.6); it is store-wide for the reason its caller is.
+    "_merge_with_disk", "_migrate_json_store", "_migrate_json_store_locked", "_track_all",
     # `_evict_to_capacity` WAS here, declared store-wide on the reasoning that capacity is a property
     # of the file. That reasoning was wrong and the test did its job by forcing the decision into
     # writing where it could be read and refuted: on a shared store at capacity=10, one tenant writing
