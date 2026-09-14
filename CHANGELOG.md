@@ -1,3 +1,31 @@
+## 2.27.7 - UPGRADE IF YOU AUDIT ROLLBACKS OR THE REVIEW QUEUE: a rollback says who and why, and a closed review leaves a trace on both exits
+
+**Three gaps against the audit entry that deepseek-ai/DeepSeek-V3#1644 asks for.** That issue lists,
+for every automatic operation, a human-readable motive and an operator identity, and asks that a
+detected contradiction never be marked resolved by the system on its own. An adversarial pass of this
+store against that list, run the day the issue opened, found three places where 2.27.6 fell short:
+
+- `revert()` took no author and no reason, so a history showed corrections with authors and rollbacks
+  with none. It now takes `reason=` and `agent_id=`, stored on the record the rollback creates.
+- `resolve_reopened(rid, "keep_current")` popped every reopen marker off the record, so after the
+  steward's decision nothing on disk said a contradiction had ever been detected. Both decisions now
+  write `meta.reopened_resolved` on the record they close: the decision, when, by whom (`agent_id=`),
+  why (`reason=`), and the markers the detection carried. The queue still empties as before.
+- A later keyed write on a reopened key superseded the record and the review queue emptied with no
+  decision recorded anywhere. The retiring write now stamps `meta.reopened_resolved` with
+  `superseded_by_write` on the retired record and `meta.resolves_reopened` on the new one.
+
+MEASURED. `probes/which_fields_of_a_1644_audit_entry_the_store_already_records.py` runs one keyed
+correction, one revert, one corroborated contradiction closed by a steward and one closed by a later
+write, and scores the eight fields from what the store returned: on 2.27.7, six present (operation id,
+timestamp, motive, content snapshot, rollback path, operator identity), two partial (operation type is
+a policy label; alternatives are recorded on refused writes only). Both queue exits read TRACED; on
+2.27.6 the steward exit read ERASED and the write exit SILENT. The verdicts are computed, and
+`--mutate <field>` shows each one moving; the first version of the probe typed them as literals, and
+the same adversarial pass mutated its evidence six ways without the table changing.
+`tests/test_a_closed_reopen_and_a_rollback_say_who_and_why.py` fails 4 of 5 on 2.27.6 and passes on
+this release, with a control that an ordinary keyed write carries no reopen trace.
+
 ## 2.27.6 - UPGRADE IF TWO PROCESSES CAN CREATE ONE STORE: a handle opening a store while a peer created it replaced the peer's file, and the 2.27.5 notes named the wrong cause for CI's loss
 
 **A writer's first record was lost when a second process opened the store during its creation.**
