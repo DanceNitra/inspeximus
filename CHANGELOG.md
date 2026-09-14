@@ -24,6 +24,11 @@ served between its start and its next write was answered from a stale view.
   the iteration. The boundary is the safe place, and the adoption test is what keeps it there.
 - `tests/test_a_long_lived_handle_sees_what_a_peer_wrote.py`: six tests, all fail on 2.27.8. The
   control counts loads and requires zero across fifty refreshes on an unmoved file.
+- End-to-end receipt: `probes/does_one_memory_hold_across_three_harnesses_at_once.py` runs a
+  long-lived `inspeximus-mcp` over stdio, writes through the shell CLI, reads through the server's
+  `recall` tool with no restart, writes through the server, reads through a library handle opened
+  before that write, and lists through the CLI. Three cross-harness claims, all True on 2.28.0; on
+  the 2.27.8 tree the same probe reports two of three False.
 
 ## 2.27.8 - UPGRADE IF SEVERAL PROCESSES OPEN ONE STORE ON WINDOWS: an open that lands on a peer's replace is retried, and never loads an empty store
 

@@ -1,0 +1,15 @@
+{
+ "probe": "does_one_memory_hold_across_three_harnesses_at_once.py",
+ "store_format": "rows (default)",
+ "cli_write_rc": 0,
+ "mcp_recall_raw": "{'result': [{'id': '8a452302f8', 'text': 'the staging database is db-9', 'score': 1.693, 'value': 1.0, 'tags': []}]}",
+ "mcp_sees_cli_write": true,
+ "mcp_write_raw": "{\n  \"id\": \"d26491b603\",\n  \"stored\": \"the deploy window is 02:00 UTC\",\n  \"tags\": [],\n  \"value\": 1.0,\n  \"mtype\": \"episodic\",\n  \"source\": null,\n  \"derived_from\": [],\n  \"project\": null,\n  \"attributable\": ",
+ "refresh_available": true,
+ "lib_saw_it_before_refresh": false,
+ "lib_sees_mcp_write": true,
+ "cli_sees_both": true,
+ "cli_list_rc": 0,
+ "seconds": 4.91,
+ "verdict": "one memory across three harnesses at once: all three cross-harness reads saw the other harness's write with no restart"
+}
