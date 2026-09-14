@@ -1155,7 +1155,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.27.8"
+__version__ = "2.28.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -7642,6 +7642,31 @@ class Inspeximus:
             except StoreChangedOnDisk:
                 if attempt == 7:
                     raise
+        return out
+
+    def refresh(self) -> dict:
+        """See what a peer process wrote since this handle last read the file, without a write of your own.
+
+        ONE MEMORY, EVERY AGENT, AT ONCE, ON THE READ PATH TOO (2.28.0). The write path already met
+        a peer: a save that finds the file moved merges with disk and lands. The read path did not.
+        A long-lived handle, which is what an MCP server or a framework adapter is, answered
+        `recall()` from the records it loaded at open, so a fact another process wrote a minute ago
+        was invisible until this handle happened to write. Measured 2026-09-14 on both formats: a
+        peer's record was visible to `recall()` and `items` in 0 of 2 formats before the handle's own
+        next write, and on the JSON format that write was refused, so it stayed invisible after it.
+
+        One `stat` when the file has not moved. When it has, the same union `reload()` performs,
+        without the save: the peer's records come in, this handle's unsaved records are kept and
+        will land on its next save. Returns {"changed": False} or the merge summary with
+        "changed": True. Safe to call before every read; the MCP server does.
+        """
+        if not self.path or self._file_sig is None:
+            return {"changed": False}
+        sig = self._stat_sig()
+        if sig == self._file_sig or sig is Inspeximus._ABSENT:
+            return {"changed": False}
+        out = self._merge_with_disk()
+        out["changed"] = True
         return out
 
     def _merge_with_disk(self) -> dict:
@@ -15041,6 +15066,9 @@ class _TenantView:
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
+        # `refresh` is `reload` without the save: the same file-level reconcile, store-wide for the
+        # same reason (2.28.0).
+        "refresh",
         # `import_changeset` sits beside `reload` because it is the same act: reconciling this
         # file with records it did not write. Both union by id and then re-run the store's own
         # per-key rule over every tenant's rows, and neither can be narrowed without breaking

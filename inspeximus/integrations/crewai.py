@@ -74,6 +74,7 @@ class InspeximusStorage(ComplianceMixin):
 
     def search(self, query: str, limit: int = 3,
                score_threshold: float = 0.35) -> List[Dict[str, Any]]:
+        self.store.refresh()                      # see what a peer process wrote (2.28.0)
         hits = self.store.recall(query, k=limit) or []
         out: List[Dict[str, Any]] = []
         for h in hits:

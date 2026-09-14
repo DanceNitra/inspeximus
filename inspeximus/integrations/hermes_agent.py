@@ -202,6 +202,7 @@ def _make_class(base):
             if self._store is None or not (query or "").strip():
                 return []
             try:
+                self._store.refresh()                      # see what a peer process wrote (2.28.0)
                 hits = self._store.recall(query, k=self._k)
             except Exception:                                # noqa: BLE001 - never break a turn
                 return []

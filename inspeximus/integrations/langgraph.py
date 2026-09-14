@@ -176,6 +176,7 @@ class InspeximusStore(BaseStore, ComplianceMixin):
                         and (r.get("meta") or {}).get("lg_key") is not None
                         and list((r.get("meta") or {}).get("lg_ns") or ())[:len(pref)] == pref]
                 if op.query:
+                    self.store.refresh()                      # see what a peer process wrote (2.28.0)
                     ranked = self.store.recall(op.query, k=op.limit + op.offset + 10)
                     order = {h["id"]: i for i, h in enumerate(ranked)}
                     pool = [r for r in pool if r["id"] in order]

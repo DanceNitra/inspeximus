@@ -48,6 +48,7 @@ class InspeximusRetriever(BaseRetriever, ComplianceMixin):
             self.store.extractor = extractor
 
     def _get_relevant_documents(self, query: str, *, run_manager=None) -> List[Document]:
+        self.store.refresh()                      # see what a peer process wrote (2.28.0)
         hits = self.store.recall(query, k=self.k) or []
         return [Document(page_content=h.get("text", ""),
                          metadata={"id": h.get("id"), "key": h.get("key"), **(h.get("meta") or {})})
@@ -74,6 +75,7 @@ class InspeximusChatMessageHistory(BaseChatMessageHistory, ComplianceMixin):
 
     @property
     def messages(self) -> List[BaseMessage]:
+        self.store.refresh()                      # see what a peer process wrote (2.28.0)
         rows = self.store.recall(self._tag, k=1000, where={"tags": {"$contains": self._tag}}) \
             if False else [r for r in getattr(self.store, "items", []) if self._tag in (r.get("tags") or [])]
         rows = sorted(rows, key=lambda r: r.get("ts", 0))

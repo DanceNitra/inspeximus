@@ -44,6 +44,7 @@ Config (environment):
 """
 from __future__ import annotations
 
+import functools
 import json
 import os
 import sys
@@ -314,7 +315,34 @@ _recover_from_concurrent_writes(_MEM)
 from inspeximus.core import StoreChangedOnDisk  # noqa: E402  (used by the wrap above)
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
 
-mcp = FastMCP("inspeximus")
+class _FreshFastMCP(FastMCP):
+    """FastMCP whose `tool()` runs one `_MEM.refresh()` before each tool body, so a read sees what a peer wrote.
+
+    THE READ HALF OF `_recover_from_concurrent_writes`. That wrapper lets a WRITE recover after
+    another process wrote first. Nothing did the same for a read: this server is a long-lived
+    singleton handle, so `recall` answered from the records it loaded at startup and a fact the
+    Claude Code hook or a second server wrote was invisible here until this handle happened to
+    write. `refresh()` is one stat when the file has not moved and the documented merge when it
+    has, applied at the tool boundary rather than inside each of the 73 tools, so a tool added
+    tomorrow sees its peers by construction. `functools.wraps` keeps the signature FastMCP reads
+    for the tool's schema. A subclass rather than a second decorator name, because three guards
+    read the tool decorator lines of this file to know the tool surface, and a renamed decorator read
+    to them as a server with no tools.
+    """
+
+    def tool(self, *a, **k):
+        register = super().tool(*a, **k)
+
+        def deco(fn):
+            @functools.wraps(fn)
+            def fresh(*fa, **fk):
+                _MEM.refresh()
+                return fn(*fa, **fk)
+            return register(fresh)
+        return deco
+
+
+mcp = _FreshFastMCP("inspeximus")
 # FastMCP takes no version= argument, and without one it reports the MCP SDK's own version as
 # serverInfo.version — so a client asking which inspeximus it was talking to got "1.28.1", the SDK. Set it on
 # the inner Server, which is what the handshake actually reads.

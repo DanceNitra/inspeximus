@@ -123,6 +123,7 @@ class InspeximusMemoryService(BaseMemoryService, ComplianceMixin):
             return resp
         by_id = {r["id"]: r for r in self.store.items}      # recall() hits omit meta; look up the full record
         n = 0
+        self.store.refresh()                      # see what a peer process wrote (2.28.0)
         for h in self.store.recall(query, k=self.k + 20):
             rec = by_id.get(h["id"])
             m = (rec.get("meta") or {}) if rec else {}

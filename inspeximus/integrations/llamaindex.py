@@ -81,6 +81,7 @@ class InspeximusMemoryBlock(BaseMemoryBlock[str], ComplianceMixin):
 
     async def _aget(self, messages: Optional[List[ChatMessage]] = None, **block_kwargs: Any) -> str:
         query = self._text(messages[-1]) if messages else ""
+        self._store.refresh()                      # see what a peer process wrote (2.28.0)
         hits = self._store.recall(query, k=self.k) if query else []
         if not hits:
             return ""

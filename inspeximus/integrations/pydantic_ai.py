@@ -34,6 +34,7 @@ def inspeximus_toolset(store: Any = None, path: str | None = None, k: int = 5, e
     def recall(query: str) -> list[str]:
         """Retrieve the most relevant facts for a query. Superseded (corrected-away) values are not
         returned, so you get current-truth."""
+        store.refresh()                      # see what a peer process wrote (2.28.0)
         return [h["text"] for h in store.recall(query, k=k)]
 
     def check_conflict(text: str) -> list[str]:

@@ -82,6 +82,7 @@ class InspeximusMABMemory:
 
     def search(self, query: str, user_id: str = "default", limit: int = 10, **_: Any) -> Dict[str, List[dict]]:
         m = self._store(user_id)
+        m.refresh()                      # see what a peer process wrote (2.28.0)
         hits = m.recall(query, k=limit) or []
         return {"results": [{"memory": h.get("text", "")} for h in hits]}
 

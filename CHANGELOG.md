@@ -1,3 +1,30 @@
+## 2.28.0 - UPGRADE IF TWO PROCESSES SHARE ONE STORE: a long-lived handle sees what a peer wrote, on the read path too
+
+**One memory, every agent, at once, was true on the write path and false on the read path.** A save
+that finds the file moved merges with disk and lands; that shipped in 2.27.x. A READ did not look. An
+MCP server or a framework adapter is one handle that lives for hours, and it answered `recall()` from
+the records it loaded at open. Measured 2026-09-14 on 2.27.8, both formats, peer in a separate
+process: the peer's record was invisible to `recall()` and to `items` until this handle happened to
+write, and on the JSON format that write was refused, so it stayed invisible after it. The Claude
+Code hook and a second server write the same store as `inspeximus-mcp`; every `recall` that server
+served between its start and its next write was answered from a stale view.
+
+- `Inspeximus.refresh()`: one `stat` when the file has not moved, and the union `reload()` performs,
+  without the save, when it has. The peer's records come in; this handle's unsaved records are kept
+  and land on its next save. Returns `{"changed": False}` or the merge summary with `"changed": True`.
+- `inspeximus-mcp` calls it at the tool boundary, one wrapper over `@mcp.tool()`, so all 73 tools see
+  their peers by construction and a tool added tomorrow does too. Tool names, descriptions and
+  schemas verified identical before and after.
+- The nine framework adapters call it before each read (`autogen`, `crewai`, `google_adk`,
+  `hermes_agent`, `langchain` x2, `langgraph`, `llamaindex`, `memoryagentbench`, `pydantic_ai`), and
+  a test reads the integration sources and fails if a `.recall(` is not preceded by a `.refresh()`.
+  Proved able to fail: removing one line fails it and names the file and line.
+- Not wired inside `recall()` itself. `recall` is called from inside `observe`, `consolidate` and
+  ten other methods while they iterate the record list; a merge there would mutate the list under
+  the iteration. The boundary is the safe place, and the adoption test is what keeps it there.
+- `tests/test_a_long_lived_handle_sees_what_a_peer_wrote.py`: six tests, all fail on 2.27.8. The
+  control counts loads and requires zero across fifty refreshes on an unmoved file.
+
 ## 2.27.8 - UPGRADE IF SEVERAL PROCESSES OPEN ONE STORE ON WINDOWS: an open that lands on a peer's replace is retried, and never loads an empty store
 
 **The reader side of a retry the writer side already had.** `_durable_replace` retries `os.replace`

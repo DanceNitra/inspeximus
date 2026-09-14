@@ -67,6 +67,7 @@ class InspeximusMemory(ComplianceMixin):
         from autogen_core.memory import MemoryContent, MemoryMimeType, MemoryQueryResult
         q = getattr(query, "content", query)
         q = q if isinstance(q, str) else str(q)
+        self.store.refresh()                      # see what a peer process wrote (2.28.0)
         hits = self.store.recall(q, k=self.k)
         results = [MemoryContent(content=h["text"], mime_type=MemoryMimeType.TEXT,
                                  metadata={"id": h["id"]}) for h in hits]
