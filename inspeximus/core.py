@@ -1155,7 +1155,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.27.6"
+__version__ = "2.27.7"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5912,6 +5912,14 @@ class Inspeximus:
                 rm = r.setdefault("meta", {})
                 rm["superseded_by_toggle"] = rec["id"]
                 rm["superseded_by_policy"] = "keyed_reaffirm" if reaffirm else "keyed_lww"
+                if r.get("reopened"):
+                    # A REOPENED RECORD CLOSED BY A WRITE, NOT BY A DECISION (2.27.7). The review queue
+                    # lists active records only, so retiring one emptied the queue with no decision
+                    # recorded anywhere. Say what happened on both sides of the edge.
+                    rm["reopened_resolved"] = self._reopen_trace(
+                        "superseded_by_write", None, None,
+                        {"by": rec["id"], "reopened_ts": r.get("reopened_ts")})
+                    rec.setdefault("meta", {})["resolves_reopened"] = r["id"]
                 # WHAT THIS WRITE RETIRED, on the writing record, before its receipt is emitted.
                 #
                 # `status_sha256` binds the withheld/served class and deliberately folds `active` and
@@ -6450,11 +6458,32 @@ class Inspeximus:
                         "contested_by": (m.get("reopened_meta") or {}).get("contested_by")})
         return out
 
-    def resolve_reopened(self, rid: str, decision: str, capability: str | None = None) -> dict:
+    @staticmethod
+    def _reopen_trace(decision: str, reason, agent_id, was: dict) -> dict:
+        """What closed a reopened record: the decision, when, by whom, why, and the detection it closes."""
+        out = {"decision": decision, "ts": time.time()}
+        if reason:
+            out["reason"] = str(reason)
+        if agent_id is not None:
+            out["aid"] = agent_id
+        out["was"] = {k: v for k, v in (was or {}).items() if v is not None}
+        return out
+
+    def resolve_reopened(self, rid: str, decision: str, capability: str | None = None,
+                         reason: str | None = None, agent_id: str | None = None) -> dict:
         """STEWARD DECISION on a reopened interval. decision='keep_current' clears the flag (false alarm ->
         status back to active). decision='reaffirm_prior' restores the surfaced prior value via the authorized
         revert path (remember(reaffirm=True)) — so it takes the revert capability when one is configured, exactly
-        like promote_candidate (the content path must not launder a restore to authority). Returns a summary."""
+        like promote_candidate (the content path must not launder a restore to authority). Returns a summary.
+
+        THE DECISION LEAVES A TRACE (2.27.7). `keep_current` used to pop every reopen marker off the record,
+        so after the steward's decision nothing on disk said a contradiction had ever been detected, let alone
+        who closed it or why. An adversarial pass against deepseek-ai/DeepSeek-V3#1644's audit-entry list
+        found that, and found the mirror of it on the other exit: a later keyed write on the same key
+        superseded a reopened record and the queue simply emptied. Both exits now write `meta.reopened_resolved`
+        on the record they close: the decision, when, by whom (`agent_id`), why (`reason`), and the markers
+        the detection carried. The queue still reads the live flag, so it empties as before; the history of
+        why it was ever non-empty stays."""
         rec = next((r for r in self.items if r["id"] == rid and r.get("reopened")
                     and r.get("status") == "active"), None)
         if rec is None:
@@ -6462,11 +6491,13 @@ class Inspeximus:
         if self.tenant is not None and rec.get("tenant") != self.tenant:
             raise KeyError(f"no reopened record with id {rid}")
         if decision == "keep_current":
+            m = rec.setdefault("meta", {})
+            was = {kk: m.pop(kk, None) for kk in ("reopened_reason", "reopened_surfaced_prior",
+                                                    "reopened_contradiction", "reopened_meta")}
+            was["reopened_ts"] = rec.pop("reopened_ts", None)
             rec.pop("reopened", None)
-            rec.pop("reopened_ts", None)
-            m = rec.get("meta", {})
-            for kk in ("reopened_reason", "reopened_surfaced_prior", "reopened_contradiction", "reopened_meta"):
-                m.pop(kk, None)
+            m["reopened_resolved"] = self._reopen_trace("keep_current", reason, agent_id, was)
+            self._touch(rec)
             self._save(force=True)
             return {"resolved": rid, "decision": "keep_current", "key": rec.get("key")}
         if decision == "reaffirm_prior":
@@ -6475,10 +6506,16 @@ class Inspeximus:
                 raise ValueError("no surfaced prior value to reaffirm")
             key = rec.get("key")
             rec.pop("reopened", None)                       # unflag; the reaffirm write will supersede it
+            rec.setdefault("meta", {})["reopened_resolved"] = self._reopen_trace(
+                "reaffirm_prior", reason, agent_id, {"reopened_ts": rec.get("reopened_ts")})
+            _meta = {"resolves_reopened": rid}
+            if reason:
+                _meta["reason"] = str(reason)
             # derived from the reopened record the prior value was surfaced from -- same principle as
             # revert: a call site the store owns, where the parent is known rather than inferred.
             new_id = self.remember(f"the {key} is {prior}", key=key, object=prior, reaffirm=True,
-                                   capability=capability, derived_from=[rid])
+                                   capability=capability, derived_from=[rid], meta=_meta,
+                                   agent_id=agent_id)
             return {"resolved": rid, "decision": "reaffirm_prior", "key": key, "reaffirmed_object": prior,
                     "new_id": new_id}
         raise ValueError("decision must be 'keep_current' or 'reaffirm_prior'")
@@ -7270,7 +7307,7 @@ class Inspeximus:
         earlier: those versions decode the file as UTF-8 and raise UnicodeDecodeError on the SQLite
         header. Renaming the backup back over the store is the whole rollback.
 
-        UNDER THE STORE LOCK, WITH THE HEADER READ AGAIN, since 2.27.6. This ran unlocked, and the
+        UNDER THE STORE LOCK, WITH THE HEADER READ AGAIN, since 2.27.7. This ran unlocked, and the
         `os.replace` at its end put whatever this handle had parsed over whatever was on disk by then.
         Two writers starting on a store that does not exist yet: the first creates the row store
         inside its locked save, and `sqlite3.connect` creates the file before the first commit writes
@@ -9634,7 +9671,8 @@ class Inspeximus:
                 return False
         return hmac.compare_digest(self.revert_capability(key), capability)
 
-    def revert(self, key: str, capability: str | None = None) -> dict:
+    def revert(self, key: str, capability: str | None = None, reason: str | None = None,
+               agent_id: str | None = None) -> dict:
         """CONTROL-PLANE revert: restore the value that the current active record for `key` superseded.
         The ledger knows what "the old one" is — no value token needed.
 
@@ -9685,10 +9723,20 @@ class Inspeximus:
         # deployment, declared lineage was 0.00%; content-based inference was tried and withdrawn in 1.50.0
         # at precision 0.06-0.23. This is the third option and the only one that is exact: at a call site the
         # store OWNS, the parent is known, so state it.
+        # WHO rolled back and WHY, on the record the rollback creates (2.27.7). A revert is the one
+        # write a store makes on a caller's behalf, and until now it was the one write that could not
+        # carry an author or a reason: `remember()` took `agent_id` and `meta`, `revert()` took neither,
+        # so an audit reading the history saw a correction with an author followed by a rollback with
+        # none. deepseek-ai/DeepSeek-V3#1644 lists both fields for every automatic operation, and the
+        # probe that checked this store against that list (probes/which_fields_of_a_1644_audit_entry_
+        # the_store_already_records.py) found exactly this gap.
+        _meta = {"revert_of": tgt["id"], "reverted_from": cur["id"]}
+        if reason:
+            _meta["reason"] = str(reason)
         rid = self.remember(tgt["text"], tags=tgt.get("tags"), value=tgt.get("value", 1.0),
                             mtype=tgt.get("mtype"), key=key, object=tgt.get("object"),
                             reaffirm=True, capability=capability, derived_from=[tgt["id"]],
-                            meta={"revert_of": tgt["id"], "reverted_from": cur["id"]})
+                            meta=_meta, agent_id=agent_id)
         return {"ok": True, "restored": rid, "superseded": cur["id"],
                 "reverted_to_object": tgt.get("object"), "reverted_to_text": tgt["text"]}
 

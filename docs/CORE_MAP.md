@@ -6,13 +6,13 @@ matching the code rather than quietly becoming fiction.
 
 ## Why one big file, and why the size is not the problem
 
-`inspeximus/core.py` is **1,091,437 bytes** across **15,658 lines**. Of that:
+`inspeximus/core.py` is **1,094,814 bytes** across **15,706 lines**. Of that:
 
 | | bytes | share |
 |---|---:|---:|
-| comments | 362,024 | 33% |
-| docstrings | 266,126 | 24% |
-| executable code | 463,287 | 42% |
+| comments | 362,981 | 33% |
+| docstrings | 267,018 | 24% |
+| executable code | 464,815 | 42% |
 
 **58% of the file is explanatory prose.** Nearly every guarantee
 carries the reason it exists and, usually, the failure that produced it. That is the audit
@@ -30,22 +30,23 @@ the file's own. Public methods are named, private ones counted; `*` marks a prop
 | 2 | 2530–3381 | 65,261 | `remember`, `admissibility_preconditions` _(+7 private)_ |
 | 3 | 3382–4478 | 70,039 | `audit_the_audits` |
 | 4 | 4479–5603 | 80,723 | `identifier_contract`, `commitment_supports`, `check_sources`, `verify_attestations`, `verify_writes` |
-| 5 | 5604–6485 | 61,578 | `recommit`, `verify_attribution`, `provisional`, `confirm`, `discard_provisional`, `candidates`, `promote_candidate`, +7 more _(+11 private)_ |
-| 6 | 6486–7500 | 72,512 | `remember_dedup`, `forget`, `register_erasure_target`, `forget_subject` _(+20 private)_ |
-| 7 | 7502–8548 | 69,956 | `reload`, `export_changeset`, `import_changeset`, `items*`, `pii_report`, `forget_pii`, `for_tenant`, +8 more _(+16 private)_ |
-| 8 | 8549–9434 | 60,496 | `state_digest`, `witness`, `verify_witness`, `index_coherence`, `erasure_certificate`, `remember_certificate`, `governance_report`, +9 more _(+4 private)_ |
-| 9 | 9436–10285 | 61,853 | `detect_split_view`, `retract_lineage`, `rederive`, `revert_challenge`, `revert_capability`, `revert`, `revert_intent`, +7 more _(+7 private)_ |
-| 10 | 10286–11685 | 101,778 | `believed_at`, `history`, `provenance`, `decisions_in_force`, `supersession_report`, `recall` _(+16 private)_ |
-| 11 | 11686–12598 | 64,366 | `influence_gate_report`, `credit`, `propagate_outcome`, `ratify`, `grade`, `convergence_report`, `slash`, +1 more _(+20 private)_ |
-| 12 | 12599–13470 | 60,842 | `monitor`, `spend_irreversible`, `irreversible_budget_report`, `recall_iterative`, `recall_iterative_start`, `recall_iterative_followup`, `admit`, +4 more _(+8 private)_ |
-| 13 | 13471–14389 | 62,727 | `consolidate`, `consolidate_clusters`, `apply_retention`, `sleep`, `session_salience`, `open_session`, `close_session`, +5 more _(+9 private)_ |
-| 14 | 14391–14758 | 26,071 | `check_self_narration`, `value_by_cohort`, `graph`, `subgraph`, `shred`, `reembed`, `flush` _(+3 private)_ |
+| 5 | 5604–6471 | 60,362 | `recommit`, `verify_attribution`, `provisional`, `confirm`, `discard_provisional`, `candidates`, `promote_candidate`, +6 more _(+12 private)_ |
+| 6 | 6472–7333 | 61,562 | `resolve_reopened`, `remember_dedup`, `forget`, `register_erasure_target`, `forget_subject` _(+18 private)_ |
+| 7 | 7334–8248 | 60,232 | `reload`, `export_changeset`, `import_changeset`, `items*`, `pii_report`, `forget_pii`, `for_tenant`, +3 more _(+17 private)_ |
+| 8 | 8249–9118 | 60,660 | `grants`, `grant_log`, `as_agent`, `erasure_report`, `erasure_audit`, `state_digest`, `witness`, +5 more _(+4 private)_ |
+| 9 | 9119–9997 | 61,540 | `explain_growth`, `anchor`, `merkle_root`, `inclusion_proof`, `transparent_statement`, `verify_inclusion`, `merkle_consistency_proof`, +14 more _(+5 private)_ |
+| 10 | 9998–10887 | 60,063 | `route`, `as_of`, `believed_at`, `history`, `provenance`, `decisions_in_force`, `supersession_report` _(+16 private)_ |
+| 11 | 10888–11733 | 67,113 | `recall` _(+3 private)_ |
+| 12 | 11734–12646 | 64,366 | `influence_gate_report`, `credit`, `propagate_outcome`, `ratify`, `grade`, `convergence_report`, `slash`, +1 more _(+20 private)_ |
+| 13 | 12647–13518 | 60,842 | `monitor`, `spend_irreversible`, `irreversible_budget_report`, `recall_iterative`, `recall_iterative_start`, `recall_iterative_followup`, `admit`, +4 more _(+8 private)_ |
+| 14 | 13519–14437 | 62,727 | `consolidate`, `consolidate_clusters`, `apply_retention`, `sleep`, `session_salience`, `open_session`, `close_session`, +5 more _(+9 private)_ |
+| 15 | 14439–14806 | 26,071 | `check_self_narration`, `value_by_cohort`, `graph`, `subgraph`, `shred`, `reembed`, `flush` _(+3 private)_ |
 
-**237 methods** on `Inspeximus`: 115 public, 122 private. Top-level functions outside the class: **58**. Other classes: **7** (AmbiguousSubject, _TrackedDict, _TrackedList, StoreChangedOnDisk, _StoreLock, _TenantBucket, _TenantView).
+**238 methods** on `Inspeximus`: 115 public, 123 private. Top-level functions outside the class: **58**. Other classes: **7** (AmbiguousSubject, _TrackedDict, _TrackedList, StoreChangedOnDisk, _StoreLock, _TenantBucket, _TenantView).
 
 ## Index
 
 Every public method, alphabetically, with the line it starts on.
 
-`admissibility_preconditions` 3263 · `admit` 13060 · `anchor` 9155 · `apply_retention` 13681 · `as_agent` 8248 · `as_of` 10208 · `audit_the_audits` 3382 · `believed_at` 10286 · `can_read` 8178 · `candidates` 6014 · `check_conflict` 14155 · `check_self_narration` 14391 · `check_sources` 4824 · `classify_reversion` 9865 · `close_session` 13981 · `commitment_supports` 4783 · `confirm` 5978 · `consolidate` 13471 · `consolidate_clusters` 13629 · `contradictions` 14131 · `convergence_report` 12356 · `credit` 12156 · `decisions_in_force` 10483 · `detect_split_view` 9436 · `discard_candidate` 6068 · `discard_provisional` 6002 · `distill_and_remember` 6221 · `erasure_audit` 8291 · `erasure_certificate` 8882 · `erasure_report` 8276 · `explain_growth` 9082 · `export_changeset` 7641 · `flush` 14736 · `for_tenant` 7901 · `forget` 6502 · `forget_pii` 7831 · `forget_subject` 6751 · `governance_report` 8992 · `grade` 12321 · `grant` 8021 · `grant_log` 8229 · `grants` 8212 · `graph` 14422 · `history` 10331 · `identifier_contract` 4479 · `import_changeset` 7661 · `inclusion_proof` 9226 · `index_coherence` 8849 · `influence_gate_report` 12040 · `irreversible_budget_report` 12848 · `items` 7700 · `memory_index` 13146 · `memory_report` 13324 · `merkle_consistency_proof` 9318 · `merkle_root` 9221 · `monitor` 12621 · `observe` 6285 · `open_session` 13850 · `pii_report` 7774 · `promote_candidate` 6039 · `propagate_outcome` 12248 · `provenance` 10350 · `provisional` 5951 · `ratify` 12294 · `recall` 10877 · `recall_iterative` 12921 · `recall_iterative_followup` 13014 · `recall_iterative_start` 12978 · `recommit` 5604 · `rederive` 9517 · `reembed` 14515 · `register_erasure_target` 6736 · `reload` 7529 · `remember` 2554 · `remember_certificate` 8942 · `remember_decision` 6142 · `remember_dedup` 6486 · `reopened` 6431 · `resolve_reopened` 6453 · `restore` 12520 · `restore_intent` 9717 · `restore_now` 9848 · `retract_lineage` 9479 · `revert` 9637 · `revert_capability` 9606 · `revert_challenge` 9599 · `revert_intent` 9710 · `revert_now` 9856 · `revoke` 8045 · `route` 9991 · `selection_integrity` 14349 · `session_context` 14062 · `session_salience` 13784 · `set_index_line` 13294 · `shred` 14487 · `slash` 12415 · `sleep` 13712 · `spend_irreversible` 12741 · `state_digest` 8549 · `subgraph` 14446 · `submit_revert` 9756 · `supersession_report` 10538 · `support_challenge_for` 6101 · `transparent_statement` 9242 · `value_by_cohort` 14409 · `verify_attestations` 5093 · `verify_attribution` 5645 · `verify_claim` 14207 · `verify_consistency` 9327 · `verify_cosigned_anchor` 9349 · `verify_inclusion` 9304 · `verify_witness` 8702 · `verify_writes` 5198 · `why_recalled` 13093 · `witness` 8581
+`admissibility_preconditions` 3263 · `admit` 13108 · `anchor` 9192 · `apply_retention` 13729 · `as_agent` 8285 · `as_of` 10256 · `audit_the_audits` 3382 · `believed_at` 10334 · `can_read` 8215 · `candidates` 6022 · `check_conflict` 14203 · `check_self_narration` 14439 · `check_sources` 4824 · `classify_reversion` 9913 · `close_session` 14029 · `commitment_supports` 4783 · `confirm` 5986 · `consolidate` 13519 · `consolidate_clusters` 13677 · `contradictions` 14179 · `convergence_report` 12404 · `credit` 12204 · `decisions_in_force` 10531 · `detect_split_view` 9473 · `discard_candidate` 6076 · `discard_provisional` 6010 · `distill_and_remember` 6229 · `erasure_audit` 8328 · `erasure_certificate` 8919 · `erasure_report` 8313 · `explain_growth` 9119 · `export_changeset` 7678 · `flush` 14784 · `for_tenant` 7938 · `forget` 6539 · `forget_pii` 7868 · `forget_subject` 6788 · `governance_report` 9029 · `grade` 12369 · `grant` 8058 · `grant_log` 8266 · `grants` 8249 · `graph` 14470 · `history` 10379 · `identifier_contract` 4479 · `import_changeset` 7698 · `inclusion_proof` 9263 · `index_coherence` 8886 · `influence_gate_report` 12088 · `irreversible_budget_report` 12896 · `items` 7737 · `memory_index` 13194 · `memory_report` 13372 · `merkle_consistency_proof` 9355 · `merkle_root` 9258 · `monitor` 12669 · `observe` 6293 · `open_session` 13898 · `pii_report` 7811 · `promote_candidate` 6047 · `propagate_outcome` 12296 · `provenance` 10398 · `provisional` 5959 · `ratify` 12342 · `recall` 10925 · `recall_iterative` 12969 · `recall_iterative_followup` 13062 · `recall_iterative_start` 13026 · `recommit` 5604 · `rederive` 9554 · `reembed` 14563 · `register_erasure_target` 6773 · `reload` 7566 · `remember` 2554 · `remember_certificate` 8979 · `remember_decision` 6150 · `remember_dedup` 6523 · `reopened` 6439 · `resolve_reopened` 6472 · `restore` 12568 · `restore_intent` 9765 · `restore_now` 9896 · `retract_lineage` 9516 · `revert` 9674 · `revert_capability` 9643 · `revert_challenge` 9636 · `revert_intent` 9758 · `revert_now` 9904 · `revoke` 8082 · `route` 10039 · `selection_integrity` 14397 · `session_context` 14110 · `session_salience` 13832 · `set_index_line` 13342 · `shred` 14535 · `slash` 12463 · `sleep` 13760 · `spend_irreversible` 12789 · `state_digest` 8586 · `subgraph` 14494 · `submit_revert` 9804 · `supersession_report` 10586 · `support_challenge_for` 6109 · `transparent_statement` 9279 · `value_by_cohort` 14457 · `verify_attestations` 5093 · `verify_attribution` 5645 · `verify_claim` 14255 · `verify_consistency` 9364 · `verify_cosigned_anchor` 9386 · `verify_inclusion` 9341 · `verify_witness` 8739 · `verify_writes` 5198 · `why_recalled` 13141 · `witness` 8618
 
