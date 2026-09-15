@@ -859,6 +859,15 @@ def main(argv=None):
                     help="a JSON file with the provider's own fields (system_name, intended_purpose, provider, ...)")
     td.add_argument("--expected-pubkey", dest="expected_pubkey", default=None)
 
+    dr = sub.add_parser("deployer-report", help="the Art. 26 deployer duties with the evidence this store and its "
+                        "action ledger supply, plus the GDPR Art. 35(7) DPIA and Art. 27(1) FRIA appendices; every "
+                        "field only the deployer can write is marked OPERATOR INPUT REQUIRED")
+    dr.add_argument("--out", default=None, help="write Markdown here (default: print JSON)")
+    dr.add_argument("--json", dest="as_json", default=None, help="also write the JSON report here")
+    dr.add_argument("--operator", default=None,
+                    help="a JSON file with the deployer's own fields (deployer, system_name, oversight_persons, ...)")
+    dr.add_argument("--expected-pubkey", dest="expected_pubkey", default=None)
+
     mc = sub.add_parser("mcp", help="start the MCP server (needs the [mcp] extra)")
     mc.add_argument("mcp_args", nargs=argparse.REMAINDER,
                     help="arguments passed through to the MCP server")
@@ -1077,7 +1086,7 @@ def main(argv=None):
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
                                                         "provenance", "erasure-certificate", "anchor", "actions", "subject",
-                                                        "technical-documentation"),
+                                                        "technical-documentation", "deployer-report"),
                receipt_key=_rk)
 
     if a.cmd == "anchor":
@@ -1496,6 +1505,24 @@ def main(argv=None):
             with open(a.out, "w", encoding="utf-8") as f:
                 f.write(render_markdown(doc))
             print(f"wrote {a.out}: Annex IV skeleton, {len(doc['operator_fields_missing'])} of "
+                  f"{doc['operator_fields_total']} operator fields still to fill, content {doc['content_sha256'][:12]}")
+        elif not a.as_json:
+            print(json.dumps(doc, indent=2, ensure_ascii=False, default=str))
+    elif a.cmd == "deployer-report":
+        from inspeximus.actions import ActionLedger
+        from inspeximus.deployer import deployer_report, render_markdown as _render_deployer
+        operator = {}
+        if a.operator:
+            with open(a.operator, encoding="utf-8") as f:
+                operator = json.load(f)
+        doc = deployer_report(m, ledger=ActionLedger(m), operator=operator, expected_pubkey=a.expected_pubkey)
+        if a.as_json:
+            with open(a.as_json, "w", encoding="utf-8") as f:
+                json.dump(doc, f, indent=2, ensure_ascii=False, default=str)
+        if a.out:
+            with open(a.out, "w", encoding="utf-8") as f:
+                f.write(_render_deployer(doc))
+            print(f"wrote {a.out}: deployer report, {len(doc['operator_fields_missing'])} of "
                   f"{doc['operator_fields_total']} operator fields still to fill, content {doc['content_sha256'][:12]}")
         elif not a.as_json:
             print(json.dumps(doc, indent=2, ensure_ascii=False, default=str))

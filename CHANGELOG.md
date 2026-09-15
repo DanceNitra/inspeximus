@@ -1,3 +1,28 @@
+## 2.30.0 - UPGRADE IF YOU DEPLOY A HIGH-RISK SYSTEM AND OWE A DPIA OR FRIA: the deployer report, Art. 26 duties with both appendices from the same evidence. AFFECTS NOBODY'S EXISTING CODE: everything here is new and opt-in.
+
+Art. 26 binds the deployer, not the provider, and most of it is organisational. What the store
+and the action ledger can show is what happened, and `inspeximus.deployer.deployer_report(store,
+ledger=, operator=)` writes that under each paragraph: who recorded oversight and how often, error
+actions nobody reviewed (26(2)); incidents and the Art. 73 clock (26(5)); the age of the oldest
+kept log entry against the six-month floor, reported as `not_yet_testable` until the log is that
+old and never as met before (26(6)); disclosure receipts (26(11)); the portable bundle an authority
+verifies offline (26(12)). Everything the deployer must write, 12 fields, is marked OPERATOR INPUT
+REQUIRED.
+
+- `dpia_appendix()`: GDPR Art. 35(7)(a) to (d), with the (a) inventory (records, tagged personal
+  data with the coverage caveat, erasures by request, grants) and the (d) measures (chain
+  verification, log retention, rights exercised) filled from evidence; six operator fields.
+- `fria_appendix()`: Art. 27(1)(a) to (f), with the observed period and frequency (b), the
+  oversight recorded (e) and the incidents, rights requests and stops (f) filled from the ledger;
+  seven operator fields. The sections that share evidence with the DPIA cross-reference it, which
+  Art. 27(4) as amended by Regulation (EU) 2026/1744 allows. Applicability is an operator field:
+  the report does not decide whether Art. 27 binds a deployment.
+- CLI `inspeximus deployer-report --out report.md --operator fields.json`; MCP `deployer_report`
+  (84 tools). `render_markdown()` shared with the Annex IV skeleton.
+- Seven tests, each with a control that fails: the floor is not claimed on a young log, an empty
+  ledger reports no period, a rewritten ledger shows as not verified in the DPIA, the FRIA targets
+  exist in the DPIA, no record text or erased content reaches the report.
+
 ## 2.29.1 - UPGRADE IF YOU USE THE ACTION LEDGER: four red-team mutations passed the 2.29.0 verifier. AFFECTS: `verify()` is stricter, `memory_state` is captured before the action, input digests are salted.
 
 A red-team pass on the page that describes the ledger ran seven mutations against 2.29.0; four

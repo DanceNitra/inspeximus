@@ -65,6 +65,7 @@ from .trusted_list import TrustedList, parse_trusted_list, classify_status
 from .actions import ActionLedger
 from .subject_rights import export_subject, rectify
 from .technical_documentation import annex_iv, instructions_for_use
+from .deployer import deployer_report, dpia_appendix, fria_appendix
 
 __all__ = [
     "Inspeximus",
@@ -73,6 +74,9 @@ __all__ = [
     "rectify",
     "annex_iv",
     "instructions_for_use",
+    "deployer_report",
+    "dpia_appendix",
+    "fria_appendix",
     "AmbiguousSubject",
     "new_receipt_keypair",
     "receipt_key_for",

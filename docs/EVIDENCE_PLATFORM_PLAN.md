@@ -41,8 +41,8 @@ shipped in inspeximus 2.28.1. "Build" is this plan.
 | Art. 11 and Annex IV: technical documentation | provider | **Annex IV generator**: fills the sections that evidence can fill (2(a) to 2(g), 3, 4, 5) from the ledgers and reports, marks the rest as operator input | built 2026-09-15 (`annex_iv`, free skeleton); pro dossier open |
 | Art. 17 and Art. 18: quality management system, keep documentation ten years | provider | export bundle with a signed manifest, versioned | have (bundle); add documentation retention |
 | Art. 20, Art. 73: corrective actions, serious incident reporting (fifteen days) | provider | **incident ledger** with a report generator carrying the linked evidence | build |
-| Art. 26: deployer duties: use per instructions, assign oversight, monitor, keep logs, inform workers, DPIA under GDPR Art. 35 | deployer | deployer view of the same ledgers, DPIA evidence appendix | build (report mode) |
-| Art. 27: fundamental rights impact assessment (public bodies and named private uses) | deployer | FRIA evidence appendix from the same data | build (template) |
+| Art. 26: deployer duties: use per instructions, assign oversight, monitor, keep logs, inform workers, DPIA under GDPR Art. 35 | deployer | deployer view of the same ledgers, DPIA evidence appendix | built 2026-09-15 (`deployer_report`, 2.30.0) |
+| Art. 27: fundamental rights impact assessment (public bodies and named private uses) | deployer | FRIA evidence appendix from the same data | built 2026-09-15 (`fria_appendix`, cross-references the DPIA per Art. 27(4)) |
 | Art. 49: registration in the EU database | provider, some deployers | export of the identifying fields | build (small) |
 | Art. 50: disclosure that the user interacts with an AI system; marking of generated content | provider, deployer | **disclosure receipt** per session: what was shown, when, in which channel | build (small, applies now) |
 | Art. 72: post-market monitoring | provider | periodic monitoring report from the ledgers | build (report mode) |
@@ -52,7 +52,7 @@ shipped in inspeximus 2.28.1. "Build" is this plan.
 | GDPR Art. 17: erasure | controller | signed content-free tombstone, residue check, offline certificate, cross-store manifest | have |
 | GDPR Art. 22: automated decisions with legal effect | controller | oversight ledger shows the human review | build (same as Art. 14) |
 | GDPR Art. 30: records of processing | controller | live record from the store | have (overlay) |
-| GDPR Art. 35: DPIA | controller | evidence appendix | build (report mode) |
+| GDPR Art. 35: DPIA | controller | evidence appendix | built 2026-09-15 (`dpia_appendix`) |
 
 ## 3. The product, in modules
 
@@ -103,8 +103,9 @@ before it ships.
    Art. 16.
 3. **Incident ledger and Art. 73 report** (built 2026-09-15, in 2.29.0): `record_incident`, `incident_report`,
    the clock per severity, the overlay row. Formerly planned as 2.31.0.
-4. **2.32.0: full controls map** (every row of section 2), deployer report mode, DPIA and FRIA
-   appendices, Annex IV skeleton.
+4. **Deployer report, DPIA and FRIA appendices, Annex IV skeleton** (built 2026-09-15, 2.29.0 and
+   2.30.0). Still open from this step: the full controls map (every row of section 2), retention for
+   the action ledger, the Art. 49 export.
 5. **Pro:** dossier across stores, hosted witness, DSR workflow. Only after an inbound signal.
 
 ## 5. Making it findable

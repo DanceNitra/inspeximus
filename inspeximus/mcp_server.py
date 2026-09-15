@@ -1637,6 +1637,26 @@ def technical_documentation(operator_json: str | None = None, expected_pubkey: s
 
 
 @mcp.tool()
+def deployer_report(operator_json: str | None = None, expected_pubkey: str | None = None) -> dict:
+    """The EU AI Act Art. 26 deployer duties with the evidence this store and its action ledger supply (oversight
+    recorded, incidents and the Art. 73 clock, log age against the six-month floor, disclosures, personal data
+    inventory, chain verification), plus the GDPR Art. 35(7) DPIA and Art. 27(1) FRIA appendices built from the same
+    evidence, the FRIA cross-referencing the DPIA per Art. 27(4). `operator_json` is a JSON object string with the
+    deployer's own fields; every field it cannot write is marked OPERATOR INPUT REQUIRED. Not an assessment."""
+    import json as _json
+    from inspeximus.actions import ActionLedger
+    from inspeximus.deployer import deployer_report as _deployer_report
+    operator = {}
+    if operator_json:
+        try:
+            operator = _json.loads(operator_json)
+        except ValueError as ex:
+            return {"error": f"operator_json is not valid JSON: {ex}"}
+    return _deployer_report(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator,
+                            expected_pubkey=expected_pubkey)
+
+
+@mcp.tool()
 def what_it_knew(seq: int) -> dict:
     """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.

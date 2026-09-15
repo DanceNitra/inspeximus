@@ -340,6 +340,25 @@ Severities: serious (15 days), widespread (2), death (10), other (no clock). Evi
 re-checked by `verify()`. CLI `inspeximus actions incident TITLE --severity ... --actor ... --evidence SEQ`,
 `actions incident-report SEQ`. MCP `record_incident`, `incident_report`.
 
+Documents generated from the evidence:
+
+```python
+from inspeximus.technical_documentation import annex_iv, instructions_for_use, render_markdown
+from inspeximus.deployer import deployer_report, dpia_appendix, fria_appendix
+
+doc = annex_iv(m, ledger=led, operator={"system_name": "Support agent", "provider": "Acme GmbH"})   # Art. 11, Annex IV
+doc["operator_fields_missing"], doc["sections"]["2_elements_and_development"]["g_validation_and_testing"]
+rep = deployer_report(m, ledger=led, operator={"deployer": "Acme GmbH"}, now=None)               # Art. 26
+rep["sections"]["1_deployer_duties_art_26"]["26_6_log_retention"]["evidence"]["status"]          # no_log | empty | not_yet_testable | floor_observed
+rep["sections"]["2_appendix_dpia_gdpr_art_35_7"]                                                  # GDPR Art. 35(7)(a)-(d)
+rep["sections"]["3_appendix_fria_art_27_1"]["27_1_b_period_and_frequency"]["evidence_observed"]  # Art. 27(1)(a)-(f)
+```
+
+`now` pins the clock for the six-month floor and the Art. 73 deadlines. Every field only the provider
+or deployer can write is `OPERATOR INPUT REQUIRED`; `operator_fields_missing` lists them. CLI
+`inspeximus technical-documentation --out annex_iv.md --operator fields.json`, `inspeximus
+deployer-report --out deployer.md --operator fields.json`. MCP `technical_documentation`, `deployer_report`.
+
 ## Governance, erasure & audit
 
 inspeximus ships tamper-evident governance primitives — built by auditing inspeximus against a governance-evidence

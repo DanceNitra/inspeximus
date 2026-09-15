@@ -214,9 +214,9 @@ def annex_iv(store, ledger=None, operator: dict | None = None, expected_pubkey: 
     return doc
 
 
-def render_markdown(doc: dict) -> str:
+def render_markdown(doc: dict, title: str = "Technical documentation skeleton (Annex IV)") -> str:
     """A readable rendering of the skeleton. Values that are dicts or lists are rendered as JSON blocks."""
-    out = ["# Technical documentation skeleton (Annex IV)", "",
+    out = [f"# {title}", "",
            f"Generated {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(doc.get('generated_at', 0)))} UTC by "
            f"inspeximus {doc.get('inspeximus_version')}. {doc.get('scope')}", "",
            f"Operator fields still to fill: {len(doc.get('operator_fields_missing', []))} of "
