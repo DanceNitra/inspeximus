@@ -3,35 +3,68 @@
 <head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EU AI Act agent-memory compliance — inspeximus</title>
-  <meta name="description" content="Verifiable erasure receipts and tamper-evident records for AI-agent memory — reusable evidence for the EU AI Act (Art. 12/15/19) and GDPR Art. 17." />
+  <title>Show what your AI agent erased, and what it held when it acted | inspeximus</title>
+  <meta name="description" content="Memory evidence for AI agents: a signed receipt for what the memory store held when the agent acted, and for what was erased from it. GDPR Art. 17 since 25 May 2018; EU AI Act Art. 12/15/19 from 2 Dec 2027. Zero-dependency Python + MCP." />
   <link rel="canonical" href="https://dancenitra.github.io/inspeximus/ai-act.html" />
-  <meta property="og:title" content="The EU AI Act compliance-evidence layer for AI-agent memory" />
-  <meta property="og:description" content="Verifiable erasure and tamper-evident record-keeping for what your AI agent remembers — a drop-in overlay, not a rebuild. Evidence, not certification." />
+  <meta property="og:title" content="Show what your AI agent erased, and what it held when it acted" />
+  <meta property="og:description" content="Action loggers sign what an agent did. inspeximus records what its memory store held when it acted and what was erased from it. A drop-in overlay for agent memory that produces evidence for the accountable party." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dancenitra.github.io/inspeximus/ai-act.html" />
   <meta property="og:image" content="https://dancenitra.github.io/inspeximus/ai-act-og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="EU AI Act compliance-evidence layer for AI-agent memory" />
-  <meta name="twitter:description" content="Verifiable erasure and tamper-evident record-keeping for what your AI agent remembers. Evidence, not certification." />
+  <meta name="twitter:title" content="Show what your AI agent erased, and what it held when it acted" />
+  <meta name="twitter:description" content="A signed receipt for what your agent's memory held when it acted, and for what was erased from it. Evidence for the accountable party." />
   <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/ai-act-og.png" />
   <meta name="theme-color" content="#0d7d84" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "inspeximus — EU AI Act agent-memory compliance",
+    "name": "inspeximus — memory evidence for AI agents",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Windows, macOS, Linux",
-    "description": "Verifiable erasure receipts and tamper-evident record-keeping for AI-agent memory — reusable evidence for the EU AI Act (Art. 12/15/19) and GDPR Art. 17. Evidence, not certification.",
+    "description": "A signed receipt for what an AI agent's memory store held when it acted, and for what was erased from it. Reusable evidence for GDPR Art. 17 and the EU AI Act (Art. 12/15/19). Evidence, not certification.",
     "url": "https://dancenitra.github.io/inspeximus/ai-act.html",
     "downloadUrl": "https://pypi.org/project/inspeximus/",
     "codeRepository": "https://github.com/DanceNitra/inspeximus",
     "license": "https://opensource.org/licenses/MIT",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "author": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I show a regulator that my AI agent erased a user under GDPR Article 17?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Erase the subject from the agent's memory store, remove the records derived from it, and keep a signed, content-free tombstone that an auditor can verify without the store or the key. inspeximus does this with forget_subject and erasure_certificate. The evidence covers this memory store and what its recall returns afterwards, at the moment the certificate was issued. Copies outside that store, prompt logs and the model itself are the deployer's responsibility; registered external stores are named in the erasure register when they do not confirm." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the EU AI Act require logging what an AI agent remembers?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not in those words. Article 12 requires automatic event logging for high-risk systems and Article 19 requires keeping the logs for at least six months. Neither article names memory, provenance or tamper-evidence. Mapping those duties onto agent memory is an interpretation, and inspeximus labels its reports as evidence, not certification." }
+      },
+      {
+        "@type": "Question",
+        "name": "When do the EU AI Act high-risk obligations apply?",
+        "acceptedAnswer": { "@type": "Answer", "text": "From 2 December 2027 for standalone Annex III systems and from 2 August 2028 for Annex I product-embedded systems, after Regulation (EU) 2026/1744 (the Digital Omnibus on AI, in force 27 July 2026) deferred them. Article 50 transparency duties apply from 2 August 2026 (generative systems already on the market have until 2 December 2026 for Article 50(2) marking); the existing prohibitions and the general-purpose AI obligations were not deferred. GDPR Article 17 erasure has applied since 25 May 2018." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between an agent audit log and memory evidence?",
+        "acceptedAnswer": { "@type": "Answer", "text": "An audit log signs what the agent did: each tool call or model call becomes a receipt. Memory evidence records what the memory store held when the agent acted: its state digest and the ids the last recall on that store handle returned, in the same signed entry as the action. Tools such as Asqav and AIR Blackbox provide the first; AgentPrizm describes unsigned recall receipts and ArkForge described a signed hash of the context window. inspeximus records the action and the store state in one chain. It does not see the prompt, tool outputs or a store in another process." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can a vector database show that a deletion happened?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A delete call returns success and says nothing about what a later query returns. inspeximus stores a signed tombstone for every erasure, re-checks the store for residue, and exports a bundle an auditor verifies offline. It also registers external stores such as a vector index, so the erasure register names any store that did not confirm. That is evidence of deletion from the stores it can see, not a guarantee about copies it cannot." }
+      }
+    ]
   }
   </script>
 </head>
@@ -186,6 +219,10 @@
 
   /* ---- closing / footer ---- */
   .closing{text-align:center;padding:64px 0 40px}
+  .faq{display:grid;gap:14px;margin-top:28px;max-width:860px}
+  .faq details{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:16px 20px}
+  .faq summary{cursor:pointer;font-weight:600;font-size:1.02rem}
+  .faq details p{margin:12px 0 2px;color:var(--muted)}
   .closing h2{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 auto 18px;max-width:20ch}
   .closing .hero-cta{justify-content:center}
   footer{border-top:1px solid var(--line);padding:30px 0 60px;color:var(--muted);font-size:.82rem}
@@ -222,19 +259,22 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="deadline"><span class="dot"></span>EU AI Act &middot; high-risk obligations apply 2 Dec 2027 (deferred by Reg. (EU) 2026/1744)</span>
-        <h1 class="head">The compliance-evidence layer for what your&nbsp;AI&nbsp;agent <em>remembers</em>.</h1>
-        <p class="lede">When the AI Act's high-risk duties apply, a provider must <b>produce</b> evidence about its
-          system's logging (Art.&nbsp;12/19) and accuracy under tampering (Art.&nbsp;15) &mdash; and controllers must
-          erase on request (GDPR Art.&nbsp;17). The text names none of memory, provenance or tamper-evidence;
-          mapping them onto agent memory is our reading, not the law. Of the nine agent-memory products we
-          scanned, none ship it. <b>inspeximus does</b> &mdash; as a drop-in overlay, not a rebuild.</p>
+        <span class="deadline"><span class="dot"></span>GDPR Art. 17 applied since 25 May 2018 &middot; EU AI Act high-risk duties from 2 Dec 2027 (Reg. (EU) 2026/1744)</span>
+        <h1 class="head">Show what your&nbsp;AI&nbsp;agent <em>erased</em>, and what its memory held when it acted.</h1>
+        <p class="lede">An erasure request arrives. Your agent holds the person in its memory, in a vector index
+          and in the facts it derived from them. A <code>delete()</code> that returns 200 says nothing about
+          what the next query returns. inspeximus keeps a signed, content-free receipt for every write,
+          correction and erasure, and one for every action, carrying the state of the memory store at that
+          moment. You can show a regulator what the store held when the agent acted, which values had been
+          corrected, and that a residue scan found no trace of the erased subject when it was erased.</p>
         <div class="hero-cta">
           <a class="btn solid" href="#gap">See the gap</a>
           <a class="btn" href="#demo">One-command report</a>
         </div>
-        <p class="fineprint">A single zero-dependency Python file + an MCP server. Evidence, not certification &mdash;
-          the memory slice only, and the obligations bind the deployer, not the library.</p>
+        <p class="fineprint">A single zero-dependency Python file and an MCP server. It produces evidence. Certification stays with the assessor.
+          The memory slice only: the obligations bind the controller, provider or deployer, not the library. The
+          same receipts can support the AI Act's record-keeping and accuracy duties (Art.&nbsp;12/15/19) when they
+          apply.</p>
       </div>
       <div class="seal-wrap">
         <div class="seal" role="img" aria-label="inspeximus attestation seal — we have inspected">
@@ -271,10 +311,12 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">The market gap</span>
-        <h2>Every agent-memory library can store. None can prove.</h2>
+        <h2>Of nine agent-memory libraries, none documents verifiable erasure.</h2>
         <p class="sec-sub">We scanned the docs of nine agent-memory products (2026&#8209;07). None advertise
           verifiable erasure with a receipt, cryptographically tamper-evident record-keeping, or any EU AI Act
-          framing.</p>
+          framing (docs read 2026&#8209;07). We re-checked the audit-trail tools that appeared since (READMEs and sites
+          read 2026&#8209;09&#8209;15, second table): they sign the agent's actions, and none of the ones we read
+          ships a signed digest of the memory the agent acted on. inspeximus 2.29.1 records both.</p>
       </div>
       <div class="tablecard">
         <div class="tscroll">
@@ -294,10 +336,10 @@
                 <td><span class="mk no">none found</span></td></tr>
               <tr><td>Zep</td>
                 <td><span class="mk no">delete + legal-hold, not verifiable</span></td>
-                <td><span class="mk no">SOC2 audit logs, not cryptographic</span></td>
+                <td><span class="mk no">SOC 2 attested; audit logs not described as hash-linked</span></td>
                 <td><span class="mk no">none found</span></td></tr>
               <tr><td>Graphiti</td>
-                <td><span class="mk no">&ldquo;invalidated, not deleted&rdquo;</span></td>
+                <td><span class="mk no">&ldquo;invalidated&rdquo;, &ldquo;not deleted&rdquo;</span></td>
                 <td><span class="mk no">provenance, not tamper-evident</span></td>
                 <td><span class="mk no">none found</span></td></tr>
               <tr><td>Letta, cognee, Memobase, LangMem, Redis, Pinecone</td>
@@ -311,9 +353,61 @@
             </tbody>
           </table>
         </div>
-        <p class="tnote">&ldquo;The only one <b>we&rsquo;ve found</b>&rdquo; &mdash; a scan of nine libraries, not
-          an exhaustive proof of a universal negative. Zep has a genuine SOC2/HIPAA compliance surface &mdash;
-          just not verifiable erasure, tamper-evident logs, or AI-Act alignment.</p>
+        <p class="tnote">The only one we found among nine, from each product's documentation on 2026&#8209;07, not an
+          exhaustive proof of a universal negative. Zep has a SOC&nbsp;2 and HIPAA compliance surface; its
+          documentation does not describe verifiable erasure, hash-linked logs, or AI-Act alignment.</p>
+      </div>
+      <div class="sec-head" style="margin-top:36px">
+        <h2>Audit-trail tools sign what the agent did. This one also records what its memory held.</h2>
+        <p class="sec-sub">Read from each project's README and site on 2026&#8209;09&#8209;15. inspeximus also records
+          the action half, so a separate action logger is optional for this slice; each action entry carries the
+          store's state digest and the ids the last recall on that store handle returned. The two nearest
+          designs we found: AgentPrizm describes recall receipts without a signature or an offline verifier, and
+          ArkForge described a signed hash of the context window (dev.to, April 2026) that its shipped repositories
+          do not carry.</p>
+      </div>
+      <div class="tablecard">
+        <div class="tscroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Tool</th>
+                <th>Signs the agent's actions</th>
+                <th>Attests memory state</th>
+                <th>Evidence of erasure from memory</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Asqav</td>
+                <td><span class="mk yes"><svg class="g" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10.5l4 4 8-9"/></svg>ML&#8209;DSA&#8209;65 receipts per action, signed server&#8209;side (a local Ed25519/ES256 mode exists)</span></td>
+                <td><span class="mk no">none found</span></td>
+                <td><span class="mk no">none found</span></td></tr>
+              <tr><td>AIR Blackbox</td>
+                <td><span class="mk yes"><svg class="g" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10.5l4 4 8-9"/></svg>gateway log + 51+ checks</span></td>
+                <td><span class="mk no">none found</span></td>
+                <td><span class="mk no">the sibling Tombstone project crypto&#8209;shreds data stored through its own vault; its README does not mention agent memory (read 2026&#8209;09&#8209;15)</span></td></tr>
+              <tr><td>agentaudit-python, ActionProof, AgentMint</td>
+                <td><span class="mk yes"><svg class="g" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10.5l4 4 8-9"/></svg>hash chain or Ed25519 per action</span></td>
+                <td><span class="mk no">none found</span></td>
+                <td><span class="mk no">none found</span></td></tr>
+              <tr><td>LangSmith, Langfuse and other tracing</td>
+                <td><span class="mk no">traces, not tamper-evident by default</span></td>
+                <td><span class="mk no">none found</span></td>
+                <td><span class="mk no">none found</span></td></tr>
+              <tr class="us"><td>inspeximus</td>
+                <td><span class="mk yes"><svg class="g" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10.5l4 4 8-9"/></svg>action ledger, signed with the store's key; hashes and signatures verify offline, the memory binding needs the store</span></td>
+                <td><span class="mk yes"><svg class="g" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10.5l4 4 8-9"/></svg>store digest and recalled ids on every action, this store handle only</span></td>
+                <td><span class="mk yes"><svg class="g" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 10.5l4 4 8-9"/></svg>signed tombstone, residue scan at erasure, offline certificate</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tnote">Others describe adjacent gaps, none of them about this product: a data-governance vendor
+          writes that, as of 2026, no commercially available vector database provides a provable deletion mechanism
+          (<a href="https://atlan.com/know/ai-agent-memory-governance/">Atlan</a>); a privacy law firm
+          titled its note &ldquo;You Cannot Delete What You Do Not Know the Agent Stored&rdquo;
+          (<a href="https://astraea.law/insights/ai-agent-memory-tool-privacy-compliance">Astraea Counsel</a>); and a
+          2026 thesis that checked 770 open-source agents against Art.&nbsp;12 found that no high-risk agent among them
+          fully complies, and 256 have no logging at all (<a href="https://mavmatrix.uta.edu/cse_theses2/3/">ReDit, University of Texas at Arlington</a>).</p>
       </div>
     </div>
   </section>
@@ -322,30 +416,35 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">What it covers</span>
-        <h2>The three memory duties the Act actually names.</h2>
-        <p class="sec-sub">Each maps to a shipped inspeximus primitive &mdash; deterministic, no LLM on the write
-          path, no new infrastructure.</p>
+        <h2>Three duties in the Act and the GDPR that touch agent memory.</h2>
+        <p class="sec-sub">Each maps to a shipped inspeximus primitive that runs deterministically, with no LLM on the write
+          path and no new infrastructure.</p>
       </div>
       <div class="pillars">
         <div class="pillar">
           <span class="art">AI Act &middot; Art. 12 &amp; 19</span>
           <h3>Record-keeping, kept&nbsp;&ge;&nbsp;6&nbsp;months</h3>
-          <p>Every write is a hash-linked, timestamped receipt; <code>anchor()</code> signs a tree head over the
-            whole history. <code>audit-build</code> exports a content-free bundle an auditor re-verifies from
-            genesis <b>offline</b> &mdash; no live store, no key.</p>
+          <p>With receipts on, every write is a hash-linked, timestamped receipt, and every action the agent takes
+            (a tool call, a model call) is one more, carrying the state of the memory store before it acted
+            (<code>ActionLedger</code>, 2.29.1). <code>anchor()</code> signs a tree head over the whole history.
+            <code>audit-build</code> exports a content-free bundle an auditor re-verifies from genesis offline,
+            with no live store and no key; binding the action entries to the memory chain needs the store.</p>
         </div>
         <div class="pillar">
           <span class="art">AI Act &middot; Art. 15</span>
           <h3>Accuracy &amp; resistance to tampering</h3>
-          <p>Keyed supersession serves the corrected value and resists the stale one resurfacing
-            (<code>echo_guard</code>); the influence gate and witness co-signing resist memory-poisoning and
-            operator-side tampering (<code>detect_split_view</code>).</p>
+          <p>Keyed supersession serves the corrected value and helps keep the stale one from resurfacing
+            (<code>echo_guard</code>); the influence gate and witness co-signing help detect memory-poisoning and
+            operator-side tampering (<code>detect_split_view</code>). An operator who holds the receipt key can
+            rewrite both chains consistently; the witness, not the ledger, is the control for that.</p>
         </div>
         <div class="pillar">
           <span class="art">GDPR &middot; Art. 17</span>
-          <h3>Provable right to erasure</h3>
+          <h3>Evidence for the right to erasure</h3>
           <p><code>forget_subject</code> hard-deletes the subject <b>plus its derived lineage</b> and emits a
-            signed, content-free tombstone; <code>erasure_certificate</code> is the portable proof-of-deletion.</p>
+            signed, content-free tombstone; <code>erasure_certificate</code> is the portable evidence of deletion
+            from this store: a chain self-check runs when it is issued, the residue scan runs at erasure, and the
+            verifier confirms absence when given the store.</p>
         </div>
       </div>
     </div>
@@ -356,12 +455,12 @@
       <div class="sec-head">
         <span class="eyebrow">The overlay</span>
         <h2>One command turns a store into a DPO-facing report.</h2>
-        <p class="sec-sub">Article-labelled evidence with live counts from your own store &mdash; and a bundle an
+        <p class="sec-sub">Article-labelled evidence with live counts from your own store, and a bundle an
           auditor verifies without the store or the key.</p>
       </div>
       <div class="demo">
         <div class="top"><span class="d"></span><span class="d"></span><span class="d"></span>
-          <span class="t">bash &mdash; inspeximus</span></div>
+          <span class="t">bash: inspeximus</span></div>
 <pre><span class="cm"># a store used normally, with the tamper-evident chain on: a fact, a correction, a PII record, an erasure</span>
 <span class="p">$</span> inspeximus --receipts remember <span class="k">"retention policy is 90 days"</span> --key policy::ret --object 90d
 <span class="p">$</span> inspeximus --receipts remember <span class="k">"retention policy is 30 days"</span> --key policy::ret --object 30d  <span class="cm"># corrects</span>
@@ -370,14 +469,17 @@
 
 <span class="cm"># one command &rarr; an article-labelled evidence report, live counts from the store</span>
 <span class="p">$</span> inspeximus compliance --out report.html
-  wrote compliance report &rarr; report.html  <span class="ok">(6/7 controls with live evidence)</span>
+  wrote compliance report &rarr; report.html  <span class="ok">(6/14 controls with live evidence)</span>
 
-<span class="cm"># hand the auditor a content-free bundle &mdash; they verify it offline, no store, no key</span>
+<span class="cm"># hand the auditor a content-free bundle; they verify it offline without the store or the key</span>
 <span class="p">$</span> inspeximus audit-build --out bundle.json
 <span class="p">$</span> inspeximus audit-verify bundle.json
-  <span class="ok">OK</span>  write chain verifies from genesis: 3 append-only records &rarr; anchor tip
-  <span class="ok">OK</span>  erasure chain verifies from genesis: 1 tombstone &rarr; anchor tip
-  VERDICT: <span class="ok">PASS</span></pre>
+  <span class="ok">OK</span>  write chain verifies from genesis: 3 append-only records -&gt; anchor tip
+  <span class="ok">OK</span>  erasure chain verifies from genesis: 1 tombstones -&gt; anchor tip
+  <span class="cm">  ... 4 more OK lines, then 4 NOTE lines; two of them, abridged:</span>
+  NOTE UNSIGNED: 0 of 4 chain entries carry a signature. The chain is internally consistent, which is not the same as attributable ...
+  NOTE SELF-CERTIFIED: this anchor carries no external co-signature. Every check above is the operator's own record-keeping verified against itself ...
+  VERDICT: <span class="ok">PASS</span>  (3 writes, 1 erasures, content NOT checked)</pre>
       </div>
     </div>
   </section>
@@ -387,14 +489,14 @@
   <section>
     <div class="wrap">
       <div class="boundary">
-        <h2>The honest boundary &mdash; why you can trust it</h2>
+        <h2>The boundary</h2>
         <p>This is the <b>agent-memory slice only</b>: the records, corrections and erasures in <i>this</i>
           store. It produces <b>evidence, not a certification.</b> The EU AI Act imposes far more than any memory
-          library can satisfy &mdash; risk management, data governance, human oversight, conformity assessment
-          &mdash; and those are the deployer&rsquo;s job.</p>
+          library can satisfy (risk management, data governance, human oversight, conformity assessment),
+          and those are the deployer&rsquo;s job.</p>
         <p>The obligations bind the <b>controller, provider or deployer</b>, not the library. inspeximus gives
           the accountable party the receipts, provenance and provable erasure they use to <i>demonstrate</i> the
-          memory-record duties &mdash; and says so, in every report it prints. The Art. 17 erasure guarantee is
+          memory-record duties, and says so in every report it prints. The Art. 17 erasure evidence is
           only as complete as the encryption and copy-control of the underlying store.</p>
       </div>
     </div>
@@ -406,9 +508,9 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">For auditors &amp; compliance teams</span>
-        <h2>inspeximus&#8209;pro &mdash; the evidence pack, assembled.</h2>
-        <p class="sec-sub">The free tools prove one store. <b>inspeximus&#8209;pro</b> turns every agent-memory
-          store you run into one branded, signed, auditor-ready dossier &mdash; an org-wide compliance matrix, a
+        <h2>inspeximus&#8209;pro: the evidence pack, assembled.</h2>
+        <p class="sec-sub">The free tools cover one store. <b>inspeximus&#8209;pro</b> turns every agent-memory
+          store you run into one branded, signed dossier built for auditors: an org-wide compliance matrix, a
           cross-store erasure register, and a verification runbook an auditor can run with the free CLI (we have not
           tested how any conformity assessor treats it).</p>
       </div>
@@ -419,7 +521,7 @@
         <ul style="margin:16px 0 0;padding-left:1.15rem;color:var(--ink-2);font-size:.95rem;line-height:1.7">
           <li>Many stores &rarr; one signed <code style="font-family:var(--mono);color:var(--teal-deep)">MANIFEST.json</code> + a print-ready dossier.</li>
           <li>Every bundle verifiable offline with the <b>free</b> <code style="font-family:var(--mono);color:var(--teal-deep)">inspeximus audit-verify</code>.</li>
-          <li>Open-core: it assembles the free primitives, it never paywalls them. No servers, no LLM.</li>
+          <li>Open-core: it assembles the free primitives and does not paywall them. It runs without servers or an LLM.</li>
         </ul>
         <div class="hero-cta" style="margin-top:20px;align-items:center">
           <a class="btn solid" href="https://github.com/DanceNitra/inspeximus/issues/new?title=inspeximus-pro%20evidence%20pack%20%E2%80%94%20request&amp;body=I%27d%20like%20the%20inspeximus-pro%20auditor%20evidence-pack%20add-on.">Request the evidence pack &rarr;</a>
@@ -429,10 +531,65 @@
     </div>
   </section>
 
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Questions people bring us</span>
+        <h2>Memory evidence, in plain terms.</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>How do I show a regulator that my AI agent erased a user under GDPR Article 17?</summary>
+          <p>Erase the subject from the agent's memory store, remove the records derived from it, and keep a
+            signed, content-free tombstone that an auditor can verify without the store or the key. inspeximus
+            does this with <code>forget_subject</code> and <code>erasure_certificate</code>. The evidence covers
+            this memory store and what its recall returns afterwards, at the moment the certificate was issued.
+            Copies outside that store, prompt logs and the model itself are the deployer's responsibility; the
+            erasure register names any registered store that did not confirm.</p>
+        </details>
+        <details>
+          <summary>Does the EU AI Act require logging what an AI agent remembers?</summary>
+          <p>Not in those words. Article 12 requires automatic event logging for high-risk systems, and Article 19
+            requires keeping the logs for at least six months. Neither article names memory, provenance or
+            tamper-evidence. Mapping those duties onto agent memory is an interpretation, and every inspeximus
+            report labels itself evidence, not certification.</p>
+        </details>
+        <details>
+          <summary>When do the EU AI Act high-risk obligations apply?</summary>
+          <p>From 2 December 2027 for standalone Annex III systems and from 2 August 2028 for Annex I
+            product-embedded systems, after Regulation (EU) 2026/1744 (the Digital Omnibus on AI, in force
+            27 July 2026) deferred them. Article 50 transparency duties apply from 2 August 2026 (generative systems
+            already on the market have until 2 December 2026 for Article 50(2) marking); the existing prohibitions
+            and the general-purpose AI obligations were not deferred, and a high-risk system already on the market before its date is
+            covered only when its design changes significantly (Art.&nbsp;111(2)). GDPR Article 17 erasure has
+            applied since 25 May 2018.</p>
+        </details>
+        <details>
+          <summary>What is the difference between an agent audit log and memory evidence?</summary>
+          <p>An audit log signs what the agent did: each tool call or model call becomes a receipt. Memory
+            evidence attests what the agent knew when it acted: which facts were current, which had been
+            corrected, and which had been erased. Tools such as Asqav and AIR Blackbox provide the first;
+            AgentPrizm describes unsigned recall receipts and ArkForge described a signed hash of the context window.
+            inspeximus records the action and the store state in one chain, so <code>what_it_knew(seq)</code>
+            answers from the record. It does not see the prompt, tool outputs, or a store in another process:
+            the entry names its scope.</p>
+        </details>
+        <details>
+          <summary>Can a vector database show that a deletion happened?</summary>
+          <p>A delete call returns success and says nothing about what a later query returns. inspeximus stores
+            a signed tombstone for every erasure, re-checks the store for residue, and exports a bundle an auditor
+            verifies offline. It also registers external stores such as a vector index, so the erasure register
+            names any store that did not confirm. That is evidence of deletion from the stores it can see, not a
+            guarantee about copies it cannot.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <section class="closing">
     <div class="wrap">
-      <span class="eyebrow">Ship the evidence, not the promise</span>
-      <h2>Give your agent&rsquo;s memory the record the Act asks for.</h2>
+      <span class="eyebrow">Ship the evidence</span>
+      <h2>Give your agent&rsquo;s memory a record that goes past what the Act asks for.</h2>
       <div class="hero-cta">
         <a class="btn solid" href="https://pypi.org/project/inspeximus/"><code>pip install inspeximus</code></a>
         <a class="btn" href="https://github.com/DanceNitra/inspeximus/blob/main/docs/AI_ACT.md">The full mapping &rarr;</a>
@@ -443,7 +600,7 @@
 
 <footer>
   <div class="wrap">
-    <div>inspeximus &mdash; the self-correcting memory layer for AI agents.
+    <div>inspeximus: the self-correcting memory layer for AI agents.
       <a href="https://pypi.org/project/inspeximus/">PyPI</a> &middot;
       <a href="https://github.com/DanceNitra/inspeximus">GitHub</a> &middot;
       <a href="./">Overview</a> &middot;
@@ -451,12 +608,14 @@
       <a href="./claude-code.html">Claude Code</a> &middot;
       <a href="https://github.com/DanceNitra/inspeximus/blob/main/docs/COMPLIANCE.md">Control mapping</a></div>
     <div class="src">Article text verified verbatim against the EU Publications Office consolidated Official
-      Journal texts &mdash; Regulation (EU) 2024/1689 (AI Act) and Regulation (EU) 2016/679 (GDPR). Enforcement
+      Journal texts, Regulation (EU) 2024/1689 (AI Act) and Regulation (EU) 2016/679 (GDPR). Enforcement
       per AI Act Art. 113 <b>as amended by Regulation (EU) 2026/1744</b> (Digital Omnibus on AI, OJ 24&nbsp;Jul&nbsp;2026,
       in force 27&nbsp;Jul&nbsp;2026): the high-risk obligations of Chapter&nbsp;III Sections&nbsp;1&ndash;3 were deferred from
-      2&nbsp;Aug&nbsp;2026 to <b>2&nbsp;Dec&nbsp;2027</b> for standalone Annex&nbsp;III systems (Art.&nbsp;6(2)) and
-      <b>2&nbsp;Aug&nbsp;2028</b> for Annex&nbsp;I product-embedded systems (Art.&nbsp;6(1)). Art.&nbsp;12 requires automatic
-      event logging; it does not name memory, provenance or tamper-evidence &mdash; these tools <b>exceed</b> the legal
+      2&nbsp;Aug&nbsp;2026 to <b>2&nbsp;Dec&nbsp;2027</b> for standalone Annex&nbsp;III systems (Art.&nbsp;6(2)) and from
+      2&nbsp;Aug&nbsp;2027 to <b>2&nbsp;Aug&nbsp;2028</b> for Annex&nbsp;I product-embedded systems (Art.&nbsp;6(1)); a
+      high-risk system placed on the market before its date is covered only when its design changes significantly
+      (Art.&nbsp;111(2)). Art.&nbsp;12 requires automatic
+      event logging; it does not name memory, provenance or tamper-evidence; these tools go past the legal
       minimum rather than being mandated by it. Evidence tooling, not legal advice.</div>
   </div>
 </footer>
