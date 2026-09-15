@@ -29,7 +29,7 @@ side (and passes offline, which is why the binding exists), a forged signature f
   kind=)` records what the user was shown as a digest plus its length, per session and channel.
 - CLI: `inspeximus actions oversight EVENT --actor ... --refers SEQ`, `actions disclose --session ...
   --shown ...`, `actions report`. MCP: `record_oversight`, `record_disclosure`, `oversight_report`
-  (82 tools with the rights and incident tools).
+  (83 tools with the rights, incident and documentation tools).
 - **Data-subject rights** (`inspeximus.subject_rights`): `export_subject(store, subject, ledger=)` returns
   every record whose source resolves to the subject, as erasure resolves it, with provenance, correction
   history, the tombstones already recorded and the actions taken while those records were recalled, under a
@@ -42,12 +42,18 @@ side (and passes offline, which is why the binding exists), a forged signature f
   verifier. `incident_report(seq)` is the Art. 73 skeleton: dates, deadline and overdue flag, evidence with
   its memory state and oversight, later entries that refer to the incident, and the fields the provider adds.
   CLI `actions incident | incident-report`; MCP `record_incident`, `incident_report`.
+- **Annex IV skeleton and Art. 13 instructions for use** (`inspeximus.technical_documentation`):
+  `annex_iv(store, ledger=, operator=)` fills the evidence sections of the Art. 11 technical documentation from
+  the live store and ledger (log files and schema, how to verify, memory and PII counts, oversight events,
+  chain verification, the controls report) and marks the 22 fields only the provider can write as
+  OPERATOR INPUT REQUIRED; `instructions_for_use()` is the Art. 13(3)(e) section. CLI
+  `inspeximus technical-documentation --out annex_iv.md --operator fields.json`; MCP `technical_documentation`.
 - `inspeximus compliance` grew from 7 to 14 controls: Art. 12 (actions), Art. 14, Art. 50, Art. 73, GDPR
   Art. 15, Art. 16 and Art. 22 read live counts from the ledger, through its verifier, so a rewritten ledger counts as no
   evidence. Report kind is now `inspeximus.compliance_report/2`.
 - `docs/EVIDENCE_PLATFORM_PLAN.md`: every duty the AI Act and GDPR place on an operator of agents,
   what artifact a tool can produce, and the order this package builds them in.
-- Twenty-nine tests, each with a control that fails.
+- Thirty-four tests, each with a control that fails.
 
 ## 2.28.1 - UPGRADE IF TWO PROCESSES WRITE ONE STORE WITH RECEIPTS ON: a peer's receipt survives this handle's next write
 

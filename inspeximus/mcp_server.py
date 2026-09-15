@@ -1618,6 +1618,25 @@ def incident_report(seq: int) -> dict:
 
 
 @mcp.tool()
+def technical_documentation(operator_json: str | None = None, expected_pubkey: str | None = None) -> dict:
+    """The Annex IV technical-documentation skeleton (EU AI Act Art. 11) for this store: the evidence sections
+    filled from the store and its action ledger (logs and how to verify them, memory and PII counts, oversight
+    events, chain verification, the 14-control report), every other field marked OPERATOR INPUT REQUIRED.
+    `operator_json` is a JSON object string with the provider's own fields. Includes the Art. 13(3)(e)
+    instructions-for-use section. Not a conformity assessment."""
+    import json as _json
+    from inspeximus.actions import ActionLedger
+    from inspeximus.technical_documentation import annex_iv
+    operator = {}
+    if operator_json:
+        try:
+            operator = _json.loads(operator_json)
+        except ValueError as ex:
+            return {"error": f"operator_json is not valid JSON: {ex}"}
+    return annex_iv(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator, expected_pubkey=expected_pubkey)
+
+
+@mcp.tool()
 def what_it_knew(seq: int) -> dict:
     """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.

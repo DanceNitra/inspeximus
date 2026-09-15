@@ -850,6 +850,15 @@ def main(argv=None):
     sjr.add_argument("--subject", default=None, help="the subject this record belongs to (source doc)")
     sjr.add_argument("--request-id", dest="request_id", default=None)
 
+    td = sub.add_parser("technical-documentation", help="the Annex IV technical-documentation skeleton (Art. 11) "
+                        "with the evidence sections filled from this store and its action ledger, and the "
+                        "Art. 13 instructions-for-use section on how to read and verify the logs")
+    td.add_argument("--out", default=None, help="write Markdown here (default: print JSON)")
+    td.add_argument("--json", dest="as_json", default=None, help="also write the JSON skeleton here")
+    td.add_argument("--operator", default=None,
+                    help="a JSON file with the provider's own fields (system_name, intended_purpose, provider, ...)")
+    td.add_argument("--expected-pubkey", dest="expected_pubkey", default=None)
+
     mc = sub.add_parser("mcp", help="start the MCP server (needs the [mcp] extra)")
     mc.add_argument("mcp_args", nargs=argparse.REMAINDER,
                     help="arguments passed through to the MCP server")
@@ -1067,7 +1076,8 @@ def main(argv=None):
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
-                                                        "provenance", "erasure-certificate", "anchor", "actions", "subject"),
+                                                        "provenance", "erasure-certificate", "anchor", "actions", "subject",
+                                                        "technical-documentation"),
                receipt_key=_rk)
 
     if a.cmd == "anchor":
@@ -1471,6 +1481,24 @@ def main(argv=None):
                         subject=a.subject, request_id=a.request_id)
             print(f"rectified {a.key}: {r['previous_id']} -> {r['new_id']}  (previous now {r['previous_status']}), "
                   f"ledger #{r['ledger_entry']['seq']}")
+    elif a.cmd == "technical-documentation":
+        from inspeximus.actions import ActionLedger
+        from inspeximus.technical_documentation import annex_iv, render_markdown
+        operator = {}
+        if a.operator:
+            with open(a.operator, encoding="utf-8") as f:
+                operator = json.load(f)
+        doc = annex_iv(m, ledger=ActionLedger(m), operator=operator, expected_pubkey=a.expected_pubkey)
+        if a.as_json:
+            with open(a.as_json, "w", encoding="utf-8") as f:
+                json.dump(doc, f, indent=2, ensure_ascii=False, default=str)
+        if a.out:
+            with open(a.out, "w", encoding="utf-8") as f:
+                f.write(render_markdown(doc))
+            print(f"wrote {a.out}: Annex IV skeleton, {len(doc['operator_fields_missing'])} of "
+                  f"{doc['operator_fields_total']} operator fields still to fill, content {doc['content_sha256'][:12]}")
+        elif not a.as_json:
+            print(json.dumps(doc, indent=2, ensure_ascii=False, default=str))
     elif a.cmd == "stats":
         items = getattr(m, "items", [])
         active = sum(1 for r in items if r.get("status") == "active")

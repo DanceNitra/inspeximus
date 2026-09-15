@@ -64,12 +64,15 @@ from .timestamp import qualified_status, signer_certificate, certificates_in
 from .trusted_list import TrustedList, parse_trusted_list, classify_status
 from .actions import ActionLedger
 from .subject_rights import export_subject, rectify
+from .technical_documentation import annex_iv, instructions_for_use
 
 __all__ = [
     "Inspeximus",
     "ActionLedger",
     "export_subject",
     "rectify",
+    "annex_iv",
+    "instructions_for_use",
     "AmbiguousSubject",
     "new_receipt_keypair",
     "receipt_key_for",
