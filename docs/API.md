@@ -328,6 +328,18 @@ Shell: `inspeximus subject export SUBJECT --out alice.json`, `inspeximus subject
 ledger (through its verifier) into the Art. 12 (actions), Art. 14, Art. 50, GDPR Art. 15, Art. 16 and
 Art. 22 rows.
 
+Serious incidents (Art. 73):
+
+```python
+e = led.incident("transfer above limit reached a customer", "serious", actor="dpo",
+                 description="...", refers_to=[3, 4], aware_ts=t_aware)   # 15-day clock from awareness
+led.incident_report(e["seq"])   # deadline, overdue flag, evidence with memory state, later updates
+```
+
+Severities: serious (15 days), widespread (2), death (10), other (no clock). Evidence must resolve and is
+re-checked by `verify()`. CLI `inspeximus actions incident TITLE --severity ... --actor ... --evidence SEQ`,
+`actions incident-report SEQ`. MCP `record_incident`, `incident_report`.
+
 ## Governance, erasure & audit
 
 inspeximus ships tamper-evident governance primitives — built by auditing inspeximus against a governance-evidence

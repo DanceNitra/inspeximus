@@ -111,7 +111,7 @@ def test_the_compliance_report_reads_the_ledger_and_treats_a_rewritten_one_as_no
     assert by_art["Art. 22"]["status"] == "evidence"
     assert by_art["Art. 50"]["status"] == "evidence" and by_art["Art. 50"]["live_count"] == 1
     assert by_art["Art. 12 (actions)"]["live_count"] == 1
-    assert len(r["controls"]) == 13          # the README publishes this count
+    assert len(r["controls"]) == 14          # the README publishes this count
     assert r["action_ledger"]["ledger_verified"] is True
     # CONTROL: rewrite the ledger; the report must not count it as evidence
     data = json.loads(led.path.read_text(encoding="utf-8"))

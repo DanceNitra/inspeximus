@@ -820,6 +820,16 @@ def main(argv=None):
                               "deepfake", "public_interest_text"])
     acd.add_argument("--locale", default=None)
     acsub.add_parser("report", help="oversight and disclosure counts an auditor asks for, from the ledger")
+    aci = acsub.add_parser("incident", help="record a serious incident (Art. 73) with its reporting clock")
+    aci.add_argument("title")
+    aci.add_argument("--severity", default="serious", choices=["serious", "widespread", "death", "other"])
+    aci.add_argument("--actor", required=True, help="who opened the record")
+    aci.add_argument("--description", default=None)
+    aci.add_argument("--evidence", type=int, action="append", default=[], help="seq of a ledger entry; repeatable")
+    aci.add_argument("--aware", type=float, default=None, help="unix time the provider became aware (default now)")
+    aci.add_argument("--subject", default=None)
+    acir = acsub.add_parser("incident-report", help="the Art. 73 report skeleton for incident SEQ")
+    acir.add_argument("seq", type=int)
 
     sj = sub.add_parser("subject", help="data-subject rights over this store: export (GDPR Art. 15) and "
                         "rectify (Art. 16); erasure is `forget-subject`")
@@ -1431,6 +1441,15 @@ def main(argv=None):
                   f"chars={e['shown_chars']}" + ("  SIGNED" if e.get("sig") else ""))
         elif a.actions_cmd == "report":
             print(json.dumps(led.oversight_report(), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "incident":
+            e = led.incident(a.title, a.severity, a.actor, description=a.description, refers_to=a.evidence,
+                             aware_ts=a.aware, subject=a.subject)
+            dl = e.get("report_deadline_ts")
+            print(f"recorded #{e['seq']} incident:{e['severity']} '{e['title']}' by {e['actor']}, evidence "
+                  f"{[r['seq'] for r in e['evidence']]}"
+                  + (f", report due in {e['report_deadline_days']} days" if dl else ""))
+        elif a.actions_cmd == "incident-report":
+            print(json.dumps(led.incident_report(a.seq), indent=2, ensure_ascii=False))
     elif a.cmd == "subject":
         from inspeximus.actions import ActionLedger
         from inspeximus.subject_rights import export_subject, rectify

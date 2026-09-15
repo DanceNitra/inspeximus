@@ -29,8 +29,10 @@ Two more event kinds share the chain. `oversight()` records a human decision abo
 (approve, refuse, override, stop, review) with the person or role who made it, for EU AI Act Art. 14
 and GDPR Art. 22. `disclosure()` records that a user was told they are interacting with an AI system,
 or that generated content was marked, for Art. 50, which applies from 2 August 2026. Every entry has
-a `kind`: "action" (the default), "oversight", "disclosure", or "rights" (a data-subject request served
-through `inspeximus.subject_rights`: an Art. 15 export or an Art. 16 rectification).
+a `kind`: "action" (the default), "oversight", "disclosure", "rights" (a data-subject request served
+through `inspeximus.subject_rights`: an Art. 15 export or an Art. 16 rectification), or "incident"
+(`incident()`: a serious-incident record with the Art. 73 reporting clock, and `incident_report()`
+for the report skeleton).
 
 The ledger lives beside the store as `<store>.actions.json`. `inspeximus actions verify` checks it
 offline; `verify()` also checks that every `memory_state.last_receipt` still resolves in the store's
@@ -56,7 +58,13 @@ except Exception:  # pragma: no cover - exercised only where cryptography is abs
     _HAVE_ED = False
 
 __all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VERSION",
-           "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS"]
+           "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS", "INCIDENT_SEVERITIES", "INCIDENT_DEADLINES_DAYS"]
+
+# Art. 73(2) to (4): a serious incident is reported immediately and no later than 15 days after the
+# provider becomes aware of it; 2 days for a widespread infringement or a serious incident concerning
+# critical infrastructure; 10 days for the death of a person. Days here are calendar days from `aware_ts`.
+INCIDENT_SEVERITIES = ("serious", "widespread", "death", "other")
+INCIDENT_DEADLINES_DAYS = {"serious": 15, "widespread": 2, "death": 10, "other": None}
 
 OVERSIGHT_EVENTS = ("approve", "refuse", "override", "stop", "review")
 DISCLOSURE_KINDS = ("interaction", "generated_content", "emotion_recognition", "biometric_categorisation",
@@ -208,8 +216,8 @@ class ActionLedger:
         "action" for what the agent did; `oversight()` and `disclosure()` set the other two."""
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
-        if kind not in ("action", "oversight", "disclosure", "rights"):
-            raise ValueError("kind must be action, oversight, disclosure or rights")
+        if kind not in ("action", "oversight", "disclosure", "rights", "incident"):
+            raise ValueError("kind must be action, oversight, disclosure, rights or incident")
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
         out = self.redact(output) if (self.redact and output is not None) else output
@@ -316,6 +324,75 @@ class ActionLedger:
         return self.record(f"disclosure:{kind}", status="ok", actor=actor, meta=meta, kind="disclosure",
                            extra=extra)
 
+    def incident(self, title: str, severity: str, actor: str, description: str | None = None,
+                 refers_to: list | None = None, aware_ts: float | None = None, subject: str | None = None,
+                 corrective_actions: list | None = None, reported_to: str | None = None,
+                 reported_ts: float | None = None, meta: dict | None = None) -> dict:
+        """Record a serious incident (EU AI Act Art. 73) or another notable event with the reporting clock.
+
+        `severity` is "serious" (15 days), "widespread" (2 days), "death" (10 days) or "other" (no
+        statutory clock). `aware_ts` is when the provider became aware; the deadline is computed from it.
+        `refers_to` lists the ledger entries (seqs or hashes) that are the evidence; each must resolve.
+        `actor` is the person or role who opened the record. Call `incident_report(seq)` for the
+        Art. 73 skeleton with the deadline and the linked evidence."""
+        if severity not in INCIDENT_SEVERITIES:
+            raise ValueError(f"severity must be one of {INCIDENT_SEVERITIES}")
+        if not actor or not title:
+            raise ValueError("an incident needs a title and an actor: the person or role who opened it")
+        refs = [self._resolve_ref(r) for r in (refers_to or [])]
+        aware = float(aware_ts) if aware_ts is not None else time.time()
+        days = INCIDENT_DEADLINES_DAYS[severity]
+        extra = {"title": title, "severity": severity, "description": description, "aware_ts": aware,
+                 "report_deadline_ts": (aware + days * 86400) if days else None,
+                 "report_deadline_days": days, "evidence": refs, "subject": subject,
+                 "corrective_actions": list(corrective_actions or []),
+                 "reported_to": reported_to, "reported_ts": reported_ts}
+        return self.record(f"incident:{severity}", inputs={"title": title}, status="ok", actor=actor,
+                           meta=meta, kind="incident", extra=extra)
+
+    def incident_report(self, seq: int, now: float | None = None) -> dict:
+        """The Art. 73 report skeleton for incident `seq`: what the ledger can fill (dates, deadline,
+        evidence entries with their memory state, oversight events on those actions, later updates that
+        refer to this incident) and what the provider must add (system identification, affected persons,
+        the assessment). Read-only."""
+        e = self._entries[seq]
+        if e.get("kind") != "incident":
+            raise ValueError(f"entry {seq} is a {e.get('kind', 'action')}, not an incident")
+        now = time.time() if now is None else now
+        deadline = e.get("report_deadline_ts")
+        evidence = []
+        for ref in e.get("evidence") or []:
+            x = self._entries[ref["seq"]]
+            row = {"seq": x["seq"], "kind": x.get("kind", "action"), "action": x.get("action"),
+                   "status": x.get("status"), "ts": x.get("ts"), "actor": x.get("actor"),
+                   "memory_state": x.get("memory_state")}
+            row["oversight"] = [{"seq": o["seq"], "event": o["event"], "actor": o.get("actor"), "reason": o.get("reason")}
+                                for o in self._entries if o.get("kind") == "oversight"
+                                and (o.get("refers_to") or {}).get("seq") == x["seq"]]
+            evidence.append(row)
+        updates = [{"seq": u["seq"], "kind": u.get("kind"), "action": u.get("action"), "ts": u.get("ts"),
+                    "actor": u.get("actor"), "event": u.get("event")}
+                   for u in self._entries[seq + 1:]
+                   if any((r or {}).get("seq") == seq for r in ([u.get("refers_to")] if isinstance(u.get("refers_to"), dict)
+                                                                 else (u.get("evidence") or [])))]
+        return {
+            "kind": "inspeximus.incident_report/1",
+            "incident": {k: e.get(k) for k in ("seq", "hash", "ts", "actor", "title", "severity", "description",
+                                                "aware_ts", "subject", "corrective_actions", "reported_to",
+                                                "reported_ts")},
+            "clock": {"deadline_ts": deadline, "deadline_days": e.get("report_deadline_days"),
+                      "days_left": (round((deadline - now) / 86400, 2) if deadline else None),
+                      "overdue": (bool(deadline and now > deadline and not e.get("reported_ts"))),
+                      "reported": bool(e.get("reported_ts"))},
+            "evidence": evidence,
+            "updates": updates,
+            "operator_must_add": ["identification of the AI system and the provider", "the persons or groups affected",
+                                  "the assessment of the incident and the causal link to the system",
+                                  "the market surveillance authority notified"],
+            "basis": "Regulation (EU) 2024/1689 Art. 73; the clock runs from the moment of awareness. The ledger "
+                     "supplies dates and evidence; it does not assess the incident.",
+        }
+
     def _resolve_ref(self, refers_to):
         if refers_to is None:
             return None
@@ -336,6 +413,8 @@ class ActionLedger:
         overs = [e for e in self._entries if e.get("kind") == "oversight"]
         discs = [e for e in self._entries if e.get("kind") == "disclosure"]
         rights = [e for e in self._entries if e.get("kind") == "rights"]
+        incidents = [e for e in self._entries if e.get("kind") == "incident"]
+        now = time.time()
         by_event: dict = {}
         by_actor: dict = {}
         reviewed = set()
@@ -360,6 +439,10 @@ class ActionLedger:
             "sessions_disclosed": {k: sorted(set(v)) for k, v in sessions.items()},
             "rights_requests": {"export": sum(1 for r in rights if r.get("event") == "export"),
                                 "rectify": sum(1 for r in rights if r.get("event") == "rectify")},
+            "incidents": len(incidents),
+            "incidents_overdue": [i["seq"] for i in incidents
+                                  if i.get("report_deadline_ts") and now > i["report_deadline_ts"]
+                                  and not i.get("reported_ts")],
         }
 
     # ----------------------------------------------------------------- reading
@@ -443,6 +526,13 @@ def verify_entries(entries: Iterable[dict], expected_pubkey: str | None = None,
                 problems.append(f"seq {i}: oversight refers_to does not resolve to an earlier entry")
         if e.get("kind") == "oversight" and not e.get("actor"):
             problems.append(f"seq {i}: oversight event with no actor")
+        if e.get("kind") == "incident":
+            for ref in e.get("evidence") or []:
+                j = (ref or {}).get("seq")
+                if not isinstance(j, int) or j >= i or j < 0 or entries[j].get("hash") != ref.get("hash"):
+                    problems.append(f"seq {i}: incident evidence does not resolve to an earlier entry")
+            if not e.get("actor"):
+                problems.append(f"seq {i}: incident with no actor")
     if len(pubkeys) > 1:
         problems.append(f"chain signed by {len(pubkeys)} different keys")
     return problems

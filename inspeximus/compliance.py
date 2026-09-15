@@ -45,6 +45,14 @@ _CONTROLS = [
      "disclosure() records per session what the user was shown, in which channel and of which kind, as a "
      "signed entry in the same chain; the report lists sessions with no disclosure.",
      "disclosures"),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 73", "Reporting of serious incidents",
+     "Providers must report serious incidents to the market surveillance authority immediately after "
+     "establishing a causal link, and no later than 15 days after becoming aware (2 days for a widespread "
+     "infringement, 10 days for a death).",
+     "incident() records the incident with the moment of awareness and the statutory clock, linked to the "
+     "ledger entries that are its evidence; incident_report() produces the Art. 73 skeleton and the report "
+     "lists incidents past their deadline that carry no reported_ts.",
+     "incidents"),
     ("EU AI Act (Reg (EU) 2024/1689)", "Art. 19", "Automatically generated logs (kept/retained)",
      "Providers must keep the automatically generated logs (Art. 12(1)) for a period appropriate to the "
      "intended purpose, of at least six months, keeping them available with their integrity preserved.",
@@ -167,6 +175,7 @@ def _ledger_counts(store) -> dict:
     """Live counts from the action ledger beside the store, or zeros when there is none. The ledger is
     read through its own verifier so a rewritten file counts as zero evidence rather than as evidence."""
     out = {"actions": 0, "oversight_events": 0, "disclosures": 0, "rights_export": 0, "rights_rectify": 0,
+           "incidents": 0, "incidents_overdue": [],
            "ledger_present": False, "ledger_verified": None, "error_actions_without_oversight": []}
     try:
         from .actions import ActionLedger
@@ -187,6 +196,8 @@ def _ledger_counts(store) -> dict:
     out["disclosures"] = rep["disclosures"]
     out["rights_export"] = rep["rights_requests"]["export"]
     out["rights_rectify"] = rep["rights_requests"]["rectify"]
+    out["incidents"] = rep["incidents"]
+    out["incidents_overdue"] = rep["incidents_overdue"]
     out["error_actions_without_oversight"] = rep["error_actions_without_oversight"]
     return out
 

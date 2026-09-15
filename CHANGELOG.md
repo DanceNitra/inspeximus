@@ -29,19 +29,25 @@ side (and passes offline, which is why the binding exists), a forged signature f
   kind=)` records what the user was shown as a digest plus its length, per session and channel.
 - CLI: `inspeximus actions oversight EVENT --actor ... --refers SEQ`, `actions disclose --session ...
   --shown ...`, `actions report`. MCP: `record_oversight`, `record_disclosure`, `oversight_report`
-  (80 tools with the two rights tools).
+  (82 tools with the rights and incident tools).
 - **Data-subject rights** (`inspeximus.subject_rights`): `export_subject(store, subject, ledger=)` returns
   every record whose source resolves to the subject, as erasure resolves it, with provenance, correction
   history, the tombstones already recorded and the actions taken while those records were recalled, under a
   manifest hash that a `rights:export` entry on the ledger carries (GDPR Art. 15). `rectify(store, key=,
   text=, actor=, reason=, ledger=)` supersedes through the ordinary keyed write and records who asked and why
   (Art. 16). CLI `inspeximus subject export | rectify`; MCP `export_subject`, `rectify_subject`.
-- `inspeximus compliance` grew from 7 to 13 controls: Art. 12 (actions), Art. 14, Art. 50, GDPR Art. 15,
-  Art. 16 and Art. 22 read live counts from the ledger, through its verifier, so a rewritten ledger counts as no
+- **Serious incidents** (Art. 73): `led.incident(title, severity, actor, refers_to=[seqs], aware_ts=)` records
+  the incident with the statutory clock from the moment of awareness (15 days; 2 for a widespread
+  infringement; 10 for a death), linked to the ledger entries that are its evidence, each re-checked by the
+  verifier. `incident_report(seq)` is the Art. 73 skeleton: dates, deadline and overdue flag, evidence with
+  its memory state and oversight, later entries that refer to the incident, and the fields the provider adds.
+  CLI `actions incident | incident-report`; MCP `record_incident`, `incident_report`.
+- `inspeximus compliance` grew from 7 to 14 controls: Art. 12 (actions), Art. 14, Art. 50, Art. 73, GDPR
+  Art. 15, Art. 16 and Art. 22 read live counts from the ledger, through its verifier, so a rewritten ledger counts as no
   evidence. Report kind is now `inspeximus.compliance_report/2`.
 - `docs/EVIDENCE_PLATFORM_PLAN.md`: every duty the AI Act and GDPR place on an operator of agents,
   what artifact a tool can produce, and the order this package builds them in.
-- Twenty-three tests, each with a control that fails.
+- Twenty-nine tests, each with a control that fails.
 
 ## 2.28.1 - UPGRADE IF TWO PROCESSES WRITE ONE STORE WITH RECEIPTS ON: a peer's receipt survives this handle's next write
 

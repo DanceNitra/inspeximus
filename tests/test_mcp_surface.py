@@ -85,6 +85,7 @@ def _args_for(name, sig, mod):
         # record_oversight / record_disclosure: a human decision with an actor, and a disclosure with the
         # text shown; both are driven for real so a crash on ordinary input is caught here.
         "event": "review", "actor": "reviewer", "session": "s1", "reason": "DSAR-17",
+        "title": "a transfer above the limit", "severity": "other", "evidence": [],
         "shown": "You are chatting with an AI assistant.",
     }
     args = []

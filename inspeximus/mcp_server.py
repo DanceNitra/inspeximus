@@ -1585,6 +1585,39 @@ def rectify_subject(key: str, text: str, actor: str, reason: str, subject: str |
 
 
 @mcp.tool()
+def record_incident(title: str, severity: str, actor: str, description: str | None = None,
+                    evidence: list[int] | None = None, aware_ts: float | None = None,
+                    subject: str | None = None) -> dict:
+    """Record a serious incident (EU AI Act Art. 73) in the action ledger with its reporting clock: severity
+    serious (15 days), widespread (2 days), death (10 days) or other. `evidence` lists ledger seqs that
+    document it; each must exist. `aware_ts` is when the provider became aware (default now)."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.incident(title, severity, actor, description=description, refers_to=evidence,
+                         aware_ts=aware_ts, subject=subject)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "severity": e["severity"], "report_deadline_ts": e["report_deadline_ts"],
+            "evidence": e["evidence"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def incident_report(seq: int) -> dict:
+    """The Art. 73 report skeleton for incident `seq`: dates, the statutory deadline and whether it is
+    overdue, the evidence entries with their memory state and any oversight on them, later entries that
+    refer to the incident, and the fields the provider must add. Read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    if seq < 0 or seq >= len(led):
+        return {"error": f"no entry #{seq}; the ledger has {len(led)} entries"}
+    try:
+        return led.incident_report(seq)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
 def what_it_knew(seq: int) -> dict:
     """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.
