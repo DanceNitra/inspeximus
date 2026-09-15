@@ -42,7 +42,7 @@ Counts by status:
 | 3 | `MCP_LISTINGS.md` | `83` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 4 | `README.md` | `14` `14` `0` | Framework adapters: 14 of 14 verified against current upstream, 0 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 5 | `README.md` | `20` | Sample size for cells 3 and 4. | **REPRODUCIBLE** | `python probes/integrity_bench_store_resolves.py --systems inspeximus` |
-| 6 | `README.md` | `14` | The compliance overlay has fourteen controls: the seven memory rows plus the seven action-ledger rows | **REPRODUCIBLE** | `python -m pytest tests/test_serious_incidents_carry_the_art_73_clock.py -q` |
+| 6 | `README.md` | `14` | The compliance overlay has fourteen controls: the seven memory rows plus the seven action-ledger rows | **REPRODUCIBLE** | `python probes/what_the_agent_knew_when_it_acted.py` |
 | 7 | `README.md` | `199` `384` `48` `4` `4` | Twelve separate OS processes writing one store through the library, four trials per format, at two writers and at twelve. The published line above carries the figures and is generated from the receipt by tools/sync_store_format_table.py; this description deliberately does not restate them, because it was the third copy of the same number and the only one nothing regenerated, so it still carried a figure that two re-measurements had moved. The JSON arm is the control: if it lost nothing the run would be too quiet for the row result to mean anything, and the receipt records whether it fired. | **REPRODUCIBLE** | `python probes/twelve_writers_and_the_one_that_stopped_writing.py` |
 | 8 | `README.md` | `20` | Cell 4: the same fixture run twice against a fresh store, timestamps and ordering normalised out. inspeximus byte-identical; Hindsight differs on all 20. | **REPRODUCIBLE** | `python probes/integrity_bench_determinism.py --systems inspeximus` |
 | 9 | `README.md` | `0` | The control: with the guard off we score zero, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
@@ -160,7 +160,7 @@ Counts by status:
 
 - **mcp-tool-count** — Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 in another. Three surfaces, one server, no error anywhere. Now read from the code.
 - **readme-adapter-conformance** — Read from docs/integration_conformance.json by _live_consistency(), which now checks BOTH index.html and README.md -- a second copy of a number is a second place for it to go stale. The other 12 in this file is the EU AI Act article number and stays a declared non-claim; the counts moved 9/12 -> 10/13 when the llm-errata adapter landed, and this line is why the drift surfaced instead of shipping; COUNT-DRIFT caught the collision the moment this line was added, which is the whole point.
-- **readme-compliance-controls** — The test asserts the count against compliance_report(); the number here is a copy of that assertion.
+- **readme-compliance-controls** — The probe's receipt carries compliance_controls; the README number is a copy of that field.
 - **readme-concurrent-writers** — Loss is load-dependent. The receipt carries every trial rather than a summary, and the claim is stated as the worst trial rather than a mean.
 - **readme-echo-graphiti** — Measured on the vendor's own native config (Neo4j + OpenAI), n=30.
 - **readme-echo-mem0** — Version-stamped on purpose: mem0 is on 2.0.18 as of 2026-08-11 and we have NOT re-run it.

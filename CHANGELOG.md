@@ -1,3 +1,29 @@
+## 2.29.1 - UPGRADE IF YOU USE THE ACTION LEDGER: four red-team mutations passed the 2.29.0 verifier. AFFECTS: `verify()` is stricter, `memory_state` is captured before the action, input digests are salted.
+
+A red-team pass on the page that describes the ledger ran seven mutations against 2.29.0; four
+passed `verify()` with the expected key named. Each is now a failing test in
+`tests/test_the_red_team_mutations_on_the_action_ledger_fail.py`.
+
+- An unsigned chain passed when `expected_pubkey` was given, because the key was only consulted
+  inside the signature branch. Naming the key now requires a signature on every entry.
+- The memory binding was set membership: any receipt hash from the chain satisfied it. It is now a
+  position check (the receipt named must be the tail at the recorded count) and entries may not
+  point earlier in the chain than their predecessor.
+- `memory_state` was taken at block exit, so a write inside the action landed in "what it knew
+  before acting". `action()` and `wrap()` now capture it before the block runs; a plain `record()`
+  captures at call time, which is after, and the docstring says so.
+- `recalled` inherited the previous action's window when no recall happened in between. An entry
+  now carries `recall_scope: "this handle"` and `recall_before_previous_entry`, and the inherited
+  window is reported empty rather than re-attributed.
+- `inputs_sha256` and `output_sha256` were plain SHA-256 over canonical JSON, a dictionary-attackable
+  fingerprint of low-entropy inputs such as a phone number. Digests are now salted with a 32-byte
+  per-ledger salt kept in `<ledger>.salt`, outside the ledger file; the entry names the scheme.
+- A store with receipts off, or no store, left every entry unbound and `verify()` said nothing.
+  It now reports how many entries carry no memory binding.
+- The limit that remains is stated in `verify()`'s docstring and pinned by a test: an operator who
+  holds the receipt key can rewrite both chains consistently, and a re-signed truncation reads as
+  complete. That is the witness's job (`anchor()` co-signed, `detect_split_view`).
+
 ## 2.29.0 - UPGRADE IF YOU NEED AN AUDIT TRAIL OF WHAT THE AGENT DID: the action ledger, bound to what it knew. AFFECTS NOBODY'S EXISTING CODE: everything here is new and opt-in.
 
 **The audit-trail tools for agents we read on 2026-09-15 (Asqav, AIR Blackbox, agentaudit-python, ActionProof) sign actions. None of them records what the agent knew when it acted.**

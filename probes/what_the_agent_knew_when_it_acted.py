@@ -89,6 +89,9 @@ def main() -> dict:
         ok3, problems3 = verify_file(led.path, expected_pubkey=pk)
         out["control_forged_signature_fails"] = (not ok3) and any("signature" in p for p in problems3)
 
+        # the compliance overlay reads the ledger through its verifier; the README publishes this count
+        from inspeximus.compliance import compliance_report
+        out["compliance_controls"] = len(compliance_report(m)["controls"])
         out["elapsed_s"] = round(time.time() - t0, 3)
         out["verdict"] = "PASS" if all(v is True for k, v in out.items() if k.startswith(("digests", "recalled",
                                        "first_acted", "signed", "clean", "control_rewritten_action", "control_rewritten_memory_fails",

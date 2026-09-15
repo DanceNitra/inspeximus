@@ -83,13 +83,20 @@ def _sha256_hex(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
 
-def _content_hash(obj: Any) -> str:
-    """Digest of any JSON-serialisable value. Non-serialisable values are digested by their repr,
-    and the entry records that fact so an auditor knows the digest is over a repr, not the value."""
+def _content_hash(obj: Any, salt: bytes = b"") -> str:
+    """Digest of any JSON-serialisable value, prefixed with the ledger's salt. Non-serialisable values
+    are digested by their repr.
+
+    WHY A SALT. Inputs to an agent action are often low-entropy personal data: a phone number, an
+    order id, an email. A plain SHA-256 of {"phone": "+100"} is a dictionary-attackable fingerprint,
+    and a ledger that keeps such fingerprints after the subject was erased is not content-free. A
+    32-byte random salt, held in a sidecar the ledger file does not contain, makes the digest useless
+    without the salt and still lets the operator prove that a given input matches an entry."""
     try:
-        return _sha256_hex(_canon(obj))
+        body = _canon(obj)
     except (TypeError, ValueError):
-        return _sha256_hex(repr(obj).encode("utf-8"))
+        body = repr(obj).encode("utf-8")
+    return _sha256_hex(salt + body)
 
 
 def _entry_hash(entry: dict) -> str:
@@ -160,7 +167,25 @@ class ActionLedger:
         self.redact = redact
         self._sk = signing_key if signing_key is not None else getattr(store, "_receipt_sk", None)
         self._entries: list[dict] = []
+        self._salt: bytes | None = None
+        self._seen_recall: int | None = None       # id() of the recall window the last entry consumed
         self._load()
+
+    @property
+    def salt_path(self):
+        return self.path.with_name(self.path.name + ".salt")
+
+    def _salt_bytes(self) -> bytes:
+        """The per-ledger digest salt, minted on first use and kept beside the ledger in its own file.
+        Not part of the ledger, so a copy of the ledger alone cannot be dictionary-attacked."""
+        if self._salt is None:
+            p = self.salt_path
+            if p.exists():
+                self._salt = bytes.fromhex(p.read_text(encoding="utf-8").strip())
+            else:
+                self._salt = os.urandom(32)
+                p.write_text(self._salt.hex(), encoding="utf-8")
+        return self._salt
 
     # ----------------------------------------------------------------- persistence
     def _load(self) -> None:
@@ -186,11 +211,18 @@ class ActionLedger:
     # ----------------------------------------------------------------- memory binding
     def memory_state(self) -> dict:
         """The store's state at this moment: digest, record count, tail of the receipt chain, and the
-        ids the last recall returned. Empty fields when the ledger has no store."""
+        ids the last recall returned. Empty fields when the ledger has no store.
+
+        `recalled` is the recall window of THIS store handle, in this process. A recall made through
+        another handle (an MCP server in another process, a second adapter) is not visible here, and
+        the entry says so: `recall_scope: "this handle"`. A recall older than the previous ledger
+        entry is reported as `recall_before_previous_entry: true` rather than re-attributed to this
+        action. Both fields exist so a reader cannot mistake an empty or inherited window for a
+        measured one."""
         st = self.store
         if st is None:
             return {"digest": None, "records": None, "last_receipt": None, "receipts": 0,
-                    "recalled": [], "recalled_at": None}
+                    "recalled": [], "recalled_at": None, "recall_scope": "no store"}
         digest = None
         try:
             digest = st.state_digest()
@@ -203,15 +235,25 @@ class ActionLedger:
             n = len(list(st.items))
         except Exception:
             n = None
+        # A recall is "new" when the store handle produced a new window since this ledger's last entry.
+        # recall() assigns a fresh list each call, so the object's identity is the tell; the timestamp
+        # is only kept when the store observes recalls, so it is a fallback, not the rule.
+        cur = getattr(st, "_last_recall", None)
+        stale = bool(recalled) and (id(cur) == self._seen_recall) if cur is not None else False
+        prev_ts = self._entries[-1].get("ts") if self._entries else None
+        if not stale and recalled and recalled_at and prev_ts and recalled_at <= prev_ts:
+            stale = True
         return {"digest": digest, "records": n,
                 "last_receipt": receipts[-1].get("hash") if receipts else None,
                 "receipts": len(receipts),
-                "recalled": recalled[:64], "recalled_at": recalled_at}
+                "recalled": [] if stale else recalled[:64], "recalled_at": recalled_at,
+                "recall_scope": "this handle", "recall_before_previous_entry": stale}
 
     # ----------------------------------------------------------------- recording
     def record(self, action: str, inputs: Any = None, output: Any = None, status: str = "ok",
                error: str | None = None, meta: dict | None = None, started: float | None = None,
-               actor: str | None = None, kind: str = "action", extra: dict | None = None) -> dict:
+               actor: str | None = None, kind: str = "action", extra: dict | None = None,
+               memory_state: dict | None = None) -> dict:
         """Append one entry. Returns it as stored (with hash, and sig when a key is set). `kind` is
         "action" for what the agent did; `oversight()` and `disclosure()` set the other two."""
         if not isinstance(action, str) or not action:
@@ -231,9 +273,12 @@ class ActionLedger:
             "actor": actor if actor is not None else self.actor,
             "action": action,
             "status": status,
-            "inputs_sha256": _content_hash(inp) if inp is not None else None,
-            "output_sha256": _content_hash(out) if out is not None else None,
-            "memory_state": self.memory_state(),
+            "digest": "sha256(salt || canonical json); salt in <ledger>.salt",
+            "inputs_sha256": _content_hash(inp, self._salt_bytes()) if inp is not None else None,
+            "output_sha256": _content_hash(out, self._salt_bytes()) if out is not None else None,
+            # captured BEFORE the action ran when the caller went through action() or wrap(); a plain
+            # record() captures now, which is after whatever the caller did.
+            "memory_state": memory_state if memory_state is not None else self.memory_state(),
         }
         if error:
             entry["error"] = str(error)[:2000]
@@ -249,6 +294,8 @@ class ActionLedger:
             entry["sig"], entry["pubkey"] = _sign(self._sk, entry["hash"])
         self._entries.append(entry)
         self._save()
+        cur = getattr(self.store, "_last_recall", None) if self.store is not None else None
+        self._seen_recall = id(cur) if cur is not None else None
         return entry
 
     @contextlib.contextmanager
@@ -256,17 +303,19 @@ class ActionLedger:
         """Record an action around a block of code. The block's exception, if any, is recorded as the
         action's error and re-raised."""
         ctx = ActionContext(self, action, inputs, meta)
+        before = self.memory_state()          # what the agent knew BEFORE it acted, not after
         try:
             yield ctx
         except BaseException as e:  # noqa: BLE001 - recorded, then re-raised
             ctx.fail(e)
             ctx.entry = self.record(action, inputs, None, status="error", error=ctx._error,
-                                    meta=ctx.meta or None, started=ctx.started, actor=actor)
+                                    meta=ctx.meta or None, started=ctx.started, actor=actor,
+                                    memory_state=before)
             raise
         status = "error" if ctx._error else "ok"
         ctx.entry = self.record(action, inputs, ctx._output if ctx._has_output else None,
                                 status=status, error=ctx._error, meta=ctx.meta or None,
-                                started=ctx.started, actor=actor)
+                                started=ctx.started, actor=actor, memory_state=before)
 
     def wrap(self, name: str | None = None, actor: str | None = None):
         """Decorator: every call of the function becomes one action; positional and keyword arguments
@@ -473,19 +522,52 @@ class ActionLedger:
                bind_to_store: bool = True) -> tuple[bool, list[str]]:
         """Recompute every hash and link, check every signature, and bind the chain to the store.
 
-        `bind_to_store` checks that each entry's `memory_state.last_receipt` is a hash that still
-        exists in the store's receipt chain. A rewritten memory history changes those hashes, so the
-        action ledger reports it even when the memory chain was re-signed consistently. Returns
+        `bind_to_store` checks that each entry's `memory_state.last_receipt` is the tail of the store's
+        receipt chain at the count the entry recorded, and that entries never point earlier in the chain
+        than their predecessor. A rewritten memory history changes those hashes, so the action ledger
+        reports it even when the memory chain was re-signed consistently. Naming `expected_pubkey`
+        requires a signature on every entry.
+
+        LIMITS, stated because a verifier that hides them claims more than it checks. An operator who
+        holds the receipt key can rewrite both chains consistently, and a ledger whose last entries are
+        deleted and the file re-signed reads as complete: neither is detectable from these two files.
+        That is the witness's job (`anchor()` co-signed by an independent party, `detect_split_view`),
+        not this function's. And the memory binding needs the store present; the offline check of the
+        ledger file alone (`verify_file`) covers hashes, links and signatures only. Returns
         (ok, problems); problems is empty when ok."""
         problems = verify_entries(self._entries, expected_pubkey=expected_pubkey,
                                   require_signatures=require_signatures)
         if bind_to_store and self.store is not None:
-            chain = {r.get("hash") for r in (getattr(self.store, "_receipts", None) or [])}
+            chain = [r.get("hash") for r in (getattr(self.store, "_receipts", None) or [])]
+            pos = {h: i for i, h in enumerate(chain)}
+            last_n = -1
+            unbound = 0
             for e in self._entries:
-                lr = (e.get("memory_state") or {}).get("last_receipt")
-                if lr and lr not in chain:
+                ms = e.get("memory_state") or {}
+                lr, n = ms.get("last_receipt"), ms.get("receipts")
+                if not lr:
+                    # An empty chain at recording time (receipts: 0 on a receipted store) is a state, not
+                    # a gap. No store, or a store with receipts off, is a gap: nothing binds the entry.
+                    if n is None or n > 0 or not getattr(self.store, "receipts_enabled", False):
+                        unbound += 1
+                    continue
+                if lr not in pos:
                     problems.append(f"seq {e.get('seq')}: memory_state.last_receipt {lr[:12]} is not in the "
                                     f"store's receipt chain (memory history rewritten or wrong store)")
+                    continue
+                # POSITION, not membership: the receipt named must be the chain's tail at that count,
+                # and counts must not go backwards. Any hash from the chain used to satisfy this check.
+                if isinstance(n, int) and pos[lr] != n - 1:
+                    problems.append(f"seq {e.get('seq')}: memory_state names receipt {lr[:12]} as the tail of "
+                                    f"{n} receipts, but it sits at position {pos[lr] + 1}")
+                if pos[lr] < last_n:
+                    problems.append(f"seq {e.get('seq')}: memory_state points earlier in the receipt chain "
+                                    f"than the previous entry did")
+                last_n = max(last_n, pos[lr])
+            if unbound:
+                problems.append(f"{unbound} entr{'y' if unbound == 1 else 'ies'} carry no memory binding "
+                                f"(the store had receipts off, or the ledger has no store); the memory side "
+                                f"of those entries is unverifiable")
         return (not problems), problems
 
 
@@ -496,7 +578,9 @@ def verify_entries(entries: Iterable[dict], expected_pubkey: str | None = None,
     entries = list(entries)
     problems: list[str] = []
     if require_signatures is None:
-        require_signatures = any("sig" in e for e in entries)
+        # A caller who names the key expects a signed chain. An unsigned chain used to pass with
+        # expected_pubkey set, because the key was only consulted inside the signature branch.
+        require_signatures = bool(expected_pubkey) or any("sig" in e for e in entries)
     prev = GENESIS
     pubkeys = set()
     for i, e in enumerate(entries):
