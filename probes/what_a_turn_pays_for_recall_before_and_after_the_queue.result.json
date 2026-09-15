@@ -1,11 +1,40 @@
 {
-  "when_utc": "2026-09-15T21:19:19Z",
+  "when_utc": "2026-09-13T13:10:18Z",
   "turns_per_arm": 40,
   "sizes": {
     "100": {
       "shipped": {
-        "median_ms": 0.581,
-        "p90_ms": 0.772,
+        "median_ms": 0.245,
+        "p90_ms": 0.337,
+        "n": 40
+      },
+      "spec-hit": {
+        "median_ms": 0.002,
+        "p90_ms": 0.003,
+        "n": 40
+      },
+      "spec-miss": {
+        "median_ms": 0.253,
+        "p90_ms": 0.287,
+        "n": 40
+      },
+      "spec-racing": {
+        "median_ms": 0.037,
+        "p90_ms": 0.055,
+        "n": 40
+      },
+      "spec-host-flow": {
+        "median_ms": 0.244,
+        "p90_ms": 0.331,
+        "n": 40
+      },
+      "_build_s": 0.8,
+      "_measure_s": 0.1
+    },
+    "1000": {
+      "shipped": {
+        "median_ms": 2.34,
+        "p90_ms": 2.822,
         "n": 40
       },
       "spec-hit": {
@@ -14,86 +43,57 @@
         "n": 40
       },
       "spec-miss": {
-        "median_ms": 0.597,
-        "p90_ms": 0.705,
+        "median_ms": 2.198,
+        "p90_ms": 2.746,
         "n": 40
       },
       "spec-racing": {
-        "median_ms": 0.625,
-        "p90_ms": 0.898,
+        "median_ms": 0.051,
+        "p90_ms": 0.065,
         "n": 40
       },
       "spec-host-flow": {
-        "median_ms": 1.104,
-        "p90_ms": 1.27,
+        "median_ms": 2.251,
+        "p90_ms": 2.815,
         "n": 40
       },
-      "_build_s": 0.9,
-      "_measure_s": 0.2
-    },
-    "1000": {
-      "shipped": {
-        "median_ms": 3.602,
-        "p90_ms": 4.081,
-        "n": 40
-      },
-      "spec-hit": {
-        "median_ms": 0.004,
-        "p90_ms": 0.006,
-        "n": 40
-      },
-      "spec-miss": {
-        "median_ms": 3.328,
-        "p90_ms": 4.005,
-        "n": 40
-      },
-      "spec-racing": {
-        "median_ms": 3.428,
-        "p90_ms": 4.304,
-        "n": 40
-      },
-      "spec-host-flow": {
-        "median_ms": 6.255,
-        "p90_ms": 8.115,
-        "n": 40
-      },
-      "_build_s": 8.1,
-      "_measure_s": 1.0
+      "_build_s": 6.8,
+      "_measure_s": 0.7
     },
     "10000": {
       "shipped": {
-        "median_ms": 42.117,
-        "p90_ms": 47.862,
+        "median_ms": 35.274,
+        "p90_ms": 42.437,
         "n": 40
       },
       "spec-hit": {
         "median_ms": 0.003,
-        "p90_ms": 0.006,
+        "p90_ms": 0.004,
         "n": 40
       },
       "spec-miss": {
-        "median_ms": 41.038,
-        "p90_ms": 44.731,
+        "median_ms": 29.896,
+        "p90_ms": 39.59,
         "n": 40
       },
       "spec-racing": {
-        "median_ms": 40.807,
-        "p90_ms": 44.214,
+        "median_ms": 20.767,
+        "p90_ms": 30.425,
         "n": 40
       },
       "spec-host-flow": {
-        "median_ms": 78.088,
-        "p90_ms": 90.65,
+        "median_ms": 50.624,
+        "p90_ms": 67.504,
         "n": 40
       },
-      "_build_s": 461.9,
-      "_measure_s": 11.9
+      "_build_s": 224.9,
+      "_measure_s": 9.6
     }
   },
   "control_one_record": {
     "shipped": {
-      "median_ms": 0.116,
-      "p90_ms": 0.151,
+      "median_ms": 0.023,
+      "p90_ms": 0.058,
       "n": 40
     },
     "spec-hit": {
@@ -102,23 +102,23 @@
       "n": 40
     },
     "spec-miss": {
-      "median_ms": 0.13,
-      "p90_ms": 0.16,
+      "median_ms": 0.026,
+      "p90_ms": 0.054,
       "n": 40
     },
     "spec-racing": {
-      "median_ms": 0.126,
-      "p90_ms": 0.165,
+      "median_ms": 0.039,
+      "p90_ms": 0.05,
       "n": 40
     },
     "spec-host-flow": {
-      "median_ms": 0.166,
-      "p90_ms": 0.21,
+      "median_ms": 0.023,
+      "p90_ms": 0.043,
       "n": 40
     },
-    "_build_s": 0.2,
-    "_measure_s": 0.1
+    "_build_s": 0.0,
+    "_measure_s": 0.0
   },
-  "control_spread_ms": 0.164,
-  "elapsed_s": 484.2
+  "control_spread_ms": 0.037,
+  "elapsed_s": 243.0
 }
