@@ -804,6 +804,22 @@ def main(argv=None):
     acv.add_argument("--expected-pubkey", default=None, help="hex Ed25519 key the chain must be signed by")
     ack = acsub.add_parser("knew", help="what the agent knew when it performed action SEQ")
     ack.add_argument("seq", type=int)
+    aco = acsub.add_parser("oversight", help="record a HUMAN decision about the agent's work (Art. 14, GDPR Art. 22): "
+                           "approve | refuse | override | stop | review, with who decided and which action")
+    aco.add_argument("event", choices=["approve", "refuse", "override", "stop", "review"])
+    aco.add_argument("--actor", required=True, help="the person or role who decided (required)")
+    aco.add_argument("--refers", type=int, default=None, help="seq of the action this concerns")
+    aco.add_argument("--reason", default=None)
+    aco.add_argument("--decision", default=None, help="what the human substituted, as text or JSON (digested)")
+    acd = acsub.add_parser("disclose", help="record an Art. 50 disclosure: what the user was shown, where, in which session")
+    acd.add_argument("--session", required=True)
+    acd.add_argument("--shown", required=True, help="the exact text shown to the user (digested, not stored)")
+    acd.add_argument("--channel", default="ui")
+    acd.add_argument("--kind", default="interaction",
+                     choices=["interaction", "generated_content", "emotion_recognition", "biometric_categorisation",
+                              "deepfake", "public_interest_text"])
+    acd.add_argument("--locale", default=None)
+    acsub.add_parser("report", help="oversight and disclosure counts an auditor asks for, from the ledger")
 
     mc = sub.add_parser("mcp", help="start the MCP server (needs the [mcp] extra)")
     mc.add_argument("mcp_args", nargs=argparse.REMAINDER,
@@ -1378,6 +1394,24 @@ def main(argv=None):
             return 0 if ok else 1
         elif a.actions_cmd == "knew":
             print(json.dumps(led.what_it_knew(a.seq), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "oversight":
+            def _val(v):
+                if v is None:
+                    return None
+                try:
+                    return json.loads(v)
+                except ValueError:
+                    return v
+            e = led.oversight(a.event, a.actor, reason=a.reason, refers_to=a.refers, decision=_val(a.decision))
+            print(f"recorded #{e['seq']} {e['action']} by {e['actor']}"
+                  + (f"  refers to #{e['refers_to']['seq']}" if e.get('refers_to') else "")
+                  + ("  SIGNED" if e.get("sig") else ""))
+        elif a.actions_cmd == "disclose":
+            e = led.disclosure(a.session, a.shown, channel=a.channel, kind=a.kind, locale=a.locale)
+            print(f"recorded #{e['seq']} {e['action']} session={e['session']} channel={e['channel']} "
+                  f"chars={e['shown_chars']}" + ("  SIGNED" if e.get("sig") else ""))
+        elif a.actions_cmd == "report":
+            print(json.dumps(led.oversight_report(), indent=2, ensure_ascii=False))
     elif a.cmd == "stats":
         items = getattr(m, "items", [])
         active = sum(1 for r in items if r.get("status") == "active")

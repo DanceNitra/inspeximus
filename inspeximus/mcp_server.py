@@ -1511,6 +1511,48 @@ def actions_verify(expected_pubkey: str | None = None) -> dict:
 
 
 @mcp.tool()
+def record_oversight(event: str, actor: str, reason: str | None = None, refers_to: int | None = None,
+                     decision: str | None = None) -> dict:
+    """Record a HUMAN decision about the agent's work in the action ledger: approve, refuse, override, stop
+    or review (EU AI Act Art. 14, GDPR Art. 22). `actor` is the person or role who decided and is required.
+    `refers_to` is the seq of the action it concerns and must exist. `decision` is what the human
+    substituted, stored as a digest."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.oversight(event, actor, reason=reason, refers_to=refers_to, decision=decision)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "action": e["action"], "actor": e["actor"], "refers_to": e.get("refers_to"),
+            "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def record_disclosure(session: str, shown: str, channel: str = "ui", kind: str = "interaction",
+                      locale: str | None = None) -> dict:
+    """Record an EU AI Act Art. 50 disclosure in the action ledger: that the user in `session` was shown
+    `shown` (stored as a digest plus its length) in `channel`. `kind` is interaction (told they interact
+    with an AI system), generated_content (output marked as generated), or another Art. 50 case."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.disclosure(session, shown, channel=channel, kind=kind, locale=locale)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "action": e["action"], "session": e["session"], "channel": e["channel"],
+            "shown_chars": e["shown_chars"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def oversight_report() -> dict:
+    """Counts from the action ledger an auditor asks for: actions, oversight events by type and by actor,
+    actions with a human decision attached, error actions with no oversight after them, stops, and
+    disclosures by session. Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).oversight_report()
+
+
+@mcp.tool()
 def what_it_knew(seq: int) -> dict:
     """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.

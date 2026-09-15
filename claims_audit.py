@@ -397,7 +397,7 @@ def _prose_number_agrees():
 
     Found 2026-08-25, and it had been true for weeks. This gate reads numeric TOKENS out of the
     published files and checks each one is registered. It never read the registry's own English.
-    So a row could pin `73` and describe it as "The MCP server exposes 75 tools", and pass -- twice,
+    So a row could pin `73` and describe it as "The MCP server exposes 78 tools", and pass -- twice,
     in two different rows -- while README's documentation table said "all 68" and BOTH the
     og:description and twitter:description of claude-code.html said "68 tools". That is the text a
     search engine and a link preview show, and it was wrong in the one place nobody re-reads.
@@ -679,9 +679,9 @@ NUMBER_CLAIMS = [
        "The objection names our own headline number", "REPRODUCIBLE-WITH-DEPS", CMD),
 
     # ---- claude-code.html: the MCP setup page ---------------------------------------------------
-    _c("cc-tool-count", "claude-code.html", ["75"],
-       "<h2>75 tools any MCP host can call</h2>",
-       "The MCP server exposes 75 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("cc-tool-count", "claude-code.html", ["78"],
+       "<h2>78 tools any MCP host can call</h2>",
+       "The MCP server exposes 78 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
     _c("readme-echo-trials", "README.md", ["30"],
        "same task, same 30 trials",
@@ -709,9 +709,9 @@ NUMBER_CLAIMS = [
        "n = 30 per system",
        "Sample size per system, and the exact competitor version measured",
        "REPRODUCIBLE", "curl -s https://pypi.org/pypi/mem0ai/json"),
-    _c("readme-mcp-tool-count", "README.md", ["75"],
-       "**75 tools**",
-       "The MCP server exposes 75 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("readme-mcp-tool-count", "README.md", ["78"],
+       "**78 tools**",
+       "The MCP server exposes 78 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
     _c("readme-own-source-coverage", "README.md", ["98.3", "0.01"],
        "98.3% populated and 0.01% re-fetchable",
@@ -727,6 +727,11 @@ NUMBER_CLAIMS = [
        "index.html and README.md -- a second copy of a number is a second place for it to go stale. "
        "The other 12 in this file is the EU AI Act article number and stays a declared non-claim; the counts moved 9/12 -> 10/13 when the llm-errata adapter landed, and this line is why the drift surfaced instead of shipping; "
        "COUNT-DRIFT caught the collision the moment this line was added, which is the whole point."),
+    _c("readme-compliance-controls", "README.md", ["11"],
+       "into 11 article-labelled",
+       "The compliance overlay has eleven controls: the seven memory rows plus the four action-ledger rows",
+       "REPRODUCIBLE", "python -m pytest tests/test_oversight_and_disclosure_events_share_the_action_chain.py -q",
+       "The test asserts the count against compliance_report(); the number here is a copy of that assertion."),
     _c("readme-tests-and-mutations", "README.md", ["2,600", "175"],
        "**2,600+ tests**",
        "Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed",
@@ -1002,22 +1007,22 @@ NUMBER_CLAIMS = [
        "The bedrock synthesis was checked from ~8 directions", "EXTERNAL", "",
        "A count of the analytical directions taken, not a measurement. Left in because the sentence "
        "labels itself 'a synthesis over those cases, not a proof'."),
-    _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["75"],
-       "`inspeximus-mcp`, 75 tools",
-       "The MCP server exposes 75 tools", "REPRODUCIBLE",
+    _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["78"],
+       "`inspeximus-mcp`, 78 tools",
+       "The MCP server exposes 78 tools", "REPRODUCIBLE",
        'python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'
        "'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))\"",
        "Checked against the live @mcp.tool() count by _live_consistency(), not by reading it here."),
 
     # ---------------------------------------------------------- MCP_LISTINGS.md
-    _c("mcp-tool-count", "MCP_LISTINGS.md", ["75"],
-       "`inspeximus-mcp`, 75 tools",
-       "The MCP server exposes 75 tools", "REPRODUCIBLE",
+    _c("mcp-tool-count", "MCP_LISTINGS.md", ["78"],
+       "`inspeximus-mcp`, 78 tools",
+       "The MCP server exposes 78 tools", "REPRODUCIBLE",
        "python claims_audit.py --numbers",
        "Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 "
        "in another. Three surfaces, one server, no error anywhere. Now read from the code."),
-    _c("mcp-tool-list", "MCP_LISTINGS.md", ["75"],
-       "**Tools (75):**",
+    _c("mcp-tool-list", "MCP_LISTINGS.md", ["78"],
+       "**Tools (78):**",
        "The enumerated tool list matches the server", "REPRODUCIBLE",
        "python claims_audit.py --numbers"),
     _c("mcp-stale-30", "MCP_LISTINGS.md", ["30", "26", "2026"],
@@ -1026,14 +1031,14 @@ NUMBER_CLAIMS = [
        "WITHDRAWN", "python claims_audit.py --numbers"),
 
     # -------------------------------------------------------------- index.html
-    _c("site-mcp-tools-counter", "index.html", ["75", "0"],
-       'data-count="75">0</b><span>MCP tools',
-       "Homepage counter: 75 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("site-mcp-tools-counter", "index.html", ["78", "0"],
+       'data-count="78">0</b><span>MCP tools',
+       "Homepage counter: 78 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- "
        "which is why the scanner hoists data-count out of the tag before stripping tags."),
-    _c("site-mcp-tools-heading", "index.html", ["75"],
-       "75 tools any MCP host can call",
-       "Homepage heading: 75 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
+    _c("site-mcp-tools-heading", "index.html", ["78"],
+       "78 tools any MCP host can call",
+       "Homepage heading: 78 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
     _c("site-adapters", "index.html", ["9", "0"],
        'data-count="9">0</b><span>framework adapters',
        "Homepage counter: 9 framework adapters", "REPRODUCIBLE",
@@ -1147,6 +1152,11 @@ NON_CLAIM_TOKENS = {
         "1": (6, "the INSPEXIMUS_KEEP_CONVERSION_BACKUP=1 example, index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
               "tamper-detection example; 6 since the action-ledger example (2.29.0): what_it_knew(1) and "
               "INSPEXIMUS_ACTIONS=1. None is a measurement"),
+        "14": (1, "EU AI Act ARTICLE number (human oversight) in the action-ledger section, not a quantity"),
+        "22": (1, "GDPR ARTICLE number (automated decisions) in the action-ledger section, not a quantity"),
+        "50": (1, "EU AI Act ARTICLE number (transparency) in the action-ledger section, not a quantity"),
+        "3,": (1, "refers_to=3 in the oversight example: a ledger seq number in a code snippet, not a "
+              "measurement"),
         "12": (2, "EU AI Act ARTICLE number, not a quantity: once in the docs table, once in the "
                "scope note under 'When someone asks you to prove it'. That section states which "
                "articles the Act actually contains and that none of them names memory, provenance "
@@ -1162,7 +1172,7 @@ NON_CLAIM_TOKENS = {
         "2028": (1, "the year Annex I product-embedded high-risk obligations start to apply"),
         "15": (1, "EU AI Act Art. 15 (accuracy, robustness, cybersecurity) -- an article number in "
                "the same scope note"),
-        "75,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
+        "78,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
                 "Was '68,' until 2026-08-25, when three places still said 68 or 71 while the server "
                 "had 73 tool defs: README's documentation table, two CLAIMS descriptions, and BOTH "
                 "og:description and twitter:description in claude-code.html -- the text search engines "

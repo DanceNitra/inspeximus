@@ -82,6 +82,10 @@ def _args_for(name, sig, mod):
         # what_it_knew(seq) reads the action ledger beside the store; on an empty ledger it answers
         # with an error dict rather than raising, which is the contract the sweep checks.
         "seq": 0,
+        # record_oversight / record_disclosure: a human decision with an actor, and a disclosure with the
+        # text shown; both are driven for real so a crash on ordinary input is caught here.
+        "event": "review", "actor": "reviewer", "session": "s1",
+        "shown": "You are chatting with an AI assistant.",
     }
     args = []
     for pname, p in sig.parameters.items():

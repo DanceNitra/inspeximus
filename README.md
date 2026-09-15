@@ -148,6 +148,13 @@ server record every tool call, and `inspeximus.integrations.langchain.Inspeximus
 records LangChain tool and model calls. Probe: `probes/what_the_agent_knew_when_it_acted.py`, three
 tamper controls, each fails.
 
+Two more event kinds share the chain. `led.oversight("override", "ops-lead", refers_to=3, reason=...)`
+records a human decision about an action, with the person or role who made it (the Act's Art. 14 and
+GDPR Art. 22 records); the reference must resolve and the verifier re-checks it. `led.disclosure("s1",
+"You are chatting with an AI assistant.", channel="web")` records an Art. 50 disclosure per session.
+`inspeximus compliance` reads all three from the ledger, through its verifier, into 11 article-labelled
+controls.
+
 ### Where the store is written
 
 You do not pick a storage format. A new store is written as rows, and an existing JSON store is
@@ -400,7 +407,7 @@ Or from a shell, after `pip install inspeximus`:
 inspeximus install --ide claude     # also: cursor, windsurf, codex, cline
 ```
 
-Both wire an MCP server with **75 tools** and the same hooks. From the next session on, your agent starts
+Both wire an MCP server with **78 tools** and the same hooks. From the next session on, your agent starts
 knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 
 - **SessionStart** injects the decisions still in force
@@ -568,7 +575,7 @@ not be the same instrument.
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
 | [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts |
 | [EU AI Act evidence](docs/AI_ACT.md) | Article 12 logging, mapped to what the store already keeps |
-| [MCP tools](MCP_LISTINGS.md) | all 75, and what each is for |
+| [MCP tools](MCP_LISTINGS.md) | all 78, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |
 | [core.py, mapped](docs/CORE_MAP.md) | every public method and where it lives, generated from the AST and checked in CI |
 | [Runnable examples](examples/) | working scripts rather than snippets |

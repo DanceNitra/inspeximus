@@ -26,6 +26,25 @@ _CONTROLS = [
      "Every write is a hash-linked, timestamped receipt; anchor() emits a signed head commitment over the "
      "whole history; the log is portable and INDEPENDENTLY verifiable offline (audit-build / audit-verify).",
      "write_receipts"),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 12 (actions)", "Record-keeping of what the agent did",
+     "The automatic logs must enable the traceability of the system's functioning; for the agent that means "
+     "each tool and model call, and what the system held when it made it.",
+     "The action ledger (<store>.actions.json) appends one signed, hash-chained entry per tool or model call, "
+     "each carrying the memory state digest and the ids recall returned before it; verified offline and bound "
+     "to the memory receipt chain.",
+     "actions"),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 14", "Human oversight",
+     "High-risk systems must be designed so natural persons can oversee them, including the ability to "
+     "decide not to use an output, to override or reverse it, and to stop the system.",
+     "oversight() records approve, refuse, override, stop and review events with the person or role who "
+     "decided and the action they refer to; oversight_report() lists error actions with no review after them.",
+     "oversight_events"),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 50", "Transparency obligations (applies from 2 Aug 2026)",
+     "Providers must ensure persons are informed that they interact with an AI system, and that generated "
+     "content is marked as generated, in the cases Art. 50 names.",
+     "disclosure() records per session what the user was shown, in which channel and of which kind, as a "
+     "signed entry in the same chain; the report lists sessions with no disclosure.",
+     "disclosures"),
     ("EU AI Act (Reg (EU) 2024/1689)", "Art. 19", "Automatically generated logs (kept/retained)",
      "Providers must keep the automatically generated logs (Art. 12(1)) for a period appropriate to the "
      "intended purpose, of at least six months, keeping them available with their integrity preserved.",
@@ -51,6 +70,12 @@ _CONTROLS = [
      "forget_subject / forget_pii hard-delete the subject plus its derived lineage and emit a signed, "
      "content-free tombstone; erasure_certificate / erasure_report are the portable proof-of-deletion.",
      "erasures"),
+    ("GDPR (Reg (EU) 2016/679)", "Art. 22", "Automated individual decision-making",
+     "Where a decision based solely on automated processing has legal or similarly significant effects, the "
+     "data subject has the right to obtain human intervention and to contest the decision.",
+     "The same oversight events, tied to the action that produced the decision, are the record that a human "
+     "reviewed, overrode or refused it.",
+     "oversight_events"),
     ("GDPR (Reg (EU) 2016/679)", "Art. 30", "Records of processing activities",
      "The controller/processor must maintain a record of processing activities.",
      "The write-receipt chain + supersession ledger + erasure log are a technical record of processing at the "
@@ -79,6 +104,8 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
     receipts_on = bool(getattr(store, "receipts_enabled", False))
 
     live = {"write_receipts": n_writes, "erasures": n_tomb, "superseded": n_sup}
+    ledger = _ledger_counts(store)
+    live.update(ledger)
 
     controls = []
     for framework, art, title, obligation, evidence, live_key in _CONTROLS:
@@ -98,7 +125,7 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
         })
 
     return {
-        "kind": "inspeximus.compliance_report/1",
+        "kind": "inspeximus.compliance_report/2",
         "inspeximus_version": __version__,
         "scope": "AGENT-MEMORY slice only: the records, corrections and erasures held in THIS inspeximus store. "
                  "NOT the whole AI system, and NOT a certification.",
@@ -109,6 +136,7 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
                       "your vector index, prompt logs, or backups. The EU AI Act imposes far more (risk "
                       "management, human oversight, conformity assessment) that lies outside any memory library.",
         "receipts_enabled": receipts_on,
+        "action_ledger": ledger,
         "controls": controls,
         "summary": {
             "writes": n_writes,
@@ -120,6 +148,32 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
             "controls_with_evidence": sum(1 for c in controls if c["status"] == "evidence"),
         },
     }
+
+
+def _ledger_counts(store) -> dict:
+    """Live counts from the action ledger beside the store, or zeros when there is none. The ledger is
+    read through its own verifier so a rewritten file counts as zero evidence rather than as evidence."""
+    out = {"actions": 0, "oversight_events": 0, "disclosures": 0, "ledger_present": False,
+           "ledger_verified": None, "error_actions_without_oversight": []}
+    try:
+        from .actions import ActionLedger
+        led = ActionLedger(store)
+    except Exception:
+        return out
+    if not led.path.exists() or len(led) == 0:
+        return out
+    out["ledger_present"] = True
+    ok, problems = led.verify()
+    out["ledger_verified"] = ok
+    if not ok:
+        out["ledger_problems"] = problems[:5]
+        return out
+    rep = led.oversight_report()
+    out["actions"] = rep["actions"]
+    out["oversight_events"] = rep["oversight_events"]
+    out["disclosures"] = rep["disclosures"]
+    out["error_actions_without_oversight"] = rep["error_actions_without_oversight"]
+    return out
 
 
 def compliance_check(store, require_receipts: bool = True, max_pii_age_days: float | None = None,

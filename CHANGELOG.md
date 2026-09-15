@@ -20,9 +20,22 @@ side (and passes offline, which is why the binding exists), a forged signature f
   the actor; tools `actions_verify` and `what_it_knew`.
 - LangChain: `inspeximus.integrations.langchain.InspeximusActionCallback` records tool and model
   calls and chain errors (the handler LangChain closed #35357 and #35691 for, on this chain).
+- **Oversight events on the same chain** (Art. 14, GDPR Art. 22): `led.oversight(event, actor, reason=,
+  refers_to=, decision=)` with event in approve, refuse, override, stop, review. The actor is required,
+  `refers_to` must resolve to an earlier entry at write time, and the verifier re-checks both, so an
+  oversight rewritten to point at a different action fails. `oversight_report()` lists error actions
+  with no human decision after them.
+- **Disclosure receipts** (Art. 50, in force since 2 Aug 2026): `led.disclosure(session, shown, channel=,
+  kind=)` records what the user was shown as a digest plus its length, per session and channel.
+- CLI: `inspeximus actions oversight EVENT --actor ... --refers SEQ`, `actions disclose --session ...
+  --shown ...`, `actions report`. MCP: `record_oversight`, `record_disclosure`, `oversight_report`
+  (78 tools).
+- `inspeximus compliance` grew from 7 to 11 controls: Art. 12 (actions), Art. 14, Art. 50 and GDPR
+  Art. 22 read live counts from the ledger, through its verifier, so a rewritten ledger counts as no
+  evidence. Report kind is now `inspeximus.compliance_report/2`.
 - `docs/EVIDENCE_PLATFORM_PLAN.md`: every duty the AI Act and GDPR place on an operator of agents,
   what artifact a tool can produce, and the order this package builds them in.
-- Nine tests, each with a control that fails.
+- Seventeen tests, each with a control that fails.
 
 ## 2.28.1 - UPGRADE IF TWO PROCESSES WRITE ONE STORE WITH RECEIPTS ON: a peer's receipt survives this handle's next write
 

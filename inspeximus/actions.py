@@ -25,6 +25,12 @@ one, so one key covers the memory chain and the action chain.
 
     ok, problems = led.verify()
 
+Two more event kinds share the chain. `oversight()` records a human decision about an action
+(approve, refuse, override, stop, review) with the person or role who made it, for EU AI Act Art. 14
+and GDPR Art. 22. `disclosure()` records that a user was told they are interacting with an AI system,
+or that generated content was marked, for Art. 50, which applies from 2 August 2026. Every entry has
+a `kind`: "action" (the default), "oversight" or "disclosure".
+
 The ledger lives beside the store as `<store>.actions.json`. `inspeximus actions verify` checks it
 offline; `verify()` also checks that every `memory_state.last_receipt` still resolves in the store's
 receipt chain, so a rewritten memory history is caught from the action side as well.
@@ -48,7 +54,12 @@ try:  # optional, only to sign
 except Exception:  # pragma: no cover - exercised only where cryptography is absent
     _HAVE_ED = False
 
-__all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VERSION"]
+__all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VERSION",
+           "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS"]
+
+OVERSIGHT_EVENTS = ("approve", "refuse", "override", "stop", "review")
+DISCLOSURE_KINDS = ("interaction", "generated_content", "emotion_recognition", "biometric_categorisation",
+                    "deepfake", "public_interest_text")
 
 GENESIS = "0" * 64
 LEDGER_VERSION = 1
@@ -191,15 +202,19 @@ class ActionLedger:
     # ----------------------------------------------------------------- recording
     def record(self, action: str, inputs: Any = None, output: Any = None, status: str = "ok",
                error: str | None = None, meta: dict | None = None, started: float | None = None,
-               actor: str | None = None) -> dict:
-        """Append one action. Returns the entry as stored (with hash, and sig when a key is set)."""
+               actor: str | None = None, kind: str = "action", extra: dict | None = None) -> dict:
+        """Append one entry. Returns it as stored (with hash, and sig when a key is set). `kind` is
+        "action" for what the agent did; `oversight()` and `disclosure()` set the other two."""
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
+        if kind not in ("action", "oversight", "disclosure"):
+            raise ValueError("kind must be action, oversight or disclosure")
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
         out = self.redact(output) if (self.redact and output is not None) else output
         entry: dict = {
             "v": LEDGER_VERSION,
+            "kind": kind,
             "seq": len(self._entries),
             "prev": self._entries[-1]["hash"] if self._entries else GENESIS,
             "ts": now,
@@ -215,6 +230,8 @@ class ActionLedger:
             entry["error"] = str(error)[:2000]
         if meta:
             entry["meta"] = meta
+        if extra:
+            entry.update(extra)
         if self.keep_content:
             entry["inputs"] = inp
             entry["output"] = out
@@ -254,6 +271,92 @@ class ActionLedger:
                     return ctx.output(fn(*a, **k))
             return inner
         return deco
+
+    # ----------------------------------------------------------------- oversight and disclosure
+    def oversight(self, event: str, actor: str, reason: str | None = None, refers_to: int | str | None = None,
+                  decision: Any = None, meta: dict | None = None) -> dict:
+        """Record a human decision about the agent's work: approve, refuse, override, stop or review.
+
+        `actor` is the person or role that decided; it is required, because an oversight event with no
+        one behind it is what Art. 14 asks to rule out. `refers_to` names the action it concerns, as a
+        seq number or an entry hash, and is checked against the ledger so the reference resolves at
+        write time. `decision` is what the human substituted (an override) or the review outcome."""
+        if event not in OVERSIGHT_EVENTS:
+            raise ValueError(f"event must be one of {OVERSIGHT_EVENTS}")
+        if not actor:
+            raise ValueError("an oversight event needs an actor: the person or role who decided")
+        ref = self._resolve_ref(refers_to)
+        extra = {"event": event, "reason": reason, "refers_to": ref}
+        if decision is not None:
+            extra["decision_sha256"] = _content_hash(decision)
+            if self.keep_content:
+                extra["decision"] = decision
+        return self.record(f"oversight:{event}", status="ok", actor=actor, meta=meta, kind="oversight",
+                           extra=extra)
+
+    def disclosure(self, session: str, shown: str, channel: str = "ui", kind: str = "interaction",
+                   actor: str | None = None, locale: str | None = None, meta: dict | None = None) -> dict:
+        """Record an Art. 50 disclosure: what the user was shown, where, and in which session.
+
+        `kind` is "interaction" (the user was told they interact with an AI system, Art. 50(1)),
+        "generated_content" (the output was marked as generated, Art. 50(2)), or one of the other
+        Art. 50 cases. The text shown is stored as a digest unless `keep_content` is set; the length
+        is kept in the clear so an auditor can tell an empty banner from a real one."""
+        if kind not in DISCLOSURE_KINDS:
+            raise ValueError(f"kind must be one of {DISCLOSURE_KINDS}")
+        if not session or not shown:
+            raise ValueError("a disclosure needs a session id and the text that was shown")
+        extra = {"session": session, "channel": channel, "disclosure_kind": kind,
+                 "shown_sha256": _content_hash(shown), "shown_chars": len(shown)}
+        if locale:
+            extra["locale"] = locale
+        if self.keep_content:
+            extra["shown"] = shown
+        return self.record(f"disclosure:{kind}", status="ok", actor=actor, meta=meta, kind="disclosure",
+                           extra=extra)
+
+    def _resolve_ref(self, refers_to):
+        if refers_to is None:
+            return None
+        if isinstance(refers_to, int):
+            if refers_to < 0 or refers_to >= len(self._entries):
+                raise ValueError(f"refers_to seq {refers_to} is not in the ledger ({len(self._entries)} entries)")
+            return {"seq": refers_to, "hash": self._entries[refers_to]["hash"]}
+        for e in self._entries:
+            if e.get("hash") == refers_to:
+                return {"seq": e["seq"], "hash": e["hash"]}
+        raise ValueError("refers_to hash is not in the ledger")
+
+    def oversight_report(self) -> dict:
+        """Counts an auditor asks for: actions, oversight events by type and actor, actions that
+        received a review or override, error actions with no oversight after them, disclosures by
+        session. Read-only."""
+        actions = [e for e in self._entries if e.get("kind", "action") == "action"]
+        overs = [e for e in self._entries if e.get("kind") == "oversight"]
+        discs = [e for e in self._entries if e.get("kind") == "disclosure"]
+        by_event: dict = {}
+        by_actor: dict = {}
+        reviewed = set()
+        for o in overs:
+            by_event[o["event"]] = by_event.get(o["event"], 0) + 1
+            by_actor[o.get("actor") or "?"] = by_actor.get(o.get("actor") or "?", 0) + 1
+            if o.get("refers_to"):
+                reviewed.add(o["refers_to"]["seq"])
+        errors_unreviewed = [a["seq"] for a in actions if a.get("status") == "error" and a["seq"] not in reviewed]
+        sessions: dict = {}
+        for d in discs:
+            sessions.setdefault(d["session"], []).append(d["disclosure_kind"])
+        return {
+            "actions": len(actions),
+            "oversight_events": len(overs),
+            "by_event": by_event,
+            "by_actor": by_actor,
+            "actions_with_oversight": len(reviewed),
+            "error_actions_without_oversight": errors_unreviewed,
+            "stops": by_event.get("stop", 0),
+            "disclosures": len(discs),
+            "sessions_disclosed": {k: sorted(set(v)) for k, v in sessions.items()},
+        }
 
     # ----------------------------------------------------------------- reading
     def entries(self) -> list[dict]:
@@ -329,6 +432,13 @@ def verify_entries(entries: Iterable[dict], expected_pubkey: str | None = None,
                     problems.append(f"seq {i}: signature does not verify"
                                     + ("" if _HAVE_ED else " (cryptography not installed)"))
         prev = e.get("hash") or ""
+        ref = e.get("refers_to")
+        if e.get("kind") == "oversight" and isinstance(ref, dict):
+            j = ref.get("seq")
+            if not isinstance(j, int) or j >= i or j < 0 or entries[j].get("hash") != ref.get("hash"):
+                problems.append(f"seq {i}: oversight refers_to does not resolve to an earlier entry")
+        if e.get("kind") == "oversight" and not e.get("actor"):
+            problems.append(f"seq {i}: oversight event with no actor")
     if len(pubkeys) > 1:
         problems.append(f"chain signed by {len(pubkeys)} different keys")
     return problems

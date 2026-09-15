@@ -77,7 +77,7 @@ assembles, it never gates a primitive.
 6. **Disclosure receipt** (build, small). One signed event per session stating the Art. 50
    disclosure shown to the user.
 7. **Retention** (have). Extend to the action, oversight and incident ledgers.
-8. **Controls map and evidence report** (have for 7 controls; extend to the whole table in
+8. **Controls map and evidence report** (11 controls; extend to the whole table in
    section 2). `inspeximus compliance` prints live status per control, `--check` gates CI.
 9. **Annex IV technical documentation generator** (build). Free: the skeleton with evidence-filled
    sections. Pro: the branded dossier across stores and agents.
@@ -91,18 +91,18 @@ assembles, it never gates a primitive.
 Each step ships as a release with tests, a runnable probe, and a receipt. Nothing is announced
 before it ships.
 
-1. **2.29.0: action ledger.** Module, CLI (`inspeximus actions list|verify`), MCP dispatch hook,
-   LangChain callback, decorator. Probe: an agent that acts on a fact, the fact is corrected, the
-   agent acts again; the two receipts carry different `memory_state` digests and the verifier
-   rejects a rewritten action or a rewritten memory.
-2. **2.30.0: oversight ledger and disclosure receipt.** Events, CLI, hooks, report rows for Art. 14,
-   Art. 22, Art. 50.
-3. **2.31.0: subject rights.** `export_subject`, rectification receipt, report rows for Art. 15,
+1. **2.29.0: action ledger, oversight events, disclosure receipts** (built 2026-09-15). Module, CLI,
+   MCP dispatch hook and tools, LangChain callback, decorator; oversight and disclosure on the same
+   chain; the compliance overlay grew from 7 to 11 controls. Probe: an agent that acts on a fact, the
+   fact is corrected, the agent acts again; the two receipts carry different `memory_state` digests
+   and the verifier rejects a rewritten action, a rewritten memory, a forged signature and a
+   rewritten oversight reference.
+2. **2.30.0: subject rights.** `export_subject`, rectification receipt, report rows for Art. 15,
    Art. 16.
-4. **2.32.0: incident ledger and Art. 73 report.**
-5. **2.33.0: full controls map** (every row of section 2), deployer report mode, DPIA and FRIA
+3. **2.31.0: incident ledger and Art. 73 report.**
+4. **2.32.0: full controls map** (every row of section 2), deployer report mode, DPIA and FRIA
    appendices, Annex IV skeleton.
-6. **Pro:** dossier across stores, hosted witness, DSR workflow. Only after an inbound signal.
+5. **Pro:** dossier across stores, hosted witness, DSR workflow. Only after an inbound signal.
 
 ## 5. Making it findable
 
