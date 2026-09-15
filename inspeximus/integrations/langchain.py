@@ -105,3 +105,79 @@ class InspeximusChatMessageHistory(BaseChatMessageHistory, ComplianceMixin):
                if self._tag in (r.get("tags") or [])]
         if ids:
             self.store.forget(ids=ids, basis="chat_history_clear")
+
+
+# ---------------------------------------------------------------------------------------------------
+# The action ledger as a LangChain callback: every tool call, model call and chain error becomes one
+# signed entry in <store>.actions.json, carrying the store's state digest and the ids the last recall
+# returned. LangChain closed two requests for a compliance callback (#35357, #35691) as not planned;
+# this is that handler, on top of inspeximus's own chain rather than a new one.
+from langchain_core.callbacks import BaseCallbackHandler  # noqa: E402
+
+
+class InspeximusActionCallback(BaseCallbackHandler):
+    """Record LangChain tool and LLM calls into an inspeximus ActionLedger.
+
+        from inspeximus import Inspeximus
+        from inspeximus.actions import ActionLedger
+        from inspeximus.integrations.langchain import InspeximusActionCallback
+
+        m = Inspeximus("memory.json", receipts=True)
+        cb = InspeximusActionCallback(ActionLedger(m, actor="support-agent"))
+        agent.invoke(inputs, config={"callbacks": [cb]})
+
+    Content-free by default (arguments and outputs are digested). Each run id is one entry; a start
+    without an end is recorded at the next end or error, so an interrupted run still leaves a row."""
+
+    def __init__(self, ledger, record_llm: bool = True, record_tools: bool = True):
+        self.ledger = ledger
+        self.record_llm = record_llm
+        self.record_tools = record_tools
+        self._open: dict = {}
+
+    # tools
+    def on_tool_start(self, serialized, input_str, *, run_id, **kwargs):
+        if self.record_tools:
+            name = (serialized or {}).get("name") or "tool"
+            self._open[str(run_id)] = ("tool:" + str(name), input_str, __import__("time").time())
+
+    def on_tool_end(self, output, *, run_id, **kwargs):
+        self._close(run_id, output, "ok", None)
+
+    def on_tool_error(self, error, *, run_id, **kwargs):
+        self._close(run_id, None, "error", error)
+
+    # models
+    def on_llm_start(self, serialized, prompts, *, run_id, **kwargs):
+        if self.record_llm:
+            name = (serialized or {}).get("name") or "llm"
+            self._open[str(run_id)] = ("llm:" + str(name), list(prompts), __import__("time").time())
+
+    def on_chat_model_start(self, serialized, messages, *, run_id, **kwargs):
+        if self.record_llm:
+            name = (serialized or {}).get("name") or "chat_model"
+            flat = [[getattr(x, "content", str(x)) for x in batch] for batch in messages]
+            self._open[str(run_id)] = ("llm:" + str(name), flat, __import__("time").time())
+
+    def on_llm_end(self, response, *, run_id, **kwargs):
+        try:
+            out = [[g.text for g in batch] for batch in response.generations]
+        except Exception:
+            out = str(response)
+        self._close(run_id, out, "ok", None)
+
+    def on_llm_error(self, error, *, run_id, **kwargs):
+        self._close(run_id, None, "error", error)
+
+    # chains: only errors are recorded, a chain start is not an action
+    def on_chain_error(self, error, *, run_id, **kwargs):
+        self.ledger.record("chain:error", status="error", error=f"{type(error).__name__}: {error}")
+
+    def _close(self, run_id, output, status, error):
+        opened = self._open.pop(str(run_id), None)
+        if opened is None:
+            return
+        action, inputs, started = opened
+        self.ledger.record(action, inputs=inputs, output=output, status=status,
+                           error=None if error is None else f"{type(error).__name__}: {error}",
+                           started=started)

@@ -19,6 +19,9 @@ Config (environment):
     INSPEXIMUS_PROJECT     project/workspace scope for ONE store shared across several repos. Writes are
                            stamped with it and recalls are filtered to it; unset = today's behaviour exactly
                            (no stamp, no filter). `--project <name>` on the command line wins over this.
+    INSPEXIMUS_ACTIONS     1 to record every tool call in the ACTION LEDGER (<store>.actions.json): one
+                           signed, hash-chained entry per call carrying the store's state digest and the ids
+                           the last recall returned. INSPEXIMUS_ACTOR names the actor. Off by default.
     INSPEXIMUS_EMBED_URL   optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall
     INSPEXIMUS_EMBED_MODEL embedding model id (default: text-embedding-3-small)
     INSPEXIMUS_EMBED_KEY   bearer key for that endpoint
@@ -337,9 +340,35 @@ class _FreshFastMCP(FastMCP):
             @functools.wraps(fn)
             def fresh(*fa, **fk):
                 _MEM.refresh()
-                return fn(*fa, **fk)
+                led = _action_ledger()
+                if led is None:
+                    return fn(*fa, **fk)
+                # THE ACTION LEDGER, at the tool boundary. With INSPEXIMUS_ACTIONS=1 every MCP tool call
+                # becomes one signed entry in <store>.actions.json carrying the store's state digest and
+                # the ids the last recall returned, so an auditor reads what the client did and what the
+                # store held at that moment from one chain. Content-free: arguments and results are
+                # digested, not stored. The ledger's own tools (below) are recorded too; recording them
+                # is cheaper than a rule that says which tools do not count.
+                with led.action(f"mcp:{fn.__name__}", inputs={"args": list(fa), "kwargs": fk},
+                                actor=_ACTOR) as ctx:
+                    return ctx.output(fn(*fa, **fk))
             return register(fresh)
         return deco
+
+
+_ACTOR = os.environ.get("INSPEXIMUS_ACTOR") or None
+_LED = None
+
+
+def _action_ledger():
+    """The ledger beside the store, opened once, only when INSPEXIMUS_ACTIONS is set to 1, true or yes."""
+    global _LED
+    if os.environ.get("INSPEXIMUS_ACTIONS", "").strip().lower() not in ("1", "true", "yes"):
+        return None
+    if _LED is None:
+        from inspeximus.actions import ActionLedger
+        _LED = ActionLedger(_MEM, actor=_ACTOR)
+    return _LED
 
 
 mcp = _FreshFastMCP("inspeximus")
@@ -1466,6 +1495,31 @@ def state_digest() -> str:
     serve). Pin it, do work, compare later — a changed digest means a write/supersession/revert/erasure happened.
     The lightweight sibling of witness()/anchor()."""
     return _MEM.state_digest()
+
+
+@mcp.tool()
+def actions_verify(expected_pubkey: str | None = None) -> dict:
+    """Verify the ACTION LEDGER beside this store: what the client did (every MCP tool call, when
+    INSPEXIMUS_ACTIONS=1), bound to what the store held at that moment. Recomputes every hash, link and
+    signature and checks that each entry's memory_state.last_receipt still exists in the store's receipt
+    chain, so a rewritten memory history is caught from the action side too. Read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    ok, problems = led.verify(expected_pubkey=expected_pubkey)
+    return {"ok": ok, "entries": len(led), "path": str(led.path), "problems": problems,
+            "recording": _action_ledger() is not None}
+
+
+@mcp.tool()
+def what_it_knew(seq: int) -> dict:
+    """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
+    digest at that moment, the ids recall had returned, and the current provenance of each of those ids.
+    Answers "which facts were current when it did this" from the chain, not from memory. Read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    if seq < 0 or seq >= len(led):
+        return {"error": f"no action #{seq}; the ledger has {len(led)} entries"}
+    return led.what_it_knew(seq)
 
 
 @mcp.tool()

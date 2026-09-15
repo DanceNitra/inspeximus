@@ -1,3 +1,29 @@
+## 2.29.0 - UPGRADE IF YOU NEED AN AUDIT TRAIL OF WHAT THE AGENT DID: the action ledger, bound to what it knew. AFFECTS NOBODY'S EXISTING CODE: everything here is new and opt-in.
+
+**The audit-trail tools for agents we read on 2026-09-15 (Asqav, AIR Blackbox, agentaudit-python, ActionProof) sign actions. None of them records what the agent knew when it acted.**
+`inspeximus.actions.ActionLedger` appends one signed, hash-chained entry per action (a tool call, a
+model call, a side effect) into `<store>.actions.json`, and every entry carries `memory_state`: the
+store's `state_digest`, the tail hash of the memory receipt chain, and the ids the last recall
+returned. Two actions around one correction carry two digests and two id sets, and
+`what_it_knew(seq)` resolves the ids to their provenance today, so the record shows that action 0
+ran on a value that is now superseded and action 1 on the value that replaced it. Measured in
+`probes/what_the_agent_knew_when_it_acted.py`: digests differ, id sets differ, first `superseded`,
+second `active`; a rewritten action fails offline, a rewritten memory history fails from the action
+side (and passes offline, which is why the binding exists), a forged signature fails.
+
+- `ActionLedger(store, actor=, signing_key=, keep_content=, redact=)`: `record()`, `action()` context
+  manager (an exception is recorded as `status: error` and re-raised), `wrap()` decorator,
+  `verify(expected_pubkey=, bind_to_store=)`, `what_it_knew(seq)`, `reload()`. Content-free by
+  default. Signed with the store's receipt key when it has one; `verify_file()` needs no store and no key.
+- CLI: `inspeximus actions list | record | verify [FILE] | knew SEQ`. `verify FILE` opens no store.
+- MCP: `INSPEXIMUS_ACTIONS=1` records every tool call at the tool boundary; `INSPEXIMUS_ACTOR` names
+  the actor; tools `actions_verify` and `what_it_knew`.
+- LangChain: `inspeximus.integrations.langchain.InspeximusActionCallback` records tool and model
+  calls and chain errors (the handler LangChain closed #35357 and #35691 for, on this chain).
+- `docs/EVIDENCE_PLATFORM_PLAN.md`: every duty the AI Act and GDPR place on an operator of agents,
+  what artifact a tool can produce, and the order this package builds them in.
+- Nine tests, each with a control that fails.
+
 ## 2.28.1 - UPGRADE IF TWO PROCESSES WRITE ONE STORE WITH RECEIPTS ON: a peer's receipt survives this handle's next write
 
 **The receipt chain was a shared file with no merge.** The store itself has merged with peers since

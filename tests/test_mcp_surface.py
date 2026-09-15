@@ -79,6 +79,9 @@ def _args_for(name, sig, mod):
         # than declared undriveable: the whole point of this file is that a skipped tool has no
         # coverage, and this one is reachable with the same `key` the rest of the table uses.
         "line": "concluded the deploy channel is BLUE-9 after the RED-2 rollback",
+        # what_it_knew(seq) reads the action ledger beside the store; on an empty ledger it answers
+        # with an error dict rather than raising, which is the contract the sweep checks.
+        "seq": 0,
     }
     args = []
     for pname, p in sig.parameters.items():

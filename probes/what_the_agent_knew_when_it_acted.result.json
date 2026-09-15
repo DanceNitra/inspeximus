@@ -1,0 +1,19 @@
+{
+ "probe": "what_the_agent_knew_when_it_acted.py",
+ "inspeximus": "2.28.1",
+ "entries": 2,
+ "digests_differ": true,
+ "recalled_ids_differ": true,
+ "first_action_recalled_status": "superseded",
+ "second_action_recalled_status": "active",
+ "first_acted_on_a_value_since_superseded": true,
+ "signed_by_the_store_key": true,
+ "clean_chain_verifies": true,
+ "clean_file_verifies_offline": true,
+ "control_rewritten_action_fails": true,
+ "control_rewritten_memory_fails_from_the_action_side": true,
+ "control_rewritten_memory_still_passes_offline": true,
+ "control_forged_signature_fails": true,
+ "elapsed_s": 0.081,
+ "verdict": "PASS"
+}

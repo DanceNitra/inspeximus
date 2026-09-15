@@ -266,6 +266,38 @@ once). Honest limit, credited: this is exogenous-trust-root / anti-Sybil (Douceu
 signature attests *source*, not *truth*); it makes the steward's independence judgement *enforceable*, it does
 not certify independence. Runnable: [`examples/05_review_trigger.py`](../examples/05_review_trigger.py).
 
+## The action ledger: what the agent did, bound to what it knew (2.29.0)
+
+`inspeximus.actions.ActionLedger` appends one signed, hash-chained entry per action into
+`<store>.actions.json`. Each entry carries `memory_state`: the store's `state_digest()`, the tail hash of
+the memory receipt chain, and the ids the last `recall()` returned. Two actions around one correction
+carry two digests; `what_it_knew(seq)` resolves the ids to their provenance today. Content-free by
+default (`inputs_sha256`, `output_sha256`); `keep_content=True` or `redact=` change that. Signed with the
+store's receipt key when it has one.
+
+```python
+from inspeximus import Inspeximus
+from inspeximus.actions import ActionLedger
+
+m = Inspeximus("memory.json", receipts=True)
+led = ActionLedger(m, actor="support-agent")
+
+with led.action("tool:refund", inputs={"order": 4711}) as a:   # exception -> status "error", re-raised
+    a.output(refund(4711))
+
+@led.wrap("tool:lookup")                                        # args and return value become the entry
+def lookup(order): ...
+
+led.record("api:openai:chat", inputs=prompt, output=answer)     # plain call
+led.verify(expected_pubkey=pk)     # (ok, problems); also binds each entry to the store's receipt chain
+led.what_it_knew(0)                # memory_state at that action + provenance of the recalled ids now
+```
+
+Shell: `inspeximus actions list | record ACTION | verify [FILE] | knew SEQ`; `verify FILE` opens no store.
+MCP: `INSPEXIMUS_ACTIONS=1` records every tool call; tools `actions_verify`, `what_it_knew`.
+LangChain: `inspeximus.integrations.langchain.InspeximusActionCallback(led)` in `config={"callbacks": [...]}`.
+Probe: `probes/what_the_agent_knew_when_it_acted.py` (three tamper controls).
+
 ## Governance, erasure & audit
 
 inspeximus ships tamper-evident governance primitives — built by auditing inspeximus against a governance-evidence

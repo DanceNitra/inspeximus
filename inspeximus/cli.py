@@ -783,6 +783,28 @@ def main(argv=None):
     # asking for a subcommand, and `pip install inspeximus` then `inspeximus-mcp` dies with
     # ModuleNotFoundError because the SDK lives in the optional [mcp] extra. Glama's build failed on
     # exactly that. Arguments after `mcp` are handed to the server's own parser unchanged.
+    ac = sub.add_parser("actions", help="the action ledger: what the agent DID, bound to what it KNEW "
+                        "(memory state digest + the ids recall returned before each action)")
+    acsub = ac.add_subparsers(dest="actions_cmd", required=True)
+    acl = acsub.add_parser("list", help="print the ledger beside this store")
+    acl.add_argument("-n", type=int, default=20, help="last N entries (default 20)")
+    acl.add_argument("--json", dest="as_json", action="store_true", help="emit the raw entries")
+    acr = acsub.add_parser("record", help="append one action from the shell (for scripts and hooks)")
+    acr.add_argument("action", help="an action name, for example tool:refund or api:openai:chat")
+    acr.add_argument("--input", default=None, help="input as a string or JSON (digested, not stored)")
+    acr.add_argument("--output", default=None, help="output as a string or JSON (digested, not stored)")
+    acr.add_argument("--status", default="ok", help="ok or error (default ok)")
+    acr.add_argument("--actor", default=None, help="who acted: an agent name or a role")
+    acr.add_argument("--keep-content", action="store_true", help="store the input and output in the clear")
+    acv = acsub.add_parser("verify", help="recompute every hash, link and signature; with a store, bind each "
+                           "entry to the store's receipt chain. Exit 1 on any problem.")
+    acv.add_argument("file", nargs="?", default=None,
+                     help="a ledger file to verify OFFLINE (no store opened). Omit to verify the ledger "
+                          "beside the store at --path, bound to that store.")
+    acv.add_argument("--expected-pubkey", default=None, help="hex Ed25519 key the chain must be signed by")
+    ack = acsub.add_parser("knew", help="what the agent knew when it performed action SEQ")
+    ack.add_argument("seq", type=int)
+
     mc = sub.add_parser("mcp", help="start the MCP server (needs the [mcp] extra)")
     mc.add_argument("mcp_args", nargs=argparse.REMAINDER,
                     help="arguments passed through to the MCP server")
@@ -814,6 +836,14 @@ def main(argv=None):
             return 0
         ok, msg = _install.apply(p)
         print(f"  {msg}")
+        return 0 if ok else 1
+
+    if a.cmd == "actions" and a.actions_cmd == "verify" and a.file:
+        from inspeximus.actions import verify_file
+        ok, problems = verify_file(a.file, expected_pubkey=a.expected_pubkey)
+        for pr in problems:
+            print("  FAIL " + pr)
+        print(("OK " if ok else "FAIL ") + f"action ledger {a.file}")
         return 0 if ok else 1
 
     # audit-verify needs only the bundle file — never open a store (that would create one as a side effect).
@@ -992,7 +1022,7 @@ def main(argv=None):
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
-                                                        "provenance", "erasure-certificate", "anchor"),
+                                                        "provenance", "erasure-certificate", "anchor", "actions"),
                receipt_key=_rk)
 
     if a.cmd == "anchor":
@@ -1312,6 +1342,42 @@ def main(argv=None):
         else:
             print(f"secret: {sk}\npublic: {pk}\n\n"
                   f"KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.")
+    elif a.cmd == "actions":
+        from inspeximus.actions import ActionLedger
+        led = ActionLedger(m)
+        if a.actions_cmd == "list":
+            ents = led.entries()[-a.n:]
+            if a.as_json:
+                print(json.dumps(ents, indent=2, ensure_ascii=False))
+            else:
+                for e in ents:
+                    ms = e.get("memory_state") or {}
+                    print(f"  #{e['seq']:<4} {e.get('status','?'):<5} {e.get('action')}  "
+                          f"actor={e.get('actor') or '-'}  memory={str(ms.get('digest') or '')[:12]}  "
+                          f"recalled={len(ms.get('recalled') or [])}"
+                          + ("  SIGNED" if e.get("sig") else ""))
+                print(f"{len(led)} action(s) in {led.path}")
+        elif a.actions_cmd == "record":
+            def _val(v):
+                if v is None:
+                    return None
+                try:
+                    return json.loads(v)
+                except ValueError:
+                    return v
+            led.keep_content = bool(a.keep_content)
+            e = led.record(a.action, inputs=_val(a.input), output=_val(a.output), status=a.status,
+                           actor=a.actor)
+            print(f"recorded #{e['seq']} {e['action']}  hash {e['hash'][:12]}"
+                  + ("  SIGNED" if e.get("sig") else "  (unsigned: pass --receipt-key-file to sign)"))
+        elif a.actions_cmd == "verify":
+            ok, problems = led.verify(expected_pubkey=a.expected_pubkey)
+            for pr in problems:
+                print("  FAIL " + pr)
+            print(("OK " if ok else "FAIL ") + f"action ledger {led.path}  ({len(led)} entries, bound to {m.path})")
+            return 0 if ok else 1
+        elif a.actions_cmd == "knew":
+            print(json.dumps(led.what_it_knew(a.seq), indent=2, ensure_ascii=False))
     elif a.cmd == "stats":
         items = getattr(m, "items", [])
         active = sum(1 for r in items if r.get("status") == "active")
