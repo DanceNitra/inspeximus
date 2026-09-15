@@ -1,3 +1,33 @@
+## 2.28.1 - UPGRADE IF TWO PROCESSES WRITE ONE STORE WITH RECEIPTS ON: a peer's receipt survives this handle's next write
+
+**The receipt chain was a shared file with no merge.** The store itself has merged with peers since
+2.10: a save that finds the file moved unions with disk. The receipts sidecar never did. Every emit
+wrote this handle's whole in-memory chain over the file, so a long-lived handle whose peer had
+appended a receipt overwrote that receipt on its next write, and the peer's record, still in the
+store, read forever as "inserted out of band". Measured 2026-09-15 on 2.28.0: two handles, one write
+each, sidecar 2; the first refreshes and writes again, sidecar 2, records 3, `verify_writes()` False on
+a fresh handle. On the JSON path the mirror image: a refused save emitted no receipt, and `reload()`
+re-added the record and saved it with none.
+
+A red-team pass on a public reply found it. The reply had described the chain as refusing a peer's
+entry; the evidence behind that sentence was this defect, read as a feature.
+
+- `_reconcile_receipts_with_disk()`: before every emit and inside the reload merge, one stat on the
+  sidecar; when it moved, the disk chain wins the part it has and this handle's entries that are not
+  on disk are re-appended after the disk tail with a fresh seq, prev, hash and signature. `ts`,
+  `memory_id`, `commit` and any amendment are unchanged, so the record-to-receipt binding is what it
+  was; the old hash is kept as `rechained_from`. Nothing is dropped.
+- `reload()` emits a receipt for a re-added record that has none, so a write that lost a race and
+  was recovered carries the same evidence as one that landed first.
+- `tests/test_a_peers_receipt_survives_this_handles_next_write.py`: seven tests, six fail on 2.28.0.
+  Both formats; a stale handle that never refreshed; the JSON refusal; two signed handles with one
+  key; the divergent case with the moved entry named; and the single-handle control, whose chain
+  is byte-for-byte what it was.
+- The #1644 conformance probe's `writer_below_the_agent` row now measures `receipt_signer=` (an
+  external signer, one call per write, chain verifies) and reads the peer case from a fresh handle;
+  its `authorized_vs_recorded` row now records that no authority is the default and a default store
+  restores on request. Both stay PARTIAL; the reasons written next to them are now the true ones.
+
 ## 2.28.0 - UPGRADE IF TWO PROCESSES SHARE ONE STORE: a long-lived handle sees what a peer wrote, on the read path too
 
 **One memory, every agent, at once, was true on the write path and false on the read path.** A save

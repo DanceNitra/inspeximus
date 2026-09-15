@@ -68,6 +68,9 @@ _STORE_WIDE_PRIVATE = {
     # `_flush_tombstones` persists the WHOLE chain to its sidecar, the way _save_cusum does; the file
     # is one file and writing it is not a tenant act.
     "_flush_tombstones",
+    # The receipt chain is one file too. `_reconcile_receipts_with_disk` adopts a peer's entries,
+    # `_append_receipt` chains onto its tail, `_receipts_disk_sig` stats it (2.28.1).
+    "_reconcile_receipts_with_disk", "_append_receipt", "_receipts_disk_sig",
     # `_merkle_leaves` feeds anchor()/witness(), which are already declared store-level: an anchor is
     # a commitment over the whole log and a scoped one would not verify -- the same either/or as
     # erasure_certificate. Store-wide on purpose, not for want of scoping.

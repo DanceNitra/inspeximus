@@ -13,11 +13,11 @@
    "verdict": "PRESENT",
    "where": "receipt ts (float seconds, sub-millisecond); history valid_from and invalidated_at",
    "evidence": {
-    "ts": 1789455157.1072354,
+    "ts": 1789456396.4393399,
     "valid_from": [
-     1789455157.0863652,
-     1789455157.1072354,
-     1789455157.114241
+     1789456396.4183185,
+     1789456396.4393399,
+     1789456396.4458177
     ]
    }
   },
@@ -74,8 +74,8 @@
    "evidence": {
     "revert": {
      "ok": true,
-     "restored": "958037bc75",
-     "superseded": "7c3710a38b",
+     "restored": "9fa4ff46dc",
+     "superseded": "1b68e497ed",
      "reverted_to_object": null,
      "reverted_to_text": "The staging database is db-7.internal"
     },
@@ -118,7 +118,7 @@
     "pending": 2,
     "need": 2,
     "surfaced_prior": null,
-    "review_id": "f929c4daf7"
+    "review_id": "bbeecd1374"
    },
    "queue_after": 1
   },
@@ -126,12 +126,12 @@
    "queue_after": 0,
    "trace": {
     "decision": "keep_current",
-    "ts": 1789455157.1808338,
+    "ts": 1789456396.5150642,
     "reason": "pages were about another key",
     "aid": "rasto",
     "was": {
      "reopened_reason": "novel_support_contradiction",
-     "reopened_ts": 1789455157.1763167
+     "reopened_ts": 1789456396.5105536
     }
    },
    "verdict": "TRACED"
@@ -140,13 +140,13 @@
    "queue_after": 0,
    "old_trace": {
     "decision": "superseded_by_write",
-    "ts": 1789455157.2185826,
+    "ts": 1789456396.5531352,
     "was": {
-     "by": "81b79222a7",
-     "reopened_ts": 1789455157.2134275
+     "by": "87079d1a30",
+     "reopened_ts": 1789456396.5481339
     }
    },
-   "new_resolves": "80ebd0fa89",
+   "new_resolves": "3ff6126287",
    "verdict": "TRACED"
   },
   "no_prescription": {
@@ -182,13 +182,20 @@
   },
   "writer_below_the_agent": {
    "verdict": "PARTIAL",
-   "where": "the Claude Code hook writes from the harness and stamps the harness as agent; a signed receipt chain refuses a peer's unsigned entry under require_signed; but the signing key is a constructor argument, so an agent holding the library handle holds the key",
+   "where": "the Claude Code hook writes from the harness and stamps it as the agent; receipt_signer= keeps the key out of the process; a chain with one unsigned entry fails verification on a fresh handle; but the handle signs whatever the handle writes, so write authority stays with the caller",
    "evidence": {
-    "receipt_key_is_a_constructor_argument": true,
+    "external_signer_supported": true,
+    "external_signer_calls_per_write": 1,
+    "external_signer_chain_verifies": true,
     "unkeyed_peer_write": "landed",
+    "fresh_handle_verify_after_peer": false,
+    "fresh_handle_problems": [
+     "1 of 2 chain entries carry NO signature while 1 do. A chain signed in places is not signed: something without the key appended to it."
+    ],
     "require_signed_verify_ok": false,
     "require_signed_problems": [
-     "1 record(s) are covered by NO write receipt, so nothing here vouches for them: ['0908e051d9']. They were inserted out of band, or written while receipts were off. Pass coverage_strict=False if this store enabled receipts part-way."
+     "receipt 1: unsigned, but a signature was required",
+     "1 of 2 chain entries carry NO signature while 1 do. A chain signed in places is not signed: something without the key appended to it."
     ],
     "hook_slug_without_harness_env": "unknown",
     "hook_slug_with_claude_code_env": "claude-code",
@@ -197,8 +204,9 @@
   },
   "authorized_vs_recorded": {
    "verdict": "PARTIAL",
-   "where": "revert and promote require a capability minted from a harness-held authority, refused by default; an ordinary landed write carries no authorization mark",
+   "where": "with a revert authority configured, a restore without a capability returns authorization_required; with revert_pubkey the store verifies and cannot mint; but no authority is the default and a default store restores on request, and an ordinary landed write carries no authorization mark",
    "evidence": {
+    "default_store_restores_without_capability": true,
     "revert_without_capability": "authorization_required",
     "revert_with_capability_ok": true,
     "plain_write_meta_keys": [
@@ -215,7 +223,7 @@
   "MISSING": 0
  },
  "probe": "which_fields_of_a_1644_audit_entry_the_store_already_records.py",
- "version": "2.28.0",
+ "version": "2.28.1",
  "issue": "deepseek-ai/DeepSeek-V3#1644 sections 3.2 to 3.4",
  "mutated": null
 }

@@ -1155,7 +1155,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.28.0"
+__version__ = "2.28.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2489,6 +2489,7 @@ class Inspeximus:
                 self._receipts = json.loads(self._receipts_path.read_text(encoding="utf-8"))
             except Exception:
                 self._receipts = []
+        self._receipts_sig = self._receipts_disk_sig() if self._receipts_path else None
         # DELETION TOMBSTONES (erasure-with-audit). forget() genuinely removes content, which otherwise makes
         # verify_writes() report the now-missing record as "deleted out-of-band" — a legitimate GDPR-erasure is
         # then INDISTINGUISHABLE from tampering. A tombstone is a hash-chained (optionally Ed25519-signed) marker
@@ -3193,49 +3194,78 @@ class Inspeximus:
         if self.receipts_enabled:
             self._emit_write_receipt(rec, amends=("status_sha256",), reason=reason)
 
-    def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "",
-                            retires=()) -> dict:
-        """`amends` names the committed fields this receipt legitimately rewrites (slash/restore -> mtype).
-        It is DECLARED, not inferred, and verification forgives an earlier receipt for exactly the declared
-        fields and nothing else. Inferring it — "the latest receipt wins" — is what let a public slash()
-        launder a forged text past verify_writes() in 1.67.0, and the same shape silently forgave a RELABEL
-        (attrib_sha256), which is the one thing committing attribution exists to catch."""
+    def _receipts_disk_sig(self):
+        try:
+            st = self._receipts_path.stat()
+            return (st.st_mtime_ns, st.st_size)
+        except (AttributeError, OSError):
+            return None
+
+    def _reconcile_receipts_with_disk(self) -> int:
+        """Adopt receipts a peer process appended to the sidecar, and re-chain ours on top of them.
+
+        THE RECEIPT CHAIN WAS A SHARED FILE WITH NO MERGE (2.28.1). The store itself has had a
+        merge for peers since 2.10: a save that finds the file moved unions with disk. The sidecar
+        never had one. Every emit wrote this handle's whole in-memory list over the file, so a
+        long-lived handle whose peer had appended a receipt overwrote that receipt on its next
+        write, and the peer's record, still in the store, then read forever as "inserted out of
+        band". Measured 2026-09-15 on 2.28.0: two handles, one write each, sidecar 2; the first
+        handle refreshes and writes again, sidecar 2, records 3, verify_writes False on a fresh
+        handle. A red-team pass of a public reply found it: the reply had described the chain as
+        refusing a peer's entry, and the evidence behind that sentence was this defect.
+
+        THE CHAIN IS A LINE, SO TWO WRITERS CANNOT BOTH BE RIGHT ABOUT `prev`. The disk chain wins
+        for the part it has; this handle's entries that are not on disk (an unsaved write, or an
+        entry appended on the same `prev` a peer used first) are re-appended after the disk tail with
+        a fresh seq, prev, hash and signature. `ts`, `memory_id`, `commit` and any amendment are
+        unchanged, so the record-to-receipt binding verify_writes checks is what it was, and the
+        old hash is kept as `rechained_from` so the move is itself visible. Nothing is dropped.
+
+        Returns how many disk entries were adopted. Runs before every emit and inside the reload
+        merge; one stat when the sidecar has not moved.
+        """
+        if not (self.receipts_enabled and self._receipts_path):
+            return 0
+        sig = self._receipts_disk_sig()
+        if sig is None or sig == getattr(self, "_receipts_sig", None):
+            return 0
+        try:
+            disk = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+        except Exception:
+            return 0
+        if not isinstance(disk, list):
+            return 0
+        mine = self._receipts
+        n = 0
+        while n < len(mine) and n < len(disk) and mine[n].get("hash") == disk[n].get("hash"):
+            n += 1
+        self._receipts_sig = sig
+        if n == len(disk):
+            return 0                                  # disk is a prefix of ours: nothing to adopt
+        tail = mine[n:]
+        self._receipts = list(disk)
+        for old in tail:
+            self._append_receipt(old, rechained=True)
+        return len(disk) - n
+
+    def _append_receipt(self, r: dict, rechained: bool = False) -> dict:
+        """Chain, hash and sign one receipt onto the current tail, then append it. `rechained` marks
+        a receipt moved from an earlier position after a peer's entries were adopted."""
         prev = self._receipts[-1]["hash"] if self._receipts else _GENESIS
-        r = {"seq": len(self._receipts), "ts": rec.get("ts"), "memory_id": rec["id"],
-             "commit": self._write_commit(rec, retires), "prev": prev}
-        if amends:
-            bad = set(amends) - _AMENDABLE
-            if bad:
-                raise ValueError(f"refusing to emit a receipt amending {sorted(bad)}: only "
-                                 f"{sorted(_AMENDABLE)} may be forgiven. Widening this is a "
-                                 f"deliberate change to what the chain guarantees, not a parameter.")
-            r["amends"] = sorted(amends)
-            # WHY a record changed is as auditable as WHAT changed (yun520-1, hermes-agent#34352).
-            # `amends` says which committed field a receipt rewrites; without a reason the trail cannot
-            # tell a correction from a quiet rewrite. An UNSTATED reason is recorded as such rather than
-            # omitted: a missing key is indistinguishable from a caller that had nothing to say, and an
-            # optional field nobody is required to fill is the adoption defect, not the feature.
-            r["amend_reason"] = (str(reason).strip() or "unstated")[:200]
+        if rechained:
+            old = r
+            r = {k: old[k] for k in ("ts", "memory_id", "commit") if k in old}
+            for k in ("amends", "amend_reason"):
+                if k in old:
+                    r[k] = old[k]
+            r["rechained_from"] = old.get("hash")
+        r["seq"] = len(self._receipts)
+        r["prev"] = prev
         r["hash"] = _sha256_hex(_canon(Inspeximus._chain_core(r, "write")))
         if self._receipt_signer is not None:
-            # WRITE-AUTHORITY BOUNDARY. The signing key lives OUTSIDE this process (KMS, HSM, a signing
-            # sidecar), so the store can ASK for a signature but can never mint one. That is the property
-            # a hash chain alone does not give you: with the key in-process, anyone who can write the
-            # store file can also rewrite the chain and re-sign it, and the log degrades to a checksum of
-            # whatever the attacker last wrote.
-            #
-            # HONEST SCOPE, because this is exactly where audit logging gets oversold: it stops an
-            # attacker who has FILE access only. It does NOT stop one who can call this API in-process --
-            # they ask the signer just as the application does, and the signer has no way to know the
-            # difference. Separating those two is a deployment property (who may run the process), not
-            # something a library can assert. Prior art for the class: Schneier & Kelsey, USENIX Security
-            # 1998, on why post-compromise entries are attacker-chosen by construction.
             try:
                 sig = self._receipt_signer(r["hash"])
             except Exception as e:
-                # A signer that is unreachable must not silently produce an UNSIGNED receipt that later
-                # verifies as "no signature required" -- that is the failure open this boundary exists to
-                # prevent. Refuse the write instead.
                 raise RuntimeError(f"receipt signer failed ({type(e).__name__}: {e}); refusing to append "
                                    f"an unsigned receipt while a signer is configured") from e
             if not sig:
@@ -3249,10 +3279,50 @@ class Inspeximus:
             r["pubkey"] = self.receipt_pubkey
             r["sig"] = sk.sign(bytes.fromhex(r["hash"])).hex()
         self._receipts.append(r)
+        return r
+
+    def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "",
+                            retires=()) -> dict:
+        """`amends` names the committed fields this receipt legitimately rewrites (slash/restore -> mtype).
+        It is DECLARED, not inferred, and verification forgives an earlier receipt for exactly the declared
+        fields and nothing else. Inferring it — "the latest receipt wins" — is what let a public slash()
+        launder a forged text past verify_writes() in 1.67.0, and the same shape silently forgave a RELABEL
+        (attrib_sha256), which is the one thing committing attribution exists to catch."""
+        self._reconcile_receipts_with_disk()
+        r = {"ts": rec.get("ts"), "memory_id": rec["id"], "commit": self._write_commit(rec, retires)}
+        if amends:
+            bad = set(amends) - _AMENDABLE
+            if bad:
+                raise ValueError(f"refusing to emit a receipt amending {sorted(bad)}: only "
+                                 f"{sorted(_AMENDABLE)} may be forgiven. Widening this is a "
+                                 f"deliberate change to what the chain guarantees, not a parameter.")
+            r["amends"] = sorted(amends)
+            # WHY a record changed is as auditable as WHAT changed (yun520-1, hermes-agent#34352).
+            # `amends` says which committed field a receipt rewrites; without a reason the trail cannot
+            # tell a correction from a quiet rewrite. An UNSTATED reason is recorded as such rather than
+            # omitted: a missing key is indistinguishable from a caller that had nothing to say, and an
+            # optional field nobody is required to fill is the adoption defect, not the feature.
+            r["amend_reason"] = (str(reason).strip() or "unstated")[:200]
+        # WRITE-AUTHORITY BOUNDARY, applied inside `_append_receipt`. With `receipt_signer=` the
+        # signing key lives OUTSIDE this process (KMS, HSM, a signing sidecar), so the store can ASK
+        # for a signature but can never mint one. That is the property a hash chain alone does not give
+        # you: with the key in-process, anyone who can write the store file can also rewrite the chain
+        # and re-sign it, and the log degrades to a checksum of whatever the attacker last wrote.
+        #
+        # HONEST SCOPE, because this is exactly where audit logging gets oversold: it stops an
+        # attacker who has FILE access only. It does NOT stop one who can call this API in-process --
+        # they ask the signer just as the application does, and the signer has no way to know the
+        # difference. Separating those two is a deployment property (who may run the process), not
+        # something a library can assert. Prior art for the class: Schneier & Kelsey, USENIX Security
+        # 1998, on why post-compromise entries are attacker-chosen by construction. A signer that is
+        # unreachable must not silently produce an UNSIGNED receipt that later verifies as "no
+        # signature required"; the helper refuses the write instead.
+        r = self._append_receipt(r)
         if self._receipts_path:
             try:
                 Inspeximus._atomic_write(self._receipts_path,
                                          json.dumps(self._receipts, indent=2, ensure_ascii=False))
+                self._receipts_sig = self._receipts_disk_sig()
             except Exception as e:
                 # The receipt chain IS the evidence. Losing it silently was worse than losing a record:
                 # measured, 4 receipts in memory, verify_writes() -> (True, []), and ZERO on reload — the
@@ -7635,7 +7705,7 @@ class Inspeximus:
         contending writers a pass is refused about once in 320 loads, so eight attempts is generous;
         if all eight are refused the last refusal propagates rather than being swallowed."""
         for attempt in range(8):
-            out = self._merge_with_disk()
+            out = self._merge_with_disk(receipts_for_readded=True)
             try:
                 self._save(force=True)
                 return out
@@ -7669,8 +7739,13 @@ class Inspeximus:
         out["changed"] = True
         return out
 
-    def _merge_with_disk(self) -> dict:
+    def _merge_with_disk(self, receipts_for_readded: bool = False) -> dict:
         """The union `reload()` performs, without the save. Both callers use THIS, and only this.
+
+        `receipts_for_readded` is True only from `reload()`: there a re-added record is one whose
+        save was refused and whose receipt was therefore never emitted. From the save path the
+        record being written gets its receipt from the write itself, so emitting here as well
+        produced a duplicate receipt for one record (measured: three receipts for two writes).
 
         The save path needs the same merge while it already holds the store lock, so it cannot call
         `reload()`, which ends in a save. The first attempt at the row-store merge therefore wrote a
@@ -7683,6 +7758,9 @@ class Inspeximus:
         self._items = []
         self._file_sig = None
         self._load_from_disk()
+        # The sidecar is part of what a peer wrote. Adopt it here so reload() and refresh() see the
+        # peer's receipts as well as its records; see `_reconcile_receipts_with_disk`.
+        self._reconcile_receipts_with_disk()
         buried = {t.get("memory_id") for t in (self._tombstones or [])}
         # Drop what THIS handle deliberately erased, whichever side it came from. Filtering only the
         # re-added set was not enough: the record came back from DISK, so a tombstoned erasure was undone by
@@ -7694,6 +7772,16 @@ class Inspeximus:
         self._items.extend(readded)
         for _r in readded:
             self._touch(_r)
+        # A RE-ADDED RECORD GETS ITS RECEIPT (2.28.1). On the JSON path a refused save emits no
+        # receipt, and reload() then re-added the record and saved it with none, so a write that
+        # merely lost a race read forever as "inserted out of band". Measured 2026-09-15: two
+        # handles, one refusal, one reload, verify_writes False on every handle after. The record's
+        # own ts is kept; the receipt is chained where it lands.
+        if receipts_for_readded and self.receipts_enabled:
+            covered = {r.get("memory_id") for r in self._receipts}
+            for _r in readded:
+                if _r["id"] not in covered:
+                    self._emit_write_receipt(_r)
         # A union by id is not enough. The disk copy of a record THIS handle had superseded comes back
         # ACTIVE, so a merged store ended up holding two contradictory active records under one key while
         # verify_writes() reported True -- the recovery path breaking the one property the store exists for.

@@ -154,8 +154,18 @@ def gather(d: str) -> dict:
         peer_write = "landed"
     except Exception as e:
         peer_write = type(e).__name__
+    fresh_ok, fresh_problems = Inspeximus(path=os.path.join(d, "signed.json"), receipts=True).verify_writes()
     m5.reload()
     ok_signed, problems = m5.verify_writes(expected_pubkey=pub, require_signed=True)
+    # An EXTERNAL signer: the key never enters this process; the handle asks an oracle for each signature.
+    calls = {"n": 0}
+    from inspeximus.core import _Ed25519SK as _SK
+    def oracle(hash_hex):
+        calls["n"] += 1
+        return _SK.from_private_bytes(bytes.fromhex(priv)).sign(bytes.fromhex(hash_hex)).hex()
+    m7 = Inspeximus(path=os.path.join(d, "oracle.json"), receipts=True, receipt_signer=oracle, receipt_pubkey=pub)
+    m7.remember("signed by an oracle this process cannot mint from", key="o1", object="a")
+    oracle_ok = m7.verify_writes(expected_pubkey=pub, require_signed=True)[0]
     drop = ("CODEX_HOME", "CODEX_CLI_PATH", "INSPEXIMUS_AGENT_ID")
     env_none = {k: v for k, v in os.environ.items() if not (k.startswith("CLAUDE_CODE_") or k in drop)}
     saved = dict(os.environ)
@@ -168,14 +178,20 @@ def gather(d: str) -> dict:
     finally:
         os.environ.clear()
         os.environ.update(saved)
-    ev["writer"] = {"receipt_key_is_a_constructor_argument": "receipt_key" in inspect.signature(Inspeximus.__init__).parameters,
-                    "unkeyed_peer_write": peer_write, "require_signed_verify_ok": ok_signed,
-                    "require_signed_problems": problems[:3],
+    ev["writer"] = {"external_signer_supported": "receipt_signer" in inspect.signature(Inspeximus.__init__).parameters,
+                    "external_signer_calls_per_write": calls["n"], "external_signer_chain_verifies": oracle_ok,
+                    "unkeyed_peer_write": peer_write, "fresh_handle_verify_after_peer": fresh_ok,
+                    "fresh_handle_problems": fresh_problems[:2],
+                    "require_signed_verify_ok": ok_signed, "require_signed_problems": problems[:3],
                     "hook_slug_without_harness_env": slug_bare, "hook_slug_with_claude_code_env": slug_cc,
                     "hook_module_writes_agent_id": "agent_id=agent_id(" in inspect.getsource(cc)}
 
     # --- icophy 3: authorized vs recorded. With an authority configured, a restore without a
     # capability is refused (default deny); a plain landed write carries no authorization mark.
+    m0 = Inspeximus(path=os.path.join(d, "auth0.json"))               # no authority configured: the default
+    m0.remember("The staging database is db-7.internal", key="staging-db", object="db-7.internal", mtype="fact")
+    m0.remember("The staging database is db-9.internal", key="staging-db", object="db-9.internal", mtype="fact")
+    default_restores = bool(m0.revert("staging-db").get("ok"))
     m6 = Inspeximus(path=os.path.join(d, "auth.json"), revert_authority="harness-held-secret")
     m6.remember("The staging database is db-7.internal", key="staging-db", object="db-7.internal", mtype="fact")
     m6.remember("The staging database is db-9.internal", key="staging-db", object="db-9.internal", mtype="fact")
@@ -187,7 +203,8 @@ def gather(d: str) -> dict:
     granted = m6.revert("staging-db", capability=m6.revert_capability("staging-db"))
     plain = next(r for r in m6.items if r.get("object") == "db-9.internal")
     marks = ("authorized", "authorization", "capability", "grant")
-    ev["authz"] = {"revert_without_capability": denied, "revert_with_capability_ok": bool(granted.get("ok")),
+    ev["authz"] = {"default_store_restores_without_capability": default_restores,
+                   "revert_without_capability": denied, "revert_with_capability_ok": bool(granted.get("ok")),
                    "plain_write_meta_keys": sorted((plain.get("meta") or {}).keys()),
                    "plain_write_has_authorization_mark": any(k in (plain.get("meta") or {}) for k in marks)}
     return ev
@@ -280,17 +297,22 @@ def score(ev: dict) -> dict:
                  "and reports stale_at_use; per record, opt-in: a write without a source binds nothing",
         "evidence": an}
     icophy["writer_below_the_agent"] = {
-        "verdict": "MISSING" if not (wr["require_signed_verify_ok"] is False and wr["hook_module_writes_agent_id"]) else
-                   ("PARTIAL" if wr["receipt_key_is_a_constructor_argument"] else "PRESENT"),
-        "where": "the Claude Code hook writes from the harness and stamps the harness as agent; a signed receipt "
-                 "chain refuses a peer's unsigned entry under require_signed; but the signing key is a constructor "
-                 "argument, so an agent holding the library handle holds the key",
+        # PRESENT would need a writer the model cannot reach. What exists: the harness-side hook, an
+        # external signer the process cannot mint from, and a chain that fails verification once a
+        # peer without the key appends. What does not: the handle signs whatever the handle writes,
+        # and the model can open the same store and write, so write authority stays with the caller.
+        "verdict": "MISSING" if not (wr["fresh_handle_verify_after_peer"] is False and wr["hook_module_writes_agent_id"]
+                                     and wr["external_signer_chain_verifies"]) else "PARTIAL",
+        "where": "the Claude Code hook writes from the harness and stamps it as the agent; receipt_signer= keeps the "
+                 "key out of the process; a chain with one unsigned entry fails verification on a fresh handle; "
+                 "but the handle signs whatever the handle writes, so write authority stays with the caller",
         "evidence": wr}
     icophy["authorized_vs_recorded"] = {
         "verdict": "MISSING" if not (az["revert_without_capability"] == "authorization_required" and az["revert_with_capability_ok"]) else
                    ("PARTIAL" if not az["plain_write_has_authorization_mark"] else "PRESENT"),
-        "where": "revert and promote require a capability minted from a harness-held authority, refused by default; "
-                 "an ordinary landed write carries no authorization mark",
+        "where": "with a revert authority configured, a restore without a capability returns authorization_required; "
+                 "with revert_pubkey the store verifies and cannot mint; but no authority is the default and a default "
+                 "store restores on request, and an ordinary landed write carries no authorization mark",
         "evidence": az}
     icophy_counts = {v: sum(1 for f in ICOPHY if icophy[f]["verdict"] == v) for v in ("PRESENT", "PARTIAL", "MISSING")}
     return {"fields": table, "counts": counts, "lifecycle": lifecycle,
@@ -325,7 +347,7 @@ def mutate(ev: dict, field: str) -> dict:
     elif field == "landing_anchor":
         ev["anchor"]["after"]["sources_match"] = True        # a witness that cannot notice the file changed
     elif field == "writer_below_the_agent":
-        ev["writer"]["require_signed_verify_ok"] = True     # a chain that accepts the unsigned peer entry
+        ev["writer"]["fresh_handle_verify_after_peer"] = True   # a chain that accepts the unsigned peer entry
     elif field == "authorized_vs_recorded":
         ev["authz"]["revert_without_capability"] = "landed"  # a restore nobody authorized
     else:
