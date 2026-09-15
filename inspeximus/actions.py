@@ -29,7 +29,8 @@ Two more event kinds share the chain. `oversight()` records a human decision abo
 (approve, refuse, override, stop, review) with the person or role who made it, for EU AI Act Art. 14
 and GDPR Art. 22. `disclosure()` records that a user was told they are interacting with an AI system,
 or that generated content was marked, for Art. 50, which applies from 2 August 2026. Every entry has
-a `kind`: "action" (the default), "oversight" or "disclosure".
+a `kind`: "action" (the default), "oversight", "disclosure", or "rights" (a data-subject request served
+through `inspeximus.subject_rights`: an Art. 15 export or an Art. 16 rectification).
 
 The ledger lives beside the store as `<store>.actions.json`. `inspeximus actions verify` checks it
 offline; `verify()` also checks that every `memory_state.last_receipt` still resolves in the store's
@@ -207,8 +208,8 @@ class ActionLedger:
         "action" for what the agent did; `oversight()` and `disclosure()` set the other two."""
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
-        if kind not in ("action", "oversight", "disclosure"):
-            raise ValueError("kind must be action, oversight or disclosure")
+        if kind not in ("action", "oversight", "disclosure", "rights"):
+            raise ValueError("kind must be action, oversight, disclosure or rights")
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
         out = self.redact(output) if (self.redact and output is not None) else output
@@ -334,6 +335,7 @@ class ActionLedger:
         actions = [e for e in self._entries if e.get("kind", "action") == "action"]
         overs = [e for e in self._entries if e.get("kind") == "oversight"]
         discs = [e for e in self._entries if e.get("kind") == "disclosure"]
+        rights = [e for e in self._entries if e.get("kind") == "rights"]
         by_event: dict = {}
         by_actor: dict = {}
         reviewed = set()
@@ -356,6 +358,8 @@ class ActionLedger:
             "stops": by_event.get("stop", 0),
             "disclosures": len(discs),
             "sessions_disclosed": {k: sorted(set(v)) for k, v in sessions.items()},
+            "rights_requests": {"export": sum(1 for r in rights if r.get("event") == "export"),
+                                "rectify": sum(1 for r in rights if r.get("event") == "rectify")},
         }
 
     # ----------------------------------------------------------------- reading

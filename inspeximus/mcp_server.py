@@ -1553,6 +1553,38 @@ def oversight_report() -> dict:
 
 
 @mcp.tool()
+def export_subject(subject: str, request_id: str | None = None, include_text: bool = True,
+                   allow_ambiguous: bool = False) -> dict:
+    """GDPR Art. 15 access: everything this store holds about `subject` (a source doc identifier), resolved
+    exactly as erasure resolves it, with provenance, correction history, the erasure tombstones already
+    recorded, and the ledger actions taken while those records were recalled. Writes one rights:export
+    entry to the action ledger carrying the export's manifest hash. Refuses an ambiguous subject unless
+    allow_ambiguous is set."""
+    from inspeximus.actions import ActionLedger
+    from inspeximus.subject_rights import export_subject as _export
+    try:
+        return _export(_MEM, subject, ledger=ActionLedger(_MEM, actor=_ACTOR), allow_ambiguous=allow_ambiguous,
+                       include_text=include_text, actor=_ACTOR, request_id=request_id)
+    except Exception as ex:  # AmbiguousSubject and friends: return, do not crash the server
+        return {"error": f"{type(ex).__name__}: {ex}"}
+
+
+@mcp.tool()
+def rectify_subject(key: str, text: str, actor: str, reason: str, subject: str | None = None,
+                    request_id: str | None = None) -> dict:
+    """GDPR Art. 16 rectification: supersede the value under `key` with `text` through the ordinary keyed
+    write (every write guard applies), and record who asked and why as a rights:rectify entry on the action
+    ledger bound to the memory receipt. `actor` and `reason` are required."""
+    from inspeximus.actions import ActionLedger
+    from inspeximus.subject_rights import rectify as _rectify
+    try:
+        return _rectify(_MEM, key=key, text=text, actor=actor, reason=reason,
+                        ledger=ActionLedger(_MEM, actor=_ACTOR), subject=subject, request_id=request_id)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
 def what_it_knew(seq: int) -> dict:
     """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.

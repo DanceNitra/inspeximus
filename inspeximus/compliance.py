@@ -64,6 +64,19 @@ _CONTROLS = [
      "check_conflict gates contradictory writes; attestation/provenance binds a record's sources; detect_pii "
      "/ redact_pii and per-type decay support data minimisation within the store.",
      None),
+    ("GDPR (Reg (EU) 2016/679)", "Art. 15", "Right of access",
+     "The data subject has the right to obtain confirmation of whether personal data are processed, access "
+     "to the data, and the available information about their source.",
+     "export_subject() returns every record whose source resolves to the subject, as erasure resolves it, "
+     "with provenance and correction history, plus the actions taken while those records were recalled; a "
+     "manifest hash ties the export to a rights entry on the action ledger.",
+     "rights_export"),
+    ("GDPR (Reg (EU) 2016/679)", "Art. 16", "Right to rectification",
+     "The data subject has the right to obtain the rectification of inaccurate personal data without undue "
+     "delay.",
+     "rectify() supersedes the value under its key through the ordinary keyed write, so the old value stops "
+     "being served, and records who asked and why as a rights entry bound to the memory receipt.",
+     "rights_rectify"),
     ("GDPR (Reg (EU) 2016/679)", "Art. 17", "Right to erasure",
      "The controller must erase personal data without undue delay on a valid request, and be able to "
      "demonstrate the erasure took place.",
@@ -153,8 +166,8 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
 def _ledger_counts(store) -> dict:
     """Live counts from the action ledger beside the store, or zeros when there is none. The ledger is
     read through its own verifier so a rewritten file counts as zero evidence rather than as evidence."""
-    out = {"actions": 0, "oversight_events": 0, "disclosures": 0, "ledger_present": False,
-           "ledger_verified": None, "error_actions_without_oversight": []}
+    out = {"actions": 0, "oversight_events": 0, "disclosures": 0, "rights_export": 0, "rights_rectify": 0,
+           "ledger_present": False, "ledger_verified": None, "error_actions_without_oversight": []}
     try:
         from .actions import ActionLedger
         led = ActionLedger(store)
@@ -172,6 +185,8 @@ def _ledger_counts(store) -> dict:
     out["actions"] = rep["actions"]
     out["oversight_events"] = rep["oversight_events"]
     out["disclosures"] = rep["disclosures"]
+    out["rights_export"] = rep["rights_requests"]["export"]
+    out["rights_rectify"] = rep["rights_requests"]["rectify"]
     out["error_actions_without_oversight"] = rep["error_actions_without_oversight"]
     return out
 

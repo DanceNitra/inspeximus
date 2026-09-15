@@ -62,9 +62,14 @@ from .scitt import (
 # the obvious import does not find inspeximus.trusted_list.
 from .timestamp import qualified_status, signer_certificate, certificates_in
 from .trusted_list import TrustedList, parse_trusted_list, classify_status
+from .actions import ActionLedger
+from .subject_rights import export_subject, rectify
 
 __all__ = [
     "Inspeximus",
+    "ActionLedger",
+    "export_subject",
+    "rectify",
     "AmbiguousSubject",
     "new_receipt_keypair",
     "receipt_key_for",

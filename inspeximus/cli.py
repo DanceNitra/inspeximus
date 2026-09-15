@@ -821,6 +821,25 @@ def main(argv=None):
     acd.add_argument("--locale", default=None)
     acsub.add_parser("report", help="oversight and disclosure counts an auditor asks for, from the ledger")
 
+    sj = sub.add_parser("subject", help="data-subject rights over this store: export (GDPR Art. 15) and "
+                        "rectify (Art. 16); erasure is `forget-subject`")
+    sjsub = sj.add_subparsers(dest="subject_cmd", required=True)
+    sje = sjsub.add_parser("export", help="everything the store holds about SUBJECT, with provenance and history")
+    sje.add_argument("subject", help="the subject identifier, as written in source={'doc': ...}")
+    sje.add_argument("--out", default=None, help="write the export JSON here (default: print)")
+    sje.add_argument("--request-id", dest="request_id", default=None)
+    sje.add_argument("--actor", default=None, help="who served the request")
+    sje.add_argument("--no-text", dest="no_text", action="store_true", help="omit record text (ids and provenance only)")
+    sje.add_argument("--allow-ambiguous", dest="allow_ambiguous", action="store_true",
+                     help="include records of subjects that merely canonicalize the same way")
+    sjr = sjsub.add_parser("rectify", help="correct the value under --key and record who asked and why")
+    sjr.add_argument("--key", required=True)
+    sjr.add_argument("--text", required=True, help="the corrected value")
+    sjr.add_argument("--actor", required=True)
+    sjr.add_argument("--reason", required=True)
+    sjr.add_argument("--subject", default=None, help="the subject this record belongs to (source doc)")
+    sjr.add_argument("--request-id", dest="request_id", default=None)
+
     mc = sub.add_parser("mcp", help="start the MCP server (needs the [mcp] extra)")
     mc.add_argument("mcp_args", nargs=argparse.REMAINDER,
                     help="arguments passed through to the MCP server")
@@ -1038,7 +1057,7 @@ def main(argv=None):
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
-                                                        "provenance", "erasure-certificate", "anchor", "actions"),
+                                                        "provenance", "erasure-certificate", "anchor", "actions", "subject"),
                receipt_key=_rk)
 
     if a.cmd == "anchor":
@@ -1412,6 +1431,27 @@ def main(argv=None):
                   f"chars={e['shown_chars']}" + ("  SIGNED" if e.get("sig") else ""))
         elif a.actions_cmd == "report":
             print(json.dumps(led.oversight_report(), indent=2, ensure_ascii=False))
+    elif a.cmd == "subject":
+        from inspeximus.actions import ActionLedger
+        from inspeximus.subject_rights import export_subject, rectify
+        led = ActionLedger(m)
+        if a.subject_cmd == "export":
+            pkg = export_subject(m, a.subject, ledger=led, allow_ambiguous=a.allow_ambiguous,
+                                 include_text=not a.no_text, actor=a.actor, request_id=a.request_id)
+            if a.out:
+                with open(a.out, "w", encoding="utf-8") as f:
+                    json.dump(pkg, f, indent=2, ensure_ascii=False, default=str)
+                c = pkg["counts"]
+                print(f"wrote {a.out}: {c['records']} record(s) ({c['direct']} direct, {c['inherited']} inherited), "
+                      f"{c['actions']} action(s) recalled them, manifest {pkg['manifest_sha256'][:12]}, "
+                      f"ledger #{pkg['ledger_entry']['seq']}")
+            else:
+                print(json.dumps(pkg, indent=2, ensure_ascii=False, default=str))
+        elif a.subject_cmd == "rectify":
+            r = rectify(m, key=a.key, text=a.text, actor=a.actor, reason=a.reason, ledger=led,
+                        subject=a.subject, request_id=a.request_id)
+            print(f"rectified {a.key}: {r['previous_id']} -> {r['new_id']}  (previous now {r['previous_status']}), "
+                  f"ledger #{r['ledger_entry']['seq']}")
     elif a.cmd == "stats":
         items = getattr(m, "items", [])
         active = sum(1 for r in items if r.get("status") == "active")

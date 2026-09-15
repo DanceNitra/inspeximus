@@ -309,8 +309,24 @@ led.oversight_report()   # by event, by actor, error actions with no oversight, 
 ```
 
 `actor` is required on an oversight event and `refers_to` must resolve to an earlier entry; both are
-re-checked by `verify()`. `inspeximus compliance` reads the ledger (through its verifier) into the
-Art. 12 (actions), Art. 14, Art. 50 and GDPR Art. 22 rows.
+re-checked by `verify()`.
+
+Data-subject rights, on the same resolver erasure uses:
+
+```python
+from inspeximus.subject_rights import export_subject, rectify
+
+pkg = export_subject(m, "crm/alice", ledger=led, actor="dpo", request_id="DSAR-17")   # Art. 15
+pkg["records"], pkg["actions"], pkg["manifest_sha256"], pkg["ledger_entry"]
+rectify(m, key="alice::phone", text="alice's phone is +200", actor="dpo", reason="DSAR-17",
+        subject="crm/alice", ledger=led)                                                # Art. 16
+m.forget_subject("crm/alice", request_id="DSAR-17")                                    # Art. 17
+```
+
+Shell: `inspeximus subject export SUBJECT --out alice.json`, `inspeximus subject rectify --key ... --text ...
+--actor ... --reason ...`. MCP: `export_subject`, `rectify_subject`. `inspeximus compliance` reads the
+ledger (through its verifier) into the Art. 12 (actions), Art. 14, Art. 50, GDPR Art. 15, Art. 16 and
+Art. 22 rows.
 
 ## Governance, erasure & audit
 

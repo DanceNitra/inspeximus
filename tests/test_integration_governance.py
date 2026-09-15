@@ -18,7 +18,7 @@ def test_mixin_delegates_all_ops():
     h.store.remember("retention is 90d", key="p::ret", object="90d")
     h.store.remember("retention is 30d", key="p::ret", object="30d")    # correction
     rep = h.compliance_report()
-    assert len(rep["controls"]) == 11 and rep["summary"]["writes"] == 2, rep["summary"]
+    assert len(rep["controls"]) == 13 and rep["summary"]["writes"] == 2, rep["summary"]
     assert h.compliance_check()["ok"]
     b = h.audit_bundle()
     assert b["anchor"]["n_writes"] == 2

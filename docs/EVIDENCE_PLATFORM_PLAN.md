@@ -77,7 +77,7 @@ assembles, it never gates a primitive.
 6. **Disclosure receipt** (build, small). One signed event per session stating the Art. 50
    disclosure shown to the user.
 7. **Retention** (have). Extend to the action, oversight and incident ledgers.
-8. **Controls map and evidence report** (11 controls; extend to the whole table in
+8. **Controls map and evidence report** (13 controls; extend to the whole table in
    section 2). `inspeximus compliance` prints live status per control, `--check` gates CI.
 9. **Annex IV technical documentation generator** (build). Free: the skeleton with evidence-filled
    sections. Pro: the branded dossier across stores and agents.
@@ -97,7 +97,9 @@ before it ships.
    fact is corrected, the agent acts again; the two receipts carry different `memory_state` digests
    and the verifier rejects a rewritten action, a rewritten memory, a forged signature and a
    rewritten oversight reference.
-2. **2.30.0: subject rights.** `export_subject`, rectification receipt, report rows for Art. 15,
+2. **Subject rights** (built 2026-09-15, in 2.29.0): `export_subject` (Art. 15), `rectify` (Art. 16);
+   the overlay reads both, 13 controls.
+   Formerly planned as 2.30.0. `export_subject`, rectification receipt, report rows for Art. 15,
    Art. 16.
 3. **2.31.0: incident ledger and Art. 73 report.**
 4. **2.32.0: full controls map** (every row of section 2), deployer report mode, DPIA and FRIA
