@@ -21,6 +21,15 @@ version's verdicts upward (a motive fits in `meta`, and several refusal paths do
 taken) and found three real gaps: `revert()` carried no author and no reason, `keep_current` erased
 the detection it resolved, and a keyed write on a reopened key emptied the review queue with no
 decision recorded. 2.27.7 closes the three; this file scores whichever version it runs against.
+
+THREE MORE ROWS, from @icophy's comment of 2026-09-15 on the same issue, scored the same way and
+each movable by `--mutate`: a decision anchored to an artifact outside the agent layer (the motive
+field is otherwise the operator's own narrative); the audit writer sitting below the agent, in the
+harness or runtime; and "recorded" kept distinct from "authorized". On 2.28.0 all three are
+PARTIAL: the anchor exists and fails when the file changes but is opt-in per record; the Claude
+Code hook writes from the harness and a signed chain refuses an unsigned peer entry, but the
+signing key is a constructor argument the agent's own process holds; a restore is refused without
+a harness-minted capability, but an ordinary landed write carries no authorization mark.
 """
 from __future__ import annotations
 
@@ -38,6 +47,13 @@ from _receipt import write_receipt  # noqa: E402
 
 FIELDS = ("operation_id", "timestamp_ms", "operation_type", "motive", "content_snapshot",
           "alternatives", "rollback_path", "operator_identity")
+
+# Three more rows from @icophy's comment of 2026-09-15 on the same issue, each a failure mode of the
+# eight above: a motive written by the operator it describes is narrative, not evidence (anchor every
+# decision to an artifact outside the agent layer); the audit writer must sit below the agent, in the
+# harness or runtime, or the agent can rewrite its own log; and "recorded" is not "authorized", so a
+# write carries an authorization mark and the default is deny.
+ICOPHY = ("landing_anchor", "writer_below_the_agent", "authorized_vs_recorded")
 
 
 def _kw(fn, **kw):
@@ -103,6 +119,77 @@ def gather(d: str) -> dict:
                          "new_resolves": next((r for r in m3.items if r["id"] == new3), {}).get("meta", {}).get("resolves_reopened")}
     ev["contradictions_sample"] = m3.contradictions(sim_threshold=0.3)
     ev["check_conflict_sample"] = m3.check_conflict("The staging database is db-7.internal", key="staging-db")
+
+    # --- icophy 1: landing anchor. A record bound to a file by content hash; the witness re-checks it.
+    import hashlib
+    m4 = Inspeximus(path=os.path.join(d, "anchor.json"), receipts=True)
+    doc = os.path.join(d, "policy.txt")
+    body = b"deployment needs two approvers"
+    open(doc, "wb").write(body)
+    anchored = m4.remember("deployment needs two approvers", key="pol", object="two",
+                           source={"doc": doc, "observed_sha256": hashlib.sha256(body).hexdigest()})
+    bare = m4.remember("the release train leaves on Thursday", key="train", object="thursday")
+    w = m4.witness([anchored], bind_sources=True)
+    v_before = m4.verify_witness(w)
+    open(doc, "wb").write(b"deployment needs ONE approver")
+    v_after = m4.verify_witness(w)
+    w_bare = m4.witness([bare], bind_sources=True)
+    keys = ("sources_match", "stale_at_use", "digest_match")
+    ev["anchor"] = {"bound": w.get("sources_bound"), "before": {k: v_before.get(k) for k in keys},
+                    "after": {k: v_after.get(k) for k in keys},
+                    "unsourced_record_bound": w_bare.get("sources_bound")}
+
+    # --- icophy 2: writer below the agent. The receipt signer is a constructor argument, so whoever
+    # holds the handle holds the key; the Claude Code hook is a second writer that runs in the harness.
+    import inspect
+    from inspeximus import claude_code as cc
+    from inspeximus.core import new_receipt_keypair
+    kp = new_receipt_keypair()
+    priv, pub = (kp[0], kp[1]) if isinstance(kp, (tuple, list)) else (kp["private"], kp["public"])
+    m5 = Inspeximus(path=os.path.join(d, "signed.json"), receipts=True, receipt_key=priv)
+    m5.remember("the signed handle wrote this", key="s1", object="a")
+    peer = Inspeximus(path=os.path.join(d, "signed.json"), receipts=True)     # same file, no key
+    try:
+        peer.remember("a handle without the key wrote this", key="s2", object="b")
+        peer_write = "landed"
+    except Exception as e:
+        peer_write = type(e).__name__
+    m5.reload()
+    ok_signed, problems = m5.verify_writes(expected_pubkey=pub, require_signed=True)
+    drop = ("CODEX_HOME", "CODEX_CLI_PATH", "INSPEXIMUS_AGENT_ID")
+    env_none = {k: v for k, v in os.environ.items() if not (k.startswith("CLAUDE_CODE_") or k in drop)}
+    saved = dict(os.environ)
+    try:
+        os.environ.clear()
+        os.environ.update(env_none)
+        slug_bare = cc.agent_id()
+        os.environ["CLAUDE_CODE_ENTRYPOINT"] = "cli"
+        slug_cc = cc.agent_id()
+    finally:
+        os.environ.clear()
+        os.environ.update(saved)
+    ev["writer"] = {"receipt_key_is_a_constructor_argument": "receipt_key" in inspect.signature(Inspeximus.__init__).parameters,
+                    "unkeyed_peer_write": peer_write, "require_signed_verify_ok": ok_signed,
+                    "require_signed_problems": problems[:3],
+                    "hook_slug_without_harness_env": slug_bare, "hook_slug_with_claude_code_env": slug_cc,
+                    "hook_module_writes_agent_id": "agent_id=agent_id(" in inspect.getsource(cc)}
+
+    # --- icophy 3: authorized vs recorded. With an authority configured, a restore without a
+    # capability is refused (default deny); a plain landed write carries no authorization mark.
+    m6 = Inspeximus(path=os.path.join(d, "auth.json"), revert_authority="harness-held-secret")
+    m6.remember("The staging database is db-7.internal", key="staging-db", object="db-7.internal", mtype="fact")
+    m6.remember("The staging database is db-9.internal", key="staging-db", object="db-9.internal", mtype="fact")
+    # The refusal is a RETURN VALUE, not an exception: {"ok": False, "reason": "authorization_required",
+    # "challenge": ...}. The first version of this row caught exceptions and read a refusal as "landed".
+    res = m6.revert("staging-db")
+    denied = ("authorization_required" if res.get("ok") is False and res.get("reason") == "authorization_required"
+              else "landed" if res.get("ok") else str(res.get("reason")))
+    granted = m6.revert("staging-db", capability=m6.revert_capability("staging-db"))
+    plain = next(r for r in m6.items if r.get("object") == "db-9.internal")
+    marks = ("authorized", "authorization", "capability", "grant")
+    ev["authz"] = {"revert_without_capability": denied, "revert_with_capability_ok": bool(granted.get("ok")),
+                   "plain_write_meta_keys": sorted((plain.get("meta") or {}).keys()),
+                   "plain_write_has_authorization_mark": any(k in (plain.get("meta") or {}) for k in marks)}
     return ev
 
 
@@ -181,7 +268,33 @@ def score(ev: dict) -> dict:
                             else "PRESCRIBES"},
     }
     counts = {v: sum(1 for f in FIELDS if table[f]["verdict"] == v) for v in ("PRESENT", "PARTIAL", "MISSING")}
-    return {"fields": table, "counts": counts, "lifecycle": lifecycle}
+
+    an, wr, az = ev["anchor"], ev["writer"], ev["authz"]
+    anchor_fails_when_it_must = (an["before"].get("sources_match") is True and an["after"].get("sources_match") is False
+                                 and an["after"].get("stale_at_use") is True)
+    icophy = {}
+    icophy["landing_anchor"] = {
+        "verdict": "MISSING" if not anchor_fails_when_it_must else
+                   ("PARTIAL" if str(an.get("unsourced_record_bound", "")).startswith("0/") else "PRESENT"),
+        "where": "source.observed_sha256 on the record; witness(bind_sources=True) re-reads the file at verify time "
+                 "and reports stale_at_use; per record, opt-in: a write without a source binds nothing",
+        "evidence": an}
+    icophy["writer_below_the_agent"] = {
+        "verdict": "MISSING" if not (wr["require_signed_verify_ok"] is False and wr["hook_module_writes_agent_id"]) else
+                   ("PARTIAL" if wr["receipt_key_is_a_constructor_argument"] else "PRESENT"),
+        "where": "the Claude Code hook writes from the harness and stamps the harness as agent; a signed receipt "
+                 "chain refuses a peer's unsigned entry under require_signed; but the signing key is a constructor "
+                 "argument, so an agent holding the library handle holds the key",
+        "evidence": wr}
+    icophy["authorized_vs_recorded"] = {
+        "verdict": "MISSING" if not (az["revert_without_capability"] == "authorization_required" and az["revert_with_capability_ok"]) else
+                   ("PARTIAL" if not az["plain_write_has_authorization_mark"] else "PRESENT"),
+        "where": "revert and promote require a capability minted from a harness-held authority, refused by default; "
+                 "an ordinary landed write carries no authorization mark",
+        "evidence": az}
+    icophy_counts = {v: sum(1 for f in ICOPHY if icophy[f]["verdict"] == v) for v in ("PRESENT", "PARTIAL", "MISSING")}
+    return {"fields": table, "counts": counts, "lifecycle": lifecycle,
+            "icophy_fields": icophy, "icophy_counts": icophy_counts}
 
 
 def mutate(ev: dict, field: str) -> dict:
@@ -209,6 +322,12 @@ def mutate(ev: dict, field: str) -> dict:
     elif field == "operator_identity":
         for h in ev["history"]:
             h["agent"] = None
+    elif field == "landing_anchor":
+        ev["anchor"]["after"]["sources_match"] = True        # a witness that cannot notice the file changed
+    elif field == "writer_below_the_agent":
+        ev["writer"]["require_signed_verify_ok"] = True     # a chain that accepts the unsigned peer entry
+    elif field == "authorized_vs_recorded":
+        ev["authz"]["revert_without_capability"] = "landed"  # a restore nobody authorized
     else:
         raise SystemExit("unknown field %r" % field)
     return ev
@@ -216,7 +335,8 @@ def mutate(ev: dict, field: str) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mutate", default=None, help="blank one field's evidence before scoring")
+    ap.add_argument("--mutate", default=None,
+                    help="blank one field's evidence before scoring (any of %s)" % ", ".join(FIELDS + ICOPHY))
     a = ap.parse_args()
     d = tempfile.mkdtemp(prefix="audit1644_")
     ev = gather(d)
@@ -228,6 +348,9 @@ def main() -> int:
     for f in FIELDS:
         print("  %-18s %-8s %s" % (f, out["fields"][f]["verdict"], out["fields"][f]["where"][:100]))
     print("  counts:", out["counts"])
+    for f in ICOPHY:
+        print("  %-24s %-8s %s" % (f, out["icophy_fields"][f]["verdict"], out["icophy_fields"][f]["where"][:100]))
+    print("  icophy counts:", out["icophy_counts"])
     lc = out["lifecycle"]
     print("  lifecycle: pending %d/%d then reopened=%s; steward exit %s; write exit %s; %s"
           % (ev["obs1"]["pending"], ev["obs1"]["need"], ev["obs2"]["reopened"], lc["steward_exit"]["verdict"],

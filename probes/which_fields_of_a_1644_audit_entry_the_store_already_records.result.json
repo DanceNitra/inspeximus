@@ -13,11 +13,11 @@
    "verdict": "PRESENT",
    "where": "receipt ts (float seconds, sub-millisecond); history valid_from and invalidated_at",
    "evidence": {
-    "ts": 1789391734.2310796,
+    "ts": 1789455157.1072354,
     "valid_from": [
-     1789391734.2080243,
-     1789391734.2310796,
-     1789391734.2371898
+     1789455157.0863652,
+     1789455157.1072354,
+     1789455157.114241
     ]
    }
   },
@@ -74,8 +74,8 @@
    "evidence": {
     "revert": {
      "ok": true,
-     "restored": "12ca9f8e65",
-     "superseded": "f04ecd6f43",
+     "restored": "958037bc75",
+     "superseded": "7c3710a38b",
      "reverted_to_object": null,
      "reverted_to_text": "The staging database is db-7.internal"
     },
@@ -118,7 +118,7 @@
     "pending": 2,
     "need": 2,
     "surfaced_prior": null,
-    "review_id": "49979a8757"
+    "review_id": "f929c4daf7"
    },
    "queue_after": 1
   },
@@ -126,12 +126,12 @@
    "queue_after": 0,
    "trace": {
     "decision": "keep_current",
-    "ts": 1789391734.2999527,
+    "ts": 1789455157.1808338,
     "reason": "pages were about another key",
     "aid": "rasto",
     "was": {
      "reopened_reason": "novel_support_contradiction",
-     "reopened_ts": 1789391734.2951908
+     "reopened_ts": 1789455157.1763167
     }
    },
    "verdict": "TRACED"
@@ -140,13 +140,13 @@
    "queue_after": 0,
    "old_trace": {
     "decision": "superseded_by_write",
-    "ts": 1789391734.332985,
+    "ts": 1789455157.2185826,
     "was": {
-     "by": "c761c5dc56",
-     "reopened_ts": 1789391734.3289835
+     "by": "81b79222a7",
+     "reopened_ts": 1789455157.2134275
     }
    },
-   "new_resolves": "82a657f991",
+   "new_resolves": "80ebd0fa89",
    "verdict": "TRACED"
   },
   "no_prescription": {
@@ -161,8 +161,61 @@
    "verdict": "NO_RECOMMENDATION"
   }
  },
+ "icophy_fields": {
+  "landing_anchor": {
+   "verdict": "PARTIAL",
+   "where": "source.observed_sha256 on the record; witness(bind_sources=True) re-reads the file at verify time and reports stale_at_use; per record, opt-in: a write without a source binds nothing",
+   "evidence": {
+    "bound": "1/1",
+    "before": {
+     "sources_match": true,
+     "stale_at_use": false,
+     "digest_match": true
+    },
+    "after": {
+     "sources_match": false,
+     "stale_at_use": true,
+     "digest_match": true
+    },
+    "unsourced_record_bound": "0/0"
+   }
+  },
+  "writer_below_the_agent": {
+   "verdict": "PARTIAL",
+   "where": "the Claude Code hook writes from the harness and stamps the harness as agent; a signed receipt chain refuses a peer's unsigned entry under require_signed; but the signing key is a constructor argument, so an agent holding the library handle holds the key",
+   "evidence": {
+    "receipt_key_is_a_constructor_argument": true,
+    "unkeyed_peer_write": "landed",
+    "require_signed_verify_ok": false,
+    "require_signed_problems": [
+     "1 record(s) are covered by NO write receipt, so nothing here vouches for them: ['0908e051d9']. They were inserted out of band, or written while receipts were off. Pass coverage_strict=False if this store enabled receipts part-way."
+    ],
+    "hook_slug_without_harness_env": "unknown",
+    "hook_slug_with_claude_code_env": "claude-code",
+    "hook_module_writes_agent_id": true
+   }
+  },
+  "authorized_vs_recorded": {
+   "verdict": "PARTIAL",
+   "where": "revert and promote require a capability minted from a harness-held authority, refused by default; an ordinary landed write carries no authorization mark",
+   "evidence": {
+    "revert_without_capability": "authorization_required",
+    "revert_with_capability_ok": true,
+    "plain_write_meta_keys": [
+     "superseded_by_policy",
+     "superseded_by_toggle"
+    ],
+    "plain_write_has_authorization_mark": false
+   }
+  }
+ },
+ "icophy_counts": {
+  "PRESENT": 0,
+  "PARTIAL": 3,
+  "MISSING": 0
+ },
  "probe": "which_fields_of_a_1644_audit_entry_the_store_already_records.py",
- "version": "2.27.7",
+ "version": "2.28.0",
  "issue": "deepseek-ai/DeepSeek-V3#1644 sections 3.2 to 3.4",
  "mutated": null
 }
