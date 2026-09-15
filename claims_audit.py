@@ -739,6 +739,12 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE", "python -c \"from inspeximus.technical_documentation import OPERATOR_FIELDS; print(len(OPERATOR_FIELDS))\"",
        "The README number is a copy of the length of the table the generator reads; the Annex IV test pins the "
        "missing-field set against that same table."),
+    _c("readme-agmi-attacks", "README.md", ["5", "5"],
+       "**5 of 5 detected**",
+       "The five agmi at-rest attacks against a receipts-on store: 5 of 5 detected by verify_writes()",
+       "REPRODUCIBLE", "python probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py",
+       "The receipts-off row is scored unverifiable, not detected: an untouched receipts-off store gets the "
+       "same refusal, and the probe carries that control."),
     _c("readme-tests-and-mutations", "README.md", ["2,600", "175"],
        "**2,600+ tests**",
        "Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed",

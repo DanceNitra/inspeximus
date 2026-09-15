@@ -552,6 +552,13 @@ break is.
 **Every number on this page is registered in [docs/CLAIMS.md](docs/CLAIMS.md)**, with the exact command
 that recomputes it. If one disagrees with your run, that is a bug report we want.
 
+The five at-rest attacks of the [agmi](https://github.com/tech4biz-yasha/agmi) conformance suite (tamper,
+truncate, delete a middle entry, reorder, forge), run against the SQLite file behind a store the way its
+attacker does: with receipts on and a key, **5 of 5 detected**, each with a reason that names it. With
+receipts off, the default, the verifier refuses to vouch for the store at all, touched or not, which is
+scored as unverifiable rather than as detection. Probe:
+`probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py`.
+
 ### Check us without trusting us
 
 Two commands. Neither needs an API key, a service, or any data of ours.
