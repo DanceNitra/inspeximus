@@ -129,17 +129,34 @@ class InspeximusActionCallback(BaseCallbackHandler):
     Content-free by default (arguments and outputs are digested). Each run id is one entry; a start
     without an end is recorded at the next end or error, so an interrupted run still leaves a row."""
 
-    def __init__(self, ledger, record_llm: bool = True, record_tools: bool = True):
+    def __init__(self, ledger, record_llm: bool = True, record_tools: bool = True,
+                 principal: str | None = None):
         self.ledger = ledger
         self.record_llm = record_llm
         self.record_tools = record_tools
+        self.principal = principal          # the person or account the run acts for, on every entry
         self._open: dict = {}
+
+    @staticmethod
+    def _model_of(serialized, kwargs) -> str | None:
+        """The model version LangChain reports for a model call: `invocation_params.model` (or
+        model_name / model_id), else the serialized id's last segment. None for a tool."""
+        inv = (kwargs or {}).get("invocation_params") or {}
+        for k in ("model", "model_name", "model_id", "deployment_name"):
+            v = inv.get(k) if isinstance(inv, dict) else None
+            if v:
+                return str(v)
+        kw = ((serialized or {}).get("kwargs") or {}) if isinstance(serialized, dict) else {}
+        for k in ("model", "model_name", "model_id"):
+            if kw.get(k):
+                return str(kw[k])
+        return None
 
     # tools
     def on_tool_start(self, serialized, input_str, *, run_id, **kwargs):
         if self.record_tools:
             name = (serialized or {}).get("name") or "tool"
-            self._open[str(run_id)] = ("tool:" + str(name), input_str, __import__("time").time())
+            self._open[str(run_id)] = ("tool:" + str(name), input_str, __import__("time").time(), None)
 
     def on_tool_end(self, output, *, run_id, **kwargs):
         self._close(run_id, output, "ok", None)
@@ -151,13 +168,15 @@ class InspeximusActionCallback(BaseCallbackHandler):
     def on_llm_start(self, serialized, prompts, *, run_id, **kwargs):
         if self.record_llm:
             name = (serialized or {}).get("name") or "llm"
-            self._open[str(run_id)] = ("llm:" + str(name), list(prompts), __import__("time").time())
+            self._open[str(run_id)] = ("llm:" + str(name), list(prompts), __import__("time").time(),
+                                       self._model_of(serialized, kwargs))
 
     def on_chat_model_start(self, serialized, messages, *, run_id, **kwargs):
         if self.record_llm:
             name = (serialized or {}).get("name") or "chat_model"
             flat = [[getattr(x, "content", str(x)) for x in batch] for batch in messages]
-            self._open[str(run_id)] = ("llm:" + str(name), flat, __import__("time").time())
+            self._open[str(run_id)] = ("llm:" + str(name), flat, __import__("time").time(),
+                                       self._model_of(serialized, kwargs))
 
     def on_llm_end(self, response, *, run_id, **kwargs):
         try:
@@ -177,7 +196,7 @@ class InspeximusActionCallback(BaseCallbackHandler):
         opened = self._open.pop(str(run_id), None)
         if opened is None:
             return
-        action, inputs, started = opened
+        action, inputs, started, model = opened
         self.ledger.record(action, inputs=inputs, output=output, status=status,
                            error=None if error is None else f"{type(error).__name__}: {error}",
-                           started=started)
+                           started=started, model=model, principal=self.principal)

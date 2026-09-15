@@ -1,6 +1,6 @@
 {
  "probe": "what_the_agent_knew_when_it_acted.py",
- "inspeximus": "2.29.1",
+ "inspeximus": "2.30.0",
  "entries": 2,
  "digests_differ": true,
  "recalled_ids_differ": true,
@@ -14,7 +14,7 @@
  "control_rewritten_memory_fails_from_the_action_side": true,
  "control_rewritten_memory_still_passes_offline": true,
  "control_forged_signature_fails": true,
- "compliance_controls": 14,
- "elapsed_s": 0.06,
+ "compliance_controls": 21,
+ "elapsed_s": 0.087,
  "verdict": "PASS"
 }

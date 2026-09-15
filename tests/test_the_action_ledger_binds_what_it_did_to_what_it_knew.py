@@ -147,3 +147,24 @@ def test_a_ledger_reloads_what_a_peer_appended(tmp_path):
     assert len(b) == 0
     b.reload()
     assert len(b) == 1 and b.verify() == (True, [])
+
+
+def test_model_and_principal_are_recorded_when_given_and_absent_when_not(tmp_path):
+    """2.31.0: the two attribution fields an ISO/IEC 42001 or SOC 2 reviewer asks for per call. Never
+    inferred: a call that names neither carries neither."""
+    m = Inspeximus(str(tmp_path / "mem.json"), receipts=True)
+    led = ActionLedger(m, actor="agent")
+    with led.action("api:openai:chat", model="gpt-5-2026-08", principal="user:alice") as a:
+        a.output("hi")
+    e = led.entries()[-1]
+    assert e["model"] == "gpt-5-2026-08" and e["principal"] == "user:alice"
+    led.record("tool:search")
+    assert "model" not in led.entries()[-1] and "principal" not in led.entries()[-1]
+
+    @led.wrap(model="local:qwen", principal="svc:billing")
+    def f(x):
+        return x * 2
+    assert f(2) == 4 and led.entries()[-1]["model"] == "local:qwen"
+    d = led.disclosure("s1", "You are chatting with an AI assistant.", agent="support-bot", principal="Acme GmbH")
+    assert d["agent"] == "support-bot" and d["principal"] == "Acme GmbH"
+    assert led.verify() == (True, [])

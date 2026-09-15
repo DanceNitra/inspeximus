@@ -108,6 +108,54 @@ _CONTROLS = [
      "Keyed last-write-wins retires the stale value so recall returns current truth; history() preserves the "
      "correction trail.",
      "superseded"),
+    # The documentation and deployer rows. These are generators, not counters: the report says 'available'
+    # for them unless the ledger carries the thing the row is about (a retention attestation, an archive).
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 19 / Art. 26(6)", "Logs kept for at least six months",
+     "Providers keep the Art. 12 logs, and deployers the logs under their control, for a period appropriate to "
+     "the intended purpose of at least six months.",
+     "attest_retention() appends a signed statement of the oldest entry the ledger accounts for and whether the "
+     "six-month floor has been observed; archive() rotates old entries under a signed checkpoint without "
+     "deleting them, and the verifier follows the checkpoint into the archive.",
+     "retention_attestations"),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 11 / Annex IV", "Technical documentation",
+     "The provider draws up technical documentation containing at least the elements of Annex IV before the "
+     "system is placed on the market.",
+     "annex_iv() fills the Annex IV sections evidence can fill (logs and how to verify them, data in memory, "
+     "oversight events, chain verification, this controls report) and marks the 24 provider fields as operator "
+     "input; `inspeximus technical-documentation`.",
+     None),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 13(3)(f)", "Instructions for use: collecting and interpreting logs",
+     "The instructions for use contain the information needed to collect, store and interpret the logs.",
+     "instructions_for_use() is that section for this store, written from the code that runs: files, entry "
+     "schema, verifier commands, retention behaviour.",
+     None),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 26", "Deployer duties",
+     "The deployer uses the system per its instructions, assigns human oversight, monitors it, keeps its logs, "
+     "informs workers and the persons subject to it, and carries out the DPIA where applicable.",
+     "deployer_report() writes the evidence under each paragraph (oversight recorded, incidents and the Art. 73 "
+     "clock, log age against the floor, disclosures, the offline bundle) and marks the 12 deployer fields as "
+     "operator input; `inspeximus deployer-report`.",
+     None),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 27", "Fundamental rights impact assessment",
+     "Named deployers assess the impact on fundamental rights before deploying an Annex III system: processes, "
+     "period and frequency, affected persons, risks of harm, oversight, measures on materialisation.",
+     "fria_appendix() fills the observed period and frequency, the oversight recorded and the incidents, rights "
+     "requests and stops from the ledger, cross-references the DPIA per Art. 27(4), and marks the 7 deployer "
+     "fields as operator input.",
+     None),
+    ("EU AI Act (Reg (EU) 2024/1689)", "Art. 49 / Annex VIII", "Registration in the EU database",
+     "Providers of high-risk systems, providers relying on Art. 6(3) and public-authority deployers register the "
+     "Annex VIII information in the EU database before placing on the market or putting into service.",
+     "registration_export() writes the Annex VIII fields for section A, B or C with the traceability reference, "
+     "the information-used description, the instructions for use and, for C, the FRIA and DPIA summaries filled "
+     "from evidence; `inspeximus registration-export`.",
+     None),
+    ("GDPR (Reg (EU) 2016/679)", "Art. 35(7)", "Data protection impact assessment",
+     "The assessment contains a description of the processing, an assessment of necessity and proportionality, "
+     "an assessment of the risks, and the measures envisaged to address them.",
+     "dpia_appendix() fills the (a) inventory and the (d) measures from the store and ledger and marks the "
+     "(b) and (c) judgements as operator input.",
+     None),
 ]
 
 
@@ -175,16 +223,19 @@ def _ledger_counts(store) -> dict:
     """Live counts from the action ledger beside the store, or zeros when there is none. The ledger is
     read through its own verifier so a rewritten file counts as zero evidence rather than as evidence."""
     out = {"actions": 0, "oversight_events": 0, "disclosures": 0, "rights_export": 0, "rights_rectify": 0,
-           "incidents": 0, "incidents_overdue": [],
+           "incidents": 0, "incidents_overdue": [], "retention_attestations": 0,
            "ledger_present": False, "ledger_verified": None, "error_actions_without_oversight": []}
     try:
         from .actions import ActionLedger
         led = ActionLedger(store)
     except Exception:
         return out
-    if not led.path.exists() or len(led) == 0:
+    if not led.path.exists() or (len(led) == 0 and not getattr(led, "archived", None)):
         return out
     out["ledger_present"] = True
+    if getattr(led, "archived", None):
+        out["archived_entries"] = led.archived.get("archived_count")
+        out["archives"] = led.archived.get("archive_chain")
     ok, problems = led.verify()
     out["ledger_verified"] = ok
     if not ok:
@@ -199,6 +250,9 @@ def _ledger_counts(store) -> dict:
     out["incidents"] = rep["incidents"]
     out["incidents_overdue"] = rep["incidents_overdue"]
     out["error_actions_without_oversight"] = rep["error_actions_without_oversight"]
+    out["retention_attestations"] = sum(1 for e in led.entries() if e.get("kind") == "retention")
+    if out.get("archives"):
+        out["retention_attestations"] += len(out["archives"])   # a checkpoint is a signed retention statement too
     return out
 
 

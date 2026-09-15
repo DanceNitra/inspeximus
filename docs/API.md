@@ -354,6 +354,28 @@ rep["sections"]["2_appendix_dpia_gdpr_art_35_7"]                                
 rep["sections"]["3_appendix_fria_art_27_1"]["27_1_b_period_and_frequency"]["evidence_observed"]  # Art. 27(1)(a)-(f)
 ```
 
+Retention and rotation of the ledger, and the registration export:
+
+```python
+led.attest_retention(183, actor="dpo")            # signed: oldest entry, counts, floor_observed (Art. 19, Art. 26(6))
+led.archive(keep_days=400, actor="ops")           # older entries -> <ledger>.archive.0001.json under a signed checkpoint
+led.archived, led.base_seq, led.oldest_ts()       # the checkpoint, the first live seq, the oldest entry archives included
+led.verify()                                      # follows the checkpoint into the archive; a missing archive is a problem
+led.incident_reported(seq, actor="dpo", reported_to="market surveillance authority")   # closes the Art. 73 clock
+
+from inspeximus.technical_documentation import registration_export
+registration_export(m, led, operator={"trade_name": "Support agent"}, section="A")   # Annex VIII A, B or C
+```
+
+Attribution on an entry, and the certificate's scope as data:
+
+```python
+with led.action("api:openai:chat", model="gpt-5-2026-08", principal="user:alice") as a: ...   # both optional, never inferred
+led.disclosure("s1", "You are chatting with an AI assistant.", agent="support-bot", principal="Acme GmbH")
+InspeximusActionCallback(led, principal="user:alice")     # model= from invocation_params, principal on every entry
+m.erasure_certificate("DSAR-17")["scope_excludes"]        # a list the verifier pins: trimming it fails the certificate
+```
+
 `now` pins the clock for the six-month floor and the Art. 73 deadlines. Every field only the provider
 or deployer can write is `OPERATOR INPUT REQUIRED`; `operator_fields_missing` lists them. CLI
 `inspeximus technical-documentation --out annex_iv.md --operator fields.json`, `inspeximus

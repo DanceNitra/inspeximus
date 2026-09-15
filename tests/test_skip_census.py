@@ -92,7 +92,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: is the fix; this pin is what stops the guard from being a quiet way to lose the tests. They still
 #: RUN in the `integrations` job, which installs .[mcp,...], so the coverage moves job rather than
 #: disappearing. Exactly +3, no slack: 166 + 3 = 169.
-MAX_HIDDEN_IN_BASE_ENV = 169
+#: 2.31.0: +1, the LangChain action-callback test (model and principal attribution), which needs
+#: langchain_core and runs in the integrations job. 169 + 1 = 170.
+MAX_HIDDEN_IN_BASE_ENV = 170
 
 
 def _base_env_census():

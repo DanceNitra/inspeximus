@@ -33,7 +33,7 @@ shipped in inspeximus 2.28.1. "Build" is this plan.
 | duty | who | artifact a tool can produce | status |
 |---|---|---|---|
 | AI Act Art. 12 record-keeping: automatic event logs over the lifetime; for Annex III 1(a) systems also usage period, reference database, input data matched, natural persons involved in verification | provider | signed, chained event ledger: memory writes, corrections, erasures, **actions (tool and model calls)**, **oversight events** | memory: have. actions, oversight: build |
-| Art. 19 and Art. 26(6): keep logs at least six months | provider, deployer | retention policy enforced and attested, export bundle | have (`retention --apply`, `audit-build`); add a retention attestation for the action ledger |
+| Art. 19 and Art. 26(6): keep logs at least six months | provider, deployer | retention policy enforced and attested, export bundle | built 2026-09-16 (`attest_retention`, `archive` under a signed checkpoint, 2.31.0) |
 | Art. 13: instructions for use, including how to collect and interpret logs | provider | generated "instructions for use" section describing the ledger schema and the verifier | built 2026-09-15 (`instructions_for_use`) |
 | Art. 14: human oversight, ability to intervene and stop | provider (design), deployer (assign persons) | **oversight ledger**: approvals, refusals, overrides, stops, each a signed event naming the person or role | build |
 | Art. 15: accuracy, robustness, cybersecurity, resilience to data and model poisoning | provider | measured poisoning defense (influence gate, echo guard), split-view detection, witness co-signing | have; add the measurement receipt to the report |
@@ -43,7 +43,7 @@ shipped in inspeximus 2.28.1. "Build" is this plan.
 | Art. 20, Art. 73: corrective actions, serious incident reporting (fifteen days) | provider | **incident ledger** with a report generator carrying the linked evidence | build |
 | Art. 26: deployer duties: use per instructions, assign oversight, monitor, keep logs, inform workers, DPIA under GDPR Art. 35 | deployer | deployer view of the same ledgers, DPIA evidence appendix | built 2026-09-15 (`deployer_report`, 2.30.0) |
 | Art. 27: fundamental rights impact assessment (public bodies and named private uses) | deployer | FRIA evidence appendix from the same data | built 2026-09-15 (`fria_appendix`, cross-references the DPIA per Art. 27(4)) |
-| Art. 49: registration in the EU database | provider, some deployers | export of the identifying fields | build (small) |
+| Art. 49: registration in the EU database | provider, some deployers | export of the identifying fields | built 2026-09-16 (`registration_export`, Annex VIII A, B, C) |
 | Art. 50: disclosure that the user interacts with an AI system; marking of generated content | provider, deployer | **disclosure receipt** per session: what was shown, when, in which channel | build (small, applies now) |
 | Art. 72: post-market monitoring | provider | periodic monitoring report from the ledgers | build (report mode) |
 | GDPR Art. 5(2): accountability | controller | everything above, verifiable offline | have (verifier) |
@@ -76,8 +76,8 @@ assembles, it never gates a primitive.
    fifteen-day clock.
 6. **Disclosure receipt** (build, small). One signed event per session stating the Art. 50
    disclosure shown to the user.
-7. **Retention** (have). Extend to the action, oversight and incident ledgers.
-8. **Controls map and evidence report** (14 controls; extend to the whole table in
+7. **Retention** (built 2026-09-16). The action ledger rotates under a signed checkpoint and attests its retention.
+8. **Controls map and evidence report** (21 controls since 2.31.0, every row of section 2 that has a primitive;
    section 2). `inspeximus compliance` prints live status per control, `--check` gates CI.
 9. **Annex IV technical documentation generator** (build). Free: the skeleton with evidence-filled
    sections. Pro: the branded dossier across stores and agents.
@@ -104,8 +104,8 @@ before it ships.
 3. **Incident ledger and Art. 73 report** (built 2026-09-15, in 2.29.0): `record_incident`, `incident_report`,
    the clock per severity, the overlay row. Formerly planned as 2.31.0.
 4. **Deployer report, DPIA and FRIA appendices, Annex IV skeleton** (built 2026-09-15, 2.29.0 and
-   2.30.0). Still open from this step: the full controls map (every row of section 2), retention for
-   the action ledger, the Art. 49 export.
+   2.30.0). The controls map (21 rows), ledger rotation and retention attestation and the Art. 49 export
+   followed in 2.31.0 (2026-09-16).
 5. **Pro:** dossier across stores, hosted witness, DSR workflow. Only after an inbound signal.
 
 ## 5. Making it findable

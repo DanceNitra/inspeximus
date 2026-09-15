@@ -14,7 +14,7 @@ import pytest
 from inspeximus import Inspeximus, new_receipt_keypair
 from inspeximus.actions import ActionLedger
 from inspeximus.deployer import (deployer_report, dpia_appendix, fria_appendix, render_markdown,
-                                 DEPLOYER_FIELDS, DPIA_FIELDS, FRIA_FIELDS, SIX_MONTHS_DAYS)
+                                 DEPLOYER_FIELDS, DPIA_FIELDS, FRIA_FIELDS)
 from inspeximus.technical_documentation import OPERATOR_INPUT
 
 pytest.importorskip("cryptography")
@@ -60,10 +60,10 @@ def test_the_six_month_floor_is_not_claimed_on_a_young_log(tmp_path):
     first = led.entries()[0]["ts"]
     young = deployer_report(m, ledger=led, now=first + 10 * 86400)
     ev = young["sections"]["1_deployer_duties_art_26"]["26_6_log_retention"]["evidence"]
-    assert ev["status"] == "not_yet_testable" and ev["six_month_floor_days"] == SIX_MONTHS_DAYS
+    assert ev["status"] == "not_yet_testable" and "calendar months" in ev["floor"]
     assert 9.9 < ev["oldest_entry_age_days"]["action_ledger"] < 10.1
     # CONTROL: the same ledger read once it is old enough
-    old = deployer_report(m, ledger=led, now=first + (SIX_MONTHS_DAYS + 1) * 86400)
+    old = deployer_report(m, ledger=led, now=first + 185 * 86400)
     assert old["sections"]["1_deployer_duties_art_26"]["26_6_log_retention"]["evidence"]["status"] == "floor_observed"
     # CONTROL: no receipts and no ledger is 'no_log', never a status about a floor
     plain = Inspeximus(str(tmp_path / "plain.json"))
@@ -77,7 +77,8 @@ def test_the_observed_period_comes_from_the_ledger(tmp_path):
     fria = fria_appendix(m, ledger=led)
     obs = fria["27_1_b_period_and_frequency"]["evidence_observed"]
     assert obs["observed"] is True and obs["actions"] == 2 and obs["errors"] == 1
-    assert obs["by_actor"] == {"agent": 2}
+    assert obs["distinct_actors"] == 1 and "by_actor" not in obs
+    assert obs["actions_per_day"] is None                             # two timestamps seconds apart are not a rate
     assert fria["27_1_b_period_and_frequency"]["operator_intended"] == OPERATOR_INPUT
     # CONTROL: a ledger with no actions reports no period rather than a zero rate
     m2 = Inspeximus(str(tmp_path / "m2.json"), receipts=True)
@@ -92,18 +93,26 @@ def test_oversight_incidents_and_rights_flow_into_the_duties_and_the_fria(tmp_pa
     doc = deployer_report(m, ledger=led, expected_pubkey=pk)
     d = doc["sections"]["1_deployer_duties_art_26"]
     ov = d["26_2_human_oversight_assigned"]["evidence"]
-    assert ov["by_event"] == {"review": 1} and ov["by_actor"] == {"dpo": 1}
+    assert ov["by_event"] == {"review": 1} and ov["distinct_actors"] == 1 and "by_actor" not in ov
     assert ov["error_actions_without_oversight"] == [1]          # tool:y failed and nobody reviewed it
     inc = d["26_5_monitoring_and_incidents"]["evidence"]
-    assert inc["incidents"] == 1 and inc["overdue"] == [] and inc["rows"][0]["severity"] == "serious"
-    assert d["26_11_persons_informed"]["evidence"]["disclosures_recorded"]["sessions_disclosed"] == {"s1": ["interaction"]}
+    assert inc["incidents"] == 1 and inc["not_yet_reported"] == [4] and inc["rows"][0]["severity"] == "serious"
+    assert inc["provider_clock_overdue"] == [] and "provider" in inc["clock"]
+    assert d["26_11_persons_informed"]["evidence"] is None
+    assert d["26_11_persons_informed"]["related_disclosures"]["sessions_disclosed"] == 1
+    assert d["26_4_input_data"]["evidence"]["with_source"] == 1     # measured: one of two records carries a source
+    # identities appear only on request
+    named = deployer_report(m, ledger=led, expected_pubkey=pk, include_identities=True)
+    assert named["sections"]["1_deployer_duties_art_26"]["26_2_human_oversight_assigned"]["evidence"]["by_actor"] == {"dpo": 1}
+    assert "dpo" not in json.dumps(doc["sections"]["1_deployer_duties_art_26"]["26_2_human_oversight_assigned"])
     fria = doc["sections"]["3_appendix_fria_art_27_1"]
     assert fria["27_1_e_human_oversight_implementation"]["evidence_recorded"]["oversight_events"] == 1
     assert fria["27_1_f_measures_on_materialisation"]["evidence"]["incidents"]["incidents"] == 1
-    # the clock: read 16 days after awareness the incident is overdue
+    # the provider's clock, shown for reference: read 16 days after awareness it has run out
     aware = [e for e in led.entries() if e.get("kind") == "incident"][0]["aware_ts"]
     late = deployer_report(m, ledger=led, now=aware + 16 * 86400)
-    assert late["sections"]["1_deployer_duties_art_26"]["26_5_monitoring_and_incidents"]["evidence"]["overdue"]
+    ev = late["sections"]["1_deployer_duties_art_26"]["26_5_monitoring_and_incidents"]["evidence"]
+    assert ev["provider_clock_overdue"] and ev["rows"][0]["days_since_awareness"] == 16.0
 
 
 def test_the_fria_cross_references_the_dpia_and_the_dpia_carries_the_erasures(tmp_path):
@@ -118,8 +127,9 @@ def test_the_fria_cross_references_the_dpia_and_the_dpia_carries_the_erasures(tm
         assert target in doc["sections"]["2_appendix_dpia_gdpr_art_35_7"]      # the target exists
     dpia = doc["sections"]["2_appendix_dpia_gdpr_art_35_7"]
     inv = dpia["35_7_a_description_of_processing"]["evidence_inventory_of_this_store"]
-    assert inv["erasures"] == {"tombstoned_total": 1, "by_request": ["DSAR-1"]}
-    assert "+100" not in json.dumps(doc)                                       # no record text, no erased content
+    assert inv["erasures"] == {"tombstoned_total": 1, "distinct_requests": 1}
+    text = json.dumps(doc)
+    assert "+100" not in text and "DSAR-1" not in text and "s1" not in json.dumps(doc["sections"]["1_deployer_duties_art_26"]["26_11_persons_informed"]["related_disclosures"])
     assert dpia["35_7_d_measures"]["evidence"]["integrity"]["memory_chain_verified"] is True
 
 

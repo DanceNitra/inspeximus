@@ -61,6 +61,11 @@
       },
       {
         "@type": "Question",
+        "name": "Can it write my Annex IV technical documentation, my DPIA or my FRIA?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It writes the skeleton and fills what a memory store and an action ledger can show: the logs and how to verify them, the data held, the oversight and incident record, the erasures, the observed period of use. On a store that has not run yet, every evidence section is empty too. The intended purpose, the risk assessment, the necessity and proportionality judgement and the affected groups are yours, and every such field is marked OPERATOR INPUT REQUIRED rather than filled with a guess. The AI Office's FRIA template under Art. 27(5) had not been published when this page was written; the appendix follows Art. 27(1)(a) to (f)." }
+      },
+      {
+        "@type": "Question",
         "name": "Can a vector database show that a deletion happened?",
         "acceptedAnswer": { "@type": "Answer", "text": "A delete call returns success and says nothing about what a later query returns. inspeximus stores a signed tombstone for every erasure, re-checks the store for residue, and exports a bundle an auditor verifies offline. It also registers external stores such as a vector index, so the erasure register names any store that did not confirm. That is evidence of deletion from the stores it can see, not a guarantee about copies it cannot." }
       }
@@ -428,7 +433,9 @@
             (a tool call, a model call) is one more, carrying the state of the memory store before it acted
             (<code>ActionLedger</code>, 2.29.1). <code>anchor()</code> signs a tree head over the whole history.
             <code>audit-build</code> exports a content-free bundle an auditor re-verifies from genesis offline,
-            with no live store and no key; binding the action entries to the memory chain needs the store.</p>
+            with no live store and no key; binding the action entries to the memory chain needs the store.
+            A ledger kept for years is rotated under a signed checkpoint the verifier follows, and
+            <code>actions attest</code> records the oldest entry against the six-month floor (2.31.0).</p>
         </div>
         <div class="pillar">
           <span class="art">AI Act &middot; Art. 15</span>
@@ -445,6 +452,51 @@
             signed, content-free tombstone; <code>erasure_certificate</code> is the portable evidence of deletion
             from this store: a chain self-check runs when it is issued, the residue scan runs at erasure, and the
             verifier confirms absence when given the store.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="documents">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">The documents</span>
+        <h2>Three skeletons filled from the same evidence, with every gap named.</h2>
+        <p class="sec-sub">Each carries the sections a store and a ledger can supply and marks every field only the
+          provider or deployer can write as OPERATOR INPUT REQUIRED. Not a conformity assessment. The law wants these
+          documents before the system goes live, when the store is empty. What the evidence fills is the part that
+          grows with operation: the logs, the oversight and incident record, the lifecycle changes, the post-market
+          monitoring inputs (Annex IV points 6 and 9, Art. 27(2), Art. 72).</p>
+      </div>
+      <div class="pillars">
+        <div class="pillar">
+          <span class="art">AI Act &middot; Art. 11, Annex IV, Art. 13(3)(f)</span>
+          <h3>Technical documentation skeleton</h3>
+          <p><code>inspeximus technical-documentation</code> writes the Annex IV structure with the evidence sections
+            filled: which logs exist and how an auditor verifies them, what the store holds, the oversight events,
+            the chain verification, the controls report. The 24 provider fields (intended purpose, risk management,
+            conformity) are marked rather than invented. The Art. 13(3)(f) instructions for collecting and interpreting
+            the logs are generated from the code that runs.</p>
+        </div>
+        <div class="pillar">
+          <span class="art">AI Act &middot; Art. 26, Art. 27 &middot; GDPR Art. 35(7)</span>
+          <h3>Deployer report with DPIA and FRIA evidence appendices</h3>
+          <p><code>inspeximus deployer-report</code> writes the Art. 26 duties with evidence under the paragraphs a
+            ledger can speak to: oversight recorded and error actions nobody reviewed, incidents and whether they were
+            reported, the age of the oldest log entry against six calendar months, the measured source coverage of the
+            input data. Workers informed, persons informed and cooperation with authorities are marked as the
+            deployer's. The DPIA evidence appendix fills the Art. 35(7) inventory and measures and leaves necessity
+            and risk to the controller; the FRIA evidence appendix fills the observed use, the oversight and the
+            incidents, and cross-references the DPIA as Art. 27(4) allows. The report counts identities and lists none.</p>
+        </div>
+        <div class="pillar">
+          <span class="art">AI Act &middot; Art. 49, Annex VIII</span>
+          <h3>Registration export</h3>
+          <p><code>inspeximus registration-export --section A|B|C</code> writes the Annex VIII fields for the EU
+            database: the provider's section A, the Art. 6(3) section B (points 7 and 9 deleted by Regulation (EU) 2026/1744), the
+            public-authority deployer's section C, where the FRIA and DPIA summaries are the deployer's text and the
+            counts they rest on come from the deployer report.
+            It is the content of a registration. The EU database has its own form.</p>
         </div>
       </div>
     </div>
@@ -469,7 +521,7 @@
 
 <span class="cm"># one command &rarr; an article-labelled evidence report, live counts from the store</span>
 <span class="p">$</span> inspeximus compliance --out report.html
-  wrote compliance report &rarr; report.html  <span class="ok">(6/14 controls with live evidence)</span>
+  wrote compliance report -&gt; report.html  <span class="ok">(6/21 controls with live evidence)</span>
 
 <span class="cm"># hand the auditor a content-free bundle; they verify it offline without the store or the key</span>
 <span class="p">$</span> inspeximus audit-build --out bundle.json
@@ -581,6 +633,15 @@
             verifies offline. It also registers external stores such as a vector index, so the erasure register
             names any store that did not confirm. That is evidence of deletion from the stores it can see, not a
             guarantee about copies it cannot.</p>
+        </details>
+        <details>
+          <summary>Can it write my Annex IV technical documentation, my DPIA or my FRIA?</summary>
+          <p>It writes the skeleton and fills what a memory store and an action ledger can show: the logs and how
+            to verify them, the data held, the oversight and incident record, the erasures, the observed period of
+            use. On a store that has not run yet, every evidence section is empty too. The intended purpose, the risk assessment, the necessity and proportionality judgement and the
+            affected groups are yours, and every such field is marked OPERATOR INPUT REQUIRED rather than filled
+            with a guess. The AI Office's FRIA template under Art. 27(5) had not been published when this page was
+            written; the appendix follows Art. 27(1)(a) to (f).</p>
         </details>
       </div>
     </div>

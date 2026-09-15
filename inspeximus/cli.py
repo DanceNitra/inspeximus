@@ -830,6 +830,22 @@ def main(argv=None):
     aci.add_argument("--subject", default=None)
     acir = acsub.add_parser("incident-report", help="the Art. 73 report skeleton for incident SEQ")
     acir.add_argument("seq", type=int)
+    acrp = acsub.add_parser("incident-reported", help="record that incident SEQ was reported, to whom and when")
+    acrp.add_argument("seq", type=int)
+    acrp.add_argument("--actor", required=True)
+    acrp.add_argument("--to", dest="reported_to", required=True, help="the authority or provider informed")
+    acrp.add_argument("--at", dest="reported_ts", type=float, default=None, help="unix time (default now)")
+    acrp.add_argument("--note", default=None)
+    aca = acsub.add_parser("archive", help="rotate the ledger: move entries older than --keep-days into a signed "
+                           "archive beside it and start the live file with a checkpoint; nothing is deleted "
+                           "and the chain verifies across the files")
+    aca.add_argument("--keep-days", dest="keep_days", type=float, required=True)
+    aca.add_argument("--actor", default=None)
+    act = acsub.add_parser("attest", help="append a signed retention statement: oldest entry, counts, whether "
+                           "the six-month floor has been observed (Art. 19, Art. 26(6))")
+    act.add_argument("--policy-days", dest="policy_days", type=float, required=True)
+    act.add_argument("--actor", required=True)
+    act.add_argument("--note", default=None)
 
     sj = sub.add_parser("subject", help="data-subject rights over this store: export (GDPR Art. 15) and "
                         "rectify (Art. 16); erasure is `forget-subject`")
@@ -858,6 +874,15 @@ def main(argv=None):
     td.add_argument("--operator", default=None,
                     help="a JSON file with the provider's own fields (system_name, intended_purpose, provider, ...)")
     td.add_argument("--expected-pubkey", dest="expected_pubkey", default=None)
+
+    rg = sub.add_parser("registration-export", help="the Annex VIII fields for registration in the EU database "
+                        "(Art. 49): --section A (provider), B (Art. 6(3) provider) or C (deployer); evidence "
+                        "fills the traceability reference, the information-used description, the instructions "
+                        "for use and, for C, the FRIA and DPIA summaries")
+    rg.add_argument("--section", default="A", choices=["A", "B", "C", "a", "b", "c"])
+    rg.add_argument("--out", default=None, help="write JSON here (default: print)")
+    rg.add_argument("--operator", default=None, help="a JSON file with the provider's or deployer's fields")
+    rg.add_argument("--expected-pubkey", dest="expected_pubkey", default=None)
 
     dr = sub.add_parser("deployer-report", help="the Art. 26 deployer duties with the evidence this store and its "
                         "action ledger supply, plus the GDPR Art. 35(7) DPIA and Art. 27(1) FRIA appendices; every "
@@ -1086,7 +1111,8 @@ def main(argv=None):
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
                                                         "provenance", "erasure-certificate", "anchor", "actions", "subject",
-                                                        "technical-documentation", "deployer-report"),
+                                                        "technical-documentation", "deployer-report",
+                                                        "registration-export"),
                receipt_key=_rk)
 
     if a.cmd == "anchor":
@@ -1469,6 +1495,22 @@ def main(argv=None):
                   + (f", report due in {e['report_deadline_days']} days" if dl else ""))
         elif a.actions_cmd == "incident-report":
             print(json.dumps(led.incident_report(a.seq), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "incident-reported":
+            e = led.incident_reported(a.seq, actor=a.actor, reported_to=a.reported_to, reported_ts=a.reported_ts,
+                                      note=a.note)
+            print(f"recorded seq {e['seq']}: incident {a.seq} reported to {a.reported_to}")
+        elif a.actions_cmd == "archive":
+            res = led.archive(keep_days=a.keep_days, actor=a.actor)
+            if res["archived"]:
+                print(f"archived {res['archived']} entries through seq {res['archived_through']} into "
+                      f"{res['archive_file']} (sha256 {res['archive_sha256'][:12]}); {res['live_entries']} live")
+            else:
+                print(f"nothing older than {a.keep_days} days; {res['live_entries']} live entries, nothing written")
+        elif a.actions_cmd == "attest":
+            e = led.attest_retention(a.policy_days, actor=a.actor, note=a.note)
+            print(f"attested seq {e['seq']}: oldest entry {e['oldest_age_days']} days, {e['live_entries']} live + "
+                  f"{e['archived_entries']} archived, six-month floor "
+                  f"{'observed' if e['floor_observed'] else 'not yet observable'}")
     elif a.cmd == "subject":
         from inspeximus.actions import ActionLedger
         from inspeximus.subject_rights import export_subject, rectify
@@ -1507,6 +1549,22 @@ def main(argv=None):
             print(f"wrote {a.out}: Annex IV skeleton, {len(doc['operator_fields_missing'])} of "
                   f"{doc['operator_fields_total']} operator fields still to fill, content {doc['content_sha256'][:12]}")
         elif not a.as_json:
+            print(json.dumps(doc, indent=2, ensure_ascii=False, default=str))
+    elif a.cmd == "registration-export":
+        from inspeximus.actions import ActionLedger
+        from inspeximus.technical_documentation import registration_export
+        operator = {}
+        if a.operator:
+            with open(a.operator, encoding="utf-8") as f:
+                operator = json.load(f)
+        doc = registration_export(m, ledger=ActionLedger(m), operator=operator, section=a.section,
+                                  expected_pubkey=a.expected_pubkey)
+        if a.out:
+            with open(a.out, "w", encoding="utf-8") as f:
+                json.dump(doc, f, indent=2, ensure_ascii=False, default=str)
+            print(f"wrote {a.out}: Annex VIII section {doc['section']}, {len(doc['operator_fields_missing'])} of "
+                  f"{doc['operator_fields_total']} operator fields still to fill")
+        else:
             print(json.dumps(doc, indent=2, ensure_ascii=False, default=str))
     elif a.cmd == "deployer-report":
         from inspeximus.actions import ActionLedger

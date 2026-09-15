@@ -50,6 +50,23 @@ cryptographically tamper-evident logs or AI-Act alignment. Send us a correction 
   and operator-side tampering (`detect_split_view`).
 - **GDPR Art. 17 — right to erasure.** `forget_subject` hard-deletes the subject *plus its derived lineage* and
   emits a signed, content-free tombstone; `erasure_certificate` is the portable proof-of-deletion.
+- **Art. 12 (actions), Art. 14, Art. 50, Art. 73, GDPR Art. 15/16/22 — what the agent did, bound to what it
+  knew (2.29.0+).** `ActionLedger` records every tool and model call as a signed, hash-chained entry carrying the
+  memory state digest and the ids the last recall returned; oversight decisions (approve, refuse, override,
+  stop, review) with the person or role who made them, Art. 50 disclosures per session, access exports and
+  rectifications, and serious incidents with the Art. 73 clock share the same chain. `inspeximus actions verify`
+  checks the file offline and, with the store, binds each entry to the memory chain by position.
+- **Art. 19 / Art. 26(6) — logs kept at least six months, for years (2.31.0+).** `inspeximus actions attest
+  --policy-days 183` appends a signed statement of the oldest entry the ledger accounts for and whether the
+  six-month floor has been observed. `inspeximus actions archive --keep-days N` rotates the older entries into
+  an archive file under a signed checkpoint: nothing is deleted, the chain is unbroken, the verifier follows the
+  checkpoint into the archive, and the live file alone reports the archived range as not verified.
+- **Art. 11 / Annex IV, Art. 13(3)(f), Art. 26, Art. 27, Art. 49 / Annex VIII, GDPR Art. 35(7) — the documents
+  (2.29.0 to 2.31.0).** `inspeximus technical-documentation` writes the Annex IV skeleton with the evidence
+  sections filled and the 24 provider fields marked; `inspeximus deployer-report` writes the Art. 26 duties with
+  the evidence under each paragraph and the DPIA and FRIA appendices, the FRIA cross-referencing the DPIA per
+  Art. 27(4); `inspeximus registration-export --section A|B|C` writes the Annex VIII fields. Every field only
+  the provider or deployer can write is `OPERATOR INPUT REQUIRED`.
 
 ## One command turns a store into a DPO-facing report
 

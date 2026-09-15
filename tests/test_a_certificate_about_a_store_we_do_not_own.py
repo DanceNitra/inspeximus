@@ -506,3 +506,20 @@ def test_drift_rejects_a_document_that_is_not_a_certificate():
     drift = certificate_drift(_scan(_clean(), sk), {"added": ["everything"]})
     assert drift["comparable"] is False
     assert drift["added"] == []
+
+
+def test_the_scope_lists_travel_with_the_document_and_cannot_be_trimmed(tmp_path):
+    """2.31.0: scope_covers and scope_excludes are the scope sentence as lists. Removing an exclusion
+    is the certificate claiming more than it verified, so the verifier pins them like the sentence."""
+    from inspeximus import Inspeximus, new_receipt_keypair, verify_erasure_certificate
+    sk, pk = new_receipt_keypair()
+    m = Inspeximus(str(tmp_path / "m.json"), receipts=True, receipt_key=sk)
+    m.remember("alice phone +100", key="a::p", source={"doc": "crm/alice"})
+    m.forget_subject("crm/alice", request_id="R1")
+    cert = m.erasure_certificate("R1")
+    assert any("backups" in x for x in cert["scope_excludes"]) and any("weights" in x for x in cert["scope_excludes"])
+    assert verify_erasure_certificate(cert, store_path=str(m.path))["valid"]
+    trimmed = dict(cert)
+    trimmed["scope_excludes"] = [x for x in cert["scope_excludes"] if "backups" not in x]
+    res = verify_erasure_certificate(trimmed, store_path=str(m.path))
+    assert res["valid"] is False and any("scope_excludes" in p for p in res["problems"])

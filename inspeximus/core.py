@@ -935,6 +935,14 @@ def sign_erasure(principal_sk_hex: str, subject: str, request_id) -> str:
 #: "Full GDPR compliance certification, all systems." left the certificate verifying `valid: true`.
 #: The one sentence a regulator most needs — "NOT a compliance certification" — was the easiest thing
 #: in the document to delete. Producer and verifier now read the same string.
+#: The same scope as lists a program can read, so a register or a dossier shows what a certificate does
+#: NOT cover without parsing the sentence. Pinned by the verifier like the sentence is.
+_CERT_SCOPE_COVERS = ("this store's records whose source resolves to the subject",
+                      "records derived from them (derived_from lineage)",
+                      "erasure targets registered with register_erasure_target, as reported by them")
+_CERT_SCOPE_EXCLUDES = ("copies in a vector index or any store not registered as an erasure target",
+                        "prompt logs and transcripts", "backups and snapshots", "model weights",
+                        "text a model produced from the record before the erasure")
 _CERT_SCOPE = ("Erasure is within THIS inspeximus store only (not the app's vector store, prompt logs, or "
                "backups); covers the subject PLUS its derived_from lineage. Tamper-evident integrity "
                "primitive, NOT a compliance certification. The tombstone proves the ACT of deletion, "
@@ -1143,6 +1151,12 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
                         "certificate's own declaration of what it does NOT certify has been altered")
     else:
         checks["scope_intact"] = _scope_txt is not None or None
+    for key, want in (("scope_excludes", _CERT_SCOPE_EXCLUDES), ("scope_covers", _CERT_SCOPE_COVERS)):
+        got = cert.get(key)
+        if got is not None and list(got) != list(want):
+            checks["scope_intact"] = False
+            problems.append(f"the `{key}` list does not match the one this library issues; an exclusion "
+                            f"removed from a certificate is the certificate claiming more than it verified")
 
     valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"]
              and checks["summary_derivable"] and checks["scope_intact"] is not False
@@ -1155,7 +1169,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.30.0"
+__version__ = "2.31.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -9139,6 +9153,8 @@ class Inspeximus:
             # the erasure did not reach it.
             "conversion_backup": dict(self._conversion_backup),
             "scope": _CERT_SCOPE,
+            "scope_covers": list(_CERT_SCOPE_COVERS),
+            "scope_excludes": list(_CERT_SCOPE_EXCLUDES),
             "verify_with": "inspeximus.verify_erasure_certificate(cert, store_path=<file>)  # or store_items=<list>",
         }
 

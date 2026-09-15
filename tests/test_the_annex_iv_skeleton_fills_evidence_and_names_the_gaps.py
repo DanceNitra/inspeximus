@@ -47,8 +47,8 @@ def test_the_evidence_sections_come_from_the_store_and_ledger(tmp_path):
     assert s2["g_validation_and_testing"]["action_ledger_verified"] is True
     assert s2["g_validation_and_testing"]["memory_chain_verified"] is True
     assert s2["d_data_requirements"]["memory_records"]["total"] == 1
-    assert s2["h_cybersecurity_measures"]["anchor"]["n_writes"] == 1
-    assert len(doc["sections"]["3_monitoring_functioning_control"]["controls_report"]["controls"]) == 14
+    assert s2["h_cybersecurity_measures"]["evidence"]["anchor"]["n_writes"] == 1
+    assert len(doc["sections"]["3_monitoring_functioning_control"]["controls_report"]["controls"]) == 21
 
 
 def test_a_rewritten_ledger_shows_as_not_verified_in_the_document(tmp_path):
@@ -73,8 +73,8 @@ def test_the_content_hash_moves_with_the_store(tmp_path):
 def test_instructions_for_use_name_real_commands_and_the_real_files(tmp_path):
     m, led, pk = _store(tmp_path)
     ins = instructions_for_use(m, led)
-    assert ins["files"]["memory_store"] == str(m.path)
-    assert ins["files"]["action_ledger"] == str(led.path)
+    assert ins["files"]["memory_store"] == "mem.json" and str(tmp_path) not in json.dumps(ins)   # names, never paths
+    assert ins["files"]["action_ledger"] == "mem.json.actions.json"
     assert ins["files"]["receipts_enabled"] is True
     from inspeximus import cli
     src = open(cli.__file__, encoding="utf-8").read()
@@ -82,6 +82,6 @@ def test_instructions_for_use_name_real_commands_and_the_real_files(tmp_path):
         assert any(cmd in line for line in ins["how_to_verify"])
         assert f'"{cmd}"' in src, f"the instructions name `{cmd}` but the CLI does not define it"
     md = render_markdown(annex_iv(m, ledger=led))
-    assert "## 1. General description" in md and "### (g) Instructions for use logs" in md
+    assert "## 1. General description" in md and "### (h) Instructions for use logs" in md
     assert "## 9. Post market monitoring plan" in md
     assert OPERATOR_INPUT in md

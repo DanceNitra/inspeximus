@@ -87,6 +87,10 @@ def _args_for(name, sig, mod):
         "event": "review", "actor": "reviewer", "session": "s1", "reason": "DSAR-17",
         "title": "a transfer above the limit", "severity": "other", "evidence": [],
         "shown": "You are chatting with an AI assistant.",
+        # archive_actions / attest_retention / incident_reported: rotation with nothing old enough writes
+        # nothing, an attestation appends one entry, and reporting seq 0 answers with an error dict when
+        # seq 0 is not an incident; none may raise.
+        "keep_days": 3650.0, "policy_days": 183.0, "reported_to": "market surveillance authority",
     }
     args = []
     for pname, p in sig.parameters.items():

@@ -1,3 +1,65 @@
+## 2.31.0 - UPGRADE IF YOUR ACTION LEDGER MUST OUTLIVE SIX MONTHS: rotation under a signed checkpoint, retention attestations, the Annex VIII export, 21 controls. AFFECTS NOBODY'S EXISTING CODE: the ledger file format is unchanged until you call archive().
+
+A ledger that is kept for years grows, and cutting it from the front breaks the chain. `ActionLedger.archive(keep_days=)`
+moves the entries older than the cutoff into `<ledger>.archive.NNNN.json` beside the ledger and starts the live
+file with a signed checkpoint that names the archive, its SHA-256, the archived range and the archived tail hash.
+Nothing is deleted. The next entry's `prev` is the archived tail, seq numbers keep counting, `verify()` follows the
+checkpoint into the archive (archives chain, so a second rotation follows two), and the live file alone reports
+the archived range as not verified rather than passing over it. The cut moves earlier when a kept entry refers to
+an entry it would archive, and an incident that has not been reported is never archived, so the Art. 73 clock
+stays live.
+
+- `incident_reported(seq, actor, reported_to, reported_ts=)`: an incident entry is immutable, so the report is a
+  later entry that names it; `incident_report`, `oversight_report`, the deployer report and `archive` treat the
+  incident as closed from then on.
+- `attest_retention(policy_days, actor)`: a signed statement of the oldest entry the ledger accounts for
+  (archives included), the live and archived counts, and whether the six-month floor of Art. 19 and Art. 26(6)
+  has been observed. Made from the ledger, never asserted.
+- `registration_export(store, ledger, operator, section=)`: the Annex VIII fields for the EU database (Art. 49),
+  section A (provider), B (Art. 6(3) provider; points 7 and 9 deleted by Regulation (EU) 2026/1744) or C
+  (public-authority deployer). Evidence fills the traceability reference, the description of the information
+  used, the instructions for use and, for C, the FRIA and DPIA summaries from the deployer report.
+- `inspeximus compliance` grew from 14 to 21 controls: Art. 19 / Art. 26(6) log retention (live: attestations
+  and archives), Art. 11 / Annex IV, Art. 13(3)(f), Art. 26, Art. 27, Art. 49 / Annex VIII and GDPR Art. 35(7).
+  The documentation rows report `available`: they are generators, not counters.
+- CLI `actions archive --keep-days N`, `actions attest --policy-days N --actor`, `actions incident-reported SEQ
+  --actor --to`, `registration-export --section A|B|C`. MCP `archive_actions`, `attest_retention`,
+  `incident_reported`, `registration_export` (88 tools).
+- Two red-team passes ran on this release before it shipped and both found real defects, fixed here:
+  a keyless attacker could strip the checkpoint's signature and rewrite `archived_first_ts`, and `verify()`
+  with no key named passed (the signature requirement is now decided before the checkpoint is read, and a
+  checkpoint signed by a different key than the entries fails); a handle that loaded the ledger before a
+  peer rotated it wrote the un-rotated chain back over the checkpoint and the next write lost an entry
+  (`record()` and `archive()` re-read a file that changed on disk); a rotation that wrote its archive and
+  then failed to save the live file blocked every later rotation (an orphan with the same bytes is reused);
+  a checkpoint whose `archived_through` was not an integer crashed the verifier (a problem string now);
+  a signed ledger rotated through a keyless handle got an unsigned checkpoint (refused); the checkpoint's
+  `archived_from`, `archived_count`, `archived_first_ts`, `archive_chain` and `archive_index` are now
+  cross-checked against the archive. "Six months" was a fixed 183 days and claimed the floor a day early
+  for logs that began in March through August; it is six calendar months now, in the deployer report and
+  the attestation. The instructions-for-use point is Art. 13(3)(f), not (e); the 2.29.0 entry below said
+  (e). The deployer report no longer lists oversight actors, disclosure session ids or erasure request ids
+  (counts by default, `include_identities=True` for the deployer's own copy), the registration export
+  carries no file path and no observed action rate as a FRIA "finding", the Art. 73 deadlines are labelled
+  as the provider's clock with the deployer's own `not_yet_reported` beside them, Art. 26(11) is marked as
+  not evidenced by Art. 50 receipts, and Art. 26(4) reports the measured source coverage instead of prose.
+- Attribution per call, for the reviewer who asks "which model, for whom": `record()`, `action()` and
+  `wrap()` take `model=` and `principal=`; the LangChain callback fills `model` from what LangChain
+  reports (`invocation_params.model`, else the serialized kwargs) and stamps a `principal=` given at
+  construction on every entry; `disclosure()` and MCP `record_disclosure` take `agent=` and `principal=`,
+  which the Commission's Art. 50 guidelines of 20 July 2026 ask each agent to name at each new
+  interaction. Nothing is inferred: a call that names neither carries neither.
+- The erasure certificate carries `scope_covers` and `scope_excludes` as lists beside the scope sentence
+  (copies in unregistered stores, prompt logs, backups and snapshots, model weights, text a model produced
+  before the erasure), and the verifier pins them the way it pins the sentence: an exclusion removed from a
+  certificate fails it.
+- Twenty-two tests, each with a control that fails: a rewritten archive, a rewritten checkpoint, a checkpoint
+  signed by another key, a keyless checkpoint rewrite, a stale handle, a torn rotation, a malformed
+  checkpoint, an absolute archive path, a missing archive, a missing middle archive, a stranded reference,
+  an open incident, nothing old enough, a non-numeric timestamp, the calendar floor, the floor claimed on a
+  young log, the Annex VIII point per field, section B's deleted points, identities kept out of the
+  exports.
+
 ## 2.30.0 - UPGRADE IF YOU DEPLOY A HIGH-RISK SYSTEM AND OWE A DPIA OR FRIA: the deployer report, Art. 26 duties with both appendices from the same evidence. AFFECTS NOBODY'S EXISTING CODE: everything here is new and opt-in.
 
 Art. 26 binds the deployer, not the provider, and most of it is organisational. What the store
@@ -96,8 +158,8 @@ side (and passes offline, which is why the binding exists), a forged signature f
 - **Annex IV skeleton and Art. 13 instructions for use** (`inspeximus.technical_documentation`):
   `annex_iv(store, ledger=, operator=)` fills the evidence sections of the Art. 11 technical documentation from
   the live store and ledger (log files and schema, how to verify, memory and PII counts, oversight events,
-  chain verification, the controls report) and marks the 22 fields only the provider can write as
-  OPERATOR INPUT REQUIRED; `instructions_for_use()` is the Art. 13(3)(e) section. CLI
+  chain verification, the controls report) and marks the 24 fields only the provider can write as
+  OPERATOR INPUT REQUIRED; `instructions_for_use()` is the Art. 13(3)(e) section [corrected in 2.31.0: it is 13(3)(f)]. CLI
   `inspeximus technical-documentation --out annex_iv.md --operator fields.json`; MCP `technical_documentation`.
 - `inspeximus compliance` grew from 7 to 14 controls: Art. 12 (actions), Art. 14, Art. 50, Art. 73, GDPR
   Art. 15, Art. 16 and Art. 22 read live counts from the ledger, through its verifier, so a rewritten ledger counts as no

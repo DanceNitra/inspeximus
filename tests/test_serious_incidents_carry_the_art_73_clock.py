@@ -100,7 +100,7 @@ def test_the_compliance_report_counts_incidents_through_the_verifier(tmp_path):
     m, led, pk = _led(tmp_path)
     r0 = compliance_report(m)
     by = {c["article"]: c for c in r0["controls"]}
-    assert by["Art. 73"]["status"] == "available" and len(r0["controls"]) == 14
+    assert by["Art. 73"]["status"] == "available" and len(r0["controls"]) == 21
     led.incident("x", "serious", "dpo", refers_to=[0])
     r1 = compliance_report(m)
     by = {c["article"]: c for c in r1["controls"]}

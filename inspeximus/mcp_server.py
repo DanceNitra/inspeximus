@@ -1529,14 +1529,17 @@ def record_oversight(event: str, actor: str, reason: str | None = None, refers_t
 
 @mcp.tool()
 def record_disclosure(session: str, shown: str, channel: str = "ui", kind: str = "interaction",
-                      locale: str | None = None) -> dict:
+                      locale: str | None = None, agent: str | None = None, principal: str | None = None) -> dict:
     """Record an EU AI Act Art. 50 disclosure in the action ledger: that the user in `session` was shown
     `shown` (stored as a digest plus its length) in `channel`. `kind` is interaction (told they interact
-    with an AI system), generated_content (output marked as generated), or another Art. 50 case."""
+    with an AI system), generated_content (output marked as generated), or another Art. 50 case. `agent`
+    names the agent that disclosed and `principal` who it acts for, as the Commission's Art. 50 guidelines
+    ask for at each new interaction."""
     from inspeximus.actions import ActionLedger
     led = ActionLedger(_MEM, actor=_ACTOR)
     try:
-        e = led.disclosure(session, shown, channel=channel, kind=kind, locale=locale)
+        e = led.disclosure(session, shown, channel=channel, kind=kind, locale=locale, agent=agent,
+                           principal=principal)
     except ValueError as ex:
         return {"error": str(ex)}
     return {"seq": e["seq"], "action": e["action"], "session": e["session"], "channel": e["channel"],
@@ -1621,8 +1624,8 @@ def incident_report(seq: int) -> dict:
 def technical_documentation(operator_json: str | None = None, expected_pubkey: str | None = None) -> dict:
     """The Annex IV technical-documentation skeleton (EU AI Act Art. 11) for this store: the evidence sections
     filled from the store and its action ledger (logs and how to verify them, memory and PII counts, oversight
-    events, chain verification, the 14-control report), every other field marked OPERATOR INPUT REQUIRED.
-    `operator_json` is a JSON object string with the provider's own fields. Includes the Art. 13(3)(e)
+    events, chain verification, the 21-control report), every other field marked OPERATOR INPUT REQUIRED.
+    `operator_json` is a JSON object string with the provider's own fields. Includes the Art. 13(3)(f)
     instructions-for-use section. Not a conformity assessment."""
     import json as _json
     from inspeximus.actions import ActionLedger
@@ -1654,6 +1657,69 @@ def deployer_report(operator_json: str | None = None, expected_pubkey: str | Non
             return {"error": f"operator_json is not valid JSON: {ex}"}
     return _deployer_report(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator,
                             expected_pubkey=expected_pubkey)
+
+
+@mcp.tool()
+def registration_export(section: str = "A", operator_json: str | None = None, expected_pubkey: str | None = None) -> dict:
+    """The Annex VIII fields for registration in the EU database (EU AI Act Art. 49). `section` A: provider of a
+    high-risk system (Art. 49(1)); B: provider relying on Art. 6(3) (Art. 49(2)); C: deployer that is a public
+    authority (Art. 49(3)). Evidence fills the traceability reference, the description of the information used,
+    the instructions for use and, for C, the FRIA and DPIA summaries; everything else is marked OPERATOR INPUT
+    REQUIRED. The content of a registration, not the registration itself."""
+    import json as _json
+    from inspeximus.actions import ActionLedger
+    from inspeximus.technical_documentation import registration_export as _reg
+    operator = {}
+    if operator_json:
+        try:
+            operator = _json.loads(operator_json)
+        except ValueError as ex:
+            return {"error": f"operator_json is not valid JSON: {ex}"}
+    try:
+        return _reg(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator, section=section,
+                    expected_pubkey=expected_pubkey)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
+def archive_actions(keep_days: float, actor: str | None = None) -> dict:
+    """Rotate the action ledger: move entries older than `keep_days` into a signed archive file beside it and
+    start the live file with a checkpoint naming the archive, its SHA-256 and the archived tail. Nothing is
+    deleted and the chain verifies across the files; an open incident and anything a kept entry refers to stay
+    live. Returns what was archived (archived=0 and nothing written when nothing is old enough)."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    return led.archive(keep_days=keep_days, actor=actor or _ACTOR)
+
+
+@mcp.tool()
+def attest_retention(policy_days: float, actor: str, note: str | None = None) -> dict:
+    """Append a signed retention statement to the action ledger: the oldest entry it accounts for (archives
+    included), live and archived counts, the policy in force and whether the six-month floor of Art. 19 and
+    Art. 26(6) has been observed. Made from the ledger, not asserted."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    try:
+        return led.attest_retention(policy_days, actor=actor, note=note)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
+def incident_reported(seq: int, actor: str, reported_to: str, reported_ts: float | None = None,
+                      note: str | None = None) -> dict:
+    """Record that incident `seq` was reported (Art. 73, Art. 26(5)): to whom and when. A later entry that names
+    the incident; incident_report and oversight_report treat it as closed from then on."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    try:
+        return led.incident_reported(seq, actor=actor, reported_to=reported_to, reported_ts=reported_ts, note=note)
+    except ValueError as ex:
+        return {"error": str(ex)}
 
 
 @mcp.tool()

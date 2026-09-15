@@ -109,7 +109,7 @@ def test_the_compliance_report_counts_rights_requests_from_the_ledger(tmp_path):
     r0 = compliance_report(m)
     by = {c["article"]: c for c in r0["controls"]}
     assert by["Art. 15"]["status"] == "available" and by["Art. 16"]["status"] == "available"
-    assert len(r0["controls"]) == 14
+    assert len(r0["controls"]) == 21
     export_subject(m, "crm/alice", ledger=led, actor="dpo")
     rectify(m, key="alice::phone", text="alice's phone is +200", actor="dpo", reason="DSAR-17", ledger=led)
     r1 = compliance_report(m)
