@@ -1695,6 +1695,23 @@ def archive_actions(keep_days: float, actor: str | None = None) -> dict:
 
 
 @mcp.tool()
+def timestamp_actions(url: str, actor: str | None = None) -> dict:
+    """Ask an RFC 3161 Time-Stamping Authority at `url` to stamp the action ledger's tail hash and append the
+    token as a chained entry. Everything else in the ledger proves order on the operator's clock; a TSA token
+    is a third party's statement of when the tail existed (eIDAS Art. 41 for a qualified one). The token is
+    stored verbatim for `openssl ts -verify`; a rejection is refused, never stored."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    try:
+        e = led.timestamp_tail(url, actor=actor or _ACTOR)
+    except Exception as ex:  # noqa: BLE001 - a network or TSA failure is an answer, not a crash
+        return {"error": f"{type(ex).__name__}: {ex}"}
+    return {"seq": e["seq"], "stamped_hash": e["stamped_hash"], "tsa_url": url, "pki_status": e["pki_status"],
+            "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
 def attest_retention(policy_days: float, actor: str, note: str | None = None) -> dict:
     """Append a signed retention statement to the action ledger: the oldest entry it accounts for (archives
     included), live and archived counts, the policy in force and whether the six-month floor of Art. 19 and

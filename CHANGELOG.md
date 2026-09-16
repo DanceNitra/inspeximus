@@ -1,3 +1,22 @@
+## 2.32.0 - UPGRADE IF AN AUDITOR WILL ASK WHEN, NOT ONLY IN WHAT ORDER: RFC 3161 timestamps on the action ledger, and the five agmi attacks measured. AFFECTS NOBODY'S EXISTING CODE: one new entry kind, opt-in.
+
+Everything in the ledger proves order, on the operator's clock. `ActionLedger.timestamp_tail(url)`
+asks an RFC 3161 Time-Stamping Authority to stamp the current tail hash and appends the token as a
+chained entry (`kind: timestamp`): the stamped hash is the entry's own `prev`, so the token dates
+everything before it, and the verifier rejects a token moved to another position, a token whose
+bytes changed, and a stored rejection (the PKIStatus is re-read from the bytes, never from the field
+beside them). The token is kept verbatim for `openssl ts -verify`
+(`inspeximus.timestamp.verify_with_openssl`); this package still does not parse CMS. Measured once
+against freetsa.org: granted, 4.6 KB token, chain verifies. CLI `inspeximus actions timestamp --url`,
+MCP `timestamp_actions` (89 tools). The deployer report lists the last five under Art. 26(6).
+
+- `probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py`: the agmi conformance
+  suite's five at-rest attacks (tamper, truncate, delete_middle, reorder, forge), run raw against the
+  SQLite file behind a store. Receipts on and a key: 5 of 5 detected, each with a reason that names
+  it. Receipts off, the default: `verify_writes()` refuses to vouch for the store touched or not,
+  scored as unverifiable, with the untouched store as the control. The README carries the row.
+- Three tests, each with a control that fails: a moved token, an altered token, a rejected status.
+
 ## 2.31.0 - UPGRADE IF YOUR ACTION LEDGER MUST OUTLIVE SIX MONTHS: rotation under a signed checkpoint, retention attestations, the Annex VIII export, 21 controls. AFFECTS NOBODY'S EXISTING CODE: the ledger file format is unchanged until you call archive().
 
 A ledger that is kept for years grows, and cutting it from the front breaks the chain. `ActionLedger.archive(keep_days=)`

@@ -362,6 +362,8 @@ led.archive(keep_days=400, actor="ops")           # older entries -> <ledger>.ar
 led.archived, led.base_seq, led.oldest_ts()       # the checkpoint, the first live seq, the oldest entry archives included
 led.verify()                                      # follows the checkpoint into the archive; a missing archive is a problem
 led.incident_reported(seq, actor="dpo", reported_to="market surveillance authority")   # closes the Art. 73 clock
+led.timestamp_tail("https://freetsa.org/tsr")   # RFC 3161 token over the tail, chained in; openssl ts -verify later
+led.timestamps()                                # each stamp, and whether it binds its own prev
 
 from inspeximus.technical_documentation import registration_export
 registration_export(m, led, operator={"trade_name": "Support agent"}, section="A")   # Annex VIII A, B or C

@@ -336,8 +336,8 @@ class ActionLedger:
         the caller did not say."""
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
-        if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention"):
-            raise ValueError("kind must be action, oversight, disclosure, rights, incident or retention")
+        if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp"):
+            raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention or timestamp")
         self._refresh_if_changed()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -672,6 +672,45 @@ class ActionLedger:
             extra["note"] = str(note)[:2000]
         return self.record("retention:attest", status="ok", actor=actor, kind="retention", extra=extra)
 
+    def timestamp_tail(self, url: str, actor: str | None = None, timeout: float = 20.0, stamp_fn=None) -> dict:
+        """Ask an RFC 3161 Time-Stamping Authority to stamp the ledger's current tail hash and append the
+        token as a chained entry. Everything else in the ledger proves ORDER; every clock in it is the
+        operator's. A TSA token says a third party saw this tail at that moment, and under eIDAS Art. 41
+        a qualified one carries a presumption of the time it shows.
+
+        The entry carries the stamped hash (the previous entry's, or the checkpoint's archived tail on an
+        empty live file), the TSA url and the token verbatim, base64. The token is not parsed here beyond
+        its PKIStatus (a rejection is refused, never stored as proof); an auditor verifies it with
+        `openssl ts -verify` through `inspeximus.timestamp.verify_with_openssl`. `stamp_fn` replaces the
+        network call in tests; it must return {token: bytes, status: {...}}."""
+        import base64
+        from . import timestamp as _ts
+        self._refresh_if_changed()
+        tail = (self._entries[-1]["hash"] if self._entries
+                else (self._checkpoint["archived_tail_hash"] if self._checkpoint else GENESIS))
+        digest = bytes.fromhex(tail)
+        res = (stamp_fn or (lambda u, d: _ts.stamp(u, d, timeout=timeout)))(url, digest)
+        token = res["token"]
+        st = _ts.read_status(token)
+        if not st.get("has_token"):
+            raise _ts.TimestampError("the authority did not grant a timestamp: " + "; ".join(st.get("problems") or []))
+        extra = {"event": "rfc3161", "stamped_hash": tail, "tsa_url": url,
+                 "token_b64": base64.b64encode(token).decode("ascii"),
+                 "token_sha256": _sha256_hex(token), "pki_status": st.get("status_text"),
+                 "verify_with": "inspeximus.timestamp.verify_with_openssl(token, bytes.fromhex(stamped_hash))"}
+        return self.record("timestamp:rfc3161", status="ok", actor=actor, kind="timestamp", extra=extra)
+
+    def timestamps(self) -> list[dict]:
+        """The timestamp entries, each with the hash it stamped and whether that hash is the entry's own
+        prev (a token over any other hash is a token over something else)."""
+        out = []
+        for e in self._entries:
+            if e.get("kind") == "timestamp":
+                out.append({"seq": e["seq"], "ts": e["ts"], "tsa_url": e.get("tsa_url"),
+                            "stamped_hash": e.get("stamped_hash"), "binds_previous_entry": e.get("stamped_hash") == e.get("prev"),
+                            "pki_status": e.get("pki_status")})
+        return out
+
     def archive(self, keep_days: float | None = None, before_ts: float | None = None, actor: str | None = None,
                 now: float | None = None) -> dict:
         """Move the entries older than the cutoff into an archive file beside the ledger and start the live
@@ -885,6 +924,25 @@ def verify_entries(entries: Iterable[dict], expected_pubkey: str | None = None,
                     problems.append(f"seq {base_seq + i}: incident evidence does not resolve to an earlier entry")
             if not e.get("actor"):
                 problems.append(f"seq {base_seq + i}: incident with no actor")
+        if e.get("kind") == "timestamp":
+            # the token is over the entry's own prev, so it dates everything before it; a token over any
+            # other hash dates something else. The token's PKIStatus is re-read from the bytes stored,
+            # never from the pki_status field beside them.
+            if e.get("stamped_hash") != e.get("prev"):
+                problems.append(f"seq {base_seq + i}: timestamp stamps {str(e.get('stamped_hash'))[:12]}, not the "
+                                f"previous entry {str(e.get('prev'))[:12]}")
+            try:
+                import base64
+                from . import timestamp as _ts
+                tok = base64.b64decode(e.get("token_b64") or "")
+                st = _ts.read_status(tok)
+                if not st.get("has_token"):
+                    problems.append(f"seq {base_seq + i}: the stored timestamp token was not granted "
+                                    f"({'; '.join(st.get('problems') or [])})")
+                elif _sha256_hex(tok) != e.get("token_sha256"):
+                    problems.append(f"seq {base_seq + i}: token_sha256 does not match the stored token")
+            except Exception as ex:  # noqa: BLE001
+                problems.append(f"seq {base_seq + i}: the stored timestamp token cannot be read ({type(ex).__name__})")
     if len(pubkeys) > 1:
         problems.append(f"chain signed by {len(pubkeys)} different keys")
     return problems

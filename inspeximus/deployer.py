@@ -141,6 +141,10 @@ def _log_retention(store, ledger, now: float) -> dict:
             out["action_ledger_archives"] = {"files": arc.get("archive_chain"), "archived_entries": arc.get("archived_count"),
                                              "note": "archived entries stay in the chain; the verifier follows the "
                                                      "checkpoint into each archive"}
+        stamps = [e for e in ledger.entries() if e.get("kind") == "timestamp"]
+        if stamps:
+            out["rfc3161_timestamps"] = [{"seq": e["seq"], "ts": e["ts"], "tsa_url": e.get("tsa_url"),
+                                          "stamped_hash": e.get("stamped_hash")} for e in stamps[-5:]]
         att = [e for e in ledger.entries() if e.get("kind") == "retention"]
         if att:
             out["retention_attestations"] = [{"seq": e["seq"], "ts": e["ts"], "policy_days": e.get("policy_days"),

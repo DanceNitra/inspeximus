@@ -81,7 +81,7 @@ assembles, it never gates a primitive.
    section 2). `inspeximus compliance` prints live status per control, `--check` gates CI.
 9. **Annex IV technical documentation generator** (build). Free: the skeleton with evidence-filled
    sections. Pro: the branded dossier across stores and agents.
-10. **Verifier, anchor, witness, timestamp** (have). `audit-build`, `audit-verify`, witness
+10. **Verifier, anchor, witness, timestamp** (have; 2.32.0 adds RFC 3161 tail timestamps inside the action ledger). `audit-build`, `audit-verify`, witness
     co-signing, RFC 3161 timestamps, SCITT and COSE encodings.
 11. **Framework hooks** (partly have). Memory adapters exist for eight frameworks; add the action
     and oversight hooks to the same modules.

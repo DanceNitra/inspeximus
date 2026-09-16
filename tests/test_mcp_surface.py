@@ -115,6 +115,9 @@ UNDRIVEABLE = {
     "check_code": "reads a source file from disk",
     "deprecate_symbol": "mutates a code-guard ledger",
     "symbol_status": "reads the code-guard ledger",
+    "timestamp_actions": "POSTs to an RFC 3161 authority on the network; driven with a fake TSA in "
+                         "tests/test_a_timestamp_entry_stamps_the_tail_it_sits_on.py, and a network failure "
+                         "is returned as an error dict, never raised",
 }
 
 

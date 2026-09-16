@@ -841,6 +841,10 @@ def main(argv=None):
                            "and the chain verifies across the files")
     aca.add_argument("--keep-days", dest="keep_days", type=float, required=True)
     aca.add_argument("--actor", default=None)
+    acts = acsub.add_parser("timestamp", help="ask an RFC 3161 authority to stamp the ledger's tail and append the "
+                            "token as a chained entry; verify it later with openssl ts -verify")
+    acts.add_argument("--url", required=True, help="the TSA endpoint, for example https://freetsa.org/tsr")
+    acts.add_argument("--actor", default=None)
     act = acsub.add_parser("attest", help="append a signed retention statement: oldest entry, counts, whether "
                            "the six-month floor has been observed (Art. 19, Art. 26(6))")
     act.add_argument("--policy-days", dest="policy_days", type=float, required=True)
@@ -1506,6 +1510,10 @@ def main(argv=None):
                       f"{res['archive_file']} (sha256 {res['archive_sha256'][:12]}); {res['live_entries']} live")
             else:
                 print(f"nothing older than {a.keep_days} days; {res['live_entries']} live entries, nothing written")
+        elif a.actions_cmd == "timestamp":
+            e = led.timestamp_tail(a.url, actor=a.actor)
+            print(f"timestamped seq {e['seq']}: tail {e['stamped_hash'][:12]} stamped by {a.url} "
+                  f"({e['pki_status']}); verify with openssl ts -verify")
         elif a.actions_cmd == "attest":
             e = led.attest_retention(a.policy_days, actor=a.actor, note=a.note)
             print(f"attested seq {e['seq']}: oldest entry {e['oldest_age_days']} days, {e['live_entries']} live + "
