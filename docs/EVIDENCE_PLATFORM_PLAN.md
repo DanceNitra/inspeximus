@@ -126,7 +126,7 @@ before it ships.
    to the store's directory), 4 of 5, the tail truncation accepted without an anchor kept elsewhere;
    the README says so. An agmi adapter PR with three rows (default read path 5 accepted; receipts and
    sidecar 4 reported; receipts and file only 5 reported) is prepared and gated on the owner; a
-   follow-up for the maintainer, measured: their `openfang(model,fixed)` reference row scores
+   follow-up for the maintainer, measured: their OpenFang reference row (the fixed model) scores
    truncate accepted once the attacker rewrites the in-store tip, the same shape. The planned article
    "five at-rest attacks on three stores" was killed before drafting as already said by agmi's own
    README, with the mechanism textbook (Crosby and Wallach 2009, RFC 9162).
