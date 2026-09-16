@@ -168,3 +168,25 @@ def test_model_and_principal_are_recorded_when_given_and_absent_when_not(tmp_pat
     d = led.disclosure("s1", "You are chatting with an AI assistant.", agent="support-bot", principal="Acme GmbH")
     assert d["agent"] == "support-bot" and d["principal"] == "Acme GmbH"
     assert led.verify() == (True, [])
+
+
+def test_a_timeline_reconstructs_one_session_content_free(tmp_path):
+    """2.33.0: the CNIL-style workflow view. Controls: another session's entries stay out; a disclosure's
+    own session field is used, not overwritten; no input or output text appears in a row."""
+    m = Inspeximus(str(tmp_path / "mem.json"), receipts=True)
+    led = ActionLedger(m, actor="agent")
+    led.disclosure("s1", "You are chatting with an AI assistant.", agent="support-bot", principal="Acme")
+    with led.action("api:openai:chat", inputs={"prompt": "SECRET-PROMPT"}, model="gpt-5", principal="user:alice",
+                    session="s1") as a:
+        a.output("SECRET-OUTPUT")
+    led.record("tool:search", session="s2", principal="user:bob")
+    led.oversight("review", "dpo", refers_to=1)
+    rows = led.timeline(session="s1")
+    assert [r["kind"] for r in rows] == ["disclosure", "action"]
+    assert rows[1]["model"] == "gpt-5" and rows[1]["principal"] == "user:alice" and rows[1]["memory_digest"]
+    assert led.timeline(principal="user:bob")[0]["action"] == "tool:search"
+    assert len(led.timeline()) == 4 and led.timeline()[3]["refers_to"] == 1 and led.timeline()[3]["event"] == "review"
+    import json as _j
+    text = _j.dumps(led.timeline())
+    assert "SECRET-PROMPT" not in text and "SECRET-OUTPUT" not in text
+    assert led.verify() == (True, [])

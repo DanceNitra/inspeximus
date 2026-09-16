@@ -1,9 +1,9 @@
 {
   "kind": "scitt-transparency-log",
   "n_tombstones": 0,
-  "n_writes": 154,
-  "sth_hash": "58f560eb2e86999f74447cb8a98b169e7ff59c7c0f88f411fb68a2f7c4f0131b",
+  "n_writes": 161,
+  "sth_hash": "f60448ed24025d414cdab7a9d1191ce6c326fc80a8ab3952e3e1c8ad961f59a6",
   "store_id": "scitt:4367a1480474b121",
   "tombstones_tip": "",
-  "writes_tip": "793c9b7f75361af0bc4c0cadbcf3b8f558976a469cdddf5a9070f8e67dfb7633"
+  "writes_tip": "bcd8d51a571065a884bb90cd7c260b5eea6f276a95b4aaf71115b8f25d4b5226"
 }

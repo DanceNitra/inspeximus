@@ -1695,6 +1695,19 @@ def archive_actions(keep_days: float, actor: str | None = None) -> dict:
 
 
 @mcp.tool()
+def action_timeline(session: str | None = None, principal: str | None = None) -> dict:
+    """One workflow reconstructed from the action ledger: the entries in order, content-free, filtered to a
+    session or a principal when given, each with the memory digest the agent held, the model, the actor and
+    the oversight or incident events that refer to it. The traceability the CNIL's 2026 note on agentic AI
+    asks for. Nothing is inferred; a row carries only what the entry recorded."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    rows = led.timeline(session=session, principal=principal)
+    return {"rows": rows, "count": len(rows), "session": session, "principal": principal}
+
+
+@mcp.tool()
 def timestamp_actions(url: str, actor: str | None = None) -> dict:
     """Ask an RFC 3161 Time-Stamping Authority at `url` to stamp the action ledger's tail hash and append the
     token as a chained entry. Everything else in the ledger proves order on the operator's clock; a TSA token

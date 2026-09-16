@@ -326,7 +326,7 @@ class ActionLedger:
                error: str | None = None, meta: dict | None = None, started: float | None = None,
                actor: str | None = None, kind: str = "action", extra: dict | None = None,
                memory_state: dict | None = None, model: str | None = None,
-               principal: str | None = None) -> dict:
+               principal: str | None = None, session: str | None = None) -> dict:
         """Append one entry. Returns it as stored (with hash, and sig when a key is set). `kind` is
         "action" for what the agent did; `oversight()` and `disclosure()` set the other two.
 
@@ -366,6 +366,8 @@ class ActionLedger:
             entry["model"] = str(model)[:200]
         if principal:
             entry["principal"] = str(principal)[:200]
+        if session and "session" not in (extra or {}):
+            entry["session"] = str(session)[:200]
         if meta:
             entry["meta"] = meta
         if extra:
@@ -384,9 +386,9 @@ class ActionLedger:
 
     @contextlib.contextmanager
     def action(self, action: str, inputs: Any = None, meta: dict | None = None, actor: str | None = None,
-               model: str | None = None, principal: str | None = None):
+               model: str | None = None, principal: str | None = None, session: str | None = None):
         """Record an action around a block of code. The block's exception, if any, is recorded as the
-        action's error and re-raised. `model` and `principal` are recorded as on record()."""
+        action's error and re-raised. `model`, `principal` and `session` are recorded as on record()."""
         ctx = ActionContext(self, action, inputs, meta)
         before = self.memory_state()          # what the agent knew BEFORE it acted, not after
         try:
@@ -395,13 +397,13 @@ class ActionLedger:
             ctx.fail(e)
             ctx.entry = self.record(action, inputs, None, status="error", error=ctx._error,
                                     meta=ctx.meta or None, started=ctx.started, actor=actor,
-                                    memory_state=before, model=model, principal=principal)
+                                    memory_state=before, model=model, principal=principal, session=session)
             raise
         status = "error" if ctx._error else "ok"
         ctx.entry = self.record(action, inputs, ctx._output if ctx._has_output else None,
                                 status=status, error=ctx._error, meta=ctx.meta or None,
                                 started=ctx.started, actor=actor, memory_state=before,
-                                model=model, principal=principal)
+                                model=model, principal=principal, session=session)
 
     def wrap(self, name: str | None = None, actor: str | None = None, model: str | None = None,
              principal: str | None = None):
@@ -699,6 +701,31 @@ class ActionLedger:
                  "token_sha256": _sha256_hex(token), "pki_status": st.get("status_text"),
                  "verify_with": "inspeximus.timestamp.verify_with_openssl(token, bytes.fromhex(stamped_hash))"}
         return self.record("timestamp:rfc3161", status="ok", actor=actor, kind="timestamp", extra=extra)
+
+    def timeline(self, session: str | None = None, principal: str | None = None) -> list[dict]:
+        """One workflow, reconstructed from the chain: the entries in order, content-free, filtered to a
+        session or a principal when given. The CNIL's July 2026 note on agentic AI asks for exactly this
+        traceability: which personal data was used, which agents acted, which third-party services were
+        called, in what order. Each row carries the memory digest the agent held, so a reader can tell
+        which facts were current at each step. Rows are the ledger's own fields; nothing is inferred."""
+        rows = []
+        for e in self._entries:
+            if session is not None and e.get("session") != session:
+                continue
+            if principal is not None and e.get("principal") != principal:
+                continue
+            ms = e.get("memory_state") or {}
+            row = {"seq": e["seq"], "ts": e.get("ts"), "kind": e.get("kind", "action"), "action": e.get("action"),
+                   "status": e.get("status"), "actor": e.get("actor"), "model": e.get("model"),
+                   "principal": e.get("principal"), "session": e.get("session"),
+                   "memory_digest": ms.get("digest"), "recalled": len(ms.get("recalled") or []),
+                   "refers_to": (e.get("refers_to") or {}).get("seq") if isinstance(e.get("refers_to"), dict) else None}
+            if e.get("kind") == "oversight":
+                row["event"] = e.get("event")
+            if e.get("kind") == "incident":
+                row["severity"] = e.get("severity")
+            rows.append(row)
+        return rows
 
     def timestamps(self) -> list[dict]:
         """The timestamp entries, each with the hash it stamped and whether that hash is the entry's own

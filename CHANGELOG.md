@@ -1,3 +1,14 @@
+## 2.33.0 - UPGRADE IF A REGULATOR ASKS YOU TO RECONSTRUCT ONE WORKFLOW: a session on every action, and a content-free timeline. AFFECTS NOBODY'S EXISTING CODE: two optional parameters and one read.
+
+The CNIL's note on agentic AI (20 July 2026) asks for traceability that reconstructs a whole
+workflow: which personal data was used, which agents acted, which third-party services were called,
+in what order. `record()`, `action()` and `wrap()` take `session=`, and `ActionLedger.timeline(session=,
+principal=)` returns the entries of one workflow in order, content-free, each with the memory digest
+the agent held, the model, the actor, and the oversight or incident event that refers to it.
+Disclosures already carried a session; they appear in the same timeline. CLI `inspeximus actions
+timeline --session s1`, MCP `action_timeline` (90 tools). Nothing is inferred: a row carries only what
+the entry recorded, and a control test checks that no input or output text reaches a row.
+
 ## 2.32.0 - UPGRADE IF AN AUDITOR WILL ASK WHEN, NOT ONLY IN WHAT ORDER: RFC 3161 timestamps on the action ledger, and the five agmi attacks measured. AFFECTS NOBODY'S EXISTING CODE: one new entry kind, opt-in.
 
 Everything in the ledger proves order, on the operator's clock. `ActionLedger.timestamp_tail(url)`

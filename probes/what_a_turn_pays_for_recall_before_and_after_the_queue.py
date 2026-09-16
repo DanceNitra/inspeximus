@@ -226,11 +226,13 @@ def main() -> int:
     result["elapsed_s"] = round(time.time() - started, 1)
     print("\ncontrol spread: %.3f ms" % spread)
 
-    out = HERE / (pathlib.Path(__file__).stem + ".result.json")
-    out.write_text(json.dumps(result, indent=2), encoding="utf-8")
-    print("wrote %s" % out.name)
-
-    if os.environ.get("PYTEST_CURRENT_TEST"):
+    # the receipt is written through the shared helper, which refuses inside the suite: this probe
+    # wrote its own file and the suite re-measured it under load on every run (0.245 ms idle became
+    # 0.581 ms with twelve workers beside it, 2026-09-15)
+    sys.path.insert(0, str(HERE))
+    from _receipt import write_receipt, suppressed
+    write_receipt(__file__, result)
+    if suppressed():
         return 0
     # The control is the gate. A spread there means the arms differ for a reason that has nothing
     # to do with the queue, and no number above can be believed.

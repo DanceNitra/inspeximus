@@ -18,6 +18,7 @@ from . import install as _install
 import json
 import os
 import sys
+import time
 
 
 def _embedder():
@@ -841,6 +842,11 @@ def main(argv=None):
                            "and the chain verifies across the files")
     aca.add_argument("--keep-days", dest="keep_days", type=float, required=True)
     aca.add_argument("--actor", default=None)
+    actl = acsub.add_parser("timeline", help="one workflow from the ledger: entries in order, content-free, "
+                            "filtered to --session or --principal, each with the memory digest it held")
+    actl.add_argument("--session", default=None)
+    actl.add_argument("--principal", default=None)
+    actl.add_argument("--json", dest="as_json", action="store_true")
     acts = acsub.add_parser("timestamp", help="ask an RFC 3161 authority to stamp the ledger's tail and append the "
                             "token as a chained entry; verify it later with openssl ts -verify")
     acts.add_argument("--url", required=True, help="the TSA endpoint, for example https://freetsa.org/tsr")
@@ -1510,6 +1516,17 @@ def main(argv=None):
                       f"{res['archive_file']} (sha256 {res['archive_sha256'][:12]}); {res['live_entries']} live")
             else:
                 print(f"nothing older than {a.keep_days} days; {res['live_entries']} live entries, nothing written")
+        elif a.actions_cmd == "timeline":
+            rows = led.timeline(session=a.session, principal=a.principal)
+            if a.as_json:
+                print(json.dumps(rows, indent=2, ensure_ascii=False))
+            else:
+                for r in rows:
+                    print(f"{r['seq']:>5}  {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(r['ts'] or 0))}  "
+                          f"{r['kind']:<10} {r['action']:<32} {r['status'] or '':<6} actor={r['actor'] or '-'} "
+                          f"model={r['model'] or '-'} digest={(r['memory_digest'] or '')[:10]}")
+                if not rows:
+                    print("no entries match")
         elif a.actions_cmd == "timestamp":
             e = led.timestamp_tail(a.url, actor=a.actor)
             print(f"timestamped seq {e['seq']}: tail {e['stamped_hash'][:12]} stamped by {a.url} "

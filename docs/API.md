@@ -364,6 +364,8 @@ led.verify()                                      # follows the checkpoint into 
 led.incident_reported(seq, actor="dpo", reported_to="market surveillance authority")   # closes the Art. 73 clock
 led.timestamp_tail("https://freetsa.org/tsr")   # RFC 3161 token over the tail, chained in; openssl ts -verify later
 led.timestamps()                                # each stamp, and whether it binds its own prev
+led.timeline(session="s1")                      # one workflow in order, content-free, with the memory digest per step
+led.timeline(principal="user:alice")            # or everything done on one person's behalf
 
 from inspeximus.technical_documentation import registration_export
 registration_export(m, led, operator={"trade_name": "Support agent"}, section="A")   # Annex VIII A, B or C
