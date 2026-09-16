@@ -141,8 +141,10 @@ before it ships.
 
 ### Open after 2.37.1
 
-- **ai-act.html does not name the agent-audit-trail export or `matches()`.** One sentence each,
-  through the standing gate before it goes on the page.
+- ~~ai-act.html does not name the agent-audit-trail export or `matches()`~~: a FAQ entry and one
+  paragraph, gated (two red-team lenses, verify 11 of 11, humanizer), live 2026-09-16 (061d918). The
+  FAQ sentence "it does not see the prompt" was corrected at the same time; 2.37.0 made it untrue on
+  the callback path.
 
 - **prEN 18229-1 event classes and the ISO/IEC 24970 information model.** Both drafts are behind
   paywalls (CEN enquiry closed 5 Aug 2026; ISO FDIS ballot from 28 Aug 2026); tag entries with their
