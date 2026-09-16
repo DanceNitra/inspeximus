@@ -375,6 +375,15 @@ led.lifecycle("substantial_modification", actor="cto", note="new retrieval model
 led.lifecycle("decommission", actor="ops", disposition="erased")                    # what happened to the memory at end of life
 led.lifecycle_events()
 
+from inspeximus.partitions import Partitions
+parts = Partitions(m)
+ctx = parts.open("triage-1", kind="context", max_age_days=1, max_records=200, agent="triage-bot")
+ctx.remember("customer asked about invoice 4471", key="ctx::inv")   # tagged partition:triage-1
+ctx.recall("invoice")                                                  # this partition only
+parts.sweep(ledger=led)                                                # expiry and cap, tombstoned, nothing outside touched
+parts.close("triage-1", actor="triage-bot", ledger=led)                # context: erased at close; process/agent: retained
+parts.report()                                                         # rules, counts, oldest age, sweep_due, records outside any partition
+
 from inspeximus.technical_documentation import registration_export
 registration_export(m, led, operator={"trade_name": "Support agent"}, section="A")   # Annex VIII A, B or C
 ```

@@ -287,6 +287,23 @@ def _source_coverage(store) -> dict:
                     "value until corroborated. Coverage is measured, not assumed."}
 
 
+def _partitions(store) -> dict | None:
+    """The partitions report, counts only, or None when the store has no registry."""
+    try:
+        from .partitions import Partitions
+        p = Partitions(store)
+        if not p.path.exists():
+            return None
+        rep = p.report()
+        return {"open": rep["open"], "closed": rep["closed"], "sweep_due": rep["sweep_due"],
+                "records_outside_any_partition": rep["records_outside_any_partition"],
+                "partitions": [{k: r[k] for k in ("name", "kind", "max_age_days", "max_records", "records",
+                                                    "oldest_age_days", "past_expiry_now", "over_cap_now",
+                                                    "closed_at", "disposition")} for r in rep["partitions"]]}
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"{type(e).__name__}: {e}"}
+
+
 def _rights(ledger) -> dict:
     if ledger is None:
         return {"export": 0, "rectify": 0}
@@ -320,8 +337,11 @@ def dpia_appendix(store, ledger=None, operator: dict | None = None, expected_pub
             "operator": _op(operator, "necessity_and_proportionality"),
             "capability": {"retention_sweeps": "inspeximus retention --apply erases records past an age and appends "
                                                "a tombstone each; dry run by default",
+                           "partitions": "memory partitions per agent or per process with an expiry and a cap, "
+                                         "closed when the process ends (inspeximus partitions)",
                            "storage_limitation_status": "see compliance_check(store, max_pii_age_days=...)"},
-            "evidence_note": "none: necessity and proportionality are the controller's judgement",
+            "evidence": {"partitions": _partitions(store)},
+            "evidence_note": "the partitions block is measured; necessity and proportionality are the controller's judgement",
         },
         "35_7_c_risks_to_rights_and_freedoms": {
             "operator": _op(operator, "risks_to_rights_and_freedoms"),

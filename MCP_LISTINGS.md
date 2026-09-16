@@ -1,6 +1,6 @@
 # inspeximus MCP — registry listing pack
 
-`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 92 tools). Registry manifest:
+`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 97 tools). Registry manifest:
 [`server.json`](server.json). Zero code — pure distribution.
 
 *(The tool count is checked, not typed: `python claims_audit.py --numbers` counts `@mcp.tool()` in
@@ -28,12 +28,12 @@ inspeximus-mcp            # stdio; persists to ./inspeximus_memory.json (set INS
 
 Or let the CLI write it: `inspeximus install --ide claude` (also cursor, windsurf, codex, cline).
 
-**Tools (92):** provenance and verification first, because that is what people ask for; the ordinary
+**Tools (97):** provenance and verification first, because that is what people ask for; the ordinary
 memory operations follow. The count and the names are both checked against `@mcp.tool()` in
 `inspeximus/mcp_server.py` (`python claims_audit.py --numbers`, plus `tests/test_readme_capabilities.py`),
 so this list cannot drift from the server again.
 
-*Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · check_sources · identifier_contract · admissibility_preconditions · audit_the_audits · state_digest · selection_integrity · index_coherence · actions_verify · what_it_knew · record_oversight · record_disclosure · oversight_report · record_incident · incident_report · incident_reported · archive_actions · attest_retention · timestamp_actions · action_timeline · export_audit_trail · record_lifecycle · technical_documentation · deployer_report · registration_export
+*Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · check_sources · identifier_contract · admissibility_preconditions · audit_the_audits · state_digest · selection_integrity · index_coherence · actions_verify · what_it_knew · record_oversight · record_disclosure · oversight_report · record_incident · incident_report · incident_reported · archive_actions · attest_retention · timestamp_actions · action_timeline · export_audit_trail · record_lifecycle · open_partition · remember_in_partition · sweep_partitions · close_partition · partitions_report · technical_documentation · deployer_report · registration_export
 
 *Memory operations:* remember · remember_decision · memory_index · set_index_line · recall · recall_iterative · recall_followup · get · neighbors · as_of · token_report · route · observe · reopened · resolve_reopened · revert · check_conflict · contradictions · consolidate · consolidate_clusters · sleep · credit · value_by_cohort · where_am_i · projects
 

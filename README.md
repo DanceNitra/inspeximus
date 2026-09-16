@@ -158,7 +158,7 @@ it, and `rectify(m, key=..., text=..., actor=..., reason=..., ledger=led)` is an
 with a receipt naming who asked. `led.incident("...", "serious", "dpo", refers_to=[3, 4])` opens an Art. 73
 record with the 15-day clock from the moment of awareness, and `incident_report(seq)` is the report
 skeleton. `inspeximus compliance` reads all of it from the ledger, through its verifier,
-into 21 article-labelled controls.
+into 22 article-labelled controls.
 
 Two documents are generated from the same evidence. `inspeximus technical-documentation --out
 annex_iv.md` is the Annex IV skeleton (Art. 11) with the sections evidence can fill written from the
@@ -188,6 +188,13 @@ tooling that reads that format; `--verify` checks any such file. `inspeximus act
 substantial_modification --actor cto --note "..."` records the Art. 3(23) change that ends a grandfathered
 system's Art. 111(2) exemption, and `lifecycle decommission --disposition erased` records what happened to
 the memory at end of life.
+
+Memory can be partitioned per agent and per process, the shape the CNIL's 2026 note on agentic AI asks
+for: `inspeximus partitions open triage-2026-09-16 --kind context --max-age-days 1 --max-records 200`
+opens a scope whose writes are tagged, `partitions sweep` applies every open partition's expiry and cap
+with tombstones, and `partitions close NAME --actor` ends the process (a context partition erases its
+records at close). `partitions report` shows what is past expiry now and how much memory sits outside
+any partition.
 
 ### Where the store is written
 
@@ -441,7 +448,7 @@ Or from a shell, after `pip install inspeximus`:
 inspeximus install --ide claude     # also: cursor, windsurf, codex, cline
 ```
 
-Both wire an MCP server with **92 tools** and the same hooks. From the next session on, your agent starts
+Both wire an MCP server with **97 tools** and the same hooks. From the next session on, your agent starts
 knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 
 - **SessionStart** injects the decisions still in force
@@ -616,7 +623,7 @@ not be the same instrument.
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
 | [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts |
 | [EU AI Act evidence](docs/AI_ACT.md) | Article 12 logging, mapped to what the store already keeps |
-| [MCP tools](MCP_LISTINGS.md) | all 92, and what each is for |
+| [MCP tools](MCP_LISTINGS.md) | all 97, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |
 | [core.py, mapped](docs/CORE_MAP.md) | every public method and where it lives, generated from the AST and checked in CI |
 | [Runnable examples](examples/) | working scripts rather than snippets |

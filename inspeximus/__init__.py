@@ -67,6 +67,7 @@ from .subject_rights import export_subject, rectify
 from .technical_documentation import annex_iv, instructions_for_use, registration_export
 from .deployer import deployer_report, dpia_appendix, fria_appendix
 from .agent_audit_trail import export_jsonl as export_audit_trail, verify_jsonl as verify_audit_trail
+from .partitions import Partitions
 
 __all__ = [
     "Inspeximus",
@@ -81,6 +82,7 @@ __all__ = [
     "fria_appendix",
     "export_audit_trail",
     "verify_audit_trail",
+    "Partitions",
     "AmbiguousSubject",
     "new_receipt_keypair",
     "receipt_key_for",

@@ -108,7 +108,7 @@ def instructions_for_use(store, ledger=None) -> dict:
             "inspeximus actions verify    (with the store present: also binds every entry's last_receipt to the "
             "memory chain, so a rewritten memory history fails from the action side)",
             "inspeximus actions knew SEQ    (the memory state at action SEQ and the provenance of what it recalled)",
-            "inspeximus compliance --out report.html    (21 article-labelled controls with live counts)",
+            "inspeximus compliance --out report.html    (22 article-labelled controls with live counts)",
         ],
         "retention": {
             "memory": "inspeximus retention --apply erases records past a retention age (dry run by default) and "

@@ -1624,7 +1624,7 @@ def incident_report(seq: int) -> dict:
 def technical_documentation(operator_json: str | None = None, expected_pubkey: str | None = None) -> dict:
     """The Annex IV technical-documentation skeleton (EU AI Act Art. 11) for this store: the evidence sections
     filled from the store and its action ledger (logs and how to verify them, memory and PII counts, oversight
-    events, chain verification, the 21-control report), every other field marked OPERATOR INPUT REQUIRED.
+    events, chain verification, the 22-control report), every other field marked OPERATOR INPUT REQUIRED.
     `operator_json` is a JSON object string with the provider's own fields. Includes the Art. 13(3)(f)
     instructions-for-use section. Not a conformity assessment."""
     import json as _json
@@ -1692,6 +1692,63 @@ def archive_actions(keep_days: float, actor: str | None = None) -> dict:
     if led is None:
         return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
     return led.archive(keep_days=keep_days, actor=actor or _ACTOR)
+
+
+@mcp.tool()
+def open_partition(name: str, kind: str = "process", max_age_days: float | None = None,
+                   max_records: int | None = None, agent: str | None = None) -> dict:
+    """Open a memory partition: a named scope per agent or per process with a size cap and an expiry (the CNIL's
+    2026 note on agentic AI). Writes made with `remember_in_partition` are tagged into it; `sweep_partitions`
+    applies the expiry and cap with tombstones; `close_partition` ends the process (a context partition erases
+    its records at close). `kind` is context, process or agent."""
+    from inspeximus.partitions import Partitions
+    try:
+        Partitions(_MEM).open(name, kind=kind, max_age_days=max_age_days, max_records=max_records, agent=agent)
+    except (ValueError, KeyError) as ex:
+        return {"error": str(ex)}
+    return {"partition": name, "kind": kind, "max_age_days": max_age_days, "max_records": max_records}
+
+
+@mcp.tool()
+def remember_in_partition(partition: str, text: str, key: str | None = None, tags: list | None = None) -> dict:
+    """Remember into a partition: the record is tagged partition:<name>, counted against its cap (the oldest is
+    evicted with a tombstone when the cap is reached), and erased by its expiry or at close."""
+    from inspeximus.partitions import Partitions
+    try:
+        rid = Partitions(_MEM).handle(partition).remember(text, key=key, tags=tags)
+    except (ValueError, KeyError) as ex:
+        return {"error": str(ex)}
+    return {"id": rid, "partition": partition}
+
+
+@mcp.tool()
+def sweep_partitions(actor: str | None = None) -> dict:
+    """Apply every open partition's expiry and cap now: records past max_age_days and beyond max_records are
+    hard-deleted with a tombstone whose basis names the partition and the rule. Nothing outside a partition
+    is touched. Records the sweep in the action ledger when one is on."""
+    from inspeximus.partitions import Partitions
+    led = _action_ledger()
+    return Partitions(_MEM).sweep(ledger=led, actor=actor or _ACTOR)
+
+
+@mcp.tool()
+def close_partition(name: str, actor: str, disposition: str | None = None) -> dict:
+    """Close a partition when its process ends. A context partition erases its records (disposition erased); a
+    process or agent partition keeps them unless `disposition="erased"`. A lifecycle entry is recorded in the
+    action ledger when one is on."""
+    from inspeximus.partitions import Partitions
+    try:
+        return Partitions(_MEM).close(name, actor=actor, disposition=disposition, ledger=_action_ledger())
+    except (ValueError, KeyError) as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
+def partitions_report() -> dict:
+    """Every partition with its rules, live count, oldest age, whether a sweep is due, and its closed state; plus
+    how many active records sit outside any partition. The storage-limitation view (GDPR Art. 5(1)(e))."""
+    from inspeximus.partitions import Partitions
+    return Partitions(_MEM).report()
 
 
 @mcp.tool()

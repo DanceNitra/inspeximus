@@ -899,6 +899,25 @@ def main(argv=None):
                     help="a JSON file with the provider's own fields (system_name, intended_purpose, provider, ...)")
     td.add_argument("--expected-pubkey", dest="expected_pubkey", default=None)
 
+    pt = sub.add_parser("partitions", help="memory partitions per agent or per process, with a size cap and an "
+                        "expiry, closed when the process ends (CNIL note on agentic AI, 2026-07)")
+    ptsub = pt.add_subparsers(dest="partitions_cmd", required=True)
+    pto = ptsub.add_parser("open", help="open a partition")
+    pto.add_argument("name")
+    pto.add_argument("--kind", default="process", choices=["context", "process", "agent"])
+    pto.add_argument("--max-age-days", dest="max_age_days", type=float, default=None)
+    pto.add_argument("--max-records", dest="max_records", type=int, default=None)
+    pto.add_argument("--agent", default=None)
+    pto.add_argument("--on-cap", dest="on_cap", default="evict_oldest", choices=["evict_oldest", "refuse"])
+    pts = ptsub.add_parser("sweep", help="apply every open partition's expiry and cap, tombstoned")
+    pts.add_argument("--actor", default=None)
+    ptc = ptsub.add_parser("close", help="close a partition when its process ends")
+    ptc.add_argument("name")
+    ptc.add_argument("--actor", required=True)
+    ptc.add_argument("--disposition", default=None, choices=["erased", "retained", "archived"])
+    ptr = ptsub.add_parser("report", help="per partition: rules, live count, oldest age, sweep due, closed state")
+    ptr.add_argument("--json", dest="as_json", action="store_true")
+
     rg = sub.add_parser("registration-export", help="the Annex VIII fields for registration in the EU database "
                         "(Art. 49): --section A (provider), B (Art. 6(3) provider) or C (deployer); evidence "
                         "fills the traceability reference, the information-used description, the instructions "
@@ -1136,7 +1155,7 @@ def main(argv=None):
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
                                                         "provenance", "erasure-certificate", "anchor", "actions", "subject",
                                                         "technical-documentation", "deployer-report",
-                                                        "registration-export"),
+                                                        "registration-export", "partitions"),
                receipt_key=_rk)
 
     if a.cmd == "anchor":
@@ -1606,6 +1625,35 @@ def main(argv=None):
                   f"{doc['operator_fields_total']} operator fields still to fill, content {doc['content_sha256'][:12]}")
         elif not a.as_json:
             print(json.dumps(doc, indent=2, ensure_ascii=False, default=str))
+    elif a.cmd == "partitions":
+        from inspeximus.partitions import Partitions
+        from inspeximus.actions import ActionLedger
+        parts = Partitions(m)
+        if a.partitions_cmd == "open":
+            parts.open(a.name, kind=a.kind, max_age_days=a.max_age_days, max_records=a.max_records,
+                       agent=a.agent, on_cap=a.on_cap)
+            print(f"opened partition {a.name} ({a.kind}; max_age_days={a.max_age_days}, max_records={a.max_records})")
+        elif a.partitions_cmd == "sweep":
+            led = ActionLedger(m) if ActionLedger(m).path.exists() else None
+            res = parts.sweep(ledger=led, actor=a.actor)
+            for name, v in res["partitions"].items():
+                print(f"  {name}: expired {v['expired']}, evicted {v['evicted']}, remaining {v['remaining']}")
+            if not res["partitions"]:
+                print("no open partitions")
+        elif a.partitions_cmd == "close":
+            led = ActionLedger(m) if ActionLedger(m).path.exists() else None
+            res = parts.close(a.name, actor=a.actor, disposition=a.disposition, ledger=led)
+            print(f"closed {a.name}: {res['disposition']}, {res['records']} records, {res['erased']} erased")
+        elif a.partitions_cmd == "report":
+            rep = parts.report()
+            if a.as_json:
+                print(json.dumps(rep, indent=2, ensure_ascii=False))
+            else:
+                for r in rep["partitions"]:
+                    state = f"closed ({r['disposition']})" if r["closed_at"] else ("SWEEP DUE" if r["sweep_due"] else "open")
+                    print(f"  {r['name']:<24} {r['kind']:<8} records={r['records']:<5} oldest={r['oldest_age_days']} "
+                          f"max_age={r['max_age_days']} cap={r['max_records']}  {state}")
+                print(f"  {rep['records_outside_any_partition']} active records outside any partition")
     elif a.cmd == "registration-export":
         from inspeximus.actions import ActionLedger
         from inspeximus.technical_documentation import registration_export

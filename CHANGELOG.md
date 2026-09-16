@@ -1,3 +1,23 @@
+## 2.36.0 - UPGRADE IF YOUR AGENTS SHARE A STORE AND A REGULATOR ASKS HOW LONG EACH ONE KEEPS WHAT: memory partitions per agent and per process. AFFECTS NOBODY'S EXISTING CODE: a new module, a registry file beside the store, records tagged only when written through it.
+
+The CNIL's note on agentic AI (20 July 2026) separates context, deleted when the process ends, from
+memory, which persists, and recommends memory partitioned by agent and by process with size limits
+and automatic expiry. `inspeximus.partitions.Partitions(store)` is that unit on top of what exists:
+`open(name, kind=context|process|agent, max_age_days=, max_records=, agent=)` returns a handle whose
+writes carry the tag `partition:<name>` and whose reads are filtered to it; `sweep()` hard-deletes
+what is past expiry or over the cap, oldest first, with a tombstone whose basis names the partition
+and the rule, and touches nothing outside; `close(name, actor, disposition=)` ends the process (a
+context partition erases its records, a process or agent partition keeps them unless told otherwise)
+and records a lifecycle entry when a ledger is on; `report()` lists every partition's rules, live
+count, oldest age, whether a sweep is due, and how many active records sit outside any partition. A
+write that reaches the cap evicts the oldest with a tombstone, or refuses with `on_cap="refuse"`.
+Not an isolation boundary: a caller holding the store sees everything; tenants are that boundary.
+The compliance overlay grew to 22 controls (GDPR Art. 5(1)(e) with the partitions report as live
+evidence); the DPIA appendix carries the partitions under 35(7)(b). CLI `inspeximus partitions open |
+sweep | close | report`; MCP `open_partition`, `remember_in_partition`, `sweep_partitions`,
+`close_partition`, `partitions_report` (97 tools). Three tests with controls: a raw write stays
+outside, the sweep touches nothing outside, a closed partition refuses writes, the cap can refuse.
+
 ## 2.35.0 - UPGRADE IF YOU CHANGE A SYSTEM THAT WAS GRANDFATHERED, OR RETIRE ONE: lifecycle events on the chain. AFFECTS NOBODY'S EXISTING CODE: one new entry kind.
 
 `ActionLedger.lifecycle(event, actor, note=, disposition=, refers_to=)` records start, stop, pause,

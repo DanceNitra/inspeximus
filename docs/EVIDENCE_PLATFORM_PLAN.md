@@ -122,9 +122,9 @@ before it ships.
 - **prEN 18229-1 event classes and the ISO/IEC 24970 information model.** Both drafts are behind
   paywalls (CEN enquiry closed 5 Aug 2026; ISO FDIS ballot from 28 Aug 2026); tag entries with their
   classes only once the text can be read, and never claim conformity to a draft.
-- **Per-agent and per-process memory partitions with expiry** (CNIL note, 20 Jul 2026). Tenancy
-  scoping (`uid`/`aid`/`sid`), `INSPEXIMUS_PROJECT` and per-type decay exist; a named partition with
-  its own retention sweep and a workflow view across partitions do not.
+- ~~Per-agent and per-process memory partitions with expiry~~ (CNIL note, 20 Jul 2026): built
+  2026-09-16, 2.36.0 (`inspeximus.partitions`: open, sweep, close with disposition, report; 22nd
+  control).
 - **The AI Office's FRIA questionnaire** (Art. 27(5) as amended) and the Art. 73 reporting template:
   map the appendix and `incident_report` onto them when published.
 - **Distribution of inspeximus-pro:** the owner's call (Polar CTA and pricing are drafted in that repo).

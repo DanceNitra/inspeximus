@@ -150,6 +150,12 @@ _CONTROLS = [
      "the information-used description, the instructions for use and, for C, the FRIA and DPIA summaries filled "
      "from evidence; `inspeximus registration-export`.",
      None),
+    ("GDPR (Reg (EU) 2016/679)", "Art. 5(1)(e)", "Storage limitation: partitions with expiry and caps",
+     "Personal data is kept in a form which permits identification for no longer than necessary.",
+     "Memory partitions per agent or per process (inspeximus.partitions) carry an expiry and a size cap enforced "
+     "by sweep() with tombstones, and a context partition erases its records when the process ends; the "
+     "partitions report shows what is past expiry now and what sits outside any partition.",
+     "partitions_open"),
     ("GDPR (Reg (EU) 2016/679)", "Art. 35(7)", "Data protection impact assessment",
      "The assessment contains a description of the processing, an assessment of necessity and proportionality, "
      "an assessment of the risks, and the measures envisaged to address them.",
@@ -175,6 +181,13 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
     live = {"write_receipts": n_writes, "erasures": n_tomb, "superseded": n_sup}
     ledger = _ledger_counts(store)
     live.update(ledger)
+    try:
+        from .partitions import Partitions
+        prep = Partitions(store).report() if Partitions(store).path.exists() else None
+        live["partitions_open"] = (prep["open"] + prep["closed"]) if prep else 0
+        live["partitions"] = prep
+    except Exception:  # noqa: BLE001 - a store with no registry has no partitions
+        live["partitions_open"] = 0
 
     controls = []
     for framework, art, title, obligation, evidence, live_key in _CONTROLS:
@@ -206,6 +219,7 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
                       "management, human oversight, conformity assessment) that lies outside any memory library.",
         "receipts_enabled": receipts_on,
         "action_ledger": ledger,
+        "partitions": live.get("partitions"),
         "controls": controls,
         "summary": {
             "writes": n_writes,

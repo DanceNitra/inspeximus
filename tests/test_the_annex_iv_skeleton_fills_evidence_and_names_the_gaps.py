@@ -48,7 +48,7 @@ def test_the_evidence_sections_come_from_the_store_and_ledger(tmp_path):
     assert s2["g_validation_and_testing"]["memory_chain_verified"] is True
     assert s2["d_data_requirements"]["memory_records"]["total"] == 1
     assert s2["h_cybersecurity_measures"]["evidence"]["anchor"]["n_writes"] == 1
-    assert len(doc["sections"]["3_monitoring_functioning_control"]["controls_report"]["controls"]) == 21
+    assert len(doc["sections"]["3_monitoring_functioning_control"]["controls_report"]["controls"]) == 22
 
 
 def test_a_rewritten_ledger_shows_as_not_verified_in_the_document(tmp_path):

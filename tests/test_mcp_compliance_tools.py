@@ -28,7 +28,7 @@ def test_mcp_compliance_surface_with_receipts():
         m._MEM.remember("retention is 90d", key="p::ret", object="90d")
         m._MEM.remember("retention is 30d", key="p::ret", object="30d")     # correction
         rep = m.compliance_report()
-        assert len(rep["controls"]) == 21 and rep["summary"]["writes"] == 2, rep["summary"]
+        assert len(rep["controls"]) == 22 and rep["summary"]["writes"] == 2, rep["summary"]
         assert m.compliance_check()["ok"]
         b = m.audit_bundle()
         assert b["anchor"]["n_writes"] == 2

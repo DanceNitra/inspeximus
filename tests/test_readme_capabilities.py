@@ -46,7 +46,7 @@ _SUBMODULES = (
     "merkle", "cose", "scitt", "transparency", "scrapi", "timestamp",
     # The evidence chain of 2.29 to 2.35: the ledger class, the rights helpers, the document generators
     # and the IETF export. `timeline`, `archive`, `attest_retention` are ActionLedger methods.
-    "actions", "subject_rights", "technical_documentation", "deployer", "agent_audit_trail",
+    "actions", "subject_rights", "technical_documentation", "deployer", "agent_audit_trail", "partitions",
 )
 
 #: Identifiers that appear in the docs on purpose but belong to somebody ELSE's API. Each one is here

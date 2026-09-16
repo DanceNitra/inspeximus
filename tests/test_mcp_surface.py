@@ -93,6 +93,8 @@ def _args_for(name, sig, mod):
         "keep_days": 3650.0, "policy_days": 183.0, "reported_to": "market surveillance authority",
         # export_audit_trail writes a JSONL file: a temp path, a URI and a semver
         "out_path": os.path.join(tempfile.gettempdir(), "inspeximus-sweep-trail.jsonl"),
+        # remember_in_partition names a partition that the sweep has not opened: an error dict, never a raise
+        "partition": "sweep-partition",
         "agent_id": "urn:agent:sweep.example", "agent_version": "0.0.1",
     }
     args = []
