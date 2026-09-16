@@ -17,6 +17,8 @@ import json
 import os
 import shutil
 
+import pytest
+
 from inspeximus import Inspeximus
 
 from _store_io import load_store, save_store
@@ -102,3 +104,14 @@ def _no_test_leaves_a_global_patched():
             + "".join("  %s is now %r, was %r\n" % (name, now, was) for name, was, now in leaked)
             + "Use monkeypatch.setattr, which restores it. A bare assignment to a module attribute "
               "is a process-wide change, and the test that BREAKS is never the test that did it.")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory):
+    """Every store with receipts writes its chain head to the config home. One suite run left 6,102
+    heads in the real one (measured 2026-09-16); the suite gets its own. Tests that need a specific
+    home set INSPEXIMUS_KEY_HOME themselves and override this."""
+    import os
+    if not os.environ.get("INSPEXIMUS_KEY_HOME"):
+        os.environ["INSPEXIMUS_KEY_HOME"] = str(tmp_path_factory.mktemp("config-home"))
+    yield

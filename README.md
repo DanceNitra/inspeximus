@@ -577,10 +577,12 @@ The five at-rest attacks of the [agmi](https://github.com/tech4biz-yasha/agmi) c
 truncate, delete a middle entry, reorder, forge), run against the SQLite file behind a store the way its
 attacker does: with receipts on and a key, **5 of 5 detected**, each with a reason that names it. When
 the attacker also holds the receipts sidecar, which write access to the store's directory gives them,
-and removes the receipt of every record they delete, **4 of 5 detected**: a middle deletion still breaks
-the signed chain, a tail truncation does not, and that cell needs an `anchor()` kept elsewhere plus
-`verify_consistency()`. Detection is `verify_writes()`, the audit call; `recall()` serves the altered
-record either way. With receipts off, the default, the verifier refuses to vouch for the store at all,
+and removes the receipt of every record they delete, still every one of them: after every receipt the store writes
+the chain's head to the user's config home, outside the store's directory, and `verify_writes()` reports
+a chain shorter than that head. An attacker who also holds the config home removes the head, and then
+**4 of 5 detected**: a middle deletion still breaks the signed chain, a tail truncation does not, and
+that case needs an `anchor()` held off the machine plus `verify_consistency()`. Detection is
+`verify_writes()`, the audit call; `recall()` serves the altered record either way. With receipts off, the default, the verifier refuses to vouch for the store at all,
 touched or not, which is scored as unverifiable rather than as detection. Probe:
 `probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py`.
 

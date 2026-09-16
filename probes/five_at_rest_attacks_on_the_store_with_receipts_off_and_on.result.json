@@ -1,8 +1,8 @@
 {
  "probe": "five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py",
- "inspeximus": "2.36.1",
+ "inspeximus": "2.38.0",
  "suite": "agmi at-rest attacks (tamper, truncate, delete_middle, reorder, forge), reproduced here, not the agmi harness itself",
- "threat_model": "write access to the backing SQLite file; the tool's answer is verify_writes(). The receipts_on_signed_sidecar_held row adds the receipts sidecar to what the attacker holds, which is what write access to the store's directory means; deletions are mirrored into it",
+ "threat_model": "write access to the backing SQLite file; the tool's answer is verify_writes(). The receipts_on_signed_sidecar_held row adds the receipts sidecar to what the attacker holds, which is what write access to the store's directory means; deletions are mirrored into it. The receipts_on_signed_sidecar_and_head_held row adds the chain head the store keeps in the user's config home: an attacker with the whole account",
  "receipts_off_default": {
   "tamper": {
    "tool_says_ok": false,
@@ -40,25 +40,25 @@
    "tool_says_ok": false,
    "outcome": "detected",
    "records_loaded": 6,
-   "first_problem": "memory 93d43e2109: its TEXT or KEY no longer matches its write receipt (edited after write)"
+   "first_problem": "memory b89d9ceba2: its TEXT or KEY no longer matches its write receipt (edited after write)"
   },
   "truncate": {
    "tool_says_ok": false,
    "outcome": "detected",
    "records_loaded": 4,
-   "first_problem": "memory 47a3ae5be7: written but missing from the store (deleted out-of-band)"
+   "first_problem": "memory a5e680e817: written but missing from the store (deleted out-of-band)"
   },
   "delete_middle": {
    "tool_says_ok": false,
    "outcome": "detected",
    "records_loaded": 5,
-   "first_problem": "memory 9f2ccd99d7: written but missing from the store (deleted out-of-band)"
+   "first_problem": "memory 5406b9182b: written but missing from the store (deleted out-of-band)"
   },
   "reorder": {
    "tool_says_ok": false,
    "outcome": "detected",
    "records_loaded": 6,
-   "first_problem": "memory 7443860ea9: its TEXT or KEY; WHEN the fact became true (`valid_from`), or where that time came from no longer matches its write receipt (edited after wri"
+   "first_problem": "memory af37c17bc8: its TEXT or KEY; WHEN the fact became true (`valid_from`), or where that time came from no longer matches its write receipt (edited after wri"
   },
   "forge": {
    "tool_says_ok": false,
@@ -72,7 +72,39 @@
    "tool_says_ok": false,
    "outcome": "detected",
    "records_loaded": 6,
-   "first_problem": "memory 21985c0c3d: its TEXT or KEY no longer matches its write receipt (edited after write)"
+   "first_problem": "memory cabc0f36bd: its TEXT or KEY no longer matches its write receipt (edited after write)"
+  },
+  "truncate": {
+   "tool_says_ok": false,
+   "outcome": "detected",
+   "records_loaded": 4,
+   "first_problem": "write log shrank below the head kept outside the store: 4 < 6 (rolled back or truncated, receipts included); a deliberate restore is accepted with reanchor_head"
+  },
+  "delete_middle": {
+   "tool_says_ok": false,
+   "outcome": "detected",
+   "records_loaded": 5,
+   "first_problem": "receipt 3: broken chain link (a prior receipt was altered/removed)"
+  },
+  "reorder": {
+   "tool_says_ok": false,
+   "outcome": "detected",
+   "records_loaded": 6,
+   "first_problem": "memory 18a15a957d: its TEXT or KEY; WHEN the fact became true (`valid_from`), or where that time came from no longer matches its write receipt (edited after wri"
+  },
+  "forge": {
+   "tool_says_ok": false,
+   "outcome": "detected",
+   "records_loaded": 7,
+   "first_problem": "1 record(s) are covered by NO write receipt, so nothing here vouches for them: ['f0r6ed00ff']. They were inserted out of band, or written while receipts were of"
+  }
+ },
+ "receipts_on_signed_sidecar_and_head_held": {
+  "tamper": {
+   "tool_says_ok": false,
+   "outcome": "detected",
+   "records_loaded": 6,
+   "first_problem": "memory f9f55b0cd7: its TEXT or KEY no longer matches its write receipt (edited after write)"
   },
   "truncate": {
    "tool_says_ok": true,
@@ -90,7 +122,7 @@
    "tool_says_ok": false,
    "outcome": "detected",
    "records_loaded": 6,
-   "first_problem": "memory ec246c6041: its TEXT or KEY; WHEN the fact became true (`valid_from`), or where that time came from no longer matches its write receipt (edited after wri"
+   "first_problem": "memory b0ed8719da: its TEXT or KEY; WHEN the fact became true (`valid_from`), or where that time came from no longer matches its write receipt (edited after wri"
   },
   "forge": {
    "tool_says_ok": false,
@@ -102,11 +134,13 @@
  "receipts_off_unverifiable": 5,
  "receipts_off_accepted": 0,
  "receipts_on_detected": 5,
- "receipts_on_sidecar_held_detected": 4,
- "receipts_on_sidecar_held_accepted": [
+ "receipts_on_sidecar_held_detected": 5,
+ "receipts_on_sidecar_held_accepted": [],
+ "receipts_on_sidecar_and_head_held_detected": 4,
+ "receipts_on_sidecar_and_head_held_accepted": [
   "truncate"
  ],
- "elapsed_s": 0.999,
+ "elapsed_s": 2.931,
  "control_untouched_store_verifies": true,
  "control_untouched_receipts_off_is_unverifiable_too": true,
  "verdict": "PASS"

@@ -1,3 +1,27 @@
+## 2.38.0 - UPGRADE IF SOMEONE CAN WRITE YOUR STORE'S DIRECTORY: a tail cut that takes its receipts with it is reported. AFFECTS: `verify_writes()` on a store restored from a backup, which now reports the rollback until `reanchor_head()` accepts it; `INSPEXIMUS_HEADS=0` restores the previous behaviour.
+
+A receipt chain cut at the tail, receipts included, is consistent to every check that reads the
+store's directory; measured with the agmi suite on 2026-09-16, an attacker holding the SQLite file was
+caught 5 of 5 and one holding the receipts sidecar as well got a tail truncation accepted, 4 of 5. After
+every receipt the store now writes the chain's head ({genesis, n_writes, writes_tip}) to the same
+config home the signing keys use (`INSPEXIMUS_KEY_HOME`, APPDATA, XDG_CONFIG_HOME or ~/.config),
+one small file per store path, and `verify_writes()` reports a chain on disk that is shorter than the
+head or whose receipt at the head's index is not the recorded tip. The head is bound to the chain's
+first receipt, so a store deleted and recreated at the same path inherits nothing; it is compared
+against the receipts on disk, so a handle that has not seen a peer's write is not a rollback; it is
+written without fsync, inside the noise of a remember() call (12.68 ms with, 12.71 without, 300 calls); the heads directory is trimmed to the oldest at most once per process. A peer's receipt rechained after a concurrent write still counts as the head's tip (`rechained_from`), so the concurrent-writer flow is not a rewrite.
+`head_path()`, `read_head()`, `reanchor_head()`; a head that cannot be written is reported in
+`head_error` and changes nothing else. A head is never lowered or
+replaced by a write: the red team's first bypass was to cut the tail and wait for the agent's next
+remember(), which rewrote the head with the shorter chain; now a chain that does not contain the
+recorded tip leaves the head alone and verify_writes() keeps naming the cut, at the same length and
+longer. Honest scope, in the docstring and the README: this closes the cell for an attacker with
+write access to the store's directory; an attacker with the whole user account removes the head too,
+a store wiped to zero and rewritten gets a new genesis and a new head, a whole directory replaced by
+a different chain likewise, and a store moved to another path has no head until its next write. Every
+one of those needs an anchor off the machine. The probe carries the boundary row: sidecar held 5 of
+5, sidecar and head held 4 of 5. Eight tests with controls, one of them the bypass.
+
 ## 2.37.1 - UPGRADE IF YOU VERIFY AGENT AUDIT TRAIL FILES FROM ANOTHER PRODUCER: the chain hash now follows draft -04 section 6.1. AFFECTS: `verify_jsonl` on a file whose records carry `signature`; files inspeximus exports are unchanged and verified the same as before.
 
 draft-sharif-agent-audit-trail-04 (15 September 2026) computes `prev_hash` over the complete previous

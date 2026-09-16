@@ -141,6 +141,13 @@ before it ships.
 
 ### Open after 2.37.1
 
+- **A rectified record can lose a recall tie to an unrelated older record.** Found 2026-09-16 while
+  the chain-head prune made writes slow: `recall("alice phone")` scores "alice prefers email",
+  "alice's phone is +200" (the rectified value) and "bob's phone is +300" all at 0.847, and with
+  1.2 s between writes the rectified record comes second. Reproduced with heads off, so it is a
+  ranking tie the recency rule does not settle, not the head. The test passes only because writes
+  land within the same second. Fix the tie-break and make the test insensitive to write latency.
+
 - ~~ai-act.html does not name the agent-audit-trail export or `matches()`~~: a FAQ entry and one
   paragraph, gated (two red-team lenses, verify 11 of 11, humanizer), live 2026-09-16 (061d918). The
   FAQ sentence "it does not see the prompt" was corrected at the same time; 2.37.0 made it untrue on

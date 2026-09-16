@@ -56,9 +56,19 @@ def _drop_receipts(path, ids):
     open(rp, "w", encoding="utf-8").write(json.dumps(kept))
 
 
-def _attack(path, name, sidecar: bool = False):
+def _drop_head(path):
+    """The attacker who also holds the user's config home removes the chain head the store keeps
+    there; a missing head is no check, which is exactly what such an attacker wants."""
+    from inspeximus.core import _head_path
+    hp = _head_path(path)
+    if hp and os.path.exists(hp):
+        os.remove(hp)
+
+
+def _attack(path, name, sidecar: bool = False, head: bool = False):
     """Edit the backing store the way agmi's attacker does: raw SQL, valid encoding, nothing else.
-    With `sidecar`, deletions are mirrored into the receipts file as well."""
+    With `sidecar`, deletions are mirrored into the receipts file as well; with `head`, the chain head
+    kept outside the store's directory is removed too."""
     rows = _rows(path)
     deleted = []
     c = sqlite3.connect(path)
@@ -91,20 +101,22 @@ def _attack(path, name, sidecar: bool = False):
         c.close()
     if sidecar and deleted:
         _drop_receipts(path, deleted)
+    if head:
+        _drop_head(path)
 
 
-def _run(receipts: bool, work: str, sidecar: bool = False) -> dict:
+def _run(receipts: bool, work: str, sidecar: bool = False, head: bool = False) -> dict:
     sk, pk = new_receipt_keypair() if receipts else (None, None)
     results = {}
     for name in ATTACKS:
-        d = os.path.join(work, ("on-" if receipts else "off-") + ("sidecar-" if sidecar else "") + name)
+        d = os.path.join(work, ("on-" if receipts else "off-") + ("sidecar-" if sidecar else "") + ("head-" if head else "") + name)
         os.makedirs(d)
         path = os.path.join(d, "memory.json")
         m = Inspeximus(path, receipts=receipts, receipt_key=sk)
         for i in range(6):                                   # seed through the tool's own API
             m.remember(f"fact {i}: the limit is {50 + i}", key=f"fact::{i}")
         del m
-        _attack(path, name, sidecar=sidecar)
+        _attack(path, name, sidecar=sidecar, head=head)
         m2 = Inspeximus(path, receipts=receipts, receipt_key=sk)   # reopen, the way a restart would
         ok, problems = m2.verify_writes(expected_pubkey=pk)
         loaded = len(list(m2.items))
@@ -125,6 +137,7 @@ def main() -> dict:
         off = _run(False, work)
         on = _run(True, work)
         on_sidecar = _run(True, work, sidecar=True)
+        on_sidecar_head = _run(True, work, sidecar=True, head=True)
         out = {
             "probe": os.path.basename(__file__),
             "inspeximus": __import__("inspeximus").__version__,
@@ -132,15 +145,19 @@ def main() -> dict:
             "threat_model": "write access to the backing SQLite file; the tool's answer is verify_writes(). The "
                             "receipts_on_signed_sidecar_held row adds the receipts sidecar to what the attacker "
                             "holds, which is what write access to the store's directory means; deletions are "
-                            "mirrored into it",
+                            "mirrored into it. The receipts_on_signed_sidecar_and_head_held row adds the chain "
+                            "head the store keeps in the user's config home: an attacker with the whole account",
             "receipts_off_default": off,
             "receipts_on_signed": on,
             "receipts_on_signed_sidecar_held": on_sidecar,
+            "receipts_on_signed_sidecar_and_head_held": on_sidecar_head,
             "receipts_off_unverifiable": sum(1 for v in off.values() if v["outcome"] == "unverifiable"),
             "receipts_off_accepted": sum(1 for v in off.values() if v["outcome"] == "accepted"),
             "receipts_on_detected": sum(1 for v in on.values() if v["outcome"] == "detected"),
             "receipts_on_sidecar_held_detected": sum(1 for v in on_sidecar.values() if v["outcome"] == "detected"),
             "receipts_on_sidecar_held_accepted": sorted(k for k, v in on_sidecar.items() if v["outcome"] == "accepted"),
+            "receipts_on_sidecar_and_head_held_detected": sum(1 for v in on_sidecar_head.values() if v["outcome"] == "detected"),
+            "receipts_on_sidecar_and_head_held_accepted": sorted(k for k, v in on_sidecar_head.items() if v["outcome"] == "accepted"),
             "elapsed_s": round(time.time() - t0, 3),
         }
         # CONTROL: a store nobody touched verifies with receipts on
@@ -162,8 +179,9 @@ def main() -> dict:
         ok3, p3 = Inspeximus(os.path.join(d2, "memory.json")).verify_writes()
         out["control_untouched_receipts_off_is_unverifiable_too"] = (not ok3) and any("DISABLED" in p for p in p3)
         out["verdict"] = "PASS" if (out["receipts_on_detected"] == 5 and out["control_untouched_store_verifies"]
-                                    and out["receipts_on_sidecar_held_detected"] == 4
-                                    and out["receipts_on_sidecar_held_accepted"] == ["truncate"]
+                                    and out["receipts_on_sidecar_held_detected"] == 5
+                                    and out["receipts_on_sidecar_and_head_held_detected"] == 4
+                                    and out["receipts_on_sidecar_and_head_held_accepted"] == ["truncate"]
                                     and out["receipts_off_unverifiable"] == 5
                                     and out["control_untouched_receipts_off_is_unverifiable_too"]) else "FAIL"
         return out

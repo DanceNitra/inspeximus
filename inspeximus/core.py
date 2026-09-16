@@ -498,6 +498,28 @@ def new_ed25519_keypair() -> tuple[str, str]:
 _STH_FIELDS = ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")
 
 
+def _head_path(store_path) -> "str | None":
+    """Where a store keeps the HEAD of its receipt chain outside its own directory.
+
+    A hash chain cut at the tail, receipts included, is internally consistent: nothing inside the
+    store's directory can say it used to be longer. Measured 2026-09-16 with the agmi suite: with
+    receipts on and signed, an attacker holding the SQLite file alone is caught 5 of 5; one who also
+    holds the receipts sidecar gets a tail truncation ACCEPTED, 4 of 5. The remedy is a head kept
+    where that attacker does not write. This is the same home the signing keys use
+    (`INSPEXIMUS_KEY_HOME`, else APPDATA, else XDG_CONFIG_HOME, else ~/.config), one small file per
+    store path. `INSPEXIMUS_HEADS=0` turns it off.
+
+    HONEST SCOPE: it closes the cell for an attacker with write access to the store's directory. An
+    attacker with the whole user account writes here too; for that the anchor has to leave the machine
+    (`anchor()` given to a witness, `verify_consistency()`, RFC 3161)."""
+    if not store_path or os.environ.get("INSPEXIMUS_HEADS", "1").strip().lower() in ("0", "off", "false", "no"):
+        return None
+    home = (os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA")
+            or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"))
+    tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
+    return os.path.join(home, "inspeximus", "heads", f"{tag}.json")
+
+
 def _guard_key_location(kdir, store_path) -> None:
     """Refuse a key directory that is inside the store's own directory.
 
@@ -1169,7 +1191,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.37.1"
+__version__ = "2.38.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2408,6 +2430,7 @@ class Inspeximus:
         # Sidecar failures live SEPARATELY: a successful main-store save must not erase the fact that the
         # receipt or tombstone chain never reached disk. (It did, in the first version of this fix.)
         self._sidecar_errors: dict = {}
+        self.head_error: "str | None" = None     #: why the chain head outside the store could not be written, if it could not
         self._read_errors: dict = {}      # unreadable sidecars: surfaced, but NOT a persist failure
         # ENCRYPTION-AT-REST (OPT-IN, default None -> plaintext JSON, byte-identical legacy). encrypt_key is a
         # raw 32-byte AES-256 key (from new_encryption_key()); encrypt_passphrase is stretched with scrypt.
@@ -3342,7 +3365,126 @@ class Inspeximus:
                 # measured, 4 receipts in memory, verify_writes() -> (True, []), and ZERO on reload — the
                 # store certified an integrity it could no longer demonstrate.
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
+            self._record_head()
         return r
+
+    # ------------------------------------------------------------------ chain head outside the store
+    @staticmethod
+    def _chain_holds_tip(receipts, n0: int, tip0) -> bool:
+        """Does this chain still contain the receipt a head recorded as its tip? At index n0-1 in the
+        ordinary case. A peer's receipt that was RECHAINED after a concurrent write moves later and
+        keeps its old hash as `rechained_from`, so that counts too: the write survived, it moved.
+        Measured 2026-09-16: the first head check called the rechain flow a rewrite."""
+        if n0 <= 0 or not tip0:
+            return True
+        if len(receipts) >= n0 and receipts[n0 - 1].get("hash") == tip0:
+            return True
+        return any(r.get("hash") == tip0 or r.get("rechained_from") == tip0 for r in receipts)
+
+    def head_path(self) -> "str | None":
+        """The file outside the store's directory that holds the receipt chain's head, or None when
+        the store has no path or `INSPEXIMUS_HEADS=0`."""
+        return _head_path(self.path)
+
+    def _record_head(self, force: bool = False) -> None:
+        """Persist {genesis, n_writes, writes_tip} for this store outside its directory, after every
+        receipt. Never raises: a head that cannot be written leaves the store exactly as it was
+        before this feature existed, and `verify_writes()` says nothing about heads it cannot find.
+
+        A HEAD IS NEVER LOWERED BY A WRITE. Measured 2026-09-16 by the red team on the first version:
+        cut the tail with its receipts, and verify_writes() reported "shrank 3 < 5"; then let the
+        agent write once through the API, and this method overwrote the head with the shorter chain,
+        so the evidence lasted exactly until the next remember(). The attacker only had to wait. Now
+        a head whose genesis matches and whose count exceeds the chain on disk is kept, the write
+        goes ahead, and the next verify_writes() still names the cut; only `reanchor_head()` lowers
+        a head, on purpose, with the act recorded."""
+        hp = self.head_path()
+        if not hp or not self._receipts:
+            return
+        self.head_error = None
+        try:
+            if not force:
+                prev = self.read_head()
+                n0 = prev.get("n_writes") if prev else None
+                if (prev and prev.get("genesis") == self._receipts[0].get("hash") and isinstance(n0, int)
+                        and (n0 > len(self._receipts)
+                             or not self._chain_holds_tip(self._receipts, n0, prev.get("writes_tip")))):
+                    # The chain on this handle does not EXTEND the recorded head: it is shorter, or it
+                    # regrew to the same length or longer along a different tip. Either way the head
+                    # stays, the write goes ahead, and verify_writes() keeps naming it.
+                    self.head_error = (f"head not advanced: it records {n0} writes ending in a receipt this chain "
+                                       f"does not contain; verify_writes() reports it, reanchor_head() accepts it")
+                    return
+            os.makedirs(os.path.dirname(hp), exist_ok=True)
+            # A temp file and os.replace, WITHOUT the fsync and lock the evidence files get: a head
+            # lost to a crash weakens the check by one write and is rewritten at the next. Measured
+            # 2026-09-16, 300 remember() calls: the durable variant added 3.9 ms per call on top of
+            # 9.4; this one is inside the noise (12.68 ms with heads, 12.71 without).
+            tmp = f"{hp}.{os.getpid()}.{threading.get_ident()}.tmp"
+            with open(tmp, "w", encoding="utf-8") as fh:
+                fh.write(json.dumps({
+                    "path": os.path.abspath(str(self.path)), "genesis": self._receipts[0].get("hash"),
+                    "n_writes": len(self._receipts), "writes_tip": self._receipts[-1].get("hash"),
+                    "ts": time.time()}))
+            os.replace(tmp, hp)
+            self._prune_heads(os.path.dirname(hp))
+        except Exception as e:  # noqa: BLE001 - the head is a bonus check, never a write failure
+            # Kept apart from `_sidecar_errors`: those name evidence the store's integrity rests on
+            # and verify_writes() fails on them. A head that could not be written removes one check
+            # and is reported here, readable as `head_error`, not as a lost chain.
+            self.head_error = f"{hp}: {type(e).__name__}: {e}"
+
+    _heads_pruned_at: float = 0.0        #: process-wide: the prune runs at most once per interval
+
+    @classmethod
+    def _prune_heads(cls, hdir: str, max_files: int = 4000, interval_s: float = 600.0) -> None:
+        """Test suites create thousands of temporary stores; their heads must not accumulate forever,
+        and the trim must not be paid on every write. Measured 2026-09-16: 6,102 heads in the config
+        home after one suite run, and the first version pruned on EVERY write once over the cap, one
+        stat per file, 1.2 s per remember(). Now: at most once per `interval_s` per process, and when
+        the directory is over `max_files` the oldest heads go until half the cap remains."""
+        now = time.time()
+        if now - cls._heads_pruned_at < interval_s:
+            return
+        cls._heads_pruned_at = now
+        try:
+            names = os.listdir(hdir)
+            if len(names) <= max_files:
+                return
+            aged = []
+            for n in names:
+                fp = os.path.join(hdir, n)
+                try:
+                    aged.append((os.path.getmtime(fp), fp))
+                except OSError:
+                    pass
+            aged.sort()
+            for _mt, fp in aged[: max(0, len(aged) - max_files // 2)]:
+                try:
+                    os.remove(fp)
+                except OSError:
+                    pass
+        except OSError:
+            pass
+
+    def read_head(self) -> "dict | None":
+        """The head kept outside the store for this path, or None when there is none."""
+        hp = self.head_path()
+        if not hp or not os.path.exists(hp):
+            return None
+        try:
+            d = json.loads(open(hp, encoding="utf-8").read())
+        except (OSError, ValueError):
+            return None
+        return d if d.get("path") == os.path.abspath(str(self.path)) else None
+
+    def reanchor_head(self) -> dict:
+        """Accept the store's CURRENT chain as the head, for a deliberate rollback (a restore from
+        backup). Returns what was accepted so the act itself is visible."""
+        before = self.read_head()
+        self._reconcile_receipts_with_disk()      # a stale handle must not anchor a chain shorter than disk
+        self._record_head(force=True)
+        return {"before": before, "after": self.read_head()}
 
     def admissibility_preconditions(self) -> dict:
         """Is this store in a state where an applicability question can be ANSWERED at all?
@@ -5683,6 +5825,36 @@ class Inspeximus:
                     f"memory {mid}: born ACTIVE and is no longer current, with nothing accounting for "
                     f"it -- no retirement declared, no later write claiming it, no tombstone. A live "
                     f"record was hidden (edited after write)")
+        # THE HEAD KEPT OUTSIDE THE STORE. Everything above reads the store's own directory, and a chain
+        # cut at the tail with its receipts is consistent to every check that lives there. The head
+        # written after each receipt to the config home says how long the chain was; a shorter chain,
+        # or one whose receipt at that index is not the recorded tip, is a rollback or a truncation.
+        # The head is bound to the chain's FIRST receipt as well as to the path: a new store created at
+        # a path an old one used to occupy inherits nothing, so a deleted-and-recreated memory.json is
+        # not reported as a rollback of the store that used to be there. A tail cut cannot change the
+        # first receipt, so the binding costs the check nothing. What it does not cover, and says so:
+        # a store wiped to zero and written fresh gets a new genesis and a new head; catching that
+        # needs a witness or a co-signed anchor off this machine.
+        head = self.read_head()
+        # Compared against the receipts ON DISK, not this handle's copy: a handle that has not seen a
+        # peer's write holds a shorter chain than the head the peer advanced, and that is not a
+        # rollback of anything. Measured before this line existed: two handles, one store, the older
+        # one reported "shrank 1 < 2" after the newer one wrote once.
+        disk_receipts = self._receipts
+        if self._receipts_path and self._receipts_path.exists():
+            try:
+                disk_receipts = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                pass
+        if head and isinstance(head.get("n_writes"), int) and disk_receipts                 and head.get("genesis") == disk_receipts[0].get("hash"):
+            n0, tip0 = head["n_writes"], head.get("writes_tip")
+            if len(disk_receipts) < n0:
+                problems.append(f"write log shrank below the head kept outside the store: {len(disk_receipts)} "
+                                f"< {n0} (rolled back or truncated, receipts included); a deliberate restore "
+                                f"is accepted with reanchor_head()")
+            elif not self._chain_holds_tip(disk_receipts, n0, tip0):
+                problems.append(f"write log diverges from the head kept outside the store at receipt {n0}: "
+                                f"the chain was rewritten past that point")
         return (len(problems) == 0, problems)
 
     def recommit(self, ids=None) -> dict:
@@ -15170,6 +15342,9 @@ class _TenantView:
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
+        # The chain head kept outside the store is a property of the FILE, like `anchor`: one head
+        # per store path, over every tenant's receipts. A tenant-bound view has nothing to narrow.
+        "head_path", "read_head", "reanchor_head",
         # `refresh` is `reload` without the save: the same file-level reconcile, store-wide for the
         # same reason (2.28.0).
         "refresh",

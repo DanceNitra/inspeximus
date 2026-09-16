@@ -294,6 +294,12 @@ led.what_it_knew(0)                # memory_state at that action + provenance of
 led.matches(2, inputs=prompt, output=answer)   # {"inputs": True, "output": True}: the kept transcript is what was digested
 ```
 
+With receipts on, the store also keeps the chain's head outside its own directory (the config home the
+signing keys use), so `verify_writes()` reports a tail cut that took its receipts with it: `m.head_path()`,
+`m.read_head()`, and `m.reanchor_head()` to accept a deliberate restore from backup. `INSPEXIMUS_HEADS=0`
+turns it off. An attacker with the whole user account can remove the head; that case needs `anchor()`
+held off the machine and `verify_consistency()`.
+
 Shell: `inspeximus actions list | record ACTION | verify [FILE] | knew SEQ | matches SEQ --inputs FILE`; `verify FILE`
 opens no store. `matches` needs the salt file beside the ledger; without it the digests cannot be re-derived.
 The LangChain callback digests a chat-model call as every message's role, content and tool calls; rebuild
