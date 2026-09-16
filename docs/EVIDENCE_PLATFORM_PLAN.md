@@ -131,7 +131,18 @@ before it ships.
    "five at-rest attacks on three stores" was killed before drafting as already said by agmi's own
    README, with the mechanism textbook (Crosby and Wallach 2009, RFC 9162).
 
-### Open after 2.37.0
+8. **2.37.1 (2026-09-16):** draft-sharif-agent-audit-trail-04 read again in full after a rescan
+   flagged it: the chain hash covers the complete previous record with only a detached `batch`
+   removed; our verifier stripped `signature` and would have called a conformant signed file broken
+   at every link. Fixed with a mutation control; timestamps and nonces checked as the draft asks; the
+   ledger's Ed25519 signature travels under `action_detail.inspeximus` because the draft registers
+   only ES256 and ML-DSA-65. The competitor rescan of the same day found no cell change on
+   ai-act.html (18 products checked, LangChain #35357 and #35691 still closed).
+
+### Open after 2.37.1
+
+- **ai-act.html does not name the agent-audit-trail export or `matches()`.** One sentence each,
+  through the standing gate before it goes on the page.
 
 - **prEN 18229-1 event classes and the ISO/IEC 24970 information model.** Both drafts are behind
   paywalls (CEN enquiry closed 5 Aug 2026; ISO FDIS ballot from 28 Aug 2026); tag entries with their
