@@ -1191,7 +1191,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.38.0"
+__version__ = "2.39.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1202,6 +1202,16 @@ _STOP = frozenset("the a an of for to in on and or is are was were be been with 
 
 
 def _stem(w: str) -> str:
+    # A possessive is its noun: "alice's" and "agents'" tokenize to "alice" and "agent". The word
+    # class admits the apostrophe, so without this fold "alice's" stemmed to "alice'", a token no
+    # query contains, and "alice's phone is +200" matched `recall("alice phone")` on one token, level
+    # with two unrelated records, its rank then decided by a decay factor that differs at 1e-6 per
+    # second between memory types. Measured 2026-09-16 with the writes 1.2 s apart: the rectified
+    # record came second. A contraction that is not a possessive ("don't") is untouched.
+    if w.endswith("'s"):
+        w = w[:-2]
+    elif w.endswith("'"):
+        w = w[:-1]
     return w[:-1] if (w.endswith("s") and len(w) > 4) else w   # crude plural/3rd-person fold
 
 

@@ -1666,5 +1666,23 @@
     "tests": [
       "tests/test_a_certificate_about_a_store_we_do_not_own.py"
     ]
+  },
+  {
+    "name": "a possessive keeps its apostrophe and never matches its noun",
+    "file": "inspeximus/core.py",
+    "old": "    if w.endswith(\"'s\"):\n        w = w[:-2]\n    elif w.endswith(\"'\"):\n        w = w[:-1]\n",
+    "new": "",
+    "tests": [
+      "tests/test_a_possessive_is_the_noun_it_belongs_to.py"
+    ]
+  },
+  {
+    "name": "only the trailing apostrophe is folded, so alice's still stems to alice'",
+    "file": "inspeximus/core.py",
+    "old": "    if w.endswith(\"'s\"):\n        w = w[:-2]\n    elif w.endswith(\"'\"):",
+    "new": "    if w.endswith(\"'\"):",
+    "tests": [
+      "tests/test_a_possessive_is_the_noun_it_belongs_to.py"
+    ]
   }
 ]

@@ -149,7 +149,11 @@ before it ships.
 
 ### Open after 2.38.0
 
-- **A rectified record can lose a recall tie to an unrelated older record.** Found 2026-09-16 while
+- ~~A rectified record can lose a recall tie to an unrelated older record~~: closed in 2.39.0 at the
+  tokenizer, not the tie. "alice's" stemmed to "alice'", so the corrected record matched one query
+  token and sat level with two unrelated records; a possessive now folds to its noun and the corrected
+  record matches both tokens. The decay-decided tie at exactly equal relevance is the designed weight
+  and is left as it is. Original note: found 2026-09-16 while
   the chain-head prune made writes slow: `recall("alice phone")` scores "alice prefers email",
   "alice's phone is +200" (the rectified value) and "bob's phone is +300" all at 0.847, and with
   1.2 s between writes the rectified record comes second. Reproduced with heads off, so it is a

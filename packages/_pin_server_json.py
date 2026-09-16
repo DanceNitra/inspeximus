@@ -143,9 +143,17 @@ def main(argv: list[str]) -> int:
         if m != 1:
             raise SystemExit("::error::index.html has no `v<semver>` hero eyebrow to pin; refusing to "
                              "guess where the version lives")
+        # A THIRD carrier on the same page: the versions list names the current release. The gate reads
+        # every standalone `v<semver>` on the page, so a carrier the pinner does not know fails the
+        # release; measured on 2.39.0, where this line still said 2.38.0 after the pin ran. Same narrow
+        # rule: the one `v<semver>` that sits immediately before `current release`.
+        new, m2 = re.subn(r'v\d+\.\d+\.\d+(</b><span>current release)', rf'v{version}\g<1>', new, count=1)
+        if m2 != 1:
+            raise SystemExit("::error::index.html has no `v<semver>` current-release list item to pin; "
+                             "refusing to guess where the version lives")
         if new != text:
             p.write_text(new, encoding="utf-8")
-        print(f"index.html softwareVersion + hero eyebrow pinned to {version}")
+        print(f"index.html softwareVersion + hero eyebrow + current-release item pinned to {version}")
 
     # The long-form document carries the version a reader sees in prose, and it is prose, so it gets a
     # NARROW pattern: only the standalone `v<semver>` token, never a bare number that might be a

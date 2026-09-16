@@ -1,3 +1,24 @@
+## 2.39.0 - BEHAVIOUR CHANGE, lexical recall: a possessive is its noun. UPGRADE IF YOUR MEMORIES NAME PEOPLE OR THINGS WITH 'S: `recall("alice phone")` now finds "alice's phone", which it did not. AFFECTS: the lexical channel and the hybrid that fuses it; ranks change for any store whose text carries possessives; the semantic channel is untouched.
+
+The word class admits the apostrophe and the stemmer folded a trailing `s`, so "alice's" tokenized to
+"alice'", a token no query contains. Measured 2026-09-16 on the Art. 16 rectification test: after
+`rectify` wrote "alice's phone is +200", `recall("alice phone")` scored it level with "alice prefers
+email" and "bob's phone is +300" (one query token each, 0.847 all three), and the tie fell to the
+value decay, which differs between memory types at about 1e-6 per second of age. With the three writes
+inside one second the corrected record came first; with 1.2 s between them it came second. The test
+passed only when the machine was fast. The fix is at the tokenizer, not at the tie: "alice's" and
+"agents'" now tokenize to "alice" and "agent", the corrected record matches both query tokens and is
+not in a tie at all. A contraction that is not a possessive ("don't") is untouched, and the plural
+fold is unchanged. Two mutations in `tools/mutations.json`: removing the fold, and folding only the
+bare apostrophe. Suite 4204 passed, 284 skipped, 8 xfailed before the change; the release gate after it: 4207 passed,
+285 skipped, 8 xfailed, with the two new tests among them.
+
+What this does not change: two records at exactly equal relevance still rank by value decay, and
+decay runs on the memory type's half-life (7 days episodic, 180 semantic, 10 years procedural), so an
+older procedural record can outrank a newer episodic one at equal relevance once their ages differ
+by a second. That is the designed weight, not a defect, and it is only reachable when the query
+matches both records equally, which the possessive fold made rarer.
+
 ## 2.38.0 - UPGRADE IF SOMEONE CAN WRITE YOUR STORE'S DIRECTORY: a tail cut that takes its receipts with it is reported. AFFECTS: `verify_writes()` on a store restored from a backup, which now reports the rollback until `reanchor_head()` accepts it; `INSPEXIMUS_HEADS=0` restores the previous behaviour.
 
 A receipt chain cut at the tail, receipts included, is consistent to every check that reads the
