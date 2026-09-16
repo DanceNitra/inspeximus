@@ -367,7 +367,11 @@ def _action_ledger():
         return None
     if _LED is None:
         from inspeximus.actions import ActionLedger
-        _LED = ActionLedger(_MEM, actor=_ACTOR)
+        # Signed with the store's receipt key when it has one, else with the server's writer key: a
+        # server that attests its writes and left its action ledger unsigned was the first thing the
+        # ledger showed when we turned it on for our own store (2026-09-16, "seq 0: no signature").
+        _LED = ActionLedger(_MEM, actor=_ACTOR,
+                            signing_key=(getattr(_MEM, "_receipt_sk", None) or _WRITER_KEY or None))
     return _LED
 
 

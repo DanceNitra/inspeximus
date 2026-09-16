@@ -190,3 +190,24 @@ def test_a_timeline_reconstructs_one_session_content_free(tmp_path):
     text = _j.dumps(led.timeline())
     assert "SECRET-PROMPT" not in text and "SECRET-OUTPUT" not in text
     assert led.verify() == (True, [])
+
+
+def test_a_recall_made_inside_one_action_is_attributed_to_the_next(tmp_path):
+    """Found the first hour the ledger ran on our own MCP server (2026-09-16): the action that performed
+    the recall marked the new window as consumed, so the next action carried recalled [] and
+    recall_before_previous_entry True. The window an entry consumes is the one its memory_state reports."""
+    m = Inspeximus(str(tmp_path / "mem.json"), receipts=True, observe_recall=True)   # the MCP server's config
+    m.remember("the limit is 50", key="limit")
+    led = ActionLedger(m, actor="agent")
+    with led.action("mcp:recall") as a:
+        a.output(m.recall("limit"))
+    with led.action("mcp:transfer") as a:
+        a.output(1)
+    with led.action("mcp:other") as a:
+        a.output(1)
+    r, t, o = led.entries()
+    assert r["memory_state"]["recalled"] == []                          # captured before its own recall
+    assert len(t["memory_state"]["recalled"]) == 1 and t["memory_state"]["recall_before_previous_entry"] is False
+    assert o["memory_state"]["recalled"] == [] and o["memory_state"]["recall_before_previous_entry"] is True
+    assert all("_window_id" not in e["memory_state"] for e in led.entries())
+    assert led.verify() == (True, [])

@@ -1,3 +1,17 @@
+## 2.36.1 - UPGRADE IF YOU RUN THE ACTION LEDGER ON THE MCP SERVER: the recall an action made was not attributed to the next action, and the ledger was unsigned. AFFECTS: `memory_state.recalled` on entries written by 2.29.0 to 2.36.0 through action() when the action itself performed the recall.
+
+Turned on for our own MCP server (`INSPEXIMUS_ACTIONS=1`, first hour, 2026-09-16) the ledger
+showed both at once. `mcp:recall` followed by `mcp:actions_verify` carried `recalled: []` and
+`recall_before_previous_entry: true` on the second entry: `record()` marked as consumed whichever
+recall window existed when the entry was written, which for an action that performed the recall was
+the new window, so the next action never inherited it; and with `observe_recall` on, the timestamp
+fallback compared the recall against the previous entry's write time rather than its start, and on a
+coarse clock even `<=` called a same-tick recall stale. Now the window an entry consumes is the one
+its `memory_state` reports, the fallback compares against the previous action's `started`, strictly.
+And the entries carried no signature: the server attests its writes with `INSPEXIMUS_WRITER_KEY_FILE`
+but the ledger signed only with a receipt key the server never sets; it now signs with the writer key
+when the store has no receipt key. Two tests, one through the MCP server's own config.
+
 ## 2.36.0 - UPGRADE IF YOUR AGENTS SHARE A STORE AND A REGULATOR ASKS HOW LONG EACH ONE KEEPS WHAT: memory partitions per agent and per process. AFFECTS NOBODY'S EXISTING CODE: a new module, a registry file beside the store, records tagged only when written through it.
 
 The CNIL's note on agentic AI (20 July 2026) separates context, deleted when the process ends, from

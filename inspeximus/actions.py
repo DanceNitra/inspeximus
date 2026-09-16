@@ -319,14 +319,24 @@ class ActionLedger:
         # is only kept when the store observes recalls, so it is a fallback, not the rule.
         cur = getattr(st, "_last_recall", None)
         stale = bool(recalled) and (id(cur) == self._seen_recall) if cur is not None else False
-        prev_ts = self._entries[-1].get("ts") if self._entries else None
-        if not stale and recalled and recalled_at and prev_ts and recalled_at <= prev_ts:
+        # The timestamp fallback compares against when the previous action STARTED, not when its entry
+        # was written: an action that performs the recall itself starts before it and is written after
+        # it, and comparing against the write time called every such window stale (measured on our own
+        # MCP server with INSPEXIMUS_OBSERVE_RECALL=1, 2026-09-16).
+        prev = self._entries[-1] if self._entries else None
+        prev_ts = (prev.get("started") or prev.get("ts")) if prev else None
+        # strictly earlier: on a coarse clock (Windows, ~1 ms) a recall made inside the previous action
+        # can share its start tick, and the identity check above already covers a consumed window
+        if not stale and recalled and recalled_at and prev_ts and recalled_at < prev_ts:
             stale = True
         return {"digest": digest, "records": n,
                 "last_receipt": receipts[-1].get("hash") if receipts else None,
                 "receipts": len(receipts),
                 "recalled": [] if stale else recalled[:64], "recalled_at": recalled_at,
-                "recall_scope": "this handle", "recall_before_previous_entry": stale}
+                "recall_scope": "this handle", "recall_before_previous_entry": stale,
+                # the identity of the window this state REPORTS, so record() marks that one consumed
+                # and not whichever window exists when the entry is written (see record)
+                "_window_id": id(cur) if cur is not None else None}
 
     # ----------------------------------------------------------------- recording
     def record(self, action: str, inputs: Any = None, output: Any = None, status: str = "ok",
@@ -366,8 +376,14 @@ class ActionLedger:
             "output_sha256": _content_hash(out, self._salt_bytes()) if out is not None else None,
             # captured BEFORE the action ran when the caller went through action() or wrap(); a plain
             # record() captures now, which is after whatever the caller did.
-            "memory_state": memory_state if memory_state is not None else self.memory_state(),
+            "memory_state": dict(memory_state) if memory_state is not None else self.memory_state(),
         }
+        # The window this entry consumed is the one its memory_state reports. It used to be whatever
+        # window existed at write time, which for an action that itself performed the recall was the
+        # NEW window, so the next action reported recall_before_previous_entry and an empty list and
+        # the fact the agent acted on was never attributed to it. Measured on our own MCP server the
+        # first hour the ledger was on (2026-09-16): mcp:recall then mcp:actions_verify, recalled [].
+        consumed = entry["memory_state"].pop("_window_id", None)
         if error:
             entry["error"] = str(error)[:2000]
         if model:
@@ -388,8 +404,7 @@ class ActionLedger:
             entry["sig"], entry["pubkey"] = _sign(self._sk, entry["hash"])
         self._entries.append(entry)
         self._save()
-        cur = getattr(self.store, "_last_recall", None) if self.store is not None else None
-        self._seen_recall = id(cur) if cur is not None else None
+        self._seen_recall = consumed
         return entry
 
     @contextlib.contextmanager
