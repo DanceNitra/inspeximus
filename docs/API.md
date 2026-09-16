@@ -291,9 +291,13 @@ def lookup(order): ...
 led.record("api:openai:chat", inputs=prompt, output=answer)     # plain call
 led.verify(expected_pubkey=pk)     # (ok, problems); also binds each entry to the store's receipt chain
 led.what_it_knew(0)                # memory_state at that action + provenance of the recalled ids now
+led.matches(2, inputs=prompt, output=answer)   # {"inputs": True, "output": True}: the kept transcript is what was digested
 ```
 
-Shell: `inspeximus actions list | record ACTION | verify [FILE] | knew SEQ`; `verify FILE` opens no store.
+Shell: `inspeximus actions list | record ACTION | verify [FILE] | knew SEQ | matches SEQ --inputs FILE`; `verify FILE`
+opens no store. `matches` needs the salt file beside the ledger; without it the digests cannot be re-derived.
+The LangChain callback digests a chat-model call as every message's role, content and tool calls; rebuild
+that value with `inspeximus.integrations.langchain.context_messages(messages)` before calling `matches`.
 MCP: `INSPEXIMUS_ACTIONS=1` records every tool call; tools `actions_verify`, `what_it_knew`.
 LangChain: `inspeximus.integrations.langchain.InspeximusActionCallback(led)` in `config={"callbacks": [...]}`.
 Probe: `probes/what_the_agent_knew_when_it_acted.py` (three tamper controls).

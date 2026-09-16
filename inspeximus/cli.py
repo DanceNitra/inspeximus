@@ -805,6 +805,11 @@ def main(argv=None):
     acv.add_argument("--expected-pubkey", default=None, help="hex Ed25519 key the chain must be signed by")
     ack = acsub.add_parser("knew", help="what the agent knew when it performed action SEQ")
     ack.add_argument("seq", type=int)
+    acm = acsub.add_parser("matches", help="check a retained transcript against action SEQ: recompute the salted "
+                           "digest of the given inputs/output JSON and compare with the entry")
+    acm.add_argument("seq", type=int)
+    acm.add_argument("--inputs", default=None, help="path to a JSON file holding what the model or tool was given")
+    acm.add_argument("--output", default=None, help="path to a JSON file holding what came back")
     aco = acsub.add_parser("oversight", help="record a HUMAN decision about the agent's work (Art. 14, GDPR Art. 22): "
                            "approve | refuse | override | stop | review, with who decided and which action")
     aco.add_argument("event", choices=["approve", "refuse", "override", "stop", "review"])
@@ -1511,6 +1516,16 @@ def main(argv=None):
             return 0 if ok else 1
         elif a.actions_cmd == "knew":
             print(json.dumps(led.what_it_knew(a.seq), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "matches":
+            def _load(pth):
+                if pth is None:
+                    return None
+                with open(pth, encoding="utf-8") as fh:
+                    return json.load(fh)
+            res = led.matches(a.seq, inputs=_load(a.inputs), output=_load(a.output))
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+            if False in (res["inputs"], res["output"]):
+                sys.exit(1)
         elif a.actions_cmd == "oversight":
             def _val(v):
                 if v is None:

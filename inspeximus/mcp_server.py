@@ -1846,6 +1846,20 @@ def incident_reported(seq: int, actor: str, reported_to: str, reported_ts: float
 
 
 @mcp.tool()
+def actions_match(seq: int, inputs=None, output=None) -> dict:
+    """Check a retained transcript against action number `seq`: recompute the salted digest of `inputs`
+    and/or `output` the way the ledger did and compare with the entry's `inputs_sha256` / `output_sha256`.
+    "Is this what the model was given, and is this what came back", for an entry whose content the ledger
+    does not keep. Each side is true, false, or null when not passed or not digested. Needs the ledger's
+    salt file beside the ledger. Read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    if seq < 0 or seq >= len(led):
+        return {"error": f"no action #{seq}; the ledger has {len(led)} entries"}
+    return led.matches(seq, inputs=inputs, output=output)
+
+
+@mcp.tool()
 def what_it_knew(seq: int) -> dict:
     """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.

@@ -725,6 +725,30 @@ class ActionLedger:
                     out["recalled_now"].append({"id": rid, "error": f"{type(ex).__name__}: {ex}"})
         return out
 
+    def matches(self, seq: int, inputs: Any = None, output: Any = None) -> dict:
+        """Check a retained transcript against entry `seq`: recompute the salted digest of `inputs`
+        and `output` exactly as record() did and compare with `inputs_sha256` and `output_sha256`.
+        Answers "is this what the model was given, and is this what came back" for an action whose
+        content the ledger does not keep. The operator keeps the transcript (a prompt log, a trace,
+        `keep_content=True`) and the ledger binds it: a transcript edited by one character no longer
+        matches. Needs the ledger's salt file, so only the salt holder can run this; without it the
+        digests are useless, which is the point of the salt.
+
+        Returns {"seq", "inputs": True | False | None, "output": True | False | None} where None means
+        the caller passed nothing for that side, or the entry has no digest for it. For a LangChain
+        chat-model entry pass the messages in the shape the callback digested, see
+        `inspeximus.integrations.langchain.context_messages`."""
+        e = self._at(seq)
+        salt = self._salt_bytes()
+
+        def side(val, key):
+            if val is None or e.get(key) is None:
+                return None
+            v = self.redact(val) if self.redact else val
+            return _content_hash(v, salt) == e[key]
+        return {"seq": seq, "action": e.get("action"),
+                "inputs": side(inputs, "inputs_sha256"), "output": side(output, "output_sha256")}
+
     # ----------------------------------------------------------------- retention
     def attest_retention(self, policy_days: float, actor: str, now: float | None = None,
                          note: str | None = None) -> dict:

@@ -1,3 +1,19 @@
+## 2.37.0 - UPGRADE IF SOMEONE WILL ASK WHAT THE MODEL WAS GIVEN: a retained transcript checks against its ledger entry. AFFECTS: `inputs_sha256` of chat-model entries written through the LangChain callback, which now digests role, content and tool calls per message instead of content alone; entries from 2.36.1 and earlier keep their old digest and match the old shape only.
+
+The ledger has always kept a salted digest of what each model or tool call was given and what came
+back, never the content. Nothing could check a transcript against it. `ActionLedger.matches(seq,
+inputs=, output=)` recomputes the digest of a presented transcript the way `record()` did, redaction
+included, and returns true, false, or null per side: "is this what the model saw, and is this what
+came back", for an entry that holds no content. One changed character fails. It needs the ledger's
+salt file, so only the salt holder can run it, which is what makes a content-free ledger safe to hand
+over. CLI `inspeximus actions matches SEQ --inputs FILE --output FILE` (exit 1 on a mismatch); MCP
+`actions_match` (98 tools). The LangChain callback now digests a chat-model call as the whole context
+the model was given, with each message's role, content and tool calls
+(`inspeximus.integrations.langchain.context_messages`); the same text under swapped roles, or with a
+tool call removed, is a different context and no longer matches. Five tests with controls: a side not
+passed is null rather than false, redaction is applied before digesting, a ledger opened without its
+salt cannot match, roles and tool calls are load-bearing.
+
 ## 2.36.1 - UPGRADE IF YOU RUN THE ACTION LEDGER ON THE MCP SERVER: the recall an action made was not attributed to the next action, and the ledger was unsigned. AFFECTS: `memory_state.recalled` on entries written by 2.29.0 to 2.36.0 through action() when the action itself performed the recall.
 
 Turned on for our own MCP server (`INSPEXIMUS_ACTIONS=1`, first hour, 2026-09-16) the ledger

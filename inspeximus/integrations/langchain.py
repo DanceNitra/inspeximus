@@ -115,6 +115,30 @@ class InspeximusChatMessageHistory(BaseChatMessageHistory, ComplianceMixin):
 from langchain_core.callbacks import BaseCallbackHandler  # noqa: E402
 
 
+def context_messages(messages) -> list:
+    """The shape a chat-model call is digested in: one dict per message with its role, content and
+    tool calls, per batch. Role and tool calls are part of it because two contexts with the same
+    text and different roles, or one with a tool call the other lacks, are different contexts; a
+    digest of content alone could not tell them apart. Pass the same messages here to rebuild the
+    value for `ActionLedger.matches()`."""
+    out = []
+    for batch in messages:
+        row = []
+        for x in batch:
+            d = {"role": getattr(x, "type", None) or type(x).__name__,
+                 "content": getattr(x, "content", None) if hasattr(x, "content") else str(x)}
+            calls = getattr(x, "tool_calls", None)
+            if calls:
+                d["tool_calls"] = [{"name": c.get("name"), "args": c.get("args"), "id": c.get("id")}
+                                   if isinstance(c, dict) else str(c) for c in calls]
+            tcid = getattr(x, "tool_call_id", None)
+            if tcid:
+                d["tool_call_id"] = tcid
+            row.append(d)
+        out.append(row)
+    return out
+
+
 class InspeximusActionCallback(BaseCallbackHandler):
     """Record LangChain tool and LLM calls into an inspeximus ActionLedger.
 
@@ -127,7 +151,13 @@ class InspeximusActionCallback(BaseCallbackHandler):
         agent.invoke(inputs, config={"callbacks": [cb]})
 
     Content-free by default (arguments and outputs are digested). Each run id is one entry; a start
-    without an end is recorded at the next end or error, so an interrupted run still leaves a row."""
+    without an end is recorded at the next end or error, so an interrupted run still leaves a row.
+
+    For a model call the digested input is the whole context the model was given: every message with
+    its role, content and tool calls (`context_messages`), or every prompt string. The operator who
+    keeps the transcript can later run `ledger.matches(seq, inputs=context_messages(messages))` and
+    get a yes or no on whether that is what the model saw. Entries written by 2.36.1 and earlier
+    digested chat messages by content alone and do not match this shape."""
 
     def __init__(self, ledger, record_llm: bool = True, record_tools: bool = True,
                  principal: str | None = None):
@@ -174,8 +204,8 @@ class InspeximusActionCallback(BaseCallbackHandler):
     def on_chat_model_start(self, serialized, messages, *, run_id, **kwargs):
         if self.record_llm:
             name = (serialized or {}).get("name") or "chat_model"
-            flat = [[getattr(x, "content", str(x)) for x in batch] for batch in messages]
-            self._open[str(run_id)] = ("llm:" + str(name), flat, __import__("time").time(),
+            shaped = context_messages(messages)
+            self._open[str(run_id)] = ("llm:" + str(name), shaped, __import__("time").time(),
                                        self._model_of(serialized, kwargs))
 
     def on_llm_end(self, response, *, run_id, **kwargs):
