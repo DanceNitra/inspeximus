@@ -21,6 +21,11 @@ worse artifact than none:
 - `record_id` is a fresh UUIDv4 per export, as the draft requires; the export is therefore not
   byte-stable across runs. `trust_level` is L1 when the ledger entries are signed with the store's
   key and L0 otherwise; the draft's L2 to L4 need an external authority this library does not have.
+- The draft registers ES256 (default) and ML-DSA-65 for `sig_alg`. The ledger signs with Ed25519, so
+  the draft's `signature`, `sig_alg` and `signer_kid` are left out and the Ed25519 signature and key
+  travel under `action_detail.inspeximus`. `verify_jsonl` checks the chain of a file from any producer:
+  `prev_hash` is computed over the complete previous record with only a detached `batch` removed
+  (section 6.1), timestamps must not go backwards, nonces must not repeat within the session.
 - `record_phase` is always `post_execution`: the ledger writes after the action.
 
     from inspeximus.agent_audit_trail import export_jsonl, verify_jsonl
@@ -68,12 +73,29 @@ def canonical_json(obj: Any) -> bytes:
 
 
 def _record_hash(rec: dict) -> str:
-    return hashlib.sha256(canonical_json({k: v for k, v in rec.items() if k != "signature"})).hexdigest()
+    """prev_hash of the next record: SHA-256 of the JCS bytes of this record COMPLETE, its signature
+    fields included, with only a detached `batch` object removed (draft -04, section 6.1 and the note
+    in 6.2). Until 2.37.1 this stripped `signature` as well, which the draft excludes only from the
+    SIGNED message, never from the chain hash; on a file whose producer signs its records that read
+    every link as broken while the file was fine."""
+    return hashlib.sha256(canonical_json({k: v for k, v in rec.items() if k != "batch"})).hexdigest()
 
 
 def _rfc3339(ts: float | None) -> str:
     ts = float(ts or 0.0)
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(ts)) + ".%03dZ" % int(round((ts - int(ts)) * 1000))
+
+
+def _parse_ts(v):
+    """An RFC 3339 timestamp as a datetime, or None when it cannot be read; the verifier compares
+    instants, not strings, so a producer's precision or offset does not fake a backwards step."""
+    if not isinstance(v, str):
+        return None
+    try:
+        from datetime import datetime
+        return datetime.fromisoformat(v.replace("Z", "+00:00"))
+    except ValueError:
+        return None
 
 
 def _outcome(e: dict) -> str:
@@ -138,6 +160,13 @@ def to_records(entries: Iterable[dict], agent_id: str, agent_version: str, sessi
             "inputs_sha256_salted": e.get("inputs_sha256"), "output_sha256_salted": e.get("output_sha256"),
             "session": e.get("session"), "principal": e.get("principal"), "actor": e.get("actor"),
         }
+        if e.get("sig"):
+            # The draft registers ES256 and ML-DSA-65 for `sig_alg`; the ledger signs with Ed25519, which is
+            # not registered, so the draft's `signature` field is left out rather than filled with a value a
+            # conformant verifier would try to check as ES256. The ledger's own signature and key travel
+            # here, under our name, for a reader who can verify Ed25519 over the ledger entry's hash.
+            detail["inspeximus"]["sig_ed25519"] = e["sig"]
+            detail["inspeximus"]["pubkey_ed25519"] = e.get("pubkey")
         rec: dict = {
             "record_id": str(uuid.uuid4()),
             "timestamp": _rfc3339(e.get("ts")),
@@ -184,6 +213,7 @@ def verify_jsonl(path) -> tuple[bool, list[str]]:
     problems: list[str] = []
     prev: dict | None = None
     seen: set = set()
+    nonces: set = set()
     session = None
     n = 0
     with open(path, encoding="utf-8") as f:
@@ -218,6 +248,11 @@ def verify_jsonl(path) -> tuple[bool, list[str]]:
                 session = r.get("session_id")
             elif r.get("session_id") != session:
                 problems.append(f"line {lineno}: session_id changes within the file")
+            nonce = r.get("nonce")
+            if nonce is not None:
+                if nonce in nonces:
+                    problems.append(f"line {lineno}: duplicate nonce {nonce!r} within the session")
+                nonces.add(nonce)
             if prev is None:
                 if r.get("parent_record_id") is not None or r.get("prev_hash") is not None:
                     problems.append(f"line {lineno}: the first record must have null parent_record_id and prev_hash")
@@ -226,6 +261,9 @@ def verify_jsonl(path) -> tuple[bool, list[str]]:
                     problems.append(f"line {lineno}: parent_record_id does not name the previous record")
                 if r.get("prev_hash") != _record_hash(prev):
                     problems.append(f"line {lineno}: prev_hash does not match the previous record's canonical JSON")
+                t_now, t_prev = _parse_ts(r.get("timestamp")), _parse_ts(prev.get("timestamp"))
+                if t_now is not None and t_prev is not None and t_now < t_prev:
+                    problems.append(f"line {lineno}: timestamp goes backwards")
             prev = r
     if n == 0:
         problems.append("the file holds no records")

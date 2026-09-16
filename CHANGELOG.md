@@ -1,3 +1,18 @@
+## 2.37.1 - UPGRADE IF YOU VERIFY AGENT AUDIT TRAIL FILES FROM ANOTHER PRODUCER: the chain hash now follows draft -04 section 6.1. AFFECTS: `verify_jsonl` on a file whose records carry `signature`; files inspeximus exports are unchanged and verified the same as before.
+
+draft-sharif-agent-audit-trail-04 (15 September 2026) computes `prev_hash` over the complete previous
+record with only a detached `batch` object removed, signature fields included; only the SIGNED message
+excludes them. `verify_jsonl` stripped `signature` before hashing, so a conformant file from a producer
+that signs its records read as broken at every link (measured: 3 false breaks on a 4-record file, 0 on
+the same file unsigned, which is why our own exports never showed it). Fixed to the draft's rule, with
+the draft's other chain checks added: timestamps must not go backwards (compared as instants), a nonce
+must not repeat within a session. The draft registers ES256 and ML-DSA-65 for `sig_alg`; the ledger
+signs with Ed25519, which is not registered, so the export leaves the draft's `signature` out and now
+carries the Ed25519 signature and key under `action_detail.inspeximus.sig_ed25519` / `pubkey_ed25519`
+instead of dropping them. Four tests with controls: a signed conformant file verifies, an edited one
+fails at the edited link, a backwards timestamp and a duplicate nonce are named, the unsigned file is
+unaffected.
+
 ## 2.37.0 - UPGRADE IF SOMEONE WILL ASK WHAT THE MODEL WAS GIVEN: a retained transcript checks against its ledger entry. AFFECTS: `inputs_sha256` of chat-model entries written through the LangChain callback, which now digests role, content and tool calls per message instead of content alone; entries from 2.36.1 and earlier keep their old digest and match the old shape only.
 
 The ledger has always kept a salted digest of what each model or tool call was given and what came
