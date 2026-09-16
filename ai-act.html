@@ -57,7 +57,12 @@
       {
         "@type": "Question",
         "name": "What is the difference between an agent audit log and memory evidence?",
-        "acceptedAnswer": { "@type": "Answer", "text": "An audit log signs what the agent did: each tool call or model call becomes a receipt. Memory evidence records what the memory store held when the agent acted: its state digest and the ids the last recall on that store handle returned, in the same signed entry as the action. Tools such as Asqav and AIR Blackbox provide the first; AgentPrizm describes unsigned recall receipts and ArkForge described a signed hash of the context window. inspeximus records the action and the store state in one chain. It does not see the prompt, tool outputs or a store in another process." }
+        "acceptedAnswer": { "@type": "Answer", "text": "An audit log signs what the agent did: each tool call or model call becomes a receipt. Memory evidence records what the memory store held when the agent acted: its state digest and the ids the last recall on that store handle returned, in the same signed entry as the action. Tools such as Asqav and AIR Blackbox provide the first; AgentPrizm describes unsigned recall receipts and ArkForge described a signed hash of the context window. inspeximus records the action and the store state in one chain. Through the MCP server it sees tool arguments and results, not the host's prompt. Through the LangChain callback it digests the messages of each model call, not what the provider adds. It does not see a store in another process. The action name says which." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I show what the model was given before it acted?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Through the LangChain callback, yes. Each model call becomes a ledger entry with a salted digest of its input. The digest covers every message LangChain sent in that call: role, content and tool calls. Bound tool schemas, sampling parameters and anything the provider adds server-side are outside it. The ledger keeps no content, so the transcript stays with you. To check it later, call matches(seq, inputs=...). A change to any message's role, text or tool call, even one character, answers no. Only the holder of the ledger's salt file can run the check. Without the salt, a reader cannot test a guess against a digest. Keep the salt file under the transcript's access controls, because with it a short input such as an order id can be recovered by guessing. Through the MCP server the ledger sees tool arguments and results, not the host's prompt. The action name says which: mcp: entries hold tool arguments and results, llm: entries hold the model's messages." }
       },
       {
         "@type": "Question",
@@ -369,7 +374,11 @@
           store's state digest and the ids the last recall on that store handle returned. The two nearest
           designs we found: AgentPrizm describes recall receipts without a signature or an offline verifier, and
           ArkForge described a signed hash of the context window (dev.to, April 2026) that its shipped repositories
-          do not carry.</p>
+          do not carry. The ledger also exports in the format of the IETF Internet-Draft
+          draft-sharif-agent-audit-trail-04 (an individual submission, September 2026), with the draft's plain
+          hash fields left empty because the ledger's digests are salted. <code>verify_jsonl</code> checks a file
+          from any producer for the draft's fields, registries, timestamp order, nonce uniqueness and prev_hash
+          chain. It does not verify ES256 or ML-DSA-65 signatures or Merkle batches.</p>
       </div>
       <div class="tablecard">
         <div class="tscroll">
@@ -623,8 +632,23 @@
             corrected, and which had been erased. Tools such as Asqav and AIR Blackbox provide the first;
             AgentPrizm describes unsigned recall receipts and ArkForge described a signed hash of the context window.
             inspeximus records the action and the store state in one chain, so <code>what_it_knew(seq)</code>
-            answers from the record. It does not see the prompt, tool outputs, or a store in another process:
-            the entry names its scope.</p>
+            answers from the record. Through the MCP server it sees tool arguments and results, not the host's
+            prompt. Through the LangChain callback it digests the messages of each model call, not what the
+            provider adds. It does not see a store in another process. The action name says which.</p>
+        </details>
+        <details>
+          <summary>Can I show what the model was given before it acted?</summary>
+          <p>Through the LangChain callback, yes. Each model call becomes a ledger entry with a salted digest of
+            its input. The digest covers every message LangChain sent in that call: role, content and tool calls.
+            Bound tool schemas, sampling parameters and anything the provider adds server-side are outside it.
+            The ledger keeps no content, so the transcript stays with you. To check it later, call
+            <code>matches(seq, inputs=...)</code>. A change to any message's role, text or tool call, even one
+            character, answers no. Only the holder of the ledger's salt file can run the check. Without the salt,
+            a reader cannot test a guess against a digest. Keep the salt file under the transcript's access
+            controls, because with it a short input such as an order id can be recovered by guessing. Through
+            the MCP server the ledger sees tool arguments and results, not the host's prompt. The action name
+            says which: <code>mcp:</code> entries hold tool arguments and results, <code>llm:</code> entries hold
+            the model's messages.</p>
         </details>
         <details>
           <summary>Can a vector database show that a deletion happened?</summary>
