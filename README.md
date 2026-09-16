@@ -170,7 +170,7 @@ plus a GDPR Art. 35(7) DPIA appendix and an Art. 27(1) FRIA appendix that cross-
 name every field they could not fill. `inspeximus registration-export --section A` writes the Annex VIII
 fields for the EU database (Art. 49) the same way.
 
-A ledger kept for years is rotated, not cut. `inspeximus actions archive --keep-days 400` moves the older
+A ledger kept for years is rotated rather than cut. `inspeximus actions archive --keep-days 400` moves the older
 entries into an archive file beside the ledger and starts the live file with a signed checkpoint naming
 the archive, its hash and the archived tail; the chain is unbroken, `actions verify` follows the
 checkpoint into the archive, and the live file alone reports the archived range as not verified rather
@@ -178,7 +178,9 @@ than passing over it. `inspeximus actions attest --policy-days 183 --actor dpo` 
 statement of the oldest entry the ledger accounts for and whether the six-month floor of Art. 19 and
 Art. 26(6) has been observed. `inspeximus actions timestamp --url https://freetsa.org/tsr` asks an
 RFC 3161 authority to stamp the tail and chains the token in, so an auditor has a third party's time
-for everything before it, verifiable with `openssl ts -verify`. `inspeximus actions timeline --session s1`
+for everything before it, verifiable with `openssl ts -verify`.
+
+`inspeximus actions timeline --session s1`
 reconstructs one workflow from the chain, content-free: each step with the memory digest the agent held,
 the model, the actor, and the oversight or incident that refers to it. `inspeximus actions export-trail`
 writes the ledger in the IETF draft-sharif-agent-audit-trail-04 format, hash-chained per RFC 8785, for
