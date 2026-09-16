@@ -745,6 +745,13 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE", "python probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py",
        "The receipts-off row is scored unverifiable, not detected: an untouched receipts-off store gets the "
        "same refusal, and the probe carries that control."),
+    _c("readme-agmi-attacks-sidecar", "README.md", ["4", "5"],
+       "**4 of 5 detected**",
+       "The same five attacks when the attacker also holds the receipts sidecar and removes the receipts of "
+       "deleted records: 4 of 5 detected, the tail truncation accepted",
+       "REPRODUCIBLE", "python probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py",
+       "receipts_on_sidecar_held_detected == 4 and receipts_on_sidecar_held_accepted == ['truncate'] in the "
+       "probe's receipt; the row exists so the file-only 5 of 5 is not read as the directory-access answer."),
     _c("readme-tests-and-mutations", "README.md", ["2,600", "175"],
        "**2,600+ tests**",
        "Suite size, and the mutation gate that makes it evidence: 175 seeded, 175 killed",

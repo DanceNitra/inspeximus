@@ -44,9 +44,23 @@ def _rows(path):
         c.close()
 
 
-def _attack(path, name):
-    """Edit the backing store the way agmi's attacker does: raw SQL, valid encoding, nothing else."""
+def _drop_receipts(path, ids):
+    """The attacker who holds the store's directory holds the receipts sidecar too, and removes the
+    receipt of every record they delete. Raises if the sidecar shape changes, so a format change fails
+    loudly instead of scoring a false detection."""
+    rp = path + ".receipts.json"
+    chain = json.loads(open(rp, encoding="utf-8").read())
+    kept = [r for r in chain if r.get("memory_id") not in set(ids)]
+    if len(kept) != len(chain) - len(ids):
+        raise RuntimeError(f"sidecar format changed: wanted to drop {len(ids)}, dropped {len(chain) - len(kept)}")
+    open(rp, "w", encoding="utf-8").write(json.dumps(kept))
+
+
+def _attack(path, name, sidecar: bool = False):
+    """Edit the backing store the way agmi's attacker does: raw SQL, valid encoding, nothing else.
+    With `sidecar`, deletions are mirrored into the receipts file as well."""
     rows = _rows(path)
+    deleted = []
     c = sqlite3.connect(path)
     try:
         if name == "tamper":
@@ -56,8 +70,10 @@ def _attack(path, name):
         elif name == "truncate":
             for rid, _o, _d in rows[-2:]:
                 c.execute("delete from records where id=?", (rid,))
+                deleted.append(rid)
         elif name == "delete_middle":
             c.execute("delete from records where id=?", (rows[len(rows) // 2][0],))
+            deleted.append(rows[len(rows) // 2][0])
         elif name == "reorder":
             (a, _oa, da), (b, _ob, db) = rows[1], rows[3]
             da2, db2 = dict(db), dict(da)
@@ -73,20 +89,22 @@ def _attack(path, name):
         c.commit()
     finally:
         c.close()
+    if sidecar and deleted:
+        _drop_receipts(path, deleted)
 
 
-def _run(receipts: bool, work: str) -> dict:
+def _run(receipts: bool, work: str, sidecar: bool = False) -> dict:
     sk, pk = new_receipt_keypair() if receipts else (None, None)
     results = {}
     for name in ATTACKS:
-        d = os.path.join(work, ("on-" if receipts else "off-") + name)
+        d = os.path.join(work, ("on-" if receipts else "off-") + ("sidecar-" if sidecar else "") + name)
         os.makedirs(d)
         path = os.path.join(d, "memory.json")
         m = Inspeximus(path, receipts=receipts, receipt_key=sk)
         for i in range(6):                                   # seed through the tool's own API
             m.remember(f"fact {i}: the limit is {50 + i}", key=f"fact::{i}")
         del m
-        _attack(path, name)
+        _attack(path, name, sidecar=sidecar)
         m2 = Inspeximus(path, receipts=receipts, receipt_key=sk)   # reopen, the way a restart would
         ok, problems = m2.verify_writes(expected_pubkey=pk)
         loaded = len(list(m2.items))
@@ -106,16 +124,23 @@ def main() -> dict:
     try:
         off = _run(False, work)
         on = _run(True, work)
+        on_sidecar = _run(True, work, sidecar=True)
         out = {
             "probe": os.path.basename(__file__),
             "inspeximus": __import__("inspeximus").__version__,
             "suite": "agmi at-rest attacks (tamper, truncate, delete_middle, reorder, forge), reproduced here, not the agmi harness itself",
-            "threat_model": "write access to the backing SQLite file, nothing else; the tool's answer is verify_writes()",
+            "threat_model": "write access to the backing SQLite file; the tool's answer is verify_writes(). The "
+                            "receipts_on_signed_sidecar_held row adds the receipts sidecar to what the attacker "
+                            "holds, which is what write access to the store's directory means; deletions are "
+                            "mirrored into it",
             "receipts_off_default": off,
             "receipts_on_signed": on,
+            "receipts_on_signed_sidecar_held": on_sidecar,
             "receipts_off_unverifiable": sum(1 for v in off.values() if v["outcome"] == "unverifiable"),
             "receipts_off_accepted": sum(1 for v in off.values() if v["outcome"] == "accepted"),
             "receipts_on_detected": sum(1 for v in on.values() if v["outcome"] == "detected"),
+            "receipts_on_sidecar_held_detected": sum(1 for v in on_sidecar.values() if v["outcome"] == "detected"),
+            "receipts_on_sidecar_held_accepted": sorted(k for k, v in on_sidecar.items() if v["outcome"] == "accepted"),
             "elapsed_s": round(time.time() - t0, 3),
         }
         # CONTROL: a store nobody touched verifies with receipts on
@@ -137,6 +162,8 @@ def main() -> dict:
         ok3, p3 = Inspeximus(os.path.join(d2, "memory.json")).verify_writes()
         out["control_untouched_receipts_off_is_unverifiable_too"] = (not ok3) and any("DISABLED" in p for p in p3)
         out["verdict"] = "PASS" if (out["receipts_on_detected"] == 5 and out["control_untouched_store_verifies"]
+                                    and out["receipts_on_sidecar_held_detected"] == 4
+                                    and out["receipts_on_sidecar_held_accepted"] == ["truncate"]
                                     and out["receipts_off_unverifiable"] == 5
                                     and out["control_untouched_receipts_off_is_unverifiable_too"]) else "FAIL"
         return out
