@@ -425,7 +425,14 @@ def deployer_report(store, ledger=None, operator: dict | None = None, expected_p
                           "with its instructions for use",
             "operator": {"deployer": op("deployer"), "system_name": op("system_name"), "provider": op("provider"),
                          "high_risk_classification": op("high_risk_classification")},
-            "evidence": {"instructions_for_use_logs": instructions_for_use(store, ledger)},
+            "evidence": {"instructions_for_use_logs": instructions_for_use(store, ledger),
+                         "lifecycle_events": (_safe(lambda: ledger.lifecycle_events(), default=[]) if ledger is not None else []),
+                         "substantial_modifications": [e for e in (_safe(lambda: ledger.lifecycle_events(), default=[])
+                                                                   if ledger is not None else [])
+                                                       if e.get("event") == "substantial_modification"]},
+            "evidence_note": "a substantial modification (Art. 3(23)) ends the Art. 111(2) grandfathering of a system "
+                             "placed on the market before its date; the ledger records the event and its actor, not "
+                             "whether the change was substantial",
         },
         "26_2_human_oversight_assigned": {
             "obligation": "assign human oversight to natural persons who have the necessary competence, training "

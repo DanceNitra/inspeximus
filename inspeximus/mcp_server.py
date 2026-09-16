@@ -1695,6 +1695,22 @@ def archive_actions(keep_days: float, actor: str | None = None) -> dict:
 
 
 @mcp.tool()
+def record_lifecycle(event: str, actor: str, note: str | None = None, disposition: str | None = None) -> dict:
+    """Record a lifecycle event of the system in the action ledger: start, stop, pause, resume,
+    configuration_change, key_rotation, substantial_modification (the Art. 3(23) change that ends Art. 111(2)
+    grandfathering) or decommission, which needs `disposition` of the persistent memory (erased, archived,
+    transferred, retained). Annex IV point 6 and the deployer report list these entries."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    try:
+        e = led.lifecycle(event, actor=actor, note=note, disposition=disposition)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "event": e["event"], "disposition": e.get("disposition"), "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
 def export_audit_trail(out_path: str, agent_id: str, agent_version: str, session_id: str | None = None) -> dict:
     """Write the action ledger as an IETF draft-sharif-agent-audit-trail-04 JSONL file: twelve mandatory fields
     per record, hash-chained per RFC 8785, so tooling that reads that format can read this ledger. The memory

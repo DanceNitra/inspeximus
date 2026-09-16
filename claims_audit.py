@@ -397,7 +397,7 @@ def _prose_number_agrees():
 
     Found 2026-08-25, and it had been true for weeks. This gate reads numeric TOKENS out of the
     published files and checks each one is registered. It never read the registry's own English.
-    So a row could pin `73` and describe it as "The MCP server exposes 91 tools", and pass -- twice,
+    So a row could pin `73` and describe it as "The MCP server exposes 92 tools", and pass -- twice,
     in two different rows -- while README's documentation table said "all 68" and BOTH the
     og:description and twitter:description of claude-code.html said "68 tools". That is the text a
     search engine and a link preview show, and it was wrong in the one place nobody re-reads.
@@ -679,9 +679,9 @@ NUMBER_CLAIMS = [
        "The objection names our own headline number", "REPRODUCIBLE-WITH-DEPS", CMD),
 
     # ---- claude-code.html: the MCP setup page ---------------------------------------------------
-    _c("cc-tool-count", "claude-code.html", ["91"],
-       "<h2>91 tools any MCP host can call</h2>",
-       "The MCP server exposes 91 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("cc-tool-count", "claude-code.html", ["92"],
+       "<h2>92 tools any MCP host can call</h2>",
+       "The MCP server exposes 92 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
     _c("readme-echo-trials", "README.md", ["30"],
        "same task, same 30 trials",
@@ -709,9 +709,9 @@ NUMBER_CLAIMS = [
        "n = 30 per system",
        "Sample size per system, and the exact competitor version measured",
        "REPRODUCIBLE", "curl -s https://pypi.org/pypi/mem0ai/json"),
-    _c("readme-mcp-tool-count", "README.md", ["91"],
-       "**91 tools**",
-       "The MCP server exposes 91 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("readme-mcp-tool-count", "README.md", ["92"],
+       "**92 tools**",
+       "The MCP server exposes 92 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
     _c("readme-own-source-coverage", "README.md", ["98.3", "0.01"],
        "98.3% populated and 0.01% re-fetchable",
@@ -1020,22 +1020,22 @@ NUMBER_CLAIMS = [
        "The bedrock synthesis was checked from ~8 directions", "EXTERNAL", "",
        "A count of the analytical directions taken, not a measurement. Left in because the sentence "
        "labels itself 'a synthesis over those cases, not a proof'."),
-    _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["91"],
-       "`inspeximus-mcp`, 91 tools",
-       "The MCP server exposes 91 tools", "REPRODUCIBLE",
+    _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["92"],
+       "`inspeximus-mcp`, 92 tools",
+       "The MCP server exposes 92 tools", "REPRODUCIBLE",
        'python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'
        "'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))\"",
        "Checked against the live @mcp.tool() count by _live_consistency(), not by reading it here."),
 
     # ---------------------------------------------------------- MCP_LISTINGS.md
-    _c("mcp-tool-count", "MCP_LISTINGS.md", ["91"],
-       "`inspeximus-mcp`, 91 tools",
-       "The MCP server exposes 91 tools", "REPRODUCIBLE",
+    _c("mcp-tool-count", "MCP_LISTINGS.md", ["92"],
+       "`inspeximus-mcp`, 92 tools",
+       "The MCP server exposes 92 tools", "REPRODUCIBLE",
        "python claims_audit.py --numbers",
        "Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 "
        "in another. Three surfaces, one server, no error anywhere. Now read from the code."),
-    _c("mcp-tool-list", "MCP_LISTINGS.md", ["91"],
-       "**Tools (91):**",
+    _c("mcp-tool-list", "MCP_LISTINGS.md", ["92"],
+       "**Tools (92):**",
        "The enumerated tool list matches the server", "REPRODUCIBLE",
        "python claims_audit.py --numbers"),
     _c("mcp-stale-30", "MCP_LISTINGS.md", ["30", "26", "2026"],
@@ -1044,14 +1044,14 @@ NUMBER_CLAIMS = [
        "WITHDRAWN", "python claims_audit.py --numbers"),
 
     # -------------------------------------------------------------- index.html
-    _c("site-mcp-tools-counter", "index.html", ["91", "0"],
-       'data-count="91">0</b><span>MCP tools',
-       "Homepage counter: 91 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("site-mcp-tools-counter", "index.html", ["92", "0"],
+       'data-count="92">0</b><span>MCP tools',
+       "Homepage counter: 92 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- "
        "which is why the scanner hoists data-count out of the tag before stripping tags."),
-    _c("site-mcp-tools-heading", "index.html", ["91"],
-       "91 tools any MCP host can call",
-       "Homepage heading: 91 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
+    _c("site-mcp-tools-heading", "index.html", ["92"],
+       "92 tools any MCP host can call",
+       "Homepage heading: 92 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
     _c("site-adapters", "index.html", ["9", "0"],
        'data-count="9">0</b><span>framework adapters',
        "Homepage counter: 9 framework adapters", "REPRODUCIBLE",
@@ -1177,7 +1177,7 @@ NON_CLAIM_TOKENS = {
                "or tamper-evidence, so the article numbers travel with the disclaimer rather than "
                "with a claim."),
         "19": (2, "EU AI Act Art. 19 (log retention) -- an article number in the scope note and in the rotation paragraph"),
-        "2": (2, "the DAY in the two AI Act application dates, 2 December 2027 and 2 August 2028. "
+        "2": (3, "the DAY in the two AI Act application dates, 2 December 2027 and 2 August 2028, and the paragraph digit in Art. 111(2). "
               "Deferred from 2 August 2026 by Regulation (EU) 2026/1744; verified 2026-08-27 against "
               "CELEX 32026R1744 and the Commission's own page, because the widely-cited tracker "
               "artificialintelligenceact.eu still prints the superseded 2026 date and was last "
@@ -1192,7 +1192,9 @@ NON_CLAIM_TOKENS = {
                "paragraph, not a quantity"),
         "11": (1, "EU AI Act ARTICLE number (technical documentation) in the documents paragraph, not a quantity"),
         "13": (1, "EU AI Act Art. 13(3)(f) (instructions for use) in the documents paragraph, an article number"),
-        "3": (1, "the paragraph digit in Art. 13(3)(f), not a quantity"),
+        "3": (2, "the paragraph digits in Art. 13(3)(f) and Art. 3(23), not quantities"),
+        "23": (1, "the definition number in Art. 3(23), substantial modification"),
+        "111": (1, "EU AI Act ARTICLE number (111(2), grandfathering) in the lifecycle sentence"),
         "26": (2, "EU AI Act ARTICLE number (deployer duties): the documents paragraph and the rotation paragraph"),
         "49": (1, "EU AI Act ARTICLE number (registration) in the documents paragraph, not a quantity"),
         "6": (1, "the paragraph digit in Art. 26(6) in the rotation paragraph, not a quantity"),
@@ -1202,7 +1204,7 @@ NON_CLAIM_TOKENS = {
         "35": (1, "GDPR ARTICLE number (data protection impact assessment) in the documents paragraph"),
         "7": (1, "the paragraph digit in GDPR Art. 35(7), not a quantity"),
         "4": (1, "refers_to=[3, 4] in the incident example: a ledger seq number in a code snippet"),
-        "91,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
+        "92,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
                 "Was '68,' until 2026-08-25, when three places still said 68 or 71 while the server "
                 "had 73 tool defs: README's documentation table, two CLAIMS descriptions, and BOTH "
                 "og:description and twitter:description in claude-code.html -- the text search engines "

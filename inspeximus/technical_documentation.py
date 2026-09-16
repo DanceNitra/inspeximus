@@ -329,6 +329,11 @@ def annex_iv(store, ledger=None, operator: dict | None = None, expected_pubkey: 
             "4_performance_metrics": op("performance_metrics_appropriateness"),
             "5_risk_management_system": op("risk_management_system"),
             "6_lifecycle_changes": {"operator": op("lifecycle_changes"),
+                                    "evidence": {"lifecycle_events": _safe(lambda: ledger.lifecycle_events(), default=[])
+                                                 if ledger is not None else [],
+                                                 "note": "the ledger's own lifecycle entries (configuration changes, "
+                                                         "key rotations, substantial modifications, decommission), "
+                                                         "each with an actor"},
                                     "capability": "every write, correction and erasure is a receipt; "
                                                   "history(key) lists a key's corrections"},
             "7_harmonised_standards": op("harmonised_standards"),

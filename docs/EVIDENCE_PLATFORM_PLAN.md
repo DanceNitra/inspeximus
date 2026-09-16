@@ -107,6 +107,27 @@ before it ships.
    2.30.0). The controls map (21 rows), ledger rotation and retention attestation and the Art. 49 export
    followed in 2.31.0 (2026-09-16).
 5. **Pro:** dossier across stores, hosted witness, DSR workflow. Only after an inbound signal.
+   (inspeximus-pro 0.3.1, local, 2026-09-16: the pack carries the ledgers with archives, the three
+   documents per store and the IETF trail; not distributed yet.)
+6. **2.32.0 to 2.35.0 (night of 2026-09-15/16), from the market scan and the ISO/IEC 42001 and CNIL
+   readings:** RFC 3161 timestamps chained into the ledger; the five agmi at-rest attacks measured
+   (5 of 5 detected with receipts on); `model`, `principal`, `session` on every action and `agent`,
+   `principal` on disclosures; the content-free `timeline()` of one workflow; the IETF
+   draft-sharif-agent-audit-trail-04 export and verifier; lifecycle events including
+   `substantial_modification` (Art. 3(23), the Art. 111(2) trigger) and `decommission` with the
+   memory's disposition; `scope_covers` and `scope_excludes` on the erasure certificate.
+
+### Open after 2.35.0
+
+- **prEN 18229-1 event classes and the ISO/IEC 24970 information model.** Both drafts are behind
+  paywalls (CEN enquiry closed 5 Aug 2026; ISO FDIS ballot from 28 Aug 2026); tag entries with their
+  classes only once the text can be read, and never claim conformity to a draft.
+- **Per-agent and per-process memory partitions with expiry** (CNIL note, 20 Jul 2026). Tenancy
+  scoping (`uid`/`aid`/`sid`), `INSPEXIMUS_PROJECT` and per-type decay exist; a named partition with
+  its own retention sweep and a workflow view across partitions do not.
+- **The AI Office's FRIA questionnaire** (Art. 27(5) as amended) and the Art. 73 reporting template:
+  map the appendix and `incident_report` onto them when published.
+- **Distribution of inspeximus-pro:** the owner's call (Polar CTA and pricing are drafted in that repo).
 
 ## 5. Making it findable
 

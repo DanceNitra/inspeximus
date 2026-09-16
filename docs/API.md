@@ -371,6 +371,9 @@ from inspeximus.agent_audit_trail import export_jsonl, verify_jsonl
 export_jsonl(led, "trail.jsonl", agent_id="urn:agent:support.acme.example", agent_version="1.4.0")  # IETF draft-sharif-agent-audit-trail-04
 verify_jsonl("trail.jsonl")                     # (ok, problems): the RFC 8785 prev_hash chain, registry values, one session
 led.all_entries()                               # every entry the ledger accounts for, archives followed; the export uses this
+led.lifecycle("substantial_modification", actor="cto", note="new retrieval model")   # Art. 3(23), ends Art. 111(2) grandfathering
+led.lifecycle("decommission", actor="ops", disposition="erased")                    # what happened to the memory at end of life
+led.lifecycle_events()
 
 from inspeximus.technical_documentation import registration_export
 registration_export(m, led, operator={"trade_name": "Support agent"}, section="A")   # Annex VIII A, B or C

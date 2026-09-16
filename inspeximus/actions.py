@@ -73,6 +73,13 @@ DISCLOSURE_KINDS = ("interaction", "generated_content", "emotion_recognition", "
 GENESIS = "0" * 64
 LEDGER_VERSION = 1
 
+#: Lifecycle events a ledger records about the system itself. `substantial_modification` is the Art. 3(23)
+#: change that ends Art. 111(2) grandfathering and re-opens conformity; `decommission` is the entry an
+#: ISO/IEC 42001 reviewer asks for, with what happened to the persistent memory.
+LIFECYCLE_EVENTS = ("start", "stop", "pause", "resume", "configuration_change", "key_rotation",
+                    "substantial_modification", "decommission")
+DISPOSITIONS = ("erased", "archived", "transferred", "retained")
+
 
 def six_months_before(ts: float) -> float:
     """The unix time exactly six calendar months before `ts` (UTC), the day clamped to the month's
@@ -336,8 +343,9 @@ class ActionLedger:
         the caller did not say."""
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
-        if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp"):
-            raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention or timestamp")
+        if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp", "lifecycle"):
+            raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp "
+                             "or lifecycle")
         self._refresh_if_changed()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -496,6 +504,39 @@ class ActionLedger:
         return self.record(f"incident:{severity}", inputs={"title": title}, status="ok", actor=actor,
                            meta=meta, kind="incident", extra=extra)
 
+    def lifecycle(self, event: str, actor: str, note: str | None = None, disposition: str | None = None,
+                  refers_to: int | str | None = None, meta: dict | None = None) -> dict:
+        """Record a lifecycle event of the system on the same chain: start, stop, pause, resume,
+        configuration_change, key_rotation, substantial_modification or decommission. `actor` is the
+        person or role who did it. `substantial_modification` is the Art. 3(23) change that ends the
+        Art. 111(2) grandfathering of a system placed on the market before its date and re-opens
+        conformity; record it when the design changes, with `note` saying what. `decommission` needs a
+        `disposition` for the persistent memory: erased, archived, transferred or retained, the entry an
+        ISO/IEC 42001 reviewer asks for. Annex IV point 6 and the deployer report list these entries."""
+        if event not in LIFECYCLE_EVENTS:
+            raise ValueError(f"event must be one of {LIFECYCLE_EVENTS}")
+        if not actor:
+            raise ValueError("a lifecycle event needs an actor: the person or role who did it")
+        if event == "decommission" and disposition not in DISPOSITIONS:
+            raise ValueError(f"decommission needs a disposition of the persistent memory: one of {DISPOSITIONS}")
+        if disposition is not None and disposition not in DISPOSITIONS:
+            raise ValueError(f"disposition must be one of {DISPOSITIONS}")
+        extra: dict = {"event": event}
+        if note:
+            extra["note"] = str(note)[:2000]
+        if disposition:
+            extra["disposition"] = disposition
+        if refers_to is not None:
+            extra["refers_to"] = self._resolve_ref(refers_to)
+        if event == "substantial_modification":
+            extra["basis"] = "Art. 3(23); a modified system placed on the market before its date is covered from this change (Art. 111(2))"
+        return self.record(f"lifecycle:{event}", status="ok", actor=actor, meta=meta, kind="lifecycle", extra=extra)
+
+    def lifecycle_events(self) -> list[dict]:
+        return [{"seq": e["seq"], "ts": e.get("ts"), "event": e.get("event"), "actor": e.get("actor"),
+                 "disposition": e.get("disposition"), "note": e.get("note")}
+                for e in self._entries if e.get("kind") == "lifecycle"]
+
     def incident_reported(self, seq: int, actor: str, reported_to: str, reported_ts: float | None = None,
                           note: str | None = None) -> dict:
         """Record that incident `seq` was reported: to whom and when. An incident entry is immutable, so
@@ -614,6 +655,7 @@ class ActionLedger:
             "sessions_disclosed": {k: sorted(set(v)) for k, v in sessions.items()},
             "rights_requests": {"export": sum(1 for r in rights if r.get("event") == "export"),
                                 "rectify": sum(1 for r in rights if r.get("event") == "rectify")},
+            "lifecycle_events": sum(1 for e in self._entries if e.get("kind") == "lifecycle"),
             "incidents": len([i for i in incidents if i.get("event") != "reported"]),
             "incidents_overdue": [i["seq"] for i in incidents if i.get("event") != "reported"
                                   and i.get("report_deadline_ts") and now > i["report_deadline_ts"]
@@ -976,6 +1018,15 @@ def verify_entries(entries: Iterable[dict], expected_pubkey: str | None = None,
                     problems.append(f"seq {base_seq + i}: incident evidence does not resolve to an earlier entry")
             if not e.get("actor"):
                 problems.append(f"seq {base_seq + i}: incident with no actor")
+        if e.get("kind") == "lifecycle":
+            if not e.get("actor"):
+                problems.append(f"seq {base_seq + i}: lifecycle event with no actor")
+            if e.get("event") not in LIFECYCLE_EVENTS:
+                problems.append(f"seq {base_seq + i}: lifecycle event {e.get('event')!r} is not one this ledger records")
+            if e.get("event") == "decommission" and e.get("disposition") not in DISPOSITIONS:
+                problems.append(f"seq {base_seq + i}: decommission with no disposition of the memory")
+            if isinstance(ref, dict) and not _resolves(ref, i):
+                problems.append(f"seq {base_seq + i}: lifecycle refers_to does not resolve to an earlier entry")
         if e.get("kind") == "timestamp":
             # the token is over the entry's own prev, so it dates everything before it; a token over any
             # other hash dates something else. The token's PKIStatus is re-read from the bytes stored,

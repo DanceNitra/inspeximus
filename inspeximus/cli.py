@@ -842,6 +842,13 @@ def main(argv=None):
                            "and the chain verifies across the files")
     aca.add_argument("--keep-days", dest="keep_days", type=float, required=True)
     aca.add_argument("--actor", default=None)
+    aclc = acsub.add_parser("lifecycle", help="record a lifecycle event: start, stop, pause, resume, "
+                            "configuration_change, key_rotation, substantial_modification (Art. 3(23), ends Art. 111(2) "
+                            "grandfathering) or decommission (with --disposition of the memory)")
+    aclc.add_argument("event")
+    aclc.add_argument("--actor", required=True)
+    aclc.add_argument("--note", default=None)
+    aclc.add_argument("--disposition", default=None, help="erased, archived, transferred or retained")
     acex = acsub.add_parser("export-trail", help="write the ledger as an IETF draft-sharif-agent-audit-trail-04 "
                             "JSONL file (hash-chained per RFC 8785), or --verify one")
     acex.add_argument("--out", default=None, help="the trail file to write")
@@ -1523,6 +1530,9 @@ def main(argv=None):
                       f"{res['archive_file']} (sha256 {res['archive_sha256'][:12]}); {res['live_entries']} live")
             else:
                 print(f"nothing older than {a.keep_days} days; {res['live_entries']} live entries, nothing written")
+        elif a.actions_cmd == "lifecycle":
+            e = led.lifecycle(a.event, actor=a.actor, note=a.note, disposition=a.disposition)
+            print(f"recorded seq {e['seq']}: lifecycle:{a.event}" + (f" ({a.disposition})" if a.disposition else ""))
         elif a.actions_cmd == "export-trail":
             from inspeximus.agent_audit_trail import export_jsonl, verify_jsonl, DRAFT
             if a.verify:

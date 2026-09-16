@@ -1,3 +1,18 @@
+## 2.35.0 - UPGRADE IF YOU CHANGE A SYSTEM THAT WAS GRANDFATHERED, OR RETIRE ONE: lifecycle events on the chain. AFFECTS NOBODY'S EXISTING CODE: one new entry kind.
+
+`ActionLedger.lifecycle(event, actor, note=, disposition=, refers_to=)` records start, stop, pause,
+resume, configuration_change, key_rotation, substantial_modification and decommission on the same
+chain, each with the person or role who did it. `substantial_modification` is the Art. 3(23) change
+that ends the Art. 111(2) grandfathering of a system placed on the market before its date and
+re-opens conformity; the entry carries that basis and the note of what changed, and it records the
+event, not a finding that the change was substantial. `decommission` needs a disposition of the
+persistent memory (erased, archived, transferred, retained), the entry an ISO/IEC 42001 reviewer asks
+for at end of life. Annex IV point 6 lists the events as evidence beside the provider's account; the
+deployer report lists them under Art. 26(1) with the substantial modifications called out; the IETF
+export maps them to the draft's lifecycle registry. The verifier refuses an unknown event, a missing
+actor and a decommission with no disposition. CLI `inspeximus actions lifecycle EVENT --actor`, MCP
+`record_lifecycle` (92 tools). One test with four refusals and a rewritten-event control.
+
 ## 2.34.0 - UPGRADE IF YOUR AUDITOR'S TOOLING READS THE IETF AGENT AUDIT TRAIL DRAFT: an export and a verifier for draft-sharif-agent-audit-trail-04. AFFECTS NOBODY'S EXISTING CODE: a new module and one CLI subcommand.
 
 `inspeximus.agent_audit_trail.export_jsonl(led, path, agent_id=, agent_version=)` writes the ledger

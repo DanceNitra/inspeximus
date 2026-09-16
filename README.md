@@ -182,7 +182,10 @@ for everything before it, verifiable with `openssl ts -verify`. `inspeximus acti
 reconstructs one workflow from the chain, content-free: each step with the memory digest the agent held,
 the model, the actor, and the oversight or incident that refers to it. `inspeximus actions export-trail`
 writes the ledger in the IETF draft-sharif-agent-audit-trail-04 format, hash-chained per RFC 8785, for
-tooling that reads that format; `--verify` checks any such file.
+tooling that reads that format; `--verify` checks any such file. `inspeximus actions lifecycle
+substantial_modification --actor cto --note "..."` records the Art. 3(23) change that ends a grandfathered
+system's Art. 111(2) exemption, and `lifecycle decommission --disposition erased` records what happened to
+the memory at end of life.
 
 ### Where the store is written
 
@@ -436,7 +439,7 @@ Or from a shell, after `pip install inspeximus`:
 inspeximus install --ide claude     # also: cursor, windsurf, codex, cline
 ```
 
-Both wire an MCP server with **91 tools** and the same hooks. From the next session on, your agent starts
+Both wire an MCP server with **92 tools** and the same hooks. From the next session on, your agent starts
 knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 
 - **SessionStart** injects the decisions still in force
@@ -611,7 +614,7 @@ not be the same instrument.
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
 | [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts |
 | [EU AI Act evidence](docs/AI_ACT.md) | Article 12 logging, mapped to what the store already keeps |
-| [MCP tools](MCP_LISTINGS.md) | all 91, and what each is for |
+| [MCP tools](MCP_LISTINGS.md) | all 92, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |
 | [core.py, mapped](docs/CORE_MAP.md) | every public method and where it lives, generated from the AST and checked in CI |
 | [Runnable examples](examples/) | working scripts rather than snippets |

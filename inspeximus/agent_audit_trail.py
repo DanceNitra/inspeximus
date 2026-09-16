@@ -103,6 +103,14 @@ def _action_type_and_detail(e: dict) -> tuple[str, dict]:
         return "escalation", {"escalation_reason": "policy_requires_human",
                               "escalation_target": e.get("reported_to") or e.get("actor") or "operator",
                               "urgency": {"serious": "high", "widespread": "critical", "death": "critical"}.get(e.get("severity"), "medium")}
+    if kind == "lifecycle":
+        ev = {"start": "session_start", "stop": "session_end", "pause": "pause", "resume": "resume",
+              "configuration_change": "configuration_change", "key_rotation": "key_rotation",
+              "substantial_modification": "configuration_change", "decommission": "session_end"}.get(e.get("event"), "configuration_change")
+        d = {"event": ev, "trigger": "manual", "new_state": f"lifecycle:{e.get('event')}"}
+        if e.get("disposition"):
+            d["new_state"] = f"decommissioned:memory {e['disposition']}"
+        return "lifecycle", d
     return "lifecycle", {"event": "configuration_change", "trigger": "policy",
                          "new_state": f"{kind}:{e.get('event') or e.get('disclosure_kind') or name}"}
 
