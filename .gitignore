@@ -27,7 +27,7 @@ memory.json
 # persists to ./inspeximus_memory.json (+ its tombstone sidecar) in whatever cwd it ran from. Two empty
 # ones were sitting untracked in the root when 1.87.0 was cut. Generated state must not be committable.
 inspeximus_memory.json
-inspeximus_memory.json.tombstones.json
+inspeximus_memory.json.*
 
 # Benchmark inputs and derived artifacts. THIRD-PARTY DATA IS NOT OURS TO SHIP, and a derived cache is
 # not evidence -- both were once committed here by accident and turned a benchmark PR into a 69,000-line
