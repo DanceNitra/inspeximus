@@ -139,7 +139,15 @@ before it ships.
    only ES256 and ML-DSA-65. The competitor rescan of the same day found no cell change on
    ai-act.html (18 products checked, LangChain #35357 and #35691 still closed).
 
-### Open after 2.37.1
+9. **2.38.0 (2026-09-16):** the owner refused the accepted cell ("we cannot lose anywhere"), and
+   the answer was a head of the receipt chain kept in the config home, outside the store's
+   directory, written after every receipt and never lowered by a write: the agmi directory
+   attacker now reads 5 of 5, the attacker who also holds the config home 4 of 5. The red team
+   found the first version's bypass (wait for the agent's next write) before release; the full
+   suite found the rechain flow and the prune cost. PR tech4biz-yasha/agmi#1 opened the same
+   evening with three rows.
+
+### Open after 2.38.0
 
 - **A rectified record can lose a recall tie to an unrelated older record.** Found 2026-09-16 while
   the chain-head prune made writes slow: `recall("alice phone")` scores "alice prefers email",
