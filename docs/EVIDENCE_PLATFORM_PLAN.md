@@ -117,7 +117,21 @@ before it ships.
    `substantial_modification` (Art. 3(23), the Art. 111(2) trigger) and `decommission` with the
    memory's disposition; `scope_covers` and `scope_excludes` on the erasure certificate.
 
-### Open after 2.35.0
+7. **2.36.0 to 2.37.0 (2026-09-16):** memory partitions per agent and per process (CNIL);
+   dogfooding the action ledger on our own MCP server found and fixed two defects in an hour (a recall
+   made inside an action was attributed to the next entry; the MCP ledger was unsigned), 2.36.1;
+   `ActionLedger.matches()` checks a retained transcript against an entry's salted digests and the
+   LangChain callback digests the whole context with roles and tool calls, 2.37.0. The agmi
+   measurement now has a second row: with the receipts sidecar in the attacker's hands (write access
+   to the store's directory), 4 of 5, the tail truncation accepted without an anchor kept elsewhere;
+   the README says so. An agmi adapter PR with three rows (default read path 5 accepted; receipts and
+   sidecar 4 reported; receipts and file only 5 reported) is prepared and gated on the owner; a
+   follow-up for the maintainer, measured: their `openfang(model,fixed)` reference row scores
+   truncate accepted once the attacker rewrites the in-store tip, the same shape. The planned article
+   "five at-rest attacks on three stores" was killed before drafting as already said by agmi's own
+   README, with the mechanism textbook (Crosby and Wallach 2009, RFC 9162).
+
+### Open after 2.37.0
 
 - **prEN 18229-1 event classes and the ISO/IEC 24970 information model.** Both drafts are behind
   paywalls (CEN enquiry closed 5 Aug 2026; ISO FDIS ballot from 28 Aug 2026); tag entries with their
