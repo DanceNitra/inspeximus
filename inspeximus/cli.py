@@ -842,6 +842,13 @@ def main(argv=None):
                            "and the chain verifies across the files")
     aca.add_argument("--keep-days", dest="keep_days", type=float, required=True)
     aca.add_argument("--actor", default=None)
+    acex = acsub.add_parser("export-trail", help="write the ledger as an IETF draft-sharif-agent-audit-trail-04 "
+                            "JSONL file (hash-chained per RFC 8785), or --verify one")
+    acex.add_argument("--out", default=None, help="the trail file to write")
+    acex.add_argument("--agent-id", dest="agent_id", default=None, help="a URI, for example urn:agent:support.acme.example")
+    acex.add_argument("--agent-version", dest="agent_version", default=None, help="semver of the agent software")
+    acex.add_argument("--session-id", dest="session_id", default=None)
+    acex.add_argument("--verify", default=None, help="verify this trail file instead of exporting")
     actl = acsub.add_parser("timeline", help="one workflow from the ledger: entries in order, content-free, "
                             "filtered to --session or --principal, each with the memory digest it held")
     actl.add_argument("--session", default=None)
@@ -1516,6 +1523,20 @@ def main(argv=None):
                       f"{res['archive_file']} (sha256 {res['archive_sha256'][:12]}); {res['live_entries']} live")
             else:
                 print(f"nothing older than {a.keep_days} days; {res['live_entries']} live entries, nothing written")
+        elif a.actions_cmd == "export-trail":
+            from inspeximus.agent_audit_trail import export_jsonl, verify_jsonl, DRAFT
+            if a.verify:
+                ok, problems = verify_jsonl(a.verify)
+                for pr in problems:
+                    print("  FAIL " + pr)
+                print(("OK " if ok else "FAIL ") + f"{a.verify} ({DRAFT})")
+                return 0 if ok else 1
+            if not (a.out and a.agent_id and a.agent_version):
+                print("export-trail needs --out, --agent-id and --agent-version (or --verify FILE)", file=sys.stderr)
+                return 2
+            res = export_jsonl(led, a.out, agent_id=a.agent_id, agent_version=a.agent_version, session_id=a.session_id)
+            print(f"wrote {res['path']}: {res['records']} records, {DRAFT}, session {res['session_id']}, "
+                  f"tail {str(res['tail_hash'])[:12]}")
         elif a.actions_cmd == "timeline":
             rows = led.timeline(session=a.session, principal=a.principal)
             if a.as_json:

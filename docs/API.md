@@ -367,6 +367,11 @@ led.timestamps()                                # each stamp, and whether it bin
 led.timeline(session="s1")                      # one workflow in order, content-free, with the memory digest per step
 led.timeline(principal="user:alice")            # or everything done on one person's behalf
 
+from inspeximus.agent_audit_trail import export_jsonl, verify_jsonl
+export_jsonl(led, "trail.jsonl", agent_id="urn:agent:support.acme.example", agent_version="1.4.0")  # IETF draft-sharif-agent-audit-trail-04
+verify_jsonl("trail.jsonl")                     # (ok, problems): the RFC 8785 prev_hash chain, registry values, one session
+led.all_entries()                               # every entry the ledger accounts for, archives followed; the export uses this
+
 from inspeximus.technical_documentation import registration_export
 registration_export(m, led, operator={"trade_name": "Support agent"}, section="A")   # Annex VIII A, B or C
 ```

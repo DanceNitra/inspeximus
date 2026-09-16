@@ -1695,6 +1695,22 @@ def archive_actions(keep_days: float, actor: str | None = None) -> dict:
 
 
 @mcp.tool()
+def export_audit_trail(out_path: str, agent_id: str, agent_version: str, session_id: str | None = None) -> dict:
+    """Write the action ledger as an IETF draft-sharif-agent-audit-trail-04 JSONL file: twelve mandatory fields
+    per record, hash-chained per RFC 8785, so tooling that reads that format can read this ledger. The memory
+    digest and recalled ids travel under action_detail.inspeximus; the salted digests are exported under their
+    own name, never as the draft's plain input_hash. `agent_id` is a URI, `agent_version` a semver."""
+    from inspeximus.agent_audit_trail import export_jsonl
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    try:
+        return export_jsonl(led, out_path, agent_id=agent_id, agent_version=agent_version, session_id=session_id)
+    except (ValueError, OSError) as ex:
+        return {"error": f"{type(ex).__name__}: {ex}"}
+
+
+@mcp.tool()
 def action_timeline(session: str | None = None, principal: str | None = None) -> dict:
     """One workflow reconstructed from the action ledger: the entries in order, content-free, filtered to a
     session or a principal when given, each with the memory digest the agent held, the model, the actor and

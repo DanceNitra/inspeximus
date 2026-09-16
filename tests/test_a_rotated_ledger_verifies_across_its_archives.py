@@ -322,3 +322,16 @@ def test_six_months_is_a_calendar_period_not_183_days():
     # a log that began 183 days before 1 September is NOT six months old yet
     began = ts(2026, 9, 1) - 183 * DAY
     assert began > six_months_before(ts(2026, 9, 1))
+
+
+def test_all_entries_walks_the_archives_and_a_missing_one_raises(tmp_path):
+    m, led, sk, pk, now = _ledger(tmp_path, n=8, spacing_days=30)
+    r1 = led.archive(keep_days=200, actor="ops", now=now)
+    led.archive(keep_days=100, actor="ops", now=now)
+    led.record("tool:after")
+    allv = led.all_entries()
+    assert [e["seq"] for e in allv] == list(range(9)) and len(led) == 4
+    (tmp_path / r1["archive_file"]).unlink()
+    with pytest.raises(FileNotFoundError):
+        led.all_entries()
+    assert len(led.entries()) == 4                                     # the live view still answers

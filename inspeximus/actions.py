@@ -624,6 +624,31 @@ class ActionLedger:
     def entries(self) -> list[dict]:
         return list(self._entries)
 
+    def all_entries(self) -> list[dict]:
+        """Every entry the ledger accounts for, archives first, in seq order: the checkpoint chain is
+        followed file by file. A missing archive raises FileNotFoundError naming it, because a trail
+        exported with a hole is not the trail. Use entries() for the live file alone."""
+        chain: list[dict] = []
+        cp = self._checkpoint
+        seen = 0
+        stack = []
+        while cp:
+            name = cp.get("archive_file")
+            arc = self.path.with_name(str(name)) if name else None
+            if arc is None or not arc.exists():
+                raise FileNotFoundError(f"archive {name} named by the checkpoint is not beside the ledger")
+            data = json.loads(arc.read_bytes().decode("utf-8"))
+            inner_cp, inner = _split(data)
+            stack.append(inner)
+            cp = inner_cp
+            seen += 1
+            if seen > 64:
+                raise ValueError("more than 64 chained archives")
+        for inner in reversed(stack):
+            chain.extend(inner)
+        chain.extend(self._entries)
+        return chain
+
     def __len__(self) -> int:
         return len(self._entries)
 

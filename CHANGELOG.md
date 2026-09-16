@@ -1,3 +1,20 @@
+## 2.34.0 - UPGRADE IF YOUR AUDITOR'S TOOLING READS THE IETF AGENT AUDIT TRAIL DRAFT: an export and a verifier for draft-sharif-agent-audit-trail-04. AFFECTS NOBODY'S EXISTING CODE: a new module and one CLI subcommand.
+
+`inspeximus.agent_audit_trail.export_jsonl(led, path, agent_id=, agent_version=)` writes the ledger
+in the format of draft-sharif-agent-audit-trail-04 (IETF, 2026-09-15): twelve mandatory fields per
+record, `prev_hash` over the RFC 8785 canonical JSON of the previous record, registry values for
+action type, outcome, trust level and phase. `verify_jsonl(path)` checks any such file, whoever
+wrote it, and rejects an edited, removed or reordered line. The mapping is stated in the module and
+is honest about the seams: the memory digest and recalled ids travel under
+`action_detail.inspeximus` because the draft has no memory field; the ledger's salted digests are
+exported under their own name and the draft's plain `input_hash` is left out; `trust_level` is L1
+when the ledger is signed with the store's key and L0 otherwise; `record_id` is a fresh UUIDv4 per
+export as the draft requires, so the file is not byte-stable across runs. CLI `inspeximus actions
+export-trail --out trail.jsonl --agent-id urn:agent:x --agent-version 1.0.0` and `--verify
+trail.jsonl`; MCP `export_audit_trail` (91 tools). The export covers the whole chain, archives
+followed (`ActionLedger.all_entries()`), and refuses a rotated ledger whose archive is missing. Four
+tests with controls.
+
 ## 2.33.0 - UPGRADE IF A REGULATOR ASKS YOU TO RECONSTRUCT ONE WORKFLOW: a session on every action, and a content-free timeline. AFFECTS NOBODY'S EXISTING CODE: two optional parameters and one read.
 
 The CNIL's note on agentic AI (20 July 2026) asks for traceability that reconstructs a whole

@@ -91,6 +91,9 @@ def _args_for(name, sig, mod):
         # nothing, an attestation appends one entry, and reporting seq 0 answers with an error dict when
         # seq 0 is not an incident; none may raise.
         "keep_days": 3650.0, "policy_days": 183.0, "reported_to": "market surveillance authority",
+        # export_audit_trail writes a JSONL file: a temp path, a URI and a semver
+        "out_path": os.path.join(tempfile.gettempdir(), "inspeximus-sweep-trail.jsonl"),
+        "agent_id": "urn:agent:sweep.example", "agent_version": "0.0.1",
     }
     args = []
     for pname, p in sig.parameters.items():
