@@ -1152,7 +1152,7 @@ NON_CLAIM_TOKENS = {
         "9942": (1, "RFC 9942, COSE Receipts -- a citation"),
         "8785,": (1, "RFC 8785, JSON Canonicalization Scheme, followed by a comma in prose -- a citation"),
         "9943": (2, "RFC 9943, SCITT architecture -- a citation, named twice"),
-        "3161": (5, "Also in the evidence table at the top (2026-09-17). RFC 3161, time-stamp protocol -- a citation, named four times since the ledger timestamp paragraph (2.32.0)"),
+        "3161": (6, "Also the feature table on the first screen (2026-09-17). Also in the evidence table at the top (2026-09-17). RFC 3161, time-stamp protocol -- a citation, named four times since the ledger timestamp paragraph (2.32.0)"),
         "41": (2, "Also eIDAS Art. 41 in the evidence table at the top (2026-09-17). eIDAS Article 41 -- an article number, in the same class as an RFC number: it "
                "names a text a reader can fetch, and there is nothing to reproduce about it"),
         "0,": (1, "'Two signers, two claims, one artifact' prose; the digit is part of a sentence, "
@@ -1165,7 +1165,7 @@ NON_CLAIM_TOKENS = {
         "5": (2, "twice, both parameters a reader changes rather than results we claim: the --n 5 "
               "argument in the offered local-judge command, and k=5 in the next-five-minutes recall "
               "snippet"),
-        "0": (11, "Python list indices [0] in the code examples, not measurements. Was 3 until the "
+        "0": (12, "One more [0] in the quickstart snippet on the first screen (2026-09-17). Python list indices [0] in the code examples, not measurements. Was 3 until the "
               "tamper-detection example landed, which reads verify_writes()[0] and [1][0]; 6 since "
               "the audit-trail example, whose transparent_statement(0, ...) names the record's "
               "position in the log; 11 since the action-ledger example (2.29.0): recall()[0] twice, "

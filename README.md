@@ -1,29 +1,18 @@
-# inspeximus — the agent memory that takes it back
+# inspeximus
 
 <img alt="A dark archive hall of suspended glass record panels receding into haze. One panel is struck through by a line of amber light, which arcs forward to a later panel. A sealed paper receipt rests on the floor beneath it." src="https://raw.githubusercontent.com/DanceNitra/inspeximus/main/docs/assets/hero.jpg">
 
-**Your agent's most expensive failure is not forgetting. It is confidently remembering the old
-answer.**
+**Tamper-evident long-term memory for AI agents. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted. One zero-dependency Python file, plus an MCP server.**
 
-Long-term memory for AI agents in one zero-dependency Python file (`inspeximus/core.py` runs on
-its own), plus an opt-in MCP server for any client and a one-line config install for Claude Code,
-Cursor, Windsurf, Codex and Cline.
-
-Correcting a fact is not the hard part, and this field already does it. Graphiti invalidates facts
-and leads with it; cognee ships `forget` as one of its four operations. When we measured mem0 and
-Graphiti, both kept the corrected value, which is the right thing to do. What neither has is a
-channel to undo that correction on command, from an instruction that names no value. Here a fact
-that was wrong, or true on Monday and outdated by Friday, gets corrected once, and you can still put
-it back afterwards.
-
-The benchmarks ask which of two conflicting facts wins. The question after that one is whether you
-can take the correction back, and whether you can show what changed.
-
-The name is from medieval charters. A king, bishop, abbot or town council opened with *inspeximus*,
-"we have inspected", reciting an older document in full to record that they had examined it, usually
-confirming it, and sealing the result so a later reader could check. It attested that the copy
-faithfully matched the original, not that the original was true. Same guarantee here, and
-`provenance()` says so in a `limits` field rather than leaving you to find out.
+<p align="center">
+  <a href="https://dancenitra.github.io/inspeximus/quickstart.html">Quickstart</a> ·
+  <a href="docs/DEEP_DIVE.md">Docs</a> ·
+  <a href="https://dancenitra.github.io/inspeximus/compare.html">vs mem0 and Graphiti</a> ·
+  <a href="https://dancenitra.github.io/inspeximus/ai-act.html">EU AI Act and GDPR evidence</a> ·
+  <a href="https://dancenitra.github.io/inspeximus/claude-code.html">Claude Code, one line</a> ·
+  <a href="https://dancenitra.github.io/inspeximus/transparency/">Transparency log</a> ·
+  <a href="https://pypi.org/project/inspeximus/">PyPI</a>
+</p>
 
 [![PyPI](https://img.shields.io/pypi/v/inspeximus?color=2563eb&label=pypi)](https://pypi.org/project/inspeximus/)
 [![Downloads](https://img.shields.io/pypi/dm/inspeximus?color=2563eb)](https://pypistats.org/packages/inspeximus)
@@ -39,10 +28,90 @@ faithfully matched the original, not that the original was true. Same guarantee 
 pip install inspeximus
 ```
 
+```python
+from inspeximus import Inspeximus
+
+m = Inspeximus("memory.json")
+m.remember("The staging database is db-3.internal", key="staging-db")
+m.remember("The staging database is db-7.internal", key="staging-db")   # a correction
+m.recall("which staging database")[0]["text"]   # 'The staging database is db-7.internal'
+m.revert("staging-db")                            # and it is reversible, on purpose
+```
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/correction-dark.svg">
   <img alt="After you correct a fact, how often does the old value come back? inspeximus 0%, Graphiti 0.x 13.3%, mem0 2.0.11 46.7%, and inspeximus with its guard disabled 100% — n=30 per system, each on its own native configuration." src="docs/assets/correction-light.svg">
 </picture>
+
+| | What you get |
+|---|---|
+| **A correction that holds** | `remember(key=...)` retires the old value by key. Restating the stale text does not bring it back; `revert()` does, as a recorded decision. |
+| **Erasure you can prove** | `forget_subject()` removes every record about a person, leaves a signed content-free tombstone, and `erasure_certificate()` lets a third party check it with no key. |
+| **What the agent knew when it acted** | A signed, hash-chained action ledger; `matches()` binds a retained transcript to its entry. |
+| **When it happened** | RFC 3161 timestamps, and a check whether the authority was on the EU trusted list on that date. |
+| **Evidence an auditor can read** | `inspeximus compliance` labels the evidence by article; export as a draft-sharif-agent-audit-trail-04 file. |
+| **Any agent, one line** | MCP server for Claude Code, Cursor, Windsurf, Codex and Cline; adapters for LangChain, LangGraph, ADK and more. |
+
+---
+
+## The receipts
+
+We measured the one thing the others do not publish: **how often a corrected fact comes back.**
+
+Each system was run on its own native configuration, same task, same 30 trials:
+
+| system | keeps the correction | resurrects the old value |
+|---|---|---|
+| **inspeximus** | **100%** | **0%** |
+| Graphiti 0.x (Neo4j + OpenAI) | 86.7% | 13.3%&nbsp;&nbsp;<sub>95% CI [3.3, 26.7]</sub> |
+| mem0 2.0.11 (OpenAI native) | 53.3% | **46.7%**&nbsp;&nbsp;<sub>95% CI [30.0, 63.3]</sub> |
+| inspeximus, guard disabled | 0% | — <sub>the control: this is what the guard is doing</sub> |
+
+<sub>n = 30 per system. mem0 measured at **2.0.11** (2026-07); mem0 is now on 2.0.18 and we have not
+re-run it — the version is stamped rather than the claim being restated as current. Full method,
+raw arrays and the re-runnable harness:
+[RAMR](https://github.com/DanceNitra/ramr) · `echo_resistance_backends_result.json`</sub>
+
+> **Read the Graphiti row correctly — its echo defense did not fail.** Our own raw output records
+> `echo_attributable_flips: 0` out of **26** corrections that were extracted correctly before the echo
+> ran. Graphiti's bi-temporal invalidation held every one of them. The 13.3% above is four *pre-echo
+> extraction misses* — the correction never made it into the graph — which is a different failure from
+> the one this table is about. Stated as the mechanism rather than the headline: on echo-attributable
+> resurrection, Graphiti scores **0%**, the same as us, by keeping the supersession link at write time.
+> That is the real finding here: what separates these systems is whether the link is recorded, not who
+> recorded it.
+
+### Two numbers you can check in three seconds, with no API key
+
+Measured 2026-08-25 against **Hindsight 0.9.2** (vectorize-io, 21k stars) and mem0, each in its own native
+config, n=20. These two need no judge at all — they read the raw recall payload, so nothing depends on a
+model reading well:
+
+| | inspeximus 2.21.0 | Hindsight 0.9.2 | mem0 |
+|---|---|---|---|
+| after a correction, recall returns the new value and **not** the old one | **20 / 20** | 0 / 20 | 1 / 20 |
+| identical writes twice — same stored state? | **byte-identical** | 20 / 20 differ | — |
+| model calls to do it | **0** | 60 | 60 |
+
+Both competitors return the corrected value *and* the retired one, and leave the choice to the caller. That is
+a defensible design — a bitemporal store handing back old and new with validity markers is being honest — but it
+is a different promise from ours, and the difference is whose job disambiguation is.
+
+The first row is free to verify. No key, no server, no network:
+
+```bash
+git clone https://github.com/DanceNitra/inspeximus && cd inspeximus
+python probes/integrity_bench_store_resolves.py --systems inspeximus
+```
+
+It finishes in milliseconds and prints `store-resolved=1.00 (resolved=20 both=0 stale=0 neither=0, n=20)`.
+Adding `,mem0` or `,hindsight` reproduces their columns and costs their own extractor calls.
+[Method, caveats and the cells where we do **not** win](probes/INTEGRITY_BENCHMARK.md).
+
+The bottom row is the point. Turn our guard off and we score **zero** — so the number is the mechanism,
+not the benchmark being kind to us.
+
+---
 
 ---
 
@@ -398,65 +467,6 @@ the line it starts on, generated from the AST and re-checked in CI.
 
 ---
 
-## The receipts
-
-We measured the one thing the others do not publish: **how often a corrected fact comes back.**
-
-Each system was run on its own native configuration, same task, same 30 trials:
-
-| system | keeps the correction | resurrects the old value |
-|---|---|---|
-| **inspeximus** | **100%** | **0%** |
-| Graphiti 0.x (Neo4j + OpenAI) | 86.7% | 13.3%&nbsp;&nbsp;<sub>95% CI [3.3, 26.7]</sub> |
-| mem0 2.0.11 (OpenAI native) | 53.3% | **46.7%**&nbsp;&nbsp;<sub>95% CI [30.0, 63.3]</sub> |
-| inspeximus, guard disabled | 0% | — <sub>the control: this is what the guard is doing</sub> |
-
-<sub>n = 30 per system. mem0 measured at **2.0.11** (2026-07); mem0 is now on 2.0.18 and we have not
-re-run it — the version is stamped rather than the claim being restated as current. Full method,
-raw arrays and the re-runnable harness:
-[RAMR](https://github.com/DanceNitra/ramr) · `echo_resistance_backends_result.json`</sub>
-
-> **Read the Graphiti row correctly — its echo defense did not fail.** Our own raw output records
-> `echo_attributable_flips: 0` out of **26** corrections that were extracted correctly before the echo
-> ran. Graphiti's bi-temporal invalidation held every one of them. The 13.3% above is four *pre-echo
-> extraction misses* — the correction never made it into the graph — which is a different failure from
-> the one this table is about. Stated as the mechanism rather than the headline: on echo-attributable
-> resurrection, Graphiti scores **0%**, the same as us, by keeping the supersession link at write time.
-> That is the real finding here: what separates these systems is whether the link is recorded, not who
-> recorded it.
-
-### Two numbers you can check in three seconds, with no API key
-
-Measured 2026-08-25 against **Hindsight 0.9.2** (vectorize-io, 21k stars) and mem0, each in its own native
-config, n=20. These two need no judge at all — they read the raw recall payload, so nothing depends on a
-model reading well:
-
-| | inspeximus 2.21.0 | Hindsight 0.9.2 | mem0 |
-|---|---|---|---|
-| after a correction, recall returns the new value and **not** the old one | **20 / 20** | 0 / 20 | 1 / 20 |
-| identical writes twice — same stored state? | **byte-identical** | 20 / 20 differ | — |
-| model calls to do it | **0** | 60 | 60 |
-
-Both competitors return the corrected value *and* the retired one, and leave the choice to the caller. That is
-a defensible design — a bitemporal store handing back old and new with validity markers is being honest — but it
-is a different promise from ours, and the difference is whose job disambiguation is.
-
-The first row is free to verify. No key, no server, no network:
-
-```bash
-git clone https://github.com/DanceNitra/inspeximus && cd inspeximus
-python probes/integrity_bench_store_resolves.py --systems inspeximus
-```
-
-It finishes in milliseconds and prints `store-resolved=1.00 (resolved=20 both=0 stale=0 neither=0, n=20)`.
-Adding `,mem0` or `,hindsight` reproduces their columns and costs their own extractor calls.
-[Method, caveats and the cells where we do **not** win](probes/INTEGRITY_BENCHMARK.md).
-
-The bottom row is the point. Turn our guard off and we score **zero** — so the number is the mechanism,
-not the benchmark being kind to us.
-
----
-
 ## Use it in Claude Code (one line)
 
 From inside Claude Code, no pip, no config file:
@@ -673,6 +683,14 @@ demos in this space show the write. This one shows the retraction, because that 
 your agent will be judged by.
 
 ---
+
+## The name
+
+The name is from medieval charters. A king, bishop, abbot or town council opened with *inspeximus*,
+"we have inspected", reciting an older document in full to record that they had examined it, usually
+confirming it, and sealing the result so a later reader could check. It attested that the copy
+faithfully matched the original, not that the original was true. Same guarantee here, and
+`provenance()` says so in a `limits` field rather than leaving you to find out.
 
 ## Citing
 
