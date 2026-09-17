@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migrate from mem0 to inspeximus: import a mem0 export with each memory&#x27;s subject and timestamp | inspeximus</title>
+  <meta name="description" content="How to move from mem0 to inspeximus: export with get_all(), import with one command, one record per memory with the user as its subject and created_at as the event time, one signed receipt each, safe to run twice. The mem0-to-inspeximus API mapping and what the import cannot recover. A real run." />
+  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/migrate-from-mem0.html" />
+  <meta property="og:title" content="Move from mem0 to inspeximus without losing whose memory each one is" />
+  <meta property="og:description" content="One command imports a mem0 export with the user as each record&#x27;s subject; a correction then stays corrected and an erasure reaches everything about one person. Real run, API mapping, honest limits." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/migrate-from-mem0.html" />
+  <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Move from mem0 to inspeximus without losing whose memory each one is" />
+  <meta name="twitter:description" content="One command imports a mem0 export with the user as each record&#x27;s subject; a correction then stays corrected and an erasure reaches everything about one person. Real run, API mapping, honest limits." />
+  <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
+  <meta name="theme-color" content="#0d7d84" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": "How do you move from mem0 to inspeximus without losing whose memory each one is?",
+        "description": "How to move from mem0 to inspeximus: export with get_all(), import with one command, one record per memory with the user as its subject and created_at as the event time, one signed receipt each, safe to run twice. The mem0-to-inspeximus API mapping and what the import cannot recover. A real run.",
+        "url": "https://dancenitra.github.io/inspeximus/migrate-from-mem0.html",
+        "datePublished": "2026-09-17",
+        "author": {
+          "@type": "Organization",
+          "name": "Agora",
+          "url": "https://dancenitra.github.io/agora/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Agora",
+          "url": "https://dancenitra.github.io/agora/"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I export my memories from mem0?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "On the Memory instance your app builds (Memory.from_config(...); a bare Memory() opens mem0's default store), call get_all(filters={\"user_id\": ...}, top_k=<more than that user's count>, show_expired=True) per user, and per agent_id or run_id for memories stored without a user, then dump each returned dict to JSON. top_k defaults to 20, so a plain get_all() exports 20 memories. This is the recipe mem0's maintainers give in discussion #5967. In 2.0.11 each item carries id, memory, hash, created_at, updated_at, the promoted user_id, agent_id, run_id, actor_id, role, attributed_to and expiration_date fields, and metadata for anything else. inspeximus import-mem0 reads that file; mem0 itself is not imported and no model runs."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What does the import keep, and what does it lose?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It keeps the memory text verbatim, the user as the record's subject (source mem0/user/<user_id>), mem0's created_at as the event time, the mem0 id and hash in meta (kept for tracing, not verified), and metadata verbatim; a metadata.key, a convention of this importer rather than a mem0 field, becomes the supersession key, namespaced by user. It skips memories mem0 had already expired unless asked; a future expiry is kept in meta and not enforced. mem0 keeps an update history in its own SQLite table, reachable through history(memory_id), but get_all() does not export it, so the import holds the last value only."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does a corrected fact stay corrected after the move?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, for records that carry a key. mem0 has no supersession key of its own, so an imported record without one is a free-standing fact until you re-remember it with a key; from then on a new value retires the old and recall returns the new one. The comparison page measures that behaviour against mem0."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I erase one person after the import, and import the same file again afterwards?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes to both. Every imported record whose export carried a user_id is attributable to mem0/user/<user_id>, so forget-subject reaches all of them, superseded values included, and leaves a signed tombstone per record. A sidecar beside the store keeps a hash of every mem0 id ever imported, so a later run of the same export skips the erased records instead of writing the person back; a tombstone is content-free and could not remember them. A memory exported without a user_id has no subject; the import counts those and says so."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+<style>
+  :root{
+    --ink:#16202a; --ink-2:#38434e; --muted:#5d6b74;
+    --ground:#f6f7f5; --panel:#ffffff; --line:#dfe3dd; --line-2:#e9ece6;
+    --teal:#0d7d84; --teal-deep:#0a5f65; --teal-wash:#e7f1f0;
+    --ok:#1a7f54; --ok-wash:#e6f2ea; --amber:#8a5a12; --amber-wash:#f6edda;
+    --seal:#7a2e2a;
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ink:#e8ece8; --ink-2:#c3ccc7; --muted:#8b9a93;
+      --ground:#0f1512; --panel:#161d19; --line:#293530; --line-2:#212b27;
+      --teal:#4bb8ba; --teal-deep:#7fd0d0; --teal-wash:#132623;
+      --ok:#57c98c; --ok-wash:#12241a; --amber:#d9ac5a; --amber-wash:#241d10;
+      --seal:#c67c76;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e8ece8; --ink-2:#c3ccc7; --muted:#8b9a93;
+    --ground:#0f1512; --panel:#161d19; --line:#293530; --line-2:#212b27;
+    --teal:#4bb8ba; --teal-deep:#7fd0d0; --teal-wash:#132623;
+    --ok:#57c98c; --ok-wash:#12241a; --amber:#d9ac5a; --amber-wash:#241d10;
+    --seal:#c67c76;
+  }
+  :root[data-theme="light"]{
+    --ink:#16202a; --ink-2:#38434e; --muted:#5d6b74;
+    --ground:#f6f7f5; --panel:#ffffff; --line:#dfe3dd; --line-2:#e9ece6;
+    --teal:#0d7d84; --teal-deep:#0a5f65; --teal-wash:#e7f1f0;
+    --ok:#1a7f54; --ok-wash:#e6f2ea; --amber:#8a5a12; --amber-wash:#f6edda;
+    --seal:#7a2e2a;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;letter-spacing:.005em;line-height:1.15}
+  a{color:var(--teal-deep);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,kbd,.mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted)}
+  .rule{height:1px;background:var(--line);border:0;margin:0}
+
+  /* ---- top bar ---- */
+  header.bar{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+    background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+  .brand{font-family:var(--serif);font-size:1.15rem;font-weight:600;letter-spacing:.01em}
+  .brand small{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);display:block;margin-top:-2px}
+  .bar nav{display:flex;gap:8px;align-items:center}
+  .btn{font-family:var(--sans);font-size:.86rem;font-weight:600;padding:.5rem .9rem;border-radius:7px;
+    border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+  .btn.solid{background:var(--teal);border-color:var(--teal);color:#fff}
+  @media (prefers-color-scheme:dark){.btn.solid{color:#04211f}}
+  :root[data-theme="dark"] .btn.solid{color:#04211f}
+  :root[data-theme="light"] .btn.solid{color:#fff}
+  .btn:hover{text-decoration:none;border-color:var(--teal)}
+
+  /* ---- hero ---- */
+  .hero{padding:72px 0 40px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:48px;align-items:center}
+  .deadline{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.74rem;
+    letter-spacing:.08em;color:var(--teal-deep);background:var(--teal-wash);border:1px solid var(--line);
+    padding:.35rem .7rem;border-radius:999px;margin-bottom:20px}
+  .deadline .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 25%,transparent)}
+  h1.head{font-size:clamp(2.1rem,4.6vw,3.35rem);margin:0 0 18px;letter-spacing:-.01em}
+  h1.head em{font-style:normal;color:var(--teal-deep);
+    box-shadow:inset 0 -.14em 0 color-mix(in srgb,var(--teal) 22%,transparent)}
+  .lede{font-size:1.12rem;color:var(--ink-2);max-width:60ch;margin:0 0 26px}
+  .lede b{color:var(--ink);font-weight:600}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .fineprint{font-size:.82rem;color:var(--muted);margin-top:16px;max-width:56ch}
+
+  /* ---- seal ---- */
+  .seal-wrap{display:flex;justify-content:center;align-items:center}
+  .seal{width:230px;height:230px;position:relative;color:var(--seal)}
+  .seal svg{width:100%;height:100%;display:block}
+  .seal .core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center}
+  .seal .core .ins{font-family:var(--serif);font-size:1.5rem;font-weight:600;letter-spacing:.02em;color:var(--ink)}
+  .seal .core .sub{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--muted);margin-top:4px}
+  .seal .core .chk{margin-top:10px;font-family:var(--mono);font-size:.62rem;color:var(--ok);
+    background:var(--ok-wash);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent);
+    padding:.2rem .5rem;border-radius:999px}
+
+  /* ---- section frame ---- */
+  section{padding:56px 0}
+  .sec-head{margin:0 0 8px}
+  .sec-head h2{font-size:clamp(1.5rem,3vw,2.05rem);margin:6px 0 0}
+  .sec-sub{color:var(--muted);max-width:64ch;margin:10px 0 0;font-size:1rem}
+
+  /* ---- gap table ---- */
+  .tablecard{margin-top:26px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .tscroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+  thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);text-align:left;padding:14px 16px;background:var(--line-2);font-weight:600;white-space:nowrap}
+  tbody td{padding:13px 16px;border-top:1px solid var(--line);vertical-align:middle;color:var(--ink-2)}
+  tbody td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  tr.us td{background:var(--teal-wash)}
+  tr.us td:first-child{color:var(--teal-deep)}
+  .mk{display:inline-flex;align-items:center;gap:7px;font-size:.86rem}
+  .mk.no{color:var(--muted)}
+  .mk.yes{color:var(--ok);font-weight:600}
+  .mk .g{width:15px;height:15px;flex:0 0 auto}
+  .tnote{padding:13px 16px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);background:var(--panel)}
+
+  /* ---- pillars ---- */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+  .pillar{border:1px solid var(--line);border-radius:12px;padding:22px 20px;background:var(--panel);
+    position:relative}
+  .pillar .art{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--teal-deep);
+    background:var(--teal-wash);border:1px solid var(--line);padding:.25rem .55rem;border-radius:6px;
+    display:inline-block;margin-bottom:14px}
+  .pillar h3{font-size:1.18rem;margin:0 0 8px}
+  .pillar p{margin:0;color:var(--ink-2);font-size:.94rem}
+  .pillar code{font-size:.85em;color:var(--teal-deep);background:var(--teal-wash);padding:.05em .35em;border-radius:4px}
+
+  /* ---- terminal ---- */
+  .demo{margin-top:28px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--ink);
+    box-shadow:0 18px 40px -24px rgba(0,0,0,.5)}
+  :root[data-theme="dark"] .demo, .demo{--tfg:#dfe7e3}
+  .demo .top{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#0e1621;border-bottom:1px solid #23303c}
+  .demo .top .d{width:11px;height:11px;border-radius:50%;background:#33414d}
+  .demo .top .t{margin-left:8px;font-family:var(--mono);font-size:.72rem;color:#7d8b96}
+  .demo pre{margin:0;padding:20px 20px 22px;overflow-x:auto;font-family:var(--mono);font-size:.83rem;
+    line-height:1.75;color:#d7e0dc}
+  .demo .p{color:#4bb8ba}
+  .demo .cm{color:#6b7c86}
+  .demo .ok{color:#57c98c}
+  .demo .k{color:#e0c07a}
+
+  /* ---- boundary ---- */
+  .boundary{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;
+    background:var(--panel);padding:26px 28px;margin-top:8px}
+  .boundary h2{font-size:1.3rem;margin:0 0 12px}
+  .boundary p{margin:0 0 12px;color:var(--ink-2);font-size:.98rem}
+  .boundary p:last-child{margin-bottom:0}
+  .boundary b{color:var(--ink)}
+
+  /* ---- closing / footer ---- */
+  .closing{text-align:center;padding:64px 0 40px}
+  .closing h2{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 auto 18px;max-width:20ch}
+  .closing .hero-cta{justify-content:center}
+  footer{border-top:1px solid var(--line);padding:30px 0 60px;color:var(--muted);font-size:.82rem}
+  footer .wrap{display:flex;flex-direction:column;gap:10px}
+  footer a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+  .src{font-size:.78rem;line-height:1.7}
+
+  @media (max-width:820px){
+    .hero-grid{grid-template-columns:1fr;gap:34px}
+    .seal-wrap{order:-1}
+    .seal{width:180px;height:180px}
+    .pillars{grid-template-columns:1fr}
+    .hero{padding:48px 0 24px}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .seal{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+    @keyframes rise{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+  }
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:6px}
+</style>
+<style>
+  /* page-local additions, in the same tokens as the sheet above */
+  .prose{max-width:68ch}
+  .prose p{color:var(--ink-2)}
+  .callout{border:1px solid var(--line);border-left:3px solid var(--teal);background:var(--panel);
+    border-radius:0 10px 10px 0;padding:18px 20px;margin:26px 0;max-width:72ch}
+  .callout b{color:var(--ink)}
+  pre.cmd{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    overflow-x:auto;font-family:var(--mono);font-size:.88rem;color:var(--ink);margin:20px 0}
+  .faq{margin-top:14px}
+  .faq details{border-top:1px solid var(--line);padding:16px 0}
+  .faq summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:1.02rem}
+  .faq p{margin:12px 0 0;color:var(--ink-2);max-width:70ch}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:24px 0;max-width:72ch}
+  .steps li{counter-increment:s;position:relative;padding:0 0 0 44px;margin:0 0 20px;color:var(--ink-2)}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:28px;height:28px;
+    display:grid;place-items:center;border-radius:50%;background:var(--teal-wash);color:var(--teal-deep);
+    font-family:var(--mono);font-size:.8rem;font-weight:600;border:1px solid var(--line)}
+  .steps li b{color:var(--ink)}
+  footer{border-top:1px solid var(--line);padding:40px 0 60px;margin-top:20px}
+  footer .wrap>div:first-child{color:var(--ink-2)}
+  footer .src{color:var(--muted);font-size:.84rem;margin-top:14px;max-width:80ch}
+</style>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="./" style="text-decoration:none;color:var(--ink)">inspeximus<small>we have inspected</small></a>
+    <nav>
+      <a class="btn" href="./">Overview</a>
+        <a class="btn" href="./quickstart.html">Quickstart</a>
+      <a class="btn" href="https://pypi.org/project/inspeximus/">PyPI</a>
+      <a class="btn solid" href="https://github.com/DanceNitra/inspeximus">GitHub</a>
+    </nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="wrap prose">
+    <p class="eyebrow">mem0 2.0.11 export &middot; inspeximus 2.41.0</p>
+    <h1 class="head">How do you move from mem0 to inspeximus
+      <em>without losing whose memory each one is?</em></h1>
+    <p class="lede">A mem0 export is a list of texts with a <code>user_id</code> on each. The import writes
+      one record per memory with that user as its subject, mem0's timestamp as the event time, and one
+      signed receipt each, so a right-to-erasure request reaches every imported record that carried
+      that user. Run twice, it writes nothing the second time, and it stays that way after the person
+      has been erased. The transcript on this page is a real run; ids, hashes and the order of the
+      erasure preview change per run, nothing else does.</p>
+    <div class="hero-cta">
+      <a class="btn solid" href="https://pypi.org/project/inspeximus/">pip install "inspeximus[crypto]"</a>
+      <a class="btn" href="./compare.html">The measurement against mem0</a>
+    </div>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.41.0</p>
+      <h2>What does an import look like, and what happens when you run it twice?</h2>
+      <p class="sec-sub">Four memories from two users in the shape mem0 2.0.11's
+        <code>get_all(show_expired=True)</code> returns, hashes included, one of them expired. A dry run,
+        the import, the import again, then the store.</p>
+    </div>
+    <div class="tablecard">
+<pre class="cmd">$ cat mem0_export.json
+{
+ &quot;results&quot;: [
+  {
+   &quot;id&quot;: &quot;8f3c2a1e-4b6d-4f1a-9c2e-1a2b3c4d5e6f&quot;,
+   &quot;memory&quot;: &quot;Alice prefers email over phone calls&quot;,
+   &quot;hash&quot;: &quot;3bdbc25483ecfd293568596e79ba9105&quot;,
+   &quot;created_at&quot;: &quot;2026-09-01T10:15:00Z&quot;,
+   &quot;updated_at&quot;: &quot;2026-09-01T10:15:00Z&quot;,
+   &quot;user_id&quot;: &quot;alice&quot;
+  },
+  {
+   &quot;id&quot;: &quot;2b7e9d4c-8a1f-4e3b-b5c6-7d8e9f0a1b2c&quot;,
+   &quot;memory&quot;: &quot;Alice&#x27;s phone number is +100&quot;,
+   &quot;hash&quot;: &quot;07465ab59b99af58d34359d8e0e96d85&quot;,
+   &quot;created_at&quot;: &quot;2026-09-02T08:00:00Z&quot;,
+   &quot;updated_at&quot;: &quot;2026-09-02T08:00:00Z&quot;,
+   &quot;user_id&quot;: &quot;alice&quot;,
+   &quot;metadata&quot;: {
+    &quot;key&quot;: &quot;phone&quot;
+   }
+  },
+  {
+   &quot;id&quot;: &quot;c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f&quot;,
+   &quot;memory&quot;: &quot;Bob&#x27;s phone number is +300&quot;,
+   &quot;hash&quot;: &quot;44d851a18e9a1991e3a6880db89edd4c&quot;,
+   &quot;created_at&quot;: &quot;2026-09-03T12:30:00Z&quot;,
+   &quot;updated_at&quot;: &quot;2026-09-03T12:30:00Z&quot;,
+   &quot;user_id&quot;: &quot;bob&quot;,
+   &quot;agent_id&quot;: &quot;support-bot&quot;,
+   &quot;metadata&quot;: {
+    &quot;key&quot;: &quot;phone&quot;
+   }
+  },
+  {
+   &quot;id&quot;: &quot;0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d&quot;,
+   &quot;memory&quot;: &quot;Promo code SUMMER26 is valid&quot;,
+   &quot;hash&quot;: &quot;45e6da7c61dc19063ec2509dbae3d34e&quot;,
+   &quot;created_at&quot;: &quot;2026-06-01T00:00:00Z&quot;,
+   &quot;updated_at&quot;: &quot;2026-06-01T00:00:00Z&quot;,
+   &quot;user_id&quot;: &quot;bob&quot;,
+   &quot;expiration_date&quot;: &quot;2026-09-01&quot;
+  }
+ ]
+}
+
+$ inspeximus writer-key --new --out key.txt
+secret written to key.txt (0600)
+public key: 0562f51d421d1868df51114a2986c3bd90e227853872fac76e9eb0af4d2306d7
+
+point the server at it:  INSPEXIMUS_WRITER_KEY_FILE=key.txt
+pin this writer as trusted with trust_seeds={&#x27;key:0562f51d421d1868df51114a2986c3bd90e227853872fac76e9eb0af4d2306d7&#x27;}
+KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.
+
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt import-mem0 mem0_export.json --dry-run
+would import 4 memory item(s) from 2 user(s); 0 carry no user_id and would have no subject
+
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt import-mem0 mem0_export.json
+imported 3 record(s), skipped 1 (expired in mem0)
+
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt import-mem0 mem0_export.json
+imported 0 record(s), skipped 4 (already imported, expired in mem0)
+
+$ inspeximus --path mem.json list
+- Bob&#x27;s phone number is +300 [key=bob::phone]
+- Alice&#x27;s phone number is +100 [key=alice::phone]
+- Alice prefers email over phone calls</pre>
+    </div>
+    <p class="sec-sub" style="margin-top:14px">Three records written, the expired promo code skipped, and
+      the second run skips all four because the store already holds their mem0 ids. Both phone numbers
+      carried <code>{"key": "phone"}</code> in their metadata; the import namespaced the key by user, so
+      Alice's and Bob's do not retire each other.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Does a correction stay corrected, does an erasure reach everything about one person, and what
+        does a re-import do afterwards?</h2>
+      <p class="sec-sub">A new value under the imported key retires the old one; recall returns the new
+        value. The erasure for Alice reaches the retired value too, and the same export imported once
+        more writes nothing back.</p>
+    </div>
+    <div class="tablecard">
+<pre class="cmd">$ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &quot;Alice&#x27;s phone number is +200&quot; --key alice::phone --source mem0/user/alice
+remembered d529fa518e [key=alice::phone]
+
+$ inspeximus --path mem.json recall &#x27;Alice phone&#x27; -k 2
+- Alice&#x27;s phone number is +200
+- Alice prefers email over phone calls
+
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject mem0/user/alice --request-id DSAR-3 --dry-run
+would erase 3 record(s): 3 naming the subject, 0 reached through lineage
+  [direct   ] 72164baa15  Alice prefers email over phone calls
+  [direct   ] b0dcaeae42  Alice&#x27;s phone number is +100
+  [direct   ] d529fa518e  Alice&#x27;s phone number is +200
+
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject mem0/user/alice --request-id DSAR-3
+erased 3 record(s), 3 tombstone(s)
+
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt import-mem0 mem0_export.json
+imported 0 record(s), skipped 4 (already imported, expired in mem0, imported earlier and since erased)
+
+$ inspeximus --path mem.json list
+- Bob&#x27;s phone number is +300 [key=bob::phone]</pre>
+    </div>
+    <p class="sec-sub" style="margin-top:14px">The <a href="./compare.html">comparison page</a> measures
+      the same property against mem0 itself: after a correction, restated as the old value, inspeximus
+      returns the corrected value in 100% of 30 trials and mem0 2.0.11 in 53.3%. The
+      <a href="./erasure.html">erasure page</a> shows the certificate a completed erasure produces.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Which mem0 call becomes which inspeximus call?</h2>
+      <p class="sec-sub">Read from the signatures of mem0 2.0.11 (<code>mem0.memory.main.Memory</code>) and
+        inspeximus 2.41.0.</p>
+    </div>
+    <div class="tablecard">
+      <table>
+        <thead><tr><th>mem0 2.0.11</th><th>inspeximus</th><th>what changes</th></tr></thead>
+        <tbody>
+          <tr><td><code>add(messages, user_id=...)</code></td><td><code>remember(text, source=..., key=...)</code></td>
+              <td>mem0 runs an LLM to extract facts from the messages; inspeximus stores the text you pass. Extract first if you want extraction. The source is the subject an erasure keys on; the key is what a later correction retires.</td></tr>
+          <tr><td><code>search(query, filters=...)</code></td><td><code>recall(query, k=...)</code></td>
+              <td>superseded values are hidden by default; <code>why_recalled()</code> explains a hit per channel.</td></tr>
+          <tr><td><code>get_all(filters=...)</code></td><td><code>items</code>, <code>subject export</code></td>
+              <td>the subject export returns everything about one person with provenance, for an Art. 15(3) request.</td></tr>
+          <tr><td><code>get(memory_id)</code></td><td><code>next(r for r in items if r["id"] == id)</code></td><td>records are plain dicts; there is no lookup call, and the MCP server's <code>get</code> does this for you.</td></tr>
+          <tr><td><code>update(memory_id, data=...)</code></td><td><code>subject_rights.rectify(store, key, text, actor, reason)</code></td>
+              <td>mem0 rewrites the vector record and logs the change in its history table; inspeximus supersedes under the key, keeps the old value as a record, and the ledger entry names the actor and the reason.</td></tr>
+          <tr><td><code>history(memory_id)</code></td><td><code>history(key)</code>, <code>as_of(key, when)</code></td>
+              <td>mem0's history is per memory id; inspeximus's is per key, and <code>as_of</code> answers what was true at a moment.</td></tr>
+          <tr><td><code>delete(memory_id)</code></td><td><code>forget(ids=[id])</code></td><td>leaves a signed, content-free tombstone.</td></tr>
+          <tr><td><code>delete_all(user_id=...)</code></td><td><code>forget_subject(subject)</code></td>
+              <td>reaches derived records through declared lineage; a dry run names the blast radius; <code>erasure_certificate()</code> attests it.</td></tr>
+          <tr><td><code>reset()</code></td><td>delete the store file</td><td>there is no call that erases a receipt chain, by design.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>What does the import not do?</h2>
+    </div>
+    <div class="prose">
+      <p>The text arrives as mem0 extracted it; nothing is re-extracted. History stays behind: mem0
+        keeps one in its own SQLite table (<code>history(memory_id)</code>), and <code>get_all()</code>
+        exports the last value only. No vector index is built, so lexical recall works on import and
+        semantic recall waits for an embedder you configure. A future <code>expiration_date</code> is
+        kept in <code>meta</code> and never enforced; the record is served until you forget it. mem0's
+        <code>hash</code> is kept for tracing and not checked, and mem0's metadata filters in
+        <code>search()</code> have no counterpart here, the metadata sits under <code>meta</code>.</p>
+      <p>Two things concern the subject. A memory exported without a <code>user_id</code> gets none, and
+        a per-user export loop never sees what mem0 stored under an <code>agent_id</code> or
+        <code>run_id</code> alone, so export those scopes as well; the import counts records with no
+        subject and says so, because a record with no subject is one a DSAR cannot reach. And
+        <code>metadata.key</code> is this importer's convention rather than a mem0 field: an app that
+        stored a <code>key</code> in metadata for some other reason gets a supersession key it did not
+        ask for.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>How do I run this on my own export?</h2>
+    </div>
+    <div class="tablecard">
+<pre class="cmd"># in your mem0 project, on the Memory your app builds, once per user (and per agent_id or run_id)
+python -c &quot;from mem0 import Memory; import json; m = Memory.from_config(YOUR_CONFIG); print(json.dumps(m.get_all(filters={&#x27;user_id&#x27;: &#x27;alice&#x27;}, top_k=100000, show_expired=True)))&quot; &gt; alice.json
+
+pip install &quot;inspeximus[crypto]&quot;
+inspeximus writer-key --new --out key.txt
+inspeximus --path mem.json --receipts --receipt-key-file key.txt import-mem0 alice.json --dry-run
+inspeximus --path mem.json --receipts --receipt-key-file key.txt import-mem0 alice.json</pre>
+    </div>
+    <p class="sec-sub" style="margin-top:14px">The export recipe is the one mem0's maintainers give in
+      <a href="https://github.com/mem0ai/mem0/discussions/5967">discussion #5967</a>; mem0's open
+      <a href="https://github.com/mem0ai/mem0/pull/6330">PR #6330</a> proposes an <code>export_session()</code>
+      bundle in a different shape, which this reader does not take yet. From Python:
+      <code>from inspeximus.migrate import import_mem0, load_export</code>. The MCP server serves the imported store to Claude Code, Cursor and any other
+      client; see <a href="./claude-code.html">Claude Code, one line</a>.</p>
+  </div>
+</section>
+<footer>
+  <div class="wrap">
+    <div>inspeximus: long-term memory for AI agents that stays correct.
+      <a href="./">Overview</a> &middot;
+      <a href="./compare.html">The measurement</a> &middot;
+      <a href="./claude-code.html">Claude Code</a> &middot;
+      <a href="./erasure.html">GDPR erasure</a> &middot;
+      <a href="./audit-trail.html">Audit trail</a> &middot;
+      <a href="./migrate-from-mem0.html">From mem0</a> &middot;
+      <a href="./ai-act.html">EU AI Act</a> &middot;
+      <a href="https://pypi.org/project/inspeximus/">PyPI</a> &middot;
+      <a href="https://github.com/DanceNitra/inspeximus">GitHub</a></div>
+    <div class="src">Every number on this page is registered in
+      <a href="https://github.com/DanceNitra/inspeximus/blob/main/docs/CLAIMS.md">docs/CLAIMS.md</a>
+      with the command that recomputes it. If one disagrees with your run, that is a bug report we want.</div>
+  </div>
+</footer>
+</body>
+</html>

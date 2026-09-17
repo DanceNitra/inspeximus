@@ -15,20 +15,20 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **571** numeric tokens are published across the 9 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html, erasure.html, audit-trail.html.
-- **260** of those are quantitative claims, in **130** registry rows below.
-- **104** rows (104/130) are reproducible by a command committed to this repository
+- **627** numeric tokens are published across the 10 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html, erasure.html, audit-trail.html, migrate-from-mem0.html.
+- **279** of those are quantitative claims, in **139** registry rows below.
+- **113** rows (113/139) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 26 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 311 tokens are declared non-claims — citation years,
+- The other 348 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 
 Counts by status:
 
-- `REPRODUCIBLE` — 49
-- `REPRODUCIBLE-WITH-DEPS` — 55
+- `REPRODUCIBLE` — 56
+- `REPRODUCIBLE-WITH-DEPS` — 57
 - `PENDING-HARNESS` — 2
 - `EXTERNAL` — 22
 - `WITHDRAWN` — 2
@@ -166,7 +166,16 @@ Counts by status:
 | 127 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 128 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 129 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
-| 130 | `quickstart.html` | `187` `190` `193` | Cold start to a corrected-and-reverted fact, from a clean directory: three consecutive runs, import included, no network and no model. Quoted as three runs rather than one number because the first draft of this page said '192 ms', which was one sample presented as a constant. | **REPRODUCIBLE** | `python -c "import time;t=time.time();from inspeximus import Inspeximus;m=Inspeximus('m.json');m.remember('a',key='k');m.remember('b',key='k');m.recall('a');m.revert('k');print(int((time.time()-t)*1000),'ms')"` |
+| 130 | `migrate-from-mem0.html` | `4` `2` `0` | The dry run counts 4 memory items from 2 users, none without a user_id | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 131 | `migrate-from-mem0.html` | `3` `3` | The erasure removes the 3 records and leaves 3 tombstones | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 132 | `migrate-from-mem0.html` | `3` `3` `0` | The erasure preview for the imported user reaches 3 records, the retired value included | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 133 | `migrate-from-mem0.html` | `3` `1` | The import writes 3 records and skips the 1 expired memory | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 134 | `migrate-from-mem0.html` | `0` `4` | A second import writes 0 records and skips all 4 | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 135 | `migrate-from-mem0.html` | `100` `30` | inspeximus keeps the correction in 100% of 30 trials (the compare.html measurement, restated) | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 136 | `migrate-from-mem0.html` | `53.3` | mem0 2.0.11 keeps the correction in 53.3% (the compare.html measurement, restated) | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 137 | `migrate-from-mem0.html` | `0` `4` | A re-import after the erasure writes 0 records: the sidecar remembers the erased ids | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 138 | `migrate-from-mem0.html` | `20,` `20` | mem0 2.0.11's get_all(top_k=20) default caps an export at 20 memories per call | **REPRODUCIBLE** | `python -c "import inspect, mem0.memory.main as m; print(inspect.signature(m.Memory.get_all))"` |
+| 139 | `quickstart.html` | `187` `190` `193` | Cold start to a corrected-and-reverted fact, from a clean directory: three consecutive runs, import included, no network and no model. Quoted as three runs rather than one number because the first draft of this page said '192 ms', which was one sample presented as a constant. | **REPRODUCIBLE** | `python -c "import time;t=time.time();from inspeximus import Inspeximus;m=Inspeximus('m.json');m.remember('a',key='k');m.remember('b',key='k');m.recall('a');m.revert('k');print(int((time.time()-t)*1000),'ms')"` |
 
 ## Notes
 
@@ -222,10 +231,11 @@ Counts by status:
 - **site-mcp-tools-counter** — Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- which is why the scanner hoists data-count out of the tag before stripping tags.
 - **site-revert-bench** — The inspeximus column runs locally; mem0 needs OPENAI_API_KEY and Graphiti a live neo4j. Methodology and CIs: probes/INTEGRITY_BENCHMARK.md.
 - **site-zero-deps** — This is the c_zero_deps check, which reads installed METADATA or, failing that, the declared pyproject dependencies -- and hard-fails if it can read neither.
+- **mem0-page-theirs** — Version-stamped like compare.html: mem0 was measured at 2.0.11 and has NOT been re-run.
 
 ## Known unenforced numbers
 
-These are outside the 9 token-enforced files, so the guard above does **not** cover them.
+These are outside the 10 token-enforced files, so the guard above does **not** cover them.
 They are listed because "absent from the table" and "not a problem" are different statements,
 and here only the first one is true. None may be promoted onto the reader-facing surface while it
 still says `PENDING-HARNESS`.

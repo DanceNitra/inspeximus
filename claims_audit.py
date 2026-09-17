@@ -320,7 +320,8 @@ NOT_TESTABLE_HERE = [
 SURFACE = ("README.md", "docs/DEEP_DIVE.md", "MCP_LISTINGS.md", "index.html",
            # New pages join the SURFACE in the same commit that creates them. A published
            # page outside the audit is exactly the hole the tests badge sat in.
-           "compare.html", "claude-code.html", "quickstart.html", "erasure.html", "audit-trail.html")
+           "compare.html", "claude-code.html", "quickstart.html", "erasure.html", "audit-trail.html",
+           "migrate-from-mem0.html")
 
 #: `transparency/index.html` is published and is DELIBERATELY not in SURFACE. Declared here rather
 #: than left silent, because "not in the table" and "not looked at" are different statements.
@@ -613,6 +614,46 @@ NUMBER_CLAIMS = [
        "wrote trail.jsonl: 1 records, draft-sharif-agent-audit-trail-04",
        "export-trail writes 1 record in the draft schema",
        "REPRODUCIBLE", "python tools/page_runs.py ledger"),
+
+    # ---- migrate-from-mem0.html: the mem0 import run (added 2026-09-17, 2.41.0) -----------------
+    # ONE ROW PER LINE. The transcript comes from `python tools/page_runs.py mem0 --out run.json`.
+    _c("mem0-dry-run", "migrate-from-mem0.html", ["4", "2", "0"],
+       "would import 4 memory item(s) from 2 user(s); 0 carry no user_id and would have no subject",
+       "The dry run counts 4 memory items from 2 users, none without a user_id",
+       "REPRODUCIBLE", "python tools/page_runs.py mem0"),
+    _c("mem0-imported", "migrate-from-mem0.html", ["3", "1"],
+       "imported 3 record(s), skipped 1 (expired in mem0)",
+       "The import writes 3 records and skips the 1 expired memory",
+       "REPRODUCIBLE", "python tools/page_runs.py mem0"),
+    _c("mem0-imported-again", "migrate-from-mem0.html", ["0", "4"],
+       "imported 0 record(s), skipped 4 (already imported, expired in mem0)",
+       "A second import writes 0 records and skips all 4",
+       "REPRODUCIBLE", "python tools/page_runs.py mem0"),
+    _c("mem0-erasure-preview", "migrate-from-mem0.html", ["3", "3", "0"],
+       "would erase 3 record(s): 3 naming the subject, 0 reached through lineage",
+       "The erasure preview for the imported user reaches 3 records, the retired value included",
+       "REPRODUCIBLE", "python tools/page_runs.py mem0"),
+    _c("mem0-erased", "migrate-from-mem0.html", ["3", "3"],
+       "erased 3 record(s), 3 tombstone(s)",
+       "The erasure removes the 3 records and leaves 3 tombstones",
+       "REPRODUCIBLE", "python tools/page_runs.py mem0"),
+    _c("mem0-reimport-after-erasure", "migrate-from-mem0.html", ["0", "4"],
+       "imported 0 record(s), skipped 4 (already imported, expired in mem0, imported earlier and since erased)",
+       "A re-import after the erasure writes 0 records: the sidecar remembers the erased ids",
+       "REPRODUCIBLE", "python tools/page_runs.py mem0"),
+    _c("mem0-page-ours", "migrate-from-mem0.html", ["100", "30"],
+       "returns the corrected value in 100% of 30 trials and mem0 2.0.11 in 53.3%",
+       "inspeximus keeps the correction in 100% of 30 trials (the compare.html measurement, restated)",
+       "REPRODUCIBLE-WITH-DEPS", CMD),
+    _c("mem0-page-theirs", "migrate-from-mem0.html", ["53.3"],
+       "and mem0 2.0.11 in 53.3%",
+       "mem0 2.0.11 keeps the correction in 53.3% (the compare.html measurement, restated)",
+       "REPRODUCIBLE-WITH-DEPS", CMD,
+       "Version-stamped like compare.html: mem0 was measured at 2.0.11 and has NOT been re-run."),
+    _c("mem0-top-k-default", "migrate-from-mem0.html", ["20,", "20"],
+       "top_k defaults to 20, so a plain get_all() exports 20 memories",
+       "mem0 2.0.11's get_all(top_k=20) default caps an export at 20 memories per call",
+       "REPRODUCIBLE", "python -c \"import inspect, mem0.memory.main as m; print(inspect.signature(m.Memory.get_all))\""),
 
     # ---- index.html: the 2.5.0 section and the corrected echo caveat ----
     # One row per LINE again: the audit requires the pin on the same source line as each token, which
@@ -1209,6 +1250,29 @@ NON_CLAIM_TOKENS = {
         "1789661451.482288": (1, "the entry's timestamp, a per-run literal"),
         "5": (1, "the last receipt hash 5feb10..., a per-run literal"),
         "8": (1, "the export session id 8e3f4852-..., a per-run literal"),
+    },
+    "migrate-from-mem0.html": {
+        # The hand-written mem0 export (ids, md5 hashes of the texts, dates, example phone numbers), the
+        # run's own record ids and key, the -k argument, an article number, and the two mem0 thread
+        # numbers. The counts are in NUMBER_CLAIMS (mem0-*).
+        "2026": (11, "datePublished, the run date in the eyebrow, four created_at and four updated_at values and one expiration_date in the export"),
+        "5967": (2, "mem0 discussion #5967, in the FAQ and the link -- a citation"),
+        "6330": (1, "mem0 PR #6330 -- a citation"),
+        "8": (1, "mem0 id 8f3c2a1e-..., in the hand-written export"),
+        "3": (2, "md5 3bdbc254..., the hash of the first text in the export, and the paragraph digit in Art. 15(3)"),
+        "2": (2, "mem0 id 2b7e9d4c-... in the export, and the -k 2 recall argument; '2 user(s)' is mem0-dry-run"),
+        "100": (3, "the example phone number +100 in the export, the list, and the erasure preview; the 100% on the comparison sentence is mem0-page-ours"),
+        "07465": (1, "md5 07465ab5..., the hash of the second text"),
+        "300": (3, "the example phone number +300 in the export and the two listings"),
+        "44": (1, "md5 44d851a1..., the hash of the third text"),
+        "0": (1, "mem0 id 0a1b2c3d-..., in the hand-written export"),
+        "45": (1, "md5 45e6da7c..., the hash of the fourth text"),
+        "0600": (1, "the file mode writer-key prints for the secret"),
+        "0562": (1, "the leading digits of the writer's public key, a per-run literal"),
+        "200": (3, "the corrected phone number +200 in the remember command, the recall and the erasure preview"),
+        "72164": (1, "the run's record id 72164baa15, a per-run literal"),
+        "15": (1, "GDPR Art. 15, an article number"),
+        "100000,": (1, "the top_k argument in the export recipe, a value larger than any user's count"),
     },
     "quickstart.html": {
         # Step numbers, a Python floor and the two fixture hostnames. None is a measurement.

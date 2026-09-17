@@ -8,6 +8,7 @@
   <a href="https://dancenitra.github.io/inspeximus/quickstart.html">Quickstart</a> ·
   <a href="docs/DEEP_DIVE.md">Docs</a> ·
   <a href="https://dancenitra.github.io/inspeximus/compare.html">vs mem0 and Graphiti</a> ·
+  <a href="https://dancenitra.github.io/inspeximus/migrate-from-mem0.html">Migrate from mem0</a> ·
   <a href="https://dancenitra.github.io/inspeximus/ai-act.html">EU AI Act and GDPR evidence</a> ·
   <a href="https://dancenitra.github.io/inspeximus/claude-code.html">Claude Code, one line</a> ·
   <a href="https://dancenitra.github.io/inspeximus/transparency/">Transparency log</a> ·
@@ -679,6 +680,7 @@ not be the same instrument.
 | [The long version](docs/DEEP_DIVE.md) | every mechanism, every measurement, and the ones that failed |
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
 | [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts; the [erasure page](https://dancenitra.github.io/inspeximus/erasure.html) shows a real run end to end |
+| [Migrate from mem0](https://dancenitra.github.io/inspeximus/migrate-from-mem0.html) | `inspeximus import-mem0 export.json`: one record per memory with the user as its subject and mem0's timestamp as the event time, safe to run twice; the API mapping and what the import cannot recover |
 | [Audit trail page](https://dancenitra.github.io/inspeximus/audit-trail.html) | what the agent knew when it acted: a signed ledger entry, a transcript match, and the IETF draft export, as a real run |
 | [EU AI Act evidence page](https://dancenitra.github.io/inspeximus/ai-act.html) | Article 12 logging and Article 17 erasure, mapped to what the store already keeps; the mapping's text is [docs/AI_ACT.md](docs/AI_ACT.md) |
 | [MCP tools](MCP_LISTINGS.md) | all 98, and what each is for |
