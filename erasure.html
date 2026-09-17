@@ -63,7 +63,7 @@
             "name": "Does this make the agent GDPR compliant?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. It is evidence for the agent-memory slice: the records that were held, the request they were erased under, and a certificate a third party can check. Vector indexes, prompt logs, model weights and backups are outside the store, and the certificate names that scope in its own text. The write receipts beside the store keep an unsalted hash of each record's text and key, so treat that file as personal data until the digest is salted."
+              "text": "No. It is evidence for the agent-memory slice: the records that were held, the request they were erased under, and a certificate a third party can check. Vector indexes, prompt logs, model weights and backups are outside the store, and the certificate names that scope in its own text. Since 2.40.0 each record carries a nonce that its write receipt's content hash includes, so a receipt that outlives an erased record confirms no guessed text; receipts written before 2.40.0 keep an unsalted hash of text and key, and that file stays personal data for those records."
             }
           },
           {
@@ -307,7 +307,7 @@
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.1</p>
+      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.40.0</p>
       <h2>What does a right-to-erasure request look like in the store?</h2>
       <p class="sec-sub">Three records, two of them Alice's. The request DSAR-17 arrives. First the dry
         run, then the erasure, then the certificate, then a verifier holding only the public key.</p>
@@ -315,25 +315,25 @@
     <div class="tablecard">
 <pre class="cmd">$ inspeximus writer-key --new --out key.txt
 secret written to key.txt (0600)
-public key: 8e670495795827c32d8020db85aed35af7c9ff2ed853fdad032bc2819a1c11ed
+public key: 90db3402bdba911466a781f830a5c851bc1fa1f350585e777c2a56551286b5d5
 
 point the server at it:  INSPEXIMUS_WRITER_KEY_FILE=key.txt
-pin this writer as trusted with trust_seeds={&#x27;key:8e670495795827c32d8020db85aed35af7c9ff2ed853fdad032bc2819a1c11ed&#x27;}
+pin this writer as trusted with trust_seeds={&#x27;key:90db3402bdba911466a781f830a5c851bc1fa1f350585e777c2a56551286b5d5&#x27;}
 KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice prefers email&#x27; --source crm/alice
-remembered 2852b6a307
+remembered 029e96ab3b
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice phone is +100&#x27; --key alice::phone --source crm/alice
-remembered 4fd0ffc60d [key=alice::phone]
+remembered a917d4a167 [key=alice::phone]
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Bob phone is +300&#x27; --key bob::phone --source crm/bob
-remembered 1cd346d768 [key=bob::phone]
+remembered 8e5e75f8c6 [key=bob::phone]
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject crm/alice --request-id DSAR-17 --dry-run
 would erase 2 record(s): 2 naming the subject, 0 reached through lineage
-  [direct   ] 2852b6a307  Alice prefers email
-  [direct   ] 4fd0ffc60d  Alice phone is +100
+  [direct   ] 029e96ab3b  Alice prefers email
+  [direct   ] a917d4a167  Alice phone is +100
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject crm/alice --request-id DSAR-17 --basis &#x27;Art. 17(1)(a)&#x27;
 erased 2 record(s), 2 tombstone(s)
@@ -341,7 +341,7 @@ erased 2 record(s), 2 tombstone(s)
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt erasure-certificate --request-id DSAR-17 --out DSAR-17.cert.json
 wrote erasure certificate -&gt; DSAR-17.cert.json  (2 erasure(s) attested, scoped to DSAR-17)
 
-$ inspeximus erasure-verify DSAR-17.cert.json --store mem.json --expected-pubkey 8e670495795827c32d8020db85aed35af7c9ff2ed853fdad032bc2819a1c11ed
+$ inspeximus erasure-verify DSAR-17.cert.json --store mem.json --expected-pubkey 90db3402bdba911466a781f830a5c851bc1fa1f350585e777c2a56551286b5d5
   OK   chain_intact
   OK   signatures_valid
   OK   signed
@@ -385,9 +385,11 @@ $ inspeximus --path mem.json list
         fails whoever holds the key.</p>
       <p>It does not prove that no copy exists anywhere. Vector indexes, prompt logs, model weights and
         backups are outside the store, and the certificate names that scope in its own text. The write
-        receipts beside the store keep an unsalted SHA-256 of each record's text and key, which a
-        reader with a candidate list can test, so treat <code>mem.json.receipts.json</code> as personal
-        data until the receipt digest is salted. A record whose writer never declared
+        receipts beside the store keep a hash of each record's text and key; since 2.40.0 that hash
+        includes a nonce that lives only in the record, so a receipt that outlives an erased record
+        confirms no guessed text. Receipts written before 2.40.0 carry the unsalted hash, and
+        <code>mem.json.receipts.json</code> stays personal data for those records. A record whose
+        writer never declared
         <code>derived_from</code> carries no lineage, so the audit reports <code>UNAUDITED</code> rather
         than a pass, because a party that stops declaring lineage would otherwise always look clean.</p>
       <p>Access and rectification travel the same path: <code>export_subject()</code> returns the copy

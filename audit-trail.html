@@ -307,7 +307,7 @@
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.1</p>
+      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.40.0</p>
       <h2>How is one action recorded, and what does the record hold?</h2>
       <p class="sec-sub">One memory, one tool call. The entry is signed and bound to the store's receipt
         chain; the inputs and output are digested, not stored.</p>
@@ -315,27 +315,27 @@
     <div class="tablecard">
 <pre class="cmd">$ inspeximus writer-key --new --out key.txt
 secret written to key.txt (0600)
-public key: 7649bb32db05e344f4d8d6982b92e8886298d9217d0fb4dc93fef155aff37aa3
+public key: 7c4e59dc326515ba066f820357b96d6e98becead7160e0eb5b7e8a02307e11da
 
 point the server at it:  INSPEXIMUS_WRITER_KEY_FILE=key.txt
-pin this writer as trusted with trust_seeds={&#x27;key:7649bb32db05e344f4d8d6982b92e8886298d9217d0fb4dc93fef155aff37aa3&#x27;}
+pin this writer as trusted with trust_seeds={&#x27;key:7c4e59dc326515ba066f820357b96d6e98becead7160e0eb5b7e8a02307e11da&#x27;}
 KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice phone is +100&#x27; --key alice::phone --source crm/alice
-remembered e1c4d8ccc1 [key=alice::phone]
+remembered b0520e2bef [key=alice::phone]
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt actions record tool:sms --input &#x27;{&quot;to&quot;: &quot;+100&quot;, &quot;text&quot;: &quot;hi&quot;}&#x27; --output &#x27;{&quot;sent&quot;: true}&#x27; --actor support-agent
-recorded #0 tool:sms  hash 68dfdad73355  SIGNED
+recorded #0 tool:sms  hash 3e42f575d77f  SIGNED
 
 $ inspeximus --path mem.json actions knew 0
 {
   &quot;seq&quot;: 0,
   &quot;action&quot;: &quot;tool:sms&quot;,
-  &quot;ts&quot;: 1789648531.390615,
+  &quot;ts&quot;: 1789661451.482288,
   &quot;memory_state&quot;: {
-    &quot;digest&quot;: &quot;13360a8e1503ce6d7b387b8a9d7eac8823f3bee94c3d55f72f3e3fe9f2c9180a&quot;,
+    &quot;digest&quot;: &quot;7fb9dbbd3921c1ca0c0055394b9bf85f9e932f075a961e834ae82d7c4962abb8&quot;,
     &quot;records&quot;: 1,
-    &quot;last_receipt&quot;: &quot;46a855df52cec14d0f4ea6bed822534a112a66c416248afd8a430aa7f73290f4&quot;,
+    &quot;last_receipt&quot;: &quot;5feb104086cfd48edbbaa903706ba82f7909bf740a0d1a1e0668b3df45818356&quot;,
     &quot;receipts&quot;: 1,
     &quot;recalled&quot;: [],
     &quot;recalled_at&quot;: null,
@@ -397,12 +397,12 @@ $ inspeximus --path mem.json actions matches 0 --inputs in_edited.json --output 
         chain of a file from any producer.</p>
     </div>
     <div class="tablecard">
-<pre class="cmd">$ inspeximus --path mem.json actions verify --expected-pubkey 7649bb32db05e344f4d8d6982b92e8886298d9217d0fb4dc93fef155aff37aa3
+<pre class="cmd">$ inspeximus --path mem.json actions verify --expected-pubkey 7c4e59dc326515ba066f820357b96d6e98becead7160e0eb5b7e8a02307e11da
 OK action ledger mem.json.actions.json  (1 entries, bound to mem.json)
 OK store records against their write receipts (1 receipt(s))
 
 $ inspeximus --path mem.json actions export-trail --out trail.jsonl --agent-id urn:agent:support.example --agent-version 1.0.0
-wrote trail.jsonl: 1 records, draft-sharif-agent-audit-trail-04, session 70b027d0-3796-41a8-aec5-c098a280a32c, tail e97a9b0bcb8c
+wrote trail.jsonl: 1 records, draft-sharif-agent-audit-trail-04, session 8e3f4852-f865-4174-9ed0-627f9af83e64, tail ac7cb937eebd
 
 $ inspeximus actions export-trail --verify trail.jsonl
 OK trail.jsonl (draft-sharif-agent-audit-trail-04)</pre>

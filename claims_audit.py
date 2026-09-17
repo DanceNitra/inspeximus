@@ -1173,18 +1173,19 @@ NUMBER_CLAIMS = [
 NON_CLAIM_TOKENS = {
     "erasure.html": {
         # Article numbers, dates, the run's example literals, key and record ids. The counts are in
-        # NUMBER_CLAIMS (erasure-*). Checked by `python tools/page_runs.py erasure`.
+        # NUMBER_CLAIMS (erasure-*). Checked by `python tools/page_runs.py erasure`; a rebuild of the
+        # page re-runs the flow and re-registers these per-run literals.
         "17": (3, "GDPR Art. 17 in the description, the eyebrow, and the --basis 'Art. 17(1)(a)' argument"),
         "2026": (3, "datePublished, the run date in the eyebrow, and 'July 2026' for the documentation read"),
         "25": (1, "the GDPR application date, 25 May 2018"),
         "2018": (1, "the GDPR application date, 25 May 2018"),
         "0600": (1, "the file mode writer-key prints for the secret"),
-        "8": (2, "the leading digit of the writer's public key 8e6704..., in writer-key's output and the --expected-pubkey argument"),
-        "2852": (2, "record id 2852b6a307, printed at write and in the dry run"),
+        "90": (2, "the leading digits of the writer's public key 90db34..., in writer-key's output and the --expected-pubkey argument"),
+        "029": (2, "record id 029e96ab3b, printed at write and in the dry run"),
         "100": (2, "the example phone number +100 in the command and the dry-run listing"),
-        "4": (2, "record id 4fd0ffc60d, printed at write and in the dry run"),
         "300": (2, "the example phone number +300 in the command and the final list"),
-        "1": (2, "record id 1cd346d768, and the paragraph digit in Art. 17(1)(a)"),
+        "8": (1, "record id 8e5e75f8c6"),
+        "1": (1, "the paragraph digit in Art. 17(1)(a)"),
         "6962": (1, "RFC 6962, the Merkle root the anchor carries -- a citation"),
         "15": (1, "GDPR Art. 15, an article number"),
         "3": (1, "the paragraph digit in Art. 15(3)"),
@@ -1200,15 +1201,14 @@ NON_CLAIM_TOKENS = {
         "2026": (2, "datePublished and the run date in the eyebrow"),
         "8785": (1, "RFC 8785, JSON Canonicalization Scheme -- a citation"),
         "0600": (1, "the file mode writer-key prints for the secret"),
-        "7649": (2, "the leading digits of the writer's public key 7649bb..., in writer-key's output and the --expected-pubkey argument"),
+        "7": (3, "the leading digit of the writer's public key 7c4e59..., in writer-key's output, the trust_seeds line and the --expected-pubkey argument"),
         "100": (4, "the example phone number +100 in the remember command, the record command and both retained inputs"),
         "0": (4, "sequence number 0: 'recorded #0', 'actions knew 0' and 'actions matches 0' twice"),
-        "68": (1, "the record hash 68dfdad73355, a per-run literal"),
+        "3": (1, "the record hash 3e42f575d77f, a per-run literal"),
         "0,": (3, "'\"seq\": 0,' in the three JSON outputs"),
-        "1789648531.390615": (1, "the entry's timestamp, a per-run literal"),
-        "13360": (1, "the memory-state digest 13360a..., a per-run literal"),
-        "46": (1, "the last receipt hash 46a855..., a per-run literal"),
-        "70": (1, "the export session id 70b027d0-..., a per-run literal"),
+        "1789661451.482288": (1, "the entry's timestamp, a per-run literal"),
+        "5": (1, "the last receipt hash 5feb10..., a per-run literal"),
+        "8": (1, "the export session id 8e3f4852-..., a per-run literal"),
     },
     "quickstart.html": {
         # Step numbers, a Python floor and the two fixture hostnames. None is a measurement.
