@@ -46,6 +46,29 @@ pip install inspeximus
 
 ---
 
+## EU AI Act and GDPR evidence, built in
+
+Every write, correction, erasure and agent action leaves a signed, hash-chained record. A third
+party verifies it offline with the standard library, with no API key and no reason to trust the
+operator. The evidence is exportable today; the EU AI Act's high-risk duties apply from
+2 December 2027 (Annex III systems) and 2 August 2028 (systems embedded in regulated products),
+and GDPR Article 17 has applied since 25 May 2018.
+
+| Duty | What inspeximus keeps | How a reader checks it |
+|---|---|---|
+| EU AI Act Art. 12, automatic event logging | a signed action ledger recording what the memory store held when the agent acted; `matches()` binds a retained transcript to its entry | `inspeximus actions verify`, offline |
+| Art. 19, log retention | an append-only receipt chain whose head lives outside the store, so a tail cut is reported | `verify_writes()` |
+| GDPR Art. 17, right to erasure | `forget_subject()` removes every record attributable to a person, including summaries that inherited it, and leaves a signed content-free tombstone | `erasure_certificate()`, checkable with no private key |
+| GDPR Art. 15 and 16, access and rectification | `export_subject()`, `rectify()` with a receipt naming the actor and the reason | the export's manifest hash sits in the ledger |
+| Art. 26, deployer duties | `deployer_report`, counts by default, no personal data in the report | |
+| When it happened | RFC 3161 timestamps from a third party; `inspeximus timestamp qualified` says whether that authority was on the EU trusted list on that date (eIDAS Art. 41) | an offline cache of the trusted lists |
+| Hand it to an auditor | export as a draft-sharif-agent-audit-trail-04 file, Ed25519 carried under `action_detail` | any conformant verifier |
+
+`inspeximus compliance` prints the evidence labelled by article. The full mapping, with the
+boundary of every row, is on the **[EU AI Act evidence page](https://dancenitra.github.io/inspeximus/ai-act.html)**
+and in [docs/AI_ACT.md](docs/AI_ACT.md). Scope in one sentence: this is the evidence for the
+agent-memory slice of a system, stated per article; a certification is a separate act by someone else.
+
 ## The 30 seconds that matter
 
 Every memory library can store and retrieve. The question nobody answers is what happens when a stored
@@ -277,13 +300,11 @@ It reports membership and nothing else. It does not check the signature on the t
 nothing about whether the token is authentic (`verify_with_openssl` does that, and both must pass),
 and before a list's earliest record it answers UNKNOWN rather than "no".
 
-**What this is not.** It is not compliance, and none of it is due yet. When the EU AI Act's
-high-risk obligations take effect, on 2 December 2027 for standalone Annex III systems and 2 August
-2028 for those embedded in regulated products, the Act will ask for automatic event logging
-(Art. 12), retention of those logs (Art. 19), and accuracy, robustness and cybersecurity (Art. 15).
-None of those articles names memory, provenance or tamper-evidence, so what is here goes past the
-text rather than implementing it. [docs/AI_ACT.md](docs/AI_ACT.md) maps what the store already keeps
-onto the logging duty, and says where the mapping stops.
+**Scope.** The rows above are the agent-memory slice, stated per article. The Act's high-risk
+obligations apply from 2 December 2027 for standalone Annex III systems and 2 August 2028 for those
+embedded in regulated products; the evidence they will ask for (Art. 12 event logging, Art. 19
+retention, Art. 15 accuracy and robustness) is what the store already keeps and exports.
+[docs/AI_ACT.md](docs/AI_ACT.md) maps each duty onto the store and marks where the mapping stops.
 
 ### A log the reader checks without asking you for anything
 
@@ -631,7 +652,7 @@ not be the same instrument.
 | [The long version](docs/DEEP_DIVE.md) | every mechanism, every measurement, and the ones that failed |
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
 | [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts |
-| [EU AI Act evidence](docs/AI_ACT.md) | Article 12 logging, mapped to what the store already keeps |
+| [EU AI Act evidence page](https://dancenitra.github.io/inspeximus/ai-act.html) | Article 12 logging and Article 17 erasure, mapped to what the store already keeps; the mapping's text is [docs/AI_ACT.md](docs/AI_ACT.md) |
 | [MCP tools](MCP_LISTINGS.md) | all 98, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |
 | [core.py, mapped](docs/CORE_MAP.md) | every public method and where it lives, generated from the AST and checked in CI |

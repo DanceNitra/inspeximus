@@ -1152,8 +1152,8 @@ NON_CLAIM_TOKENS = {
         "9942": (1, "RFC 9942, COSE Receipts -- a citation"),
         "8785,": (1, "RFC 8785, JSON Canonicalization Scheme, followed by a comma in prose -- a citation"),
         "9943": (2, "RFC 9943, SCITT architecture -- a citation, named twice"),
-        "3161": (4, "RFC 3161, time-stamp protocol -- a citation, named four times since the ledger timestamp paragraph (2.32.0)"),
-        "41": (1, "eIDAS Article 41 -- an article number, in the same class as an RFC number: it "
+        "3161": (5, "Also in the evidence table at the top (2026-09-17). RFC 3161, time-stamp protocol -- a citation, named four times since the ledger timestamp paragraph (2.32.0)"),
+        "41": (2, "Also eIDAS Art. 41 in the evidence table at the top (2026-09-17). eIDAS Article 41 -- an article number, in the same class as an RFC number: it "
                "names a text a reader can fetch, and there is nothing to reproduce about it"),
         "0,": (1, "'Two signers, two claims, one artifact' prose; the digit is part of a sentence, "
                "not a measurement"),
@@ -1179,20 +1179,20 @@ NON_CLAIM_TOKENS = {
         "50": (1, "EU AI Act ARTICLE number (transparency) in the action-ledger section, not a quantity"),
         "3,": (2, "refers_to=3 in the oversight example and refers_to=[3, 4] in the incident example: seq "
               "numbers in code snippets, not measurements"),
-        "12": (2, "EU AI Act ARTICLE number, not a quantity: once in the docs table, once in the "
+        "12": (2, "The evidence table at the top carries it with a comma, registered separately (2026-09-17). EU AI Act ARTICLE number, not a quantity: once in the docs table, once in the "
                "scope note under 'When someone asks you to prove it'. That section states which "
                "articles the Act actually contains and that none of them names memory, provenance "
                "or tamper-evidence, so the article numbers travel with the disclaimer rather than "
                "with a claim."),
-        "19": (2, "EU AI Act Art. 19 (log retention) -- an article number in the scope note and in the rotation paragraph"),
-        "2": (3, "the DAY in the two AI Act application dates, 2 December 2027 and 2 August 2028, and the paragraph digit in Art. 111(2). "
+        "19": (2, "The evidence table at the top carries it with a comma, registered separately (2026-09-17). EU AI Act Art. 19 (log retention) -- an article number in the scope note and in the rotation paragraph"),
+        "2": (5, "Two more in the 'EU AI Act and GDPR evidence, built in' section (2 December 2027, 2 August 2028), added 2026-09-17. the DAY in the two AI Act application dates, 2 December 2027 and 2 August 2028, and the paragraph digit in Art. 111(2). "
               "Deferred from 2 August 2026 by Regulation (EU) 2026/1744; verified 2026-08-27 against "
               "CELEX 32026R1744 and the Commission's own page, because the widely-cited tracker "
               "artificialintelligenceact.eu still prints the superseded 2026 date and was last "
               "updated 1 August 2024"),
-        "2027": (1, "the year standalone Annex III high-risk obligations start to apply"),
-        "2028": (1, "the year Annex I product-embedded high-risk obligations start to apply"),
-        "15": (3, "EU AI Act Art. 15 (accuracy, robustness, cybersecurity) -- an article number in "
+        "2027": (2, "Also in the evidence section at the top (2026-09-17). the year standalone Annex III high-risk obligations start to apply"),
+        "2028": (2, "Also in the evidence section at the top (2026-09-17). the year Annex I product-embedded high-risk obligations start to apply"),
+        "15": (4, "Also GDPR Art. 15 in the evidence table at the top (2026-09-17). EU AI Act Art. 15 (accuracy, robustness, cybersecurity) -- an article number in "
                "the same scope note; GDPR Art. 15 (access) in the action-ledger section; and the 15-day "
                "Art. 73 reporting clock named there, a statutory period rather than a measurement"),
         "16": (1, "GDPR ARTICLE number (rectification) in the action-ledger section, not a quantity"),
@@ -1224,6 +1224,14 @@ NON_CLAIM_TOKENS = {
         # not a measurement. Declared with a count so that adding a second DOI has to be declared too,
         # rather than being absorbed silently by a bare name.
         "10.5281": (1, "Zenodo DOI registrant prefix in the citation link, an identifier not a quantity"),
+        "17": (2, "GDPR ARTICLE number (right to erasure) in the evidence section at the top: the opening paragraph and the table row (2026-09-17)"),
+        "17,": (1, "GDPR Art. 17, with the comma of the table row 'GDPR Art. 17, right to erasure' (2026-09-17)"),
+        "12,": (1, "EU AI Act Art. 12, with the comma of the table row 'Art. 12, automatic event logging' (2026-09-17)"),
+        "19,": (1, "EU AI Act Art. 19, with the comma of the table row 'Art. 19, log retention' (2026-09-17)"),
+        "16,": (1, "GDPR Art. 16, with the comma of the table row 'Art. 15 and 16, access and rectification' (2026-09-17)"),
+        "26,": (1, "EU AI Act Art. 26, with the comma of the table row 'Art. 26, deployer duties' (2026-09-17)"),
+        "25": (1, "the DAY in the GDPR application date, 25 May 2018, in the evidence section (2026-09-17)"),
+        "2018": (1, "the YEAR GDPR became applicable, 25 May 2018, in the evidence section (2026-09-17)"),
     },
     "docs/DEEP_DIVE.md": {
         # The quickstart names the five examples that need Ed25519 by FILENAME, so their
