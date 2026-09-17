@@ -1281,7 +1281,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.39.1"
+__version__ = "2.40.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2845,6 +2845,15 @@ class Inspeximus:
         now = time.time()
         rec = {"id": mid, "text": text, "tags": list(tags or []), "value": float(value),
                "ts": now, "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+               # A PER-RECORD NONCE, since 2.40.0, folded into the receipt's content hashes by
+               # _write_commit. The write receipts beside the store keep sha256(text, key) for every
+               # record, erased ones included, and a red team recovered an erased phone number from
+               # that receipt with a thousand guesses (2026-09-17): the tombstone was content-free,
+               # the receipt was not. The nonce lives IN the record, not in the receipt, so a reader
+               # holding the live record still recomputes the hash, and an erasure that removes the
+               # record removes the only thing that makes the receipt's hash guessable. 128 bits,
+               # never rewritten; a record whose nonce was stripped no longer matches its receipt.
+               "nonce": os.urandom(16).hex(),
                # EVENT-TIME (bi-temporal). Accepts an epoch float or an ISO-8601 string, and RAISES on
                # anything else rather than falling back to `now`: a guessed event time that reads as a
                # declared one is exactly what `valid_from_source` below exists to make impossible.
@@ -3235,10 +3244,22 @@ class Inspeximus:
         # text out of band, call the public slash(), and verify_writes() went False -> True with the forged
         # text standing. Measured. Separate hashes let the amendment forgive exactly the field it rewrites.
         # `content_sha256` is kept so pre-1.68 verifiers still check something meaningful.
+        # THE NONCE, since 2.40.0. A record written by 2.40.0 or later carries `nonce`, and every
+        # content-bearing hash below includes it, so the receipt commits to the text without letting
+        # a holder of the receipts file confirm a guessed text after the record is erased. A record
+        # without one (written before 2.40.0) is hashed exactly as before, so no honest old store
+        # raises a tamper alarm on upgrade; and the field cannot be stripped to reach the old
+        # formula, because the receipt was made over the nonced preimage and the recomputation
+        # then differs.
+        _n = rec.get("nonce")
+        _imm = {"text": rec.get("text"), "key": rec.get("key")}
+        _con = {"text": rec.get("text"), "key": rec.get("key"), "mtype": rec.get("mtype")}
+        _val = {"object": rec.get("object")}
+        if _n:
+            _imm["nonce"] = _con["nonce"] = _val["nonce"] = _n
         return {"id": rec["id"],
-                "content_sha256": _sha256_hex(_canon({"text": rec.get("text"), "key": rec.get("key"),
-                                                      "mtype": rec.get("mtype")})),
-                "immutable_sha256": _sha256_hex(_canon({"text": rec.get("text"), "key": rec.get("key")})),
+                "content_sha256": _sha256_hex(_canon(_con)),
+                "immutable_sha256": _sha256_hex(_canon(_imm)),
                 "mtype": rec.get("mtype"),
                 # THE VALUE, since 1.82.0. `object` is what supersession, the echo guard, revert(),
                 # check_conflict and _obj_sig all treat as authoritative -- it is the thing the store
@@ -3255,7 +3276,7 @@ class Inspeximus:
                 # It binds for life like text+key: `object` is written once in remember() before the
                 # receipt is emitted, and no call site rewrites it afterwards (supersession moves `status`,
                 # revert() writes a new record).
-                "value_sha256": _sha256_hex(_canon({"object": rec.get("object")})),
+                "value_sha256": _sha256_hex(_canon(_val)),
                 # WHETHER THE STORE WILL SERVE IT, since 2.10.2. `status` and `confirmed_by` were in
                 # no commitment at all, so the one edit that changes what a reader sees WITHOUT
                 # touching a committed field had zero coverage. Measured 2026-08-15 with two controls:

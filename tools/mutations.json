@@ -290,8 +290,8 @@
  {
   "name": "the served value leaves the commitment again",
   "file": "inspeximus/core.py",
-  "old": "                \"value_sha256\": _sha256_hex(_canon({\"object\": rec.get(\"object\")})),",
-  "new": "                \"value_sha256\": \"constant\",",
+  "old": "                \"value_sha256\": _sha256_hex(_canon(_val)),\n",
+  "new": "                \"value_sha256\": \"constant\",\n",
   "tests": [
    "tests/test_value_is_committed.py"
   ]
@@ -1755,6 +1755,24 @@
   "new": "                with open(pth, encoding=\"utf-8\") as fh:\n",
   "tests": [
    "tests/test_a_trimmed_certificate_is_not_a_certificate.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "records are written without a nonce",
+  "old": "               \"nonce\": os.urandom(16).hex(),\n",
+  "new": "",
+  "tests": [
+   "tests/test_an_erased_records_receipt_cannot_be_guessed.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the nonce is not folded into the content hashes",
+  "old": "        if _n:\n            _imm[\"nonce\"] = _con[\"nonce\"] = _val[\"nonce\"] = _n\n",
+  "new": "        if False:\n            _imm[\"nonce\"] = _con[\"nonce\"] = _val[\"nonce\"] = _n\n",
+  "tests": [
+   "tests/test_an_erased_records_receipt_cannot_be_guessed.py"
   ]
  }
 ]

@@ -134,14 +134,19 @@ def test_the_commit_separates_immutable_fields_from_the_amendable_one():
     This asserts the SHAPE, so that regression fails here rather than in a customer's audit."""
     m = Inspeximus(path=_path(), receipts=True)
     rid = m.remember("a fact", key="k")
-    commit = m._write_commit(next(r for r in m.items if r["id"] == rid))
+    rec = next(r for r in m.items if r["id"] == rid)
+    commit = m._write_commit(rec)
     assert "immutable_sha256" in commit and "mtype" in commit
 
     a = dict(commit)
-    same_text_other_type = m._write_commit({"id": rid, "text": "a fact", "key": "k", "mtype": "procedural"})
+    # the record's nonce (2.40.0) is part of every content hash, so the probes carry the same one
+    nonce = rec["nonce"]
+    same_text_other_type = m._write_commit({"id": rid, "text": "a fact", "key": "k", "mtype": "procedural",
+                                            "nonce": nonce})
     assert same_text_other_type["immutable_sha256"] == a["immutable_sha256"], \
         "mtype must not feed the immutable hash, or an amendment cannot forgive it alone"
-    other_text = m._write_commit({"id": rid, "text": "another fact", "key": "k", "mtype": a["mtype"]})
+    other_text = m._write_commit({"id": rid, "text": "another fact", "key": "k", "mtype": a["mtype"],
+                                  "nonce": nonce})
     assert other_text["immutable_sha256"] != a["immutable_sha256"]
 
 

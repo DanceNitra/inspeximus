@@ -149,7 +149,7 @@ before it ships.
 
 ### Open after 2.39.1
 
-- **The write receipts keep an unsalted content hash of every record, erased ones included.**
+- ~~The write receipts keep an unsalted content hash of every record, erased ones included~~: closed in 2.40.0 by a per-record nonce folded into the receipt's content hashes (the nonce lives in the record, so live verification is unchanged and an erasure removes the guessable preimage; pre-2.40.0 receipts keep the old hash). Original note:
   Found by the 2026-09-17 red team on the erasure page's own run: `mem.json.receipts.json` carries
   `immutable_sha256 = sha256(canon({text, key}))` per write, so "Alice phone is +100" was recovered
   from the receipt of an erased record with a thousand guesses. The tombstone is content-free; the

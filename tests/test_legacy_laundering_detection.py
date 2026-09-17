@@ -45,7 +45,6 @@ def _legacy_receipt_store(tamper: bool):
     """
     m = Inspeximus(path=_path(), receipts=True)
     rid = m.remember("Revenue is 100M", mtype="semantic", source={"doc": "bigfour-auditor.com"})
-
     # Strip the split fields AND re-hash, or the chain fails on a hash mismatch instead of on the check
     # under test -- a fixture that reports the right answer for the wrong reason.
     prev = core._GENESIS
@@ -70,9 +69,10 @@ def _legacy_receipt_store(tamper: bool):
     # receipt is also the latest, so even the old lenient rule catches the tamper, and the test would pass
     # without exercising anything. My first version did exactly that.
     rec = next(x for x in m.items if x["id"] == rid)
+    # `content_sha256` through _write_commit rather than by hand: since 2.40.0 the record's nonce is
+    # part of that preimage, and a hand-built hash would mismatch for a reason this test is not about.
     commit = {"id": rec["id"],
-              "content_sha256": core._sha256_hex(core._canon(
-                  {"text": rec.get("text"), "key": rec.get("key"), "mtype": rec.get("mtype")})),
+              "content_sha256": Inspeximus._write_commit(rec)["content_sha256"],
               "attrib_sha256": core._sha256_hex(core._canon(sorted(Inspeximus._rec_sources(rec))))}
     second = {"seq": len(m._receipts), "ts": rec.get("ts"), "memory_id": rid,
               "commit": commit, "prev": m._receipts[-1]["hash"]}

@@ -59,6 +59,11 @@ def _legacy_store():
         s = Inspeximus(path=p, receipts=True)
         rid = s.remember("retention policy is 90 days", key="policy::retention", object="90d")
         s.remember("a note carrying no value at all")
+        # a pre-1.82 record carries no `nonce` either (2.40.0); with one present the current
+        # _write_commit would hash by the nonced formula and the fixture would fail for a reason
+        # this file is not about
+        for x in s._items:
+            x.pop("nonce", None)
         s.flush()
     finally:
         Inspeximus._write_commit = new

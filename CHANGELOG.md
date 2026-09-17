@@ -1,3 +1,24 @@
+## 2.40.0 - every record carries a nonce, and the write receipt's content hashes include it, so the receipt of an erased record no longer confirms a guessed text. UPGRADE IF A RECEIPTS FILE EVER LEAVES THE MACHINE THAT HOLDS THE STORE. AFFECTS: `remember()` (a new `nonce` field on every record), `_write_commit` (three hashes change preimage for nonced records), nothing else; records written before 2.40.0 hash exactly as before and raise no alarm.
+
+The write receipts beside the store committed `sha256(canon({text, key}))` for every record, erased
+ones included. A red team on 2026-09-17, on the run published at erasure.html, recovered "Alice phone
+is +100" from the receipt of an erased record with a thousand guesses. The tombstone was content-free;
+the receipt was not, and `actions.py` already salted its own digests for exactly this reason.
+
+The fix keeps third-party verification and removes the guess. Each record now carries a 128-bit
+`nonce`, written once and never rewritten, and `_write_commit` folds it into `immutable_sha256`,
+`content_sha256` and `value_sha256`. The nonce lives in the record rather than in the receipt, so a
+reader holding the live record recomputes the hash as before (`verify_writes`, `audit-verify --store`,
+the bundle verifier), and an erasure that removes the record removes the only thing that makes the
+receipt's hash guessable. A record whose nonce is stripped no longer matches its receipt. A record
+without a nonce is hashed by the old formula, so an honest pre-2.40.0 store verifies unchanged; its
+receipts keep the unsalted hash, and both site pages say that file stays personal data for those
+records.
+
+Two mutations (no nonce written; nonce not folded), both killed by
+`tests/test_an_erased_records_receipt_cannot_be_guessed.py`, which replays the red team's loop
+against the receipt that survives the erasure.
+
 ## 2.39.1 - the erasure certificate's anchor is checked in every field, can be pinned to a witnessed anchor, and is bound to the store it is verified against; the bound `actions verify` re-hashes the records; `matches()` refuses without its salt. UPGRADE IF YOU HAND ERASURE CERTIFICATES OR ACTION LEDGERS TO A THIRD PARTY. AFFECTS: `verify_erasure_certificate` (three new checks, two new optional inputs), `inspeximus erasure-verify` (`--expected-anchor`, two NOTE lines), `inspeximus actions verify` bound to a store (a second verdict line), `ActionLedger.matches` (raises `FileNotFoundError` instead of answering false when the salt file is missing).
 
 Found by a red team on 2026-09-17, on the run published at erasure.html and audit-trail.html, before

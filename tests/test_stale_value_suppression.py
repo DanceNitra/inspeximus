@@ -79,7 +79,8 @@ def test_suppression_stage_adds_no_state_of_its_own():
     kw = dict(k=5, mode="lexical", reinforce=False)
     a = _smeared_store(); a.recall("what is my title", **kw)
     b = _smeared_store(); b.recall("what is my title", suppress_stale_values=True, **kw)
-    _vol = ("id", "ts", "iso", "valid_from", "last_access", "superseded_ts", "invalidated_at", "meta")
+    _vol = ("id", "ts", "iso", "valid_from", "last_access", "superseded_ts", "invalidated_at", "meta",
+            "nonce")                      # per-record random since 2.40.0, like id
     strip = lambda m: [{k: v for k, v in r.items() if k not in _vol} for r in m.items]
     assert strip(a) == strip(b)
 
