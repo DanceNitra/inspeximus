@@ -1,3 +1,26 @@
+## 2.41.0 - `inspeximus import-mem0`: a mem0 export becomes one record per memory, with the user as the subject, mem0's timestamp as the event time, and one receipt each. UPGRADE IF YOU ARE MOVING A STORE FROM mem0. AFFECTS: only callers of the new command and module; no existing call changes. ADDS: `inspeximus.migrate` (`load_export`, `import_mem0`) and the CLI subcommand; nothing existing changes.
+
+The export is the dict `Memory.get_all()` returns (read from mem0 2.0.11, `_get_all_from_vector_store`:
+`id`, `memory`, `hash`, `created_at`, `updated_at`, the promoted `user_id`, `agent_id`, `run_id`,
+`actor_id`, `role`, `attributed_to`, `expiration_date`, and `metadata` for the rest). mem0 is not
+imported and no model runs. `memory` is stored verbatim; `user_id` becomes `source
+{"doc": "mem0/user/<id>"}`, so `forget_subject` reaches every record of that person; `created_at`
+becomes `valid_from`; `id` and `hash` go to `meta`; `metadata` travels verbatim and a `metadata.key`
+becomes the supersession key. Expired memories are skipped unless `--include-expired`; `updated_at`
+is dropped because `get_all()` exports the last value only; mem0's own history table is not exported. A memory without
+a `user_id` is imported and counted, and the command says how many have no subject. A `mem0_id`
+the store already holds is never written again, and a sidecar beside the store keeps a hash of every
+id ever imported, so the command is safe to run twice and stays safe after a subject erasure (a
+tombstone is content-free, so the store alone cannot remember which ids it erased; measured by the
+red team on the first version, which wrote the person back). A `metadata.key`, a convention of this
+importer rather than a mem0 field, is namespaced by user so two users' `{"key": "phone"}` do not
+retire each other; a future `expiration_date` is kept in `meta` and not enforced; the expiry rule is
+mem0's own (the date is before today, UTC); `attributed_to` travels as a tag; an item with no id is
+identified by a hash of user, timestamp and text.
+
+Seven mutations, all killed by `tests/test_a_mem0_export_imports_with_its_subjects.py`. The page
+`migrate-from-mem0.html` shows a real run and the call-by-call mapping.
+
 ## 2.40.0 - every record carries a nonce, and the write receipt's content hashes include it, so the receipt of an erased record no longer confirms a guessed text. UPGRADE IF A RECEIPTS FILE EVER LEAVES THE MACHINE THAT HOLDS THE STORE. AFFECTS: `remember()` (a new `nonce` field on every record), `_write_commit` (three hashes change preimage for nonced records), nothing else; records written before 2.40.0 hash exactly as before and raise no alarm.
 
 The write receipts beside the store committed `sha256(canon({text, key}))` for every record, erased

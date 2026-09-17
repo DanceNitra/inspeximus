@@ -1774,5 +1774,68 @@
   "tests": [
    "tests/test_an_erased_records_receipt_cannot_be_guessed.py"
   ]
+ },
+ {
+  "file": "inspeximus/migrate.py",
+  "name": "the mem0 user is not the subject",
+  "old": "            source={\"doc\": f\"mem0/user/{user}\"} if user else None,\n",
+  "new": "            source=None,\n",
+  "tests": [
+   "tests/test_a_mem0_export_imports_with_its_subjects.py"
+  ]
+ },
+ {
+  "file": "inspeximus/migrate.py",
+  "name": "a second import writes every memory again",
+  "old": "        if ident in in_store:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_mem0_export_imports_with_its_subjects.py"
+  ]
+ },
+ {
+  "file": "inspeximus/migrate.py",
+  "name": "a re-import after an erasure writes the person back",
+  "old": "        if _h(ident) in ever:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_mem0_export_imports_with_its_subjects.py"
+  ]
+ },
+ {
+  "file": "inspeximus/migrate.py",
+  "name": "an expired mem0 memory is imported by default",
+  "old": "        if _expired_for_mem0(it.get(\"expiration_date\"), now) and not include_expired:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_mem0_export_imports_with_its_subjects.py"
+  ]
+ },
+ {
+  "file": "inspeximus/migrate.py",
+  "name": "created_at is not the event time",
+  "old": "            valid_from=_event_time(it.get(\"created_at\")),\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_mem0_export_imports_with_its_subjects.py"
+  ]
+ },
+ {
+  "file": "inspeximus/migrate.py",
+  "name": "the metadata key is not namespaced by user",
+  "old": "        if key and user and \"::\" not in key:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_mem0_export_imports_with_its_subjects.py"
+  ]
+ },
+ {
+  "file": "inspeximus/migrate.py",
+  "name": "mem0's expiry rule becomes 'on or before today'",
+  "old": "    return d < datetime.fromtimestamp(now, tz=timezone.utc).date()\n",
+  "new": "    return d <= datetime.fromtimestamp(now, tz=timezone.utc).date()\n",
+  "tests": [
+   "tests/test_a_mem0_export_imports_with_its_subjects.py"
+  ]
  }
 ]

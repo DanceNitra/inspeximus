@@ -503,6 +503,15 @@ def main(argv=None):
     f.add_argument("--dry-run", action="store_true",
                    help="preview what would be deleted (with a text sample) — deletes nothing")
 
+    im = sub.add_parser("import-mem0",
+                        help="import a mem0 export (the dict Memory.get_all() returns, dumped to JSON) into "
+                             "this store: one record per memory, user_id as the subject, created_at as the "
+                             "event time, one receipt each; safe to run twice")
+    im.add_argument("export", help="JSON file: {\"results\": [...]}, a list of items, or one item per line")
+    im.add_argument("--include-expired", action="store_true",
+                    help="import memories mem0 had already expired (skipped by default)")
+    im.add_argument("--dry-run", action="store_true", help="count what would be written; write nothing")
+
     fs = sub.add_parser("forget-subject",
                         help="right-to-erasure by SUBJECT: delete everything attributable to a source, "
                              "including records that inherited it through lineage")
@@ -1410,6 +1419,27 @@ def main(argv=None):
                 print(f"revert refused for {a.key}: {reason}", file=sys.stderr)
             return 1
         _out(res, a.json) or print(f"reverted {a.key}: now -> {res.get('restored') or res.get('active') or res}")
+
+    elif a.cmd == "import-mem0":
+        from inspeximus.migrate import import_mem0, load_export
+        items = load_export(a.export)
+        if a.dry_run:
+            users = {it.get("user_id") for it in items if it.get("user_id")}
+            no_subject = sum(1 for it in items if it.get("memory") and not it.get("user_id"))
+            print(f"would import {sum(1 for it in items if it.get('memory'))} memory item(s) from "
+                  f"{len(users)} user(s); {no_subject} carry no user_id and would have no subject")
+            return 0
+        res = import_mem0(m, items, include_expired=a.include_expired)
+        m._save(force=True)
+        if a.json:
+            _out(res, True)
+        else:
+            print(f"imported {len(res['written'])} record(s), skipped {len(res['skipped'])}"
+                  + (f" ({', '.join(sorted({s['why'] for s in res['skipped']}))})" if res["skipped"] else ""))
+            if res["without_subject"]:
+                print(f"  NOTE {res['without_subject']} record(s) carry no user_id, so no subject erasure "
+                      f"reaches them; re-remember them with --source when you know whose they are")
+        return 0
 
     elif a.cmd == "forget-subject":
         # The library has had subject erasure since 1.0; the CLI never exposed it, so the one operation a
