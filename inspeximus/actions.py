@@ -200,13 +200,23 @@ class ActionLedger:
     def salt_path(self):
         return self.path.with_name(self.path.name + ".salt")
 
-    def _salt_bytes(self) -> bytes:
+    def _salt_bytes(self, create: bool = True) -> bytes:
         """The per-ledger digest salt, minted on first use and kept beside the ledger in its own file.
-        Not part of the ledger, so a copy of the ledger alone cannot be dictionary-attacked."""
+        Not part of the ledger, so a copy of the ledger alone cannot be dictionary-attacked.
+
+        `create=False` is for the READ side. `matches()` used to mint a fresh salt when the file was
+        missing, so a ledger handed over without its salt answered `false` for every transcript,
+        including the true one, and the verdict was indistinguishable from an edit (red team,
+        2026-09-17). A comparison that cannot be made is refused, not answered."""
         if self._salt is None:
             p = self.salt_path
             if p.exists():
                 self._salt = bytes.fromhex(p.read_text(encoding="utf-8").strip())
+            elif not create:
+                raise FileNotFoundError(
+                    f"the ledger's salt file {p} is missing, so no transcript can be checked against "
+                    f"this ledger: a digest without its salt answers false for every input, the true "
+                    f"one included. Restore the salt file beside the ledger.")
             else:
                 self._salt = os.urandom(32)
                 p.write_text(self._salt.hex(), encoding="utf-8")
@@ -739,7 +749,7 @@ class ActionLedger:
         chat-model entry pass the messages in the shape the callback digested, see
         `inspeximus.integrations.langchain.context_messages`."""
         e = self._at(seq)
-        salt = self._salt_bytes()
+        salt = self._salt_bytes(create=False)
 
         def side(val, key):
             if val is None or e.get(key) is None:

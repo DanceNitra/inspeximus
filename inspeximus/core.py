@@ -974,7 +974,9 @@ _CERT_SCOPE = ("Erasure is within THIS inspeximus store only (not the app's vect
 
 def verify_erasure_certificate(cert: dict, store_path: str | None = None,
                                store_items: list | None = None,
-                               expected_pubkey: str | None = None) -> dict:
+                               expected_pubkey: str | None = None,
+                               expected_anchor: dict | None = None,
+                               store_receipts: list | None = None) -> dict:
     """Independently verify a inspeximus erasure certificate (from Inspeximus.erasure_certificate()). The AUDITOR's check:
     needs NO private key and does NOT trust the operator. Confirms, in order:
       1. tombstone hash-chain re-derives from genesis (append-only, untampered);
@@ -990,7 +992,29 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
          `valid: true` — see `checks["attests_an_erasure"]`.
     Returns {valid, checks, problems}. Pure-stdlib + Ed25519; import it standalone: `from inspeximus import
     verify_erasure_certificate`. HONEST: signatures are load-bearing only against a party who does not hold
-    receipt_key; for operator-adversarial audit, pin the anchor against one you witnessed out of band."""
+    receipt_key; for operator-adversarial audit, pin the anchor against one you witnessed out of band.
+
+    THE ANCHOR WAS SELF-DESCRIBED AND NOTHING COMPARED IT TO ANYTHING (found by a red team on
+    2026-09-17, on the run published at erasure.html). Drop the LAST tombstone from a certificate,
+    set `anchor.tombstones_tip` to the new tail, fix `count` and the ids, put that record back in the
+    store under its original id: every check above passed, `VERDICT: PASS (1 erasure(s) attested)`,
+    while `list` showed the record live. No key was needed, because the anchor's `n_tombstones` and
+    `tombstones_root` still said two and this function read neither. And `--store other.json`, a
+    store that never held the records, passed "absence checked" the same way the erased store did,
+    because `anchor.writes_tip` was never compared to the store it was handed. Three checks close it:
+      6. `anchor_consistent`: `n_tombstones` equals the chain length, `tombstones_root` re-derives
+         from the tombstones (RFC 6962 over `_chain_core`), `sth_hash` re-derives from its four
+         fields. A trimmer now has to rewrite the whole anchor, which is exactly the document a
+         witness signs.
+      7. `anchor_witnessed` (only with `expected_anchor`, an anchor obtained OUTSIDE the operator's
+         control: a witness co-signature, a timestamp, a copy you took): the chain must be at least
+         as long as the witnessed one and hold the witnessed tip at the witnessed position. A chain
+         that lost a tombstone the witness saw fails here whoever holds the key.
+      8. `store_bound` (only with `store_receipts`, the handed store's own receipt chain): the
+         certificate's `anchor.writes_tip` must be a hash IN that chain, so "absent from the store"
+         is said of the store the certificate was issued from, not of whichever file was named.
+    Each of the three is None when its input was not given, and `valid` treats None as "not
+    performed", never as passed, the way `store_absent` already did."""
     problems: list = []
     checks: dict = {}
     toms = cert.get("tombstones") or []
@@ -1058,6 +1082,50 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     checks["anchor_matches_tip"] = (anc.get("tombstones_tip") == tip)
     if not checks["anchor_matches_tip"]:
         problems.append("anchor tombstones_tip does not match the tombstone chain tip")
+
+    # (6) THE ANCHOR MUST DESCRIBE THE CHAIN IT SITS ON, in every field, not only the tip.
+    anchor_ok = True
+    if anc.get("n_tombstones") is not None and anc.get("n_tombstones") != len(toms):
+        problems.append(f"anchor n_tombstones says {anc.get('n_tombstones')} but the certificate carries "
+                        f"{len(toms)} tombstone(s): a tombstone was removed or added after the anchor")
+        anchor_ok = False
+    if anc.get("tombstones_root") is not None:
+        try:
+            from inspeximus.merkle import root as _mroot
+            leaves = [_canon(Inspeximus._chain_core(t, "tombstone")) for t in toms]
+            if _mroot(leaves).hex() != anc.get("tombstones_root"):
+                problems.append("anchor tombstones_root does not re-derive from the tombstones carried")
+                anchor_ok = False
+        except Exception as e:                                       # noqa: BLE001
+            problems.append(f"anchor tombstones_root could not be re-derived: {repr(e)[:60]}")
+            anchor_ok = False
+    if anc.get("sth_hash") is not None and all(k in anc for k in _STH_FIELDS):
+        if _sha256_hex(_canon({k: anc[k] for k in _STH_FIELDS})) != anc.get("sth_hash"):
+            problems.append("anchor sth_hash does not re-derive from its four fields")
+            anchor_ok = False
+    checks["anchor_consistent"] = anchor_ok
+
+    # (7) A WITNESSED ANCHOR OUTRANKS THE ONE THE CERTIFICATE CARRIES.
+    checks["anchor_witnessed"] = None
+    if expected_anchor is not None:
+        w_n = expected_anchor.get("n_tombstones")
+        w_tip = expected_anchor.get("tombstones_tip")
+        ok_w = True
+        if not isinstance(w_n, int) or w_tip is None:
+            problems.append("expected_anchor carries no n_tombstones/tombstones_tip; nothing to pin to")
+            ok_w = False
+        elif len(toms) < w_n:
+            problems.append(f"the witnessed anchor saw {w_n} tombstone(s); this certificate carries "
+                            f"{len(toms)}: the chain was truncated after it was witnessed")
+            ok_w = False
+        elif w_n > 0 and toms[w_n - 1].get("hash") != w_tip:
+            problems.append(f"tombstone {w_n - 1} is not the one the witness saw at that position: the "
+                            f"chain was rewritten after it was witnessed")
+            ok_w = False
+        elif w_n == 0 and w_tip != _GENESIS:
+            problems.append("the witnessed anchor claims an empty chain with a non-genesis tip")
+            ok_w = False
+        checks["anchor_witnessed"] = ok_w
 
     # (5) THE SUMMARY MUST FOLLOW FROM THE TOMBSTONES. Until 1.63.0 `count`, `erased_memory_ids` and
     # `request_ids` were echoed straight from the certificate and never re-derived, so every one of them was
@@ -1154,6 +1222,27 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
         if leaked:
             problems.append(f"{len(leaked)} erased id(s) STILL PRESENT in the store: {leaked[:5]}")
 
+    # (8) ABSENT FROM WHICH STORE. The certificate names the store by its receipt tip at issue time;
+    # the handed store's chain must hold that hash, or the absence was checked against a stranger.
+    checks["store_bound"] = None
+    if store_receipts is not None:
+        w_tip = anc.get("writes_tip")
+        hashes = {r.get("hash") for r in store_receipts}
+        if w_tip is None:
+            problems.append("the certificate's anchor carries no writes_tip, so it cannot be bound to a store")
+            checks["store_bound"] = False
+        elif w_tip == _GENESIS and store_receipts:
+            problems.append("the certificate was issued from a store with no write receipts; the handed "
+                            "store has some, so it is not that store")
+            checks["store_bound"] = False
+        elif w_tip != _GENESIS and w_tip not in hashes:
+            problems.append("the handed store's receipt chain does not contain the certificate's "
+                            "writes_tip: the absence proof ran against a store this certificate was "
+                            "not issued from")
+            checks["store_bound"] = False
+        else:
+            checks["store_bound"] = True
+
     # `valid` is computed from the CHECKS, and a check absent from this expression is decorative — the
     # summary-derivability finding was recorded in `problems` and ignored here in the first cut of this fix,
     # so a forged count still verified. `count` in the return is the DERIVED one, not the claim.
@@ -1180,7 +1269,8 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             problems.append(f"the `{key}` list does not match the one this library issues; an exclusion "
                             f"removed from a certificate is the certificate claiming more than it verified")
 
-    valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"]
+    valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"] and checks["anchor_consistent"]
+             and checks["anchor_witnessed"] is not False and checks["store_bound"] is not False
              and checks["summary_derivable"] and checks["scope_intact"] is not False
              and checks["attests_an_erasure"]
              and (checks["store_absent"] is True or not store_requested))
@@ -1191,7 +1281,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.39.0"
+__version__ = "2.39.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.

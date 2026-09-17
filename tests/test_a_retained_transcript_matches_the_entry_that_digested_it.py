@@ -57,8 +57,11 @@ def test_without_the_salt_file_the_transcript_cannot_be_matched(tmp_path):
     os.remove(led.salt_path)
     m2 = Inspeximus(str(tmp_path / "mem.json"), receipts=True)
     led2 = ActionLedger(m2, actor="agent")
-    assert led2.matches(e["seq"], inputs=["p"])["inputs"] is False, \
-        "a fresh salt is generated, the digests no longer line up: the salt is the key to matching"
+    # Until 2.39.1 a fresh salt was minted here and the answer was False, the same answer an edited
+    # transcript gets; a verdict that cannot be told from a lost key is not a verdict. Refused now.
+    with pytest.raises(FileNotFoundError):
+        led2.matches(e["seq"], inputs=["p"])
+    assert not led.salt_path.exists(), "the read side must not mint a salt"
 
 
 def test_the_langchain_shape_keeps_roles_and_tool_calls(tmp_path):

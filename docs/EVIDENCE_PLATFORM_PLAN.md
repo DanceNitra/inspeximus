@@ -147,6 +147,23 @@ before it ships.
    suite found the rechain flow and the prune cost. PR tech4biz-yasha/agmi#1 opened the same
    evening with three rows.
 
+### Open after 2.39.1
+
+- **The write receipts keep an unsalted content hash of every record, erased ones included.**
+  Found by the 2026-09-17 red team on the erasure page's own run: `mem.json.receipts.json` carries
+  `immutable_sha256 = sha256(canon({text, key}))` per write, so "Alice phone is +100" was recovered
+  from the receipt of an erased record with a thousand guesses. The tombstone is content-free; the
+  receipt is not. `actions.py` salts its input and output digests for exactly this reason. Options:
+  a per-store secret salt beside the receipts (then a third party without the salt verifies the
+  chain but not the content, the trade the action ledger already makes), or an HMAC keyed by the
+  writer key. Either changes the receipt preimage, so it lands as a minor release with a format
+  version, and until then both pages and the certificate's scope prose say the receipts file is
+  personal data.
+- **2.39.1 closed three verifier holes the same red team found** (a trimmed certificate, an
+  unbound store, a ledger that did not re-hash the records) and one ledger read-side defect (a
+  missing salt answered false instead of refusing). The witnessed-anchor input exists now; the
+  pages still show an unwitnessed run with the NOTE line, because a demo cannot witness itself.
+
 ### Open after 2.38.0
 
 - ~~A rectified record can lose a recall tie to an unrelated older record~~: closed in 2.39.0 at the

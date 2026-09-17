@@ -605,6 +605,11 @@ def main(argv=None):
                     help="the store the certificate came from; without it the erased ids are NOT checked "
                          "for absence, which is the strongest proof in the document")
     ev.add_argument("--expected-pubkey", default=None, help="the public key you expect it signed by (hex)")
+    ev.add_argument("--expected-anchor", default=None,
+                    help="a JSON anchor you obtained OUTSIDE the operator's control (a witness co-signature, "
+                         "a timestamped copy, your own earlier copy). The certificate's chain must be at "
+                         "least that long and hold the witnessed tip at the witnessed position; a chain "
+                         "trimmed after it was witnessed fails whoever holds the key.")
     ev.add_argument("--expected-pubkey-file", default=None,
                     help="read that public key from a file instead")
 
@@ -1040,14 +1045,33 @@ def main(argv=None):
             with open(a.expected_pubkey_file, encoding="utf-8") as f:
                 pub = f.read().strip()
         items = None
+        receipts = None
         if a.store:
-            from inspeximus.audit_bundle import load_store_items
+            from inspeximus.audit_bundle import load_store_items, load_store_receipts
             items = load_store_items(a.store)          # ONE implementation; see its docstring
             if items is None:
                 print(f"  FAIL --store {a.store} does not exist; refusing to create a store while "
                       f"verifying, because every erased id is absent from an empty one")
                 return 1
-        res = verify_erasure_certificate(cert, store_items=items, expected_pubkey=pub)
+            # The handed store's own receipt chain, so "absent" is said of the store the certificate
+            # names (anchor.writes_tip) and not of whichever file was passed. A store with no chain
+            # cannot be bound, and the verdict says so as a NOTE rather than counting it passed.
+            receipts = load_store_receipts(a.store) or None
+        anchor = None
+        if a.expected_anchor:
+            with open(a.expected_anchor, encoding="utf-8-sig") as f:
+                anchor = json.load(f)
+        res = verify_erasure_certificate(cert, store_items=items, expected_pubkey=pub,
+                                         expected_anchor=anchor, store_receipts=receipts)
+        if a.store and receipts is None:
+            res.setdefault("limits", []).append(
+                "NOT BOUND: the store at --store has no receipt chain, so the certificate could not be "
+                "tied to it; the absence check ran against the file named, whatever its origin")
+        if anchor is None:
+            res.setdefault("limits", []).append(
+                "NOT WITNESSED: no --expected-anchor, so the anchor was checked against itself only; "
+                "a chain trimmed and re-anchored by the key holder passes. Pin an anchor you obtained "
+                "outside the operator's control.")
         if a.json:
             _out(res, True)
         else:
@@ -1513,6 +1537,20 @@ def main(argv=None):
             for pr in problems:
                 print("  FAIL " + pr)
             print(("OK " if ok else "FAIL ") + f"action ledger {led.path}  ({len(led)} entries, bound to {m.path})")
+            # THE LEDGER BINDS TO THE RECEIPT CHAIN, NOT TO THE RECORDS. A record's text rewritten on
+            # disk leaves the chain untouched, so `verify` printed OK on a store whose memory no longer
+            # matched what the agent acted on; only `verify_writes()`, which re-hashes each record
+            # against its receipt, sees it (red team, 2026-09-17, on the audit-trail page's own run).
+            # The bound form of this command now runs both and says which one failed.
+            if getattr(m, "_receipts", None):
+                w_ok, w_problems = m.verify_writes(expected_pubkey=a.expected_pubkey)
+                for pr in w_problems:
+                    print("  FAIL " + pr)
+                print(("OK " if w_ok else "FAIL ") + f"store records against their write receipts "
+                      f"({len(m._receipts)} receipt(s))")
+                ok = ok and w_ok
+            else:
+                print("NOTE store has no receipt chain; the records were not re-hashed against anything")
             return 0 if ok else 1
         elif a.actions_cmd == "knew":
             print(json.dumps(led.what_it_knew(a.seq), indent=2, ensure_ascii=False))
@@ -1520,9 +1558,13 @@ def main(argv=None):
             def _load(pth):
                 if pth is None:
                     return None
-                with open(pth, encoding="utf-8") as fh:
+                with open(pth, encoding="utf-8-sig") as fh:       # a BOM is not a transcript edit
                     return json.load(fh)
-            res = led.matches(a.seq, inputs=_load(a.inputs), output=_load(a.output))
+            try:
+                res = led.matches(a.seq, inputs=_load(a.inputs), output=_load(a.output))
+            except FileNotFoundError as e:
+                print(f"  REFUSED {e}")
+                sys.exit(2)
             print(json.dumps(res, indent=2, ensure_ascii=False))
             if False in (res["inputs"], res["output"]):
                 sys.exit(1)

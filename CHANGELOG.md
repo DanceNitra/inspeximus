@@ -1,3 +1,42 @@
+## 2.39.1 - the erasure certificate's anchor is checked in every field, can be pinned to a witnessed anchor, and is bound to the store it is verified against; the bound `actions verify` re-hashes the records; `matches()` refuses without its salt. UPGRADE IF YOU HAND ERASURE CERTIFICATES OR ACTION LEDGERS TO A THIRD PARTY. AFFECTS: `verify_erasure_certificate` (three new checks, two new optional inputs), `inspeximus erasure-verify` (`--expected-anchor`, two NOTE lines), `inspeximus actions verify` bound to a store (a second verdict line), `ActionLedger.matches` (raises `FileNotFoundError` instead of answering false when the salt file is missing).
+
+Found by a red team on 2026-09-17, on the run published at erasure.html and audit-trail.html, before
+either page went live. Four holes, all reproduced with the shipped 2.39.0 CLI:
+
+1. **A trimmed certificate passed.** Drop the last tombstone, set `anchor.tombstones_tip` to the new
+   tail, fix `count` and the ids, put the record back in the store under its original id, and
+   `erasure-verify --store mem.json` printed every check OK and `VERDICT: PASS (1 erasure(s)
+   attested, absence checked)` while `list` showed the record live. No key was needed: the anchor's
+   `n_tombstones` and `tombstones_root` still said two, and the verifier compared neither. Now
+   `anchor_consistent` requires the count, the RFC 6962 root and `sth_hash` to re-derive from the
+   tombstones carried. A trimmer has to rewrite the whole anchor, which is the document a witness
+   signs, so `--expected-anchor <json>` (`expected_anchor=` in Python) pins the certificate to an
+   anchor obtained outside the operator's control: the chain must be at least as long as the
+   witnessed one and hold the witnessed tip at the witnessed position. Without it the verdict says
+   so in a NOTE line rather than silently passing on a self-described anchor.
+2. **Absence was checked against whatever store was named.** `--store other.json`, a store that
+   never held the records, passed "absence checked" the same way the erased store did. `store_bound`
+   now requires the certificate's `anchor.writes_tip` to be a hash in the handed store's receipt
+   chain (the CLI loads the sidecar; `store_receipts=` in Python). A store with no chain is reported
+   NOT BOUND, never passed.
+3. **`actions verify` printed OK on a store whose record text had been rewritten.** The ledger
+   binds each entry to a position in the receipt chain, and an edit to a record's text leaves the
+   chain untouched; only `verify_writes()` re-hashes the record against its receipt. The bound form
+   of `inspeximus actions verify` now runs both and prints a second line, `OK/FAIL store records
+   against their write receipts`, and exits 1 on either.
+4. **`matches()` on a ledger handed over without its salt minted a new salt** and answered false
+   for every transcript, the true one included, which is the same answer an edited transcript gets.
+   The read side now refuses with `FileNotFoundError` and mints nothing; the CLI prints REFUSED and
+   exits 2. A BOM on a retained transcript file is read as a BOM, not as an edit.
+
+Eight mutations in `tools/mutations.json`, each killed by
+`tests/test_a_trimmed_certificate_is_not_a_certificate.py`. Still open, and stated on both pages
+until it is closed: the write receipts beside the store keep an unsalted SHA-256 of each record's
+text and key, so an erased low-entropy value can be confirmed by guessing against the receipt
+file (the library's own comment in `actions.py` calls that "not content-free"). Salting the receipt
+digest changes what a third party can verify without the salt, so it is a design change for a
+minor release, not a patch.
+
 ## 2.39.0 - BEHAVIOUR CHANGE, lexical recall: a possessive is its noun. UPGRADE IF YOUR MEMORIES NAME PEOPLE OR THINGS WITH 'S: `recall("alice phone")` now finds "alice's phone", which it did not. AFFECTS: the lexical channel and the hybrid that fuses it; ranks change for any store whose text carries possessives; the semantic channel is untouched.
 
 The word class admits the apostrophe and the stemmer folded a trailing `s`, so "alice's" tokenized to
