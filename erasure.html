@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GDPR right to erasure for AI agent memory: delete one person and prove it | inspeximus</title>
-  <meta name="description" content="How to delete one person&#x27;s data from an AI agent&#x27;s memory under GDPR Article 17 and prove the erasure to a third party: forget_subject by source, a dry run of the blast radius, signed tombstones, and an erasure certificate verified offline with no key. A real run, unedited." />
+  <meta name="description" content="How to delete one person&#x27;s data from an AI agent&#x27;s memory under GDPR Article 17 and prove the erasure to a third party: forget_subject by source, a dry run of the blast radius, signed tombstones, and an erasure certificate verified with the public key alone. A real run, with the verifier&#x27;s own limits on the page." />
   <link rel="canonical" href="https://dancenitra.github.io/inspeximus/erasure.html" />
   <meta property="og:title" content="Erase one person from an AI agent&#x27;s memory, and prove it" />
-  <meta property="og:description" content="forget_subject removes every record about a person and what was derived from it; erasure_certificate lets a third party check it with no key. Real run, eight checks OK." />
+  <meta property="og:description" content="forget_subject removes every record whose source is the person and what declares it as lineage; erasure_certificate lets a third party check it with the public key alone. Real run, every check shown." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://dancenitra.github.io/inspeximus/erasure.html" />
   <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
@@ -15,7 +15,7 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Erase one person from an AI agent&#x27;s memory, and prove it" />
-  <meta name="twitter:description" content="forget_subject removes every record about a person and what was derived from it; erasure_certificate lets a third party check it with no key. Real run, eight checks OK." />
+  <meta name="twitter:description" content="forget_subject removes every record whose source is the person and what declares it as lineage; erasure_certificate lets a third party check it with the public key alone. Real run, every check shown." />
   <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta name="theme-color" content="#0d7d84" />
   <script type="application/ld+json">
@@ -25,7 +25,7 @@
       {
         "@type": "TechArticle",
         "headline": "How do you erase one person from an AI agent's memory, and prove it?",
-        "description": "How to delete one person's data from an AI agent's memory under GDPR Article 17 and prove the erasure to a third party: forget_subject by source, a dry run of the blast radius, signed tombstones, and an erasure certificate verified offline with no key. A real run, unedited.",
+        "description": "How to delete one person's data from an AI agent's memory under GDPR Article 17 and prove the erasure to a third party: forget_subject by source, a dry run of the blast radius, signed tombstones, and an erasure certificate verified with the public key alone. A real run, with the verifier's own limits on the page.",
         "url": "https://dancenitra.github.io/inspeximus/erasure.html",
         "datePublished": "2026-09-17",
         "author": {
@@ -47,7 +47,7 @@
             "name": "How do I delete one person's data from an AI agent's memory?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Write every memory with the source it is attributable to, then call forget_subject(subject) or run inspeximus forget-subject <subject> --request-id <DSAR id>. It removes every record naming the subject and every record that inherited it through declared lineage, and leaves a signed, content-free tombstone per record."
+              "text": "Write every record with the subject it belongs to (--source), then call forget_subject(subject) or run inspeximus forget-subject <subject> --request-id <DSAR id>. It removes every record whose source is the subject and every record that declares it as lineage, and leaves a signed, content-free tombstone per record. A record about the person written under another source, or with no source, is not reached; the dry run and the residue scan show what remains."
             }
           },
           {
@@ -55,7 +55,7 @@
             "name": "What proves the erasure happened?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "erasure_certificate() writes a portable certificate. inspeximus erasure-verify <certificate> --store <store> checks the receipt chain, the signatures, that the certificate attests an erasure, and that the erased ids are absent from the store, with no private key and no trust in the operator. On a signed store all eight checks print OK."
+              "text": "erasure_certificate() writes a portable certificate. inspeximus erasure-verify <certificate> --store <store> checks it with the public key alone: the tombstone chain, the signatures, the anchor in every field, that the certificate attests an erasure, that the erased ids are absent from the store's live rows, and that the store is the one the certificate was issued from. Against the operator, who holds the signing key, pin the key with --expected-pubkey and an anchor you obtained outside their control with --expected-anchor; the verifier prints a NOTE line for each one you did not pin."
             }
           },
           {
@@ -63,7 +63,7 @@
             "name": "Does this make the agent GDPR compliant?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. It is the evidence for the agent-memory slice: the records that were held, the request they were erased under, and a certificate a third party can check. Vector indexes, prompt logs, model weights and backups are outside the store and outside the certificate, and the CLI prints that limit on every erasure-audit run."
+              "text": "No. It is evidence for the agent-memory slice: the records that were held, the request they were erased under, and a certificate a third party can check. Vector indexes, prompt logs, model weights and backups are outside the store, and the certificate names that scope in its own text. The write receipts beside the store keep an unsalted hash of each record's text and key, so treat that file as personal data until the digest is salted."
             }
           },
           {
@@ -71,7 +71,7 @@
             "name": "What does the dry run show?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "The blast radius before anything is deleted: how many records name the subject directly, how many are reached through lineage, and which other subjects would go with them. A subject that shares a canonical form with a different source is refused until --allow-ambiguous."
+              "text": "The blast radius before anything is deleted: how many records name the subject directly, how many are reached through declared lineage, and which other subjects would go with them. A subject that shares a canonical form with a different source is refused until --allow-ambiguous."
             }
           }
         ]
@@ -290,12 +290,13 @@
     <p class="eyebrow">GDPR Art. 17 &middot; applied since 25 May 2018</p>
     <h1 class="head">How do you erase one person from an AI agent's memory,
       <em>and prove it?</em></h1>
-    <p class="lede">Every memory library has a delete call. Almost none can show an auditor afterwards
-      what was erased, under which request, and that it is gone. inspeximus writes each record with
-      the subject it belongs to, erases by subject including what was derived from it, and issues a
-      certificate a third party verifies offline. The transcript on this page is a real run, unedited.</p>
+    <p class="lede">Every memory library has a delete call. Of the nine we read, none leaves a signed
+      record that a named record was erased, under which request, and that it is gone. inspeximus writes
+      each record with the subject it belongs to, erases by subject including what declares it as
+      lineage, and issues a certificate a reader verifies with the public key alone. The transcript on
+      this page is a real run; ids and hashes change per run, nothing else does.</p>
     <div class="hero-cta">
-      <a class="btn solid" href="https://pypi.org/project/inspeximus/">pip install inspeximus</a>
+      <a class="btn solid" href="https://pypi.org/project/inspeximus/">pip install "inspeximus[crypto]"</a>
       <a class="btn" href="./ai-act.html">The EU AI Act and GDPR mapping</a>
     </div>
   </div>
@@ -306,40 +307,53 @@
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.0</p>
+      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.1</p>
       <h2>What does a right-to-erasure request look like in the store?</h2>
       <p class="sec-sub">Three records, two of them Alice's. The request DSAR-17 arrives. First the dry
-        run, then the erasure, then the certificate, then a verifier with no key.</p>
+        run, then the erasure, then the certificate, then a verifier holding only the public key.</p>
     </div>
     <div class="tablecard">
 <pre class="cmd">$ inspeximus writer-key --new --out key.txt
+secret written to key.txt (0600)
+public key: 8e670495795827c32d8020db85aed35af7c9ff2ed853fdad032bc2819a1c11ed
+
+point the server at it:  INSPEXIMUS_WRITER_KEY_FILE=key.txt
+pin this writer as trusted with trust_seeds={&#x27;key:8e670495795827c32d8020db85aed35af7c9ff2ed853fdad032bc2819a1c11ed&#x27;}
+KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.
+
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice prefers email&#x27; --source crm/alice
-remembered da1206356b
+remembered 2852b6a307
+
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice phone is +100&#x27; --key alice::phone --source crm/alice
-remembered 693bfceed2 [key=alice::phone]
+remembered 4fd0ffc60d [key=alice::phone]
+
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Bob phone is +300&#x27; --key bob::phone --source crm/bob
-remembered 9d18377508 [key=bob::phone]
+remembered 1cd346d768 [key=bob::phone]
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject crm/alice --request-id DSAR-17 --dry-run
 would erase 2 record(s): 2 naming the subject, 0 reached through lineage
-  [direct   ] 693bfceed2  Alice phone is +100
-  [direct   ] da1206356b  Alice prefers email
+  [direct   ] 2852b6a307  Alice prefers email
+  [direct   ] 4fd0ffc60d  Alice phone is +100
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject crm/alice --request-id DSAR-17 --basis &#x27;Art. 17(1)(a)&#x27;
 erased 2 record(s), 2 tombstone(s)
 
-$ inspeximus --path mem.json --receipts erasure-certificate --request-id DSAR-17 --out DSAR-17.cert.json
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt erasure-certificate --request-id DSAR-17 --out DSAR-17.cert.json
 wrote erasure certificate -&gt; DSAR-17.cert.json  (2 erasure(s) attested, scoped to DSAR-17)
 
-$ inspeximus erasure-verify DSAR-17.cert.json --store mem.json
+$ inspeximus erasure-verify DSAR-17.cert.json --store mem.json --expected-pubkey 8e670495795827c32d8020db85aed35af7c9ff2ed853fdad032bc2819a1c11ed
   OK   chain_intact
   OK   signatures_valid
   OK   signed
   OK   anchor_matches_tip
+  OK   anchor_consistent
+  n/a  anchor_witnessed
   OK   summary_derivable
   OK   attests_an_erasure
   OK   store_absent
+  OK   store_bound
   OK   scope_intact
+  NOTE NOT WITNESSED: no --expected-anchor, so the anchor was checked against itself only; a chain trimmed and re-anchored by the key holder passes. Pin an anchor you obtained outside the operator&#x27;s control.
 
 VERDICT: PASS  (2 erasure(s) attested, absence checked)
 
@@ -347,8 +361,9 @@ $ inspeximus --path mem.json list
 - Bob phone is +300 [key=bob::phone]</pre>
     </div>
     <p class="sec-sub" style="margin-top:14px">Bob is untouched. Alice's two records are gone from the
-      store, two signed tombstones say when and under which request, and the certificate carries
-      enough for a reader to check all of it without the operator's private key.</p>
+      store's live rows, two signed tombstones say when and under which request, and the verifier pinned
+      the writer's public key from the writer-key output. The NOTE line is part of the run: nothing on
+      this page witnessed the anchor, and the verifier says so rather than passing quietly.</p>
   </div>
 </section>
 
@@ -358,19 +373,27 @@ $ inspeximus --path mem.json list
       <h2>What does the certificate prove, and what does it not?</h2>
     </div>
     <div class="prose">
-      <p>It proves that this store erased these records under this request, that the receipt chain
-        around the erasure is intact and signed by the writer's key, and, when the verifier is handed
-        the store, that the erased ids are absent from it. A dry run before the erasure names the
-        blast radius, direct and inherited, and refuses a subject that shares its canonical form with a
-        different source until you say <code>--allow-ambiguous</code>.</p>
+      <p>A reader checks it with the public key alone. Against a party who does not hold the signing
+        key, the signatures and the chain prove the tombstones were not altered, the anchor describes the
+        chain in every field (count, RFC 6962 root, tip), and, when the verifier is handed the store,
+        that the ids in the chain are absent from that store's live rows and that the store is the one
+        the certificate was issued from. Against the operator, who holds the key, the certificate proves
+        consistency, not history: an operator can re-sign a rewritten chain. Pass
+        <code>--expected-pubkey</code> with a key you obtained out of band, and
+        <code>--expected-anchor</code> with an anchor witnessed outside the operator's control (a
+        co-signature, a timestamp, your own earlier copy); a chain trimmed after it was witnessed then
+        fails whoever holds the key.</p>
       <p>It does not prove that no copy exists anywhere. Vector indexes, prompt logs, model weights and
-        backups are outside the store, and <code>erasure-audit</code> prints that limit on every run.
-        A record whose writer never declared <code>derived_from</code> carries no lineage, so the
-        audit reports <code>UNAUDITED</code> rather than a pass, because a party that stops declaring
-        lineage would otherwise always look clean.</p>
-      <p>Access and rectification travel the same path: <code>export_subject()</code> returns exactly
-        the records an erasure would remove (Art. 15), and <code>rectify()</code> supersedes a value
-        under its key with a receipt naming the actor and the reason (Art. 16). The
+        backups are outside the store, and the certificate names that scope in its own text. The write
+        receipts beside the store keep an unsalted SHA-256 of each record's text and key, which a
+        reader with a candidate list can test, so treat <code>mem.json.receipts.json</code> as personal
+        data until the receipt digest is salted. A record whose writer never declared
+        <code>derived_from</code> carries no lineage, so the audit reports <code>UNAUDITED</code> rather
+        than a pass, because a party that stops declaring lineage would otherwise always look clean.</p>
+      <p>Access and rectification travel the same path: <code>export_subject()</code> returns the copy
+        of the records an erasure would remove, with provenance, for an Art. 15(3) request, and
+        <code>rectify()</code> supersedes the value under its key and, when an action ledger is
+        attached, records the actor and the reason in a rights entry (Art. 16). The
         <a href="./ai-act.html">EU AI Act and GDPR page</a> maps every article to the call that
         answers it and marks where the mapping stops.</p>
     </div>
@@ -383,12 +406,15 @@ $ inspeximus --path mem.json list
       <h2>Which agent-memory libraries document verifiable erasure?</h2>
     </div>
     <div class="prose">
-      <p>Of the agent-memory products whose documentation we read for the
-        <a href="./ai-act.html">evidence page</a>, one documents an erasure that leaves a signed
-        tombstone and a certificate a third party can check. The others document a plain
-        <code>delete()</code> or <code>forget()</code>. That is a reading of their documentation on the
-        date on that page, not a proof of a universal negative. If a product added it since, open an
-        issue and the table changes.</p>
+      <p>Of the nine memory products whose documentation we read in July 2026 for the
+        <a href="./ai-act.html">evidence page</a>, none documents an erasure that leaves a signed
+        tombstone and a certificate a third party can check. They document a plain
+        <code>delete()</code> or <code>forget()</code>. Outside those nine, Lethe (Apache-2.0, pgvector
+        and Pinecone connectors) issues an Ed25519-signed deletion certificate with an absence re-query,
+        and Deletable sells a crypto-erasure certificate; neither writes the subject into the record at
+        write time, follows declared lineage, or leaves a tombstone. That is a reading of their
+        documentation on those dates, not a proof of a universal negative. If a product added it since,
+        open an issue and the table changes.</p>
     </div>
   </div>
 </section>
@@ -399,16 +425,17 @@ $ inspeximus --path mem.json list
       <h2>How do I run this on my own store?</h2>
     </div>
     <div class="tablecard">
-<pre class="cmd">pip install inspeximus
+<pre class="cmd">pip install &quot;inspeximus[crypto]&quot;
 inspeximus writer-key --new --out key.txt
 inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &quot;...&quot; --source &lt;subject&gt;
 inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject &lt;subject&gt; --request-id &lt;DSAR id&gt; --dry-run
 inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject &lt;subject&gt; --request-id &lt;DSAR id&gt;
-inspeximus --path mem.json --receipts erasure-certificate --request-id &lt;DSAR id&gt; --out cert.json
-inspeximus erasure-verify cert.json --store mem.json</pre>
+inspeximus --path mem.json --receipts --receipt-key-file key.txt erasure-certificate --request-id &lt;DSAR id&gt; --out cert.json
+inspeximus erasure-verify cert.json --store mem.json --expected-pubkey &lt;the writer&#x27;s public key&gt;</pre>
     </div>
-    <p class="sec-sub" style="margin-top:14px">Zero dependencies. The verifier is the same package;
-      anyone with the certificate and the store can run it. From Python the calls are
+    <p class="sec-sub" style="margin-top:14px">The store has no dependencies; signing and signature
+      checks need the <code>[crypto]</code> extra. The verifier is the same package, so anyone with the
+      certificate, the store and the public key can run it. From Python the calls are
       <code>remember(source=...)</code>, <code>forget_subject()</code>, <code>erasure_certificate()</code>
       and <code>verify_erasure_certificate()</code>. The MCP server exposes the same four to Claude Code,
       Cursor and any other client; see <a href="./claude-code.html">Claude Code, one line</a>.</p>
@@ -416,7 +443,7 @@ inspeximus erasure-verify cert.json --store mem.json</pre>
 </section>
 <footer>
   <div class="wrap">
-    <div>inspeximus &mdash; long-term memory for AI agents that stays correct.
+    <div>inspeximus: long-term memory for AI agents that stays correct.
       <a href="./">Overview</a> &middot;
       <a href="./compare.html">The measurement</a> &middot;
       <a href="./claude-code.html">Claude Code</a> &middot;

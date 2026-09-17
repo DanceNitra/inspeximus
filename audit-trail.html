@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Audit trail for AI agents: what the agent knew when it acted, verified offline | inspeximus</title>
-  <meta name="description" content="A signed, hash-chained action ledger for AI agents that records what the memory held at each action, digests inputs and outputs without storing them, answers whether a retained transcript matches, and exports a draft-sharif-agent-audit-trail-04 file. EU AI Act Article 12 event logging. A real run, unedited." />
+  <meta name="description" content="A signed, hash-chained action ledger for AI agents that records a digest of what the memory held at each action, digests inputs and outputs without storing them, answers whether a retained transcript matches, and exports in the draft-sharif-agent-audit-trail-04 schema. EU AI Act Article 12 event logging for high-risk systems. A real run, with the verifier&#x27;s limits on the page." />
   <link rel="canonical" href="https://dancenitra.github.io/inspeximus/audit-trail.html" />
   <meta property="og:title" content="What did the agent know when it acted? An audit trail that answers offline" />
-  <meta property="og:description" content="Signed action ledger bound to the memory store; matches() checks a retained transcript character by character; export in the IETF agent-audit-trail draft. Real run." />
+  <meta property="og:description" content="Signed action ledger bound to the memory store; matches() answers false for a transcript that differs by one character; export in the IETF agent-audit-trail draft schema. Real run." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://dancenitra.github.io/inspeximus/audit-trail.html" />
   <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
@@ -15,7 +15,7 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="What did the agent know when it acted? An audit trail that answers offline" />
-  <meta name="twitter:description" content="Signed action ledger bound to the memory store; matches() checks a retained transcript character by character; export in the IETF agent-audit-trail draft. Real run." />
+  <meta name="twitter:description" content="Signed action ledger bound to the memory store; matches() answers false for a transcript that differs by one character; export in the IETF agent-audit-trail draft schema. Real run." />
   <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta name="theme-color" content="#0d7d84" />
   <script type="application/ld+json">
@@ -25,7 +25,7 @@
       {
         "@type": "TechArticle",
         "headline": "What did the agent know when it acted? An audit trail that answers, offline.",
-        "description": "A signed, hash-chained action ledger for AI agents that records what the memory held at each action, digests inputs and outputs without storing them, answers whether a retained transcript matches, and exports a draft-sharif-agent-audit-trail-04 file. EU AI Act Article 12 event logging. A real run, unedited.",
+        "description": "A signed, hash-chained action ledger for AI agents that records a digest of what the memory held at each action, digests inputs and outputs without storing them, answers whether a retained transcript matches, and exports in the draft-sharif-agent-audit-trail-04 schema. EU AI Act Article 12 event logging for high-risk systems. A real run, with the verifier's limits on the page.",
         "url": "https://dancenitra.github.io/inspeximus/audit-trail.html",
         "datePublished": "2026-09-17",
         "author": {
@@ -47,7 +47,7 @@
             "name": "What is an audit trail for an AI agent?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "A signed, hash-chained record of each action the agent took, with what it was given, what came back, who acted, and what its memory held at that moment. inspeximus keeps that ledger beside the memory store and binds each entry to the store's receipt chain, so a reader can recompute every hash, link and signature offline."
+              "text": "A signed, hash-chained record of each action the agent took, with digests of what it was given and what came back, who acted, and a digest of what its memory held at that moment. inspeximus keeps that ledger beside the memory store and binds each entry to the store's receipt chain, so a reader can recompute every hash, link and signature offline."
             }
           },
           {
@@ -55,7 +55,7 @@
             "name": "How do I prove what the agent knew when it acted?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "inspeximus actions knew <seq> prints the memory state digest, the number of records and receipts, and what was recalled before the action. inspeximus actions matches <seq> --inputs <json> --output <json> recomputes the salted digest of a retained transcript and answers true or false per side; one changed character answers false."
+              "text": "inspeximus actions knew <seq> prints the memory state digest, the receipt it was bound to, the number of records and receipts, and the recall window the entry consumed. inspeximus actions matches <seq> --inputs <json> --output <json> recomputes the salted digest of a retained transcript and answers true or false per side; a transcript that differs by one character answers false. The digest holds no content: with the store and its receipt chain a reader checks which records were current then and that none was edited since."
             }
           },
           {
@@ -63,7 +63,7 @@
             "name": "Does the ledger store my prompts?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. Inputs and outputs are digested with a salt and the content stays with you, unless you pass --keep-content. Only the holder of the salt file can run matches(), so a reader cannot test a guess against the ledger."
+              "text": "No. Inputs and outputs are digested with a salt and the content stays with you, unless you pass --keep-content. Only the holder of the salt file, kept beside the ledger by default, can run matches(); move it if the ledger is handed over without the salt. A ledger without its salt refuses to answer rather than answering false."
             }
           },
           {
@@ -71,7 +71,7 @@
             "name": "Can I hand this to an auditor in a standard format?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. inspeximus actions export-trail writes the ledger as a draft-sharif-agent-audit-trail-04 JSONL file, hash-chained over RFC 8785 canonical JSON, with the Ed25519 signature carried under action_detail, and --verify checks a file from any conformant producer."
+              "text": "Yes. inspeximus actions export-trail writes the ledger in the record schema and hash chain of draft-sharif-agent-audit-trail-04, an individual IETF Internet-Draft: twelve mandatory fields, prev_hash over RFC 8785 canonical JSON. The draft registers ES256 and ML-DSA-65 signatures; this ledger signs with Ed25519, so the signature and the memory digest travel as an extension under action_detail.inspeximus. --verify checks the mandatory fields and the chain of a file from any producer; the signature is checked by actions verify on the ledger, not by --verify on the export."
             }
           }
         ]
@@ -287,15 +287,16 @@
 </header>
 <section class="hero">
   <div class="wrap prose">
-    <p class="eyebrow">EU AI Act Art. 12 &middot; event logging</p>
+    <p class="eyebrow">EU AI Act Art. 12 &middot; event logging for high-risk systems</p>
     <h1 class="head">What did the agent know when it acted?
       <em>An audit trail that answers, offline.</em></h1>
-    <p class="lede">Action loggers sign what an agent did. inspeximus also signs what its memory held
-      at that moment, digests the inputs and outputs without storing them, and lets a reader with a
-      retained transcript check it later, one character at a time. The transcript on this page is a
-      real run, unedited.</p>
+    <p class="lede">Action loggers sign what an agent did. inspeximus also signs a digest of what its
+      memory held at that moment, digests the inputs and outputs without storing them, and lets a reader
+      with a retained transcript check it later: a transcript that differs by one character answers
+      false. The transcript on this page is a real run; ids and hashes change per run, nothing else
+      does.</p>
     <div class="hero-cta">
-      <a class="btn solid" href="https://pypi.org/project/inspeximus/">pip install inspeximus</a>
+      <a class="btn solid" href="https://pypi.org/project/inspeximus/">pip install "inspeximus[crypto]"</a>
       <a class="btn" href="./ai-act.html">The EU AI Act and GDPR mapping</a>
     </div>
   </div>
@@ -306,28 +307,35 @@
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.0</p>
+      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.1</p>
       <h2>How is one action recorded, and what does the record hold?</h2>
       <p class="sec-sub">One memory, one tool call. The entry is signed and bound to the store's receipt
         chain; the inputs and output are digested, not stored.</p>
     </div>
     <div class="tablecard">
 <pre class="cmd">$ inspeximus writer-key --new --out key.txt
+secret written to key.txt (0600)
+public key: 7649bb32db05e344f4d8d6982b92e8886298d9217d0fb4dc93fef155aff37aa3
+
+point the server at it:  INSPEXIMUS_WRITER_KEY_FILE=key.txt
+pin this writer as trusted with trust_seeds={&#x27;key:7649bb32db05e344f4d8d6982b92e8886298d9217d0fb4dc93fef155aff37aa3&#x27;}
+KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.
+
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice phone is +100&#x27; --key alice::phone --source crm/alice
-remembered d7b5ad7cd3 [key=alice::phone]
+remembered e1c4d8ccc1 [key=alice::phone]
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt actions record tool:sms --input &#x27;{&quot;to&quot;: &quot;+100&quot;, &quot;text&quot;: &quot;hi&quot;}&#x27; --output &#x27;{&quot;sent&quot;: true}&#x27; --actor support-agent
-recorded #0 tool:sms  hash 9c95dfa32992  SIGNED
+recorded #0 tool:sms  hash 68dfdad73355  SIGNED
 
 $ inspeximus --path mem.json actions knew 0
 {
   &quot;seq&quot;: 0,
   &quot;action&quot;: &quot;tool:sms&quot;,
-  &quot;ts&quot;: 1789645197.9655478,
+  &quot;ts&quot;: 1789648531.390615,
   &quot;memory_state&quot;: {
-    &quot;digest&quot;: &quot;69e3a70a0990de04cb5d67b03287c06f1a9c707e1cce51dcca911ae7b8545197&quot;,
+    &quot;digest&quot;: &quot;13360a8e1503ce6d7b387b8a9d7eac8823f3bee94c3d55f72f3e3fe9f2c9180a&quot;,
     &quot;records&quot;: 1,
-    &quot;last_receipt&quot;: &quot;da3e9678fc14c3a9c1e43aff0172f9fb9132c0cb3a2f1db4310f823cdfd14c17&quot;,
+    &quot;last_receipt&quot;: &quot;46a855df52cec14d0f4ea6bed822534a112a66c416248afd8a430aa7f73290f4&quot;,
     &quot;receipts&quot;: 1,
     &quot;recalled&quot;: [],
     &quot;recalled_at&quot;: null,
@@ -337,6 +345,10 @@ $ inspeximus --path mem.json actions knew 0
   &quot;recalled_now&quot;: []
 }</pre>
     </div>
+    <p class="sec-sub" style="margin-top:14px"><code>recalled</code> is empty here because the CLI opens
+      a new handle per command; from Python or the MCP server, a recall made on the same handle before
+      the action is listed in the entry. The digest is a hash over each record's id, status, timestamp, key,
+      tenant and content hash at that moment; it holds no content.</p>
   </div>
 </section>
 
@@ -345,11 +357,13 @@ $ inspeximus --path mem.json actions knew 0
     <div class="sec-head">
       <h2>Does a retained transcript match the entry, and what happens when one character changes?</h2>
       <p class="sec-sub">The same inputs answer true on both sides. Change "hi" to "hello" in the retained
-        input and the input side answers false while the output side still matches.</p>
+        input and the input side answers false while the output side still matches. The comparison is
+        over JSON values: key order and whitespace never flip it, any value does.</p>
     </div>
     <div class="tablecard">
 <pre class="cmd">$ cat in.json
 {&quot;to&quot;: &quot;+100&quot;, &quot;text&quot;: &quot;hi&quot;}
+
 $ inspeximus --path mem.json actions matches 0 --inputs in.json --output out.json
 {
   &quot;seq&quot;: 0,
@@ -360,6 +374,7 @@ $ inspeximus --path mem.json actions matches 0 --inputs in.json --output out.jso
 
 $ cat in_edited.json
 {&quot;to&quot;: &quot;+100&quot;, &quot;text&quot;: &quot;hello&quot;}
+
 $ inspeximus --path mem.json actions matches 0 --inputs in_edited.json --output out.json
 {
   &quot;seq&quot;: 0,
@@ -375,15 +390,19 @@ $ inspeximus --path mem.json actions matches 0 --inputs in_edited.json --output 
   <div class="wrap">
     <div class="sec-head">
       <h2>How does an auditor verify the ledger and take it away in a standard format?</h2>
-      <p class="sec-sub">verify recomputes every hash, link and signature and binds each entry to the
-        store; export-trail writes the IETF draft format and verifies a file from any producer.</p>
+      <p class="sec-sub"><code>verify</code> recomputes every hash, link and signature, binds each entry to
+        a position in the store's receipt chain, and re-hashes each record against its write receipt, so a
+        record edited on disk under an unchanged chain fails the second line. <code>export-trail</code>
+        writes the IETF draft's record schema and chain; <code>--verify</code> checks the fields and the
+        chain of a file from any producer.</p>
     </div>
     <div class="tablecard">
-<pre class="cmd">$ inspeximus --path mem.json actions verify
+<pre class="cmd">$ inspeximus --path mem.json actions verify --expected-pubkey 7649bb32db05e344f4d8d6982b92e8886298d9217d0fb4dc93fef155aff37aa3
 OK action ledger mem.json.actions.json  (1 entries, bound to mem.json)
+OK store records against their write receipts (1 receipt(s))
 
 $ inspeximus --path mem.json actions export-trail --out trail.jsonl --agent-id urn:agent:support.example --agent-version 1.0.0
-wrote trail.jsonl: 1 records, draft-sharif-agent-audit-trail-04, session 558cb15c-3830-4ee4-af2c-6056acb47180, tail 16ed55c41f6c
+wrote trail.jsonl: 1 records, draft-sharif-agent-audit-trail-04, session 70b027d0-3796-41a8-aec5-c098a280a32c, tail e97a9b0bcb8c
 
 $ inspeximus actions export-trail --verify trail.jsonl
 OK trail.jsonl (draft-sharif-agent-audit-trail-04)</pre>
@@ -404,17 +423,20 @@ OK trail.jsonl (draft-sharif-agent-audit-trail-04)</pre>
     </div>
     <div class="prose">
       <p>An action logger signs what the agent did. This ledger also carries a signed digest of the
-        memory the agent acted on, which is the half an investigator asks for first: not only what the
-        agent did, but what it held when it did it. Both sit in one entry, and the memory side is bound
-        to the store's own receipt chain, so a store rewritten after the fact no longer matches its
-        ledger. The <a href="./compare.html">comparison page</a> carries the other measurement this
-        library is built around: whether a correction stays corrected.</p>
+        memory the agent acted on, which is the half an investigator asks for first: what the agent
+        held when it did it, beside what it did. Both sit in one entry, and the memory side is bound
+        to the store's own receipt chain, so a store rewritten by someone without the signing key no
+        longer matches its ledger. An operator who holds the key can rewrite both, and can drop trailing
+        entries; a witnessed anchor (<code>inspeximus actions timestamp</code>, or a co-signed anchor)
+        is what closes that, and the code's own docstrings say so. The
+        <a href="./compare.html">comparison page</a> carries the other measurement this library is
+        built around: whether a correction stays corrected.</p>
     </div>
   </div>
 </section>
 <footer>
   <div class="wrap">
-    <div>inspeximus &mdash; long-term memory for AI agents that stays correct.
+    <div>inspeximus: long-term memory for AI agents that stays correct.
       <a href="./">Overview</a> &middot;
       <a href="./compare.html">The measurement</a> &middot;
       <a href="./claude-code.html">Claude Code</a> &middot;
