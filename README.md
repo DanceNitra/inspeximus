@@ -678,7 +678,8 @@ not be the same instrument.
 | [Claude Code setup](https://dancenitra.github.io/inspeximus/claude-code.html) | the one-line MCP install, and what each of the three hooks does |
 | [The long version](docs/DEEP_DIVE.md) | every mechanism, every measurement, and the ones that failed |
 | [Full API](docs/API.md) | every method, with the failure it exists to prevent |
-| [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts |
+| [Erasure & GDPR](docs/ERASURE.md) | right-to-erasure across derived summaries, with receipts; the [erasure page](https://dancenitra.github.io/inspeximus/erasure.html) shows a real run end to end |
+| [Audit trail page](https://dancenitra.github.io/inspeximus/audit-trail.html) | what the agent knew when it acted: a signed ledger entry, a transcript match, and the IETF draft export, as a real run |
 | [EU AI Act evidence page](https://dancenitra.github.io/inspeximus/ai-act.html) | Article 12 logging and Article 17 erasure, mapped to what the store already keeps; the mapping's text is [docs/AI_ACT.md](docs/AI_ACT.md) |
 | [MCP tools](MCP_LISTINGS.md) | all 98, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |

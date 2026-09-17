@@ -6,6 +6,8 @@
 
 - [Home](https://dancenitra.github.io/inspeximus/): what it is, the measured tables against mem0, Graphiti and Hindsight, install
 - [EU AI Act and GDPR evidence](https://dancenitra.github.io/inspeximus/ai-act.html): Article 12 event logging, Article 19 retention, GDPR Article 17 erasure certificates, RFC 3161 timestamps with the eIDAS qualified check, the agent-audit-trail export
+- [GDPR erasure](https://dancenitra.github.io/inspeximus/erasure.html): delete one person from an agent's memory by subject, dry-run the blast radius, and verify the erasure certificate offline with no key; a real run, eight checks OK
+- [Audit trail](https://dancenitra.github.io/inspeximus/audit-trail.html): what the agent knew when it acted; a signed ledger entry bound to the memory store, a retained transcript checked against it, and the draft-sharif-agent-audit-trail-04 export; a real run
 - [Comparison](https://dancenitra.github.io/inspeximus/compare.html): does agent memory keep a correction; inspeximus 100%, Graphiti 86.7%, mem0 53.3% over 30 trials each, with the control
 - [Claude Code](https://dancenitra.github.io/inspeximus/claude-code.html): persistent memory for Claude Code, Cursor, Windsurf, Codex and Cline in one config line
 - [Quickstart](https://dancenitra.github.io/inspeximus/quickstart.html): running in under a minute

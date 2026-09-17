@@ -3,19 +3,19 @@
 <head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Does your agent memory keep a correction? mem0 vs Graphiti vs inspeximus</title>
-  <meta name="description" content="Measured: after a stored fact is corrected, how often does the old value come back? inspeximus 0%, Graphiti 13.3%, mem0 46.7% (n=30 each, native configs). Open harness, with a control." />
-  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/compare.html" />
-  <meta property="og:title" content="When you correct a fact, does your agent memory keep it corrected?" />
-  <meta property="og:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <title>Audit trail for AI agents: what the agent knew when it acted, verified offline | inspeximus</title>
+  <meta name="description" content="A signed, hash-chained action ledger for AI agents that records what the memory held at each action, digests inputs and outputs without storing them, answers whether a retained transcript matches, and exports a draft-sharif-agent-audit-trail-04 file. EU AI Act Article 12 event logging. A real run, unedited." />
+  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/audit-trail.html" />
+  <meta property="og:title" content="What did the agent know when it acted? An audit trail that answers offline" />
+  <meta property="og:description" content="Signed action ledger bound to the memory store; matches() checks a retained transcript character by character; export in the IETF agent-audit-trail draft. Real run." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/compare.html" />
+  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/audit-trail.html" />
   <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="When you correct a fact, does your agent memory keep it corrected?" />
-  <meta name="twitter:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <meta name="twitter:title" content="What did the agent know when it acted? An audit trail that answers offline" />
+  <meta name="twitter:description" content="Signed action ledger bound to the memory store; matches() checks a retained transcript character by character; export in the IETF agent-audit-trail draft. Real run." />
   <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta name="theme-color" content="#0d7d84" />
   <script type="application/ld+json">
@@ -24,29 +24,55 @@
     "@graph": [
       {
         "@type": "TechArticle",
-        "headline": "When you correct a fact, does your agent memory keep it corrected?",
-        "description": "A measured comparison of inspeximus, Graphiti and mem0 on one question: after a stored fact is corrected, how often does the old value come back? n=30 per system, each on its own native configuration.",
-        "url": "https://dancenitra.github.io/inspeximus/compare.html",
-        "author": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" },
-        "publisher": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" }
+        "headline": "What did the agent know when it acted? An audit trail that answers, offline.",
+        "description": "A signed, hash-chained action ledger for AI agents that records what the memory held at each action, digests inputs and outputs without storing them, answers whether a retained transcript matches, and exports a draft-sharif-agent-audit-trail-04 file. EU AI Act Article 12 event logging. A real run, unedited.",
+        "url": "https://dancenitra.github.io/inspeximus/audit-trail.html",
+        "datePublished": "2026-09-17",
+        "author": {
+          "@type": "Organization",
+          "name": "Agora",
+          "url": "https://dancenitra.github.io/agora/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Agora",
+          "url": "https://dancenitra.github.io/agora/"
+        }
       },
       {
         "@type": "FAQPage",
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Why measure resurrection instead of recall accuracy?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Recall accuracy is widely benchmarked and we are not the best at it. What almost nobody publishes is what happens after a stored fact turns out to be wrong. An agent that recalls well and re-serves a corrected value confidently is the failure that costs you, and it does not show up in a recall score." }
+            "name": "What is an audit trail for an AI agent?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A signed, hash-chained record of each action the agent took, with what it was given, what came back, who acted, and what its memory held at that moment. inspeximus keeps that ledger beside the memory store and binds each entry to the store's receipt chain, so a reader can recompute every hash, link and signature offline."
+            }
           },
           {
             "@type": "Question",
-            "name": "Is this a general memory-quality comparison?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. It is one narrow adversarial cut. On plain retrieval benchmarks other systems can and do beat us. Treat this page as the answer to a single question, not a ranking." }
+            "name": "How do I prove what the agent knew when it acted?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "inspeximus actions knew <seq> prints the memory state digest, the number of records and receipts, and what was recalled before the action. inspeximus actions matches <seq> --inputs <json> --output <json> recomputes the salted digest of a retained transcript and answers true or false per side; one changed character answers false."
+            }
           },
           {
             "@type": "Question",
-            "name": "Which versions were measured, and when?",
-            "acceptedAnswer": { "@type": "Answer", "text": "mem0 was measured at 2.0.11 in 2026-07 and has not been re-run since; mem0 is on 2.0.18 now. Graphiti was run on its native Neo4j and OpenAI configuration. The version is stamped rather than the claim being restated as current." }
+            "name": "Does the ledger store my prompts?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Inputs and outputs are digested with a salt and the content stays with you, unless you pass --keep-content. Only the holder of the salt file can run matches(), so a reader cannot test a guess against the ledger."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I hand this to an auditor in a standard format?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. inspeximus actions export-trail writes the ledger as a draft-sharif-agent-audit-trail-04 JSONL file, hash-chained over RFC 8785 canonical JSON, with the Ed25519 signature carried under action_detail, and --verify checks a file from any conformant producer."
+            }
           }
         ]
       }
@@ -261,15 +287,16 @@
 </header>
 <section class="hero">
   <div class="wrap prose">
-    <p class="eyebrow">the measurement</p>
-    <h1 class="head">When you correct a fact, does your agent memory
-      <em>keep it corrected?</em></h1>
-    <p class="lede">Every memory library can store and retrieve. Far fewer publish what happens after a
-      stored fact turns out to be <b>wrong</b> &mdash; so we measured it, on three systems, each on its
-      own native configuration.</p>
+    <p class="eyebrow">EU AI Act Art. 12 &middot; event logging</p>
+    <h1 class="head">What did the agent know when it acted?
+      <em>An audit trail that answers, offline.</em></h1>
+    <p class="lede">Action loggers sign what an agent did. inspeximus also signs what its memory held
+      at that moment, digests the inputs and outputs without storing them, and lets a reader with a
+      retained transcript check it later, one character at a time. The transcript on this page is a
+      real run, unedited.</p>
     <div class="hero-cta">
-      <a class="btn solid" href="https://github.com/DanceNitra/ramr">The harness is open</a>
-      <a class="btn" href="./">What inspeximus is</a>
+      <a class="btn solid" href="https://pypi.org/project/inspeximus/">pip install inspeximus</a>
+      <a class="btn" href="./ai-act.html">The EU AI Act and GDPR mapping</a>
     </div>
   </div>
 </section>
@@ -279,110 +306,109 @@
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">n = 30 per system</p>
-      <h2>How often the old value comes back</h2>
-      <p class="sec-sub">A fact is stored, then corrected. We then ask for it again and count how often
-        the superseded value is what comes back.</p>
+      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.0</p>
+      <h2>How is one action recorded, and what does the record hold?</h2>
+      <p class="sec-sub">One memory, one tool call. The entry is signed and bound to the store's receipt
+        chain; the inputs and output are digested, not stored.</p>
     </div>
     <div class="tablecard">
-      <div class="tscroll">
-        <table>
-          <thead><tr><th>system</th><th>keeps the correction</th><th>resurrects the old value</th></tr></thead>
-          <tbody>
-            <tr class="us"><td>inspeximus</td><td><span class="mk yes">100%</span></td><td><span class="mk yes">0%</span></td></tr>
-            <tr><td>Graphiti 0.x <span class="mono" style="font-weight:400;color:var(--muted)">(Neo4j + OpenAI)</span></td><td>86.7%</td><td>13.3% <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [3.3, 26.7]</span></td></tr>
-            <tr><td>mem0 2.0.11 <span class="mono" style="font-weight:400;color:var(--muted)">(OpenAI native)</span></td><td>53.3%</td><td><b>46.7%</b> <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [30.0, 63.3]</span></td></tr>
-            <tr><td>inspeximus <span class="mono" style="font-weight:400;color:var(--muted)">&mdash; guard disabled</span></td><td><span class="mk no">0%</span></td><td>&mdash; the control</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+<pre class="cmd">$ inspeximus writer-key --new --out key.txt
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice phone is +100&#x27; --key alice::phone --source crm/alice
+remembered d7b5ad7cd3 [key=alice::phone]
 
-    <div class="callout">
-      <b>The bottom row is the point.</b> Turn our own guard off and we score zero. That is what tells
-      you the number is the mechanism doing work, and not the benchmark being kind to us. A comparison
-      without a control on the author&rsquo;s own system is a marketing table.
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt actions record tool:sms --input &#x27;{&quot;to&quot;: &quot;+100&quot;, &quot;text&quot;: &quot;hi&quot;}&#x27; --output &#x27;{&quot;sent&quot;: true}&#x27; --actor support-agent
+recorded #0 tool:sms  hash 9c95dfa32992  SIGNED
+
+$ inspeximus --path mem.json actions knew 0
+{
+  &quot;seq&quot;: 0,
+  &quot;action&quot;: &quot;tool:sms&quot;,
+  &quot;ts&quot;: 1789645197.9655478,
+  &quot;memory_state&quot;: {
+    &quot;digest&quot;: &quot;69e3a70a0990de04cb5d67b03287c06f1a9c707e1cce51dcca911ae7b8545197&quot;,
+    &quot;records&quot;: 1,
+    &quot;last_receipt&quot;: &quot;da3e9678fc14c3a9c1e43aff0172f9fb9132c0cb3a2f1db4310f823cdfd14c17&quot;,
+    &quot;receipts&quot;: 1,
+    &quot;recalled&quot;: [],
+    &quot;recalled_at&quot;: null,
+    &quot;recall_scope&quot;: &quot;this handle&quot;,
+    &quot;recall_before_previous_entry&quot;: false
+  },
+  &quot;recalled_now&quot;: []
+}</pre>
     </div>
   </div>
 </section>
 
-<hr class="rule" />
-
 <section>
-  <div class="wrap prose">
+  <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">what this is not</p>
-      <h2>The honest scope</h2>
+      <h2>Does a retained transcript match the entry, and what happens when one character changes?</h2>
+      <p class="sec-sub">The same inputs answer true on both sides. Change "hi" to "hello" in the retained
+        input and the input side answers false while the output side still matches.</p>
     </div>
-    <p>This is <b>one narrow adversarial cut</b>, not a general memory-quality score. On plain retrieval
-      benchmarks other systems can and do beat us, and we publish those results too rather than only the
-      cut we win. Read this page as the answer to a single question.</p>
-    <p>mem0 was measured at <b>2.0.11</b> (2026-07) and has <b>not</b> been re-run since; mem0 is on
-      2.0.18 now. The version is stamped rather than the claim being quietly restated as current &mdash;
-      if they have fixed it, this page is out of date and we would rather you could tell.</p>
-    <p>Confidence intervals are given because a 30-trial proportion is not a point. Ours is 0% with the
-      guard on and 100% with it off, which is a mechanism, not a sample.</p>
+    <div class="tablecard">
+<pre class="cmd">$ cat in.json
+{&quot;to&quot;: &quot;+100&quot;, &quot;text&quot;: &quot;hi&quot;}
+$ inspeximus --path mem.json actions matches 0 --inputs in.json --output out.json
+{
+  &quot;seq&quot;: 0,
+  &quot;action&quot;: &quot;tool:sms&quot;,
+  &quot;inputs&quot;: true,
+  &quot;output&quot;: true
+}
+
+$ cat in_edited.json
+{&quot;to&quot;: &quot;+100&quot;, &quot;text&quot;: &quot;hello&quot;}
+$ inspeximus --path mem.json actions matches 0 --inputs in_edited.json --output out.json
+{
+  &quot;seq&quot;: 0,
+  &quot;action&quot;: &quot;tool:sms&quot;,
+  &quot;inputs&quot;: false,
+  &quot;output&quot;: true
+}</pre>
+    </div>
   </div>
 </section>
 
-<hr class="rule" />
-
 <section>
-  <div class="wrap prose">
+  <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">reproduce it</p>
-      <h2>Run it against your own store</h2>
+      <h2>How does an auditor verify the ledger and take it away in a standard format?</h2>
+      <p class="sec-sub">verify recomputes every hash, link and signature and binds each entry to the
+        store; export-trail writes the IETF draft format and verifies a file from any producer.</p>
     </div>
-    <ol class="steps">
-      <li><b>Clone the harness.</b> It is a separate public repository so that the benchmark is not
-        maintained by the thing it measures.
-        <pre class="cmd">git clone https://github.com/DanceNitra/ramr</pre></li>
-      <li><b>Bring your own keys.</b> The inspeximus column runs locally and free; the mem0 and Graphiti
-        columns need an OpenAI key and, for Graphiti, a live Neo4j.</li>
-      <li><b>Run the backend comparison.</b> Raw per-trial arrays land in
-        <span class="mono">echo_resistance_backends_result.json</span> &mdash; not a summary, the arrays.
-        <pre class="cmd">python ramr_echo_resistance_backends.py</pre></li>
-    </ol>
-    <p>If your run disagrees with this table, that is a bug report we want, and it goes on the
-      <a href="https://dancenitra.github.io/agora/public/crucible/">public replication ledger</a>
-      whichever way it lands.</p>
+    <div class="tablecard">
+<pre class="cmd">$ inspeximus --path mem.json actions verify
+OK action ledger mem.json.actions.json  (1 entries, bound to mem.json)
+
+$ inspeximus --path mem.json actions export-trail --out trail.jsonl --agent-id urn:agent:support.example --agent-version 1.0.0
+wrote trail.jsonl: 1 records, draft-sharif-agent-audit-trail-04, session 558cb15c-3830-4ee4-af2c-6056acb47180, tail 16ed55c41f6c
+
+$ inspeximus actions export-trail --verify trail.jsonl
+OK trail.jsonl (draft-sharif-agent-audit-trail-04)</pre>
+    </div>
+    <p class="sec-sub" style="margin-top:14px">The ledger also records human oversight decisions
+      (approve, refuse, override, stop, review; Art. 14), Art. 50 disclosures, Art. 73 incidents with
+      their reporting clock, and lifecycle events. <code>inspeximus compliance</code> prints the evidence
+      labelled by article; the <a href="./ai-act.html">mapping page</a> states the boundary of each row.
+      Timestamps from a third party, and whether that authority was on the EU trusted list on that date,
+      are one command away: <code>inspeximus actions timestamp</code>.</p>
   </div>
 </section>
 
-<hr class="rule" />
-
 <section>
-  <div class="wrap prose">
+  <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">questions</p>
-      <h2>Reasonable objections</h2>
+      <h2>How is this different from an action logger?</h2>
     </div>
-    <div class="faq">
-      <details open>
-        <summary>Why measure resurrection instead of recall accuracy?</summary>
-        <p>Recall accuracy is widely benchmarked, and we are not the best at it. What almost nobody
-          publishes is what a system does after a stored fact turns out to be wrong. An agent that
-          recalls well and confidently re-serves a value you already corrected is the failure that
-          costs you, and it does not appear in a recall score at all.</p>
-      </details>
-      <details>
-        <summary>Isn&rsquo;t 100% just a benchmark you designed to win?</summary>
-        <p>That is the right suspicion, and it is why the control row exists. With the same harness,
-          the same task and our guard switched off, we resurrect the old value every time. The delta is
-          attributable to one mechanism rather than to the benchmark&rsquo;s shape.</p>
-      </details>
-      <details>
-        <summary>How does inspeximus actually do it?</summary>
-        <p>A correction is a first-class write: <span class="mono">remember(key=...)</span> retires the
-          previous value for that key, deterministically, with no model in the loop deciding which is
-          newer. The retirement is a record you can audit, revert with
-          <span class="mono">revert(key)</span>, and prove.</p>
-      </details>
-      <details>
-        <summary>Does this need a vector database?</summary>
-        <p>No. inspeximus is one zero-dependency file. Semantic recall is optional; the lexical
-          fallback needs nothing installed.</p>
-      </details>
+    <div class="prose">
+      <p>An action logger signs what the agent did. This ledger also carries a signed digest of the
+        memory the agent acted on, which is the half an investigator asks for first: not only what the
+        agent did, but what it held when it did it. Both sit in one entry, and the memory side is bound
+        to the store's own receipt chain, so a store rewritten after the fact no longer matches its
+        ledger. The <a href="./compare.html">comparison page</a> carries the other measurement this
+        library is built around: whether a correction stays corrected.</p>
     </div>
   </div>
 </section>

@@ -320,7 +320,7 @@ NOT_TESTABLE_HERE = [
 SURFACE = ("README.md", "docs/DEEP_DIVE.md", "MCP_LISTINGS.md", "index.html",
            # New pages join the SURFACE in the same commit that creates them. A published
            # page outside the audit is exactly the hole the tests badge sat in.
-           "compare.html", "claude-code.html", "quickstart.html")
+           "compare.html", "claude-code.html", "quickstart.html", "erasure.html", "audit-trail.html")
 
 #: `transparency/index.html` is published and is DELIBERATELY not in SURFACE. Declared here rather
 #: than left silent, because "not in the table" and "not looked at" are different statements.
@@ -572,6 +572,42 @@ NUMBER_CLAIMS = [
        "python -c \"import time;t=time.time();from inspeximus import Inspeximus;"
        "m=Inspeximus('m.json');m.remember('a',key='k');m.remember('b',key='k');"
        "m.recall('a');m.revert('k');print(int((time.time()-t)*1000),'ms')\""),
+
+    # ---- erasure.html and audit-trail.html: two real CLI runs (added 2026-09-17) ----------------
+    # Each page publishes one transcript. The COUNTS are the claims; ids, hashes, timestamps and the
+    # session id are per-run literals and are declared below as non-claims.
+    _c("erasure-dry-run", "erasure.html", ["2", "2", "0"],
+       "would erase 2 record(s): 2 naming the subject, 0 reached through lineage",
+       "The dry run names 2 records, both direct, none through lineage",
+       "REPRODUCIBLE", "python tools/page_runs.py erasure"),
+    _c("erasure-erased", "erasure.html", ["2", "2"],
+       "erased 2 record(s), 2 tombstone(s)",
+       "forget-subject erases the 2 records and leaves 2 tombstones",
+       "REPRODUCIBLE", "python tools/page_runs.py erasure"),
+    _c("erasure-cert", "erasure.html", ["2"],
+       "(2 erasure(s) attested, scoped to DSAR-17)",
+       "The certificate attests the 2 erasures of DSAR-17",
+       "REPRODUCIBLE", "python tools/page_runs.py erasure"),
+    _c("erasure-verdict", "erasure.html", ["2"],
+       "VERDICT: PASS  (2 erasure(s) attested, absence checked)",
+       "erasure-verify passes all eight checks and attests 2 erasures",
+       "REPRODUCIBLE", "python tools/page_runs.py erasure"),
+    _c("ledger-knew-records", "audit-trail.html", ["1,"],
+       "&quot;records&quot;: 1,",
+       "The memory state at the action held 1 record",
+       "REPRODUCIBLE", "python tools/page_runs.py ledger"),
+    _c("ledger-knew-receipts", "audit-trail.html", ["1,"],
+       "&quot;receipts&quot;: 1,",
+       "The memory state at the action held 1 receipt",
+       "REPRODUCIBLE", "python tools/page_runs.py ledger"),
+    _c("ledger-verify", "audit-trail.html", ["1"],
+       "OK action ledger mem.json.actions.json  (1 entries, bound to mem.json)",
+       "actions verify reports 1 entry bound to the store",
+       "REPRODUCIBLE", "python tools/page_runs.py ledger"),
+    _c("ledger-export", "audit-trail.html", ["1"],
+       "wrote trail.jsonl: 1 records, draft-sharif-agent-audit-trail-04",
+       "export-trail writes 1 record in the draft format",
+       "REPRODUCIBLE", "python tools/page_runs.py ledger"),
 
     # ---- index.html: the 2.5.0 section and the corrected echo caveat ----
     # One row per LINE again: the audit requires the pin on the same source line as each token, which
@@ -1130,6 +1166,39 @@ NUMBER_CLAIMS = [
 #: total moved. Nothing here may be a measurement -- if a row needs the word "measured", it belongs
 #: in NUMBER_CLAIMS with a command instead.
 NON_CLAIM_TOKENS = {
+    "erasure.html": {
+        # Article numbers, dates, the run's example literals and record ids. The counts are in
+        # NUMBER_CLAIMS (erasure-*). Checked by `python tools/page_runs.py erasure`.
+        "17": (3, "GDPR Art. 17 in the eyebrow, the --basis 'Art. 17(1)(a)' argument, and Art. 17 in prose"),
+        "2026": (2, "the run date 2026-09-17 in the eyebrow and the transparency-log year in the footer"),
+        "25": (1, "the GDPR application date, 25 May 2018"),
+        "2018": (1, "the GDPR application date, 25 May 2018"),
+        "100": (2, "the example phone number +100 in the command and the dry-run listing"),
+        "300": (2, "the example phone number +300 in the command and the final list"),
+        "693": (2, "record id 693bfceed2, printed at write and in the dry run"),
+        "9": (1, "record id 9d18377508"),
+        "1": (1, "the paragraph digit in Art. 17(1)(a)"),
+        "15": (1, "GDPR Art. 15, an article number"),
+        "16": (1, "GDPR Art. 16, an article number"),
+    },
+    "audit-trail.html": {
+        # Article numbers, sequence numbers, the run's example literals, hashes and the session id.
+        # The counts are in NUMBER_CLAIMS (ledger-*). Checked by `python tools/page_runs.py ledger`.
+        "12": (2, "EU AI Act Art. 12 in the eyebrow and in prose"),
+        "14": (1, "EU AI Act Art. 14, an article number"),
+        "50": (1, "EU AI Act Art. 50, an article number"),
+        "73": (1, "EU AI Act Art. 73, an article number"),
+        "2026": (2, "the run date 2026-09-17 in the eyebrow and the transparency-log year in the footer"),
+        "8785,": (1, "RFC 8785, JSON Canonicalization Scheme -- a citation"),
+        "100": (4, "the example phone number +100 in the remember command, the record command and both retained inputs"),
+        "0": (4, "sequence number 0: 'recorded #0', 'actions knew 0' and 'actions matches 0' twice"),
+        "0,": (3, "'\"seq\": 0,' in the three JSON outputs"),
+        "9": (1, "the record hash 9c95dfa32992"),
+        "1789645197.9655478": (1, "the entry's timestamp, a per-run literal"),
+        "69": (1, "the memory-state digest 69e3a7..., a per-run literal"),
+        "558": (1, "the export session id 558cb15c-..., a per-run literal"),
+        "16": (1, "the export tail hash 16ed55c41f6c, a per-run literal"),
+    },
     "quickstart.html": {
         # Step numbers, a Python floor and the two fixture hostnames. None is a measurement.
         "1": (1, "step number '1. Install'"),

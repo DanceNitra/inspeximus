@@ -3,19 +3,19 @@
 <head><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-BJNQ0ZHY21"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BJNQ0ZHY21');</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Does your agent memory keep a correction? mem0 vs Graphiti vs inspeximus</title>
-  <meta name="description" content="Measured: after a stored fact is corrected, how often does the old value come back? inspeximus 0%, Graphiti 13.3%, mem0 46.7% (n=30 each, native configs). Open harness, with a control." />
-  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/compare.html" />
-  <meta property="og:title" content="When you correct a fact, does your agent memory keep it corrected?" />
-  <meta property="og:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <title>GDPR right to erasure for AI agent memory: delete one person and prove it | inspeximus</title>
+  <meta name="description" content="How to delete one person&#x27;s data from an AI agent&#x27;s memory under GDPR Article 17 and prove the erasure to a third party: forget_subject by source, a dry run of the blast radius, signed tombstones, and an erasure certificate verified offline with no key. A real run, unedited." />
+  <link rel="canonical" href="https://dancenitra.github.io/inspeximus/erasure.html" />
+  <meta property="og:title" content="Erase one person from an AI agent&#x27;s memory, and prove it" />
+  <meta property="og:description" content="forget_subject removes every record about a person and what was derived from it; erasure_certificate lets a third party check it with no key. Real run, eight checks OK." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/compare.html" />
+  <meta property="og:url" content="https://dancenitra.github.io/inspeximus/erasure.html" />
   <meta property="og:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="When you correct a fact, does your agent memory keep it corrected?" />
-  <meta name="twitter:description" content="inspeximus 0%, Graphiti 13.3%, mem0 46.7% resurrection of a corrected fact. n=30, native configs, open harness, and a control that shows the number is the mechanism." />
+  <meta name="twitter:title" content="Erase one person from an AI agent&#x27;s memory, and prove it" />
+  <meta name="twitter:description" content="forget_subject removes every record about a person and what was derived from it; erasure_certificate lets a third party check it with no key. Real run, eight checks OK." />
   <meta name="twitter:image" content="https://dancenitra.github.io/inspeximus/og.png" />
   <meta name="theme-color" content="#0d7d84" />
   <script type="application/ld+json">
@@ -24,29 +24,55 @@
     "@graph": [
       {
         "@type": "TechArticle",
-        "headline": "When you correct a fact, does your agent memory keep it corrected?",
-        "description": "A measured comparison of inspeximus, Graphiti and mem0 on one question: after a stored fact is corrected, how often does the old value come back? n=30 per system, each on its own native configuration.",
-        "url": "https://dancenitra.github.io/inspeximus/compare.html",
-        "author": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" },
-        "publisher": { "@type": "Organization", "name": "Agora", "url": "https://dancenitra.github.io/agora/" }
+        "headline": "How do you erase one person from an AI agent's memory, and prove it?",
+        "description": "How to delete one person's data from an AI agent's memory under GDPR Article 17 and prove the erasure to a third party: forget_subject by source, a dry run of the blast radius, signed tombstones, and an erasure certificate verified offline with no key. A real run, unedited.",
+        "url": "https://dancenitra.github.io/inspeximus/erasure.html",
+        "datePublished": "2026-09-17",
+        "author": {
+          "@type": "Organization",
+          "name": "Agora",
+          "url": "https://dancenitra.github.io/agora/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Agora",
+          "url": "https://dancenitra.github.io/agora/"
+        }
       },
       {
         "@type": "FAQPage",
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Why measure resurrection instead of recall accuracy?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Recall accuracy is widely benchmarked and we are not the best at it. What almost nobody publishes is what happens after a stored fact turns out to be wrong. An agent that recalls well and re-serves a corrected value confidently is the failure that costs you, and it does not show up in a recall score." }
+            "name": "How do I delete one person's data from an AI agent's memory?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Write every memory with the source it is attributable to, then call forget_subject(subject) or run inspeximus forget-subject <subject> --request-id <DSAR id>. It removes every record naming the subject and every record that inherited it through declared lineage, and leaves a signed, content-free tombstone per record."
+            }
           },
           {
             "@type": "Question",
-            "name": "Is this a general memory-quality comparison?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. It is one narrow adversarial cut. On plain retrieval benchmarks other systems can and do beat us. Treat this page as the answer to a single question, not a ranking." }
+            "name": "What proves the erasure happened?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "erasure_certificate() writes a portable certificate. inspeximus erasure-verify <certificate> --store <store> checks the receipt chain, the signatures, that the certificate attests an erasure, and that the erased ids are absent from the store, with no private key and no trust in the operator. On a signed store all eight checks print OK."
+            }
           },
           {
             "@type": "Question",
-            "name": "Which versions were measured, and when?",
-            "acceptedAnswer": { "@type": "Answer", "text": "mem0 was measured at 2.0.11 in 2026-07 and has not been re-run since; mem0 is on 2.0.18 now. Graphiti was run on its native Neo4j and OpenAI configuration. The version is stamped rather than the claim being restated as current." }
+            "name": "Does this make the agent GDPR compliant?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. It is the evidence for the agent-memory slice: the records that were held, the request they were erased under, and a certificate a third party can check. Vector indexes, prompt logs, model weights and backups are outside the store and outside the certificate, and the CLI prints that limit on every erasure-audit run."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What does the dry run show?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The blast radius before anything is deleted: how many records name the subject directly, how many are reached through lineage, and which other subjects would go with them. A subject that shares a canonical form with a different source is refused until --allow-ambiguous."
+            }
           }
         ]
       }
@@ -261,15 +287,16 @@
 </header>
 <section class="hero">
   <div class="wrap prose">
-    <p class="eyebrow">the measurement</p>
-    <h1 class="head">When you correct a fact, does your agent memory
-      <em>keep it corrected?</em></h1>
-    <p class="lede">Every memory library can store and retrieve. Far fewer publish what happens after a
-      stored fact turns out to be <b>wrong</b> &mdash; so we measured it, on three systems, each on its
-      own native configuration.</p>
+    <p class="eyebrow">GDPR Art. 17 &middot; applied since 25 May 2018</p>
+    <h1 class="head">How do you erase one person from an AI agent's memory,
+      <em>and prove it?</em></h1>
+    <p class="lede">Every memory library has a delete call. Almost none can show an auditor afterwards
+      what was erased, under which request, and that it is gone. inspeximus writes each record with
+      the subject it belongs to, erases by subject including what was derived from it, and issues a
+      certificate a third party verifies offline. The transcript on this page is a real run, unedited.</p>
     <div class="hero-cta">
-      <a class="btn solid" href="https://github.com/DanceNitra/ramr">The harness is open</a>
-      <a class="btn" href="./">What inspeximus is</a>
+      <a class="btn solid" href="https://pypi.org/project/inspeximus/">pip install inspeximus</a>
+      <a class="btn" href="./ai-act.html">The EU AI Act and GDPR mapping</a>
     </div>
   </div>
 </section>
@@ -279,111 +306,112 @@
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">n = 30 per system</p>
-      <h2>How often the old value comes back</h2>
-      <p class="sec-sub">A fact is stored, then corrected. We then ask for it again and count how often
-        the superseded value is what comes back.</p>
+      <p class="eyebrow">the run, 2026-09-17, inspeximus 2.39.0</p>
+      <h2>What does a right-to-erasure request look like in the store?</h2>
+      <p class="sec-sub">Three records, two of them Alice's. The request DSAR-17 arrives. First the dry
+        run, then the erasure, then the certificate, then a verifier with no key.</p>
     </div>
     <div class="tablecard">
-      <div class="tscroll">
-        <table>
-          <thead><tr><th>system</th><th>keeps the correction</th><th>resurrects the old value</th></tr></thead>
-          <tbody>
-            <tr class="us"><td>inspeximus</td><td><span class="mk yes">100%</span></td><td><span class="mk yes">0%</span></td></tr>
-            <tr><td>Graphiti 0.x <span class="mono" style="font-weight:400;color:var(--muted)">(Neo4j + OpenAI)</span></td><td>86.7%</td><td>13.3% <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [3.3, 26.7]</span></td></tr>
-            <tr><td>mem0 2.0.11 <span class="mono" style="font-weight:400;color:var(--muted)">(OpenAI native)</span></td><td>53.3%</td><td><b>46.7%</b> <span class="mono" style="font-size:.8rem;color:var(--muted)">95% CI [30.0, 63.3]</span></td></tr>
-            <tr><td>inspeximus <span class="mono" style="font-weight:400;color:var(--muted)">&mdash; guard disabled</span></td><td><span class="mk no">0%</span></td><td>&mdash; the control</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+<pre class="cmd">$ inspeximus writer-key --new --out key.txt
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice prefers email&#x27; --source crm/alice
+remembered da1206356b
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice phone is +100&#x27; --key alice::phone --source crm/alice
+remembered 693bfceed2 [key=alice::phone]
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Bob phone is +300&#x27; --key bob::phone --source crm/bob
+remembered 9d18377508 [key=bob::phone]
 
-    <div class="callout">
-      <b>The bottom row is the point.</b> Turn our own guard off and we score zero. That is what tells
-      you the number is the mechanism doing work, and not the benchmark being kind to us. A comparison
-      without a control on the author&rsquo;s own system is a marketing table.
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject crm/alice --request-id DSAR-17 --dry-run
+would erase 2 record(s): 2 naming the subject, 0 reached through lineage
+  [direct   ] 693bfceed2  Alice phone is +100
+  [direct   ] da1206356b  Alice prefers email
+
+$ inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject crm/alice --request-id DSAR-17 --basis &#x27;Art. 17(1)(a)&#x27;
+erased 2 record(s), 2 tombstone(s)
+
+$ inspeximus --path mem.json --receipts erasure-certificate --request-id DSAR-17 --out DSAR-17.cert.json
+wrote erasure certificate -&gt; DSAR-17.cert.json  (2 erasure(s) attested, scoped to DSAR-17)
+
+$ inspeximus erasure-verify DSAR-17.cert.json --store mem.json
+  OK   chain_intact
+  OK   signatures_valid
+  OK   signed
+  OK   anchor_matches_tip
+  OK   summary_derivable
+  OK   attests_an_erasure
+  OK   store_absent
+  OK   scope_intact
+
+VERDICT: PASS  (2 erasure(s) attested, absence checked)
+
+$ inspeximus --path mem.json list
+- Bob phone is +300 [key=bob::phone]</pre>
+    </div>
+    <p class="sec-sub" style="margin-top:14px">Bob is untouched. Alice's two records are gone from the
+      store, two signed tombstones say when and under which request, and the certificate carries
+      enough for a reader to check all of it without the operator's private key.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>What does the certificate prove, and what does it not?</h2>
+    </div>
+    <div class="prose">
+      <p>It proves that this store erased these records under this request, that the receipt chain
+        around the erasure is intact and signed by the writer's key, and, when the verifier is handed
+        the store, that the erased ids are absent from it. A dry run before the erasure names the
+        blast radius, direct and inherited, and refuses a subject that shares its canonical form with a
+        different source until you say <code>--allow-ambiguous</code>.</p>
+      <p>It does not prove that no copy exists anywhere. Vector indexes, prompt logs, model weights and
+        backups are outside the store, and <code>erasure-audit</code> prints that limit on every run.
+        A record whose writer never declared <code>derived_from</code> carries no lineage, so the
+        audit reports <code>UNAUDITED</code> rather than a pass, because a party that stops declaring
+        lineage would otherwise always look clean.</p>
+      <p>Access and rectification travel the same path: <code>export_subject()</code> returns exactly
+        the records an erasure would remove (Art. 15), and <code>rectify()</code> supersedes a value
+        under its key with a receipt naming the actor and the reason (Art. 16). The
+        <a href="./ai-act.html">EU AI Act and GDPR page</a> maps every article to the call that
+        answers it and marks where the mapping stops.</p>
     </div>
   </div>
 </section>
 
-<hr class="rule" />
-
 <section>
-  <div class="wrap prose">
+  <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">what this is not</p>
-      <h2>The honest scope</h2>
+      <h2>Which agent-memory libraries document verifiable erasure?</h2>
     </div>
-    <p>This is <b>one narrow adversarial cut</b>, not a general memory-quality score. On plain retrieval
-      benchmarks other systems can and do beat us, and we publish those results too rather than only the
-      cut we win. Read this page as the answer to a single question.</p>
-    <p>mem0 was measured at <b>2.0.11</b> (2026-07) and has <b>not</b> been re-run since; mem0 is on
-      2.0.18 now. The version is stamped rather than the claim being quietly restated as current &mdash;
-      if they have fixed it, this page is out of date and we would rather you could tell.</p>
-    <p>Confidence intervals are given because a 30-trial proportion is not a point. Ours is 0% with the
-      guard on and 100% with it off, which is a mechanism, not a sample.</p>
+    <div class="prose">
+      <p>Of the agent-memory products whose documentation we read for the
+        <a href="./ai-act.html">evidence page</a>, one documents an erasure that leaves a signed
+        tombstone and a certificate a third party can check. The others document a plain
+        <code>delete()</code> or <code>forget()</code>. That is a reading of their documentation on the
+        date on that page, not a proof of a universal negative. If a product added it since, open an
+        issue and the table changes.</p>
+    </div>
   </div>
 </section>
 
-<hr class="rule" />
-
 <section>
-  <div class="wrap prose">
+  <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">reproduce it</p>
-      <h2>Run it against your own store</h2>
+      <h2>How do I run this on my own store?</h2>
     </div>
-    <ol class="steps">
-      <li><b>Clone the harness.</b> It is a separate public repository so that the benchmark is not
-        maintained by the thing it measures.
-        <pre class="cmd">git clone https://github.com/DanceNitra/ramr</pre></li>
-      <li><b>Bring your own keys.</b> The inspeximus column runs locally and free; the mem0 and Graphiti
-        columns need an OpenAI key and, for Graphiti, a live Neo4j.</li>
-      <li><b>Run the backend comparison.</b> Raw per-trial arrays land in
-        <span class="mono">echo_resistance_backends_result.json</span> &mdash; not a summary, the arrays.
-        <pre class="cmd">python ramr_echo_resistance_backends.py</pre></li>
-    </ol>
-    <p>If your run disagrees with this table, that is a bug report we want, and it goes on the
-      <a href="https://dancenitra.github.io/agora/public/crucible/">public replication ledger</a>
-      whichever way it lands.</p>
-  </div>
-</section>
-
-<hr class="rule" />
-
-<section>
-  <div class="wrap prose">
-    <div class="sec-head">
-      <p class="eyebrow">questions</p>
-      <h2>Reasonable objections</h2>
+    <div class="tablecard">
+<pre class="cmd">pip install inspeximus
+inspeximus writer-key --new --out key.txt
+inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &quot;...&quot; --source &lt;subject&gt;
+inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject &lt;subject&gt; --request-id &lt;DSAR id&gt; --dry-run
+inspeximus --path mem.json --receipts --receipt-key-file key.txt forget-subject &lt;subject&gt; --request-id &lt;DSAR id&gt;
+inspeximus --path mem.json --receipts erasure-certificate --request-id &lt;DSAR id&gt; --out cert.json
+inspeximus erasure-verify cert.json --store mem.json</pre>
     </div>
-    <div class="faq">
-      <details open>
-        <summary>Why measure resurrection instead of recall accuracy?</summary>
-        <p>Recall accuracy is widely benchmarked, and we are not the best at it. What almost nobody
-          publishes is what a system does after a stored fact turns out to be wrong. An agent that
-          recalls well and confidently re-serves a value you already corrected is the failure that
-          costs you, and it does not appear in a recall score at all.</p>
-      </details>
-      <details>
-        <summary>Isn&rsquo;t 100% just a benchmark you designed to win?</summary>
-        <p>That is the right suspicion, and it is why the control row exists. With the same harness,
-          the same task and our guard switched off, we resurrect the old value every time. The delta is
-          attributable to one mechanism rather than to the benchmark&rsquo;s shape.</p>
-      </details>
-      <details>
-        <summary>How does inspeximus actually do it?</summary>
-        <p>A correction is a first-class write: <span class="mono">remember(key=...)</span> retires the
-          previous value for that key, deterministically, with no model in the loop deciding which is
-          newer. The retirement is a record you can audit, revert with
-          <span class="mono">revert(key)</span>, and prove.</p>
-      </details>
-      <details>
-        <summary>Does this need a vector database?</summary>
-        <p>No. inspeximus is one zero-dependency file. Semantic recall is optional; the lexical
-          fallback needs nothing installed.</p>
-      </details>
-    </div>
+    <p class="sec-sub" style="margin-top:14px">Zero dependencies. The verifier is the same package;
+      anyone with the certificate and the store can run it. From Python the calls are
+      <code>remember(source=...)</code>, <code>forget_subject()</code>, <code>erasure_certificate()</code>
+      and <code>verify_erasure_certificate()</code>. The MCP server exposes the same four to Claude Code,
+      Cursor and any other client; see <a href="./claude-code.html">Claude Code, one line</a>.</p>
   </div>
 </section>
 <footer>
