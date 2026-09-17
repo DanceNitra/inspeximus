@@ -1,0 +1,18 @@
+# inspeximus
+
+> Tamper-evident long-term memory for AI agents in one zero-dependency Python file, plus an MCP server. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted.
+
+## Pages
+
+- [Home](https://dancenitra.github.io/inspeximus/): what it is, the measured tables against mem0, Graphiti and Hindsight, install
+- [EU AI Act and GDPR evidence](https://dancenitra.github.io/inspeximus/ai-act.html): Article 12 event logging, Article 19 retention, GDPR Article 17 erasure certificates, RFC 3161 timestamps with the eIDAS qualified check, the agent-audit-trail export
+- [Comparison](https://dancenitra.github.io/inspeximus/compare.html): does agent memory keep a correction; inspeximus 100%, Graphiti 86.7%, mem0 53.3% over 30 trials each, with the control
+- [Claude Code](https://dancenitra.github.io/inspeximus/claude-code.html): persistent memory for Claude Code, Cursor, Windsurf, Codex and Cline in one config line
+- [Quickstart](https://dancenitra.github.io/inspeximus/quickstart.html): running in under a minute
+- [Transparency log](https://dancenitra.github.io/inspeximus/transparency/): the published log a reader verifies offline
+
+## Source
+
+- [GitHub](https://github.com/DanceNitra/inspeximus): code, tests, every probe behind every number
+- [PyPI](https://pypi.org/project/inspeximus/): `pip install inspeximus`
+- [Deep dive](https://github.com/DanceNitra/inspeximus/blob/main/docs/DEEP_DIVE.md)

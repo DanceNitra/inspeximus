@@ -54,6 +54,23 @@ m.revert("staging-db")                            # and it is reversible, on pur
 
 ---
 
+## Why inspeximus
+
+Use it when the agent runs for days and the facts it holds will change under it, and when
+somebody can later ask what it knew and what it erased. That is the whole design brief.
+
+| You have | Reach for |
+|---|---|
+| An agent that keeps confidently repeating a value you already corrected | `remember(key=...)`: the correction wins, the restatement does not bring the old value back, `revert()` is a recorded decision |
+| A right-to-erasure request, or an auditor asking what the agent knew when it acted | `forget_subject()` with `erasure_certificate()`; the signed action ledger with `matches()` |
+| Claude Code, Cursor, Windsurf, Codex or Cline, and no memory between sessions | the MCP server, one config line |
+| A framework (LangChain, LangGraph, ADK, agno, Hermes, Haystack) and no way to prove a memory write happened | the adapters and the receipt chain |
+
+Not the right tool when you want a hosted service with a dashboard, a knowledge graph over
+documents, or the highest score on a conversational-recall benchmark. mem0, Zep and cognee lead
+there, and the [comparison page](https://dancenitra.github.io/inspeximus/compare.html) says where
+each of us wins and where we do not.
+
 ## The receipts
 
 We measured the one thing the others do not publish: **how often a corrected fact comes back.**
