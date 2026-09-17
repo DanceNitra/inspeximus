@@ -110,20 +110,33 @@ def test_absence_is_checked_against_the_store_the_certificate_names(tmp_path):
     assert res["valid"] is False
 
 
+# CI's test job runs the suite from the source tree without installing the package, so a child
+# started in a temp directory has no `inspeximus` on its path unless the repo root is put there.
+# Measured 2026-09-17: two of these tests passed locally (editable install) and failed on all
+# three CI runners with `writer-key` exiting 1.
+_ENV = {**os.environ, "PYTHONPATH": os.pathsep.join(
+    p for p in (os.path.dirname(os.path.dirname(os.path.abspath(__file__))), os.environ.get("PYTHONPATH", "")) if p)}
+
+
 def _cli(args, cwd):
-    return subprocess.run([sys.executable, "-m", "inspeximus.cli", *args], cwd=cwd,
+    return subprocess.run([sys.executable, "-m", "inspeximus.cli", *args], cwd=cwd, env=_ENV,
                           capture_output=True, text=True, encoding="utf-8")
 
 
+def _ok(r):
+    """A child that failed says why in the assertion, not only in a return code."""
+    assert r.returncode == 0, r.stdout + r.stderr
+    return r
+
+
 def test_bound_actions_verify_sees_a_record_rewritten_under_an_intact_chain(tmp_path):
-    subprocess.run([sys.executable, "-m", "inspeximus.cli", "writer-key", "--new", "--out", "key.txt"],
-                   cwd=tmp_path, check=True, capture_output=True)
+    _ok(_cli(["writer-key", "--new", "--out", "key.txt"], tmp_path))
     store = ["--path", "mem.json", "--receipts", "--receipt-key-file", "key.txt"]
-    assert _cli(store + ["remember", "Alice phone is +100", "--key", "alice::phone"], tmp_path).returncode == 0
-    assert _cli(store + ["actions", "record", "tool:sms", "--input", '{"to": "+100"}', "--output",
-                         '{"sent": true}', "--actor", "a"], tmp_path).returncode == 0
-    before = _cli(["--path", "mem.json", "actions", "verify"], tmp_path)
-    assert before.returncode == 0 and "store records against their write receipts" in before.stdout
+    _ok(_cli(store + ["remember", "Alice phone is +100", "--key", "alice::phone"], tmp_path))
+    _ok(_cli(store + ["actions", "record", "tool:sms", "--input", '{"to": "+100"}', "--output",
+                      '{"sent": true}', "--actor", "a"], tmp_path))
+    before = _ok(_cli(["--path", "mem.json", "actions", "verify"], tmp_path))
+    assert "store records against their write receipts" in before.stdout
 
     # rewrite the record's text on disk without touching the receipt chain
     m = Inspeximus(str(tmp_path / "mem.json"))
@@ -152,11 +165,10 @@ def test_matches_refuses_without_the_salt_instead_of_answering_false(tmp_path):
 
 
 def test_a_bom_on_a_transcript_is_not_an_edit(tmp_path):
-    subprocess.run([sys.executable, "-m", "inspeximus.cli", "writer-key", "--new", "--out", "key.txt"],
-                   cwd=tmp_path, check=True, capture_output=True)
+    _ok(_cli(["writer-key", "--new", "--out", "key.txt"], tmp_path))
     store = ["--path", "mem.json", "--receipts", "--receipt-key-file", "key.txt"]
-    assert _cli(store + ["actions", "record", "tool:sms", "--input", '{"to": "+100"}', "--output",
-                         '{"sent": true}', "--actor", "a"], tmp_path).returncode == 0
+    _ok(_cli(store + ["actions", "record", "tool:sms", "--input", '{"to": "+100"}', "--output",
+                      '{"sent": true}', "--actor", "a"], tmp_path))
     (tmp_path / "in.json").write_bytes(b"\xef\xbb\xbf" + json.dumps({"to": "+100"}).encode())
     (tmp_path / "out.json").write_text(json.dumps({"sent": True}), encoding="utf-8")
     r = _cli(["--path", "mem.json", "actions", "matches", "0", "--inputs", "in.json", "--output", "out.json"], tmp_path)
