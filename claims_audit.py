@@ -1189,7 +1189,7 @@ NON_CLAIM_TOKENS = {
         "50": (1, "EU AI Act Art. 50, an article number"),
         "73": (1, "EU AI Act Art. 73, an article number"),
         "2026": (2, "the run date 2026-09-17 in the eyebrow and the transparency-log year in the footer"),
-        "8785,": (1, "RFC 8785, JSON Canonicalization Scheme -- a citation"),
+        "8785": (1, "RFC 8785, JSON Canonicalization Scheme -- a citation"),
         "100": (4, "the example phone number +100 in the remember command, the record command and both retained inputs"),
         "0": (4, "sequence number 0: 'recorded #0', 'actions knew 0' and 'actions matches 0' twice"),
         "0,": (3, "'\"seq\": 0,' in the three JSON outputs"),
