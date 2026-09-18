@@ -106,6 +106,21 @@ def _p_monitoring(store):
     return n, f"{n} post-market monitoring report(s) signed into the ledger"
 
 
+def _p_corrective(store):
+    n = len(_entries(store, "corrective"))
+    return n, f"{n} corrective action(s) recorded, with the parties informed"
+
+
+def _p_authority(store):
+    n = len(_entries(store, "authority"))
+    return n, f"{n} authority request(s) recorded, with what was provided"
+
+
+def _p_breaches(store):
+    ev = [e for e in _entries(store, "breach") if not e.get("event")]
+    return len(ev), f"{len(ev)} breach record(s) with the 72-hour clock"
+
+
 def _p_lifecycle(store):
     n = len(_entries(store, "lifecycle"))
     return n, f"{n} lifecycle event(s)"
@@ -208,10 +223,9 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "aia-19", "law": "AI Act", "article": "Art. 19", "duty": "keep the logs at least six months", "who": "provider",
      "probe": _p_retention, "artifact": "attest_retention(), archive under a signed checkpoint"},
     {"id": "aia-20", "law": "AI Act", "article": "Art. 20", "duty": "corrective actions: withdraw, disable, recall; inform the chain", "who": "provider",
-     "probe": None, "gap": "a `record_corrective_action` event linked to an incident, and the Art. 20 report"},
+     "probe": _p_corrective, "artifact": "corrective_action() with the parties informed; corrective_action_report(seq)"},
     {"id": "aia-21", "law": "AI Act", "article": "Art. 21", "duty": "cooperation with authorities: hand over documentation and logs", "who": "provider",
-     "probe": _p_report("compliance_report", "compliance"), "artifact": "audit bundle, export-trail, compliance_report(); verifiable offline",
-     "partial": "no record of a request received and what was handed over; add a `record_authority_request` event"},
+     "probe": _p_authority, "artifact": "authority_request() naming the request, its scope and what was provided (by reference); the audit bundle, export-trail and compliance_report() are what is handed over"},
     {"id": "aia-25", "law": "AI Act", "article": "Art. 25", "duty": "responsibilities along the value chain", "who": "provider, distributor, deployer",
      "probe": None, "gap": "a signed `record_responsibilities` event naming the parties and the split"},
     {"id": "aia-43", "law": "AI Act", "article": "Art. 43, 47, 48", "duty": "conformity assessment, EU declaration of conformity, CE marking", "who": "provider",
@@ -229,7 +243,7 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "aia-27", "law": "AI Act", "article": "Art. 27", "duty": "fundamental rights impact assessment", "who": "deployer (public bodies, named private uses)",
      "probe": _p_report("fria_appendix", "deployer"), "artifact": "fria_appendix()"},
     {"id": "aia-86", "law": "AI Act", "article": "Art. 86", "duty": "explanation of an individual decision to the affected person", "who": "deployer",
-     "probe": None, "gap": "a `decision_explanation` export: what_it_knew(seq) plus the oversight events on it, in one document"},
+     "probe": _p_rights("explanation"), "artifact": "decision_explanation(seq, actor=...): the action, what it knew, the oversight on it, in one document, logged as rights:explanation"},
     # ---- EU AI Act: out of scope for an agent operator
     {"id": "aia-53", "law": "AI Act", "article": "Art. 53 to 55", "duty": "general-purpose AI model provider duties", "who": "GPAI model provider",
      "probe": None, "why": "an operator of an agent built on a model is not the model's provider; the model provider's documentation is an input to Annex IV, not this store's output"},
@@ -260,7 +274,7 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "gdpr-30", "law": "GDPR", "article": "Art. 30", "duty": "records of processing activities", "who": "controller",
      "probe": _p_report("compliance_report", "compliance"), "artifact": "compliance_report() records section"},
     {"id": "gdpr-33", "law": "GDPR", "article": "Art. 33, 34", "duty": "breach notification within 72 hours, and to the subject", "who": "controller",
-     "probe": None, "gap": "a `record_breach` clock beside the Art. 73 clock on incidents, and the subject-notification event"},
+     "probe": _p_breaches, "artifact": "breach() with the 72-hour clock and the 33(3) fields; breach_notified() to the authority, the subjects or the public; breach_report(seq)"},
     {"id": "gdpr-35", "law": "GDPR", "article": "Art. 35", "duty": "data protection impact assessment", "who": "controller",
      "probe": _p_report("dpia_appendix", "deployer"), "artifact": "dpia_appendix()"},
 ]

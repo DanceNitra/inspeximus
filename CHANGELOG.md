@@ -1,3 +1,42 @@
+## 2.44.0 - corrective actions (Art. 20), authority requests (Art. 21), the explanation of a decision (Art. 86) and personal data breaches (GDPR Art. 33 and 34), as signed ledger entries. UPGRADE IF YOU OPERATE AN AGENT THAT CAN BE WITHDRAWN, ASKED ABOUT, OR LEAK. AFFECTS: adds seven `ActionLedger` methods, seven CLI subcommands under `actions`, and seven MCP tools (109); the ledger accepts three new entry kinds, `corrective`, `authority` and `breach`; the audit-trail export maps the new kinds to escalations; nothing existing changes.
+
+`corrective_action()` records what was done with a system the provider has reason to consider
+non-conforming (bring into conformity, withdraw, disable, recall: Art. 20(1)), the non-conformity,
+the causes investigated (20(2)), and who was informed and when, from the six parties the article
+names. `corrective_action_report(seq)` lists the parties NOT informed and, when the system presented
+a risk under Art. 79(1), whether the market surveillance authority was among those told; it reports
+the gap rather than judging it, because 20(1) says "as applicable".
+
+`authority_request()` records a reasoned request from a competent authority (Art. 21): its
+reference, whether it asked for documentation (21(1)), the automatically generated logs (21(2)) or
+both, the language, and what was provided as {item, sha256} references. Never the content: 21(3)
+puts what the authority receives under Art. 78 confidentiality and the ledger is not the place for
+it. `authority_requests()` lists them. The Art. 21 coverage row now needs a recorded request to read
+EVIDENCE; the audit bundle, the export trail and `compliance_report()` are what gets handed over.
+
+`decision_explanation(seq)` is the material for the Art. 86 right to "the role of the AI system in
+the decision-making procedure": the action with its model and principal, the memory state it acted
+on and what recall returned with each record's provenance as it stands now, the oversight events on
+it, the disclosures in its session, and the incidents, risks and corrective actions that refer to
+it, in one document from the chain. With an actor, the fact that an explanation was produced is
+appended as a `rights:explanation` entry carrying the document's hash, the subject reference and
+the request id; read-only without one, and then it moves no coverage row.
+
+`breach()` records a personal data breach with its 72-hour clock from awareness (Art. 33(1)) and
+the 33(3) content as far as known: nature, categories and approximate numbers of subjects and
+records, contact point, likely consequences, measures. `breach_notified()` records the notification
+to the supervisory authority (a notification after 72 hours is refused without its reasons, 33(1)),
+to the data subjects (34(1)), or a public communication (34(3)(c)), or the 34(3) exemption instead
+(protected, mitigated, disproportionate). `breach_report(seq)` is the 33(3) and 33(5) record with
+the clock, the late flag and the reasons. `oversight_report()` names overdue breaches;
+`post_market_report()` counts corrective actions, authority requests and breaches.
+
+`inspeximus coverage` on a fresh store: 28 of 36 in-scope duties covered, 8 not covered (was 25 and
+11). Six mutations, all killed by
+`tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py`. Evidence,
+never a certification: whether a breach was unlikely to result in a risk, and which Art. 20 parties
+had to be told, are the operator's assessments; this is the record of when they were made.
+
 ## 2.43.0 - the Art. 9 risk register and the Art. 72 post-market monitoring report, as signed ledger entries. UPGRADE IF YOU ARE THE PROVIDER OF AN AGENT AND AN ASSESSOR WILL ASK FOR ITS RISK MANAGEMENT SYSTEM. AFFECTS: adds `ActionLedger.risk()`, `risk_register()`, `post_market_report()`, three CLI subcommands under `actions`, and three MCP tools (102); the ledger accepts two new entry kinds, `risk` and `monitoring`; nothing existing changes.
 
 Art. 9(2) calls risk management "a continuous iterative process ... requiring regular systematic

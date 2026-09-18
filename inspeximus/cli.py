@@ -896,6 +896,56 @@ def main(argv=None):
     acpm.add_argument("--plan", default=None,
                       help="path to the operator's monitoring plan (JSON with name and version); carried by name, version and hash")
     acpm.add_argument("--note", default=None)
+    acca = acsub.add_parser("corrective", help="record a corrective action (Art. 20) and who was informed")
+    acca.add_argument("kind", choices=["conformity", "withdraw", "disable", "recall"])
+    acca.add_argument("non_conformity", help="what was not in conformity, in one line")
+    acca.add_argument("--actor", required=True)
+    acca.add_argument("--refers-to", dest="refers_to", type=int, action="append", default=[], help="seq of an incident, risk or report; repeatable")
+    acca.add_argument("--informed", action="append", default=[],
+                      help="PARTY[:HOW] among distributor, deployer, authorised_representative, importer, market_surveillance_authority, notified_body; repeatable")
+    acca.add_argument("--causes", default=None, help="the Art. 20(2) investigation, in one line")
+    acca.add_argument("--presents-risk", dest="presents_risk", action="store_true", help="the system presents a risk under Art. 79(1)")
+    accr = acsub.add_parser("corrective-report", help="the Art. 20 record for corrective action SEQ")
+    accr.add_argument("seq", type=int)
+    acau = acsub.add_parser("authority-request", help="record a reasoned request from an authority (Art. 21) and what was provided")
+    acau.add_argument("authority")
+    acau.add_argument("reference", help="the authority's reference for the request")
+    acau.add_argument("--scope", required=True, choices=["documentation", "logs", "both"])
+    acau.add_argument("--actor", required=True)
+    acau.add_argument("--received", dest="received_ts", type=float, default=None, help="unix time (default now)")
+    acau.add_argument("--provided", action="append", default=[], help="ITEM[:SHA256] handed over, by reference; repeatable")
+    acau.add_argument("--provided-at", dest="provided_ts", type=float, default=None)
+    acau.add_argument("--language", default=None)
+    acau.add_argument("--note", default=None)
+    acex = acsub.add_parser("explanation", help="the Art. 86 explanation material for action SEQ; --actor logs that it was produced")
+    acex.add_argument("seq", type=int)
+    acex.add_argument("--actor", default=None)
+    acex.add_argument("--subject", default=None, help="the affected person's reference, never their name")
+    acex.add_argument("--request-id", dest="request_id", default=None)
+    acbr = acsub.add_parser("breach", help="record a personal data breach (GDPR Art. 33) with its 72-hour clock")
+    acbr.add_argument("title")
+    acbr.add_argument("--nature", required=True, help="the nature of the breach (Art. 33(3)(a))")
+    acbr.add_argument("--actor", required=True)
+    acbr.add_argument("--aware", dest="aware_ts", type=float, default=None, help="unix time the controller became aware (default now)")
+    acbr.add_argument("--subjects", dest="subjects_approx", type=int, default=None, help="approximate number of data subjects")
+    acbr.add_argument("--records", dest="records_approx", type=int, default=None, help="approximate number of records")
+    acbr.add_argument("--category", dest="categories", action="append", default=[], help="a category of data or subjects; repeatable")
+    acbr.add_argument("--consequences", default=None)
+    acbr.add_argument("--measures", default=None)
+    acbr.add_argument("--high-risk", dest="high_risk", action="store_true", default=None, help="Art. 34(1): likely a high risk to the subjects")
+    acbr.add_argument("--contact", default=None, help="the DPO or contact point (Art. 33(3)(b))")
+    acbr.add_argument("--refers-to", dest="refers_to", type=int, action="append", default=[])
+    acbn = acsub.add_parser("breach-notified", help="record that breach SEQ was notified, to whom and when")
+    acbn.add_argument("seq", type=int)
+    acbn.add_argument("--actor", required=True)
+    acbn.add_argument("--to", required=True, choices=["supervisory_authority", "data_subjects", "public"])
+    acbn.add_argument("--at", dest="ts", type=float, default=None, help="unix time (default now)")
+    acbn.add_argument("--reasons-for-delay", dest="reasons_for_delay", default=None)
+    acbn.add_argument("--exemption", default=None, choices=["protected", "mitigated", "disproportionate"],
+                      help="Art. 34(3): why the subjects were not told directly")
+    acbn.add_argument("--note", default=None)
+    acbp = acsub.add_parser("breach-report", help="the Art. 33 and 34 record for breach SEQ")
+    acbp.add_argument("seq", type=int)
     acrp = acsub.add_parser("incident-reported", help="record that incident SEQ was reported, to whom and when")
     acrp.add_argument("seq", type=int)
     acrp.add_argument("--actor", required=True)
@@ -1701,6 +1751,42 @@ def main(argv=None):
                     plan = json.load(fh)
             print(json.dumps(led.post_market_report(a.since, until=a.until, actor=a.actor, plan=plan, note=a.note),
                              indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "corrective":
+            informed = []
+            for spec in a.informed:
+                party, _, how = spec.partition(":")
+                informed.append({"party": party, "how": how or None})
+            e = led.corrective_action(a.kind, a.actor, a.non_conformity, refers_to=a.refers_to, informed=informed,
+                                      causes=a.causes, presents_risk=a.presents_risk)
+            print(f"recorded #{e['seq']} corrective:{e['corrective_kind']} by {e['actor']}, informed "
+                  f"{[p['party'] for p in e['informed']]}, evidence {[r['seq'] for r in e['evidence']]}")
+        elif a.actions_cmd == "corrective-report":
+            print(json.dumps(led.corrective_action_report(a.seq), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "authority-request":
+            provided = []
+            for spec in a.provided:
+                item, _, sha = spec.partition(":")
+                provided.append({"item": item, "sha256": sha or None})
+            e = led.authority_request(a.authority, a.reference, a.actor, a.scope, received_ts=a.received_ts,
+                                      provided=provided, provided_ts=a.provided_ts, language=a.language, note=a.note)
+            print(f"recorded #{e['seq']} authority:{e['scope']} from {e['authority']} ({e['reference']}), "
+                  f"{len(e['provided'])} item(s) provided")
+        elif a.actions_cmd == "explanation":
+            print(json.dumps(led.decision_explanation(a.seq, actor=a.actor, subject=a.subject, request_id=a.request_id),
+                             indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "breach":
+            e = led.breach(a.title, a.actor, a.nature, aware_ts=a.aware_ts, subjects_approx=a.subjects_approx,
+                           records_approx=a.records_approx, categories=a.categories, consequences=a.consequences,
+                           measures=a.measures, high_risk=a.high_risk, contact=a.contact, refers_to=a.refers_to)
+            hours = (e["notify_deadline_ts"] - time.time()) / 3600
+            print(f"recorded #{e['seq']} breach '{e['title']}' by {e['actor']}; the supervisory authority is due "
+                  f"in {hours:.1f} h" + (", subjects must be told (Art. 34)" if e.get("high_risk") else ""))
+        elif a.actions_cmd == "breach-notified":
+            e = led.breach_notified(a.seq, a.actor, a.to, ts=a.ts, reasons_for_delay=a.reasons_for_delay,
+                                    exemption=a.exemption, note=a.note)
+            print(f"recorded seq {e['seq']}: breach {a.seq} {e['event']} ({a.to})" + (" LATE" if e.get("late") else ""))
+        elif a.actions_cmd == "breach-report":
+            print(json.dumps(led.breach_report(a.seq), indent=2, ensure_ascii=False))
         elif a.actions_cmd == "incident-reported":
             e = led.incident_reported(a.seq, actor=a.actor, reported_to=a.reported_to, reported_ts=a.reported_ts,
                                       note=a.note)

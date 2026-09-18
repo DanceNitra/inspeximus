@@ -1676,6 +1676,127 @@ def post_market_report(since: float, until: float | None = None, actor: str | No
 
 
 @mcp.tool()
+def record_corrective_action(kind: str, actor: str, non_conformity: str, refers_to: list[int] | None = None,
+                             informed: list[dict] | None = None, causes: str | None = None,
+                             presents_risk: bool = False) -> dict:
+    """Record a corrective action (EU AI Act Art. 20): `kind` is conformity, withdraw, disable or recall;
+    `non_conformity` what was wrong; `refers_to` the ledger seqs that are the evidence (each must exist);
+    `informed` a list of {party, ts, how} among distributor, deployer, authorised_representative, importer,
+    market_surveillance_authority, notified_body; `presents_risk` the Art. 79(1) case where the authority
+    must be informed (20(2)). The report names which parties were not informed."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.corrective_action(kind, actor, non_conformity, refers_to=refers_to, informed=informed,
+                                  causes=causes, presents_risk=presents_risk)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "kind": e["corrective_kind"], "informed": [p["party"] for p in e["informed"]],
+            "evidence": e["evidence"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def corrective_action_report(seq: int) -> dict:
+    """The Art. 20 record for corrective action `seq`: the non-conformity, the action, the causes, the
+    parties informed and those not, whether the authority was informed when the system presented a
+    risk, the evidence entries and later entries that refer to it. Read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        return led.corrective_action_report(seq)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
+def record_authority_request(authority: str, reference: str, actor: str, scope: str,
+                             received_ts: float | None = None, provided: list[dict] | None = None,
+                             provided_ts: float | None = None, language: str | None = None,
+                             note: str | None = None) -> dict:
+    """Record a reasoned request from a competent authority (EU AI Act Art. 21) and what was handed over.
+    `scope` is documentation (21(1)), logs (21(2)) or both; `provided` lists {item, sha256} references
+    to what was given, never the content (21(3) confidentiality)."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.authority_request(authority, reference, actor, scope, received_ts=received_ts, provided=provided,
+                                  provided_ts=provided_ts, language=language, note=note)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "authority": e["authority"], "reference": e["reference"], "scope": e["scope"],
+            "provided": len(e["provided"]), "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def decision_explanation(seq: int, actor: str | None = None, subject: str | None = None,
+                         request_id: str | None = None) -> dict:
+    """The material for an Art. 86 explanation of the decision at action `seq`: the action with its model
+    and principal, the memory state it acted on and what recall returned (with provenance as it stands
+    now), the oversight events on it, the disclosures in its session, and the incidents, risks and
+    corrective actions that refer to it, in one document from the chain. With `actor` the fact that an
+    explanation was produced is logged as a rights:explanation entry carrying the document's hash."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        return led.decision_explanation(seq, actor=actor, subject=subject, request_id=request_id)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
+def record_breach(title: str, actor: str, nature: str, aware_ts: float | None = None,
+                  subjects_approx: int | None = None, records_approx: int | None = None,
+                  categories: list[str] | None = None, consequences: str | None = None,
+                  measures: str | None = None, high_risk: bool | None = None, contact: str | None = None,
+                  refers_to: list[int] | None = None) -> dict:
+    """Record a personal data breach (GDPR Art. 33) with its 72-hour clock from `aware_ts` (default now)
+    and the Art. 33(3) content as far as known: nature, categories and approximate numbers of subjects
+    and records, contact point, likely consequences, measures. `high_risk` is the Art. 34(1) judgement
+    that decides whether the subjects must be told. `refers_to` lists ledger seqs; each must exist."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.breach(title, actor, nature, aware_ts=aware_ts, subjects_approx=subjects_approx,
+                       records_approx=records_approx, categories=categories, consequences=consequences,
+                       measures=measures, high_risk=high_risk, contact=contact, refers_to=refers_to)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "title": e["title"], "aware_ts": e["aware_ts"],
+            "notify_deadline_ts": e["notify_deadline_ts"], "high_risk": e["high_risk"],
+            "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def breach_notified(seq: int, actor: str, to: str, ts: float | None = None, reasons_for_delay: str | None = None,
+                    exemption: str | None = None, note: str | None = None) -> dict:
+    """Record that breach `seq` was notified: `to` the supervisory_authority (Art. 33(1)), the data_subjects
+    (Art. 34(1)) or the public (Art. 34(3)(c)). After 72 hours a notification to the authority needs
+    `reasons_for_delay`. With `exemption` (protected, mitigated, disproportionate) the entry records why
+    the subjects were not told directly (Art. 34(3))."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.breach_notified(seq, actor, to, ts=ts, reasons_for_delay=reasons_for_delay, exemption=exemption, note=note)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "event": e["event"], "to": e["to"], "notified_ts": e["notified_ts"], "late": e["late"],
+            "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def breach_report(seq: int) -> dict:
+    """The Art. 33 and 34 record for breach `seq`: the 33(3) content, the 72-hour clock and whether the
+    authority was notified in time, the subject communication or the 34(3) exemption, the 33(5)
+    documentation, the evidence entries and the fields the controller adds. Read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        return led.breach_report(seq)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
 def incident_report(seq: int) -> dict:
     """The Art. 73 report skeleton for incident `seq`: dates, the statutory deadline and whether it is
     overdue, the evidence entries with their memory state and any oversight on them, later entries that

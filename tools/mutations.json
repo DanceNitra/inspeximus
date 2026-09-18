@@ -1918,5 +1918,59 @@
   "tests": [
    "tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py"
   ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "a party outside Art. 20 is accepted as informed",
+  "old": "            if not isinstance(p, dict) or p.get(\"party\") not in INFORMED_PARTIES:",
+  "new": "            if not isinstance(p, dict):",
+  "tests": [
+   "tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the corrective report never lists a party not informed",
+  "old": "                \"not_informed\": [p for p in INFORMED_PARTIES if p not in told],",
+  "new": "                \"not_informed\": [],",
+  "tests": [
+   "tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "a late notification to the authority needs no reasons",
+  "old": "            if to == \"supervisory_authority\" and when > float(e[\"notify_deadline_ts\"]) and not reasons_for_delay:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the breach clock is 24 hours",
+  "old": "BREACH_DEADLINE_HOURS = 72",
+  "new": "BREACH_DEADLINE_HOURS = 24",
+  "tests": [
+   "tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the explanation entry hashes an empty document",
+  "old": "                     \"evidence\": [self._resolve_ref(seq)], \"manifest_sha256\": _content_hash(doc)}",
+  "new": "                     \"evidence\": [self._resolve_ref(seq)], \"manifest_sha256\": _content_hash({})}",
+  "tests": [
+   "tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/coverage.py",
+  "name": "the authority probe counts nothing",
+  "old": "    n = len(_entries(store, \"authority\"))",
+  "new": "    n = 0",
+  "tests": [
+   "tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py"
+  ]
  }
 ]

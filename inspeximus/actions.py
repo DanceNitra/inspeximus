@@ -59,7 +59,9 @@ except Exception:  # pragma: no cover - exercised only where cryptography is abs
 
 __all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VERSION",
            "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS", "INCIDENT_SEVERITIES", "INCIDENT_DEADLINES_DAYS",
-           "RISK_SOURCES", "RISK_HARMS", "RISK_MEASURES", "RISK_LEVELS"]
+           "RISK_SOURCES", "RISK_HARMS", "RISK_MEASURES", "RISK_LEVELS", "CORRECTIVE_ACTIONS",
+           "INFORMED_PARTIES", "AUTHORITY_REQUEST_SCOPES", "BREACH_NOTIFY_TARGETS", "BREACH_EXEMPTIONS",
+           "BREACH_DEADLINE_HOURS"]
 
 # Art. 73(2) to (4): a serious incident is reported immediately and no later than 15 days after the
 # provider becomes aware of it; 2 days for a widespread infringement or a serious incident concerning
@@ -77,6 +79,20 @@ RISK_HARMS = ("health", "safety", "fundamental_rights")
 #: Art. 9(5)(a) to (c): the kind of measure taken.
 RISK_MEASURES = ("eliminate", "mitigate", "inform")
 RISK_LEVELS = ("low", "medium", "high")
+
+#: Art. 20(1): what a provider does with a non-conforming system.
+CORRECTIVE_ACTIONS = ("conformity", "withdraw", "disable", "recall")
+#: Art. 20(1) names the first four; 20(2) adds the authority and the notified body when the system
+#: presents a risk within the meaning of Art. 79(1).
+INFORMED_PARTIES = ("distributor", "deployer", "authorised_representative", "importer",
+                    "market_surveillance_authority", "notified_body")
+#: Art. 21(1) documentation, 21(2) the automatically generated logs.
+AUTHORITY_REQUEST_SCOPES = ("documentation", "logs", "both")
+#: GDPR Art. 33(1) the supervisory authority, 34(1) the data subjects, 34(3)(c) a public communication.
+BREACH_NOTIFY_TARGETS = ("supervisory_authority", "data_subjects", "public")
+#: GDPR Art. 34(3)(a) to (c): why the subjects were not told directly.
+BREACH_EXEMPTIONS = ("protected", "mitigated", "disproportionate")
+BREACH_DEADLINE_HOURS = 72
 DISCLOSURE_KINDS = ("interaction", "generated_content", "emotion_recognition", "biometric_categorisation",
                     "deepfake", "public_interest_text")
 
@@ -393,9 +409,9 @@ class ActionLedger:
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
         if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp",
-                        "lifecycle", "risk", "monitoring"):
+                        "lifecycle", "risk", "monitoring", "corrective", "authority", "breach"):
             raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
-                             "lifecycle, risk or monitoring")
+                             "lifecycle, risk, monitoring, corrective, authority or breach")
         self._refresh_if_changed()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -735,9 +751,15 @@ class ActionLedger:
             "retention_attestations": len(kind("retention")),
             "lifecycle": _count_by(kind("lifecycle"), "event"),
             "disclosures": len(kind("disclosure")),
+            "corrective_actions": _count_by(kind("corrective"), "corrective_kind"),
+            "authority_requests": len(kind("authority")),
+            "breaches": {"opened": sum(1 for e in kind("breach") if not e.get("event")),
+                         "notified_late": sum(1 for e in kind("breach") if e.get("late"))},
             "chain": _chain_state(self),
             "requirements": {"Art. 9": "risks", "Art. 12": "actions, chain", "Art. 14": "oversight",
-                             "Art. 15": "chain, incidents", "Art. 13": "disclosures", "Art. 73": "incidents"},
+                             "Art. 15": "chain, incidents", "Art. 13": "disclosures", "Art. 73": "incidents",
+                             "Art. 20": "corrective_actions", "Art. 21": "authority_requests",
+                             "GDPR Art. 33": "breaches"},
             "store": {"records": len(list(self.store.items)) if self.store is not None else None,
                       "tombstones": len(getattr(self.store, "_tombstones", None) or []) if self.store is not None else None},
             "plan": ({"name": plan.get("name"), "version": plan.get("version"),
@@ -756,6 +778,250 @@ class ActionLedger:
                                 actor=actor, kind="monitoring", extra=extra)
             report["ledger_seq"] = entry["seq"]
         return report
+
+    # ------------------------------------------------------------------ Art. 20: corrective actions
+    def corrective_action(self, kind: str, actor: str, non_conformity: str, refers_to: list | None = None,
+                          informed: list | None = None, causes: str | None = None,
+                          presents_risk: bool = False, meta: dict | None = None) -> dict:
+        """Record a corrective action (EU AI Act Art. 20): what was done with a system the provider has
+        reason to consider non-conforming (bring into conformity, withdraw, disable, recall: 20(1)), the
+        non-conformity itself, and who was informed and when (distributors, deployers, the authorised
+        representative, importers: 20(1); the market surveillance authority and the notified body when
+        the system presents a risk under Art. 79(1): 20(2)). `causes` is the 20(2) investigation.
+        `refers_to` lists the ledger entries that are the evidence (an incident, a risk, a monitoring
+        report) and each must resolve. `informed` is a list of {party, ts, how}; a party outside the
+        Art. 20 list is refused. Nothing here judges whether the right parties were informed: the
+        report names which of them were and which were not."""
+        if kind not in CORRECTIVE_ACTIONS:
+            raise ValueError(f"kind must be one of {CORRECTIVE_ACTIONS}")
+        if not actor or not non_conformity:
+            raise ValueError("a corrective action needs an actor and the non-conformity it corrects")
+        told = []
+        for p in (informed or []):
+            if not isinstance(p, dict) or p.get("party") not in INFORMED_PARTIES:
+                raise ValueError(f"each informed party needs a party in {INFORMED_PARTIES}")
+            told.append({"party": p["party"], "ts": float(p.get("ts") or time.time()), "how": p.get("how")})
+        refs = [self._resolve_ref(r) for r in (refers_to or [])]
+        extra = {"corrective_kind": kind, "non_conformity": str(non_conformity)[:2000], "causes": causes,
+                 "informed": told, "presents_risk": bool(presents_risk), "evidence": refs}
+        return self.record(f"corrective:{kind}", inputs={"non_conformity": str(non_conformity)[:200]},
+                           status="ok", actor=actor, meta=meta, kind="corrective", extra=extra)
+
+    def corrective_action_report(self, seq: int) -> dict:
+        """The Art. 20 record for corrective action `seq`: the non-conformity, the action, the causes,
+        the parties informed with their dates, the Art. 20 parties not informed, whether the authority
+        was informed when the system presented a risk, the evidence entries, and later entries that
+        refer to this one. Read-only."""
+        e = self._at(seq)
+        if e.get("kind") != "corrective":
+            raise ValueError(f"entry {seq} is a {e.get('kind', 'action')}, not a corrective action")
+        told = {p["party"]: p for p in (e.get("informed") or [])}
+        evidence = []
+        for ref in e.get("evidence") or []:
+            x = self._at(ref["seq"])
+            evidence.append({"seq": x["seq"], "kind": x.get("kind", "action"), "action": x.get("action"),
+                             "ts": x.get("ts"), "hash": x.get("hash")})
+        later = [{"seq": u["seq"], "kind": u.get("kind", "action"), "action": u.get("action"), "ts": u.get("ts")}
+                 for u in self._entries if u.get("seq", -1) > seq
+                 and any((r or {}).get("seq") == seq for r in
+                         ([u.get("refers_to")] if isinstance(u.get("refers_to"), dict) else list(u.get("evidence") or [])))]
+        return {"kind": "inspeximus.corrective_action_report/1", "seq": seq, "ts": e.get("ts"),
+                "actor": e.get("actor"), "action": e.get("corrective_kind"),
+                "non_conformity": e.get("non_conformity"), "causes": e.get("causes"),
+                "presents_risk": bool(e.get("presents_risk")),
+                "informed": list(told.values()),
+                "not_informed": [p for p in INFORMED_PARTIES if p not in told],
+                "authority_informed": ("market_surveillance_authority" in told) if e.get("presents_risk") else None,
+                "evidence": evidence, "later_entries": later, "hash": e.get("hash"), "signed": "sig" in e,
+                "scope": ("What this ledger records about the action. Which parties had to be informed is "
+                          "'as applicable' under Art. 20(1); the list of those not informed is for the "
+                          "provider to answer, not a finding.")}
+
+    # ------------------------------------------------------------------ Art. 21: cooperation with authorities
+    def authority_request(self, authority: str, reference: str, actor: str, scope: str,
+                          received_ts: float | None = None, provided: list | None = None,
+                          provided_ts: float | None = None, language: str | None = None,
+                          note: str | None = None, meta: dict | None = None) -> dict:
+        """Record a reasoned request from a competent authority (EU AI Act Art. 21) and what was handed
+        over: `scope` is documentation (21(1)), logs (21(2)) or both; `provided` lists {item, sha256}
+        references to what was given (an audit bundle, an export trail, a technical documentation
+        file), never the content, because 21(3) puts what the authority receives under Art. 78
+        confidentiality and the ledger is not the place for it. `language` is the 21(1) language."""
+        if scope not in AUTHORITY_REQUEST_SCOPES:
+            raise ValueError(f"scope must be one of {AUTHORITY_REQUEST_SCOPES}")
+        if not authority or not reference or not actor:
+            raise ValueError("an authority request needs the authority, its reference and an actor")
+        items = []
+        for it in (provided or []):
+            if not isinstance(it, dict) or not it.get("item"):
+                raise ValueError("each provided item needs an item name, and a sha256 where it is a file")
+            items.append({"item": str(it["item"]), "sha256": it.get("sha256")})
+        extra = {"authority": authority, "reference": reference, "scope": scope,
+                 "received_ts": float(received_ts) if received_ts is not None else time.time(),
+                 "provided": items, "provided_ts": float(provided_ts) if provided_ts is not None else None,
+                 "language": language, "note": note}
+        return self.record(f"authority:{scope}", inputs={"authority": authority, "reference": reference},
+                           status="ok", actor=actor, meta=meta, kind="authority", extra=extra)
+
+    def authority_requests(self) -> list[dict]:
+        """Every Art. 21 request recorded, with what was provided and when. Read-only."""
+        return [{"seq": e["seq"], "ts": e.get("ts"), "authority": e.get("authority"),
+                 "reference": e.get("reference"), "scope": e.get("scope"), "received_ts": e.get("received_ts"),
+                 "provided": e.get("provided") or [], "provided_ts": e.get("provided_ts"),
+                 "language": e.get("language"), "actor": e.get("actor"), "signed": "sig" in e}
+                for e in self._entries if e.get("kind") == "authority"]
+
+    # ------------------------------------------------------------------ Art. 86: explanation of a decision
+    def decision_explanation(self, seq: int, actor: str | None = None, subject: str | None = None,
+                             request_id: str | None = None) -> dict:
+        """The material for an Art. 86 explanation of the decision recorded at action `seq`: the role of
+        the AI system (the action, its model and principal, the memory state it acted on and what recall
+        returned, with each returned record's provenance as it stands now), the oversight events on
+        that action, the disclosures in its session, and the incidents, risks and corrective actions
+        that refer to it. In one document, from the chain, so the deployer's explanation to the person
+        rests on records rather than recollection. With `actor` the fact that an explanation was
+        produced is appended as a `rights:explanation` entry carrying the document's hash, the
+        subject reference and the request id; without it, read-only."""
+        e = self._at(seq)
+        if e.get("kind", "action") != "action":
+            raise ValueError(f"entry {seq} is a {e.get('kind')}, not an action")
+        knew = self.what_it_knew(seq)
+
+        def refers(u):
+            refs = [u.get("refers_to")] if isinstance(u.get("refers_to"), dict) else list(u.get("evidence") or [])
+            return any((r or {}).get("seq") == seq for r in refs)
+        oversight = [{"seq": u["seq"], "event": u.get("event"), "actor": u.get("actor"), "ts": u.get("ts"),
+                      "reason": u.get("reason")} for u in self._entries if u.get("kind") == "oversight" and refers(u)]
+        referring = [{"seq": u["seq"], "kind": u.get("kind"), "action": u.get("action"), "ts": u.get("ts")}
+                     for u in self._entries if u.get("kind") in ("incident", "risk", "corrective") and refers(u)]
+        session = e.get("session")
+        disclosures = [{"seq": u["seq"], "ts": u.get("ts"), "disclosure_kind": u.get("disclosure_kind"),
+                        "channel": u.get("channel")} for u in self._entries
+                       if u.get("kind") == "disclosure" and session and u.get("session") == session]
+        doc = {"kind": "inspeximus.decision_explanation/1", "seq": seq,
+               "decision": {"action": e.get("action"), "ts": e.get("ts"), "actor": e.get("actor"),
+                            "model": e.get("model"), "principal": e.get("principal"), "session": session,
+                            "status": e.get("status"), "error": e.get("error"),
+                            "inputs_sha256": e.get("inputs_sha256"), "output_sha256": e.get("output_sha256"),
+                            "hash": e.get("hash"), "signed": "sig" in e},
+               "role_of_the_system": {"memory_state": knew.get("memory_state"),
+                                      "recalled_now": knew.get("recalled_now")},
+               "oversight": oversight, "disclosures_in_session": disclosures, "referring_entries": referring,
+               "fields_the_deployer_adds": ["the decision as communicated to the person",
+                                            "the main elements of the decision (Art. 86(1))",
+                                            "the human steps between the output and the decision"],
+               "scope": ("What the chain records about the action and what the system knew when it ran. "
+                         "The explanation itself, in clear and meaningful terms, is the deployer's; this "
+                         "is the evidence it is written from.")}
+        if actor:
+            extra = {"event": "explanation", "subject": subject, "request_id": request_id,
+                     "evidence": [self._resolve_ref(seq)], "manifest_sha256": _content_hash(doc)}
+            entry = self.record("rights:explanation", inputs={"seq": seq, "request_id": request_id},
+                                status="ok", actor=actor, kind="rights", extra=extra)
+            doc["ledger_entry"] = {"seq": entry["seq"], "hash": entry["hash"]}
+        return doc
+
+    # ------------------------------------------------------------------ GDPR Art. 33 and 34: breaches
+    def breach(self, title: str, actor: str, nature: str, aware_ts: float | None = None,
+               subjects_approx: int | None = None, records_approx: int | None = None,
+               categories: list | None = None, consequences: str | None = None, measures: str | None = None,
+               high_risk: bool | None = None, contact: str | None = None, refers_to: list | None = None,
+               meta: dict | None = None) -> dict:
+        """Record a personal data breach (GDPR Art. 33) with its 72-hour clock from `aware_ts`, and the
+        Art. 33(3) content as far as it is known: the nature of the breach, the categories and
+        approximate numbers of subjects and records, the contact point, the likely consequences and
+        the measures taken or proposed. Information may come in phases (33(4)): a later `breach_notified`
+        or a new entry referring to this one is the phase. `high_risk` is the Art. 34(1) judgement that
+        decides whether the subjects must be told. `refers_to` lists the ledger entries that are the
+        evidence (an incident, an action) and each must resolve."""
+        if not title or not actor or not nature:
+            raise ValueError("a breach needs a title, an actor and the nature of the breach")
+        refs = [self._resolve_ref(r) for r in (refers_to or [])]
+        aware = float(aware_ts) if aware_ts is not None else time.time()
+        extra = {"title": title, "nature": str(nature)[:2000], "aware_ts": aware,
+                 "notify_deadline_ts": aware + BREACH_DEADLINE_HOURS * 3600,
+                 "subjects_approx": subjects_approx, "records_approx": records_approx,
+                 "categories": list(categories or []), "consequences": consequences, "measures": measures,
+                 "high_risk": high_risk, "contact": contact, "evidence": refs}
+        return self.record("breach:opened", inputs={"title": title}, status="ok", actor=actor, meta=meta,
+                           kind="breach", extra=extra)
+
+    def breach_notified(self, seq: int, actor: str, to: str, ts: float | None = None,
+                        reasons_for_delay: str | None = None, exemption: str | None = None,
+                        note: str | None = None) -> dict:
+        """Record that breach `seq` was notified: to the supervisory authority (Art. 33(1)), to the data
+        subjects (Art. 34(1)), or by a public communication (Art. 34(3)(c)). A notification to the
+        authority after the 72 hours must carry `reasons_for_delay` (33(1)). With `exemption` the entry
+        records instead why the subjects were not told directly (34(3): protected, mitigated, or
+        disproportionate), and `to` must be data_subjects."""
+        e = self._at(seq)
+        if e.get("kind") != "breach" or e.get("event"):
+            raise ValueError(f"entry {seq} is not a breach record")
+        if to not in BREACH_NOTIFY_TARGETS:
+            raise ValueError(f"to must be one of {BREACH_NOTIFY_TARGETS}")
+        if not actor:
+            raise ValueError("breach_notified needs an actor")
+        when = float(ts) if ts is not None else time.time()
+        if exemption is not None:
+            if exemption not in BREACH_EXEMPTIONS or to != "data_subjects":
+                raise ValueError(f"an exemption is one of {BREACH_EXEMPTIONS} and applies to data_subjects only")
+            event = "subjects_exempt"
+        else:
+            event = "notified"
+            if to == "supervisory_authority" and when > float(e["notify_deadline_ts"]) and not reasons_for_delay:
+                raise ValueError("a notification to the supervisory authority after 72 hours needs reasons_for_delay (Art. 33(1))")
+        extra = {"title": e.get("title"), "event": event, "to": to, "notified_ts": when,
+                 "late": bool(to == "supervisory_authority" and when > float(e["notify_deadline_ts"])),
+                 "reasons_for_delay": reasons_for_delay, "exemption": exemption,
+                 "evidence": [self._resolve_ref(seq)], "aware_ts": e.get("aware_ts"),
+                 "notify_deadline_ts": e.get("notify_deadline_ts")}
+        if note:
+            extra["note"] = str(note)[:2000]
+        return self.record(f"breach:{event}", inputs={"seq": seq, "to": to}, status="ok", actor=actor,
+                           kind="breach", extra=extra)
+
+    def breach_report(self, seq: int, now: float | None = None) -> dict:
+        """The Art. 33 and 34 record for breach `seq`: the 33(3) content, the 72-hour clock and whether
+        the authority was notified in time (with the reasons given if not), the subject communication
+        or the 34(3) exemption, the documentation 33(5) asks for (facts, effects, remedial action), the
+        evidence entries, and the fields the controller must add. Read-only."""
+        e = self._at(seq)
+        if e.get("kind") != "breach" or e.get("event"):
+            raise ValueError(f"entry {seq} is not a breach record")
+        now = time.time() if now is None else now
+        updates = [u for u in self._entries if u.get("kind") == "breach" and u.get("event")
+                   and any((r or {}).get("seq") == seq for r in (u.get("evidence") or []))]
+        authority = next((u for u in updates if u.get("to") == "supervisory_authority"), None)
+        subjects = next((u for u in updates if u.get("to") in ("data_subjects", "public")), None)
+        deadline = float(e["notify_deadline_ts"])
+        evidence = []
+        for ref in e.get("evidence") or []:
+            x = self._at(ref["seq"])
+            evidence.append({"seq": x["seq"], "kind": x.get("kind", "action"), "action": x.get("action"),
+                             "ts": x.get("ts"), "hash": x.get("hash")})
+        return {"kind": "inspeximus.breach_report/1", "seq": seq, "title": e.get("title"), "actor": e.get("actor"),
+                "aware_ts": e.get("aware_ts"), "notify_deadline_ts": deadline,
+                "article_33_3": {"nature": e.get("nature"), "categories": e.get("categories") or [],
+                                 "subjects_approx": e.get("subjects_approx"), "records_approx": e.get("records_approx"),
+                                 "contact": e.get("contact"), "consequences": e.get("consequences"),
+                                 "measures": e.get("measures")},
+                "authority": ({"notified_ts": authority.get("notified_ts"), "late": authority.get("late"),
+                               "reasons_for_delay": authority.get("reasons_for_delay"), "seq": authority["seq"]}
+                              if authority else {"notified_ts": None, "overdue": now > deadline,
+                                                 "hours_left": round((deadline - now) / 3600, 1)}),
+                "subjects": ({"event": subjects.get("event"), "to": subjects.get("to"), "ts": subjects.get("notified_ts"),
+                              "exemption": subjects.get("exemption"), "seq": subjects["seq"]}
+                             if subjects else {"event": None, "high_risk": e.get("high_risk"),
+                                               "required": bool(e.get("high_risk"))}),
+                "documentation_33_5": {"facts": e.get("nature"), "effects": e.get("consequences"),
+                                       "remedial_action": e.get("measures"), "updates": len(updates)},
+                "evidence": evidence, "hash": e.get("hash"), "signed": "sig" in e,
+                "fields_the_controller_adds": ["the supervisory authority competent under Art. 55",
+                                               "the assessment of risk to rights and freedoms (33(1), 34(1))",
+                                               "the wording of the communication to the subjects (34(2))"],
+                "scope": ("What this ledger records about the breach and its clock. Whether the breach was "
+                          "unlikely to result in a risk, and whether the risk to the subjects is high, are "
+                          "the controller's assessments; this is the evidence of when they were made.")}
 
     def incident_reported(self, seq: int, actor: str, reported_to: str, reported_ts: float | None = None,
                           note: str | None = None) -> dict:
@@ -878,6 +1144,14 @@ class ActionLedger:
             "lifecycle_events": sum(1 for e in self._entries if e.get("kind") == "lifecycle"),
             "risk_entries": sum(1 for e in self._entries if e.get("kind") == "risk"),
             "monitoring_reports": sum(1 for e in self._entries if e.get("kind") == "monitoring"),
+            "corrective_actions": sum(1 for e in self._entries if e.get("kind") == "corrective"),
+            "authority_requests": sum(1 for e in self._entries if e.get("kind") == "authority"),
+            "breaches": sum(1 for e in self._entries if e.get("kind") == "breach" and not e.get("event")),
+            "breaches_overdue": [e["seq"] for e in self._entries if e.get("kind") == "breach" and not e.get("event")
+                                 and now > float(e.get("notify_deadline_ts") or now)
+                                 and not any(u.get("kind") == "breach" and u.get("to") == "supervisory_authority"
+                                             and any((r or {}).get("seq") == e["seq"] for r in (u.get("evidence") or []))
+                                             for u in self._entries)],
             "incidents": len([i for i in incidents if i.get("event") != "reported"]),
             "incidents_overdue": [i["seq"] for i in incidents if i.get("event") != "reported"
                                   and i.get("report_deadline_ts") and now > i["report_deadline_ts"]

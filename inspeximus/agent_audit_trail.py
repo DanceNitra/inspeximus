@@ -103,7 +103,7 @@ def _outcome(e: dict) -> str:
     if kind == "oversight":
         return {"refuse": "denied", "stop": "denied", "override": "escalated", "review": "success",
                 "approve": "success"}.get(e.get("event"), "success")
-    if kind == "incident":
+    if kind in ("incident", "breach", "corrective"):
         return "escalated"
     return "failure" if e.get("status") == "error" else "success"
 
@@ -125,6 +125,12 @@ def _action_type_and_detail(e: dict) -> tuple[str, dict]:
         return "escalation", {"escalation_reason": "policy_requires_human",
                               "escalation_target": e.get("reported_to") or e.get("actor") or "operator",
                               "urgency": {"serious": "high", "widespread": "critical", "death": "critical"}.get(e.get("severity"), "medium")}
+    if kind == "breach":
+        return "escalation", {"escalation_reason": "policy_requires_human",
+                              "escalation_target": e.get("to") or "supervisory_authority", "urgency": "high"}
+    if kind == "corrective":
+        return "escalation", {"escalation_reason": "policy_requires_human",
+                              "escalation_target": "provider", "urgency": "high"}
     if kind == "lifecycle":
         ev = {"start": "session_start", "stop": "session_end", "pause": "pause", "resume": "resume",
               "configuration_change": "configuration_change", "key_rotation": "key_rotation",

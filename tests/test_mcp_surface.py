@@ -95,6 +95,12 @@ def _args_for(name, sig, mod):
         # a period that started before the sweep (read-only without an actor; the actor above signs it)
         "risk_id": "R-sweep", "hazard": "a recalled fact steers the agent", "harm": "fundamental_rights",
         "source": "foreseeable_misuse", "since": 0.0,
+        # record_corrective_action / record_authority_request / record_breach / breach_notified / the two
+        # reports: `kind` here is the Art. 20 kind (the disclosure tool has its own default), `scope` the
+        # Art. 21 scope, `to` the Art. 33 target; seq 0 is not a breach so the report answers with an error
+        "kind": "disable", "non_conformity": "the send tool acted on a stale address",
+        "authority": "market surveillance authority", "reference": "REQ-sweep", "scope": "logs",
+        "nature": "an export reached another subject", "to": "supervisory_authority",
         # export_audit_trail writes a JSONL file: a temp path, a URI and a semver
         "out_path": os.path.join(tempfile.gettempdir(), "inspeximus-sweep-trail.jsonl"),
         # remember_in_partition names a partition that the sweep has not opened: an error dict, never a raise
