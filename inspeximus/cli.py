@@ -417,6 +417,17 @@ def _survive_a_narrow_console() -> None:
             pass          # a redirected or exotic stream is not worth failing a command over
 
 
+def _num(text: str):
+    """A threshold or an observed value as the CLI receives it: a number when it parses, else the text."""
+    try:
+        return int(text)
+    except ValueError:
+        try:
+            return float(text)
+        except ValueError:
+            return text
+
+
 def main(argv=None):
     _survive_a_narrow_console()
     ap = argparse.ArgumentParser(prog="inspeximus", description="inspeximus — the self-correcting memory layer (CLI).")
@@ -854,6 +865,37 @@ def main(argv=None):
     aci.add_argument("--subject", default=None)
     acir = acsub.add_parser("incident-report", help="the Art. 73 report skeleton for incident SEQ")
     acir.add_argument("seq", type=int)
+    acrk = acsub.add_parser("risk", help="append one risk-register entry (Art. 9); the same id again is a review")
+    acrk.add_argument("risk_id", help="the risk's id; every later entry under it is its history")
+    acrk.add_argument("hazard", help="what can go wrong, in one line")
+    acrk.add_argument("--harm", required=True, choices=["health", "safety", "fundamental_rights"])
+    acrk.add_argument("--source", required=True, choices=["intended_use", "foreseeable_misuse", "post_market"],
+                      help="Art. 9(2)(a), (b) or (c): where the risk was found")
+    acrk.add_argument("--actor", required=True)
+    acrk.add_argument("--likelihood", default="medium", choices=["low", "medium", "high"])
+    acrk.add_argument("--severity", default="medium", choices=["low", "medium", "high"])
+    acrk.add_argument("--measure", default=None, help="the Art. 9(2)(d) measure taken")
+    acrk.add_argument("--measure-kind", dest="measure_kind", default=None, choices=["eliminate", "mitigate", "inform"])
+    acrk.add_argument("--residual", default=None, choices=["low", "medium", "high"])
+    acrk.add_argument("--acceptable", dest="residual_acceptable", action="store_true", default=None,
+                      help="the Art. 9(5) judgement that the residual risk is acceptable")
+    acrk.add_argument("--not-acceptable", dest="residual_acceptable", action="store_false")
+    acrk.add_argument("--evidence", action="append", default=[], help="a probe path, receipt hash or test name; repeatable")
+    acrk.add_argument("--refers-to", dest="refers_to", type=int, action="append", default=[], help="seq of a ledger entry; repeatable")
+    acrk.add_argument("--test", action="append", default=[],
+                      help="METRIC=THRESHOLD[:OBSERVED[:pass|fail]] tested against a prior defined threshold (Art. 9(8)); repeatable")
+    acrk.add_argument("--vulnerable-groups", dest="vulnerable", action="store_true",
+                      help="Art. 9(9): affects persons under 18 or other vulnerable groups")
+    acrk.add_argument("--status", default="open", choices=["open", "closed"])
+    acsub.add_parser("risk-register", help="the Art. 9 register: the latest state per risk id, with the counts an assessor asks for")
+    acpm = acsub.add_parser("post-market-report", help="the Art. 72 monitoring report for a period, signed into the ledger with --actor")
+    acpm.add_argument("--since", type=float, required=True, help="unix time the period starts")
+    acpm.add_argument("--until", type=float, default=None, help="unix time the period ends (default now)")
+    acpm.add_argument("--actor", default=None,
+                      help="sign the report into the ledger as this person or role; without it the report is read-only")
+    acpm.add_argument("--plan", default=None,
+                      help="path to the operator's monitoring plan (JSON with name and version); carried by name, version and hash")
+    acpm.add_argument("--note", default=None)
     acrp = acsub.add_parser("incident-reported", help="record that incident SEQ was reported, to whom and when")
     acrp.add_argument("seq", type=int)
     acrp.add_argument("--actor", required=True)
@@ -1629,6 +1671,36 @@ def main(argv=None):
                   + (f", report due in {e['report_deadline_days']} days" if dl else ""))
         elif a.actions_cmd == "incident-report":
             print(json.dumps(led.incident_report(a.seq), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "risk":
+            tests = []
+            for spec in a.test:
+                head, _, rest = spec.partition("=")
+                parts = rest.split(":")
+                if not head or not parts[0]:
+                    raise SystemExit("--test needs METRIC=THRESHOLD[:OBSERVED[:pass|fail]]")
+                t = {"metric": head, "threshold": _num(parts[0])}
+                if len(parts) > 1 and parts[1] != "":
+                    t["observed"] = _num(parts[1])
+                if len(parts) > 2:
+                    t["passed"] = parts[2] == "pass"
+                tests.append(t)
+            e = led.risk(a.risk_id, a.hazard, a.harm, a.source, a.actor, likelihood=a.likelihood,
+                         severity=a.severity, measure=a.measure, measure_kind=a.measure_kind,
+                         residual=a.residual, residual_acceptable=a.residual_acceptable, evidence=a.evidence,
+                         refers_to=a.refers_to, tests=tests, affects_vulnerable_groups=a.vulnerable, status=a.status)
+            print(f"recorded #{e['seq']} risk {e['risk_id']} ({e['source']}, {e['harm']}) by {e['actor']}"
+                  + (f", residual {e['residual']}" if e.get("residual") else "")
+                  + (", acceptable" if e.get("residual_acceptable") else "")
+                  + (f", {len(e['tests'])} test(s)" if e.get("tests") else ""))
+        elif a.actions_cmd == "risk-register":
+            print(json.dumps(led.risk_register(), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "post-market-report":
+            plan = None
+            if a.plan:
+                with open(a.plan, encoding="utf-8") as fh:
+                    plan = json.load(fh)
+            print(json.dumps(led.post_market_report(a.since, until=a.until, actor=a.actor, plan=plan, note=a.note),
+                             indent=2, ensure_ascii=False))
         elif a.actions_cmd == "incident-reported":
             e = led.incident_reported(a.seq, actor=a.actor, reported_to=a.reported_to, reported_ts=a.reported_ts,
                                       note=a.note)

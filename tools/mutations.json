@@ -1873,5 +1873,50 @@
   "tests": [
    "tests/test_coverage_names_what_is_missing.py"
   ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "a risk source outside Art. 9(2) is accepted",
+  "old": "        if source not in RISK_SOURCES:\n            raise ValueError(f\"source must be one of {RISK_SOURCES}\")",
+  "new": "        if False:\n            raise ValueError(f\"source must be one of {RISK_SOURCES}\")",
+  "tests": [
+   "tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the register never counts an untested risk",
+  "old": "                           \"without_test\": sum(1 for r in open_rows if not r[\"tests\"]),",
+  "new": "                           \"without_test\": 0,",
+  "tests": [
+   "tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the monitoring entry hashes an empty summary",
+  "old": "\"summary_sha256\": _content_hash(report),",
+  "new": "\"summary_sha256\": _content_hash({}),",
+  "tests": [
+   "tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the monitoring report is never signed into the ledger",
+  "old": "        if actor:\n            extra = {\"since\": since, \"until\": until,",
+  "new": "        if False:\n            extra = {\"since\": since, \"until\": until,",
+  "tests": [
+   "tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py"
+  ]
+ },
+ {
+  "file": "inspeximus/coverage.py",
+  "name": "the risk probe counts nothing",
+  "old": "    ev = _entries(store, \"risk\")\n    ids",
+  "new": "    ev = []\n    ids",
+  "tests": [
+   "tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py"
+  ]
  }
 ]

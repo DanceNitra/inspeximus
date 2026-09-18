@@ -1,3 +1,32 @@
+## 2.43.0 - the Art. 9 risk register and the Art. 72 post-market monitoring report, as signed ledger entries. UPGRADE IF YOU ARE THE PROVIDER OF AN AGENT AND AN ASSESSOR WILL ASK FOR ITS RISK MANAGEMENT SYSTEM. AFFECTS: adds `ActionLedger.risk()`, `risk_register()`, `post_market_report()`, three CLI subcommands under `actions`, and three MCP tools (102); the ledger accepts two new entry kinds, `risk` and `monitoring`; nothing existing changes.
+
+Art. 9(2) calls risk management "a continuous iterative process ... requiring regular systematic
+review and updating", so a risk is a `risk_id` with a history: every review is a new signed entry
+under the same id, and `risk_register()` reads the latest state, the length of the history and the
+days since the last review. Each entry carries where the risk was found (intended use, reasonably
+foreseeable misuse, or post-market data: 9(2)(a) to (c)), what it threatens (health, safety,
+fundamental rights), the measure and its kind (eliminate, mitigate, inform: 9(5)(a) to (c)), the
+residual level and whether it was judged acceptable (9(5)), tests against a threshold defined before
+the test (9(8): a test without its threshold is refused), the 9(9) vulnerable-groups flag, and
+references to ledger entries that must resolve. The register counts what an assessor asks first:
+open risks without a measure, without evidence, without a test, with the residual not judged or not
+acceptable.
+
+Art. 72(2) asks the provider to "actively and systematically collect, document and analyse"
+performance data and to evaluate continuous compliance with Section 2, so `post_market_report()` is
+built from the ledgers for one period, never typed in: actions and errors, oversight by event with
+the refusal-or-override rate, incidents and their clocks, rights requests, risks recorded and those
+found from post-market data, retention attestations, lifecycle events, disclosures, the store's
+size, and the chain verifier's own verdict. The monitoring plan (72(3), part of Annex IV) is carried
+by name, version and content hash, never its text. With an actor the report is appended to the
+ledger as a signed `monitoring` entry carrying the hash of what it summarised, so that monitoring
+happened is itself evidence; without an actor it is read-only and moves no coverage row.
+
+`inspeximus coverage` on a fresh store: 25 of 36 in-scope duties covered, 11 not covered (was 23
+and 13). Five mutations, all killed by
+`tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py`. Evidence, never a
+certification: whether the risks are the right ones is the provider's assessment.
+
 ## 2.42.0 - `inspeximus coverage`: every obligation of an AI-agent operator under the EU AI Act and the GDPR, and whether this store holds evidence for it. UPGRADE IF YOU HAND EVIDENCE TO AN ASSESSOR OR WANT TO KNOW WHAT IS MISSING. AFFECTS: adds a CLI subcommand and an MCP tool (99); nothing existing changes.
 
 Thirty-six in-scope duties (provider and deployer duties of a high-risk system that runs an agent,

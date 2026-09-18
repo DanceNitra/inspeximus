@@ -58,7 +58,8 @@ except Exception:  # pragma: no cover - exercised only where cryptography is abs
     _HAVE_ED = False
 
 __all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VERSION",
-           "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS", "INCIDENT_SEVERITIES", "INCIDENT_DEADLINES_DAYS"]
+           "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS", "INCIDENT_SEVERITIES", "INCIDENT_DEADLINES_DAYS",
+           "RISK_SOURCES", "RISK_HARMS", "RISK_MEASURES", "RISK_LEVELS"]
 
 # Art. 73(2) to (4): a serious incident is reported immediately and no later than 15 days after the
 # provider becomes aware of it; 2 days for a widespread infringement or a serious incident concerning
@@ -67,6 +68,15 @@ INCIDENT_SEVERITIES = ("serious", "widespread", "death", "other")
 INCIDENT_DEADLINES_DAYS = {"serious": 15, "widespread": 2, "death": 10, "other": None}
 
 OVERSIGHT_EVENTS = ("approve", "refuse", "override", "stop", "review")
+
+#: Art. 9(2): where a risk was identified. (a) intended use, (b) reasonably foreseeable misuse,
+#: (c) data from post-market monitoring (Art. 72).
+RISK_SOURCES = ("intended_use", "foreseeable_misuse", "post_market")
+#: Art. 9(2)(a): what the risk is to.
+RISK_HARMS = ("health", "safety", "fundamental_rights")
+#: Art. 9(5)(a) to (c): the kind of measure taken.
+RISK_MEASURES = ("eliminate", "mitigate", "inform")
+RISK_LEVELS = ("low", "medium", "high")
 DISCLOSURE_KINDS = ("interaction", "generated_content", "emotion_recognition", "biometric_categorisation",
                     "deepfake", "public_interest_text")
 
@@ -105,6 +115,25 @@ def _canon(obj: Any) -> bytes:
 
 def _sha256_hex(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
+
+
+def _chain_state(ledger) -> dict:
+    """The ledger's own verifier, run for the monitoring report: Art. 72(2) asks the provider to
+    evaluate continuous compliance with Section 2, and a chain that no longer verifies is the first
+    thing such an evaluation has to say. Never raises: a verifier that cannot run is reported as such."""
+    try:
+        ok, problems = ledger.verify()
+        return {"verified": bool(ok), "problems": len(problems), "entries": len(ledger)}
+    except Exception as ex:  # noqa: BLE001 - the report must still build
+        return {"verified": None, "problems": None, "entries": len(ledger), "error": str(ex)[:200]}
+
+
+def _count_by(entries: list, field: str) -> dict:
+    out: dict = {}
+    for e in entries:
+        k = str(e.get(field))
+        out[k] = out.get(k, 0) + 1
+    return out
 
 
 def _content_hash(obj: Any, salt: bytes = b"") -> str:
@@ -363,9 +392,10 @@ class ActionLedger:
         the caller did not say."""
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
-        if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp", "lifecycle"):
-            raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp "
-                             "or lifecycle")
+        if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp",
+                        "lifecycle", "risk", "monitoring"):
+            raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
+                             "lifecycle, risk or monitoring")
         self._refresh_if_changed()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -562,6 +592,171 @@ class ActionLedger:
                  "disposition": e.get("disposition"), "note": e.get("note")}
                 for e in self._entries if e.get("kind") == "lifecycle"]
 
+    # ------------------------------------------------------------------ Art. 9: risk register
+    def risk(self, risk_id: str, hazard: str, harm: str, source: str, actor: str,
+             likelihood: str = "medium", severity: str = "medium",
+             measure: str | None = None, measure_kind: str | None = None,
+             residual: str | None = None, residual_acceptable: bool | None = None,
+             evidence: list | None = None, refers_to: list | None = None,
+             tests: list | None = None, affects_vulnerable_groups: bool = False,
+             status: str = "open", meta: dict | None = None) -> dict:
+        """One entry in the risk register (EU AI Act Art. 9), appended, never rewritten.
+
+        Art. 9(2) asks for a continuous, iterative process with regular systematic review, so a risk
+        is a `risk_id` with a history: every review, re-estimation or new measure is a new entry under
+        the same id, and `risk_register()` shows the latest state and the age of the last review.
+        `source` is where the risk was found: the intended use (9(2)(a)), reasonably foreseeable
+        misuse (9(2)(b)), or data from post-market monitoring (9(2)(c)). `harm` is what it threatens.
+        `measure` and `measure_kind` are the 9(2)(d) measure and whether it eliminates, mitigates or
+        informs (9(5)(a) to (c)); `residual` and `residual_acceptable` are the 9(5) judgement.
+        `evidence` is a list of free references to what supports the estimate (a probe path, a
+        receipt hash, a test name); `refers_to` is a list of ledger entries (an incident, a
+        monitoring report) and each must resolve. `tests` is the 9(6) to 9(8) record: each item names
+        the `metric`, the prior defined `threshold`, the `observed` value and whether it `passed`, so
+        the register can say which risks were tested against a threshold set before the test and
+        which were not. `affects_vulnerable_groups` is the 9(9) flag. `actor` is the person or role
+        making the entry."""
+        if source not in RISK_SOURCES:
+            raise ValueError(f"source must be one of {RISK_SOURCES}")
+        if harm not in RISK_HARMS:
+            raise ValueError(f"harm must be one of {RISK_HARMS}")
+        if likelihood not in RISK_LEVELS or severity not in RISK_LEVELS:
+            raise ValueError(f"likelihood and severity must be one of {RISK_LEVELS}")
+        if residual is not None and residual not in RISK_LEVELS:
+            raise ValueError(f"residual must be one of {RISK_LEVELS}")
+        if measure_kind is not None and measure_kind not in RISK_MEASURES:
+            raise ValueError(f"measure_kind must be one of {RISK_MEASURES}")
+        if status not in ("open", "closed"):
+            raise ValueError("status must be 'open' or 'closed'")
+        if not risk_id or not hazard or not actor:
+            raise ValueError("a risk entry needs a risk_id, a hazard and an actor")
+        if residual_acceptable and residual is None:
+            raise ValueError("residual_acceptable=True needs the residual level it judges")
+        checked = []
+        for t in (tests or []):
+            if not isinstance(t, dict) or not t.get("metric") or "threshold" not in t:
+                raise ValueError("each test needs a metric and the threshold defined before the test (Art. 9(8))")
+            checked.append({"metric": str(t["metric"]), "threshold": t["threshold"],
+                            "observed": t.get("observed"), "passed": t.get("passed"),
+                            "probe": t.get("probe")})
+        refs = [self._resolve_ref(r) for r in (refers_to or [])]
+        extra = {"risk_id": risk_id, "hazard": hazard, "harm": harm, "source": source,
+                 "likelihood": likelihood, "severity": severity, "measure": measure,
+                 "measure_kind": measure_kind, "residual": residual,
+                 "residual_acceptable": residual_acceptable, "evidence": list(evidence or []),
+                 "refers_to": refs, "tests": checked,
+                 "affects_vulnerable_groups": bool(affects_vulnerable_groups), "risk_status": status}
+        return self.record(f"risk:{source}", inputs={"risk_id": risk_id, "hazard": hazard}, status="ok",
+                           actor=actor, meta=meta, kind="risk", extra=extra)
+
+    def risk_register(self, now: float | None = None) -> dict:
+        """The register an assessor reads: the latest entry per risk_id, its history length, the days
+        since its last review, and the counts Art. 9 asks about (by source, unmitigated, residual not
+        judged acceptable, vulnerable groups). Read-only."""
+        now = time.time() if now is None else now
+        by_id: dict = {}
+        for e in self._entries:
+            if e.get("kind") != "risk":
+                continue
+            by_id.setdefault(e["risk_id"], []).append(e)
+        rows = []
+        for rid, hist in by_id.items():
+            last = hist[-1]
+            rows.append({"risk_id": rid, "hazard": last.get("hazard"), "harm": last.get("harm"),
+                         "source": last.get("source"), "likelihood": last.get("likelihood"),
+                         "severity": last.get("severity"), "measure": last.get("measure"),
+                         "measure_kind": last.get("measure_kind"), "residual": last.get("residual"),
+                         "residual_acceptable": last.get("residual_acceptable"),
+                         "status": last.get("risk_status"), "entries": len(hist),
+                         "first_seq": hist[0]["seq"], "last_seq": last["seq"],
+                         "last_review_ts": last.get("ts"),
+                         "days_since_review": round((now - float(last.get("ts") or now)) / 86400, 1),
+                         "evidence": last.get("evidence") or [], "refers_to": last.get("refers_to") or [],
+                         "tests": last.get("tests") or [],
+                         "affects_vulnerable_groups": bool(last.get("affects_vulnerable_groups"))})
+        open_rows = [r for r in rows if r["status"] == "open"]
+        return {"kind": "inspeximus.risk_register/1", "ts": now, "risks": rows,
+                "counts": {"total": len(rows), "open": len(open_rows),
+                           "by_source": {s: sum(1 for r in rows if r["source"] == s) for s in RISK_SOURCES},
+                           "by_harm": {h: sum(1 for r in rows if r["harm"] == h) for h in RISK_HARMS},
+                           "without_measure": sum(1 for r in open_rows if not r["measure"]),
+                           "residual_not_judged": sum(1 for r in open_rows if r["residual_acceptable"] is None),
+                           "residual_not_acceptable": sum(1 for r in open_rows if r["residual_acceptable"] is False),
+                           "without_evidence": sum(1 for r in open_rows if not r["evidence"]),
+                           "without_test": sum(1 for r in open_rows if not r["tests"]),
+                           "test_failed": sum(1 for r in open_rows if any(t.get("passed") is False for t in r["tests"])),
+                           "vulnerable_groups": sum(1 for r in rows if r["affects_vulnerable_groups"])},
+                "scope": ("The register as recorded in this ledger: each entry is signed and chained, and a risk "
+                          "is a history, not a row. Whether the risks are the right ones and the residual "
+                          "judgement sound is the provider's assessment; this is the evidence of it.")}
+
+    # ------------------------------------------------------------------ Art. 72: post-market monitoring
+    def post_market_report(self, since: float, until: float | None = None, actor: str | None = None,
+                           plan: dict | None = None, note: str | None = None) -> dict:
+        """The periodic report of a post-market monitoring system (EU AI Act Art. 72(2)): what the
+        ledgers show about the agent's performance over one period, gathered and analysed here rather
+        than asserted. It counts actions and error actions, oversight events by type (refusals and
+        overrides are the operator's own signal that outputs needed correction), incidents opened and
+        their reporting clocks, erasures and rights requests, retention attestations, lifecycle
+        events, and risks added from post-market data (Art. 9(2)(c)). `plan` is the operator's
+        monitoring plan (Art. 72(3): part of the Annex IV documentation; the Commission's template is
+        pending) and is carried by reference: its name, version and content hash, never its text.
+
+        With `actor`, the report is ALSO appended to the ledger as a signed `monitoring` entry, so
+        the fact that monitoring happened is itself evidence; without an actor it is read-only."""
+        until = time.time() if until is None else float(until)
+        since = float(since)
+        if until <= since:
+            raise ValueError("until must be after since")
+        inside = [e for e in self._entries if since <= float(e.get("ts") or 0) < until]
+
+        def kind(k):
+            return [e for e in inside if e.get("kind", "action") == k]
+        actions = kind("action")
+        overs = kind("oversight")
+        incidents = kind("incident")
+        risks = kind("risk")
+        rights = kind("rights")
+        report = {
+            "kind": "inspeximus.post_market_report/1", "period": {"since": since, "until": until},
+            "actions": {"total": len(actions),
+                        "error": sum(1 for e in actions if e.get("status") not in (None, "ok")),
+                        "by_action": _count_by(actions, "action")},
+            "oversight": {"total": len(overs), "by_event": _count_by(overs, "event"),
+                          "refusal_or_override_rate": (round(sum(1 for e in overs if e.get("event") in ("refuse", "override"))
+                                                             / len(actions), 4) if actions else None)},
+            "incidents": {"opened": len(incidents), "by_severity": _count_by(incidents, "severity"),
+                          "overdue": [e["seq"] for e in incidents
+                                      if e.get("report_deadline_ts") and not e.get("reported_ts")
+                                      and float(e["report_deadline_ts"]) < until]},
+            "rights_requests": _count_by(rights, "action"),
+            "risks": {"recorded": len(risks), "from_post_market": sum(1 for e in risks if e.get("source") == "post_market"),
+                      "residual_not_acceptable": sum(1 for e in risks if e.get("residual_acceptable") is False)},
+            "retention_attestations": len(kind("retention")),
+            "lifecycle": _count_by(kind("lifecycle"), "event"),
+            "disclosures": len(kind("disclosure")),
+            "chain": _chain_state(self),
+            "requirements": {"Art. 9": "risks", "Art. 12": "actions, chain", "Art. 14": "oversight",
+                             "Art. 15": "chain, incidents", "Art. 13": "disclosures", "Art. 73": "incidents"},
+            "store": {"records": len(list(self.store.items)) if self.store is not None else None,
+                      "tombstones": len(getattr(self.store, "_tombstones", None) or []) if self.store is not None else None},
+            "plan": ({"name": plan.get("name"), "version": plan.get("version"),
+                      "sha256": _content_hash(plan)} if plan else None),
+            "note": note,
+            "scope": ("Counts from this ledger and store for the period, read through their verifiers. Not a "
+                      "judgement of continuous compliance; the material for one. Interaction with other AI "
+                      "systems is visible only where those systems wrote into this ledger."),
+        }
+        if actor:
+            extra = {"since": since, "until": until, "summary_sha256": _content_hash(report),
+                     "plan": report["plan"], "note": note,
+                     "counts": {"actions": report["actions"]["total"], "incidents": report["incidents"]["opened"],
+                                "oversight": report["oversight"]["total"], "risks": report["risks"]["recorded"]}}
+            entry = self.record("monitoring:post_market", inputs={"since": since, "until": until}, status="ok",
+                                actor=actor, kind="monitoring", extra=extra)
+            report["ledger_seq"] = entry["seq"]
+        return report
+
     def incident_reported(self, seq: int, actor: str, reported_to: str, reported_ts: float | None = None,
                           note: str | None = None) -> dict:
         """Record that incident `seq` was reported: to whom and when. An incident entry is immutable, so
@@ -681,6 +876,8 @@ class ActionLedger:
             "rights_requests": {"export": sum(1 for r in rights if r.get("event") == "export"),
                                 "rectify": sum(1 for r in rights if r.get("event") == "rectify")},
             "lifecycle_events": sum(1 for e in self._entries if e.get("kind") == "lifecycle"),
+            "risk_entries": sum(1 for e in self._entries if e.get("kind") == "risk"),
+            "monitoring_reports": sum(1 for e in self._entries if e.get("kind") == "monitoring"),
             "incidents": len([i for i in incidents if i.get("event") != "reported"]),
             "incidents_overdue": [i["seq"] for i in incidents if i.get("event") != "reported"
                                   and i.get("report_deadline_ts") and now > i["report_deadline_ts"]

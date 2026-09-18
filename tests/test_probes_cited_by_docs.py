@@ -385,6 +385,13 @@ _SLOW_PROBES = {
     # the smallest size. The seeding is already amortised (one template store per format and size,
     # copied per trial); what is left is the measurement itself.
     "one_write_two_formats_across_store_sizes.py": 500,
+    # 151 s idle against the flat 180 s (16% headroom), measured 2026-09-18 after it failed two release
+    # runs the same day under the suite's 24-way parallelism; the probe is untouched since 1.26.0.
+    "generative_agents_retrieval_stress.py": 600,
+    # 40.6 s idle, and it still overran 180 s in a release run on 2026-09-18 while 24 workers shared
+    # the box: a 4.5x load factor on a probe that persists every write. The budget is a hang
+    # detector, and 400 s still catches one.
+    "forget_verification_bench.py": 400,
 }
 _DEFAULT_PROBE_TIMEOUT = 180
 

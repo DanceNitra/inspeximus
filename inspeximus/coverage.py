@@ -95,6 +95,17 @@ def _p_incidents(store):
     return n, f"{n} incident record(s) with the Art. 73 reporting clock"
 
 
+def _p_risks(store):
+    ev = _entries(store, "risk")
+    ids = {e.get("risk_id") for e in ev}
+    return len(ev), f"{len(ev)} risk entr(ies) over {len(ids)} risk id(s) in the register"
+
+
+def _p_monitoring(store):
+    n = len(_entries(store, "monitoring"))
+    return n, f"{n} post-market monitoring report(s) signed into the ledger"
+
+
 def _p_lifecycle(store):
     n = len(_entries(store, "lifecycle"))
     return n, f"{n} lifecycle event(s)"
@@ -175,7 +186,7 @@ OBLIGATIONS: list[dict[str, Any]] = [
      "who": "provider, deployer", "probe": _p_disclosures, "artifact": "record_disclosure()"},
     # ---- EU AI Act: high-risk provider
     {"id": "aia-9", "law": "AI Act", "article": "Art. 9", "duty": "risk management system over the lifecycle", "who": "provider",
-     "probe": None, "gap": "a `record_risk` ledger event (risk, measure, residual risk) linked to a probe or receipt, and the register report"},
+     "probe": _p_risks, "artifact": "ActionLedger.risk() entries, risk_register(); 9(2)(a) to (d), 9(5), 9(9) fields"},
     {"id": "aia-10", "law": "AI Act", "article": "Art. 10", "duty": "data governance: provenance, relevance, bias examination of the data the system works on",
      "who": "provider", "probe": _p_sources, "artifact": "provenance(), pii_report(), retention(); per-record source and lineage"},
     {"id": "aia-11", "law": "AI Act", "article": "Art. 11, Annex IV", "duty": "technical documentation", "who": "provider",
@@ -208,7 +219,8 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "aia-49", "law": "AI Act", "article": "Art. 49, Annex VIII", "duty": "registration in the EU database", "who": "provider, some deployers",
      "probe": _p_report("registration_export", "technical_documentation"), "artifact": "registration_export() sections A, B, C"},
     {"id": "aia-72", "law": "AI Act", "article": "Art. 72", "duty": "post-market monitoring plan and reports", "who": "provider",
-     "probe": None, "gap": "a `post_market_report` from the ledgers (incidents, oversight, drift, erasures) and the plan it reports against"},
+     "probe": _p_monitoring, "artifact": "post_market_report() signed into the ledger, carrying the plan by name, version and hash",
+     "partial": "the plan itself is the operator's document; the Commission's template (Art. 72(3)) is not published yet"},
     {"id": "aia-73", "law": "AI Act", "article": "Art. 73", "duty": "serious incident reporting within the deadlines", "who": "provider",
      "probe": _p_incidents, "artifact": "record_incident(), incident_report() with the reporting clock"},
     # ---- EU AI Act: deployer

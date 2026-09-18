@@ -70,13 +70,16 @@ def test_each_artifact_moves_its_row_to_evidence(tmp_path):
 def test_every_not_covered_row_names_a_function_that_does_not_exist_yet():
     """The gap text is a promise; when the function ships, this fails until the row is rewritten."""
     import inspeximus.actions as actions
-    import inspeximus.mcp_server as mcp
+    try:
+        import inspeximus.mcp_server as mcp        # CI's plain job has no MCP SDK; the ledger check still runs
+    except ImportError:
+        mcp = None
     for ob in OBLIGATIONS:
         if ob.get("probe") is None and not ob.get("why"):
             names = re.findall(r"`([a-z_]+)`", ob["gap"])
             assert names, f"{ob['id']}: the gap must name the function that would close it, in backticks"
             for n in names:
-                assert not hasattr(mcp, n) and not hasattr(actions.ActionLedger, n), \
+                assert not hasattr(actions.ActionLedger, n) and not (mcp is not None and hasattr(mcp, n)), \
                     f"{ob['id']}: `{n}` exists now; rewrite the row with a probe"
 
 

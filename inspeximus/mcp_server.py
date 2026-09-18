@@ -1623,6 +1623,59 @@ def record_incident(title: str, severity: str, actor: str, description: str | No
 
 
 @mcp.tool()
+def record_risk(risk_id: str, hazard: str, harm: str, source: str, actor: str, likelihood: str = "medium",
+                severity: str = "medium", measure: str | None = None, measure_kind: str | None = None,
+                residual: str | None = None, residual_acceptable: bool | None = None,
+                evidence: list[str] | None = None, refers_to: list[int] | None = None,
+                tests: list[dict] | None = None, affects_vulnerable_groups: bool = False,
+                status: str = "open") -> dict:
+    """Append one entry to the risk register (EU AI Act Art. 9). The same `risk_id` again is a review or a
+    re-estimate; the register shows the latest state and how long since the last review. `source` is
+    intended_use, foreseeable_misuse or post_market (9(2)(a) to (c)); `harm` is health, safety or
+    fundamental_rights; `measure_kind` is eliminate, mitigate or inform (9(5)); `residual` plus
+    `residual_acceptable` is the 9(5) judgement; `tests` lists {metric, threshold, observed, passed}
+    against a threshold defined before the test (9(8)); `refers_to` lists ledger seqs and each must exist."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.risk(risk_id, hazard, harm, source, actor, likelihood=likelihood, severity=severity,
+                     measure=measure, measure_kind=measure_kind, residual=residual,
+                     residual_acceptable=residual_acceptable, evidence=evidence, refers_to=refers_to,
+                     tests=tests, affects_vulnerable_groups=affects_vulnerable_groups, status=status)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "risk_id": e["risk_id"], "source": e["source"], "harm": e["harm"],
+            "residual": e["residual"], "residual_acceptable": e["residual_acceptable"],
+            "tests": len(e["tests"]), "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def risk_register() -> dict:
+    """The Art. 9 risk register as this ledger records it: the latest entry per risk id, its history
+    length, days since the last review, and the counts an assessor asks for (by source and harm, open
+    risks without a measure, without evidence, without a test, residual not judged or not acceptable,
+    vulnerable groups). Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).risk_register()
+
+
+@mcp.tool()
+def post_market_report(since: float, until: float | None = None, actor: str | None = None,
+                       plan: dict | None = None, note: str | None = None) -> dict:
+    """The Art. 72 post-market monitoring report for one period, from the ledgers: actions and errors,
+    oversight by event, incidents and their clocks, rights requests, risks recorded (and those found
+    from post-market data), retention, lifecycle, disclosures, the chain verifier's verdict, and the
+    store's size. `plan` is the operator's monitoring plan, carried by name, version and hash. With
+    `actor` the report is signed into the ledger as a `monitoring` entry; without it, read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        return led.post_market_report(since, until=until, actor=actor, plan=plan, note=note)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
 def incident_report(seq: int) -> dict:
     """The Art. 73 report skeleton for incident `seq`: dates, the statutory deadline and whether it is
     overdue, the evidence entries with their memory state and any oversight on them, later entries that

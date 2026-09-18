@@ -91,6 +91,10 @@ def _args_for(name, sig, mod):
         # nothing, an attestation appends one entry, and reporting seq 0 answers with an error dict when
         # seq 0 is not an incident; none may raise.
         "keep_days": 3650.0, "policy_days": 183.0, "reported_to": "market surveillance authority",
+        # record_risk / post_market_report: one Art. 9 entry in the register, and an Art. 72 report over
+        # a period that started before the sweep (read-only without an actor; the actor above signs it)
+        "risk_id": "R-sweep", "hazard": "a recalled fact steers the agent", "harm": "fundamental_rights",
+        "source": "foreseeable_misuse", "since": 0.0,
         # export_audit_trail writes a JSONL file: a temp path, a URI and a semver
         "out_path": os.path.join(tempfile.gettempdir(), "inspeximus-sweep-trail.jsonl"),
         # remember_in_partition names a partition that the sweep has not opened: an error dict, never a raise
