@@ -9,6 +9,52 @@ Regulation (EU) 2026/1744, and Regulation (EU) 2016/679). Verify each article qu
 before it goes into a public page. Nothing here is legal advice; the product produces evidence, the
 accountable party produces compliance.
 
+## 0. The whole Act, step by step (owner's directive, 2026-09-17)
+
+The owner, 2026-09-17: our path is THE WHOLE ACT, not "the agent-memory slice". This section is the
+procedure we follow to get there, in the order we follow it, and it is the only place the procedure
+lives. Section 2's status table below it is now GENERATED from `inspeximus.coverage` by
+`tools/gen_coverage_table.py`, and a test fails when the two disagree, because the hand-written
+table had gone stale for four duties within two days of being written.
+
+**The rule of the procedure.** One duty at a time. For each: (1) read the article in the
+consolidated text, not a summary; (2) name the artifact an operator would hand an assessor;
+(3) build the call that produces it, with a receipt, and a probe in `inspeximus.coverage` that
+counts it; (4) tests that move the row from CAPABILITY to EVIDENCE on a fixture and a mutation
+that kills it; (5) the row's `gap` text is deleted, or the test
+`test_every_not_covered_row_names_a_function_that_does_not_exist_yet` refuses the release;
+(6) the release goes through `tools/release_check.py`; (7) the public claim changes only after the
+matrix does. "The whole Act" is reached when `inspeximus coverage` prints zero NOT COVERED rows on
+a fresh store; until then every surface says how many remain, from the matrix, not from memory.
+
+**The order.** Small releases, each one gated, each one leaving a NOT COVERED row fewer:
+
+1. **2.42.0, this step: the matrix itself.** `inspeximus coverage` (CLI and MCP), four states per
+   duty, 36 in-scope duties, 2 not applicable with the reason, the plan table generated from it.
+2. **2.43.0: Art. 9 and Art. 72.** `record_risk` (risk, measure, residual risk, each linked to a
+   probe or receipt) with a register report; `post_market_report` from the ledgers (incidents,
+   oversight, drift, erasures, retention) against a plan document the operator supplies.
+3. **2.44.0: Art. 20, 21, 86 and GDPR 33/34.** `record_corrective_action` linked to an incident
+   with the Art. 20 report; `record_authority_request` for what was handed over and when;
+   `decision_explanation(seq)` in one document (what the agent knew, the oversight on it);
+   `record_breach` with the 72-hour clock beside the Art. 73 clock and the subject-notification
+   event.
+4. **2.45.0: Art. 18, 43/47/48, 4, 5, 25.** `attest_documentation_retention` over the Annex IV
+   document and the declaration; `record_declaration` with the Annex V fields linked to Annex IV;
+   `record_literacy`, `record_attestation` (prohibited practices), `record_responsibilities`.
+5. **2.46.0: GDPR 13/14, 20, 21, 28.** `record_notice`; the subject export labelled as the Art. 20
+   response with a format version; `record_objection` that withholds the subject's records from
+   recall; `record_processing_role`.
+6. **Art. 15 and Art. 21 partials.** The poisoning, echo and split-view measurements carried into
+   `compliance_report()` as receipts; the authority-request record above closes Art. 21.
+7. **Then the surfaces.** ai-act.html rewritten as "evidence for every obligation of an agent
+   operator", with the matrix on the page; README, bio and PyPI description without the "slice"
+   wording; each through the standing gate.
+
+Every step is also the evidence for the next: the risk register (Art. 9) feeds Annex IV section 3,
+the monitoring report (Art. 72) feeds the corrective-action record (Art. 20), and the declaration
+(Art. 47) is what the documentation retention (Art. 18) attests over.
+
 ## 1. What changed and why the plan exists
 
 - The Digital Omnibus on AI (OJ 24 July 2026, in force 27 July 2026) moved the high-risk duties of
@@ -30,29 +76,52 @@ accountable party produces compliance.
 The table names each duty, who carries it, and what artifact a tool can produce. "Have" means
 shipped in inspeximus 2.28.1. "Build" is this plan.
 
-| duty | who | artifact a tool can produce | status |
-|---|---|---|---|
-| AI Act Art. 12 record-keeping: automatic event logs over the lifetime; for Annex III 1(a) systems also usage period, reference database, input data matched, natural persons involved in verification | provider | signed, chained event ledger: memory writes, corrections, erasures, **actions (tool and model calls)**, **oversight events** | memory: have. actions, oversight: build |
-| Art. 19 and Art. 26(6): keep logs at least six months | provider, deployer | retention policy enforced and attested, export bundle | built 2026-09-16 (`attest_retention`, `archive` under a signed checkpoint, 2.31.0) |
-| Art. 13: instructions for use, including how to collect and interpret logs | provider | generated "instructions for use" section describing the ledger schema and the verifier | built 2026-09-15 (`instructions_for_use`) |
-| Art. 14: human oversight, ability to intervene and stop | provider (design), deployer (assign persons) | **oversight ledger**: approvals, refusals, overrides, stops, each a signed event naming the person or role | build |
-| Art. 15: accuracy, robustness, cybersecurity, resilience to data and model poisoning | provider | measured poisoning defense (influence gate, echo guard), split-view detection, witness co-signing | have; add the measurement receipt to the report |
-| Art. 10: data governance for training, validation and testing data | provider | for agent memory: provenance per record, PII report, source diversity, retention | have (`provenance`, `pii_report`, `retention`) |
-| Art. 11 and Annex IV: technical documentation | provider | **Annex IV generator**: fills the sections that evidence can fill (2(a) to 2(g), 3, 4, 5) from the ledgers and reports, marks the rest as operator input | built 2026-09-15 (`annex_iv`, free skeleton); pro dossier open |
-| Art. 17 and Art. 18: quality management system, keep documentation ten years | provider | export bundle with a signed manifest, versioned | have (bundle); add documentation retention |
-| Art. 20, Art. 73: corrective actions, serious incident reporting (fifteen days) | provider | **incident ledger** with a report generator carrying the linked evidence | build |
-| Art. 26: deployer duties: use per instructions, assign oversight, monitor, keep logs, inform workers, DPIA under GDPR Art. 35 | deployer | deployer view of the same ledgers, DPIA evidence appendix | built 2026-09-15 (`deployer_report`, 2.30.0) |
-| Art. 27: fundamental rights impact assessment (public bodies and named private uses) | deployer | FRIA evidence appendix from the same data | built 2026-09-15 (`fria_appendix`, cross-references the DPIA per Art. 27(4)) |
-| Art. 49: registration in the EU database | provider, some deployers | export of the identifying fields | built 2026-09-16 (`registration_export`, Annex VIII A, B, C) |
-| Art. 50: disclosure that the user interacts with an AI system; marking of generated content | provider, deployer | **disclosure receipt** per session: what was shown, when, in which channel | build (small, applies now) |
-| Art. 72: post-market monitoring | provider | periodic monitoring report from the ledgers | build (report mode) |
-| GDPR Art. 5(2): accountability | controller | everything above, verifiable offline | have (verifier) |
-| GDPR Art. 15: right of access | controller | **subject export**: every record, action and derived fact about a subject, with provenance | build |
-| GDPR Art. 16: rectification | controller | keyed supersession with a receipt naming the correction | have; add a rectification receipt type |
-| GDPR Art. 17: erasure | controller | signed content-free tombstone, residue check, offline certificate, cross-store manifest | have |
-| GDPR Art. 22: automated decisions with legal effect | controller | oversight ledger shows the human review | build (same as Art. 14) |
-| GDPR Art. 30: records of processing | controller | live record from the store | have (overlay) |
-| GDPR Art. 35: DPIA | controller | evidence appendix | built 2026-09-15 (`dpia_appendix`) |
+<!-- coverage:begin (generated by tools/gen_coverage_table.py; do not edit by hand) -->
+
+23 of 36 in-scope duties covered by the library, 13 not covered, 2 not applicable. `inspeximus coverage` prints the same matrix for a real store, with EVIDENCE counts.
+
+| law | article | duty | who | state | artifact or gap |
+|---|---|---|---|---|---|
+| AI Act | Art. 4 | AI literacy of staff | provider, deployer | NOT COVERED | a `record_literacy` ledger event (who, what, when) and a count in the deployer report |
+| AI Act | Art. 5 | prohibited practices are not used | provider, deployer | NOT COVERED | a signed `record_attestation` event per prohibited-practice class, dated, in the ledger |
+| AI Act | Art. 50 | disclosure that the user interacts with an AI system; marking of generated content | provider, deployer | CAPABILITY | record_disclosure() |
+| AI Act | Art. 9 | risk management system over the lifecycle | provider | NOT COVERED | a `record_risk` ledger event (risk, measure, residual risk) linked to a probe or receipt, and the register report |
+| AI Act | Art. 10 | data governance: provenance, relevance, bias examination of the data the system works on | provider | CAPABILITY | provenance(), pii_report(), retention(); per-record source and lineage |
+| AI Act | Art. 11, Annex IV | technical documentation | provider | CAPABILITY | annex_iv() |
+| AI Act | Art. 12 | automatic recording of events over the lifetime | provider | CAPABILITY | ActionLedger.record(); actions verify; export-trail |
+| AI Act | Art. 13 | instructions for use, including how to read the logs | provider | CAPABILITY | instructions_for_use() |
+| AI Act | Art. 14 | human oversight: intervene, override, stop | provider, deployer | CAPABILITY | record_oversight(): approve, refuse, override, stop, review |
+| AI Act | Art. 15 | accuracy, robustness, cybersecurity, resilience to poisoning | provider | CAPABILITY | receipt chain, verify_writes(), influence gate, echo guard, audit_the_audits(); partial: the poisoning and split-view measurements live in probes/ and are not yet carried into compliance_report() |
+| AI Act | Art. 17 | quality management system | provider | CAPABILITY | compliance_report(), audit bundle; partial: the library stores and proves the QMS records; the QMS itself is the provider's |
+| AI Act | Art. 18 | keep the documentation ten years | provider | NOT COVERED | an `attest_documentation_retention` statement over annex_iv and the declaration, like attest_retention over logs |
+| AI Act | Art. 19 | keep the logs at least six months | provider | CAPABILITY | attest_retention(), archive under a signed checkpoint |
+| AI Act | Art. 20 | corrective actions: withdraw, disable, recall; inform the chain | provider | NOT COVERED | a `record_corrective_action` event linked to an incident, and the Art. 20 report |
+| AI Act | Art. 21 | cooperation with authorities: hand over documentation and logs | provider | CAPABILITY | audit bundle, export-trail, compliance_report(); verifiable offline; partial: no record of a request received and what was handed over; add a `record_authority_request` event |
+| AI Act | Art. 25 | responsibilities along the value chain | provider, distributor, deployer | NOT COVERED | a signed `record_responsibilities` event naming the parties and the split |
+| AI Act | Art. 43, 47, 48 | conformity assessment, EU declaration of conformity, CE marking | provider | NOT COVERED | a `record_declaration` event with the Annex V fields, linked to annex_iv; the assessment itself is the provider's |
+| AI Act | Art. 49, Annex VIII | registration in the EU database | provider, some deployers | CAPABILITY | registration_export() sections A, B, C |
+| AI Act | Art. 72 | post-market monitoring plan and reports | provider | NOT COVERED | a `post_market_report` from the ledgers (incidents, oversight, drift, erasures) and the plan it reports against |
+| AI Act | Art. 73 | serious incident reporting within the deadlines | provider | CAPABILITY | record_incident(), incident_report() with the reporting clock |
+| AI Act | Art. 26 | deployer duties: use per instructions, assign oversight, monitor, keep logs, inform workers | deployer | CAPABILITY | deployer_report() |
+| AI Act | Art. 27 | fundamental rights impact assessment | deployer (public bodies, named private uses) | CAPABILITY | fria_appendix() |
+| AI Act | Art. 86 | explanation of an individual decision to the affected person | deployer | NOT COVERED | a `decision_explanation` export: what_it_knew(seq) plus the oversight events on it, in one document |
+| AI Act | Art. 53 to 55 | general-purpose AI model provider duties | GPAI model provider | NOT APPLICABLE | an operator of an agent built on a model is not the model's provider; the model provider's documentation is an input to Annex IV, not this store's output |
+| AI Act | Art. 60, 61 | real-world testing outside sandboxes, informed consent | provider testing pre-market | NOT APPLICABLE | a testing regime, not an operating one; the consent records it needs are the disclosure and oversight events above once a test runs |
+| GDPR | Art. 5(2) | accountability: demonstrate compliance | controller | CAPABILITY | receipt chain, anchor, transparency log, offline verifiers |
+| GDPR | Art. 13, 14 | information given to the data subject at collection | controller | NOT COVERED | a `record_notice` receipt per subject: what was told, when, on which channel; the disclosure receipt is the shape |
+| GDPR | Art. 15 | right of access | controller | CAPABILITY | export_subject() |
+| GDPR | Art. 16 | rectification | controller | CAPABILITY | rectify() |
+| GDPR | Art. 17 | erasure | controller | CAPABILITY | forget_subject(), erasure_certificate(), erasure-verify |
+| GDPR | Art. 20 | portability in a machine-readable format | controller | CAPABILITY | export_subject() returns JSON with provenance; partial: the export exists; it is not labelled as an Art. 20 response and carries no format version |
+| GDPR | Art. 21 | objection: stop the processing | controller | NOT COVERED | a `record_objection` event that withholds the subject's records from recall, with a receipt |
+| GDPR | Art. 22 | automated decisions: human review on request | controller | CAPABILITY | record_oversight(review) on the action |
+| GDPR | Art. 25 | data protection by design and by default | controller | CAPABILITY | memory partitions with expiry, retention sweep, PII tagging |
+| GDPR | Art. 28 | processor obligations and records | controller, processor | NOT COVERED | a `record_processing_role` per store (controller or processor, on whose instruction) |
+| GDPR | Art. 30 | records of processing activities | controller | CAPABILITY | compliance_report() records section |
+| GDPR | Art. 33, 34 | breach notification within 72 hours, and to the subject | controller | NOT COVERED | a `record_breach` clock beside the Art. 73 clock on incidents, and the subject-notification event |
+| GDPR | Art. 35 | data protection impact assessment | controller | CAPABILITY | dpia_appendix() |
+
+<!-- coverage:end -->
 
 ## 3. The product, in modules
 

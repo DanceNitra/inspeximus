@@ -1,3 +1,24 @@
+## 2.42.0 - `inspeximus coverage`: every obligation of an AI-agent operator under the EU AI Act and the GDPR, and whether this store holds evidence for it. UPGRADE IF YOU HAND EVIDENCE TO AN ASSESSOR OR WANT TO KNOW WHAT IS MISSING. AFFECTS: adds a CLI subcommand and an MCP tool (99); nothing existing changes.
+
+Thirty-six in-scope duties (provider and deployer duties of a high-risk system that runs an agent,
+the duties on every operator, and the GDPR articles a controller answers about an agent's memory),
+each in one of four states. EVIDENCE: this store holds at least one artifact, counted. CAPABILITY:
+the library produces the artifact and this store has none yet. NOT COVERED: nothing produces it,
+and the row names in backticks the function that would. NOT APPLICABLE: the duty falls on someone
+else (general-purpose model providers, Art. 53 to 55; real-world testing, Art. 60 and 61), with the
+reason. On a fresh store the library covers 23 of 36 and 13 are not covered; on our own MCP store
+13 rows carry evidence.
+
+Built after the owner found the product still calling itself "the agent-memory slice" while the
+plan said the whole evidence product, and the plan's own status table had gone stale for four
+duties that shipped in 2.29.0. The table in `docs/EVIDENCE_PLATFORM_PLAN.md` is now generated from
+this module (`tools/gen_coverage_table.py`) and a test fails when they disagree; another test fails
+the day a NOT COVERED row's named function ships without the row being rewritten, so a gap cannot
+close silently. Section 0 of the plan is the procedure and the order for closing the thirteen.
+
+Evidence, never a certification: a row says an artifact exists, not that it satisfies an assessor.
+Four mutations, all killed by `tests/test_coverage_names_what_is_missing.py`.
+
 ## 2.41.0 - `inspeximus import-mem0`: a mem0 export becomes one record per memory, with the user as the subject, mem0's timestamp as the event time, and one receipt each. UPGRADE IF YOU ARE MOVING A STORE FROM mem0. AFFECTS: only callers of the new command and module; no existing call changes. ADDS: `inspeximus.migrate` (`load_export`, `import_mem0`) and the CLI subcommand; nothing existing changes.
 
 The export is the dict `Memory.get_all()` returns (read from mem0 2.0.11, `_get_all_from_vector_store`:

@@ -1349,6 +1349,19 @@ def supersession_report() -> dict:
 
 
 @mcp.tool()
+def coverage() -> dict:
+    """The obligation matrix for THIS store: every duty of an AI-agent operator under the EU AI Act
+    (Regulation (EU) 2024/1689 as amended by 2026/1744) and the GDPR, each in one of four states.
+    EVIDENCE: this store holds at least one artifact for the duty, counted. CAPABILITY: the library
+    produces the artifact and this store has none yet. NOT COVERED: nothing in the library produces
+    it, and the row names the function that would. NOT APPLICABLE: the duty falls on someone else
+    (a general-purpose model provider), with the reason. Read-only, no LLM. Evidence, never a
+    certification: a row says an artifact exists, not that it satisfies an assessor."""
+    from .coverage import coverage as _cov
+    return _cov(_MEM)
+
+
+@mcp.tool()
 def compliance_report(expected_pubkey: str = "") -> dict:
     """EU AI Act AGENT-MEMORY compliance EVIDENCE (read-only, no LLM): an article-labelled report (AI Act
     Art. 12/15/19; GDPR Art. 17/30/5(1)(d)) with LIVE counts from this store and an honest per-control status

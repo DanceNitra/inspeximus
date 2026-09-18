@@ -1837,5 +1837,41 @@
   "tests": [
    "tests/test_a_mem0_export_imports_with_its_subjects.py"
   ]
+ },
+ {
+  "file": "inspeximus/coverage.py",
+  "name": "every probe reads as evidence, even on an empty store",
+  "old": "            row[\"state\"] = EVIDENCE if n > 0 else CAPABILITY\n",
+  "new": "            row[\"state\"] = EVIDENCE\n",
+  "tests": [
+   "tests/test_coverage_names_what_is_missing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/coverage.py",
+  "name": "a probe that raises is reported as evidence",
+  "old": "                n, detail = 0, f\"probe could not run: {type(e).__name__}: {e}\"[:200]\n",
+  "new": "                n, detail = 1, f\"probe could not run: {type(e).__name__}: {e}\"[:200]\n",
+  "tests": [
+   "tests/test_coverage_names_what_is_missing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/coverage.py",
+  "name": "not-applicable rows are counted as in scope",
+  "old": "    in_scope = counts[EVIDENCE] + counts[CAPABILITY] + counts[NOT_COVERED]\n",
+  "new": "    in_scope = len(rows)\n",
+  "tests": [
+   "tests/test_coverage_names_what_is_missing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/coverage.py",
+  "name": "the action probe counts nothing",
+  "old": "    n = len(_entries(store, \"action\"))\n    signed",
+  "new": "    n = 0\n    signed",
+  "tests": [
+   "tests/test_coverage_names_what_is_missing.py"
+  ]
  }
 ]

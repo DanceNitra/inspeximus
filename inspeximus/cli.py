@@ -554,6 +554,10 @@ def main(argv=None):
 
     sub.add_parser("contradictions", help="list mutually-incompatible memories (flagged, not auto-resolved)")
     sub.add_parser("governance", help="governance/erasure/tamper-evidence snapshot")
+    cv = sub.add_parser("coverage", help="every obligation of an AI-agent operator under the EU AI Act and the "
+                                         "GDPR, and whether THIS store holds evidence for it, the library could "
+                                         "produce it, nothing produces it, or it does not apply")
+    cv.add_argument("--markdown", action="store_true", help="the table the plan and the site carry")
     # THE ONE COMMAND THAT CAN COME BACK BAD ABOUT US, run on the caller's own data. Every other
     # number this project publishes is ours, about our store, which is the reason a curator gave for
     # declining it in Snseam/awesome-agent-memory#19: "vendor/self-claimed benchmark signals". This
@@ -1191,7 +1195,7 @@ def main(argv=None):
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
-                                                        "provenance", "erasure-certificate", "anchor", "actions", "subject",
+                                                        "provenance", "erasure-certificate", "anchor", "actions", "subject", "coverage",
                                                         "technical-documentation", "deployer-report",
                                                         "registration-export", "partitions"),
                receipt_key=_rk)
@@ -1848,6 +1852,17 @@ def main(argv=None):
 
     elif a.cmd == "governance":
         _out(m.governance_report(), a.json) or print(json.dumps(m.governance_report(), indent=2, default=str))
+
+    elif a.cmd == "coverage":
+        from inspeximus.coverage import coverage, render_markdown, render_text
+        rep = coverage(m)
+        if a.json:
+            _out(rep, True)
+        elif a.markdown:
+            print(render_markdown(rep))
+        else:
+            print(render_text(rep))
+        return 0
 
     elif a.cmd == "audit":
         res = m.audit_the_audits()

@@ -272,8 +272,12 @@ def test_readme_names_only_capabilities_that_exist():
 @pytest.mark.parametrize("doc", sorted(
     f for f in os.listdir(DOCS) if f.endswith(".md")) if os.path.isdir(DOCS) else [])
 def test_docs_name_only_capabilities_that_exist(doc):
+    """The plan may name the functions its NOT COVERED rows promise (`inspeximus.coverage.gap_names`);
+    tests/test_coverage_names_what_is_missing.py fails the day one of them ships unannounced, so
+    exempting that set here is not a hole. The README gets no such exemption."""
+    from inspeximus.coverage import gap_names
     text = _read(os.path.join(DOCS, doc))
-    missing = unknown_capabilities(text, public_surface())
+    missing = [n for n in unknown_capabilities(text, public_surface()) if n not in gap_names()]
     assert not missing, "docs/%s claims capabilities that do not exist: %r" % (doc, missing)
 
 

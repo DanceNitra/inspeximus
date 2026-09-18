@@ -38,8 +38,8 @@ Counts by status:
 | # | file | figure(s) | claim | status | command that reproduces it |
 |---|---|---|---|---|---|
 | 1 | `MCP_LISTINGS.md` | `30` `26` `2026` | WITHDRAWN: the previous '30 tools' figure, kept as the record of the correction | **WITHDRAWN** | `python claims_audit.py --numbers` |
-| 2 | `MCP_LISTINGS.md` | `98` | The MCP server exposes 98 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 3 | `MCP_LISTINGS.md` | `98` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 2 | `MCP_LISTINGS.md` | `99` | The MCP server exposes 99 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 3 | `MCP_LISTINGS.md` | `99` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 4 | `README.md` | `14` `14` `0` | Framework adapters: 14 of 14 verified against current upstream, 0 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 5 | `README.md` | `5` `5` | The five agmi at-rest attacks against a receipts-on store: 5 of 5 detected by verify_writes() | **REPRODUCIBLE** | `python probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py` |
 | 6 | `README.md` | `4` `5` | The same five attacks when the attacker holds the receipts sidecar AND the chain head in the config home: 4 of 5 detected, the tail truncation accepted; with the sidecar alone the head reports it, 5 of 5 | **REPRODUCIBLE** | `python probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py` |
@@ -57,7 +57,7 @@ Counts by status:
 | 18 | `README.md` | `0` `26` | Graphiti's bi-temporal invalidation held 26/26 corrections that were extracted pre-echo; its 13.3% raw resurrection is four extraction misses, not echo failures | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 19 | `README.md` | `0` | On echo-attributable resurrection specifically, Graphiti scores 0% -- the separator is whether the supersession link is recorded at write time, not which vendor recorded it | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 20 | `README.md` | `2026` `0.9` `2` `21` | The competitor version measured and its star count on the day of measurement, stamped rather than restated as current. | **EXTERNAL** | `gh api repos/vectorize-io/hindsight --jq '.stargazers_count'` |
-| 21 | `README.md` | `98` | The MCP server exposes 98 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 21 | `README.md` | `99` | The MCP server exposes 99 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 22 | `README.md` | `0` `60` | Model calls per run on the write path. inspeximus has none; Hindsight extracts on every retain, three retains per case over 20 cases. | **REPRODUCIBLE** | `python probes/integrity_bench_determinism.py --systems inspeximus` |
 | 23 | `README.md` | `0` | Mutation gate: zero seeded defects survived | **REPRODUCIBLE** | `python tools/mutation_check_parallel.py` |
 | 24 | `README.md` | `24` | The Annex IV skeleton marks 24 provider fields as OPERATOR INPUT REQUIRED: len(OPERATOR_FIELDS) | **REPRODUCIBLE** | `python -c "from inspeximus.technical_documentation import OPERATOR_FIELDS; print(len(OPERATOR_FIELDS))"` |
@@ -75,7 +75,7 @@ Counts by status:
 | 36 | `audit-trail.html` | `1,` | The memory state at the action held 1 record | **REPRODUCIBLE** | `python tools/page_runs.py ledger` |
 | 37 | `audit-trail.html` | `1` | actions verify reports 1 entry bound to the store | **REPRODUCIBLE** | `python tools/page_runs.py ledger` |
 | 38 | `audit-trail.html` | `1` | the bound verify re-hashes the 1 record against its receipt (2.39.1) | **REPRODUCIBLE** | `python tools/page_runs.py ledger` |
-| 39 | `claude-code.html` | `98` | The MCP server exposes 98 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 39 | `claude-code.html` | `99` | The MCP server exposes 99 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 40 | `compare.html` | `0` | The control: with our own guard off, we keep the correction 0% of the time | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 41 | `compare.html` | `100` | The objection names our own headline number | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 42 | `compare.html` | `0` `86.7` `13.3` `95` `3.3` `26.7` | Graphiti keeps the correction 86.7%; resurrection 13.3%, 95% CI [3.3, 26.7] | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
@@ -107,7 +107,7 @@ Counts by status:
 | 68 | `docs/DEEP_DIVE.md` | `25` `0.83` `0.70` | LOCOMO retrieval-recall@25 = 0.83 (any evidence turn) / 0.70 (all), n=1536, reinforce=False | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
 | 69 | `docs/DEEP_DIVE.md` | `1536,` | The LoCoMo config size behind recall_any@1 | **PENDING-HARNESS** | `python probes/retrieval_recall_locomo.py --k 25` |
 | 70 | `docs/DEEP_DIVE.md` | `0.7839` `0.6484` `0.783` `0.648` `1536` | The OLD published pair reproduces exactly at its own operating point (reinforce=True) | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 71 | `docs/DEEP_DIVE.md` | `98` | The MCP server exposes 98 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
+| 71 | `docs/DEEP_DIVE.md` | `99` | The MCP server exposes 99 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(109)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
 | 72 | `docs/DEEP_DIVE.md` | `0.592` `0.544` `2` | MemOps answer accuracy: keep-all 0.592, mem0 0.544; ~2% of mem0 extractions failed to parse | **EXTERNAL** | — |
 | 73 | `docs/DEEP_DIVE.md` | `0.593` | MemOps answer accuracy: inspeximus 0.593 | **EXTERNAL** | — |
 | 74 | `docs/DEEP_DIVE.md` | `519` `917` `606` `24` | mem0's default pipeline spends 519-917 s (median 606) of LLM extraction per MemOps scenario | **EXTERNAL** | — |
@@ -158,8 +158,8 @@ Counts by status:
 | 119 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 120 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 121 | `index.html` | `14` `14` `0` | 14 of 14 framework adapters verified against current upstream; 0 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
-| 122 | `index.html` | `98` `0` | Homepage counter: 98 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 123 | `index.html` | `98` | Homepage heading: 98 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 122 | `index.html` | `99` `0` | Homepage counter: 99 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 123 | `index.html` | `99` | Homepage heading: 99 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 124 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
 | 125 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
 | 126 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
