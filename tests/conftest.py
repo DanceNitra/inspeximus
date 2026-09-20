@@ -16,12 +16,49 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import tempfile
 
 import pytest
 
 from inspeximus import Inspeximus
 
 from _store_io import load_store, save_store
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _every_temp_file_lands_under_pytests_basetemp(tmp_path_factory):
+    """Point `tempfile` and the TMP/TEMP/TMPDIR environment at pytest's own basetemp for the session.
+
+    MEASURED 2026-09-20 on the machine that runs this suite: 1,027,150 entries in the user's Temp
+    directory were ours. 596,291 were `inspeximus-<hex>.lock` files, one per store PATH, written by
+    `_StoreLock` into `tempfile.gettempdir()` and never removed (by design for a real store; a test
+    store is a fresh path every time). 422,798 were `tmp*` directories from the 354 bare
+    `tempfile.mkdtemp()` calls across 149 test files, none of which cleans up. The rest were the
+    example runners' `inspeximus_example_*` and `inspeximus_base_*` directories.
+
+    Fixing the two example call sites would have removed 0.7% of it. The class is "a test asked
+    the system for a temporary path and never gave it back", and the one place that covers every
+    caller, including the lock file and every subprocess a test spawns, is the directory those
+    calls resolve to. pytest keeps its basetemp to the last three runs and prunes older ones, so
+    everything written here disappears on its own three sessions later. The environment is set
+    too, because a child interpreter reads TMP/TEMP before it reads anything of ours.
+    """
+    base = tmp_path_factory.getbasetemp() / "tmp"
+    base.mkdir(parents=True, exist_ok=True)
+    before = tempfile.tempdir
+    env_before = {k: os.environ.get(k) for k in ("TMP", "TEMP", "TMPDIR")}
+    tempfile.tempdir = str(base)
+    for k in env_before:
+        os.environ[k] = str(base)
+    try:
+        yield
+    finally:
+        tempfile.tempdir = before
+        for k, v in env_before.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
 
 
 def fork_of(ix, dest, records, receipt_key=None, keep=1):
