@@ -195,3 +195,18 @@ def test_the_policy_resolves_explicit_then_env_then_lww(monkeypatch):
     assert ix.supersession == "authority"
     with pytest.raises(ValueError, match="supersession must be one of"):
         _resolve_supersession("newest")
+
+
+def test_a_parent_the_writer_cannot_see_contributes_no_authority():
+    """Lineage resolves against the writer's own view, as taint inheritance does. If a foreign parent
+    counted, a tenant could name any id in derived_from and learn that record's authority from
+    whether its own write is held."""
+    p, ix = _mk(supersession="authority")
+    globex = ix.for_tenant("globex")
+    secret = globex.remember("globex rumour", source={"doc": "g", "authority": 0.1})
+    acme = ix.for_tenant("acme")
+    a = _w(acme, "k", 50, authority=0.5)
+    probe = acme.remember("k is 40", key="k", object="40", source={"doc": "s", "authority": 0.9},
+                          derived_from=[secret])
+    assert acme.current("k")["id"] == probe, "the foreign parent must not drag 0.9 down to 0.1"
+    assert acme.last_write["policy"] is None

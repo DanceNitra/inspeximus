@@ -496,6 +496,15 @@ NUMBER_CLAIMS = [
        note="Needs the MemTX corpus checked out under tmp/memtx/memtx-src (git clone "
             "https://github.com/lxy1134/MEMTX_ tmp/memtx/memtx-src). The columns lww_store and "
             "auth_store are the product; lww, authority and shipped are the pure replay."),
+    _c("readme-memtx-authority-oneliner", "README.md", ["318", "278", "307"],
+       "the default mode serves the labelled belief in 278 of 318 cases and `supersession=\"authority\"` in 307 of 318",
+       "The one-line restatement of the row above, on its own source line: MemTX, 318 replayable "
+       "cases, the default mode 278 of 318 and the authority policy 307 of 318, both through a real "
+       "store per case. Same probe, same run, same corpus. Measured 2026-09-20.",
+       "REPRODUCIBLE-WITH-DEPS",
+       "python probes/memtx_replayed_through_keyed_supersession.py --store",
+       note="Registered separately because the audit pins a claim to the source line its tokens sit "
+            "on, and this sentence is a second line carrying the same three figures."),
     _c("readme-memtx-authority-misses", "README.md", ["11"],
        "The 11 it still misses are lost updates",
        "The cases the authority rule leaves wrong through the store, the total minus the "

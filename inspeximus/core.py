@@ -6577,8 +6577,11 @@ class Inspeximus:
 
         A record that declares nothing and derives from nothing is None (takes no part). A record that
         declares nothing but derives from parents that do is as weak as its weakest parent, so
-        dropping the field on a summary does not launder the rumour underneath it. Parents are looked
-        up store-wide by id (lineage is not tenant-scoped); a missing or cyclic parent is skipped."""
+        dropping the field on a summary does not launder the rumour underneath it. Parents are
+        resolved against the handle's own scoped view, the same pool taint inheritance in remember()
+        uses: a parent the writer cannot see contributes nothing, so a view cannot learn a foreign
+        record's authority by naming its id and watching whether the write is held. A missing or
+        cyclic parent is skipped."""
         _seen = _seen if _seen is not None else set()
         rid = rec.get("id")
         if rid in _seen:
@@ -6587,7 +6590,7 @@ class Inspeximus:
         own = _declared_authority(rec.get("source"))
         parents = rec.get("derived_from") or []
         if parents:
-            by_id = self._by_id_all()
+            by_id = {r["id"]: r for r in self.items}
             for pid in parents:
                 pr = by_id.get(pid)
                 if pr is None:
@@ -6596,10 +6599,6 @@ class Inspeximus:
                 if pa is not None:
                     own = pa if own is None else min(own, pa)
         return own
-
-    def _by_id_all(self) -> dict:
-        """Every record in the shared store by id, across tenants and agents, for lineage lookups."""
-        return {r["id"]: r for r in self._items}
 
     def _supersede_by_key(self, rec: dict, reaffirm: bool = False) -> list:
         """Deterministic (subject, relation, object) supersession: retire active records that share
@@ -16425,6 +16424,8 @@ class _TenantView:
     # Store-wide like verify_writes itself: the concealment sweep walks every tenant's receipts, and
     # a per-tenant answer would hide a record retired under another binding. Read-only, content-free.
     def _unaccounted_retirements(self, *a, **k): return Inspeximus._unaccounted_retirements(self._parent, *a, **k)
+    # Scoped like taint inheritance: parents resolve against THIS view's items (3.2.0).
+    def _effective_authority(self, *a, **k): return Inspeximus._effective_authority(self, *a, **k)
     def _acl_visible(self, *a, **k):    return Inspeximus._acl_visible(self, *a, **k)
     def _acl_grants_for(self, *a, **k): return Inspeximus._acl_grants_for(self, *a, **k)
     def _acl_match(self, *a, **k):      return Inspeximus._acl_match(self, *a, **k)

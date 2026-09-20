@@ -204,6 +204,8 @@ whatever its authority; what authority adds is a weaker source writing a value t
 The 11 it still misses are lost updates between writers of equal authority, which no authority rule
 can decide, and the rule is wrong in one shape worth knowing: a fact the system seeds at full authority
 can never be corrected by an agent writing below it. Both are in the docstring of `_supersede_by_key`.
+On a benchmark we did not write (MemTX, 318 replayable cases), the default mode serves the labelled belief in 278 of 318 cases and `supersession="authority"` in 307 of 318.
+The first number already contains the echo guard, a mechanism that shipped in 1.87.0, before anyone measured it on this corpus.
 
 ---
 
