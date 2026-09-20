@@ -859,3 +859,31 @@ def test_a_denial_caused_by_a_broken_grant_is_distinguishable_from_no_grant_at_a
     out = s.can_read("eve", rid)
     assert out["allowed"] is False
     assert out["problems"] and "authorises nothing" in out["problems"][0], out
+
+
+# ── the default-deny gate, in the shape a CREW OS integrator asked for (2026-09-20) ──────────────────
+def test_agent_isolation_is_default_deny_then_grant_then_revoke(tmp_path):
+    """One record owned by B, checked through the one call that answers a single decision.
+
+    OWNERSHIP COMES FROM WRITING THROUGH THE VIEW. The version of this test that arrived wrote
+    `remember(..., agent_id="agent_B")` on the operator handle and called that B's record; that
+    argument stamps `meta.aid` for scoping and attribution and grants nothing, so the test would
+    have passed while measuring an unowned record. `as_agent("agent_B").remember(...)` is what
+    makes B the owner, and is what this test uses.
+    """
+    m = Inspeximus(path=str(tmp_path / "store.json"))
+    m.as_agent("agent_A").remember("A's secret", key="a::secret")
+    id_b = m.as_agent("agent_B").remember("B's secret", key="b::secret")
+    assert repr(m.as_agent("agent_A")) == "<Inspeximus view: tenant=None, agent='agent_A'>"
+    # 1) no grant: DENY, and the scoped recall returns nothing of B's
+    assert m.can_read("agent_A", id_b)["allowed"] is False
+    assert not any(h["id"] == id_b for h in m.as_agent("agent_A").recall("secret"))
+    assert m.can_read("agent_B", id_b)["allowed"] is True and m.can_read("agent_B", id_b)["via"] == "owner"
+    # 2) after a grant: ALLOW
+    m.grant("agent_A", ids=[id_b], by="agent_B")
+    assert m.can_read("agent_A", id_b)["allowed"] is True
+    assert any(h["id"] == id_b for h in m.as_agent("agent_A").recall("secret"))
+    # 3) after the revocation: DENY again, on the next read
+    m.revoke("agent_A", ids=[id_b], by="agent_B")
+    assert m.can_read("agent_A", id_b)["allowed"] is False
+    assert not any(h["id"] == id_b for h in m.as_agent("agent_A").recall("secret"))

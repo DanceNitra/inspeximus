@@ -40,6 +40,7 @@ MIT-licensed. Part of Agora (https://github.com/DanceNitra/agora).
 from __future__ import annotations
 
 import calendar
+import collections as _collections
 import hashlib
 import hmac
 import json
@@ -1981,7 +1982,8 @@ class Inspeximus:
                  embed_query=None, embed_id: str | None = None,
                  infer_lineage: float = 0.0, echo_guard: bool | None = None,
                  agent: str | None = None, observe_recall: bool = False,
-                 writer_key: str | None = None, events: bool = True):
+                 writer_key: str | None = None, events: bool = True,
+                 l1_size: int = 2000, l1_auto_refresh: bool = True):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -2164,6 +2166,17 @@ class Inspeximus:
         # persist their nonce in the record meta, so single-use survives a reload; a conflicted-but-unlanded
         # nonce is only held in memory (honest boundary: after a restart it would conflict again, not land).
         self._consumed_revert_nonces: set[str] = set()
+        # THE L1, since 3.0.0: an LRU over (tenant, agent, key) -> the current record, served by
+        # `current(key)`. It sits over `_items`, which is already in memory, so what it saves is the
+        # scan that every keyed read paid: `self.items` filters the whole list for a bound view and
+        # a key lookup then walks it again. Sized in entries; `l1_stats()` reports hits and misses.
+        # A replaced `_items` (reload, refresh, forget, retention) resets it through the setter below.
+        self._l1_max = max(0, int(l1_size or 0))
+        self._l1_auto_refresh = bool(l1_auto_refresh)
+        self._l1: "collections.OrderedDict" = _collections.OrderedDict()
+        self._l1_hits = 0
+        self._l1_misses = 0
+        self._l1_last_stat = 0.0
         self._items: list[dict] = []
         self._file_sig = None       # (mtime_ns, size) of the file we loaded; guards against clobbering a peer
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
@@ -3179,6 +3192,14 @@ class Inspeximus:
         if key is not None and not _is_candidate:   # below always has a value to commit
             _retired = self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
             #                                                  a candidate (low identity_confidence) never supersedes
+        if key is not None:
+            # The L1 entry for this key is stale in EVERY scope now, not only the writer's: an
+            # operator write retires what an agent view had cached. An access-control write
+            # changes who may see what, so it drops the whole cache rather than one key.
+            if key.startswith(_ACL_PREFIX):
+                self._l1_reset()
+            else:
+                self._l1_drop_key(key)
         if self.capacity is not None:
             self._evict_to_capacity(protect_id=mid)          # bounded working set (opt-in) BEFORE persisting
         self._save(force=True)        # a new memory is real content - persist immediately, not throttled
@@ -3498,6 +3519,105 @@ class Inspeximus:
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
             self._record_head()
         return r
+
+    # ------------------------------------------------------------------ the L1 cache
+    @property
+    def _items(self) -> list:
+        return self.__dict__.get("_Inspeximus__items", [])
+
+    @_items.setter
+    def _items(self, value) -> None:
+        # Every replacement of the list -- load, reload, refresh, forget, retention, shred -- comes
+        # through here, so the L1 cannot outlive the records it pointed at. Appends do not, and
+        # remember() invalidates its own key.
+        self.__dict__["_Inspeximus__items"] = value
+        self._l1_reset()
+
+    def _l1_reset(self) -> None:
+        l1 = getattr(self, "_l1", None)           # absent while __init__ is still running
+        if l1:
+            l1.clear()
+
+    def _l1_drop_key(self, key) -> None:
+        l1 = getattr(self, "_l1", None)
+        if not l1:
+            return
+        for ck in [ck for ck in l1 if ck[2] == key]:
+            del l1[ck]
+
+    def current(self, key: str) -> "dict | None":
+        """The record this handle currently serves for `key`, or None: the active record with the
+        latest `valid_from`, in this handle's tenant and agent scope. The L1 answers repeat reads.
+
+        WHAT THE CACHE KEY IS, because this is where an L1 would leak. Entries are keyed by
+        (tenant, agent, key), so a hit primed by `as_agent("alice")` is never served to
+        `as_agent("bob")`: bob's first read misses, scans bob's own scoped view, and caches under
+        bob's key, which holds only what `can_read` let through. A grant or revocation is a keyed
+        write on the access-control prefix and drops the whole cache. A hit is re-validated against
+        the record's status, so a record superseded, reverted or confirmed since it was cached is
+        a miss, and a replaced record list (reload, refresh, forget, retention) resets the cache
+        through the `_items` setter.
+
+        `l1_auto_refresh` (default on) stats the store file at most once a second on a read and,
+        when a peer process has moved it, runs `refresh()` before answering, so a hot key never
+        serves a value another agent superseded more than a second ago. Off, the handle serves
+        what it loaded until it reads or writes for another reason, as every 2.x read did.
+        """
+        if key is None:
+            return None
+        if self._l1_auto_refresh and self.path:
+            _t = time.time()
+            if _t - self._l1_last_stat >= 1.0:
+                self._l1_last_stat = _t
+                try:
+                    self.refresh()                    # one stat when the file has not moved
+                except Exception:                     # noqa: BLE001 -- a read must not raise on a stat
+                    pass
+        ck = (self.tenant, getattr(self, "agent", None), key)
+        l1 = self._l1
+        rec = l1.get(ck)
+        if rec is not None and rec.get("status") == "active" and rec.get("key") == key:
+            l1.move_to_end(ck)
+            self._l1_hits += 1
+            return rec
+        self._l1_misses += 1
+        best = None
+        for r in self.items:                          # SCOPED: tenant first, then the read grants
+            if r.get("key") == key and r.get("status") == "active":
+                if best is None or r.get("valid_from", r.get("ts", 0)) > best.get("valid_from", best.get("ts", 0)):
+                    best = r
+        if best is not None and self._l1_max:
+            l1[ck] = best
+            l1.move_to_end(ck)
+            while len(l1) > self._l1_max:
+                l1.popitem(last=False)
+        elif ck in l1:
+            del l1[ck]
+        return best
+
+    def l1_stats(self) -> dict:
+        """{hits, misses, size, max_size, auto_refresh} for this handle's L1."""
+        return {"hits": self._l1_hits, "misses": self._l1_misses, "size": len(self._l1),
+                "max_size": self._l1_max, "auto_refresh": self._l1_auto_refresh}
+
+    def l1_invalidate(self, key: str | None = None, agent_id: str | None = None) -> int:
+        """Drop L1 entries: for one `key` (every scope), for one `agent_id` (every key), for both, or
+        all of them when neither is given. Returns how many were dropped."""
+        if key is None and agent_id is None:
+            n = len(self._l1)
+            self._l1.clear()
+            return n
+        victims = [ck for ck in self._l1
+                   if (key is None or ck[2] == key) and (agent_id is None or ck[1] == agent_id)]
+        for ck in victims:
+            del self._l1[ck]
+        return len(victims)
+
+    def l1_flush(self) -> None:
+        """Drop every L1 entry and zero the counters."""
+        self._l1.clear()
+        self._l1_hits = 0
+        self._l1_misses = 0
 
     # ------------------------------------------------------------------ the event table
     def publish_event(self, event_type: str, payload: dict | None = None,
@@ -9019,6 +9139,27 @@ class Inspeximus:
             store.as_agent("eve").recall("roadmap")                     # -> nothing
             store.revoke("bob", tag="roadmap")
             store.as_agent("bob").recall("roadmap")                     # -> nothing, on the next read
+
+        THE VIEW IS NOT ITERABLE, AND THAT IS NOT A DEFECT. `list(store.as_agent("bob"))` raises
+        TypeError because the view defines no `__iter__`; Python resolves special methods on the
+        type, so the allow-list below plays no part in it. Read the records through `.items`,
+        which is scoped to the agent (own writes plus grants), or `recall`, `history`, `current`.
+        Nothing here needs iteration over the view itself, so none is defined.
+
+        HOW TO CHECK ONE DECISION rather than infer it from a recall:
+
+            store.can_read("bob", record_id)     # {"allowed": False, "reason": ..., "via": None}
+
+        GRANTS TAKE AN EXACT SELECTOR (`scope`, `tag`, `key` or `ids`), never a query: a grant that
+        followed a similarity search would widen itself whenever the embedder or the index changed.
+        `grants()` is the matrix in force, `grant_log()` the hash-chained history, and
+        `inspeximus grants --log` prints it. Ownership comes from writing THROUGH the view
+        (`store.as_agent("bob").remember(...)`); `remember(agent_id=...)` on the operator handle
+        stamps `meta.aid` for scoping and attribution and grants nothing.
+
+        SCOPE OF THE GUARANTEE. This is logical isolation inside one process: `by` on a grant is
+        declared by the caller, and an operator handle sees everything. Where the process is the
+        security boundary, give each party its own store file and key.
         """
         return _TenantView(self, self.tenant, agent=Inspeximus._check_agent_id(agent))
 
@@ -15735,6 +15876,9 @@ class _TenantView:
         # Subscriptions and the seq counter are properties of the table, not of a tenant's slice;
         # what a subscriber is HANDED goes through the rebound `poll_events`, which filters.
         "events_tip", "subscribe", "unsubscribe", "dispatch_events",
+        # The L1 is one dict on the parent, keyed by (tenant, agent, key); its counters and its
+        # invalidation are properties of that dict. The READ (`current`) is rebound, see below.
+        "l1_stats", "l1_invalidate", "l1_flush",
         # The chain head kept outside the store is a property of the FILE, like `anchor`: one head
         # per store path, over every tenant's receipts. A tenant-bound view has nothing to narrow.
         "head_path", "read_head", "reanchor_head",
@@ -15809,6 +15953,10 @@ class _TenantView:
                 f"surface on _TenantView (and make it use self._tenant_rows()), or to _STORE_LEVEL if it is "
                 f"genuinely store-wide.")
         return getattr(self._parent, name)           # data attributes (items, config, caches) stay shared
+
+    def __repr__(self) -> str:
+        # Says which it is, so a debugger can tell a scoped view from the operator store at a glance.
+        return f"<Inspeximus view: tenant={self.tenant!r}, agent={self.agent!r}>"
 
     def __setattr__(self, name, value):     # config writes go to the shared parent (the scopes are slot-local)
         if name in ("tenant", "agent"):
@@ -16005,6 +16153,9 @@ class _TenantView:
     # The event table, rebound so `self.tenant` and `self.agent` inside them are the VIEW's:
     # poll_events filters by both, publish_event stamps the view's tenant on what it writes.
     def publish_event(self, *a, **k):   return Inspeximus.publish_event(self, *a, **k)
+    # The L1 read is rebound so the cache key carries THIS view's tenant and agent, and the miss path
+    # scans THIS view's `items`. The cache itself lives on the parent: one dict, keyed by scope.
+    def current(self, *a, **k):         return Inspeximus.current(self, *a, **k)
     def poll_events(self, *a, **k):     return Inspeximus.poll_events(self, *a, **k)
     def _dispatch_events(self, *a, **k): return Inspeximus._dispatch_events(self, *a, **k)
     # Store-wide like verify_writes itself: the concealment sweep walks every tenant's receipts, and

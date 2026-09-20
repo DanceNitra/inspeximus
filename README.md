@@ -243,6 +243,29 @@ m.verify_writes()[0]
 Or from the shell: `inspeximus receipts enable --backfill`. The CHANGELOG entry for 3.0.0
 carries the measurement on our own store.
 
+### Many processes, one store
+
+The row writer appends a content-free row to `memory_events` inside the transaction that writes
+the rows, so another process tails the table by `seq` and sees a commit on its next call, with
+no reload and no broker. `current(key)` answers repeat reads from an L1 keyed by (tenant, agent,
+key), so a hit primed by one agent is never served to another.
+
+```python
+from inspeximus import Inspeximus
+
+lead = Inspeximus("crew.json")
+worker = Inspeximus("crew.json")
+tip = worker.events_tip()
+
+lead.remember("The plan is: ship on Friday", key="plan")
+lead.publish_event("plan.updated", {"to": "worker"}, agent_id="lead")
+
+[e["type"] for e in worker.poll_events(since_seq=tip)]
+# ['record.added', 'plan.updated']
+worker.current("plan")["text"]
+# 'The plan is: ship on Friday'
+```
+
 ### What the agent did, bound to what it knew
 
 An audit-trail tool signs the agent's actions. The action ledger does that too, and binds each action

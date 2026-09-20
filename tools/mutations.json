@@ -2035,5 +2035,41 @@
   "tests": [
    "tests/test_memory_events_land_in_the_same_transaction_as_the_rows.py"
   ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the L1 key drops the agent, so a hit crosses agents",
+  "old": "        ck = (self.tenant, getattr(self, \"agent\", None), key)",
+  "new": "        ck = (self.tenant, None, key)",
+  "tests": [
+   "tests/test_the_l1_cache_never_serves_across_a_scope_and_never_outlives_a_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a keyed write leaves the L1 entry in place",
+  "old": "            if key.startswith(_ACL_PREFIX):\n                self._l1_reset()\n            else:\n                self._l1_drop_key(key)",
+  "new": "            if key.startswith(_ACL_PREFIX):\n                self._l1_reset()\n            else:\n                pass",
+  "tests": [
+   "tests/test_the_l1_cache_never_serves_across_a_scope_and_never_outlives_a_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a hit is not re-validated against the record's status",
+  "old": "        if rec is not None and rec.get(\"status\") == \"active\" and rec.get(\"key\") == key:",
+  "new": "        if rec is not None:",
+  "tests": [
+   "tests/test_the_l1_cache_never_serves_across_a_scope_and_never_outlives_a_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a replaced record list keeps the old L1",
+  "old": "        self.__dict__[\"_Inspeximus__items\"] = value\n        self._l1_reset()",
+  "new": "        self.__dict__[\"_Inspeximus__items\"] = value",
+  "tests": [
+   "tests/test_the_l1_cache_never_serves_across_a_scope_and_never_outlives_a_write.py"
+  ]
  }
 ]
