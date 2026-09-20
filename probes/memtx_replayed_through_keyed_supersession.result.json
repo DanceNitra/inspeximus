@@ -4,42 +4,650 @@
  "authority_correct": 280,
  "shipped_correct": 280,
  "files_in_corpus": 342,
+ "lww_store_correct": 278,
+ "authority_store_correct": 307,
+ "store_vs_simulation_disagreements": [
+  {
+   "case": "S2_ecommerce_stale_late_write_0003.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_ecommerce_stale_late_write_0003.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_ecommerce_stale_late_write_0004.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_ecommerce_stale_late_write_0004.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_education_stale_late_write_0015.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_education_stale_late_write_0015.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_education_stale_late_write_0016.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_education_stale_late_write_0016.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_finance_stale_late_write_0007.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_finance_stale_late_write_0007.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_finance_stale_late_write_0008.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_finance_stale_late_write_0008.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_hr_stale_late_write_0009.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_hr_stale_late_write_0009.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_hr_stale_late_write_0010.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_hr_stale_late_write_0010.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_legal_stale_late_write_0013.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_legal_stale_late_write_0013.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_legal_stale_late_write_0014.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_legal_stale_late_write_0014.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_logistics_stale_late_write_0017.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_logistics_stale_late_write_0017.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_logistics_stale_late_write_0018.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_logistics_stale_late_write_0018.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_medical_stale_late_write_0005.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_medical_stale_late_write_0005.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_medical_stale_late_write_0006.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_medical_stale_late_write_0006.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_project_stale_late_write_0011.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_project_stale_late_write_0011.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_project_stale_late_write_0012.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_project_stale_late_write_0012.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_social_stale_late_write_0019.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_social_stale_late_write_0019.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_social_stale_late_write_0020.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_social_stale_late_write_0020.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_travel_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_travel_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_travel_stale_late_write_0002.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_travel_stale_late_write_0002.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0002.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0003.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0003.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0004.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0004.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "S2_stale_late_write_0005.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C2_ecommerce_stale_write_then_action_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C2_finance_stale_write_then_action_0003.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C2_hr_stale_write_then_action_0002.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C2_travel_stale_write_then_action_0004.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C5_education_authority_late_write_0002.json",
+   "type": "semantic_conflict",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C5_finance_authority_late_write_0003.json",
+   "type": "semantic_conflict",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C5_legal_authority_late_write_0001.json",
+   "type": "semantic_conflict",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C5_medical_authority_late_write_0004.json",
+   "type": "semantic_conflict",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_education_authority_inverted_stale_0003.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_education_authority_inverted_stale_0003.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_finance_authority_inverted_stale_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_finance_authority_inverted_stale_0001.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_logistics_authority_inverted_stale_0002.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_logistics_authority_inverted_stale_0002.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_travel_authority_inverted_stale_0004.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RWH_C8_travel_authority_inverted_stale_0004.json",
+   "type": "stale_late_write",
+   "policy": "authority",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_ecommerce_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_education_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_finance_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_hr_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_legal_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_logistics_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_medical_records.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_project_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_social_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  },
+  {
+   "case": "RW_S2_travel_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "policy": "lww",
+   "pure_correct": false,
+   "store_correct": true,
+   "miss": []
+  }
+ ],
  "by_type": {
   "tool_result_pollution": {
    "n": 52,
    "lww": 38,
    "authority": 52,
-   "shipped": 52
+   "shipped": 52,
+   "lww_store": 38,
+   "auth_store": 52
   },
   "stale_late_write": {
    "n": 55,
    "lww": 7,
    "authority": 23,
-   "shipped": 23
+   "shipped": 23,
+   "lww_store": 50,
+   "auth_store": 50
   },
   "cascading_rollback": {
    "n": 58,
    "lww": 58,
    "authority": 58,
-   "shipped": 58
+   "shipped": 58,
+   "lww_store": 58,
+   "auth_store": 58
   },
   "permission_laundering": {
    "n": 53,
    "lww": 48,
    "authority": 53,
-   "shipped": 53
+   "shipped": 53,
+   "lww_store": 48,
+   "auth_store": 53
   },
   "dirty_tentative_read": {
    "n": 46,
    "lww": 46,
    "authority": 46,
-   "shipped": 46
+   "shipped": 46,
+   "lww_store": 46,
+   "auth_store": 46
   },
   "semantic_conflict": {
    "n": 54,
    "lww": 34,
    "authority": 48,
-   "shipped": 48
+   "shipped": 48,
+   "lww_store": 38,
+   "auth_store": 48
   }
  },
  "disagreements": [

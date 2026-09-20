@@ -6678,19 +6678,27 @@ class Inspeximus:
         authority on all 300 initial records and all 532 writes, so this choice does not move the
         measured numbers.
 
-        MEASURED, 2026-09-20 (probes/memtx_replayed_through_keyed_supersession.py, the MemTX corpus
-        at github.com/lxy1134/MEMTX_, 318 replayable cases scored against the labelled
-        `expected.committed_beliefs`): last-write-wins 231 of 318, authority 280 of 318, and in all
-        49 cases where the two disagree the label sides with authority. By scenario type:
-        permission_laundering 48 -> 53 of 53, tool_result_pollution 38 -> 52 of 52, semantic_conflict
-        34 -> 48 of 54, stale_late_write 7 -> 23 of 55, cascading_rollback and dirty_tentative_read
-        unchanged. That is a replay of the labelled schedule through the rule as a pure function, not
-        through this store; the store-level tests reproduce the rule on single cases.
+        MEASURED, 2026-09-20 (probes/memtx_replayed_through_keyed_supersession.py --store, the MemTX
+        corpus at github.com/lxy1134/MEMTX_, 318 replayable cases, each replayed through a fresh
+        Inspeximus(supersession=...) and scored on current(key) against the labelled
+        `expected.committed_beliefs`): last-write-wins 278 of 318, authority 307 of 318, no case
+        going the other way. By scenario type: permission_laundering 48 -> 53 of 53,
+        tool_result_pollution 38 -> 52 of 52, semantic_conflict 38 -> 48 of 54, stale_late_write
+        50 -> 50 of 55, cascading_rollback and dirty_tentative_read unchanged.
 
-        WHAT IT DOES NOT COVER, stated so nobody turns it on and believes otherwise. 32 of the 55
-        stale_late_write cases are temporal (a lost update between two writers of EQUAL authority),
-        which no authority rule can decide; they need a read-snapshot check. And the rule can be WRONG
-        in the other direction, MemTX lost_update_0001:
+        THE ECHO GUARD DOES MOST OF THE STALE-WRITE WORK, NOT THIS RULE. The same replay as a pure
+        function of the schedule, with no guard at all, scores 231 and 280; the store with
+        INSPEXIMUS_ECHO_GUARD=0 reproduces those two numbers exactly (0 disagreements), so the
+        difference IS the echo guard: a stale writer restates a value the key has already moved
+        away from, and the guard retires it on arrival whatever its authority. That takes
+        stale_late_write from 7 to 50 by itself, and authority adds nothing on top. What authority
+        buys through the product is the other 29: a lower source overwriting a higher one with a
+        value the key has NEVER held, which no echo can catch.
+
+        WHAT IT DOES NOT COVER, stated so nobody turns it on and believes otherwise. The 5
+        stale_late_write cases still wrong are lost updates between writers of EQUAL authority writing
+        a fresh value, which no authority rule can decide; they need a read-snapshot check. And the
+        rule can be WRONG in the other direction, MemTX lost_update_0001:
 
             initial:  system,  authority 1.0, value 50
             agent_B:  authority 0.8, value 48

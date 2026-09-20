@@ -11,17 +11,24 @@ with no authority accepts a declared write, and a declared incumbent accepts an 
 on last-write-wins. That is the migration rule, chosen over "missing reads as 1.0", which would
 have frozen every legacy value against every declared writer below 1.0 the moment the flag went on.
 
-Measured before it was built, on the MemTX corpus (318 replayable cases, labelled committed
-beliefs): last-write-wins matches the label in 231, the authority rule in 280, and every one of the
-49 disagreements sides with authority. By type: permission_laundering 48 to 53 of 53,
-tool_result_pollution 38 to 52 of 52, semantic_conflict 34 to 48 of 54, stale_late_write 7 to 23 of
-55. The assignment that proposed the rule cited "58 of 92 stale_late_write cases decided by
-authority"; the corpus holds 55, and the rule decides 23. This is the first half of stale writes.
-The other 32 are lost updates between writers of equal authority and need a read-snapshot check,
-which is not in this release. The rule is also wrong in one direction, MemTX lost_update_0001: a
-fact the system seeds at 1.0 can never be corrected by agents writing at 0.8, so last-write-wins
-serves 47, authority serves 50, and the label is 48. A test pins that both are wrong so the
-docstring cannot outlive the behaviour.
+Measured before it was built, and then measured again through the product before it was tagged,
+on the MemTX corpus (318 replayable cases, labelled committed beliefs). As a pure replay of the
+schedule with no guard: last-write-wins matches the label in 231, the authority rule in 280, and
+every one of the 49 disagreements sides with authority. Through a real store per case: the default
+matches in 278 and authority in 307, none going the other way. The two tables differ because the
+store carries the echo guard and the pure replay does not; with INSPEXIMUS_ECHO_GUARD=0 the store
+reproduces 231 and 280 exactly. So through the product the echo guard already decides 50 of the 55
+stale_late_write cases on its own (a stale writer restates a value the key has moved away from)
+and authority adds nothing there; what authority adds is 29 cases where a weaker source writes a
+value the key never held: permission_laundering 48 to 53 of 53, tool_result_pollution 38 to 52 of
+52, semantic_conflict 38 to 48 of 54. The assignment that proposed the rule cited "58 of 92
+stale_late_write cases decided by authority"; the corpus holds 55, and through the product the rule
+decides none of them that the guard had not. The 11 cases still wrong are lost updates between
+writers of equal authority writing a fresh value and need a read-snapshot check, which is not in
+this release. The rule is also wrong in one direction, MemTX lost_update_0001: a fact the system
+seeds at 1.0 can never be corrected by agents writing at 0.8, so last-write-wins serves 47,
+authority serves 50, and the label is 48. A test pins that both are wrong so the docstring cannot
+outlive the behaviour.
 
 The second item of the assignment, collapsing two records with one `source.doc` into one witness
 in the corroboration count, was already the behaviour: `_distinct_sources` has counted canonical
