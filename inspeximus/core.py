@@ -1923,6 +1923,28 @@ class _StoreLock:
                         mod.locking(self._fh.fileno(), mod.LK_UNLCK, 1)
                 except OSError:
                     pass                     # the handle stays cached; the next acquire re-opens it
+                # THE FILE GOES WHEN THE LOCK DOES, ON WINDOWS. Measured 2026-09-20: 596,291
+                # `inspeximus-<hex>.lock` files in one user's Temp, one per store path ever opened,
+                # because nothing removed them. On Windows the removal is safe by the file-sharing
+                # rules: `open()` here sets no FILE_SHARE_DELETE, so an unlink fails while ANY other
+                # process holds the file, and succeeds only when nobody does -- and a process that
+                # opens the path after a successful unlink creates a new file that every later
+                # opener shares. No two holders can end up on different files. On POSIX `unlink`
+                # succeeds under an open handle, so a waiter on the old inode and a newcomer on the
+                # new one would both believe they hold the lock; there the file stays, as before.
+                # The cached handle is closed first, because our own open handle would also refuse
+                # the unlink; the next acquire re-opens it, one syscall against a 16 ms write.
+                if os.name == "nt":
+                    try:
+                        self._fh.close()
+                    except OSError:
+                        pass
+                    with _StoreLock._CACHE_GUARD:
+                        _StoreLock._CACHE[self._path] = (self._tl, None)
+                    try:
+                        os.unlink(self._path)
+                    except OSError:
+                        pass                 # another process holds it: it is still in use
                 self._fh = None
         finally:
             if self._tl is not None:
@@ -5976,8 +5998,14 @@ class Inspeximus:
         # reached disk, and it did not.
         if (not self._dirty) and self._rows_available() and self.path and self.path.exists():
             try:
-                _disk = {r["id"]: _rows_mod_doc(r) for r in _rows.load(self.path)
-                         if isinstance(r, dict) and r.get("id")}
+                # BOTH SIDES DROP `vec` WHEN THIS HANDLE DOES NOT PERSIST IT. A store written with
+                # persist_vectors=True and opened without it holds vectors on disk that this handle
+                # never loads or writes; comparing them against a memory image that has none reported
+                # "differs in vec" on every record -- 117 of 7,880 stores on the fixture corpus
+                # (2026-09-20), each a false integrity alarm on an untouched, healthy store.
+                _disk = {r["id"]: _rows_mod_doc({_k: _v for _k, _v in r.items()
+                                                 if _k != "vec" or self._persist_vectors})
+                         for r in _rows.load(self.path) if isinstance(r, dict) and r.get("id")}
                 # COMPARE WHAT THE WRITER WRITES. `_save` strips the `vec` embedding cache unless
                 # the store persists vectors, so comparing the raw in-memory record against the
                 # stored row reported every embedded record as unpersisted -- a false alarm on a
@@ -8248,6 +8276,16 @@ class Inspeximus:
                 f"the store at {self.path} parses as JSON but is a {found}, and a store is a list "
                 f"of records. Refusing to open it, because continuing would overwrite the file."
                 f"{hint}")
+        # A LIST WHOSE ELEMENTS ARE NOT RECORDS gets the same refusal as a dict, not an AttributeError
+        # from the first `setdefault`. Found on the 20,000-store fixture corpus (2026-09-20): a file
+        # holding `[1, 2, 3]` opened with "'int' object has no attribute 'setdefault'", which tells the
+        # operator nothing and reads as a crash in the library rather than a file that is not a store.
+        _foreign = [type(r).__name__ for r in self._items if not isinstance(r, dict)]
+        if _foreign:
+            raise ValueError(
+                f"the store at {self.path} parses as a JSON list, but {len(_foreign)} of its "
+                f"{len(self._items)} elements are not records (first: {_foreign[0]}). Refusing to open "
+                f"it, because continuing would overwrite the file.")
         for r in self._items:
             # A record missing a field newer code assumes crashed six methods with a bare KeyError — and made
             # index_coherence report `coherent: true` with an undercount, which is worse than crashing. Foreign,
