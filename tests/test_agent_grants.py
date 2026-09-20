@@ -177,6 +177,12 @@ _ARGS = {
     # the whole write log, so the sweep drives it with a real index and lets the leak check decide.
     # Exempting it would exempt the one method here that reads every tenant's leaves by design.
     "transparent_statement": (0, "did:web:sweep.example"),
+    # The event table (3.0.0). publish_event is driven with the other side's secret in its payload,
+    # because the table is not behind the read grants and a bound view must not be handed a
+    # payload it did not publish; subscribe/unsubscribe take a callback and an id, content-free.
+    "publish_event": ("sweep.event", {"note": "GLOBEX_SECRET " + SECRET, "to": "nobody"}, "sweep"),
+    "subscribe": ("*", print),
+    "unsubscribe": ("no-such-subscription",),
     # import_changeset takes a PEER'S changeset, so the sweep hands it a hand-built one whose
     # record text carries the other side's secret. An import is the method most tempted to echo
     # what it just merged -- a summary of "what came in" is the obvious thing to return -- and

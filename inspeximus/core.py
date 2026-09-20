@@ -1281,7 +1281,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "2.44.0"
+__version__ = "3.0.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1981,7 +1981,7 @@ class Inspeximus:
                  embed_query=None, embed_id: str | None = None,
                  infer_lineage: float = 0.0, echo_guard: bool | None = None,
                  agent: str | None = None, observe_recall: bool = False,
-                 writer_key: str | None = None):
+                 writer_key: str | None = None, events: bool = True):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -2519,6 +2519,16 @@ class Inspeximus:
         self._dirty = False
         self._touched = set()          # ids changed since the last successful save
         self._full_reconcile = False   # ask the next save for the complete diff
+        # THE EVENT TABLE, since 3.0.0. Every committed change to a row is described by a
+        # content-free row in `memory_events`, inserted in the same transaction (see
+        # sqlite_store.save), so a second process can tail the table by `seq` and learn WHAT
+        # changed without polling every record. `publish_event()` queues an application event for
+        # the next commit; `poll_events()` reads; `subscribe()` is in-process only. Off with
+        # events=False, and absent on a legacy JSON store, which has no table to write.
+        self._events_enabled = bool(events)
+        self._pending_events: list = []
+        self._subscribers: dict = {}
+        self._events_seen: int = 0
         self._row_snapshot = None      # id -> serialised row, when the store is a row store
         #: what the last hard erasure did with the pre-conversion JSON copy, reported by
         #: `erasure_certificate()` so removing a user's rollback file is never silent
@@ -3488,6 +3498,241 @@ class Inspeximus:
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
             self._record_head()
         return r
+
+    # ------------------------------------------------------------------ the event table
+    def publish_event(self, event_type: str, payload: dict | None = None,
+                      agent_id: str = "system") -> int:
+        """Append an application event to `memory_events` and return its seq.
+
+        It is committed in the same transaction as whatever rows are pending on this handle, so a
+        caller that writes a record and then publishes "plan.updated" gets both or neither. The
+        save is forced, which is what makes the returned seq real rather than promised. `payload`
+        is the caller's and is stored as given: keep it content-free when other agents will tail
+        it, because the event table is not behind the read grants (see `poll_events`).
+
+        Raises on a legacy JSON store, which has no table; a store that opted out with
+        `events=False` raises too, rather than returning a seq that nothing wrote.
+        """
+        if not self._events_enabled:
+            raise RuntimeError("events are off for this store (events=False)")
+        if not self._rows_available():
+            raise RuntimeError("events need the row store; this is a legacy JSON store "
+                               "(migrate with inspeximus.sqlite_store.migrate_from_json)")
+        et = str(event_type or "").strip()
+        if not et:
+            raise ValueError("event_type is required")
+        if et.startswith("record."):
+            raise ValueError("record.* events are written by the store itself; pick another type")
+        row = (time.time(), et, None, str(agent_id) if agent_id is not None else None,
+               self.tenant, json.dumps(dict(payload or {}), ensure_ascii=False, sort_keys=True))
+        self._pending_events.append(row)
+        self._dirty = True
+        self._save(force=True)
+        if self._persist_error:
+            raise OSError(f"inspeximus could not persist the event to {self._persist_error['path']}: "
+                          f"{self._persist_error['error']}")
+        return _rows.events_tip(self.path)
+
+    def poll_events(self, since_seq: int = 0, agent_id: str | None = None, limit: int = 100,
+                    event_type: str | None = None) -> list:
+        """Events with seq > since_seq, oldest first: {seq, ts, type, memory_id, agent, tenant,
+        payload}. Reads the table on disk, so a change another process committed is visible on the
+        next call without a reload. `agent_id` keeps only events whose `agent` is that id.
+
+        Automatic events are content-free by construction (id, key, status, mtype), so a reader
+        learns that a record changed and fetches it through `recall`/`get`, where the grants apply.
+        On a tenant-bound handle only that tenant's events are returned. On an agent-bound handle
+        (`as_agent`) a record event is returned only when `can_read` allows the record, and an
+        application event only when it was published by that agent, by "system", or names the
+        agent in `payload["to"]`. A store with no table returns [].
+        """
+        if not self.path or not self._rows_available():
+            return []
+        want = max(1, int(limit))
+        out = []
+        cursor = int(since_seq)
+        # Read in pages so a bound view that filters most events out still fills `limit`.
+        for _ in range(50):
+            page = _rows.events_since(self.path, cursor, max(want * 4, 100), event_type)
+            if not page:
+                break
+            for ev in page:
+                cursor = ev["seq"]
+                if agent_id is not None and ev.get("agent") != agent_id:
+                    continue
+                if self.tenant is not None and ev.get("tenant") != self.tenant:
+                    continue
+                agent = getattr(self, "agent", None)
+                if agent is not None:
+                    mid = ev.get("memory_id")
+                    if mid:
+                        try:
+                            if not self.can_read(agent, mid).get("allowed"):
+                                continue
+                        except Exception:
+                            continue
+                    elif ev.get("agent") not in (agent, "system") and \
+                            (ev.get("payload") or {}).get("to") != agent:
+                        continue
+                out.append(ev)
+                if len(out) >= want:
+                    return out
+            if len(page) < max(want * 4, 100):
+                break
+        return out
+
+    def events_tip(self) -> int:
+        """The highest event seq on disk; the value to start a tail from."""
+        if not self.path or not self._rows_available():
+            return 0
+        return _rows.events_tip(self.path)
+
+    def subscribe(self, event_type: str, callback) -> str:
+        """Call `callback(event)` for every later event of `event_type` ("*" for all) that THIS
+        handle commits, and for anything `dispatch_events()` pulls in from other processes.
+        In-process only: the store publishes to a table, and who reads it is the orchestrator's
+        business. Returns the subscription id for `unsubscribe`."""
+        if not callable(callback):
+            raise TypeError("callback must be callable")
+        sid = uuid.uuid4().hex[:10]
+        self._subscribers[sid] = (str(event_type or "*"), callback)
+        if not self._events_seen:
+            self._events_seen = self.events_tip()
+        return sid
+
+    def unsubscribe(self, sub_id: str) -> bool:
+        return self._subscribers.pop(sub_id, None) is not None
+
+    def dispatch_events(self, limit: int = 1000) -> int:
+        """Deliver every event committed since the last dispatch to the subscribers, including
+        events other processes wrote. Returns how many were delivered. The way a long-running
+        agent pumps the bus: call it from its loop."""
+        return self._dispatch_events(self._events_seen, limit)
+
+    def _dispatch_events(self, since: int, limit: int = 1000) -> int:
+        if not self._subscribers:
+            return 0
+        evs = self.poll_events(since_seq=since, limit=limit)
+        n = 0
+        for ev in evs:
+            self._events_seen = max(self._events_seen, ev["seq"])
+            for et, cb in list(self._subscribers.values()):
+                if et == "*" or et == ev["type"]:
+                    try:
+                        cb(ev)
+                    except Exception:            # noqa: BLE001 -- one bad subscriber must not stop the rest
+                        pass
+                    n += 1
+        return n
+
+    # ------------------------------------------------------------------ receipts on an existing store
+    def enable_receipts(self, receipt_key: "str | None" = None, backfill_genesis: bool = True,
+                        reason: str = "") -> dict:
+        """Turn write receipts on for a store that has records but no chain, or a chain that does not
+        cover every record, and cover the uncovered ones with a signed genesis checkpoint.
+
+        Returns ``{"status", "anchored_records", "already_covered", "genesis_root", "chain_tip",
+        "signed"}``. ``genesis_root`` is the Merkle root (RFC 6962 tree, `inspeximus.merkle`) over the
+        commitments of the records covered by this call, or None when nothing needed covering.
+
+        WHAT A BACKFILL RECEIPT PROVES, stated because this is where it would be oversold. Each
+        uncovered record gets one ordinary receipt whose `commit` is the record as it stands NOW,
+        and whose `backfill` field carries the batch's Merkle root, inside the hash. From this call
+        on, an edit to any of those records on disk fails `verify_writes()` exactly as an edit to a
+        record written under receipts does. What it does NOT prove is that the record was not
+        altered BEFORE this call: there was no chain then, and a receipt made later cannot reach
+        back. The marker is committed so no reader can mistake one for the other.
+
+        Idempotent: a second call finds nothing uncovered and returns ``anchored_records: 0`` with
+        the chain untouched. A store opened with `receipts=False` is switched on in place; the
+        sidecar is created beside the store as it would have been at construction. `receipt_key`
+        (an Ed25519 private key hex, see `new_receipt_keypair`) signs the backfill and every later
+        receipt; without it the store keeps whatever signer it was opened with, which may be none.
+        """
+        if receipt_key:
+            if self._receipt_signer is not None:
+                raise ValueError("this store signs through receipt_signer; pass no receipt_key")
+            if not _HAVE_ED:
+                raise RuntimeError("signing write receipts needs the `cryptography` package "
+                                   "(pip install cryptography)")
+            try:
+                pub = _Ed25519SK.from_private_bytes(bytes.fromhex(receipt_key)).public_key(
+                    ).public_bytes(_ser.Encoding.Raw, _ser.PublicFormat.Raw).hex()
+            except Exception as e:
+                raise ValueError("receipt_key must be a 32-byte Ed25519 private key as hex "
+                                 "(use new_receipt_keypair()); got an unusable value") from e
+            if self.receipt_pubkey and self.receipt_pubkey != pub:
+                raise ValueError("receipt_key does not match the key this store already signs with; "
+                                 "a chain signed by two keys is two chains")
+            self._receipt_sk = receipt_key
+            self.receipt_pubkey = pub
+        was_enabled = self.receipts_enabled
+        self.receipts_enabled = True
+        if self._receipts_path is None and self.path:
+            self._receipts_path = self.path.parent / (self.path.name + ".receipts.json")
+        if not was_enabled and self._receipts_path and self._receipts_path.exists() and not self._receipts:
+            # Opened with receipts off beside an existing sidecar: adopt the chain, do not restart it.
+            try:
+                self._receipts = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+            except Exception:
+                self._receipts = []
+            self._receipts_sig = self._receipts_disk_sig()
+        self._reconcile_receipts_with_disk()
+        named = {rc.get("memory_id") for rc in self._receipts}
+        uncovered = [r for r in self._items if r["id"] not in named]
+        out = {"status": "enabled", "anchored_records": 0, "retirements_declared": 0,
+               "already_covered": len(self._items) - len(uncovered),
+               "genesis_root": None,
+               "chain_tip": self._receipts[-1]["hash"] if self._receipts else None,
+               "signed": bool(self._receipt_signer is not None or (self._receipt_sk and _HAVE_ED))}
+        if not backfill_genesis or not uncovered:
+            if self._receipts_path and not self._receipts_path.exists():
+                self._persist_receipts()
+            return out
+        uncovered.sort(key=lambda r: (r.get("ts") or 0, r["id"]))
+        commits = [self._write_commit(r) for r in uncovered]
+        from . import merkle as _merkle
+        root = _merkle.root([_canon(c) for c in commits]).hex()
+        now = time.time()
+        marker = {"genesis_root": root, "n": len(uncovered), "at": now,
+                  "reason": (str(reason).strip() or "unstated")[:200]}
+        for rec, commit in zip(uncovered, commits):
+            self._append_receipt({"ts": rec.get("ts"), "memory_id": rec["id"], "commit": commit,
+                                  "backfill": marker})
+        # RETIREMENTS THAT HAPPENED WHILE THE CHAIN WAS NOT LOOKING. A record written under receipts,
+        # born active, and superseded by a write made with receipts off is exactly what the
+        # concealment sweep reports, and it is right to: the chain has nothing that accounts for it.
+        # The backfill declares those the way every legitimate retirement path does (an amendment
+        # of status_sha256), carrying the same marker, so an auditor reads "retired, declared at
+        # backfill" rather than "hidden". Measured on the store this was built for: 2 such records,
+        # both superseded on the same day by a writer that had receipts off.
+        declared = self._unaccounted_retirements()
+        by_id = {r["id"]: r for r in self._items}
+        for mid in declared:
+            rec = by_id[mid]
+            self._append_receipt({"ts": rec.get("ts"), "memory_id": mid,
+                                  "commit": self._write_commit(rec),
+                                  "amends": ["status_sha256"],
+                                  "amend_reason": "retired while receipts were off; declared at backfill",
+                                  "backfill": marker})
+        self._persist_receipts()
+        out.update({"anchored_records": len(uncovered), "retirements_declared": len(declared),
+                    "genesis_root": root, "chain_tip": self._receipts[-1]["hash"]})
+        return out
+
+    def _persist_receipts(self) -> None:
+        """Write the whole receipt chain to its sidecar once, then record the head. One write for a
+        batch, so a 2,000-record backfill is one atomic replace rather than 2,000."""
+        if not self._receipts_path:
+            return
+        try:
+            Inspeximus._atomic_write(self._receipts_path,
+                                     json.dumps(self._receipts, indent=2, ensure_ascii=False))
+            self._receipts_sig = self._receipts_disk_sig()
+            self._sidecar_errors.pop("receipts", None)
+        except Exception as e:
+            self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
+        self._record_head()
 
     # ------------------------------------------------------------------ chain head outside the store
     @staticmethod
@@ -5542,6 +5787,46 @@ class Inspeximus:
                             "An empty check is not a passing one." % skipped)
         return (not problems), problems
 
+    def _unaccounted_retirements(self) -> list:
+        """Ids of records that were BORN as the live value (per their first receipt) and are not
+        current now, with nothing in the chain accounting for it: no later receipt of their own, no
+        write whose `retires` names them, no tombstone. ONE definition, shared by verify_writes()
+        (which reports them as concealment) and enable_receipts() (which declares them, marked as
+        backfill), so the two cannot drift apart."""
+        _first: dict = {}
+        _later: dict = {}
+        for rc in self._receipts:
+            mid = rc.get("memory_id")
+            if mid not in _first:
+                _first[mid] = rc
+            else:
+                _later[mid] = rc
+        _tombed = {t.get("memory_id") for t in (self._tombstones or ())}
+        _named = {rid for rc in self._receipts
+                  for rid in ((rc.get("commit") or {}).get("retires") or ())}
+        _hidden = []
+        for r in self._items:
+            mid = r["id"]
+            rc = _first.get(mid)
+            if rc is None:
+                continue                      # uncovered: the coverage sweep owns that case
+            born = (rc.get("commit") or {}).get("born_status")
+            if born is None:
+                continue                      # pre-2.10.2 receipt: nothing to compare against
+            # BORN AS THE LIVE VALUE, which is the only thing that can be HIDDEN. Not "born
+            # recallable": `superseded` is in `_RECALLABLE` (history is readable with
+            # include_superseded), so the first version of this line skipped nothing for a record
+            # retired ON ARRIVAL and reported every honest echo as concealment. `hub` counts --
+            # it is a ranking demotion, not a retirement.
+            if born not in ("active", "hub"):
+                continue                      # never the current value, so never hidden
+            if r.get("status") in ("active", "hub"):
+                continue                      # still current, or demoted in RANKING only
+            if mid in _later or mid in _named or mid in _tombed:
+                continue                      # accounted for
+            _hidden.append(mid)
+        return sorted(_hidden)
+
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
                       legacy_strict: bool = True, value_strict: bool = True,
                       coverage_strict: bool = True,
@@ -5909,39 +6194,7 @@ class Inspeximus:
             # `born_status` is what makes this possible without false alarms: a record retired ON
             # ARRIVAL by the echo, objectless or back-fill guards was never recallable, so its own
             # birth receipt is the whole explanation and it is not swept.
-            _first: dict = {}
-            _later: dict = {}
-            for rc in self._receipts:
-                mid = rc.get("memory_id")
-                if mid not in _first:
-                    _first[mid] = rc
-                else:
-                    _later[mid] = rc
-            _tombed = {t.get("memory_id") for t in (self._tombstones or ())}
-            _named = {rid for rc in self._receipts
-                      for rid in ((rc.get("commit") or {}).get("retires") or ())}
-            _hidden = []
-            for r in self._items:
-                mid = r["id"]
-                rc = _first.get(mid)
-                if rc is None:
-                    continue                      # uncovered: the coverage sweep above owns that case
-                born = (rc.get("commit") or {}).get("born_status")
-                if born is None:
-                    continue                      # pre-2.10.2 receipt: nothing to compare against
-                # BORN AS THE LIVE VALUE, which is the only thing that can be HIDDEN. Not "born
-                # recallable": `superseded` is in `_RECALLABLE` (history is readable with
-                # include_superseded), so the first version of this line skipped nothing for a record
-                # retired ON ARRIVAL and reported every honest echo as concealment. `hub` counts --
-                # it is a ranking demotion, not a retirement.
-                if born not in ("active", "hub"):
-                    continue                      # never the current value, so never hidden
-                if r.get("status") in ("active", "hub"):
-                    continue                      # still current, or demoted in RANKING only
-                if mid in _later or mid in _named or mid in _tombed:
-                    continue                      # accounted for
-                _hidden.append(mid)
-            for mid in sorted(_hidden):
+            for mid in self._unaccounted_retirements():
                 problems.append(
                     f"memory {mid}: born ACTIVE and is no longer current, with nothing accounting for "
                     f"it -- no retirement declared, no later write claiming it, no tombstone. A live "
@@ -9574,6 +9827,12 @@ class Inspeximus:
             # still verify. Committed, it can be contradicted but not rewritten.
             if rec.get("amend_reason"):
                 core["amend_reason"] = rec["amend_reason"]
+            # A BACKFILL RECEIPT SAYS SO INSIDE ITS HASH, since 3.0.0. `enable_receipts()` covers
+            # records that were written before the chain existed, and such a receipt vouches for the
+            # record as it stood at backfill time, never at its original write. That difference is
+            # what an auditor has to see, so it is committed: strip the marker and the hash changes.
+            if rec.get("backfill"):
+                core["backfill"] = rec["backfill"]
             return core
         return Inspeximus._tombstone_core(rec)                                                   # tombstone
 
@@ -15199,14 +15458,19 @@ class Inspeximus:
                     _res = _rows.save(self.path, rows, self._row_snapshot,
                                       dirty=None if _reconcile else self._touched,
                                       rewrite_all=self._rewrite_all,
-                                      keep_vec=self._persist_vectors)
+                                      keep_vec=self._persist_vectors,
+                                      events=self._pending_events if self._events_enabled else None,
+                                      auto_events=self._events_enabled)
                     self._rewrite_all = False
                     self._row_snapshot = _res["snapshot"]
                     self._touched = set()
+                    self._pending_events = []          # committed with the rows, or rolled back with them
                     self._file_sig = self._stat_sig()
                     _wrote_rows = True
+                    _committed_events = _res.get("event_seqs") or []
                 else:
                     _wrote_rows = False
+                    _committed_events = []
                 # THE TAIL BELOW IS SHARED, and the row branch used to `return` before it.
                 # `.embedid` -- the sidecar recording which embed recipe the
                 # persisted vectors were made with -- was therefore never
@@ -15243,6 +15507,8 @@ class Inspeximus:
             self._last_save = now
             self._dirty = False
             self._persist_error = None
+            if _committed_events and self._subscribers:
+                self._dispatch_events(self._events_seen)   # AFTER the commit and OUTSIDE the lock
         except StoreChangedOnDisk:
             raise                                    # the caller must see this one; it is not a disk failure
         except Exception as e:
@@ -15463,6 +15729,12 @@ class _TenantView:
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
+        # The receipt chain is one per store file, over every tenant's writes, like `anchor`; a
+        # backfill covers the rows the chain does not name, whoever wrote them.
+        "enable_receipts",
+        # Subscriptions and the seq counter are properties of the table, not of a tenant's slice;
+        # what a subscriber is HANDED goes through the rebound `poll_events`, which filters.
+        "events_tip", "subscribe", "unsubscribe", "dispatch_events",
         # The chain head kept outside the store is a property of the FILE, like `anchor`: one head
         # per store path, over every tenant's receipts. A tenant-bound view has nothing to narrow.
         "head_path", "read_head", "reanchor_head",
@@ -15730,6 +16002,14 @@ class _TenantView:
     def grants(self, *a, **k):          return Inspeximus.grants(self, *a, **k)
     def grant_log(self, *a, **k):       return Inspeximus.grant_log(self, *a, **k)
     def can_read(self, *a, **k):        return Inspeximus.can_read(self, *a, **k)
+    # The event table, rebound so `self.tenant` and `self.agent` inside them are the VIEW's:
+    # poll_events filters by both, publish_event stamps the view's tenant on what it writes.
+    def publish_event(self, *a, **k):   return Inspeximus.publish_event(self, *a, **k)
+    def poll_events(self, *a, **k):     return Inspeximus.poll_events(self, *a, **k)
+    def _dispatch_events(self, *a, **k): return Inspeximus._dispatch_events(self, *a, **k)
+    # Store-wide like verify_writes itself: the concealment sweep walks every tenant's receipts, and
+    # a per-tenant answer would hide a record retired under another binding. Read-only, content-free.
+    def _unaccounted_retirements(self, *a, **k): return Inspeximus._unaccounted_retirements(self._parent, *a, **k)
     def _acl_visible(self, *a, **k):    return Inspeximus._acl_visible(self, *a, **k)
     def _acl_grants_for(self, *a, **k): return Inspeximus._acl_grants_for(self, *a, **k)
     def _acl_match(self, *a, **k):      return Inspeximus._acl_match(self, *a, **k)

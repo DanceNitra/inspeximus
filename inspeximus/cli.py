@@ -547,6 +547,16 @@ def main(argv=None):
                     help="write the SECRET to this file (referenced by INSPEXIMUS_WRITER_KEY_FILE); "
                          "printed to stdout if omitted")
 
+    rc = sub.add_parser("receipts", help="write receipts on an EXISTING store: turn them on and cover every "
+                                         "record the chain does not name with a genesis checkpoint")
+    rcsub = rc.add_subparsers(dest="receipts_cmd", required=True)
+    rce = rcsub.add_parser("enable", help="switch receipts on; with --backfill, one receipt per uncovered "
+                                          "record, all carrying the batch's Merkle root inside the hash")
+    rce.add_argument("--backfill", action="store_true",
+                     help="cover the records the chain does not name (without it: only switch on)")
+    rce.add_argument("--reason", default="", help="why the backfill is happening, committed in each receipt")
+    rce.add_argument("--json", action="store_true")
+
     br = sub.add_parser("browse", help="render a self-contained offline HTML memory browser")
     br.add_argument("--out", default="inspeximus_browser.html", help="output HTML file")
     br.add_argument("--open", action="store_true", help="open it in the default browser after writing")
@@ -1289,8 +1299,29 @@ def main(argv=None):
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
                                                         "provenance", "erasure-certificate", "anchor", "actions", "subject", "coverage",
                                                         "technical-documentation", "deployer-report",
-                                                        "registration-export", "partitions"),
+                                                        "registration-export", "partitions", "receipts"),
                receipt_key=_rk)
+
+    if a.cmd == "receipts":
+        # The store above was opened with receipts on (forced list), so an existing chain is adopted
+        # and a missing one starts here. What this prints is what `verify_writes()` will say next.
+        res = m.enable_receipts(receipt_key=_rk, backfill_genesis=a.backfill, reason=a.reason)
+        if a.json:
+            print(json.dumps(res, ensure_ascii=False, indent=2))
+        else:
+            print(f"receipts: {res['status']}  covered now: {res['anchored_records']}  "
+                  f"already covered: {res['already_covered']}  signed: {res['signed']}")
+            if res["genesis_root"]:
+                print(f"genesis root: {res['genesis_root']}")
+                print(f"chain tip:    {res['chain_tip']}")
+            elif not a.backfill and res["already_covered"] < len(m.items):
+                print(f"{len(m.items) - res['already_covered']} record(s) still uncovered: "
+                      f"re-run with --backfill to cover them")
+        ok, problems = m.verify_writes()
+        print("verify_writes:", "PASS" if ok else "FAIL")
+        for pr in problems[:5]:
+            print("  -", pr)
+        return 0 if ok else 1
 
     if a.cmd == "anchor":
         anc = m.anchor()

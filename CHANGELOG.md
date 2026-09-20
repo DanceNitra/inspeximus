@@ -1,3 +1,32 @@
+## 3.0.0 - receipts on an existing store, and an event table other processes tail. UPGRADE IF YOU RUN MORE THAN ONE AGENT PROCESS ON ONE STORE, OR HOLD A STORE THAT PREDATES ITS RECEIPTS. AFFECTS: adds `enable_receipts()` and `inspeximus receipts enable`; adds the `memory_events` table, `publish_event`/`poll_events`/`subscribe`/`unsubscribe`/`dispatch_events`/`events_tip`, the `events=` constructor flag, and two MCP tools (111). NOT A BREAKING RELEASE: every 2.x call keeps its signature and its behaviour, and no row of `records` changes shape. The major number moves because the core gains a second table that other processes read, which is a change to what a store IS, not to what a call returns.
+
+`enable_receipts(receipt_key=None, backfill_genesis=True, reason="")` turns write receipts on for a
+store that already holds records with no chain, or a chain that started part-way, and covers the
+records the chain does not name. Each gets an ordinary receipt over the record AS IT STANDS at
+backfill time, with a `backfill` field inside its hash carrying the Merkle root of the batch
+(`inspeximus.merkle`, RFC 6962), so no reader can mistake it for a receipt made at write time and
+stripping the marker breaks the chain link. Retirements that happened while the chain was not
+looking (a record born active under receipts, superseded by a writer that had receipts off, which
+`verify_writes()` reports as hidden) are declared with the same marker, through the amendment path
+every legitimate retirement uses. Idempotent; refuses a second signing key. CLI:
+`inspeximus receipts enable --backfill`. Measured on our own store: 2,907 records, 2,030 uncovered
+and 2 hidden, `verify_writes()` False; after one call, True, in 1.7 s. The concealment criterion
+moved into `_unaccounted_retirements()` so the verifier and the backfill share one definition.
+
+`memory_events` is a table the row writer appends to INSIDE the transaction that writes the rows,
+one content-free row per committed change: `record.added`, `record.changed` (a supersession, a
+status flip) and `record.removed`, carrying id, key, status and mtype and never text. A second
+process tails it by `seq` with `poll_events(since_seq)` and sees another writer's commit on the
+next call, with no reload and no broker; `publish_event(type, payload, agent_id)` queues an
+application event for the same commit and returns its seq after a forced save. Because the
+INSERT shares the transaction, an event exists exactly when its row does: the test fails the row
+INSERT from inside the open transaction and requires zero events. On a tenant-bound handle only
+that tenant's events return; on an agent-bound handle a record event returns only when `can_read`
+allows the record, and an application event only when that agent published it, "system" did, or
+`payload["to"]` names it. `subscribe(type, callback)` and `dispatch_events()` are in-process. A
+store created before the table gets it on the next open; `events=False` opts out; a legacy JSON
+store has no table and `publish_event` says so. MCP: `poll_memory_events`, `subscribe_memory_event`.
+
 ## 2.44.0 - corrective actions (Art. 20), authority requests (Art. 21), the explanation of a decision (Art. 86) and personal data breaches (GDPR Art. 33 and 34), as signed ledger entries. UPGRADE IF YOU OPERATE AN AGENT THAT CAN BE WITHDRAWN, ASKED ABOUT, OR LEAK. AFFECTS: adds seven `ActionLedger` methods, seven CLI subcommands under `actions`, and seven MCP tools (109); the ledger accepts three new entry kinds, `corrective`, `authority` and `breach`; the audit-trail export maps the new kinds to escalations; nothing existing changes.
 
 `corrective_action()` records what was done with a system the provider has reason to consider

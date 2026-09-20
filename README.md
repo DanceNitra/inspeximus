@@ -220,6 +220,29 @@ Inspeximus("memory.json", receipts=True).verify_writes()[1][0].split(": ", 1)[1]
 # 'its TEXT or KEY no longer matches its write receipt (edited after write)'
 ```
 
+A store that already holds records with no chain, or a chain that started part-way, is covered
+in one call. Each record the chain does not name gets a receipt over the record as it stands
+now, marked `backfill` inside its hash and carrying the Merkle root of the batch. From that call
+on, an edit fails `verify_writes()` like any other; what happened before it, no later receipt
+can reach.
+
+```python
+from inspeximus import Inspeximus
+
+m = Inspeximus("older.json")            # a store written with receipts off
+m.remember("The on-call rota is in the wiki", key="on-call")
+m.verify_writes()[1][0].split(":", 1)[0]
+# 'write receipts are DISABLED'
+
+m.enable_receipts()["anchored_records"]
+# 1
+m.verify_writes()[0]
+# True
+```
+
+Or from the shell: `inspeximus receipts enable --backfill`. The CHANGELOG entry for 3.0.0
+carries the measurement on our own store.
+
 ### What the agent did, bound to what it knew
 
 An audit-trail tool signs the agent's actions. The action ledger does that too, and binds each action
@@ -500,7 +523,7 @@ Or from a shell, after `pip install inspeximus`:
 inspeximus install --ide claude     # also: cursor, windsurf, codex, cline
 ```
 
-Both wire an MCP server with **109 tools** and the same hooks. From the next session on, your agent starts
+Both wire an MCP server with **111 tools** and the same hooks. From the next session on, your agent starts
 knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 
 - **SessionStart** injects the decisions still in force
@@ -683,7 +706,7 @@ not be the same instrument.
 | [Migrate from mem0](https://dancenitra.github.io/inspeximus/migrate-from-mem0.html) | `inspeximus import-mem0 export.json`: one record per memory with the user as its subject and mem0's timestamp as the event time, safe to run twice; the API mapping and what the import cannot recover |
 | [Audit trail page](https://dancenitra.github.io/inspeximus/audit-trail.html) | what the agent knew when it acted: a signed ledger entry, a transcript match, and the IETF draft export, as a real run |
 | [EU AI Act evidence page](https://dancenitra.github.io/inspeximus/ai-act.html) | Article 12 logging and Article 17 erasure, mapped to what the store already keeps; the mapping's text is [docs/AI_ACT.md](docs/AI_ACT.md) |
-| [MCP tools](MCP_LISTINGS.md) | all 109, and what each is for |
+| [MCP tools](MCP_LISTINGS.md) | all 111, and what each is for |
 | [Claims ledger](docs/CLAIMS.md) | every published number, and the command that recomputes it |
 | [core.py, mapped](docs/CORE_MAP.md) | every public method and where it lives, generated from the AST and checked in CI |
 | [Runnable examples](examples/) | working scripts rather than snippets |

@@ -2239,6 +2239,30 @@ def get_as(agent: str, id: str) -> dict:
     return rec or {}
 
 
+@mcp.tool()
+def poll_memory_events(since_seq: int = 0, limit: int = 100, event_type: str | None = None,
+                       agent_id: str | None = None) -> dict:
+    """What changed in the store since `since_seq`, from the `memory_events` table the row writer
+    appends to INSIDE its own transaction: {events: [...], tip: <highest seq now>}. Each event is
+    {seq, ts, type, memory_id, agent, tenant, payload}; the automatic ones (record.added,
+    record.changed, record.removed) carry only id, key, status and mtype, never text, so tail
+    them and fetch the record with `get`/`recall` where the grants apply. Another process's write
+    is visible on the next call, no reload. Keep `tip` and pass it back as `since_seq`."""
+    evs = _MEM.poll_events(since_seq=int(since_seq), limit=max(1, min(int(limit), 1000)),
+                           event_type=event_type or None, agent_id=agent_id)
+    return {"events": evs, "tip": _MEM.events_tip(), "since_seq": int(since_seq)}
+
+
+@mcp.tool()
+def subscribe_memory_event(event_type: str = "*") -> dict:
+    """Start a tail: returns the cursor to poll from ({event_type, since_seq}). An MCP call cannot
+    be called back, so a subscription here is a cursor, not a callback: call `poll_memory_events`
+    with this `since_seq` (and `event_type`) to receive everything published after this moment.
+    In-process subscribers with a real callback use `Inspeximus.subscribe()` from Python."""
+    return {"event_type": event_type or "*", "since_seq": _MEM.events_tip(),
+            "poll_with": "poll_memory_events(since_seq, event_type)"}
+
+
 # ── RESOURCES (read-only URIs — the second MCP primitive; lets a client browse memory as addressable context) ──
 @mcp.resource("inspeximus://digest")
 def digest_resource() -> str:

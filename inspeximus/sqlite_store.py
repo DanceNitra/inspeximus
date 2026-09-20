@@ -37,7 +37,35 @@ CREATE TABLE IF NOT EXISTS records (
 );
 CREATE INDEX IF NOT EXISTS records_ord ON records(ord);
 CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT);
+CREATE TABLE IF NOT EXISTS memory_events (
+    seq       INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts        REAL NOT NULL,
+    type      TEXT NOT NULL,
+    memory_id TEXT,
+    agent     TEXT,
+    tenant    TEXT,
+    payload   TEXT NOT NULL
+);
 """
+
+#: The event table alone, for a store created before it existed. Additive: no row of `records`
+#: changes, and a reader that does not know the table never touches it.
+EVENTS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS memory_events (
+    seq       INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts        REAL NOT NULL,
+    type      TEXT NOT NULL,
+    memory_id TEXT,
+    agent     TEXT,
+    tenant    TEXT,
+    payload   TEXT NOT NULL
+);
+"""
+
+#: What an automatic event carries about a record: ids, labels and status, never text or value.
+#: A reader who may not read the record learns that something it cannot see changed, and nothing
+#: else; the text is behind `recall`/`get`, under the grants that already guard them.
+_EVENT_FIELDS = ("key", "status", "mtype")
 
 #: Bumped when the BYTES a record turns into change, not when the schema does. A store written by an
 #: older writer keeps those bytes until something rewrites the row, so a fix to the encoding does not
@@ -115,9 +143,18 @@ def _connect(path):
     # RUN THE SCHEMA ONCE, NOT ON EVERY WRITE. `CREATE TABLE IF NOT EXISTS` is cheap to satisfy and
     # not free to parse: measured, 300 connections cost 0.55 s with the script and 0.07 s without it,
     # so a quarter of a small store's write time was spent re-declaring tables that already existed.
-    if _fresh or not con.execute(
-            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='records'").fetchone():
+    if _fresh:
         con.executescript(SCHEMA)
+    else:
+        # ONE query answers both "is this a store" and "does it predate the event table". The
+        # second table is created in place on an older store; that is the whole migration.
+        _have = {r[0] for r in con.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' "
+            "AND name IN ('records','memory_events')")}
+        if "records" not in _have:
+            con.executescript(SCHEMA)
+        elif "memory_events" not in _have:
+            con.executescript(EVENTS_SCHEMA)
     if _fresh:
         con.execute("INSERT INTO meta(k, v) VALUES('doc_format', ?) "
                     "ON CONFLICT(k) DO UPDATE SET v=excluded.v", (str(DOC_FORMAT),))
@@ -217,8 +254,66 @@ def snapshot(items, keep_vec: bool = True) -> dict:
             for r in items if isinstance(r, dict) and _field(r, "id")}
 
 
+def _event_row(kind, rec, ts):
+    """A content-free event row for one record: (ts, type, memory_id, agent, tenant, payload)."""
+    if not isinstance(rec, dict):
+        return (ts, kind, None, None, None, "{}")
+    payload = {k: rec.get(k) for k in _EVENT_FIELDS if rec.get(k) is not None}
+    return (ts, kind, _field(rec, "id"), rec.get("owner_agent"), rec.get("tenant"),
+            json.dumps(payload, ensure_ascii=False, sort_keys=True))
+
+
+def _insert_events(con, rows) -> list:
+    """INSERT the event rows inside the caller's open transaction and return their seqs."""
+    seqs = []
+    for row in rows:
+        cur = con.execute("INSERT INTO memory_events(ts, type, memory_id, agent, tenant, payload) "
+                          "VALUES(?,?,?,?,?,?)", row)
+        seqs.append(cur.lastrowid)
+    return seqs
+
+
+def events_since(path, since_seq: int = 0, limit: int = 100, event_type=None) -> list:
+    """Events with seq > since_seq, oldest first, at most `limit`. [] for a store that has none."""
+    if not os.path.exists(str(path)):
+        return []
+    con = _connect(path)
+    try:
+        q = "SELECT seq, ts, type, memory_id, agent, tenant, payload FROM memory_events WHERE seq>?"
+        args = [int(since_seq)]
+        if event_type:
+            q += " AND type=?"
+            args.append(str(event_type))
+        q += " ORDER BY seq LIMIT ?"
+        args.append(max(1, int(limit)))
+        rows = con.execute(q, args).fetchall()
+    finally:
+        con.close()
+    out = []
+    for seq, ts, kind, mid, agent, tenant, payload in rows:
+        try:
+            pl = json.loads(payload)
+        except Exception:
+            pl = {}
+        out.append({"seq": seq, "ts": ts, "type": kind, "memory_id": mid, "agent": agent,
+                    "tenant": tenant, "payload": pl})
+    return out
+
+
+def events_tip(path) -> int:
+    """The highest event seq on disk, 0 for none."""
+    if not os.path.exists(str(path)):
+        return 0
+    con = _connect(path)
+    try:
+        row = con.execute("SELECT MAX(seq) FROM memory_events").fetchone()
+    finally:
+        con.close()
+    return int(row[0] or 0)
+
+
 def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
-         keep_vec: bool = True) -> dict:
+         keep_vec: bool = True, events=None, auto_events: bool = False) -> dict:
     """Write only what changed since `before`. Returns the new snapshot and what it did.
 
     `dirty` IS THE DIFFERENCE BETWEEN FAST AND POINTLESS. Without it this has to serialise every
@@ -234,7 +329,7 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
     rewrite cannot tell this is working.
     """
     if dirty is not None and not rewrite_all:
-        return _save_known(path, items, before, set(dirty), keep_vec)
+        return _save_known(path, items, before, set(dirty), keep_vec, events, auto_events)
     now = snapshot(items, keep_vec)
     order = {_field(r, "id"): i for i, r in enumerate(items)
              if isinstance(r, dict) and _field(r, "id")}
@@ -269,6 +364,18 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
         # subject is the same defect as a guard that never sees its target.
         con.execute("INSERT INTO meta(k, v) VALUES('doc_format', ?) "
                     "ON CONFLICT(k) DO UPDATE SET v=excluded.v", (str(DOC_FORMAT),))
+        # THE EVENTS RIDE IN THIS TRANSACTION, which is the one property that makes them worth
+        # having: an event lands with its row or not at all, so a reader tailing `memory_events`
+        # never sees a change that rolled back, and never misses one that committed.
+        _ev = list(events or ())
+        if auto_events:
+            _ts = time.time()
+            _by = {_field(r, "id"): r for r in items if isinstance(r, dict) and _field(r, "id")}
+            _ev += [_event_row("record.added", _by.get(k), _ts) for k in added]
+            _ev += [_event_row("record.changed", _by.get(k), _ts) for k in changed
+                    if not rewrite_all or now[k] != before.get(k)]
+            _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
+        seqs = _insert_events(con, _ev) if _ev else []
         con.execute("COMMIT")
     except Exception:
         try:
@@ -279,7 +386,14 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
         raise
     con.close()
     return {"snapshot": now, "added": len(added), "changed": len(changed),
-            "removed": len(removed)}
+            "removed": len(removed), "event_seqs": seqs}
+
+
+def _parse(doc):
+    try:
+        return json.loads(doc) if doc else None
+    except Exception:
+        return None
 
 
 def migrate_from_json(json_path, db_path) -> dict:
@@ -302,7 +416,8 @@ def migrate_from_json(json_path, db_path) -> dict:
     return {"records": len(back), "written": res["added"]}
 
 
-def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True) -> dict:
+def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True,
+                events=None, auto_events: bool = False) -> dict:
     """The caller named what it touched, so serialise only those, plus anything that vanished."""
     order, live = {}, set()
     for i, r in enumerate(items):
@@ -315,15 +430,24 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True) ->
     for k in removed:
         now.pop(k, None)
 
-    touched = []
+    touched, touched_recs = [], []
     for r in items:
         rid = _field(r, "id") if isinstance(r, dict) else None
         if rid in dirty:
             doc = _doc(r, keep_vec)
             if before.get(rid) != doc:
                 touched.append((rid, order[rid], doc))
+                touched_recs.append(r)
                 now[rid] = doc
 
+    _ev = list(events or ())
+    if auto_events and (touched or removed):
+        _ts = time.time()
+        _ev += [_event_row("record.added" if _field(r, "id") not in before else "record.changed",
+                           r, _ts) for r in touched_recs]
+        _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
+    if not touched and not removed and not _ev:
+        return {"snapshot": now, "added": 0, "changed": 0, "removed": 0, "event_seqs": []}
     con = _connect(path)
     try:
         con.execute("BEGIN IMMEDIATE")
@@ -333,6 +457,7 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True) ->
             con.executemany("INSERT INTO records(id, ord, doc) VALUES(?,?,?) "
                             "ON CONFLICT(id) DO UPDATE SET ord=excluded.ord, doc=excluded.doc",
                             touched)
+        seqs = _insert_events(con, _ev) if _ev else []
         con.execute("COMMIT")
     except Exception:
         try:
@@ -343,4 +468,5 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True) ->
         raise
     con.close()
     return {"snapshot": now, "added": len([t for t in touched if t[0] not in before]),
-            "changed": len([t for t in touched if t[0] in before]), "removed": len(removed)}
+            "changed": len([t for t in touched if t[0] in before]), "removed": len(removed),
+            "event_seqs": seqs}

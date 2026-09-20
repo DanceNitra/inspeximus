@@ -1972,5 +1972,68 @@
   "tests": [
    "tests/test_a_correction_a_request_an_explanation_and_a_breach_are_ledger_entries.py"
   ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the backfill marker is not committed",
+  "old": "            if rec.get(\"backfill\"):\n                core[\"backfill\"] = rec[\"backfill\"]",
+  "new": "            if False:\n                core[\"backfill\"] = rec[\"backfill\"]",
+  "tests": [
+   "tests/test_enable_receipts_covers_what_was_written_before_the_chain.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the backfill declares no retirement",
+  "old": "        declared = self._unaccounted_retirements()\n        by_id = {r[\"id\"]: r for r in self._items}",
+  "new": "        declared = []\n        by_id = {r[\"id\"]: r for r in self._items}",
+  "tests": [
+   "tests/test_enable_receipts_covers_what_was_written_before_the_chain.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the backfill covers nothing",
+  "old": "        uncovered = [r for r in self._items if r[\"id\"] not in named]",
+  "new": "        uncovered = []",
+  "tests": [
+   "tests/test_enable_receipts_covers_what_was_written_before_the_chain.py"
+  ]
+ },
+ {
+  "file": "inspeximus/sqlite_store.py",
+  "name": "the declared-ids writer emits no events",
+  "old": "    if auto_events and (touched or removed):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_memory_events_land_in_the_same_transaction_as_the_rows.py"
+  ]
+ },
+ {
+  "file": "inspeximus/sqlite_store.py",
+  "name": "the events are committed before the row transaction opens",
+  "old": "        return {\"snapshot\": now, \"added\": 0, \"changed\": 0, \"removed\": 0, \"event_seqs\": []}\n    con = _connect(path)\n    try:",
+  "new": "        return {\"snapshot\": now, \"added\": 0, \"changed\": 0, \"removed\": 0, \"event_seqs\": []}\n    con = _connect(path)\n    seqs = _insert_events(con, _ev) if _ev else []\n    _ev = []\n    try:",
+  "tests": [
+   "tests/test_memory_events_land_in_the_same_transaction_as_the_rows.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "an agent-bound view sees every record event",
+  "old": "                            if not self.can_read(agent, mid).get(\"allowed\"):\n                                continue",
+  "new": "                            if False:\n                                continue",
+  "tests": [
+   "tests/test_memory_events_land_in_the_same_transaction_as_the_rows.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a tenant-bound view sees every tenant's events",
+  "old": "                if self.tenant is not None and ev.get(\"tenant\") != self.tenant:\n                    continue",
+  "new": "                if False:\n                    continue",
+  "tests": [
+   "tests/test_memory_events_land_in_the_same_transaction_as_the_rows.py"
+  ]
  }
 ]
