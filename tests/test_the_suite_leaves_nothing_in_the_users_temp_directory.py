@@ -36,7 +36,8 @@ def test_mkdtemp_and_the_store_lock_land_under_basetemp(tmp_path_factory):
 def test_a_child_interpreter_inherits_the_redirect(tmp_path_factory):
     base = str(tmp_path_factory.getbasetemp())
     code = "import tempfile; print(tempfile.gettempdir())"
-    child = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True).stdout.strip()
+    child = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                           encoding="utf-8", errors="replace").stdout.strip()
     assert _under(child, base), child
 
 
@@ -46,5 +47,6 @@ def test_CONTROL_without_the_environment_a_child_uses_the_system_temp(tmp_path_f
     base = str(tmp_path_factory.getbasetemp())
     env = {k: v for k, v in os.environ.items() if k not in ("TMP", "TEMP", "TMPDIR")}
     code = "import tempfile; print(tempfile.gettempdir())"
-    child = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env=env).stdout.strip()
+    child = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", env=env).stdout.strip()
     assert not _under(child, base), child

@@ -91,7 +91,8 @@ def test_the_cli_retires_and_the_reason_lands():
     ix.flush()
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p, "retire", "--key", "k::cli",
-                        "--reason", "moved"], capture_output=True, text=True, cwd=root,
+                        "--reason", "moved"], capture_output=True, text=True, encoding="utf-8",
+                       errors="replace", cwd=root,
                        env={**os.environ, "PYTHONPATH": root, "INSPEXIMUS_HEADS": "0"})
     assert r.returncode == 0, r.stdout + r.stderr
     assert "retired 1 value(s)" in r.stdout
