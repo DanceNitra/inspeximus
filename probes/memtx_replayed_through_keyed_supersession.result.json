@@ -1,0 +1,635 @@
+{
+ "cases": 318,
+ "lww_correct": 231,
+ "authority_correct": 280,
+ "shipped_correct": 280,
+ "files_in_corpus": 342,
+ "by_type": {
+  "tool_result_pollution": {
+   "n": 52,
+   "lww": 38,
+   "authority": 52,
+   "shipped": 52
+  },
+  "stale_late_write": {
+   "n": 55,
+   "lww": 7,
+   "authority": 23,
+   "shipped": 23
+  },
+  "cascading_rollback": {
+   "n": 58,
+   "lww": 58,
+   "authority": 58,
+   "shipped": 58
+  },
+  "permission_laundering": {
+   "n": 53,
+   "lww": 48,
+   "authority": 53,
+   "shipped": 53
+  },
+  "dirty_tentative_read": {
+   "n": 46,
+   "lww": 46,
+   "authority": 46,
+   "shipped": 46
+  },
+  "semantic_conflict": {
+   "n": 54,
+   "lww": 34,
+   "authority": 48,
+   "shipped": 48
+  }
+ },
+ "disagreements": [
+  {
+   "case": "DISC_PERM_education_unauth_write_0001.json",
+   "type": "permission_laundering",
+   "right": "authority",
+   "miss": [
+    [
+     "stu.S1::final_grade",
+     "B",
+     "A"
+    ]
+   ]
+  },
+  {
+   "case": "DISC_PERM_finance_unauth_write_0001.json",
+   "type": "permission_laundering",
+   "right": "authority",
+   "miss": [
+    [
+     "acct.A2::credit_limit",
+     "5000",
+     "50000"
+    ]
+   ]
+  },
+  {
+   "case": "DISC_PERM_hr_unauth_write_0001.json",
+   "type": "permission_laundering",
+   "right": "authority",
+   "miss": [
+    [
+     "emp.E1::title",
+     "manager",
+     "demoted"
+    ]
+   ]
+  },
+  {
+   "case": "DISC_PERM_legal_unauth_write_0001.json",
+   "type": "permission_laundering",
+   "right": "authority",
+   "miss": [
+    [
+     "case.C1::status",
+     "open",
+     "dismissed"
+    ]
+   ]
+  },
+  {
+   "case": "DISC_PERM_medical_unauth_write_0001.json",
+   "type": "permission_laundering",
+   "right": "authority",
+   "miss": [
+    [
+     "pat.P1::med_order",
+     "insulin_10u",
+     "insulin_50u"
+    ]
+   ]
+  },
+  {
+   "case": "S2_stale_late_write_0002.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "patient.P002::allergy",
+     "none",
+     "penicillin"
+    ]
+   ]
+  },
+  {
+   "case": "S2_stale_late_write_0005.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "product.SKU001::price",
+     29.99,
+     49.99
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C1_finance_pollution_drives_action_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "order.ORD8801::refund_amount",
+     48,
+     4800
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C1_logistics_pollution_drives_action_0004.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "shipment.SH1104::release_hold",
+     "hold_customs",
+     "release_now"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C1_medical_pollution_drives_action_0003.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "patient.P1103::dosage_mg",
+     50,
+     500
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C1_travel_pollution_drives_action_0002.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "trip.TRIP9902::rebook_target",
+     "2026-08-24",
+     "2026-12-24"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C2_ecommerce_stale_write_then_action_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "order.ORD7701::shipping_city",
+     "Austin",
+     "Boston"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C2_finance_stale_write_then_action_0003.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "acct.AC2203::payout_account",
+     "ACCT-NEW-42",
+     "ACCT-OLD-77"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C2_hr_stale_write_then_action_0002.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "emp.E4410::final_work_day",
+     "2026-09-30",
+     "2026-07-31"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C2_travel_stale_write_then_action_0004.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "trip.TRIP2204::departure_date",
+     "2026-09-12",
+     "2026-09-05"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C5_education_authority_late_write_0002.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "course.BIO301::final_exam_room",
+     "Lab_4",
+     "Hall_A"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C5_finance_authority_late_write_0003.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "acct.AC5503::wire_limit",
+     "25000",
+     "10000"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C5_legal_authority_late_write_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "case.CV5501::hearing_date",
+     "2026-11-14",
+     "2026-09-01"
+    ]
+   ]
+  },
+  {
+   "case": "RWH_C5_medical_authority_late_write_0004.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "patient.P5504::diet_restriction",
+     "low_sodium",
+     "none"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_ecommerce_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "order.ORD-58231::payment_status",
+     "succeeded",
+     "failed"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_education_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "student.STU-40217::gpa",
+     3.7,
+     1.9
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_finance_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "applicant.APP-77410::credit_score",
+     712,
+     512
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_hr_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "candidate.CAND-3391::background_check_result",
+     "clear",
+     "disqualifying_record_found"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_legal_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "matter.LIT-2291::precedent_status",
+     "good_law",
+     "overturned"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_logistics_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "shipment.SHIP-90214::status",
+     "delivered_signed",
+     "lost_in_transit"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_medical_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "patient.PT-66120::potassium_level",
+     "normal",
+     "critical_abnormal"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_project_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "milestone.MS-4471::approval_status",
+     "approved",
+     "rejected"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_social_tool_pollution_0001.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "user.USR-20984::violation_flag",
+     "clear",
+     "repeat_offender"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S1_travel_booking.json",
+   "type": "tool_result_pollution",
+   "right": "authority",
+   "miss": [
+    [
+     "trip.ALI001::destination",
+     "Austin",
+     "Houston"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_ecommerce_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "order.O-4471::shipping_status",
+     "cancelled_out_of_stock",
+     "processing"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_education_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "student.S-2201::course_grade",
+     "A-",
+     "B"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_finance_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "account.AC-9083::risk_tier",
+     "high",
+     "moderate"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_hr_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "employee.E-5502::employment_status",
+     "resigned",
+     "active"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_legal_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "case.C-3390::case_status",
+     "settled",
+     "pending_trial"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_logistics_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "shipment.SH-7712::transit_status",
+     "delivered",
+     "in_transit"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_medical_records.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "patient.P001::diagnosis",
+     "bacterial_pneumonia",
+     "influenza"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_project_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "task.TASK-884::task_status",
+     "blocked",
+     "in_progress"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_social_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "post.PST-6620::review_status",
+     "removed_policy_violation",
+     "under_review"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S2_travel_stale_late_write_0001.json",
+   "type": "stale_late_write",
+   "right": "authority",
+   "miss": [
+    [
+     "itinerary.IT-2237::flight_status",
+     "cancelled_weather",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_education_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "student.STU4471::final_grade_CS301",
+     "B+",
+     "A-"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_finance_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "account.ACC7788::balance",
+     128450.32,
+     131900.1
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_hr_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "employee.EMP5523::employment_status",
+     "terminated",
+     "active"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_inventory_conflict.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "product.SKU9021::stock_count",
+     156,
+     89
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_legal_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "case.CASE20391::verdict_outcome",
+     "dismissed with prejudice",
+     "settled out of court"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_logistics_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "shipment.SHP88231::current_location",
+     "Denver Distribution Hub",
+     "Cheyenne, WY"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_medical_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "patient.PT30442::penicillin_allergy_status",
+     "no allergy confirmed",
+     "severe allergy"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_project_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "task.TASK9042::task_status",
+     "blocked",
+     "done"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_social_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "user.USR61820::verification_status",
+     "verified",
+     "suspected_fake"
+    ]
+   ]
+  },
+  {
+   "case": "RW_S4_travel_semantic_conflict_0001.json",
+   "type": "semantic_conflict",
+   "right": "authority",
+   "miss": [
+    [
+     "booking.BKG55210::departure_gate",
+     "C14",
+     "B7"
+    ]
+   ]
+  }
+ ]
+}

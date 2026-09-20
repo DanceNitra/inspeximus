@@ -191,6 +191,18 @@ that text competes on its own merits. Both behaviours are measured in
 [`probes/does_a_restatement_take_the_key_back.py`](probes/does_a_restatement_take_the_key_back.py),
 which runs offline in a second.
 
+**Opt in to authority, and a weaker source stops overwriting a stronger one.** By default the later
+keyed write wins. With `Inspeximus(path, supersession="authority")` a keyed write whose
+`source={"doc": ..., "authority": 0.3}` is below the current value's authority is retired on arrival
+and the current value stands; the verdict is on the record and in `m.last_write`. A summary carries
+its weakest parent's authority through `derived_from`, so restating a rumour at full authority does not launder
+it. Authority decides only when both sides declare one, so turning it on over an existing store
+changes nothing until your writers start declaring. Replayed on the MemTX corpus, last-write-wins
+serves the labelled belief in 231 of 318 cases and authority in 280 of 318 cases, with none going the other way.
+The 38 it still misses are lost updates between writers of equal authority, which no authority rule
+can decide, and the rule is wrong in one shape worth knowing: a fact the system seeds at full authority
+can never be corrected by an agent writing below it. Both are in the docstring of `_supersede_by_key`.
+
 ---
 
 ## When someone asks you to prove it

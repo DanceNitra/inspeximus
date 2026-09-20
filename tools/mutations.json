@@ -2125,5 +2125,68 @@
   "tests": [
    "tests/test_two_findings_from_the_fixture_corpus.py"
   ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "an equal authority is held instead of going to the later write",
+  "old": "                    if a_new < a_cur:\n                        rec[\"status\"] = \"superseded\"",
+  "new": "                    if a_new <= a_cur:\n                        rec[\"status\"] = \"superseded\"",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the authority rule ignores reaffirm",
+  "old": "        if self.supersession == \"authority\" and not reaffirm:",
+  "new": "        if self.supersession == \"authority\":",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the laundering rule takes the strongest parent instead of the weakest",
+  "old": "                    own = pa if own is None else min(own, pa)",
+  "new": "                    own = pa if own is None else max(own, pa)",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a missing authority reads as 1.0 instead of taking no part",
+  "old": "    a = source.get(\"authority\")\n    if a is None or isinstance(a, bool):\n        return None",
+  "new": "    a = source.get(\"authority\")\n    if a is None or isinstance(a, bool):\n        return 1.0",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the authority rule runs on the default store",
+  "old": "    v = explicit if explicit is not None else os.environ.get(\"INSPEXIMUS_SUPERSESSION\", \"lww\")",
+  "new": "    v = explicit if explicit is not None else os.environ.get(\"INSPEXIMUS_SUPERSESSION\", \"authority\")",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a garbage authority is stored under the policy",
+  "old": "        if self.supersession == \"authority\" and isinstance(source, dict) and \"authority\" in source \\\n                and _declared_authority(source) is None:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the held write is not marked, so it becomes the current value",
+  "old": "                        rec[\"status\"] = \"superseded\"\n                        self._touch(rec)                       # retired on arrival; the incumbent stands",
+  "new": "                        rec[\"status\"] = \"active\"\n                        self._touch(rec)                       # retired on arrival; the incumbent stands",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py"
+  ]
  }
 ]

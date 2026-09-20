@@ -481,6 +481,30 @@ NUMBER_CLAIMS = [
             "One territory (HU) served a certificate its own chain did not validate on the day of "
             "measurement and is reported unreachable rather than dropped."),
 
+    # ---- README.md "Opt in to authority" (added 2026-09-20) ----
+    _c("readme-memtx-authority-replay", "README.md", ["231", "318", "280"],
+       "serves the labelled belief in 231 of 318 cases and authority in 280 of 318 cases",
+       "The MemTX corpus (github.com/lxy1134/MEMTX_; every file with an event schedule) replayed "
+       "through keyed writes as a pure function of the schedule: the value last-write-wins serves "
+       "equals the labelled committed belief in 231 of 318 cases, the authority rule in 280 of 318, "
+       "and every case where the two disagree sides with authority. The rule shipped in this release "
+       "(a side with no declared authority takes no part) scores the same 280, measured as its own "
+       "arm. Measured 2026-09-20.",
+       "REPRODUCIBLE-WITH-DEPS",
+       "python probes/memtx_replayed_through_keyed_supersession.py",
+       note="Needs the MemTX corpus checked out under tmp/memtx/memtx-src (git clone "
+            "https://github.com/lxy1134/MEMTX_ tmp/memtx/memtx-src). The replay is of the labelled "
+            "schedule through the rule, not through a store; the store-level behaviour is in "
+            "tests/test_authority_supersession_holds_a_lower_authority_write.py."),
+    _c("readme-memtx-authority-misses", "README.md", ["38"],
+       "The 38 it still misses are lost updates",
+       "The cases the authority rule leaves wrong on the MemTX replay, the total minus the "
+       "authority score of the row above. Most are stale_late_write, the rest semantic_conflict; "
+       "all are decided by write order between equal authorities.",
+       "REPRODUCIBLE-WITH-DEPS",
+       "python probes/memtx_replayed_through_keyed_supersession.py",
+       note="Same probe and corpus as the row above; the by-type table it prints is the breakdown."),
+
     # ---- README.md "Where the store is written" (added 2026-09-06) ----
     # ONE ROW PER LINE, as the header at the top of this list says. The write cost and the
     # concurrency result are separate sentences on separate lines and separate probes, and they were
@@ -1301,6 +1325,8 @@ NON_CLAIM_TOKENS = {
                "names a text a reader can fetch, and there is nothing to reproduce about it"),
         "0,": (1, "'Two signers, two claims, one artifact' prose; the digit is part of a sentence, "
                "not a measurement"),
+        "0.3": (1, "the authority example: source={'doc': ..., 'authority': 0.3} is an example "
+                "literal a reader changes, not a measurement (2026-09-20)"),
         "30": (1, "the rhetorical heading 'The 30 seconds that matter', not a quantity"),
         "01": (1, "example FILENAME 01_basics.py, not a quantity"),
         "02": (1, "example FILENAME 02_correction_and_erasure.py, not a quantity"),

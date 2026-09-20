@@ -1,51 +1,48 @@
-# inspeximus 3.1.0
+# inspeximus 3.2.0
 
-retire a key with no replacement; the store lock file goes with the lock on Windows; two false alarms found on a 20,000-store corpus. UPGRADE IF YOU RUN THE SUITE ON WINDOWS, OR NEED TO END A KEY WITHOUT WRITING A NEW VALUE. AFFECTS: adds `retire(key, reason, source=None)`, the `retire` CLI command and the `retire_key` MCP tool (112); `history()` rows gain a `reason` field (None unless the key was retired); on Windows `_StoreLock` removes its file on release; opening a JSON list of non-records raises ValueError instead of AttributeError; `verify_writes()` no longer reports `store not persisted (differs in vec)` on a vector-persisted store opened without the embedder. Nothing existing changes shape.
+an opt-in authority rule for keyed writes, measured on MemTX before it was built. UPGRADE IF A WEAKER SOURCE CAN REACH THE SAME KEY AS A STRONGER ONE: AN AGENT NEXT TO A SYSTEM OF RECORD, A TOOL RESULT NEXT TO A HUMAN. AFFECTS: adds the `supersession=` constructor flag (`"lww"`, the default, or `"authority"`) and the `INSPEXIMUS_SUPERSESSION` variable; under `"authority"` a keyed write whose effective `source.authority` is below the incumbent's is retired on arrival with `meta.superseded_by_policy == "keyed_authority"`, and a present but non-numeric authority is refused at the write. NOT A BREAKING RELEASE: the default store is byte-identical to 3.1.0, `source.authority` stays inert under it, and no call changes signature.
 
 ## Who should upgrade
 
-Upgrade if this is true of you: **YOU RUN THE SUITE ON WINDOWS, OR NEED TO END A KEY WITHOUT WRITING A NEW VALUE. AFFECTS**.
+Upgrade if this is true of you: **A WEAKER SOURCE CAN REACH THE SAME KEY AS A STRONGER ONE**.
 
 ## What changed
 
-`retire(key, reason, source=None)` ends a key: every active value for it in the handle's scope
-becomes `superseded` with `meta.superseded_by_policy == "retired"`, the reason in
-`meta.retired_reason`, the declaration in the receipt chain, and NO new record. It exists because a
-key migration tried `remember(key=k, object="__superseded__")` to end a key and got the opposite: a
-keyed write replaces, so the placeholder became the key's new active value. `retract_lineage` is
-by source and `forget` erases; nothing ended a key and kept its history. Not a fourth status: the
-record reads `superseded`, which every reader and the concealment sweep already handle; what tells
-"ended" from "replaced" is the policy, the reason, and the absence of a newer record. A reason is
-required. Scoped like a write. The L1 drops the key and the event table records the change.
+`supersession="authority"` runs after the echo guard and before last-write-wins. A write below the
+incumbent's authority is held: the record is stored `superseded` with `rejected_authority` and
+`retained_authority` in its meta, `last_write` carries the same verdict, the L1 keeps serving the
+incumbent, and the receipt chain verifies. Equal goes to the later write; `reaffirm=True` bypasses
+the rule. Effective authority is `min(declared, every parent's effective authority)` over
+`derived_from`, so a 1.0 summary of a 0.3 rumour is 0.3, and a summary that declares nothing is as
+weak as its weakest parent. Authority decides only when BOTH sides declare one: a legacy record
+with no authority accepts a declared write, and a declared incumbent accepts an undeclared write,
+on last-write-wins. That is the migration rule, chosen over "missing reads as 1.0", which would
+have frozen every legacy value against every declared writer below 1.0 the moment the flag went on.
 
-`_StoreLock` kept one `inspeximus-<hex>.lock` per store path in the system Temp, for ever: 596,291
-of them on the machine that runs the suite. On Windows the file is removed on release, safe by the
-sharing rules (`open()` sets no FILE_SHARE_DELETE, so the unlink fails while any process holds the
-lock and succeeds only when none does; a later opener creates a fresh file every later opener
-shares). On POSIX `unlink` succeeds under an open handle, so the file stays there. Tested with a
-second process holding the lock for four seconds; the twelve-writers probe lost 0 records in 12
-of 12 trials at 12, 24 and 48 processes. The suite itself now writes every temporary file under
-pytest's basetemp (tests/conftest.py), which pytest prunes.
+Measured before it was built, on the MemTX corpus (318 replayable cases, labelled committed
+beliefs): last-write-wins matches the label in 231, the authority rule in 280, and every one of the
+49 disagreements sides with authority. By type: permission_laundering 48 to 53 of 53,
+tool_result_pollution 38 to 52 of 52, semantic_conflict 34 to 48 of 54, stale_late_write 7 to 23 of
+55. The assignment that proposed the rule cited "58 of 92 stale_late_write cases decided by
+authority"; the corpus holds 55, and the rule decides 23. This is the first half of stale writes.
+The other 32 are lost updates between writers of equal authority and need a read-snapshot check,
+which is not in this release. The rule is also wrong in one direction, MemTX lost_update_0001: a
+fact the system seeds at 1.0 can never be corrected by agents writing at 0.8, so last-write-wins
+serves 47, authority serves 50, and the label is 48. A test pins that both are wrong so the
+docstring cannot outlive the behaviour.
 
-Before removing the 422,798 fixture directories the suite had left behind, 20,000 were sampled and
-archived (`probes/fixture_corpus_sample_and_census.py`). Residue: 558 of them had run an erasure
-and none leaked a secret. Compatibility: 7,880 stores from 2.4x opened with 3.0.0; every refusal
-was right except two, fixed here. A file holding `[1, 2, 3]` crashed with AttributeError instead
-of the refusal a dict gets. And 117 stores written with `persist_vectors=True` and opened without an
-embedder reported `store not persisted (differs in vec)`: a false integrity alarm from comparing a
-cache one side keeps and the other never loads. Both sides now drop `vec` when the handle does not
-persist it; a real unpersisted edit is still reported.
+The second item of the assignment, collapsing two records with one `source.doc` into one witness
+in the corroboration count, was already the behaviour: `_distinct_sources` has counted canonical
+sources since 2.5.1 and a test covers it. Nothing was changed for it.
 
 ## What breaks
 
-No line in the 3.1.0 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
-
-If that is wrong -- if something a caller relies on changed shape, name or default -- the entry is what needs fixing, not this section: RELEASING.md requires a behaviour change to carry the marker on its own line, and this reads that marker.
+- an opt-in authority rule for keyed writes, measured on MemTX before it was built. UPGRADE IF A WEAKER SOURCE CAN REACH THE SAME KEY AS A STRONGER ONE: AN AGENT NEXT TO A SYSTEM OF RECORD, A TOOL RESULT NEXT TO A HUMAN. AFFECTS: adds the `supersession=` constructor flag (`"lww"`, the default, or `"authority"`) and the `INSPEXIMUS_SUPERSESSION` variable; under `"authority"` a keyed write whose effective `source.authority` is below the incumbent's is retired on arrival with `meta.superseded_by_policy == "keyed_authority"`, and a present but non-numeric authority is refused at the write. NOT A BREAKING RELEASE: the default store is byte-identical to 3.1.0, `source.authority` stays inert under it, and no call changes signature.
 
 ## Try it -- one command
 
 ```bash
-pip install -U "inspeximus==3.1.0"
+pip install -U "inspeximus==3.2.0"
 ```
 
 No server, no API key, no database, no LLM on the write path. A correction, and the retired value

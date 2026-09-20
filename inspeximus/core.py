@@ -1283,7 +1283,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.1.0"
+__version__ = "3.2.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1605,6 +1605,43 @@ class StoreChangedOnDisk(RuntimeError):
     was erased, and `verify_writes()` still returned True because the surviving chain was self-consistent.
     Detecting the conflict and refusing is the honest floor: no silent loss, and `reload()` offers a recovery
     path. inspeximus is a SINGLE-WRITER store; this makes that assumption enforced rather than assumed."""
+
+
+def _resolve_supersession(explicit: str | None = None) -> str:
+    """The ONE place the keyed-supersession policy is decided: explicit argument > env var > "lww".
+
+    Same shape as `_resolve_echo_guard`, for the same reason: a default re-declared at each entry
+    point is a default one of them misses. `INSPEXIMUS_SUPERSESSION=authority` reaches the CLI, the
+    MCP server and every adapter without each of them growing a flag."""
+    v = explicit if explicit is not None else os.environ.get("INSPEXIMUS_SUPERSESSION", "lww")
+    v = str(v).strip().lower()
+    if v not in _SUPERSESSION_POLICIES:
+        raise ValueError(f"supersession must be one of {sorted(_SUPERSESSION_POLICIES)}, got {v!r}")
+    return v
+
+
+_SUPERSESSION_POLICIES = frozenset({"lww", "authority"})
+
+
+def _declared_authority(source) -> float | None:
+    """`source.authority` as a float clamped to [0, 1], or None when the record does not declare one.
+
+    None is a first-class answer, not a default: a missing authority means the write takes no part
+    in the authority comparison and falls through to last-write-wins. A value that is present but
+    not a finite number is also None here; `remember()` refuses such a value at write time when the
+    authority policy is on, so None from this function can only come from a legacy record."""
+    if not isinstance(source, dict):
+        return None
+    a = source.get("authority")
+    if a is None or isinstance(a, bool):
+        return None
+    try:
+        f = float(a)
+    except (TypeError, ValueError):
+        return None
+    if f != f or f in (float("inf"), float("-inf")):
+        return None
+    return max(0.0, min(1.0, f))
 
 
 def _resolve_echo_guard(explicit: bool | None = None) -> bool:
@@ -2006,7 +2043,8 @@ class Inspeximus:
                  infer_lineage: float = 0.0, echo_guard: bool | None = None,
                  agent: str | None = None, observe_recall: bool = False,
                  writer_key: str | None = None, events: bool = True,
-                 l1_size: int = 2000, l1_auto_refresh: bool = True):
+                 l1_size: int = 2000, l1_auto_refresh: bool = True,
+                 supersession: str | None = None):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -2298,6 +2336,11 @@ class Inspeximus:
         # an EXPLICIT argument always wins (a caller who names a posture gets it, env or no env), else the
         # env var, else ON.
         self.echo_guard = _resolve_echo_guard(echo_guard)
+        # KEYED-SUPERSESSION POLICY (OPT-IN, default "lww" -> byte-identical to every release before
+        # 3.2.0). "authority": a keyed write whose effective `source.authority` is LOWER than the
+        # incumbent's is retired on arrival instead of superseding it. The full rule, its measured
+        # effect on MemTX, and the two cases it does NOT cover are in `_supersede_by_key`.
+        self.supersession = _resolve_supersession(supersession)
         # STRICT corroboration (OPT-IN, default OFF). The corroboration bar
         # (episodic->semantic graduation AND the recall influence gate) counts ">=2 distinct sources". By
         # default a "source" is a canonical STRING (entity-resolved), which collapses honest sybil variants
@@ -2889,6 +2932,13 @@ class Inspeximus:
                 project = _aliased["project"]
         mid = uuid.uuid4().hex[:10]
         now = time.time()
+        if self.supersession == "authority" and isinstance(source, dict) and "authority" in source \
+                and _declared_authority(source) is None:
+            # Loud at the write, so a garbage authority cannot enter a store whose policy reads it.
+            # Under "lww" the field is inert and is stored as given, byte-identical to 3.1.0.
+            raise ValueError(
+                f"remember(source={{'authority': {source['authority']!r}}}): with supersession='authority' "
+                f"the authority must be a finite number (it is clamped to [0, 1]).")
         rec = {"id": mid, "text": text, "tags": list(tags or []), "value": float(value),
                "ts": now, "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                # A PER-RECORD NONCE, since 2.40.0, folded into the receipt's content hashes by
@@ -6522,6 +6572,35 @@ class Inspeximus:
         # kept; only punctuation and spacing collapse, which was the point.
         return _norm_obj(s)   # one rule, shared with check_conflict's keyed comparison
 
+    def _effective_authority(self, rec: dict, _seen: set | None = None) -> float | None:
+        """The laundering rule: min(declared `source.authority`, every parent's effective authority).
+
+        A record that declares nothing and derives from nothing is None (takes no part). A record that
+        declares nothing but derives from parents that do is as weak as its weakest parent, so
+        dropping the field on a summary does not launder the rumour underneath it. Parents are looked
+        up store-wide by id (lineage is not tenant-scoped); a missing or cyclic parent is skipped."""
+        _seen = _seen if _seen is not None else set()
+        rid = rec.get("id")
+        if rid in _seen:
+            return None
+        _seen.add(rid)
+        own = _declared_authority(rec.get("source"))
+        parents = rec.get("derived_from") or []
+        if parents:
+            by_id = self._by_id_all()
+            for pid in parents:
+                pr = by_id.get(pid)
+                if pr is None:
+                    continue
+                pa = self._effective_authority(pr, _seen)
+                if pa is not None:
+                    own = pa if own is None else min(own, pa)
+        return own
+
+    def _by_id_all(self) -> dict:
+        """Every record in the shared store by id, across tenants and agents, for lineage lookups."""
+        return {r["id"]: r for r in self._items}
+
     def _supersede_by_key(self, rec: dict, reaffirm: bool = False) -> list:
         """Deterministic (subject, relation, object) supersession: retire active records that share
         rec['key']. No similarity threshold, no LLM call — the fix our Crucible replication validated
@@ -6575,7 +6654,53 @@ class Inspeximus:
         OBJECT that has ALREADY been superseded for this key AND differs from the current active value, it
         is a restatement-of-superseded (an echo) — retire the incoming rec stale-on-arrival and keep the
         current value, so a later re-mention of the old value cannot resurrect it. reaffirm=True bypasses
-        the guard (a genuine, authoritative reversal back to a previously-superseded value)."""
+        the guard (a genuine, authoritative reversal back to a previously-superseded value).
+
+        AUTHORITY (self.supersession == "authority", OPT-IN since 3.2.0, default "lww"). Runs AFTER the
+        echo guard and BEFORE last-write-wins, in that order: an echo is an echo whatever its authority.
+        It compares against ACTIVE incumbents only, so a key ended by retire() accepts its next write
+        on last-write-wins, whatever that write's authority. A keyed write whose effective
+        authority is LOWER than the incumbent active value's is retired on arrival with
+        meta.superseded_by_policy == "keyed_authority", meta.rejected_authority (the write's) and
+        meta.retained_authority (the incumbent's); `last_write` carries the same verdict. Equal or
+        higher falls through to last-write-wins, so ties go to the later write.
+
+        Effective authority is the laundering rule: min(declared `source.authority`, every parent's
+        effective authority over `derived_from`), so a 1.0 summary of a 0.3 rumour carries 0.3. The
+        declared value is `float()`-coerced and clamped to [0, 1].
+
+        AUTHORITY DECIDES ONLY WHEN BOTH SIDES DECLARE IT. A write or an incumbent with no
+        `source.authority` takes no part in the comparison and the write falls through to
+        last-write-wins. This is the migration rule: turning the policy on over an existing store
+        changes nothing until records start carrying an authority, and a declared 0.8 still lands on a
+        legacy record that declares nothing. The alternative (missing reads as 1.0) would freeze every
+        legacy value against every declared writer below 1.0, silently. The MemTX corpus declares an
+        authority on all 300 initial records and all 532 writes, so this choice does not move the
+        measured numbers.
+
+        MEASURED, 2026-09-20 (probes/memtx_replayed_through_keyed_supersession.py, the MemTX corpus
+        at github.com/lxy1134/MEMTX_, 318 replayable cases scored against the labelled
+        `expected.committed_beliefs`): last-write-wins 231 of 318, authority 280 of 318, and in all
+        49 cases where the two disagree the label sides with authority. By scenario type:
+        permission_laundering 48 -> 53 of 53, tool_result_pollution 38 -> 52 of 52, semantic_conflict
+        34 -> 48 of 54, stale_late_write 7 -> 23 of 55, cascading_rollback and dirty_tentative_read
+        unchanged. That is a replay of the labelled schedule through the rule as a pure function, not
+        through this store; the store-level tests reproduce the rule on single cases.
+
+        WHAT IT DOES NOT COVER, stated so nobody turns it on and believes otherwise. 32 of the 55
+        stale_late_write cases are temporal (a lost update between two writers of EQUAL authority),
+        which no authority rule can decide; they need a read-snapshot check. And the rule can be WRONG
+        in the other direction, MemTX lost_update_0001:
+
+            initial:  system,  authority 1.0, value 50
+            agent_B:  authority 0.8, value 48
+            agent_A:  authority 0.8, value 47      <- the last write
+            expected: keep 48
+
+        Last-write-wins serves 47. Authority serves 50, because an agent at 0.8 NEVER overwrites a
+        value the system seeded at 1.0, not once, however many agents agree. Both are wrong. So a
+        store that seeds facts at 1.0 and lets agents write at 0.8 has made those facts read-only for
+        its agents, which is either exactly what it wants or a lost update it can no longer make."""
         _retired: list = []                    # ids this write retires; committed by its receipt
         if rec.get("status") == "provisional":
             # A record that is NOT authoritative cannot retire one that is. Measured while building
@@ -6663,6 +6788,35 @@ class Inspeximus:
         # a value makes the echoes supersede each other and the current answer disappears from recall.
         if rec.get("meta", {}).get("asserts_change") is False:
             return _retired
+        if self.supersession == "authority" and not reaffirm:
+            a_new = self._effective_authority(rec)
+            if a_new is not None:
+                _incumbents = [(self._effective_authority(r), r) for r in _pool
+                               if r is not rec and r.get("status") == "active"
+                               and r.get("key") == k and r.get("tenant") == tv]
+                _declared = [(a, r) for a, r in _incumbents if a is not None]
+                if _declared:
+                    a_cur, r_cur = max(_declared, key=lambda ar: ar[0])
+                    if a_new < a_cur:
+                        rec["status"] = "superseded"
+                        self._touch(rec)                       # retired on arrival; the incumbent stands
+                        rec["superseded_ts"] = time.time()
+                        rec["invalidated_at"] = vf_new
+                        m = rec.setdefault("meta", {})
+                        m["superseded_by_toggle"] = r_cur["id"]
+                        m["superseded_by_policy"] = "keyed_authority"
+                        m["rejected_authority"] = a_new
+                        m["retained_authority"] = a_cur
+                        self.last_write = {
+                            "id": rec["id"], "key": rec.get("key"), "status": "superseded",
+                            "blocked": True, "policy": "keyed_authority", "current_id": r_cur["id"],
+                            "rejected_authority": a_new, "retained_authority": a_cur,
+                            "note": (f"this write carries authority {a_new:g} against an incumbent at "
+                                     f"{a_cur:g}, so it was retired on arrival and the current value is "
+                                     f"unchanged. A genuine reversal from a lower authority is written "
+                                     f"with reaffirm=True."),
+                        }
+                        return _retired
         new_sig_r = self._obj_sig(rec)
         for r in _pool:
             if r is rec or r.get("status") != "active" or r.get("key") != k or r.get("tenant") != tv:

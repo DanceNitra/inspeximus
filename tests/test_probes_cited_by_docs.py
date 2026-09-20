@@ -147,6 +147,11 @@ NOT_STANDALONE = {
     # It refuses with an explicit message rather than a ModuleNotFoundError, so the skip above cannot see
     # it -- and it downloads three dense retrievers, which is more than a pip install anyway.
     "agentpoison_multiretriever_check.py": "needs torch + transformers AND downloads three dense retrievers",
+    # The MemTX corpus is not redistributed here; the probe exits 2 with the reason when it is absent.
+    "memtx_replayed_through_keyed_supersession.py":
+        "needs the MemTX corpus under tmp/memtx/memtx-src (git clone lxy1134/MEMTX_); exits 2 without it",
+    "the_default_store_is_byte_identical_to_the_previous_release.py":
+        "needs --previous, the previous release's wheel unpacked from PyPI; the docstring gives the two commands",
 }
 
 
