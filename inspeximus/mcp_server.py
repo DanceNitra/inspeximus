@@ -2254,6 +2254,16 @@ def poll_memory_events(since_seq: int = 0, limit: int = 100, event_type: str | N
 
 
 @mcp.tool()
+def retire_key(key: str, reason: str, source: str = "") -> dict:
+    """END a key with NO replacement. Every active value for `key` becomes superseded with `reason`
+    on the record and in the receipt chain; nothing new is written, so `recall` stops returning it
+    and `history(key)` still shows every value it held with policy "retired" and the reason. Use it
+    when a key no longer applies (moved, renamed, withdrawn). A `remember` with a placeholder value
+    would do the opposite: it leaves a new ACTIVE value standing. Returns {key, retired, ids, reason}."""
+    return _MEM.retire(key, reason, source={"doc": source} if source else None)
+
+
+@mcp.tool()
 def subscribe_memory_event(event_type: str = "*") -> dict:
     """Start a tail: returns the cursor to poll from ({event_type, since_seq}). An MCP call cannot
     be called back, so a subscription here is a cursor, not a callback: call `poll_memory_events`

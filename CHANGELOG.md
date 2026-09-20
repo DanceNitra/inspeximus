@@ -1,3 +1,33 @@
+## 3.1.0 - retire a key with no replacement; the store lock file goes with the lock on Windows; two false alarms found on a 20,000-store corpus. UPGRADE IF YOU RUN THE SUITE ON WINDOWS, OR NEED TO END A KEY WITHOUT WRITING A NEW VALUE. AFFECTS: adds `retire(key, reason, source=None)`, the `retire` CLI command and the `retire_key` MCP tool (112); `history()` rows gain a `reason` field (None unless the key was retired); on Windows `_StoreLock` removes its file on release; opening a JSON list of non-records raises ValueError instead of AttributeError; `verify_writes()` no longer reports `store not persisted (differs in vec)` on a vector-persisted store opened without the embedder. Nothing existing changes shape.
+
+`retire(key, reason, source=None)` ends a key: every active value for it in the handle's scope
+becomes `superseded` with `meta.superseded_by_policy == "retired"`, the reason in
+`meta.retired_reason`, the declaration in the receipt chain, and NO new record. It exists because a
+key migration tried `remember(key=k, object="__superseded__")` to end a key and got the opposite: a
+keyed write replaces, so the placeholder became the key's new active value. `retract_lineage` is
+by source and `forget` erases; nothing ended a key and kept its history. Not a fourth status: the
+record reads `superseded`, which every reader and the concealment sweep already handle; what tells
+"ended" from "replaced" is the policy, the reason, and the absence of a newer record. A reason is
+required. Scoped like a write. The L1 drops the key and the event table records the change.
+
+`_StoreLock` kept one `inspeximus-<hex>.lock` per store path in the system Temp, for ever: 596,291
+of them on the machine that runs the suite. On Windows the file is removed on release, safe by the
+sharing rules (`open()` sets no FILE_SHARE_DELETE, so the unlink fails while any process holds the
+lock and succeeds only when none does; a later opener creates a fresh file every later opener
+shares). On POSIX `unlink` succeeds under an open handle, so the file stays there. Tested with a
+second process holding the lock for four seconds; the twelve-writers probe lost 0 records in 12
+of 12 trials at 12, 24 and 48 processes. The suite itself now writes every temporary file under
+pytest's basetemp (tests/conftest.py), which pytest prunes.
+
+Before removing the 422,798 fixture directories the suite had left behind, 20,000 were sampled and
+archived (`probes/fixture_corpus_sample_and_census.py`). Residue: 558 of them had run an erasure
+and none leaked a secret. Compatibility: 7,880 stores from 2.4x opened with 3.0.0; every refusal
+was right except two, fixed here. A file holding `[1, 2, 3]` crashed with AttributeError instead
+of the refusal a dict gets. And 117 stores written with `persist_vectors=True` and opened without an
+embedder reported `store not persisted (differs in vec)`: a false integrity alarm from comparing a
+cache one side keeps and the other never loads. Both sides now drop `vec` when the handle does not
+persist it; a real unpersisted edit is still reported.
+
 ## 3.0.0 - receipts on an existing store, an event table other processes tail, and an L1 cache inside the core. UPGRADE IF YOU RUN MORE THAN ONE AGENT PROCESS ON ONE STORE, OR HOLD A STORE THAT PREDATES ITS RECEIPTS. AFFECTS: adds `enable_receipts()` and `inspeximus receipts enable`; adds the `memory_events` table, `publish_event`/`poll_events`/`subscribe`/`unsubscribe`/`dispatch_events`/`events_tip`, the `events=` constructor flag, and two MCP tools (111); adds `current(key)` with an L1 behind it, `l1_stats`/`l1_invalidate`/`l1_flush` and the `l1_size=`/`l1_auto_refresh=` constructor flags; `_TenantView` gets a `__repr__`. NOT A BREAKING RELEASE: every 2.x call keeps its signature and its behaviour, and no row of `records` changes shape. The major number moves because the core gains a second table that other processes read, which is a change to what a store IS, not to what a call returns.
 
 `enable_receipts(receipt_key=None, backfill_genesis=True, reason="")` turns write receipts on for a

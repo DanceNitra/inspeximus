@@ -182,6 +182,8 @@ _ARGS = {
     # payload it did not publish; subscribe/unsubscribe take a callback and an id, content-free.
     "publish_event": ("sweep.event", {"note": "GLOBEX_SECRET " + SECRET, "to": "nobody"}, "sweep"),
     "subscribe": ("*", print),
+    # retire (3.1.0) is a keyed write; aimed at the other side's key it must end nothing of theirs.
+    "retire": ("roadmap", "the key moved"),
     "unsubscribe": ("no-such-subscription",),
     # import_changeset takes a PEER'S changeset, so the sweep hands it a hand-built one whose
     # record text carries the other side's secret. An import is the method most tempted to echo

@@ -2071,5 +2071,59 @@
   "tests": [
    "tests/test_the_l1_cache_never_serves_across_a_scope_and_never_outlives_a_write.py"
   ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "retire leaves the record active",
+  "old": "        for r in targets:\n            r[\"status\"] = \"superseded\"\n            self._touch(r)\n            r[\"superseded_ts\"] = now\n            r[\"invalidated_at\"] = now\n            meta = r.setdefault(\"meta\", {})\n            meta[\"superseded_by_policy\"] = \"retired\"",
+  "new": "        for r in targets:\n            self._touch(r)\n            r[\"superseded_ts\"] = now\n            r[\"invalidated_at\"] = now\n            meta = r.setdefault(\"meta\", {})\n            meta[\"superseded_by_policy\"] = \"retired\"",
+  "tests": [
+   "tests/test_retire_ends_a_key_with_no_replacement.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "retire does not declare itself in the chain",
+  "old": "            self._declare_retired(r, f\"retired: {why[:200]}\")\n            ids.append(r[\"id\"])",
+  "new": "            ids.append(r[\"id\"])",
+  "tests": [
+   "tests/test_retire_ends_a_key_with_no_replacement.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "retire reaches past the handle's scope",
+  "old": "        targets = [r for r in self.items if r.get(\"key\") == k and r.get(\"status\") == \"active\"]",
+  "new": "        targets = [r for r in self._items if r.get(\"key\") == k and r.get(\"status\") == \"active\"]",
+  "tests": [
+   "tests/test_retire_ends_a_key_with_no_replacement.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the lock file is never removed",
+  "old": "                if os.name == \"nt\":\n                    try:\n                        self._fh.close()",
+  "new": "                if False:\n                    try:\n                        self._fh.close()",
+  "tests": [
+   "tests/test_the_store_lock_file_does_not_outlive_the_lock_on_windows.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a list of non-records is opened anyway",
+  "old": "        if _foreign:\n            raise ValueError(",
+  "new": "        if False:\n            raise ValueError(",
+  "tests": [
+   "tests/test_two_findings_from_the_fixture_corpus.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the disk side keeps vec in the not-persisted comparison",
+  "old": "                _disk = {r[\"id\"]: _rows_mod_doc({_k: _v for _k, _v in r.items()\n                                                 if _k != \"vec\" or self._persist_vectors})",
+  "new": "                _disk = {r[\"id\"]: _rows_mod_doc({_k: _v for _k, _v in r.items()\n                                                 if True})",
+  "tests": [
+   "tests/test_two_findings_from_the_fixture_corpus.py"
+  ]
  }
 ]

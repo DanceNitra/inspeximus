@@ -557,6 +557,13 @@ def main(argv=None):
     rce.add_argument("--reason", default="", help="why the backfill is happening, committed in each receipt")
     rce.add_argument("--json", action="store_true")
 
+    rt = sub.add_parser("retire", help="end a key with NO replacement: every active value becomes superseded "
+                                       "with the reason on the record and in the receipt chain")
+    rt.add_argument("--key", required=True)
+    rt.add_argument("--reason", required=True)
+    rt.add_argument("--source", default=None, help="who or what ended it (recorded as {\"doc\": ...})")
+    rt.add_argument("--json", action="store_true")
+
     br = sub.add_parser("browse", help="render a self-contained offline HTML memory browser")
     br.add_argument("--out", default="inspeximus_browser.html", help="output HTML file")
     br.add_argument("--open", action="store_true", help="open it in the default browser after writing")
@@ -1299,8 +1306,16 @@ def main(argv=None):
     m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
                                                         "provenance", "erasure-certificate", "anchor", "actions", "subject", "coverage",
                                                         "technical-documentation", "deployer-report",
-                                                        "registration-export", "partitions", "receipts"),
+                                                        "registration-export", "partitions", "receipts", "retire"),
                receipt_key=_rk)
+
+    if a.cmd == "retire":
+        res = m.retire(a.key, a.reason, source={"doc": a.source} if a.source else None)
+        if a.json:
+            print(json.dumps(res, ensure_ascii=False, indent=2))
+        else:
+            print(f"retired {res['retired']} value(s) of {res['key']!r}: {res['reason']}")
+        return 0
 
     if a.cmd == "receipts":
         # The store above was opened with receipts on (forced list), so an existing chain is adopted

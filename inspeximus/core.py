@@ -333,6 +333,7 @@ _RESERVED_META = frozenset({
     "observed_sha256", "observation_bound", "source_moved_before_capture",
     "source_at_capture_sha256",
     "slashed", "superseded_by_policy", "superseded_by_toggle", "truncated_from",
+    "retired_reason", "retired_source",
 
     # Read by check_sources() for environment_binding_coverage, so the library owns it: a caller
     # able to set it could inflate the very coverage number that reports whether it is set.
@@ -1282,7 +1283,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.0.0"
+__version__ = "3.1.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -10426,6 +10427,62 @@ class Inspeximus:
                          "different-size heads: run verify_consistency against a replica to settle append-only"
                          if undetermined else "")}
 
+    def retire(self, key: str, reason: str, source=None) -> dict:
+        """End `key` with NO replacement: every active record for it in this handle's scope becomes
+        `superseded`, with the reason on the record and declared in the receipt chain, and nothing
+        new is written. `current(key)` answers None, `recall` hides it, `history(key)` keeps every
+        value with `policy: "retired"` and the reason.
+
+        WHY THIS EXISTS (CREW OS, 2026-09-20). A key migration wanted to say "this key no longer
+        applies" and tried `remember(key=k, object="__superseded__")`. That is a keyed write, so it
+        did what a keyed write does: retired the old value and left a NEW ACTIVE value standing,
+        the opposite of the intent. Supersession replaces; `forget` erases; nothing ended a key and
+        kept its history. `retract_lineage` is by SOURCE, not by key, and `revoke` is for grants.
+
+        NOT A FOURTH STATUS. The record reads `superseded`, the status every reader, `as_of`,
+        the concealment sweep and the coverage tests already branch on; what distinguishes a
+        retirement from a replacement is `meta.superseded_by_policy == "retired"`, the reason in
+        `meta.retired_reason`, and the absence of a newer record. The receipt is the same
+        amendment every legitimate retirement path emits, so `verify_writes()` reads it as declared,
+        not hidden.
+
+        `reason` is required: an ended key with no reason is the ambiguity this call exists to
+        remove. `source` (same shape as on `remember`) records who or what ended it. Access-control
+        keys are refused; `revoke` is their path. Scoped like a write: a tenant-bound handle ends
+        its tenant's value, an agent-bound handle only what that agent may read.
+        Returns {"key", "retired", "ids", "reason"}; `retired` is 0 when nothing was active.
+        """
+        k = str(key or "").strip()
+        if not k:
+            raise ValueError("retire() needs a key")
+        why = str(reason or "").strip()
+        if not why:
+            raise ValueError("retire() needs a reason: an ended key with no reason is the ambiguity "
+                             "this call exists to remove")
+        if k.startswith(_ACL_PREFIX):
+            raise ValueError("access-control keys are ended with revoke(), not retire()")
+        src = Inspeximus._check_source(source) if source is not None else None
+        targets = [r for r in self.items if r.get("key") == k and r.get("status") == "active"]
+        now = time.time()
+        ids = []
+        for r in targets:
+            r["status"] = "superseded"
+            self._touch(r)
+            r["superseded_ts"] = now
+            r["invalidated_at"] = now
+            meta = r.setdefault("meta", {})
+            meta["superseded_by_policy"] = "retired"
+            meta["retired_reason"] = why[:500]
+            if src is not None:
+                meta["retired_source"] = src
+            self._declare_retired(r, f"retired: {why[:200]}")
+            ids.append(r["id"])
+        if ids:
+            self._l1_drop_key(k)
+            self._mat = None; self._mat_built_n = -1        # status change alters the recall pool
+            self._save(force=True)
+        return {"key": k, "retired": len(ids), "ids": sorted(ids), "reason": why[:500]}
+
     def retract_lineage(self, subject: str, reason: str = "lineage_corrected",
                         allow_ambiguous: bool = False) -> dict:
         """Lineage-aware correction: the MIDDLE PATH between a value-only supersession (which leaves records
@@ -11304,6 +11361,10 @@ class Inspeximus:
         return [{"object": r.get("object"), "text": r.get("text"), "status": r.get("status"),
                  "valid_from": r.get("valid_from", r["ts"]), "invalidated_at": r.get("invalidated_at"),
                  "policy": (r.get("meta") or {}).get("superseded_by_policy"),
+                 # WHY a key ended, when it ended with no replacement (3.1.0). None for every
+                 # other retirement, so a reader can tell "replaced" from "ended" without the
+                 # next value's existence being the only evidence.
+                 "reason": (r.get("meta") or {}).get("retired_reason"),
                  "agent": (r.get("meta") or {}).get("aid"),
                  "session": (r.get("meta") or {}).get("sid"),
                  "id": r["id"]} for r in recs]
@@ -16134,6 +16195,9 @@ class _TenantView:
     def governance_report(self, *a, **k):   return Inspeximus.governance_report(self, *a, **k)
     def forget(self, *a, **k):              return Inspeximus.forget(self, *a, **k)
     def retract_lineage(self, *a, **k):     return Inspeximus.retract_lineage(self, *a, **k)
+    # `retire` is a write against `self.items`, so it is rebound: an agent view ends only what it
+    # may read, and a tenant view only its tenant's value for the key.
+    def retire(self, *a, **k):              return Inspeximus.retire(self, *a, **k)
     def rederive(self, *a, **k):            return Inspeximus.rederive(self, *a, **k)
     def revert(self, *a, **k):              return Inspeximus.revert(self, *a, **k)
     def submit_revert(self, *a, **k):       return Inspeximus.submit_revert(self, *a, **k)
