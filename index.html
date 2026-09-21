@@ -185,7 +185,7 @@
       <section class="strip" id="stats">
         <ul class="strip__grid">
           <li><b class="count" data-count="128">0</b><span>MCP tools</span></li>
-          <li><b class="count" data-count="9">0</b><span>framework adapters</span></li>
+          <li><b class="count" data-count="14">0</b><span>integrations, 14 of 14 verified upstream</span></li>
           <li><b class="count" data-count="0.75" data-decimals="2">0</b><span>revert success (vs 0.20, n=20)</span></li>
           <li><b>A</b><span>Glama quality</span></li>
           <li><b>v3.4.0</b><span>current release</span></li>
@@ -517,6 +517,33 @@ graph = builder.compile(checkpointer=InspeximusSaver(path=<span class="s">"state
       </section>
 
       <!-- Footer -->
+      <!-- Evidence for an assessor -->
+      <section class="section" id="evidence">
+        <div class="section__head reveal">
+          <p class="eyebrow">the evidence layer, since 2.29</p>
+          <h2 class="section__title">Every duty in the AI Act and GDPR matrix has a call that produces evidence</h2>
+          <p><code>inspeximus coverage</code> prints the matrix at v3.4.0: 38 rows, 36 with a library call that produces the evidence, 2 not applicable, 0 not covered. Each row names the article, the duty, the role, the call and the artifact an assessor reads. <a href="./ai-act.html">The full matrix &rarr;</a></p>
+        </div>
+        <div class="grid grid--2 reveal">
+          <article class="card spotlight">
+            <h3>A signed action ledger (AI Act Art. 12, 19)</h3>
+            <p>Every action lands as an Ed25519-signed entry in a hash chain whose head can sit outside the store: <code>anchor()</code>, a witness pool, RFC 3161 timestamps with an eIDAS qualified-status check. <code>audit_bundle()</code> packs the chain, the receipts and the checks for a third party who holds no key.</p>
+          </article>
+          <article class="card spotlight">
+            <h3>Data-subject rights as artifacts (GDPR Art. 13 to 22)</h3>
+            <p><code>record_notice</code> for Art. 13/14, <code>export_subject</code> for access and portability (Art. 15, 20), <code>rectify</code> with a receipt naming the actor (Art. 16), an erasure certificate a third party checks with no key (Art. 17), and <code>object_processing</code>, which withholds the subject from recall until the objection is resolved (Art. 21).</p>
+          </article>
+          <article class="card spotlight">
+            <h3>The operator's record (GDPR Art. 28 to 35, AI Act Art. 4, 5, 25, 43)</h3>
+            <p>Processor roles, the Art. 30 register, breach entries with the 72-hour clock, a DPIA appendix, AI-literacy and prohibited-practice attestations, responsibilities along the value chain, and the EU declaration of conformity, each a signed ledger entry, each in the deployer report.</p>
+          </article>
+          <article class="card spotlight">
+            <h3>Reports an assessor can read (AI Act Art. 26, 72, 73)</h3>
+            <p><code>deployer_report()</code>, the post-market monitoring report and the incident report with its Art. 73 clock. Counts by default, never the actors' identifiers. The releases on PyPI are signed with Sigstore, so the code that produced the evidence is itself attributable.</p>
+          </article>
+        </div>
+      </section>
+
       <footer class="footer">
         <div class="footer__brand">
           <svg viewBox="0 0 28 28" width="24" height="24" aria-hidden="true"><rect x="4" y="18.4" width="12" height="3" rx="1.5" fill="currentColor" opacity=".34"/><rect x="4" y="12.9" width="15.5" height="3" rx="1.5" fill="currentColor" opacity=".62"/><rect x="4" y="7" width="20" height="3.4" rx="1.7" fill="var(--signal)"/></svg>
