@@ -1287,7 +1287,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.5.0"
+__version__ = "3.5.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1678,9 +1678,14 @@ _INSTRUCTION_SHAPES = [
     ("override_prior_instructions",
      re.compile(r"\b(ignore|disregard|forget|override)\s+(all\s+|any\s+|the\s+|your\s+)?"
                 r"(previous|prior|above|earlier|preceding|existing|original)\s+"
-                r"(instructions?|prompts?|rules?|guidelines?|directions?|messages?|context)\b", re.I)),
+                r"(instructions?|prompts?|rules?|guidelines?|directions?|messages?|context)\b"
+                # 3.5.1: the same order without the noun: 'disregard everything you were told earlier'
+                r"|\b(ignore|disregard|forget)\s+(everything|anything|all|what|whatever)\s+"
+                r"(you|you've|i|i've|we|we've)\s+(were|have been|had been|been|was)?\s*(told|said|instructed|given|asked)\b", re.I)),
     ("new_instructions_block",
-     re.compile(r"\b(new|updated|revised|real|actual|secret)\s+(instructions?|rules?|directives?)\s*:", re.I)),
+     # 3.5.1: 'new instructions follow' and 'are as follows' beside the colon form; 'rules' keeps the colon
+     re.compile(r"\b(new|updated|revised|real|actual|secret)\s+(instructions?|rules?|directives?)\s*:"
+                r"|\b(new|updated|revised|real|actual|secret)\s+(instructions?|directives?)\s+(follow\b|below\b|are as follows)", re.I)),
     ("persona_switch",
      re.compile(r"\b(you are now|from now on,?\s+(you|act|respond|answer|behave)|act as (if you were|an?)\s+\w+\s+(with|without)\s+(no\s+)?(restrictions?|limits?|filters?))\b", re.I)),
     ("system_prompt_reference",
@@ -1688,12 +1693,17 @@ _INSTRUCTION_SHAPES = [
     ("exfiltration_order",
      re.compile(r"\b(send|forward|email|post|upload|transmit|exfiltrate|leak|copy)\s+(all\s+|every\s+|the\s+|any\s+|your\s+)?"
                 r"(?:[\w-]+\s+){0,2}"          # up to two qualifiers: 'all CUSTOMER data', 'the SIGNING keys'
-                r"(data|files?|records?|memories|memory|secrets?|keys?|passwords?|credentials?|tokens?|conversations?|history|contents?)\b"
+                r"(data|files?|records?|memories|memory|secrets?|keys?|passwords?|credentials?|tokens?|conversations?|history|contents?"
+                r"|lists?|database|tables?|contacts?|addresses|emails?|customers?|notes?|transcripts?)\b"   # 3.5.1: the nouns a paraphrase reaches for
                 r"[^.\n]{0,80}\b(to|at)\s+\S*(@|https?://|www\.)", re.I)),
     ("concealment_order",
-     re.compile(r"\b(do not|don't|never|must not)\s+(tell|inform|reveal|mention|show|disclose)\s+(this\s+)?(to\s+)?(the\s+)?(user|human|operator|owner|anyone)\b", re.I)),
+     # 3.5.1: up to three words of object between the verb and the audience: 'do not mention this note to the user'
+     re.compile(r"\b(do not|don't|never|must not)\s+(tell|inform|reveal|mention|show|disclose)\s+(?:[\w'-]+\s+){0,3}?(to\s+)?(the\s+)?(user|human|operator|owner|anyone)\b", re.I)),
     ("execution_order",
-     re.compile(r"\b(execute|run)\s+(this|the following|the attached|the below)\s+(command|code|script|shell)\b", re.I)),
+     # 3.5.1: also a backticked or bare curl/wget order that reaches a URL or pipes into a shell
+     re.compile(r"\b(execute|run)\s+(this|the following|the attached|the below)\s+(command|code|script|shell)\b"
+                r"|\b(execute|run)\s+`[^`\n]*(https?://|\|\s*(sh|bash))[^`\n]*`"
+                r"|\b(execute|run)\s+(curl|wget)\s[^\n]{0,120}?(https?://|\|\s*(sh|bash)\b)", re.I)),
 ]
 
 #: Short function words that never count as the repeated term in a stuffing check.
@@ -2921,6 +2931,15 @@ class Inspeximus:
                  user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
                  project: str | None = None) -> str:
         """Append-only raw capture. Stamped with an absolute UTC time; never edited afterward.
+
+        RETURNS THE NEW ID WHETHER OR NOT THE WRITE BECAME THE CURRENT VALUE. A keyed write can be
+        retired on arrival by the echo guard, the objectless guard or the authority rule; the record
+        exists, `history(key)` shows it, and the current value is unchanged. The verdict for the call
+        just made is `store.last_write`: {"id", "key", "status", "blocked", "policy", "current_id",
+        "note"}, plus "previous" {"id", "status", "derived_from"} and "lineage_dropped" for a keyed
+        write that landed. Read it after every keyed write that must land; the MCP and CLI write
+        surfaces report the same fields.
+
         mtype in {episodic, semantic, procedural} sets the decay prior (episodic fades fast,
         semantic slow, procedural barely); inferred from the text if not given. Pass it explicitly
         when the caller knows the kind — inference defaults to episodic (the conservative, fast-decay
@@ -3406,6 +3425,27 @@ class Inspeximus:
         if key is not None and not _is_candidate:   # below always has a value to commit
             _retired = self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
             #                                                  a candidate (low identity_confidence) never supersedes
+            # WHAT THIS WRITE FOLLOWED (3.5.1). A keyed write that landed names the value it followed on
+            # the same key, whatever ended that value: ordinary supersession, or retire() with nothing
+            # written since. Lineage is declared, never inherited, so a rewrite that carries no
+            # `derived_from` follows a value that had N anchors with a value that has none. Measured on
+            # the Crew OS store 2026-09-21: a retire() + remember() on one key took a layer from 10
+            # anchors to 0, and nothing at the call said so. `lineage_dropped` says so, at the write.
+            if not self.last_write.get("blocked"):
+                # A record the guards retired on arrival never stood, so it is not a value this write
+                # followed: the same exclusion `_route_chain` applies, plus the authority rejection,
+                # which marks `rejected_authority` and no blocked flag.
+                _prev = [r for r in self.items if r is not rec and r.get("key") == key
+                         and r.get("tenant") == rec.get("tenant")
+                         and not ((r.get("meta") or {}).get("echo_blocked")
+                                  or (r.get("meta") or {}).get("objectless_blocked")
+                                  or "rejected_authority" in (r.get("meta") or {}))]
+                if _prev:
+                    _p = max(_prev, key=lambda r: (r.get("ts") or 0.0, r.get("id") or ""))
+                    _n = len(_p.get("derived_from") or [])
+                    self.last_write["previous"] = {"id": _p["id"], "status": _p.get("status"),
+                                                   "derived_from": _n}
+                    self.last_write["lineage_dropped"] = _n if (_n and not rec.get("derived_from")) else 0
         if key is not None:
             # The L1 entry for this key is stale in EVERY scope now, not only the writer's: an
             # operator write retires what an agent view had cached. An access-control write
@@ -8959,6 +8999,8 @@ class Inspeximus:
         already solved here. One merge, two callers.
         """
         mine = {r["id"]: r for r in self._items}
+        # THE ROWS THIS HANDLE EDITED, captured before the load below clears the set (3.5.1).
+        _edited = set(self._touched or ())
         self._items = []
         self._file_sig = None
         self._load_from_disk()
@@ -8976,6 +9018,28 @@ class Inspeximus:
         self._items.extend(readded)
         for _r in readded:
             self._touch(_r)
+        # AN EDIT THIS HANDLE MADE TO A RECORD THAT IS ALSO ON DISK IS KEPT (3.5.1). The union
+        # above let disk win for every id both sides hold, which is right for a record this handle
+        # merely read and wrong for one it changed: retire() marks the record superseded, returns
+        # `retired: 1`, and the save that follows finds the file changed by a peer's append, merges,
+        # takes the peer's copy of the record, which is still active, and writes nothing for it.
+        # Measured 2026-09-21, 35 retire() calls across 8 processes beside 200 concurrent keyed
+        # writes: every call returned retired=1, six keys were still active on disk. A keyed
+        # supersession survived the same merge only because `_reapply_key_lww` below demotes the
+        # older of two active values; a retirement has no newer value to win by, and neither does
+        # a promotion, a rejection or a quarantine release. Rows this handle wrote and did not save
+        # are the `_touched` set the row store already keeps; a peer's edit to the same row in the
+        # same window loses to ours, which is the row-level last-writer-wins the store had before.
+        if _edited:
+            _kept = 0
+            for _i, _r in enumerate(self._items):
+                _rid = _r.get("id")
+                if _rid in _edited and _rid in mine and _rid not in buried:
+                    self._items[_i] = mine[_rid]
+                    self._touch(_rid)
+                    _kept += 1
+            if _kept:
+                self._items_view_rev = None
         # A RE-ADDED RECORD GETS ITS RECEIPT (2.28.1). On the JSON path a refused save emits no
         # receipt, and reload() then re-added the record and saved it with none, so a write that
         # merely lost a race read forever as "inserted out of band". Measured 2026-09-15: two
@@ -10935,7 +10999,9 @@ class Inspeximus:
         remove. `source` (same shape as on `remember`) records who or what ended it. Access-control
         keys are refused; `revoke` is their path. Scoped like a write: a tenant-bound handle ends
         its tenant's value, an agent-bound handle only what that agent may read.
-        Returns {"key", "retired", "ids", "reason"}; `retired` is 0 when nothing was active.
+        Returns {"key", "retired", "ids", "reason", "status", "policy"}; `retired` is 0 when nothing
+        was active, `status` is always "superseded" and `policy` always "retired", so the filter to
+        find ended keys is `meta.superseded_by_policy == "retired"`, never `status == "retired"`.
         """
         k = str(key or "").strip()
         if not k:
@@ -10966,7 +11032,12 @@ class Inspeximus:
             self._l1_drop_key(k)
             self._mat = None; self._mat_built_n = -1        # status change alters the recall pool
             self._save(force=True)
-        return {"key": k, "retired": len(ids), "ids": sorted(ids), "reason": why[:500]}
+        # The status the records now carry, said at the call (3.5.1): a reader who filters on
+        # `status == "retired"` finds nothing, because there is no such status; the filter is
+        # `meta.superseded_by_policy == "retired"`. Measured on the Crew OS store 2026-09-21: an
+        # audit reported `retired: 0` over four keys this call had just ended.
+        return {"key": k, "retired": len(ids), "ids": sorted(ids), "reason": why[:500],
+                "status": "superseded", "policy": "retired"}
 
     def retract_lineage(self, subject: str, reason: str = "lineage_corrected",
                         allow_ambiguous: bool = False) -> dict:

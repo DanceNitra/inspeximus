@@ -1,0 +1,42 @@
+{
+ "probe": "a_retirement_lost_to_a_peer_append_across_processes.py",
+ "inspeximus": "3.5.1",
+ "arms": {
+  "A in-process stale handles": {
+   "still_active_after_stale_writes": 0,
+   "of": 35
+  },
+  "B stale handle rewrites an ended key": {
+   "records": [
+    [
+     "v1",
+     "superseded"
+    ],
+    [
+     "v2",
+     "active"
+    ]
+   ],
+   "b_last_write": {
+    "id": "4bd641bcbf",
+    "key": "crew::K",
+    "status": "active",
+    "blocked": false,
+    "policy": null,
+    "previous": {
+     "id": "82bb273b3f",
+     "status": "superseded",
+     "derived_from": 0
+    },
+    "lineage_dropped": 0
+   }
+  },
+  "C 35 retires x 8 processes + 200 concurrent writes": {
+   "retire_returned_1": 35,
+   "still_active": 0,
+   "still_active_keys": [],
+   "writer_landed": 200,
+   "writer_keys_on_disk": 200
+  }
+ }
+}

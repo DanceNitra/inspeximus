@@ -1553,7 +1553,24 @@ def main(argv=None):
                          source={"doc": a.source} if a.source else None,
                          derived_from=a.derived_from or None)
         m._save(force=True)
-        _out({"id": mid, "key": a.key}, a.json) or print(f"remembered {mid}" + (f" [key={a.key}]" if a.key else ""))
+        # The verdict, not only the id (3.5.1): a keyed write retired on arrival printed "remembered
+        # <id>" and exited 0, which is what a landed write prints. Same signal as the library's
+        # `last_write` and the MCP result; here it is also the exit code, because a script that
+        # rewrites a key must not read a blocked write as done.
+        _lw = getattr(m, "last_write", None) or {}
+        _out({"id": mid, "key": a.key, "status": _lw.get("status", "active"),
+              "blocked": bool(_lw.get("blocked")), "policy": _lw.get("policy"),
+              "current_id": _lw.get("current_id"), "lineage_dropped": int(_lw.get("lineage_dropped") or 0)},
+             a.json) or print(f"remembered {mid}" + (f" [key={a.key}]" if a.key else ""))
+        if _lw.get("blocked"):
+            print(f"NOT LANDED: {_lw.get('policy')}: {_lw.get('note')} The current value is "
+                  f"{_lw.get('current_id')}.", file=sys.stderr)
+            _flush_or_fail(m)
+            return 3
+        if _lw.get("lineage_dropped"):
+            print(f"warning: the value this write followed had {_lw['lineage_dropped']} derived_from "
+                  f"anchor(s) and this write carries none; lineage is declared, never inherited.",
+                  file=sys.stderr)
         # A --derived-from id that does not resolve is the quietest way to lose a DSAR. The library keeps the
         # evidence (`derived_from_unresolved` + `orphan`), but THIS surface printed "remembered <id>" and
         # exited 0, so the operator has been told the write succeeded and nothing has been told about the

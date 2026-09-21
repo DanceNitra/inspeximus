@@ -87,7 +87,10 @@ def test_a_concurrent_supersession_leaves_one_active_record_under_the_key(fmt, m
     if fmt == "json":
         with pytest.raises(StoreChangedOnDisk):
             a.remember("salary is 200", key="pay")
-        assert a.reload()["demoted"] == 1
+        # Since 3.5.1 the merge keeps the rows this handle edited, so the record `a` superseded in
+        # memory comes through the reload already superseded and the LWW pass has nothing to demote.
+        # Before, disk's active copy won and the pass demoted it (1). The store below is the same.
+        assert a.reload()["demoted"] == 0
     else:
         a.remember("salary is 200", key="pay")
         a.flush()

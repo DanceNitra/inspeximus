@@ -2452,9 +2452,9 @@
  },
  {
   "file": "inspeximus/core.py",
-  "name": "the concealment shape needs no audience, so 'do not tell Bob' is quarantined",
-  "old": "(this\\s+)?(to\\s+)?(the\\s+)?(user|human|operator|owner|anyone)\\b\", re.I)),",
-  "new": "(this\\s+)?(to\\s+)?(the\\s+)?(\\w+)\\b\", re.I)),",
+  "name": "the concealment shape needs no audience, so 'do not tell Bob' is quarantined (re-anchored to the 3.5.1 wording)",
+  "old": "(?:[\\w'-]+\\s+){0,3}?(to\\s+)?(the\\s+)?(user|human|operator|owner|anyone)\\b\", re.I)),",
+  "new": "(?:[\\w'-]+\\s+){0,3}?(to\\s+)?(the\\s+)?(\\w+)\\b\", re.I)),",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
@@ -2493,6 +2493,123 @@
   "new": "                r\"(?:[\\w-]+\\s+){0}\"          # up to two qualifiers: 'all CUSTOMER data', 'the SIGNING keys'\n",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 override without the noun is dropped, so 'disregard everything you were told earlier' is served",
+  "old": "                r\"|\\b(ignore|disregard|forget)\\s+(everything|anything|all|what|whatever)\\s+\"\n                r\"(you|you've|i|i've|we|we've)\\s+(were|have been|had been|been|was)?\\s*(told|said|instructed|given|asked)\\b\", re.I)),",
+  "new": "                , re.I)),",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 'new instructions follow' needs a colon again",
+  "old": "                r\"|\\b(new|updated|revised|real|actual|secret)\\s+(instructions?|directives?)\\s+(follow\\b|below\\b|are as follows)\", re.I)),",
+  "new": "                , re.I)),",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 the concealment shape allows no object again, so 'do not mention this note to the user' is served",
+  "old": "(?:[\\w'-]+\\s+){0,3}?(to\\s+)?(the\\s+)?(user|human|operator|owner|anyone)\\b\", re.I)),",
+  "new": "(this\\s+)?(to\\s+)?(the\\s+)?(user|human|operator|owner|anyone)\\b\", re.I)),",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 the backticked and bare curl orders are dropped from the execution shape",
+  "old": "                r\"|\\b(execute|run)\\s+`[^`\\n]*(https?://|\\|\\s*(sh|bash))[^`\\n]*`\"\n                r\"|\\b(execute|run)\\s+(curl|wget)\\s[^\\n]{0,120}?(https?://|\\|\\s*(sh|bash)\\b)\", re.I)),",
+  "new": "                , re.I)),",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 the added exfiltration nouns are dropped, so 'email the customer list to <addr>' is served",
+  "old": "                r\"|lists?|database|tables?|contacts?|addresses|emails?|customers?|notes?|transcripts?)\\b\"   # 3.5.1: the nouns a paraphrase reaches for",
+  "new": "                r\")\\b\"   # 3.5.1: the nouns a paraphrase reaches for",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 the concealment object window is unbounded, so 'do not tell Bob about the surprise party' reaches no audience but 'never reveal the user's name to Bob' would be flagged either way; the bounded window is what keeps the test's ordinary sentence ordinary",
+  "old": "(?:[\\w'-]+\\s+){0,3}?(to\\s+)?(the\\s+)?(user|human|operator|owner|anyone)\\b\", re.I)),",
+  "new": "(?:[\\w'-]+\\s+){0,30}?(to\\s+)?(the\\s+)?(user|human|operator|owner|anyone)\\b\", re.I)),",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 lineage_dropped is always 0, so a rewrite that dropped 10 anchors reads as clean",
+  "old": "                    self.last_write[\"lineage_dropped\"] = _n if (_n and not rec.get(\"derived_from\")) else 0",
+  "new": "                    self.last_write[\"lineage_dropped\"] = 0",
+  "tests": [
+   "tests/test_a_blocked_write_says_so_on_every_surface_and_retire_names_its_status.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 previous counts a write the guards retired on arrival as the value this write followed",
+  "old": "                         and not ((r.get(\"meta\") or {}).get(\"echo_blocked\")\n                                  or (r.get(\"meta\") or {}).get(\"objectless_blocked\")\n                                  or \"rejected_authority\" in (r.get(\"meta\") or {}))]",
+  "new": "                         ]",
+  "tests": [
+   "tests/test_a_blocked_write_says_so_on_every_surface_and_retire_names_its_status.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 retire() stops naming the status it set",
+  "old": "        return {\"key\": k, \"retired\": len(ids), \"ids\": sorted(ids), \"reason\": why[:500],\n                \"status\": \"superseded\", \"policy\": \"retired\"}",
+  "new": "        return {\"key\": k, \"retired\": len(ids), \"ids\": sorted(ids), \"reason\": why[:500]}",
+  "tests": [
+   "tests/test_a_blocked_write_says_so_on_every_surface_and_retire_names_its_status.py"
+  ]
+ },
+ {
+  "file": "inspeximus/mcp_server.py",
+  "name": "3.5.1 the MCP write result reports every write as landed",
+  "old": "    out = {\"status\": lw.get(\"status\", \"active\"), \"blocked\": bool(lw.get(\"blocked\")),",
+  "new": "    out = {\"status\": \"active\", \"blocked\": False,",
+  "tests": [
+   "tests/test_a_blocked_write_says_so_on_every_surface_and_retire_names_its_status.py"
+  ]
+ },
+ {
+  "file": "inspeximus/cli.py",
+  "name": "3.5.1 the CLI exits 0 on a blocked write again",
+  "old": "            _flush_or_fail(m)\n            return 3\n        if _lw.get(\"lineage_dropped\"):",
+  "new": "            _flush_or_fail(m)\n        if _lw.get(\"lineage_dropped\"):",
+  "tests": [
+   "tests/test_a_blocked_write_says_so_on_every_surface_and_retire_names_its_status.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 the merge lets disk win for a row this handle edited again, so a retirement beside a peer append is lost",
+  "old": "        if _edited:\n            _kept = 0",
+  "new": "        if False:\n            _kept = 0",
+  "tests": [
+   "tests/test_a_retirement_survives_a_peer_write_that_landed_first.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.1 the edited set is read after the load cleared it, so nothing is kept",
+  "old": "        _edited = set(self._touched or ())\n        self._items = []",
+  "new": "        _edited = set()\n        self._items = []",
+  "tests": [
+   "tests/test_a_retirement_survives_a_peer_write_that_landed_first.py"
   ]
  }
 ]

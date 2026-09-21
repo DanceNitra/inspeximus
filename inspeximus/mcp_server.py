@@ -460,7 +460,10 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
     stamped with it and later recalls in OTHER projects will not return it. The active scope is echoed back
     as `project` in the result (null = unscoped, shared by every project).
 
-    Returns the new id."""
+    Returns the new id, and the VERDICT on the write: `blocked` is true when a keyed write was retired
+    on arrival (`policy` names the guard, `current_id` the value that stands, `note` what to do);
+    `lineage_dropped` is the anchor count of the value this write followed when this write carries
+    no `derived_from`. A result with `blocked: true` is not a landed write."""
     mid = _MEM.remember(text, tags=tags or [], value=value, mtype=mtype, key=key,
                         object=object, reaffirm=reaffirm,
                         source={"doc": source} if source else None,
@@ -479,7 +482,25 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
             # not come back from recall until a human releases it. The caller learns that here, not
             # from a recall that quietly misses it later.
             "quarantined": ((rec.get("meta") or {}).get("quarantined") or {}).get("shapes") or None,
-            "stuffed": ((rec.get("meta") or {}).get("stuffed") or {}).get("word") or None}
+            "stuffed": ((rec.get("meta") or {}).get("stuffed") or {}).get("word") or None,
+            **_write_verdict()}
+
+
+def _write_verdict() -> dict:
+    """The verdict on the write just made, for the result of a write tool (3.5.1). A keyed write the
+    echo guard, the objectless guard or the authority rule retired on arrival still returns an id,
+    and until this the tool result looked the same as a landed one. Measured on the Crew OS store
+    2026-09-21: four rewrites of one key in a row read as four successes and changed nothing. The
+    library carried the verdict in `store.last_write` the whole time; this puts it in the result."""
+    lw = getattr(_MEM, "last_write", None) or {}
+    out = {"status": lw.get("status", "active"), "blocked": bool(lw.get("blocked")),
+           "policy": lw.get("policy"), "current_id": lw.get("current_id"),
+           "lineage_dropped": int(lw.get("lineage_dropped") or 0)}
+    if lw.get("note"):
+        out["note"] = lw["note"]
+    if lw.get("previous"):
+        out["previous"] = lw["previous"]
+    return out
 
 
 @mcp.tool()
@@ -507,7 +528,8 @@ def remember_decision(decision: str, because: str = "", context: str = "", topic
     supersession key stays `decision::<topic>` and is NOT namespaced by project: the same topic in two
     projects still supersedes across them. Use a project-qualified topic when you want them independent.
 
-    Returns the new memory id."""
+    Returns the new memory id and the verdict on the write (`blocked`, `policy`, `current_id`,
+    `lineage_dropped`), as `remember` does."""
     mid = _MEM.remember_decision(decision, because=because or None, context=context or None,
                                  topic=topic or None, source=source or None, project=_PROJECT,
                                  derived_from=derived_from or None)
@@ -519,7 +541,8 @@ def remember_decision(decision: str, because: str = "", context: str = "", topic
             # not come back from recall until a human releases it. The caller learns that here, not
             # from a recall that quietly misses it later.
             "quarantined": ((rec.get("meta") or {}).get("quarantined") or {}).get("shapes") or None,
-            "stuffed": ((rec.get("meta") or {}).get("stuffed") or {}).get("word") or None}
+            "stuffed": ((rec.get("meta") or {}).get("stuffed") or {}).get("word") or None,
+            **_write_verdict()}
 
 
 @mcp.tool()
@@ -2532,7 +2555,9 @@ def retire_key(key: str, reason: str, source: str = "") -> dict:
     on the record and in the receipt chain; nothing new is written, so `recall` stops returning it
     and `history(key)` still shows every value it held with policy "retired" and the reason. Use it
     when a key no longer applies (moved, renamed, withdrawn). A `remember` with a placeholder value
-    would do the opposite: it leaves a new ACTIVE value standing. Returns {key, retired, ids, reason}."""
+    would do the opposite: it leaves a new ACTIVE value standing. Returns {key, retired, ids, reason,
+    status, policy}: the records read `status: "superseded"` with `meta.superseded_by_policy: "retired"`;
+    there is no `retired` status to filter on."""
     return _MEM.retire(key, reason, source={"doc": source} if source else None)
 
 
