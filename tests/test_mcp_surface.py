@@ -117,6 +117,10 @@ def _args_for(name, sig, mod):
         "provider_name": "Acme", "provider_address": "Street 1", "conformity_procedure": "annex_vi_internal_control",
         "place": "Bratislava", "signer_name": "R. D.", "signer_function": "CEO", "signed_for": "Acme",
         "placed_on_market_ts": 0.0,
+        # record_notice / record_objection / record_processing_role (3.4.0): an Art. 13 notice with one
+        # item, an objection by a subject the sweep store may not hold (an error dict, never a raise), and a
+        # controller declaration; `ground`, `role` and `channel` are theirs (`kind`/`scope`/`to` are taken)
+        "items": ["rights"], "channel": "ui", "ground": "own_situation", "role": "controller",
         "documents": [{"kind": "technical_documentation", "sha256": "a" * 64},
                       {"kind": "eu_declaration_of_conformity", "sha256": "b" * 64},
                       {"kind": "notified_body_changes", "present": False, "not_applicable_reason": "Annex VI"},

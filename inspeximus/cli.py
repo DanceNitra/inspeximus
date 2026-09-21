@@ -1029,6 +1029,31 @@ def main(argv=None):
     acdr.add_argument("--actor", required=True)
     acdr.add_argument("--declaration", dest="declaration_seq", type=int, default=None)
     acdr.add_argument("--note", default=None)
+    acno = acsub.add_parser("notice", help="record that a subject was given the GDPR Art. 13 or 14 information")
+    acno.add_argument("subject")
+    acno.add_argument("--article", type=int, default=13, choices=[13, 14])
+    acno.add_argument("--channel", required=True, choices=["ui", "email", "letter", "api", "voice", "document"])
+    acno.add_argument("--item", dest="items", action="append", default=[], help="an item the notice carried; repeatable")
+    acno.add_argument("--actor", required=True)
+    acno.add_argument("--at", dest="ts", type=float, default=None)
+    acno.add_argument("--text-sha256", dest="text_sha256", default=None)
+    acno.add_argument("--source", default=None, help="Art. 14: where the data came from")
+    acno.add_argument("--timing", default=None,
+                      choices=["at_collection", "within_one_month", "at_first_communication", "at_first_disclosure"])
+    acno.add_argument("--request-id", dest="request_id", default=None)
+    acsub.add_parser("notice-register", help="the latest notice per subject and the items each left out")
+    acpr = acsub.add_parser("processing-role", help="record the operator's GDPR Art. 28 role for this store")
+    acpr.add_argument("role", choices=["controller", "joint_controller", "processor", "sub_processor"])
+    acpr.add_argument("--actor", required=True)
+    acpr.add_argument("--controller", default=None, help="for a processor: the controller it acts for")
+    acpr.add_argument("--instructions", dest="instructions_ref", default=None, help="the Art. 28(3) written instructions")
+    acpr.add_argument("--instructions-sha256", dest="instructions_sha256", default=None)
+    acpr.add_argument("--sub-processor", dest="sub_processors", action="append", default=[],
+                      help="NAME:AUTHORISED_BY; repeatable (Art. 28(2))")
+    acpr.add_argument("--purpose", dest="purposes", action="append", default=[])
+    acpr.add_argument("--category", dest="categories", action="append", default=[])
+    acpr.add_argument("--store-ref", dest="store_ref", default=None)
+    acsub.add_parser("processing-roles", help="every Art. 28 role declaration, the current one named")
     acrp = acsub.add_parser("incident-reported", help="record that incident SEQ was reported, to whom and when")
     acrp.add_argument("seq", type=int)
     acrp.add_argument("--actor", required=True)
@@ -1080,6 +1105,22 @@ def main(argv=None):
     sje.add_argument("--no-text", dest="no_text", action="store_true", help="omit record text (ids and provenance only)")
     sje.add_argument("--allow-ambiguous", dest="allow_ambiguous", action="store_true",
                      help="include records of subjects that merely canonicalize the same way")
+    sje.add_argument("--portability", action="store_true",
+                     help="label the export as the Art. 20 response, with the versioned format and portable flags")
+    sjo = sjsub.add_parser("object", help="record an Art. 21 objection: the subject's records are withheld from recall")
+    sjo.add_argument("subject")
+    sjo.add_argument("--actor", required=True)
+    sjo.add_argument("--ground", required=True, choices=["own_situation", "direct_marketing"])
+    sjo.add_argument("--scope", default="all", choices=["all", "profiling"])
+    sjo.add_argument("--request-id", dest="request_id", default=None)
+    sjo.add_argument("--allow-ambiguous", dest="allow_ambiguous", action="store_true")
+    sjv = sjsub.add_parser("resolve-objection", help="close the standing objection: upheld, or overridden with compelling grounds")
+    sjv.add_argument("subject")
+    sjv.add_argument("--actor", required=True)
+    sjv.add_argument("--outcome", required=True, choices=["upheld", "overridden"])
+    sjv.add_argument("--grounds", default=None, help="Art. 21(1): the compelling legitimate grounds, for overridden")
+    sjv.add_argument("--request-id", dest="request_id", default=None)
+    sjsub.add_parser("objections", help="every objection this store has recorded")
     sjr = sjsub.add_parser("rectify", help="correct the value under --key and record who asked and why")
     sjr.add_argument("--key", required=True)
     sjr.add_argument("--text", required=True, help="the corrected value")
@@ -1969,6 +2010,27 @@ def main(argv=None):
             print(f"recorded #{e['seq']} documentation attestation: {years} years to "
                   f"{time.strftime('%Y-%m-%d', time.gmtime(e['retention_end_ts']))}"
                   + (f", gaps: {', '.join(e['gaps'])}" if e["gaps"] else ", no gaps"))
+        elif a.actions_cmd == "notice":
+            e = led.record_notice(a.actor, a.subject, a.channel, a.items, article=a.article, ts=a.ts,
+                                  text_sha256=a.text_sha256, source=a.source, timing=a.timing,
+                                  request_id=a.request_id)
+            print(f"recorded #{e['seq']} Art. {e['article']} notice to {e['subject']} via {e['channel']}"
+                  + (f", missing: {', '.join(e['missing'])}" if e["missing"] else ", complete"))
+        elif a.actions_cmd == "notice-register":
+            print(json.dumps(led.notice_register(), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "processing-role":
+            subs = []
+            for spec in a.sub_processors:
+                if ":" not in spec:
+                    raise SystemExit(f"--sub-processor needs NAME:AUTHORISED_BY, got {spec!r}")
+                n_, by = spec.split(":", 1)
+                subs.append({"name": n_, "authorised_by": by})
+            e = led.record_processing_role(a.actor, a.role, controller=a.controller, instructions_ref=a.instructions_ref,
+                                           instructions_sha256=a.instructions_sha256, sub_processors=subs,
+                                           purposes=a.purposes, categories=a.categories, store_ref=a.store_ref)
+            print(f"recorded #{e['seq']} processing role {e['role']}" + (f" for {e['controller']}" if e["controller"] else ""))
+        elif a.actions_cmd == "processing-roles":
+            print(json.dumps(led.processing_roles(), indent=2, ensure_ascii=False))
         elif a.actions_cmd == "incident-reported":
             e = led.incident_reported(a.seq, actor=a.actor, reported_to=a.reported_to, reported_ts=a.reported_ts,
                                       note=a.note)
@@ -2023,7 +2085,8 @@ def main(argv=None):
         led = ActionLedger(m)
         if a.subject_cmd == "export":
             pkg = export_subject(m, a.subject, ledger=led, allow_ambiguous=a.allow_ambiguous,
-                                 include_text=not a.no_text, actor=a.actor, request_id=a.request_id)
+                                 include_text=not a.no_text, actor=a.actor, request_id=a.request_id,
+                                 basis="portability" if a.portability else "access")
             if a.out:
                 with open(a.out, "w", encoding="utf-8") as f:
                     json.dump(pkg, f, indent=2, ensure_ascii=False, default=str)
@@ -2033,6 +2096,19 @@ def main(argv=None):
                       f"ledger #{pkg['ledger_entry']['seq']}")
             else:
                 print(json.dumps(pkg, indent=2, ensure_ascii=False, default=str))
+        elif a.subject_cmd == "object":
+            from inspeximus.subject_rights import record_objection
+            r = record_objection(m, a.subject, a.actor, a.ground, scope=a.scope, ledger=led,
+                                 request_id=a.request_id, allow_ambiguous=a.allow_ambiguous)
+            print(f"objection by {a.subject} recorded ({a.ground}): {r['withheld_at_objection']} record(s) withheld "
+                  f"from recall, ledger #{r['ledger_entry']['seq']}")
+        elif a.subject_cmd == "resolve-objection":
+            from inspeximus.subject_rights import resolve_objection
+            r = resolve_objection(m, a.subject, a.actor, a.outcome, grounds=a.grounds, ledger=led,
+                                  request_id=a.request_id)
+            print(f"objection by {a.subject} {r['status']}, ledger #{r['ledger_entry']['seq']}")
+        elif a.subject_cmd == "objections":
+            print(json.dumps(m.objections(), indent=2, ensure_ascii=False))
         elif a.subject_cmd == "rectify":
             r = rectify(m, key=a.key, text=a.text, actor=a.actor, reason=a.reason, ledger=led,
                         subject=a.subject, request_id=a.request_id)

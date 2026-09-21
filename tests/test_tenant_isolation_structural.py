@@ -68,6 +68,10 @@ _ARGS = {                                     # plausible arguments that would r
     "subscribe": ("*", print),
     # retire (3.1.0) is a keyed write; aimed at the other side's key it must end nothing of theirs.
     "retire": ("b/k", "the key moved"),
+    # An objection (3.4.0) aimed at the other tenant's subject resolves on the bound view and withholds
+    # nothing of theirs; both calls are content-free and are swept for the leak check like the rest.
+    "object_processing": ("globex-src", "dpo", "own_situation"),
+    "resolve_objection": ("globex-src", "dpo", "upheld"),
     "unsubscribe": ("no-such-subscription",),
     # import_changeset takes a PEER'S changeset, so the sweep hands it a hand-built one whose
     # record text carries the other side's secret. An import is the method most tempted to echo

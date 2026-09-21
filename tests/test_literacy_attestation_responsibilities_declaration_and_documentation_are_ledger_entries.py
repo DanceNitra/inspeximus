@@ -283,7 +283,7 @@ def test_the_chain_verifies_with_all_five_kinds_and_the_reports_count_them(tmp_p
     assert pm["responsibilities_agreements"] == 1 and pm["declarations"] == 1 and pm["documentation_attestations"] == 1
     assert pm["requirements"]["Art. 4"] == "literacy_measures" and pm["requirements"]["Art. 18"] == "documentation_attestations"
     cov = coverage(m)
-    assert cov["counts"]["NOT COVERED"] == 3, "gdpr-13, gdpr-21 and gdpr-28 remain; every Act row is covered"
+    assert cov["counts"]["NOT COVERED"] == 0, "every Act row was covered here at 3.3.0; 3.4.0 closed the three GDPR rows"
     assert all(_row(cov, r)["state"] == EVIDENCE for r in ("aia-4", "aia-5", "aia-18", "aia-25", "aia-43"))
     # the registers and the document are read-only: no row moved
     before = [e["hash"] for e in led.entries()]

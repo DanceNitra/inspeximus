@@ -195,6 +195,24 @@ def check_version_carriers(rep, root=ROOT):
             % (checked, len(REQUIRED_CARRIERS) - len(silent), want, note))
 
 
+def check_no_empty_module(rep, root=ROOT):
+    """Every .py under inspeximus/ has content.
+
+    Measured 2026-09-21: a patch script opened inspeximus/actions.py with mode "w" and raised on a bad
+    `newline=` argument AFTER the open had truncated the file to 0 bytes. `git status` showed the
+    deletion, but a sibling session saw only `ImportError: cannot import name 'ActionLedger'` with
+    nothing pointing at an empty file, and the import leg of this checklist would have reported the
+    same ImportError one level removed. An empty module is never intended in this package; name it.
+    """
+    pkg = root / "inspeximus"
+    empty = sorted(str(f.relative_to(root)) for f in pkg.rglob("*.py") if f.stat().st_size == 0)
+    if empty:
+        rep.add("no empty module", FAIL, "0-byte module(s) in the package: " + ", ".join(empty)
+                + ". A truncated file, not an intended one; restore it from git.")
+        return
+    rep.add("no empty module", PASS, "every .py under inspeximus/ has content")
+
+
 def check_import_version(rep, root=ROOT):
     """The version a USER reads, from the tree that is about to be released.
 
@@ -702,6 +720,7 @@ def run(root=ROOT, skip_tests=False):
     snapshot = _probe_snapshot(root)
     try:
         check_version_carriers(rep, root)
+        check_no_empty_module(rep, root)
         check_import_version(rep, root)
         check_changelog(rep, root)
         check_zero_dependencies(rep, root)

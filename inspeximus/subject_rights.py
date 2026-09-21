@@ -41,9 +41,20 @@ def _sha(obj: Any) -> str:
     return hashlib.sha256(_canon(obj)).hexdigest()
 
 
+#: The export document's format, versioned so a receiving system can parse it (GDPR Art. 20(1):
+#: "structured, commonly used and machine-readable"). Bump the number when a field changes meaning.
+EXPORT_FORMAT = {"name": "inspeximus.subject_export", "version": 1, "media_type": "application/json",
+                 "encoding": "utf-8", "canonical_hash": "sha256 over the JSON-canonical body, key manifest_sha256"}
+
+
 def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = False,
-                   include_text: bool = True, actor: str | None = None, request_id: str | None = None) -> dict:
-    """Everything the store holds about `subject`, for an Art. 15 access request.
+                   include_text: bool = True, actor: str | None = None, request_id: str | None = None,
+                   basis: str = "access") -> dict:
+    """Everything the store holds about `subject`, for an Art. 15 access request, or with
+    `basis="portability"` the same document labelled as the Art. 20 response: `response_to` names the
+    article, `format` carries the versioned format, each record says whether it is `portable` (provided
+    by the subject: a direct record, not one inherited through derivation), and the ledger entry is
+    `rights:portability`. The default output is unchanged.
 
     Returns a dict with the records (direct and inherited), each record's provenance and, when it is
     keyed, its correction history; the erasure tombstones already recorded for the subject; the
@@ -53,6 +64,8 @@ def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = Fal
 
     Raises `AmbiguousSubject` when the subject collides with another under canonicalisation, the
     same refusal `forget_subject` makes, unless `allow_ambiguous=True`."""
+    if basis not in ("access", "portability"):
+        raise ValueError("basis must be access (Art. 15) or portability (Art. 20)")
     cand, ids, collisions = store._resolve_subject(subject, allow_ambiguous=allow_ambiguous, destructive=True)
     if collisions and not allow_ambiguous:
         raise store._ambiguous_error(subject, collisions, "export_subject")
@@ -70,6 +83,8 @@ def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = Fal
         if include_text:
             row["text"] = r.get("text")
             row["object"] = r.get("object")
+        if basis == "portability":
+            row["portable"] = row["why"] == "direct"
         try:
             row["provenance"] = store.provenance(id=rid)
         except Exception as e:  # noqa: BLE001 - the export must not fail on one record's provenance
@@ -120,15 +135,56 @@ def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = Fal
                  "erasure resolves them. Records that mention the subject only in free text under another "
                  "source are not included. Stores registered as erasure targets are not read here.",
     }
+    if basis == "portability":
+        body["response_to"] = "GDPR Art. 20"
+        body["format"] = dict(EXPORT_FORMAT)
+        body["counts"]["portable"] = sum(1 for r in records if r.get("portable"))
+        body["portability_scope"] = ("Records marked portable were provided by the subject (a direct source); "
+                                     "inherited records are derived from them and are included for completeness. "
+                                     "Whether the processing rests on consent or a contract and is automated "
+                                     "(Art. 20(1)(a) and (b)) is the controller's finding, not the store's.")
     body["manifest_sha256"] = _sha({k: v for k, v in body.items() if k != "manifest_sha256"})
     if ledger is not None:
-        entry = ledger.record("rights:export", inputs={"subject": subject, "request_id": request_id},
+        event = "portability" if basis == "portability" else "export"
+        entry = ledger.record("rights:" + event, inputs={"subject": subject, "request_id": request_id},
                               status="ok", actor=actor, kind="rights",
-                              extra={"event": "export", "subject": subject, "request_id": request_id,
+                              extra={"event": event, "subject": subject, "request_id": request_id,
                                      "manifest_sha256": body["manifest_sha256"],
-                                     "n_records": len(records), "record_ids": sorted(ids)})
+                                     "n_records": len(records), "record_ids": sorted(ids),
+                                     **({"format": dict(EXPORT_FORMAT)} if basis == "portability" else {})})
         body["ledger_entry"] = {"seq": entry["seq"], "hash": entry["hash"]}
     return body
+
+
+def record_objection(store, subject: str, actor: str, ground: str, scope: str = "all", ledger=None,
+                     request_id: str | None = None, allow_ambiguous: bool = False) -> dict:
+    """Serve a GDPR Art. 21 objection: the store stops serving the subject's records (see
+    `Inspeximus.object_processing`) and, with a ledger, one `rights:objection` entry records who asked, on
+    which ground, and how many records were withheld at that moment."""
+    row = store.object_processing(subject, actor, ground, scope=scope, request_id=request_id,
+                                  allow_ambiguous=allow_ambiguous)
+    if ledger is not None:
+        entry = ledger.record("rights:objection", inputs={"subject": subject, "request_id": request_id},
+                              status="ok", actor=actor, kind="rights",
+                              extra={"event": "objection", "subject": subject, "request_id": request_id,
+                                     "ground": ground, "scope": scope,
+                                     "withheld": row["withheld_at_objection"]})
+        row["ledger_entry"] = {"seq": entry["seq"], "hash": entry["hash"]}
+    return row
+
+
+def resolve_objection(store, subject: str, actor: str, outcome: str, grounds: str | None = None, ledger=None,
+                      request_id: str | None = None) -> dict:
+    """Close an objection as `upheld` or `overridden` (see `Inspeximus.resolve_objection`) and record the
+    decision as a `rights:objection_resolved` entry carrying the outcome and the grounds."""
+    row = store.resolve_objection(subject, actor, outcome, grounds=grounds, request_id=request_id)
+    if ledger is not None:
+        entry = ledger.record("rights:objection_resolved", inputs={"subject": subject, "outcome": outcome},
+                              status="ok", actor=actor, kind="rights",
+                              extra={"event": "objection_resolved", "subject": subject, "request_id": request_id,
+                                     "outcome": outcome, "grounds": row["resolved"]["grounds"]})
+        row["ledger_entry"] = {"seq": entry["seq"], "hash": entry["hash"]}
+    return row
 
 
 def _is_direct(store, r: dict, cand: set) -> bool:

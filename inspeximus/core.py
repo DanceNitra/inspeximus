@@ -1283,7 +1283,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.3.0"
+__version__ = "3.4.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -2771,6 +2771,16 @@ class Inspeximus:
                 self._tombstones = json.loads(self._tombstones_path.read_text(encoding="utf-8"))
             except Exception:
                 self._tombstones = []
+        # GDPR Art. 21 objections: a sidecar like the tombstones, one row per objection with its status.
+        # A standing objection withholds the subject's records from recall (see recall's pool filter);
+        # the file exists only once an objection has been recorded, so a store without one is unchanged.
+        self._objections: list[dict] = []
+        self._objections_path = (self.path.parent / (self.path.name + ".objections.json")) if self.path else None
+        if self._objections_path and self._objections_path.exists():
+            try:
+                self._objections = json.loads(self._objections_path.read_text(encoding="utf-8"))
+            except Exception:
+                self._objections = []
         # PERSIST A REALIGNMENT EXACTLY ONCE. The realigned vectors and the recipe sidecar must land together:
         # the sidecar is written only inside _save(), so a caller that never saves (a READ-ONLY path — recall(),
         # a session-digest, any short-lived hook process) would redo the whole realignment on EVERY open, turning
@@ -6794,15 +6804,34 @@ class Inspeximus:
             # Changing a ledgered value requires an explicit object, reaffirm=True, or revert(). Keys that
             # never used explicit objects (text-fallback legacy) are unaffected.
             if rec.get("object") is None and any(r.get("object") is not None for r in active):
-                rec["status"] = "superseded"
-                self._touch(rec)               # retired stale-on-arrival
-                rec["superseded_ts"] = time.time()
-                rec["invalidated_at"] = vf_new
-                m = rec.setdefault("meta", {})
-                m["objectless_blocked"] = True
-                m["superseded_by_toggle"] = active[0]["id"]
-                m["superseded_by_policy"] = "objectless_guard"
-                return _retired
+                # A VERBATIM RESTATEMENT IS NOT A CLOBBER. Measured 2026-09-21 on the Crew OS store: a
+                # keyed write repeating the current text exactly, differing only in `derived_from`, was
+                # retired here, so lineage could not be added to an existing record and the caller had
+                # to change the text to get it through. The guard exists to stop junk text displacing a
+                # ledgered value; the same text cannot displace anything. The write inherits the value
+                # it restates and goes on to ordinary supersession, so the metadata lands.
+                _same = [r for r in active if r.get("object") is not None and r.get("text") == rec.get("text")]
+                if _same:
+                    rec["object"] = _same[0]["object"]
+                else:
+                    rec["status"] = "superseded"
+                    self._touch(rec)               # retired stale-on-arrival
+                    rec["superseded_ts"] = time.time()
+                    rec["invalidated_at"] = vf_new
+                    m = rec.setdefault("meta", {})
+                    m["objectless_blocked"] = True
+                    m["superseded_by_toggle"] = active[0]["id"]
+                    m["superseded_by_policy"] = "objectless_guard"
+                    # The echo guard below tells the caller through `last_write`; this branch did not,
+                    # so a retired write read as landed (blocked False, status active). Same fix.
+                    self.last_write = {
+                        "id": rec["id"], "key": rec.get("key"), "status": "superseded",
+                        "blocked": True, "policy": "objectless_guard", "current_id": active[0]["id"],
+                        "note": ("this key carries explicit objects and the write carried none, so it was "
+                                 "retired on arrival and the current value is unchanged. Pass `object`, "
+                                 "reaffirm=True, or use revert()."),
+                    }
+                    return _retired
             superseded_sigs = {self._obj_sig(r) for r in same_key if r.get("status") == "superseded"}
             if (active and new_sig in superseded_sigs
                     and all(self._obj_sig(a) != new_sig for a in active)):
@@ -7751,6 +7780,98 @@ class Inspeximus:
             # returned tombstones:1 and erasure_certificate said verified, while a reload showed
             # erasures_total: 0 — the deletion record a DSAR response rests on, gone without a word.
             self._sidecar_errors["tombstones"] = f"{self._tombstones_path}: {type(e).__name__}: {e}"
+
+    def _flush_objections(self) -> None:
+        if not self._objections_path:
+            return
+        try:
+            Inspeximus._atomic_write(self._objections_path,
+                                     json.dumps(self._objections, indent=2, ensure_ascii=False))
+        except Exception as e:
+            self._sidecar_errors["objections"] = f"{self._objections_path}: {type(e).__name__}: {e}"
+
+    def _withheld_ids(self) -> set:
+        """The ids of every record a STANDING objection withholds, resolved NOW so a record written after
+        the objection is caught too. Resolved the way erasure resolves a subject (`_resolve_subject`,
+        path and all), never by the canonical key: the first version filtered on `cands`, and the
+        control refuted it in one run, because 'crm/alice' and 'crm/bob' share the canonical host and
+        Alice's objection withheld Bob. Tenant-scoped like every subject path."""
+        out = set()
+        for o in self._objections:
+            # `upheld` keeps withholding: the objection was the final answer and the records wait for
+            # the controller's erasure or restriction. Only `overridden` returns them to recall.
+            if o.get("status") not in ("standing", "upheld") or (self.tenant is not None and o.get("tenant") != self.tenant):
+                continue
+            try:
+                _c, ids, _k = self._resolve_subject(o["subject"], allow_ambiguous=bool(o.get("allow_ambiguous")),
+                                                   destructive=True)
+            except Exception:
+                continue
+            out.update(ids)
+        return out
+
+    def object_processing(self, subject: str, actor: str, ground: str, scope: str = "all",
+                          request_id: str | None = None, allow_ambiguous: bool = False) -> dict:
+        """Record a data subject's objection (GDPR Art. 21) and stop serving their records: from this call
+        on, recall withholds every record whose source resolves to `subject`, including records written
+        later, until the objection is resolved. `ground` is `own_situation` (21(1): processing under
+        Art. 6(1)(e) or (f)) or `direct_marketing` (21(2), which the controller cannot override). The
+        records are not erased and remain exportable under Art. 15; erasure is `forget_subject`, the
+        controller's separate decision. Resolves the subject exactly as erasure does and refuses an
+        ambiguous one unless `allow_ambiguous`."""
+        if ground not in ("own_situation", "direct_marketing"):
+            raise ValueError("ground must be own_situation (Art. 21(1)) or direct_marketing (Art. 21(2))")
+        if scope not in ("all", "profiling"):
+            raise ValueError("scope must be all or profiling")
+        if not actor or not subject:
+            raise ValueError("an objection needs the subject and the actor who recorded it")
+        cand, ids, collisions = self._resolve_subject(subject, allow_ambiguous=allow_ambiguous, destructive=True)
+        if collisions and not allow_ambiguous:
+            raise self._ambiguous_error(subject, collisions, "object_processing")
+        for o in self._objections:
+            if o.get("status") == "standing" and o.get("subject") == subject \
+                    and (self.tenant is None or o.get("tenant") == self.tenant):
+                raise ValueError(f"an objection by '{subject}' is already standing (recorded {o.get('ts')})")
+        row = {"subject": subject, "cands": sorted(cand), "ground": ground, "scope": scope, "actor": actor,
+               "ts": time.time(), "request_id": request_id, "tenant": self.tenant, "status": "standing",
+               "allow_ambiguous": bool(allow_ambiguous), "withheld_at_objection": len(ids), "resolved": None}
+        self._objections.append(row)
+        self._flush_objections()
+        return dict(row)
+
+    def resolve_objection(self, subject: str, actor: str, outcome: str, grounds: str | None = None,
+                          request_id: str | None = None) -> dict:
+        """Close the standing objection by `subject`. `outcome` is `upheld` (the objection stands as the
+        final answer; the records stay withheld and the controller's next step is erasure or restriction)
+        or `overridden` (Art. 21(1): the controller demonstrates compelling legitimate grounds, which
+        `grounds` must state; recall resumes). A direct-marketing objection (21(2)) is refused an
+        override, because the article gives the controller no such ground."""
+        if outcome not in ("upheld", "overridden"):
+            raise ValueError("outcome must be upheld or overridden")
+        if not actor:
+            raise ValueError("resolving an objection needs an actor")
+        row = None
+        for o in self._objections:
+            if o.get("status") == "standing" and o.get("subject") == subject \
+                    and (self.tenant is None or o.get("tenant") == self.tenant):
+                row = o
+        if row is None:
+            raise ValueError(f"no standing objection by '{subject}'")
+        if outcome == "overridden":
+            if row.get("ground") == "direct_marketing":
+                raise ValueError("an objection to direct marketing (Art. 21(2)) cannot be overridden")
+            if not grounds:
+                raise ValueError("overriding an objection needs the compelling legitimate grounds (Art. 21(1))")
+        row["status"] = outcome
+        row["resolved"] = {"actor": actor, "ts": time.time(), "grounds": (str(grounds)[:2000] if grounds else None),
+                           "request_id": request_id}
+        self._flush_objections()
+        return dict(row)
+
+    def objections(self) -> list:
+        """Every objection this store has recorded, standing or resolved, tenant-scoped. Read-only."""
+        return [dict(o) for o in self._objections
+                if self.tenant is None or o.get("tenant") == self.tenant]
 
     def register_erasure_target(self, target) -> "Inspeximus":
         """Register an APP-SIDE store (the app's vector index, an embedding/response cache, a retrieval log)
@@ -12290,6 +12411,13 @@ class Inspeximus:
         # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
         if self.tenant is not None:
             pool = [r for r in pool if r.get("tenant") == self.tenant]
+        # GDPR Art. 21: a standing objection withholds the subject's records from every recall, on the
+        # STORE, so no caller argument can serve them by omission. Records written after the objection
+        # are caught too, because the filter resolves sources, not ids. Export (Art. 15) still sees them.
+        if self._objections:
+            _withheld = self._withheld_ids()
+            if _withheld:
+                pool = [r for r in pool if r["id"] not in _withheld]
         # Scope/namespace isolation: when a scope is requested, recall ONLY sees memories tagged with that scope
         # (meta['scope']) BEFORE ranking — a shared store (e.g. many agents / tenants in one Inspeximus) cannot bleed
         # one scope's memories into another's recall. scope=None (default) sees everything (legacy behavior).
@@ -14594,7 +14722,8 @@ class Inspeximus:
         for r in sample:
             other = [h for h in self.recall(r["text"], k=2) if h["id"] != r["id"]]
             if other:
-                s = self._similarity(r["text"], other[0], self._qvec(r["text"]) if self.embed else None)
+                s = self._similarity(r["text"], other[0], self._qvec(r["text"]) if self.embed else None,
+                                     self._rec_tokens(r))
                 if s >= dup_threshold and not _value_clash(r["text"], other[0]["text"]):
                     redundant += 1
         # A write RETIRED ON ARRIVAL is a different event from one a later assertion replaced, and this
@@ -14662,9 +14791,10 @@ class Inspeximus:
         # >= supersede_persistence independent records. An isolated poison flip stays below it.
         if self.supersede_persistence > 1:
             nvec = self._qvec(newer["text"])
+            ntok = self._rec_tokens(newer)               # tokenised once, not once per candidate
             support = sum(
                 1 for r in active if r["status"] == "active"
-                and self._similarity(newer["text"], r, nvec) >= dup_threshold
+                and self._similarity(newer["text"], r, nvec, ntok) >= dup_threshold
                 and not _value_clash(newer["text"], r["text"])
                 and not _negation_clash(newer["text"], r["text"])
                 and (_value_clash(older["text"], r["text"]) or _negation_clash(older["text"], r["text"])))
@@ -14770,10 +14900,11 @@ class Inspeximus:
                 if a["status"] != "active":          # superseded by an earlier toggle this pass
                     continue
                 avec = self._qvec(a["text"])         # embed each anchor once, not once per partner
+                atok = self._rec_tokens(a)           # and tokenise it once: lexical mode re-tokenised a per partner
                 for b in active[i + 1:]:
                     if b["status"] != "active" or b["id"] in a["links"]:
                         continue
-                    if self._similarity(a["text"], b, avec) >= dup_threshold:
+                    if self._similarity(a["text"], b, avec, atok) >= dup_threshold:
                         if _negation_clash(a["text"], b["text"]) or _value_clash(a["text"], b["text"]):
                             # ONE resolution, shared with consolidate_clusters(). It lived here as an
                             # inlined block and the cluster path had its own copy with none of the
@@ -14831,24 +14962,52 @@ class Inspeximus:
 
     # ── cluster-triggered consolidation ───────────────────────────────────────
     def _cluster_active(self, sim_threshold: float = 0.5) -> list[list[dict]]:
-        """Cheap greedy single-pass clustering of ACTIVE memories by similarity (O(n·#clusters)).
-        Highest-value member is the cluster representative; each memory joins the most-similar
-        cluster above the threshold, else starts its own. Lexical or semantic per the store's mode."""
+        """Greedy single-pass clustering of ACTIVE memories by similarity. Highest-value member is the
+        cluster representative; each memory joins the most-similar cluster above the threshold, else
+        starts its own. Lexical or semantic per the store's mode.
+
+        COST, measured rather than assumed. The docstring used to say O(n * #clusters), which is true
+        and misleading: on a live store #clusters grows with n (0.73 n on 3,343 active records, 2026-09-21),
+        so the pass is quadratic, and it took 300 s. Two things made it worse than the pair count: the
+        centroid's text was re-tokenised on EVERY comparison (lexical mode has no vec, so `_similarity`
+        fell through to `_tokens(query)` 1,600 times per record), and every cluster was scored even when
+        it could not reach the threshold. The overlap coefficient is |q & t| / min(|q|, |t|), so a cluster
+        can pass only if it shares at least ceil(threshold * min(|q|, |t|)) tokens with the record; an
+        inverted index from token to cluster counts shared tokens per candidate first and scores only
+        the clusters that can pass. Both changes are exact: the same clusters come out, in the same
+        order. Semantic mode (a vec on every record) skips the index, because cosine has no such bound."""
         active = sorted([r for r in self.items if r["status"] == "active"
                          and (self.tenant is None or r.get("tenant") == self.tenant)],   # tenant-scoped clustering
                         key=lambda r: -r["value"])
         cents: list[dict] = []
+        index: dict = {}                     # token -> [cluster index], lexical mode only
         for r in active:
             rvec = self._qvec(r["text"])
+            rtok = self._rec_tokens(r)
             best = None
-            for c in cents:
-                s = self._similarity(c["rec"]["text"], r, c["vec"])
+            if self.embed and r.get("vec"):
+                # cosine for every centroid that has a vec, and cosine has no token bound: score all
+                candidates = range(len(cents))
+            else:
+                # count shared tokens per cluster; only clusters that can reach the threshold are scored
+                shared: dict = {}
+                for t in rtok:
+                    for ci in index.get(t, ()):
+                        shared[ci] = shared.get(ci, 0) + 1
+                candidates = [ci for ci, n in shared.items()
+                              if n >= sim_threshold * min(len(rtok), len(cents[ci]["tok"]))]
+                candidates.sort()
+            for ci in candidates:
+                c = cents[ci]
+                s = self._similarity(c["rec"]["text"], r, c["vec"], c["tok"])
                 if s >= sim_threshold and (best is None or s > best[1]):
                     best = (c, s)
             if best:
                 best[0]["members"].append(r)
             else:
-                cents.append({"rec": r, "vec": rvec, "members": [r]})
+                cents.append({"rec": r, "vec": rvec, "tok": rtok, "members": [r]})
+                for t in rtok:
+                    index.setdefault(t, []).append(len(cents) - 1)
         return [c["members"] for c in cents]
 
     def consolidate_clusters(self, threshold: int = 15, cluster_sim: float = 0.5,
@@ -14874,10 +15033,11 @@ class Inspeximus:
                 if a["status"] != "active":
                     continue
                 avec = self._qvec(a["text"])
+                atok = self._rec_tokens(a)
                 for b in members[i + 1:]:
                     if b["status"] != "active" or b["id"] in a["links"]:
                         continue
-                    if self._similarity(a["text"], b, avec) >= dup_threshold:
+                    if self._similarity(a["text"], b, avec, atok) >= dup_threshold:
                         if _negation_clash(a["text"], b["text"]) or _value_clash(a["text"], b["text"]):
                             # ONE resolution, shared with consolidate(). This loop used to inline its
                             # own -- ts ordering, no corroboration guard, no persistence guard, no
@@ -16424,6 +16584,10 @@ class _TenantView:
     def recall_iterative_followup(self, *a, **k): return Inspeximus.recall_iterative_followup(self, *a, **k)
     def recall(self, *a, **k):          return Inspeximus.recall(self, *a, **k)
     def forget_subject(self, *a, **k):  return Inspeximus.forget_subject(self, *a, **k)
+    def object_processing(self, *a, **k): return Inspeximus.object_processing(self, *a, **k)
+    def resolve_objection(self, *a, **k): return Inspeximus.resolve_objection(self, *a, **k)
+    def objections(self, *a, **k):      return Inspeximus.objections(self, *a, **k)
+    def _withheld_ids(self, *a, **k):   return Inspeximus._withheld_ids(self, *a, **k)
     def forget_pii(self, *a, **k):      return Inspeximus.forget_pii(self, *a, **k)
     def pii_report(self, *a, **k):      return Inspeximus.pii_report(self, *a, **k)
     def remember_dedup(self, *a, **k):  return Inspeximus.remember_dedup(self, *a, **k)

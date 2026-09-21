@@ -184,6 +184,10 @@ _ARGS = {
     "subscribe": ("*", print),
     # retire (3.1.0) is a keyed write; aimed at the other side's key it must end nothing of theirs.
     "retire": ("roadmap", "the key moved"),
+    # An objection (3.4.0) aimed at the other side's subject resolves through _resolve_subject on the
+    # bound view, so it can withhold nothing the view cannot see; the resolution is content-free.
+    "object_processing": ("alice-src", "dpo", "own_situation"),
+    "resolve_objection": ("alice-src", "dpo", "upheld"),
     "unsubscribe": ("no-such-subscription",),
     # import_changeset takes a PEER'S changeset, so the sweep hands it a hand-built one whose
     # record text carries the other side's secret. An import is the method most tempted to echo

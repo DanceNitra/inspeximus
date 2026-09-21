@@ -41,8 +41,12 @@ def _clean_tree():
     """A working copy holding only the package and the probes, checked out somewhere else."""
     d = tempfile.mkdtemp(prefix="insp_pubcmd_")
     for part in ("inspeximus", "probes"):
+        # Scratch files a probe writes beside itself while another xdist worker runs it are not part
+        # of the tree under test, and one of them vanished mid-copy on the 3.3.0 release run
+        # (`probes/_lifetime_budget_tmp.json-journal`, a SQLite journal, gone between listdir and copy).
         shutil.copytree(os.path.join(REPO, part), os.path.join(d, part),
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "_*_tmp*", "*-journal",
+                                                      "*-wal", "*-shm", "*.result.json.tmp"))
     assert not os.path.exists(os.path.join(d, "server", ".env"))
     return d
 

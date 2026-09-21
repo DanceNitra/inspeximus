@@ -152,6 +152,8 @@ NOT_STANDALONE = {
         "needs the MemTX corpus under tmp/memtx/memtx-src (git clone lxy1134/MEMTX_); exits 2 without it",
     "the_default_store_is_byte_identical_to_the_previous_release.py":
         "needs --previous, the previous release's wheel unpacked from PyPI; the docstring gives the two commands",
+    "the_cluster_pass_is_quadratic_and_the_fix_is_exact.py":
+        "needs --store, a copy of a live store with thousands of active records; the docstring gives the command",
 }
 
 

@@ -64,7 +64,8 @@ __all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VE
            "INFORMED_PARTIES", "AUTHORITY_REQUEST_SCOPES", "BREACH_NOTIFY_TARGETS", "BREACH_EXEMPTIONS",
            "BREACH_DEADLINE_HOURS", "LITERACY_MEASURES", "LITERACY_AUDIENCES", "LITERACY_CONSIDERATIONS",
            "PROHIBITED_PRACTICES", "ATTESTATION_STATEMENTS", "RESPONSIBILITY_ROLES", "PROVIDER_TRIGGERS",
-           "COOPERATION_ITEMS", "CONFORMITY_PROCEDURES", "RETENTION_DOCUMENTS", "DOCUMENTATION_RETENTION_YEARS"]
+           "COOPERATION_ITEMS", "CONFORMITY_PROCEDURES", "RETENTION_DOCUMENTS", "DOCUMENTATION_RETENTION_YEARS",
+           "NOTICE_ITEMS", "NOTICE_ART14_ITEMS", "NOTICE_CHANNELS", "NOTICE_TIMINGS", "PROCESSING_ROLES"]
 
 # Art. 73(2) to (4): a serious incident is reported immediately and no later than 15 days after the
 # provider becomes aware of it; 2 days for a widespread infringement or a serious incident concerning
@@ -143,6 +144,19 @@ CONFORMITY_PROCEDURES = ("annex_vi_internal_control", "annex_vii_notified_body")
 RETENTION_DOCUMENTS = ("technical_documentation", "quality_management_system", "notified_body_changes",
                        "notified_body_decisions", "eu_declaration_of_conformity")
 DOCUMENTATION_RETENTION_YEARS = 10
+
+#: GDPR Art. 13(1) and (2): what the controller tells the subject when data is collected from them.
+NOTICE_ITEMS = ("controller_identity", "dpo_contact", "purposes_and_legal_basis", "legitimate_interests",
+                "recipients", "third_country_transfer", "retention_period", "rights", "withdraw_consent",
+                "complaint_to_authority", "provision_required", "automated_decision_making")
+#: Art. 14(1)(d) and (2)(f): the two items that exist only when the data did not come from the subject.
+NOTICE_ART14_ITEMS = ("data_categories", "data_source")
+NOTICE_CHANNELS = ("ui", "email", "letter", "api", "voice", "document")
+#: Art. 14(3): when a notice for data obtained elsewhere is due.
+NOTICE_TIMINGS = ("at_collection", "within_one_month", "at_first_communication", "at_first_disclosure")
+
+#: GDPR Art. 28: the role this store's operator plays for the personal data in it.
+PROCESSING_ROLES = ("controller", "joint_controller", "processor", "sub_processor")
 
 GENESIS = "0" * 64
 LEDGER_VERSION = 1
@@ -458,10 +472,11 @@ class ActionLedger:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
         if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp",
                         "lifecycle", "risk", "monitoring", "corrective", "authority", "breach",
-                        "literacy", "attestation", "responsibilities", "declaration", "documentation"):
+                        "literacy", "attestation", "responsibilities", "declaration", "documentation",
+                        "notice", "processing_role"):
             raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
                              "lifecycle, risk, monitoring, corrective, authority, breach, literacy, attestation, "
-                             "responsibilities, declaration or documentation")
+                             "responsibilities, declaration, documentation, notice or processing_role")
         self._refresh_if_changed()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -811,13 +826,18 @@ class ActionLedger:
             "responsibilities_agreements": len(kind("responsibilities")),
             "declarations": len(kind("declaration")),
             "documentation_attestations": len(kind("documentation")),
+            "notices": len(kind("notice")),
+            "processing_roles": len(kind("processing_role")),
+            "objections": {"recorded": sum(1 for e in kind("rights") if e.get("event") == "objection"),
+                           "resolved": sum(1 for e in kind("rights") if e.get("event") == "objection_resolved")},
             "chain": _chain_state(self),
             "requirements": {"Art. 9": "risks", "Art. 12": "actions, chain", "Art. 14": "oversight",
                              "Art. 15": "chain, incidents", "Art. 13": "disclosures", "Art. 73": "incidents",
                              "Art. 20": "corrective_actions", "Art. 21": "authority_requests",
                              "GDPR Art. 33": "breaches", "Art. 4": "literacy_measures", "Art. 5": "attestations",
                              "Art. 25": "responsibilities_agreements", "Art. 47": "declarations",
-                             "Art. 18": "documentation_attestations"},
+                             "Art. 18": "documentation_attestations", "GDPR Art. 13, 14": "notices",
+                             "GDPR Art. 21": "objections", "GDPR Art. 28": "processing_roles"},
             "store": {"records": len(list(self.store.items)) if self.store is not None else None,
                       "tombstones": len(getattr(self.store, "_tombstones", None) or []) if self.store is not None else None},
             "plan": ({"name": plan.get("name"), "version": plan.get("version"),
@@ -1309,6 +1329,105 @@ class ActionLedger:
                 "scope": ("The declaration as the provider drew it up, in the Annex V order. The assessment behind "
                           "it (Art. 43) is the provider's or the notified body's; this document is what Art. 47(1) "
                           "asks to be kept and handed over on request.")}
+
+    # ------------------------------------------------------------------ GDPR Art. 13, 14: information to the subject
+    def record_notice(self, actor: str, subject: str, channel: str, items: list, article: int = 13,
+                      ts: float | None = None, text_sha256: str | None = None, source: str | None = None,
+                      timing: str | None = None, request_id: str | None = None, meta: dict | None = None) -> dict:
+        """Record that `subject` was given the Art. 13 (data collected from them) or Art. 14 (data obtained
+        elsewhere) information: on which `channel`, when, and which of the article's items the notice
+        carried; the entry lists the items it did NOT carry as `missing`, so a partial notice is visible
+        rather than judged. `text_sha256` pins the notice text without storing it. Art. 14 additionally
+        needs `source` (14(2)(f)) and `timing` (14(3)). The shape is the Art. 50 disclosure receipt."""
+        if article not in (13, 14):
+            raise ValueError("article must be 13 (collected from the subject) or 14 (obtained elsewhere)")
+        if channel not in NOTICE_CHANNELS:
+            raise ValueError(f"channel must be one of {NOTICE_CHANNELS}")
+        if not actor or not subject:
+            raise ValueError("a notice record needs the actor and the subject reference")
+        allowed = set(NOTICE_ITEMS) | (set(NOTICE_ART14_ITEMS) if article == 14 else set())
+        bad = [i for i in (items or []) if i not in allowed]
+        if bad:
+            raise ValueError(f"items must be among {sorted(allowed)}, got {bad}")
+        if text_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(text_sha256)):
+            raise ValueError("text_sha256 must be a 64-hex sha256 of the notice text")
+        if article == 14:
+            if not source:
+                raise ValueError("an Art. 14 notice names the source the data came from (14(2)(f))")
+            if timing not in NOTICE_TIMINGS:
+                raise ValueError(f"an Art. 14 notice needs its timing (14(3)): one of {NOTICE_TIMINGS}")
+        elif timing is not None and timing != "at_collection":
+            raise ValueError("an Art. 13 notice is given at collection")
+        given = sorted(set(items or []))
+        extra = {"article": article, "subject": subject, "channel": channel, "items": given,
+                 "missing": [i for i in allowed if i not in given],
+                 "given_ts": float(ts) if ts is not None else time.time(), "text_sha256": text_sha256,
+                 "source": source, "timing": timing or ("at_collection" if article == 13 else None),
+                 "request_id": request_id}
+        return self.record(f"notice:art{article}", inputs={"subject": subject, "channel": channel}, status="ok",
+                           actor=actor, meta=meta, kind="notice", extra=extra)
+
+    def notice_register(self) -> dict:
+        """The latest Art. 13 or 14 notice per subject, and the items every notice left out. Read-only."""
+        latest: dict = {}
+        for e in self._entries:
+            if e.get("kind") == "notice":
+                latest[e.get("subject")] = e
+        rows = [{"subject": s, "seq": e["seq"], "article": e.get("article"), "channel": e.get("channel"),
+                 "given_ts": e.get("given_ts"), "items": e.get("items") or [], "missing": e.get("missing") or [],
+                 "actor": e.get("actor"), "signed": "sig" in e} for s, e in latest.items()]
+        return {"kind": "inspeximus.notice_register/1", "subjects": len(rows),
+                "incomplete": sorted(r["subject"] for r in rows if r["missing"]), "rows": rows,
+                "scope": ("What this ledger records was told, to whom and when. Whether the text was clear and "
+                          "in plain language (Art. 12(1)) is the controller's judgement; the hash pins which text.")}
+
+    # ------------------------------------------------------------------ GDPR Art. 28: processing role
+    def record_processing_role(self, actor: str, role: str, controller: str | None = None,
+                               instructions_ref: str | None = None, instructions_sha256: str | None = None,
+                               sub_processors: list | None = None, purposes: list | None = None,
+                               categories: list | None = None, store_ref: str | None = None,
+                               ts: float | None = None, meta: dict | None = None) -> dict:
+        """Record who this store's operator is for the personal data in it (GDPR Art. 28): a `controller`
+        or `joint_controller`, or a `processor` or `sub_processor` acting for `controller` under the written
+        `instructions_ref` (the 28(3) contract, pinned by `instructions_sha256`). `sub_processors` lists
+        {name, authorised_by, authorised_ts} (28(2): no sub-processor without the controller's written
+        authorisation, so each row needs one). `purposes` and `categories` describe the processing the
+        way an Art. 30(2) processor record does."""
+        if role not in PROCESSING_ROLES:
+            raise ValueError(f"role must be one of {PROCESSING_ROLES}")
+        if not actor:
+            raise ValueError("a processing-role record needs an actor")
+        if role in ("processor", "sub_processor"):
+            if not controller:
+                raise ValueError(f"a {role} names the controller it acts for")
+            if not instructions_ref:
+                raise ValueError(f"a {role} names the written instructions it acts under (Art. 28(3))")
+        if instructions_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(instructions_sha256)):
+            raise ValueError("instructions_sha256 must be a 64-hex sha256")
+        subs = []
+        for sp in sub_processors or []:
+            if not isinstance(sp, dict) or not sp.get("name") or not sp.get("authorised_by"):
+                raise ValueError("each sub-processor needs a name and who authorised it (Art. 28(2))")
+            subs.append({"name": str(sp["name"]), "authorised_by": str(sp["authorised_by"]),
+                         "authorised_ts": sp.get("authorised_ts")})
+        extra = {"role": role, "controller": controller, "instructions_ref": instructions_ref,
+                 "instructions_sha256": instructions_sha256, "sub_processors": subs,
+                 "purposes": [str(x) for x in (purposes or [])], "categories": [str(x) for x in (categories or [])],
+                 "store_ref": store_ref, "declared_ts": float(ts) if ts is not None else time.time()}
+        return self.record(f"processing_role:{role}", inputs={"role": role, "controller": controller},
+                           status="ok", actor=actor, meta=meta, kind="processing_role", extra=extra)
+
+    def processing_roles(self) -> dict:
+        """Every Art. 28 role declaration, latest first, with the current one named. Read-only."""
+        ev = [e for e in self._entries if e.get("kind") == "processing_role"]
+        rows = [{"seq": e["seq"], "ts": e.get("ts"), "role": e.get("role"), "controller": e.get("controller"),
+                 "instructions_ref": e.get("instructions_ref"), "sub_processors": e.get("sub_processors") or [],
+                 "purposes": e.get("purposes") or [], "actor": e.get("actor"), "signed": "sig" in e} for e in ev]
+        return {"kind": "inspeximus.processing_roles/1", "declarations": len(rows),
+                "current": rows[-1] if rows else None, "rows": list(reversed(rows)),
+                "scope": ("The operator's own declaration of its role. Whether a party is in fact a controller "
+                          "or a processor follows from the facts of the processing (Art. 4(7) and (8)), not "
+                          "from what it recorded here.")}
 
     # ------------------------------------------------------------------ Art. 18: documentation keeping
     def attest_documentation_retention(self, actor: str, placed_on_market_ts: float, documents: list,

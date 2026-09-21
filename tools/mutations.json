@@ -2260,5 +2260,167 @@
   "tests": [
    "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
   ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the objection filter withholds by canonical host, so a neighbour vanishes too",
+  "old": "                _c, ids, _k = self._resolve_subject(o[\"subject\"], allow_ambiguous=bool(o.get(\"allow_ambiguous\")),\n                                                   destructive=True)\n            except Exception:\n                continue\n            out.update(ids)",
+  "new": "                _c, ids, _k = self._resolve_subject(o[\"subject\"], allow_ambiguous=bool(o.get(\"allow_ambiguous\")),\n                                                   destructive=True)\n            except Exception:\n                continue\n            out.update(r[\"id\"] for r in self.items if _c & Inspeximus._rec_sources(r))",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "recall ignores standing objections",
+  "old": "            _withheld = self._withheld_ids()\n            if _withheld:\n                pool = [r for r in pool if r[\"id\"] not in _withheld]",
+  "new": "            _withheld = set()\n            if _withheld:\n                pool = [r for r in pool if r[\"id\"] not in _withheld]",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "an upheld objection stops withholding",
+  "old": "            if o.get(\"status\") not in (\"standing\", \"upheld\") or (self.tenant is not None and o.get(\"tenant\") != self.tenant):",
+  "new": "            if o.get(\"status\") not in (\"standing\",) or (self.tenant is not None and o.get(\"tenant\") != self.tenant):",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a direct-marketing objection can be overridden",
+  "old": "            if row.get(\"ground\") == \"direct_marketing\":\n                raise ValueError(\"an objection to direct marketing (Art. 21(2)) cannot be overridden\")",
+  "new": "            if False:\n                raise ValueError(\"an objection to direct marketing (Art. 21(2)) cannot be overridden\")",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "an override needs no grounds",
+  "old": "            if not grounds:\n                raise ValueError(\"overriding an objection needs the compelling legitimate grounds (Art. 21(1))\")",
+  "new": "            if False:\n                raise ValueError(\"overriding an objection needs the compelling legitimate grounds (Art. 21(1))\")",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the objection is not persisted",
+  "old": "        self._objections.append(row)\n        self._flush_objections()\n        return dict(row)",
+  "new": "        self._objections.append(row)\n        return dict(row)",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "an Art. 14 notice needs no source",
+  "old": "            if not source:\n                raise ValueError(\"an Art. 14 notice names the source the data came from (14(2)(f))\")",
+  "new": "            if False:\n                raise ValueError(\"an Art. 14 notice names the source the data came from (14(2)(f))\")",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the notice hides the missing items",
+  "old": "                 \"missing\": [i for i in allowed if i not in given],",
+  "new": "                 \"missing\": [],",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "a processor needs no controller",
+  "old": "            if not controller:\n                raise ValueError(f\"a {role} names the controller it acts for\")",
+  "new": "            if False:\n                raise ValueError(f\"a {role} names the controller it acts for\")",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/subject_rights.py",
+  "name": "every record is portable, inherited ones included",
+  "old": "            row[\"portable\"] = row[\"why\"] == \"direct\"",
+  "new": "            row[\"portable\"] = True",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/subject_rights.py",
+  "name": "the portability export is logged as a plain export",
+  "old": "        event = \"portability\" if basis == \"portability\" else \"export\"",
+  "new": "        event = \"export\"",
+  "tests": [
+   "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the candidate bound is strict, so pairs exactly on the threshold are never scored",
+  "old": "                candidates = [ci for ci, n in shared.items()\n                              if n >= sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
+  "new": "                candidates = [ci for ci, n in shared.items()\n                              if n > sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
+  "tests": [
+   "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "candidates are scored in arrival order of the index, not cluster order, so the best-on-tie changes",
+  "old": "                candidates.sort()\n            for ci in candidates:",
+  "new": "                candidates.reverse()\n            for ci in candidates:",
+  "tests": [
+   "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the centroid is tokenised per comparison again",
+  "old": "                s = self._similarity(c[\"rec\"][\"text\"], r, c[\"vec\"], c[\"tok\"])",
+  "new": "                s = self._similarity(c[\"rec\"][\"text\"], r, c[\"vec\"])",
+  "tests": [
+   "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "consolidate_clusters re-tokenises the anchor per partner",
+  "old": "                avec = self._qvec(a[\"text\"])\n                atok = self._rec_tokens(a)\n                for b in members[i + 1:]:\n                    if b[\"status\"] != \"active\" or b[\"id\"] in a[\"links\"]:\n                        continue\n                    if self._similarity(a[\"text\"], b, avec, atok) >= dup_threshold:",
+  "new": "                avec = self._qvec(a[\"text\"])\n                atok = self._rec_tokens(a)\n                for b in members[i + 1:]:\n                    if b[\"status\"] != \"active\" or b[\"id\"] in a[\"links\"]:\n                        continue\n                    if self._similarity(a[\"text\"], b, avec, _tokens(a[\"text\"])) >= dup_threshold:",
+  "tests": [
+   "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the verbatim restatement is retired like junk",
+  "old": "                _same = [r for r in active if r.get(\"object\") is not None and r.get(\"text\") == rec.get(\"text\")]\n                if _same:",
+  "new": "                _same = []\n                if _same:",
+  "tests": [
+   "tests/test_a_verbatim_restatement_carries_its_lineage_through_the_objectless_guard.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "any objectless write inherits the object, junk included",
+  "old": "                _same = [r for r in active if r.get(\"object\") is not None and r.get(\"text\") == rec.get(\"text\")]",
+  "new": "                _same = [r for r in active if r.get(\"object\") is not None]",
+  "tests": [
+   "tests/test_a_verbatim_restatement_carries_its_lineage_through_the_objectless_guard.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the objectless guard retires silently again",
+  "old": "                        \"blocked\": True, \"policy\": \"objectless_guard\", \"current_id\": active[0][\"id\"],",
+  "new": "                        \"blocked\": False, \"policy\": None, \"current_id\": active[0][\"id\"],",
+  "tests": [
+   "tests/test_a_verbatim_restatement_carries_its_lineage_through_the_objectless_guard.py"
+  ]
  }
 ]

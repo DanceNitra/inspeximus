@@ -668,3 +668,20 @@ def test_a_missing_generator_fails_rather_than_passing(tmp_path):
     release_check.check_core_map(rep, root)
     assert rep.status("core map") == release_check.FAIL
 
+
+def test_the_empty_module_check_passes_on_a_full_package(tmp_path):
+    root = _tree(tmp_path)
+    rep = _Rep()
+    release_check.check_no_empty_module(rep, root)
+    assert rep.status("no empty module") == release_check.PASS
+
+
+def test_a_zero_byte_module_fails_by_name(tmp_path):
+    """The 2026-09-21 shape: open(path, "w") truncated actions.py before the call raised."""
+    root = _tree(tmp_path)
+    (root / "inspeximus" / "actions.py").write_bytes(b"")
+    rep = _Rep()
+    release_check.check_no_empty_module(rep, root)
+    assert rep.status("no empty module") == release_check.FAIL
+    assert "actions.py" in rep.detail("no empty module")
+

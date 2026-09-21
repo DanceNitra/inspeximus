@@ -1,0 +1,39 @@
+{
+  "probe": "the_cluster_pass_is_quadratic_and_the_fix_is_exact.py",
+  "store": "tmp/bm_store.json",
+  "sim": 0.5,
+  "active": 3368,
+  "embed": false,
+  "rows": [
+    {
+      "n": 500,
+      "new_s": 0.08,
+      "clusters": 258,
+      "old_s": 10.41,
+      "identical": true,
+      "speedup": 130.1
+    },
+    {
+      "n": 1000,
+      "new_s": 0.46,
+      "clusters": 605,
+      "old_s": 39.04,
+      "identical": true,
+      "speedup": 84.9
+    },
+    {
+      "n": 2000,
+      "new_s": 0.92,
+      "clusters": 1370,
+      "old_s": 162.51,
+      "identical": true,
+      "speedup": 176.6
+    },
+    {
+      "n": 3368,
+      "new_s": 2.61,
+      "clusters": 2448
+    }
+  ],
+  "CONTROL_every_compared_prefix_is_identical": true
+}

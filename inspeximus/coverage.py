@@ -147,6 +147,24 @@ def _p_documentation(store):
     return n, f"{n} documentation-retention attestation(s) over the Art. 18(1) documents"
 
 
+def _p_notices(store):
+    ev = _entries(store, "notice")
+    subjects = {e.get("subject") for e in ev}
+    return len(ev), f"{len(ev)} Art. 13/14 notice(s) recorded for {len(subjects)} subject(s)"
+
+
+def _p_roles(store):
+    n = len(_entries(store, "processing_role"))
+    return n, f"{n} Art. 28 role declaration(s) recorded"
+
+
+def _p_objections(store):
+    ev = [e for e in _entries(store, "rights") if e.get("event") == "objection"]
+    withholding = len([o for o in (getattr(store, "objections", lambda: [])() or [])
+                       if o.get("status") in ("standing", "upheld")])
+    return len(ev), f"{len(ev)} objection(s) recorded, {withholding} standing or upheld and withheld from recall"
+
+
 def _p_lifecycle(store):
     n = len(_entries(store, "lifecycle"))
     return n, f"{n} lifecycle event(s)"
@@ -280,7 +298,7 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "gdpr-5", "law": "GDPR", "article": "Art. 5(2)", "duty": "accountability: demonstrate compliance", "who": "controller",
      "probe": _p_receipts, "artifact": "receipt chain, anchor, transparency log, offline verifiers"},
     {"id": "gdpr-13", "law": "GDPR", "article": "Art. 13, 14", "duty": "information given to the data subject at collection", "who": "controller",
-     "probe": None, "gap": "a `record_notice` receipt per subject: what was told, when, on which channel; the disclosure receipt is the shape"},
+     "probe": _p_notices, "artifact": "record_notice() per subject with the article, channel, items given and items missing; notice_register()"},
     {"id": "gdpr-15", "law": "GDPR", "article": "Art. 15", "duty": "right of access", "who": "controller",
      "probe": _p_rights("export"), "artifact": "export_subject()"},
     {"id": "gdpr-16", "law": "GDPR", "article": "Art. 16", "duty": "rectification", "who": "controller",
@@ -288,16 +306,15 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "gdpr-17", "law": "GDPR", "article": "Art. 17", "duty": "erasure", "who": "controller",
      "probe": _p_tombstones, "artifact": "forget_subject(), erasure_certificate(), erasure-verify"},
     {"id": "gdpr-20", "law": "GDPR", "article": "Art. 20", "duty": "portability in a machine-readable format", "who": "controller",
-     "probe": _p_rights("export"), "artifact": "export_subject() returns JSON with provenance",
-     "partial": "the export exists; it is not labelled as an Art. 20 response and carries no format version"},
+     "probe": _p_rights("portability"), "artifact": "export_subject(basis='portability'): the Art. 20 response with a versioned format and per-record portable flags; rights:portability entry"},
     {"id": "gdpr-21", "law": "GDPR", "article": "Art. 21", "duty": "objection: stop the processing", "who": "controller",
-     "probe": None, "gap": "a `record_objection` event that withholds the subject's records from recall, with a receipt"},
+     "probe": _p_objections, "artifact": "record_objection() withholds the subject's records from recall on the store; resolve_objection(); rights:objection entries"},
     {"id": "gdpr-22", "law": "GDPR", "article": "Art. 22", "duty": "automated decisions: human review on request", "who": "controller",
      "probe": _p_oversight, "artifact": "record_oversight(review) on the action"},
     {"id": "gdpr-25", "law": "GDPR", "article": "Art. 25", "duty": "data protection by design and by default", "who": "controller",
      "probe": _p_partitions, "artifact": "memory partitions with expiry, retention sweep, PII tagging"},
     {"id": "gdpr-28", "law": "GDPR", "article": "Art. 28", "duty": "processor obligations and records", "who": "controller, processor",
-     "probe": None, "gap": "a `record_processing_role` per store (controller or processor, on whose instruction)"},
+     "probe": _p_roles, "artifact": "record_processing_role() with the controller, the 28(3) instructions and the 28(2) sub-processors; processing_roles()"},
     {"id": "gdpr-30", "law": "GDPR", "article": "Art. 30", "duty": "records of processing activities", "who": "controller",
      "probe": _p_report("compliance_report", "compliance"), "artifact": "compliance_report() records section"},
     {"id": "gdpr-33", "law": "GDPR", "article": "Art. 33, 34", "duty": "breach notification within 72 hours, and to the subject", "who": "controller",

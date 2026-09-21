@@ -1574,19 +1574,58 @@ def oversight_report() -> dict:
 
 @mcp.tool()
 def export_subject(subject: str, request_id: str | None = None, include_text: bool = True,
-                   allow_ambiguous: bool = False) -> dict:
+                   allow_ambiguous: bool = False, basis: str = "access") -> dict:
     """GDPR Art. 15 access: everything this store holds about `subject` (a source doc identifier), resolved
     exactly as erasure resolves it, with provenance, correction history, the erasure tombstones already
     recorded, and the ledger actions taken while those records were recalled. Writes one rights:export
-    entry to the action ledger carrying the export's manifest hash. Refuses an ambiguous subject unless
-    allow_ambiguous is set."""
+    entry to the action ledger carrying the export's manifest hash. With basis="portability" the same
+    document is the Art. 20 response: labelled, with a versioned format and per-record portable flags,
+    logged as rights:portability. Refuses an ambiguous subject unless allow_ambiguous is set."""
     from inspeximus.actions import ActionLedger
     from inspeximus.subject_rights import export_subject as _export
     try:
         return _export(_MEM, subject, ledger=ActionLedger(_MEM, actor=_ACTOR), allow_ambiguous=allow_ambiguous,
-                       include_text=include_text, actor=_ACTOR, request_id=request_id)
+                       include_text=include_text, actor=_ACTOR, request_id=request_id, basis=basis)
     except Exception as ex:  # AmbiguousSubject and friends: return, do not crash the server
         return {"error": f"{type(ex).__name__}: {ex}"}
+
+
+@mcp.tool()
+def record_objection(subject: str, actor: str, ground: str, scope: str = "all",
+                     request_id: str | None = None, allow_ambiguous: bool = False) -> dict:
+    """GDPR Art. 21: record the subject's objection and stop serving their records. From this call on,
+    recall withholds every record whose source resolves to `subject`, including later writes, until the
+    objection is resolved. `ground` is own_situation (21(1)) or direct_marketing (21(2), never overridable);
+    `scope` is all or profiling. The records stay exportable under Art. 15; erasure is forget_subject."""
+    from inspeximus.actions import ActionLedger
+    from inspeximus.subject_rights import record_objection as _obj
+    try:
+        return _obj(_MEM, subject, actor, ground, scope=scope, ledger=ActionLedger(_MEM, actor=_ACTOR),
+                    request_id=request_id, allow_ambiguous=allow_ambiguous)
+    except Exception as ex:
+        return {"error": f"{type(ex).__name__}: {ex}"}
+
+
+@mcp.tool()
+def resolve_objection(subject: str, actor: str, outcome: str, grounds: str | None = None,
+                      request_id: str | None = None) -> dict:
+    """Close the standing Art. 21 objection by `subject`: `upheld` (records stay withheld) or `overridden`
+    (Art. 21(1) compelling legitimate grounds, which `grounds` must state; recall resumes). A
+    direct-marketing objection is refused an override."""
+    from inspeximus.actions import ActionLedger
+    from inspeximus.subject_rights import resolve_objection as _res
+    try:
+        return _res(_MEM, subject, actor, outcome, grounds=grounds, ledger=ActionLedger(_MEM, actor=_ACTOR),
+                    request_id=request_id)
+    except Exception as ex:
+        return {"error": f"{type(ex).__name__}: {ex}"}
+
+
+@mcp.tool()
+def objections() -> dict:
+    """Every Art. 21 objection this store has recorded, standing or resolved. Read-only."""
+    rows = _MEM.objections()
+    return {"objections": rows, "standing": sum(1 for o in rows if o.get("status") == "standing")}
 
 
 @mcp.tool()
@@ -1938,6 +1977,63 @@ def attest_documentation_retention(actor: str, placed_on_market_ts: float, docum
         return {"error": str(ex)}
     return {"seq": e["seq"], "retention_end_ts": e["retention_end_ts"], "within_period": e["within_period"],
             "gaps": e["gaps"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def record_notice(actor: str, subject: str, channel: str, items: list[str], article: int = 13,
+                  ts: float | None = None, text_sha256: str | None = None, source: str | None = None,
+                  timing: str | None = None, request_id: str | None = None) -> dict:
+    """Record that a data subject was given the GDPR Art. 13 (data collected from them) or Art. 14 (data
+    obtained elsewhere) information: the channel (ui, email, letter, api, voice, document), the items the
+    notice carried (controller_identity, dpo_contact, purposes_and_legal_basis, legitimate_interests,
+    recipients, third_country_transfer, retention_period, rights, withdraw_consent, complaint_to_authority,
+    provision_required, automated_decision_making; for Art. 14 also data_categories, data_source), and
+    `text_sha256` pinning the text. Art. 14 needs `source` and `timing` (at_collection, within_one_month,
+    at_first_communication, at_first_disclosure). The entry lists the items it did not carry."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.record_notice(actor, subject, channel, items, article=article, ts=ts, text_sha256=text_sha256,
+                              source=source, timing=timing, request_id=request_id)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "article": e["article"], "subject": e["subject"], "missing": e["missing"],
+            "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def notice_register() -> dict:
+    """The latest Art. 13 or 14 notice per subject and the items each one left out. Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).notice_register()
+
+
+@mcp.tool()
+def record_processing_role(actor: str, role: str, controller: str | None = None,
+                           instructions_ref: str | None = None, instructions_sha256: str | None = None,
+                           sub_processors: list[dict] | None = None, purposes: list[str] | None = None,
+                           categories: list[str] | None = None, store_ref: str | None = None,
+                           ts: float | None = None) -> dict:
+    """Record who this store's operator is for the personal data in it (GDPR Art. 28): controller,
+    joint_controller, processor or sub_processor. A processor names the `controller` and the written
+    `instructions_ref` (28(3)), pinned by `instructions_sha256`; `sub_processors` lists
+    {name, authorised_by, authorised_ts} (28(2)); `purposes` and `categories` describe the processing."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.record_processing_role(actor, role, controller=controller, instructions_ref=instructions_ref,
+                                       instructions_sha256=instructions_sha256, sub_processors=sub_processors,
+                                       purposes=purposes, categories=categories, store_ref=store_ref, ts=ts)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "role": e["role"], "controller": e["controller"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def processing_roles() -> dict:
+    """Every Art. 28 role declaration, with the current one named. Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).processing_roles()
 
 
 @mcp.tool()
