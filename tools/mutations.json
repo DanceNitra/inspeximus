@@ -2188,5 +2188,77 @@
   "tests": [
    "tests/test_authority_supersession_holds_a_lower_authority_write.py"
   ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "a scored literacy vocabulary is accepted",
+  "old": "        if measure not in LITERACY_MEASURES:\n            raise ValueError(f\"measure must be one of {LITERACY_MEASURES}\")",
+  "new": "        if False:\n            raise ValueError(f\"measure must be one of {LITERACY_MEASURES}\")",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "a not_applicable attestation needs no basis",
+  "old": "        if statement == \"not_applicable\" and not basis:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "an agreement with no provider is recorded",
+  "old": "        if not any(r[\"role\"] in (\"provider\", \"new_provider\", \"product_manufacturer\") for r in rows):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "an Annex VII declaration is recorded without its notified body",
+  "old": "            if not isinstance(notified_body, dict) or not notified_body.get(\"name\") or not notified_body.get(\"id\"):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the CE number may differ from the assessing body's",
+  "old": "            if nb and ce.get(\"notified_body_id\") and ce[\"notified_body_id\"] != nb[\"id\"]:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "a retention statement without the technical documentation passes",
+  "old": "        for k in (\"technical_documentation\", \"eu_declaration_of_conformity\"):\n            if not seen.get(k, {}).get(\"present\"):",
+  "new": "        for k in (\"technical_documentation\", \"eu_declaration_of_conformity\"):\n            if False:",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the retention period is one year, not ten",
+  "old": "        end = placed + DOCUMENTATION_RETENTION_YEARS * 365.25 * 86400.0",
+  "new": "        end = placed + 1 * 365.25 * 86400.0",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "the attestation register hides the classes with none",
+  "old": "                \"missing\": [c for c in PROHIBITED_PRACTICES if c not in latest], \"rows\": rows,",
+  "new": "                \"missing\": [], \"rows\": rows,",
+  "tests": [
+   "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
+  ]
  }
 ]

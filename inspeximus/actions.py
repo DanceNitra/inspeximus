@@ -45,6 +45,7 @@ import functools
 import hashlib
 import json
 import os
+import re
 import time
 from pathlib import Path
 from typing import Any, Callable, Iterable
@@ -61,7 +62,9 @@ __all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VE
            "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS", "INCIDENT_SEVERITIES", "INCIDENT_DEADLINES_DAYS",
            "RISK_SOURCES", "RISK_HARMS", "RISK_MEASURES", "RISK_LEVELS", "CORRECTIVE_ACTIONS",
            "INFORMED_PARTIES", "AUTHORITY_REQUEST_SCOPES", "BREACH_NOTIFY_TARGETS", "BREACH_EXEMPTIONS",
-           "BREACH_DEADLINE_HOURS"]
+           "BREACH_DEADLINE_HOURS", "LITERACY_MEASURES", "LITERACY_AUDIENCES", "LITERACY_CONSIDERATIONS",
+           "PROHIBITED_PRACTICES", "ATTESTATION_STATEMENTS", "RESPONSIBILITY_ROLES", "PROVIDER_TRIGGERS",
+           "COOPERATION_ITEMS", "CONFORMITY_PROCEDURES", "RETENTION_DOCUMENTS", "DOCUMENTATION_RETENTION_YEARS"]
 
 # Art. 73(2) to (4): a serious incident is reported immediately and no later than 15 days after the
 # provider becomes aware of it; 2 days for a widespread infringement or a serious incident concerning
@@ -95,6 +98,51 @@ BREACH_EXEMPTIONS = ("protected", "mitigated", "disproportionate")
 BREACH_DEADLINE_HOURS = 72
 DISCLOSURE_KINDS = ("interaction", "generated_content", "emotion_recognition", "biometric_categorisation",
                     "deepfake", "public_interest_text")
+
+#: Art. 4 (as amended by the Digital Omnibus, in force 27 July 2026): providers and deployers take measures
+#: to support the development of AI literacy of their staff and other persons dealing with the operation
+#: and use of AI systems on their behalf, taking into account their technical knowledge, experience,
+#: education and training, the context of use, and the persons the systems are used on. The obligation
+#: does not require a specific level for any individual, so the record is the measure taken, never a score.
+LITERACY_MEASURES = ("training", "guidance", "documentation", "briefing", "assessment")
+LITERACY_AUDIENCES = ("staff", "contractor", "operator_of_the_system", "other_person_on_behalf")
+LITERACY_CONSIDERATIONS = ("technical_knowledge", "experience", "education", "training", "context_of_use",
+                           "persons_affected")
+
+#: Art. 5(1), the classes of prohibited practice a provider or deployer attests it does not use. (ba) and
+#: (bb) were added by the amendment and apply from 2 December 2026; (g) and (h) are the biometric ones.
+PROHIBITED_PRACTICES = {
+    "a": "subliminal, manipulative or deceptive techniques that materially distort behaviour",
+    "b": "exploiting vulnerabilities of age, disability or social or economic situation",
+    "ba": "generating or manipulating intimate imagery of an identifiable person without consent",
+    "bb": "generating or manipulating child sexual abuse material or performance",
+    "c": "social scoring leading to detrimental or disproportionate treatment",
+    "d": "risk assessment of a natural person committing a criminal offence based solely on profiling",
+    "e": "creating or expanding facial recognition databases by untargeted scraping",
+    "f": "inferring emotions in the workplace or in education, outside medical or safety reasons",
+    "g": "biometric categorisation inferring race, political opinion, union membership, religion, sex life or orientation",
+    "h": "real-time remote biometric identification in publicly accessible spaces for law enforcement",
+}
+#: What the attestation says about a class: the system is not used for it, or the class cannot arise in
+#: this system at all (with the basis stated, because "not applicable" is the easier claim).
+ATTESTATION_STATEMENTS = ("not_used", "not_applicable")
+
+#: Art. 25: who is the provider along the value chain, and why a party became one (25(1)(a) to (c)).
+RESPONSIBILITY_ROLES = ("provider", "initial_provider", "new_provider", "product_manufacturer", "distributor",
+                        "importer", "deployer", "authorised_representative", "third_party_supplier")
+PROVIDER_TRIGGERS = ("name_or_trademark", "substantial_modification", "changed_intended_purpose")
+#: Art. 25(2) as amended: what the initial provider makes available to a new provider.
+COOPERATION_ITEMS = ("technical_documentation", "known_limitations_and_failure_modes", "targeted_technical_access")
+
+#: Art. 43(1): the conformity assessment procedure the provider followed. Annex VI is internal control;
+#: Annex VII involves a notified body, whose identification then follows the CE marking (Art. 48(4)).
+CONFORMITY_PROCEDURES = ("annex_vi_internal_control", "annex_vii_notified_body")
+
+#: Art. 18(1)(a) to (e): what the provider keeps at the disposal of the authorities for ten years after
+#: the system was placed on the market or put into service.
+RETENTION_DOCUMENTS = ("technical_documentation", "quality_management_system", "notified_body_changes",
+                       "notified_body_decisions", "eu_declaration_of_conformity")
+DOCUMENTATION_RETENTION_YEARS = 10
 
 GENESIS = "0" * 64
 LEDGER_VERSION = 1
@@ -409,9 +457,11 @@ class ActionLedger:
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
         if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp",
-                        "lifecycle", "risk", "monitoring", "corrective", "authority", "breach"):
+                        "lifecycle", "risk", "monitoring", "corrective", "authority", "breach",
+                        "literacy", "attestation", "responsibilities", "declaration", "documentation"):
             raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
-                             "lifecycle, risk, monitoring, corrective, authority or breach")
+                             "lifecycle, risk, monitoring, corrective, authority, breach, literacy, attestation, "
+                             "responsibilities, declaration or documentation")
         self._refresh_if_changed()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -755,11 +805,19 @@ class ActionLedger:
             "authority_requests": len(kind("authority")),
             "breaches": {"opened": sum(1 for e in kind("breach") if not e.get("event")),
                          "notified_late": sum(1 for e in kind("breach") if e.get("late"))},
+            "literacy_measures": len(kind("literacy")),
+            "attestations": {"entries": len(kind("attestation")),
+                             "classes_attested": len({e.get("practice") for e in kind("attestation")})},
+            "responsibilities_agreements": len(kind("responsibilities")),
+            "declarations": len(kind("declaration")),
+            "documentation_attestations": len(kind("documentation")),
             "chain": _chain_state(self),
             "requirements": {"Art. 9": "risks", "Art. 12": "actions, chain", "Art. 14": "oversight",
                              "Art. 15": "chain, incidents", "Art. 13": "disclosures", "Art. 73": "incidents",
                              "Art. 20": "corrective_actions", "Art. 21": "authority_requests",
-                             "GDPR Art. 33": "breaches"},
+                             "GDPR Art. 33": "breaches", "Art. 4": "literacy_measures", "Art. 5": "attestations",
+                             "Art. 25": "responsibilities_agreements", "Art. 47": "declarations",
+                             "Art. 18": "documentation_attestations"},
             "store": {"records": len(list(self.store.items)) if self.store is not None else None,
                       "tombstones": len(getattr(self.store, "_tombstones", None) or []) if self.store is not None else None},
             "plan": ({"name": plan.get("name"), "version": plan.get("version"),
@@ -1022,6 +1080,285 @@ class ActionLedger:
                 "scope": ("What this ledger records about the breach and its clock. Whether the breach was "
                           "unlikely to result in a risk, and whether the risk to the subjects is high, are "
                           "the controller's assessments; this is the evidence of when they were made.")}
+
+    # ------------------------------------------------------------------ Art. 4: AI literacy
+    def record_literacy(self, actor: str, measure: str, audience: str, description: str,
+                        ts: float | None = None, system: str | None = None, context: str | None = None,
+                        considered: list | None = None, persons_affected: list | None = None,
+                        refers_to: list | None = None, meta: dict | None = None) -> dict:
+        """Record one AI-literacy measure (EU AI Act Art. 4, as amended): what was done (`measure`), for
+        whom (`audience`: staff, or other persons operating or using the system on the operator's behalf),
+        when, for which system and context of use, and which of the Art. 4 considerations it took into
+        account (technical knowledge, experience, education, training, the context, the persons the system
+        is used on). The article requires measures, not a level of literacy for any individual, so the
+        record names the measure and never scores a person. `refers_to` links the material (a documentation
+        entry, an instructions-for-use export) and each reference must resolve."""
+        if measure not in LITERACY_MEASURES:
+            raise ValueError(f"measure must be one of {LITERACY_MEASURES}")
+        if audience not in LITERACY_AUDIENCES:
+            raise ValueError(f"audience must be one of {LITERACY_AUDIENCES}")
+        if not actor or not description:
+            raise ValueError("a literacy record needs an actor and a description of the measure")
+        bad = [c for c in (considered or []) if c not in LITERACY_CONSIDERATIONS]
+        if bad:
+            raise ValueError(f"considered must be among {LITERACY_CONSIDERATIONS}, got {bad}")
+        refs = [self._resolve_ref(r) for r in (refers_to or [])]
+        extra = {"literacy_measure": measure, "audience": audience, "description": str(description)[:2000],
+                 "delivered_ts": float(ts) if ts is not None else time.time(), "system": system,
+                 "context": context, "considered": list(considered or []),
+                 "persons_affected": [str(x) for x in (persons_affected or [])], "material": refs}
+        return self.record(f"literacy:{measure}", inputs={"audience": audience}, status="ok", actor=actor,
+                           meta=meta, kind="literacy", extra=extra)
+
+    def literacy_register(self) -> dict:
+        """Every Art. 4 measure recorded, with counts by audience and by measure. Read-only."""
+        ev = [e for e in self._entries if e.get("kind") == "literacy"]
+        return {"kind": "inspeximus.literacy_register/1", "measures": len(ev),
+                "by_audience": _count_by(ev, "audience"), "by_measure": _count_by(ev, "literacy_measure"),
+                "entries": [{"seq": e["seq"], "ts": e.get("ts"), "delivered_ts": e.get("delivered_ts"),
+                             "measure": e.get("literacy_measure"), "audience": e.get("audience"),
+                             "system": e.get("system"), "considered": e.get("considered") or [],
+                             "actor": e.get("actor"), "signed": "sig" in e} for e in ev],
+                "scope": ("The measures this ledger records. Art. 4 asks for measures taken, not for a level "
+                          "of literacy reached; whether the measures were sufficient is the operator's judgement.")}
+
+    # ------------------------------------------------------------------ Art. 5: prohibited practices
+    def record_attestation(self, actor: str, practice: str, statement: str, basis: str | None = None,
+                           ts: float | None = None, system: str | None = None, meta: dict | None = None) -> dict:
+        """Attest, for one Art. 5(1) class, that the system is not used for that practice (`not_used`) or
+        that the class cannot arise in it (`not_applicable`, which needs a `basis`: what about the system
+        rules it out). One entry per class per attestation date; the register shows the latest for each of
+        the ten classes and names the classes with none. The attestation is the operator's statement,
+        signed when the ledger signs; nothing here inspects the system."""
+        if practice not in PROHIBITED_PRACTICES:
+            raise ValueError(f"practice must be one of {sorted(PROHIBITED_PRACTICES)}")
+        if statement not in ATTESTATION_STATEMENTS:
+            raise ValueError(f"statement must be one of {ATTESTATION_STATEMENTS}")
+        if not actor:
+            raise ValueError("an attestation needs an actor")
+        if statement == "not_applicable" and not basis:
+            raise ValueError("a not_applicable attestation needs its basis: what about the system rules the class out")
+        extra = {"practice": practice, "practice_text": PROHIBITED_PRACTICES[practice], "statement": statement,
+                 "basis": (str(basis)[:2000] if basis else None),
+                 "attested_ts": float(ts) if ts is not None else time.time(), "system": system}
+        return self.record(f"attestation:{practice}", inputs={"statement": statement}, status="ok", actor=actor,
+                           meta=meta, kind="attestation", extra=extra)
+
+    def attestation_register(self) -> dict:
+        """The latest Art. 5 attestation per prohibited-practice class, and the classes with none. Read-only."""
+        latest: dict = {}
+        for e in self._entries:
+            if e.get("kind") == "attestation":
+                latest[e["practice"]] = e
+        rows = []
+        for code, text in PROHIBITED_PRACTICES.items():
+            e = latest.get(code)
+            rows.append({"practice": code, "text": text,
+                         "statement": e.get("statement") if e else None, "basis": e.get("basis") if e else None,
+                         "attested_ts": e.get("attested_ts") if e else None, "seq": e["seq"] if e else None,
+                         "actor": e.get("actor") if e else None, "signed": ("sig" in e) if e else False})
+        return {"kind": "inspeximus.attestation_register/1", "attested": len(latest),
+                "missing": [c for c in PROHIBITED_PRACTICES if c not in latest], "rows": rows,
+                "scope": ("The operator's own attestations, dated and signed. Whether a practice is in fact "
+                          "absent is not something a ledger can see; the register shows what was attested and "
+                          "when, and which classes were never attested.")}
+
+    # ------------------------------------------------------------------ Art. 25: responsibilities along the value chain
+    def record_responsibilities(self, actor: str, agreement_ref: str, parties: list, ts: float | None = None,
+                                agreement_sha256: str | None = None, trigger: str | None = None,
+                                cooperation: dict | None = None, not_to_be_changed_into_high_risk: bool = False,
+                                system: str | None = None, meta: dict | None = None) -> dict:
+        """Record who carries which obligations along the value chain (EU AI Act Art. 25). `parties` is a
+        list of {party, role, obligations}; exactly the roles of Art. 25 are allowed and at least one party
+        must carry the provider's obligations (provider, new_provider or product_manufacturer). `trigger`
+        is why a party became the provider (25(1)(a) name or trademark, (b) substantial modification,
+        (c) changed intended purpose). `cooperation` records the 25(2) items the initial provider made
+        available (technical_documentation, known_limitations_and_failure_modes, targeted_technical_access)
+        as {item: reference}; `not_to_be_changed_into_high_risk` is the 25(2) opt-out, which excludes the
+        cooperation duty, so the two are refused together. `agreement_ref` names the 25(4) written
+        agreement and `agreement_sha256` pins its bytes."""
+        if not actor or not agreement_ref:
+            raise ValueError("a responsibilities record needs an actor and the written agreement it records")
+        if not parties:
+            raise ValueError("at least one party is needed")
+        rows = []
+        for p in parties:
+            if not isinstance(p, dict) or not p.get("party") or p.get("role") not in RESPONSIBILITY_ROLES:
+                raise ValueError(f"each party needs a name and a role in {RESPONSIBILITY_ROLES}")
+            rows.append({"party": str(p["party"]), "role": p["role"],
+                         "obligations": [str(o) for o in (p.get("obligations") or [])]})
+        if not any(r["role"] in ("provider", "new_provider", "product_manufacturer") for r in rows):
+            raise ValueError("no party carries the provider's obligations; Art. 25 exists to say who does")
+        if trigger is not None and trigger not in PROVIDER_TRIGGERS:
+            raise ValueError(f"trigger must be one of {PROVIDER_TRIGGERS}")
+        coop = {}
+        for k, v in (cooperation or {}).items():
+            if k not in COOPERATION_ITEMS:
+                raise ValueError(f"cooperation items are {COOPERATION_ITEMS}")
+            coop[k] = str(v)
+        if coop and not_to_be_changed_into_high_risk:
+            raise ValueError("the 25(2) opt-out and cooperation items exclude each other")
+        extra = {"agreement_ref": str(agreement_ref), "agreement_sha256": agreement_sha256, "parties": rows,
+                 "trigger": trigger, "cooperation": coop,
+                 "not_to_be_changed_into_high_risk": bool(not_to_be_changed_into_high_risk),
+                 "agreed_ts": float(ts) if ts is not None else time.time(), "system": system}
+        return self.record("responsibilities:agreement", inputs={"agreement": str(agreement_ref)}, status="ok",
+                           actor=actor, meta=meta, kind="responsibilities", extra=extra)
+
+    def responsibilities_register(self) -> dict:
+        """Every Art. 25 record: the agreement, the parties and roles, the trigger, the 25(2) items. Read-only."""
+        ev = [e for e in self._entries if e.get("kind") == "responsibilities"]
+        return {"kind": "inspeximus.responsibilities_register/1", "agreements": len(ev),
+                "entries": [{"seq": e["seq"], "ts": e.get("ts"), "agreement_ref": e.get("agreement_ref"),
+                             "agreement_sha256": e.get("agreement_sha256"), "parties": e.get("parties") or [],
+                             "trigger": e.get("trigger"), "cooperation": e.get("cooperation") or {},
+                             "not_to_be_changed_into_high_risk": bool(e.get("not_to_be_changed_into_high_risk")),
+                             "actor": e.get("actor"), "signed": "sig" in e} for e in ev],
+                "scope": ("Who the parties said carries what. Whether a modification was substantial, and so "
+                          "whether the trigger applies, is a finding under Art. 3(23), not a ledger field.")}
+
+    # ------------------------------------------------------------------ Art. 43, 47, 48: declaration of conformity
+    def record_declaration(self, actor: str, system_name: str, system_type: str, system_reference: str,
+                           provider_name: str, provider_address: str, conformity_procedure: str, place: str,
+                           signer_name: str, signer_function: str, signed_for: str,
+                           issue_ts: float | None = None, annex_iv_sha256: str | None = None,
+                           personal_data: bool = False, harmonised_standards: list | None = None,
+                           common_specifications: list | None = None, notified_body: dict | None = None,
+                           other_union_law: list | None = None, ce_marking: dict | None = None,
+                           authorised_representative: dict | None = None, meta: dict | None = None) -> dict:
+        """Record an EU declaration of conformity (Art. 47) with every Annex V item: (1) the system's name,
+        type and unambiguous reference; (2) the provider's name and address, or the authorised
+        representative's; (3) that it is issued under the provider's sole responsibility; (4) that the system
+        conforms to the Regulation and, where applicable, other Union law (47(3)); (5) where personal data is
+        processed, that it complies with the GDPR, Regulation 2018/1725 and Directive 2016/680; (6) the
+        harmonised standards or common specifications used; (7) where applicable, the notified body, the
+        procedure and the certificate; (8) the place and date of issue and who signed, in what function, for
+        whom. `conformity_procedure` is the Art. 43 choice; Annex VII requires a notified body with an
+        identification number, which Art. 48(4) then puts after the CE marking. `annex_iv_sha256` pins the
+        technical documentation the declaration rests on. The assessment itself is the provider's; this is
+        the declaration as drawn up, machine readable (47(1))."""
+        req = {"actor": actor, "system_name": system_name, "system_type": system_type,
+               "system_reference": system_reference, "provider_name": provider_name,
+               "provider_address": provider_address, "place": place, "signer_name": signer_name,
+               "signer_function": signer_function, "signed_for": signed_for}
+        missing = [k for k, v in req.items() if not v]
+        if missing:
+            raise ValueError(f"a declaration needs {missing} (Annex V items 1, 2 and 8)")
+        if conformity_procedure not in CONFORMITY_PROCEDURES:
+            raise ValueError(f"conformity_procedure must be one of {CONFORMITY_PROCEDURES}")
+        nb = None
+        if conformity_procedure == "annex_vii_notified_body":
+            if not isinstance(notified_body, dict) or not notified_body.get("name") or not notified_body.get("id"):
+                raise ValueError("an Annex VII assessment needs the notified body's name and identification number (Annex V item 7, Art. 48(4))")
+            nb = {"name": str(notified_body["name"]), "id": str(notified_body["id"]),
+                  "procedure": str(notified_body.get("procedure") or "Annex VII"),
+                  "certificate": notified_body.get("certificate")}
+        elif notified_body:
+            raise ValueError("a notified body is recorded only for an Annex VII assessment")
+        if annex_iv_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(annex_iv_sha256)):
+            raise ValueError("annex_iv_sha256 must be a 64-hex sha256 of the technical documentation")
+        ce = None
+        if ce_marking is not None:
+            if not isinstance(ce_marking, dict):
+                raise ValueError("ce_marking is a dict: {digital_access, affixed_to, notified_body_id}")
+            ce = {"digital_access": ce_marking.get("digital_access"), "affixed_to": ce_marking.get("affixed_to"),
+                  "notified_body_id": ce_marking.get("notified_body_id")}
+            if nb and ce.get("notified_body_id") and ce["notified_body_id"] != nb["id"]:
+                raise ValueError("the notified body id after the CE marking (Art. 48(4)) must be the assessing body's")
+        extra = {"system_name": str(system_name), "system_type": str(system_type),
+                 "system_reference": str(system_reference), "provider_name": str(provider_name),
+                 "provider_address": str(provider_address),
+                 "authorised_representative": (dict(authorised_representative) if authorised_representative else None),
+                 "sole_responsibility": True, "conforms": True,
+                 "other_union_law": [str(x) for x in (other_union_law or [])],
+                 "personal_data": bool(personal_data),
+                 "data_protection_statement": bool(personal_data),
+                 "harmonised_standards": [str(x) for x in (harmonised_standards or [])],
+                 "common_specifications": [str(x) for x in (common_specifications or [])],
+                 "conformity_procedure": conformity_procedure, "notified_body": nb, "ce_marking": ce,
+                 "place": str(place), "issue_ts": float(issue_ts) if issue_ts is not None else time.time(),
+                 "signer": {"name": str(signer_name), "function": str(signer_function), "for": str(signed_for)},
+                 "annex_iv_sha256": annex_iv_sha256}
+        return self.record("declaration:eu", inputs={"system": str(system_reference)}, status="ok", actor=actor,
+                           meta=meta, kind="declaration", extra=extra)
+
+    def declaration_document(self, seq: int) -> dict:
+        """The declaration at `seq` as one machine-readable document with the Annex V items in order,
+        the Art. 43 procedure, the Art. 48 marking, and the ledger hash that binds it. Read-only."""
+        e = self._at(seq)
+        if e.get("kind") != "declaration":
+            raise ValueError(f"entry {seq} is a {e.get('kind', 'action')}, not a declaration")
+        items = {
+            "1_system": {"name": e.get("system_name"), "type": e.get("system_type"), "reference": e.get("system_reference")},
+            "2_provider": {"name": e.get("provider_name"), "address": e.get("provider_address"),
+                           "authorised_representative": e.get("authorised_representative")},
+            "3_sole_responsibility": "This EU declaration of conformity is issued under the sole responsibility of the provider.",
+            "4_conformity": ("The AI system identified above is in conformity with Regulation (EU) 2024/1689"
+                             + (" and with " + ", ".join(e.get("other_union_law") or []) if e.get("other_union_law") else "") + "."),
+            "5_personal_data": ("The AI system complies with Regulations (EU) 2016/679 and (EU) 2018/1725 and Directive (EU) 2016/680."
+                                if e.get("personal_data") else "not applicable: the system does not process personal data, as declared"),
+            "6_standards": {"harmonised_standards": e.get("harmonised_standards") or [],
+                            "common_specifications": e.get("common_specifications") or []},
+            "7_notified_body": e.get("notified_body") or "not applicable: Annex VI internal control",
+            "8_signature": {"place": e.get("place"), "issue_ts": e.get("issue_ts"), **(e.get("signer") or {})},
+        }
+        return {"kind": "inspeximus.eu_declaration_of_conformity/1", "seq": seq, "ts": e.get("ts"),
+                "annex_v": items, "conformity_procedure": e.get("conformity_procedure"),
+                "ce_marking": e.get("ce_marking"), "technical_documentation_sha256": e.get("annex_iv_sha256"),
+                "hash": e.get("hash"), "signed": "sig" in e,
+                "scope": ("The declaration as the provider drew it up, in the Annex V order. The assessment behind "
+                          "it (Art. 43) is the provider's or the notified body's; this document is what Art. 47(1) "
+                          "asks to be kept and handed over on request.")}
+
+    # ------------------------------------------------------------------ Art. 18: documentation keeping
+    def attest_documentation_retention(self, actor: str, placed_on_market_ts: float, documents: list,
+                                       now: float | None = None, declaration_seq: int | None = None,
+                                       note: str | None = None, meta: dict | None = None) -> dict:
+        """Append a signed statement of which Art. 18(1) documents are at the disposal of the authorities:
+        (a) the technical documentation, (b) the quality management system documentation, (c) changes
+        approved by notified bodies and (d) their decisions, where applicable, (e) the EU declaration of
+        conformity. `documents` is a list of {kind, sha256 or ref, present, not_applicable_reason}. (a) and
+        (e) are required present; (c) and (d) may be not applicable with a reason; (b) absent is recorded
+        as a gap, not refused. The period ends ten years after `placed_on_market_ts`, and the statement
+        carries the end date and whether the attestation falls inside it. `declaration_seq` links the
+        declaration entry, like `attest_retention` over logs (Art. 19)."""
+        if not actor:
+            raise ValueError("attest_documentation_retention needs an actor")
+        now = time.time() if now is None else float(now)
+        placed = float(placed_on_market_ts)
+        seen: dict = {}
+        for d in documents or []:
+            if not isinstance(d, dict) or d.get("kind") not in RETENTION_DOCUMENTS:
+                raise ValueError(f"each document needs a kind in {RETENTION_DOCUMENTS}")
+            present = bool(d.get("present", True))
+            na = d.get("not_applicable_reason")
+            if present and not (d.get("sha256") or d.get("ref")):
+                raise ValueError(f"a present {d['kind']} needs a sha256 or a ref an assessor can follow")
+            if d.get("sha256") is not None and not re.fullmatch(r"[0-9a-f]{64}", str(d["sha256"])):
+                raise ValueError(f"{d['kind']}: sha256 must be 64 hex characters")
+            seen[d["kind"]] = {"present": present, "sha256": d.get("sha256"), "ref": d.get("ref"),
+                               "not_applicable_reason": (str(na)[:500] if na else None)}
+        for k in ("technical_documentation", "eu_declaration_of_conformity"):
+            if not seen.get(k, {}).get("present"):
+                raise ValueError(f"{k} must be present: Art. 18(1) has no case where it is not applicable")
+        for k in ("notified_body_changes", "notified_body_decisions"):
+            row = seen.get(k)
+            if row is None or (not row["present"] and not row["not_applicable_reason"]):
+                raise ValueError(f"{k} is present, or not applicable with the reason (no notified body)")
+        decl = self._resolve_ref(declaration_seq) if declaration_seq is not None else None
+        if decl is not None and self._at(decl["seq"]).get("kind") != "declaration":
+            raise ValueError("declaration_seq must point at a declaration entry")
+        end = placed + DOCUMENTATION_RETENTION_YEARS * 365.25 * 86400.0
+        extra = {"event": "attest", "placed_on_market_ts": placed, "retention_years": DOCUMENTATION_RETENTION_YEARS,
+                 "retention_end_ts": end, "within_period": bool(placed <= now <= end),
+                 "years_elapsed": round((now - placed) / (365.25 * 86400.0), 3),
+                 "documents": {k: seen.get(k, {"present": False, "sha256": None, "ref": None, "not_applicable_reason": None})
+                               for k in RETENTION_DOCUMENTS},
+                 "gaps": [k for k in RETENTION_DOCUMENTS
+                          if not seen.get(k, {}).get("present") and not seen.get(k, {}).get("not_applicable_reason")],
+                 "declaration": decl, "note": (str(note)[:2000] if note else None), "attested_ts": now}
+        return self.record("documentation:attest", inputs={"placed": placed}, status="ok", actor=actor,
+                           meta=meta, kind="documentation", extra=extra)
 
     def incident_reported(self, seq: int, actor: str, reported_to: str, reported_ts: float | None = None,
                           note: str | None = None) -> dict:

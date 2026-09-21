@@ -1,3 +1,54 @@
+## 3.3.0 - AI literacy (Art. 4), prohibited-practice attestations (Art. 5), responsibilities along the value chain (Art. 25), the EU declaration of conformity (Art. 43, 47, 48) and documentation keeping (Art. 18), as signed ledger entries. UPGRADE IF AN ASSESSOR WILL ASK WHO TRAINED THE STAFF, WHO IS THE PROVIDER, OR WHERE THE DECLARATION IS. AFFECTS: adds nine `ActionLedger` methods, nine CLI subcommands under `actions`, and nine MCP tools (121); the ledger accepts five new entry kinds, `literacy`, `attestation`, `responsibilities`, `declaration` and `documentation`; the deployer report gains an Art. 4 section; nothing existing changes.
+
+`record_literacy()` records one measure taken under Art. 4 as amended (training, guidance,
+documentation, briefing, assessment), for which audience (staff, contractors, operators, other
+persons acting on the operator's behalf), and which of the article's considerations it took into
+account (technical knowledge, experience, education, training, the context of use, the persons the
+system is used on). The article asks for measures and guarantees no level for any individual, so
+the record carries no score. `literacy_register()` counts by audience and by measure; the deployer
+report carries the count under a new `4_ai_literacy` section.
+
+`record_attestation()` is one signed, dated statement per Art. 5(1) class, ten of them with (ba)
+and (bb) from the amendment: the system is `not_used` for the practice, or the class is
+`not_applicable` with the basis that rules it out, because "not applicable" is the easier claim
+and is refused without one. `attestation_register()` shows the latest per class and names the
+classes never attested. The ledger records what was attested and when; whether a practice is in
+fact absent is not something a ledger can see.
+
+`record_responsibilities()` records the Art. 25(4) written agreement by reference and hash, the
+parties with their roles from the article's list, the 25(1) trigger by which a party became the
+provider (name or trademark, substantial modification, changed intended purpose), and the 25(2)
+items the initial provider made available (technical documentation, known limitations and failure
+modes, targeted technical access). At least one party must carry the provider's obligations. The
+25(2) opt-out (specified not to be changed into a high-risk system) and cooperation items are
+refused together, because the opt-out is what removes the duty.
+
+`record_declaration()` carries every Annex V item: the system's name, type and reference; the
+provider or authorised representative; the sole-responsibility and conformity statements; the
+data-protection statement where personal data is processed; the harmonised standards or common
+specifications; the notified body where Annex VII applied; the place, date and signer. The Art. 43
+procedure is a field, and Annex VII is refused without the notified body's name and number, which
+Art. 48(4) then puts after the CE marking, so a CE record naming a different body is refused too.
+`annex_iv_sha256` pins the technical documentation the declaration rests on.
+`declaration_document(seq)` renders it in the Annex V order as the machine-readable document Art.
+47(1) asks for, with the ledger hash that binds it. The assessment itself stays the provider's or
+the notified body's, and the coverage row says so.
+
+`attest_documentation_retention()` is a signed statement of which Art. 18(1) documents are at the
+authorities' disposal: (a) the technical documentation, (b) the quality management system
+documentation, (c) changes approved by notified bodies, (d) their decisions, (e) the EU declaration,
+each by sha256 or reference, present or not applicable with the reason. (a) and (e) have no
+not-applicable case and are required; (c) and (d) may be not applicable when no notified body was
+involved; an absent (b) is recorded as a gap rather than refused. The statement carries the end of
+the ten-year period from placing on the market and whether the attestation falls inside it, and
+links the declaration entry the way `attest_retention` links logs under Art. 19.
+
+`inspeximus coverage` on a fresh store: 33 of 36 in-scope duties covered, 3 not covered (was 28
+and 8); every AI Act row is now covered, and GDPR Art. 13/14, 21 and 28 remain. Eight mutations,
+all killed by
+`tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py`.
+This is the release the evidence plan numbered 2.45.0 before the 3.x line began.
+
 ## 3.2.0 - an opt-in authority rule for keyed writes, measured on MemTX before it was built. UPGRADE IF A WEAKER SOURCE CAN REACH THE SAME KEY AS A STRONGER ONE: AN AGENT NEXT TO A SYSTEM OF RECORD, A TOOL RESULT NEXT TO A HUMAN. AFFECTS: adds the `supersession=` constructor flag (`"lww"`, the default, or `"authority"`) and the `INSPEXIMUS_SUPERSESSION` variable; under `"authority"` a keyed write whose effective `source.authority` is below the incumbent's is retired on arrival with `meta.superseded_by_policy == "keyed_authority"`, and a present but non-numeric authority is refused at the write. NOT A BREAKING RELEASE: the default store is byte-identical to 3.1.0, `source.authority` stays inert under it, and no call changes signature.
 
 `supersession="authority"` runs after the echo guard and before last-write-wins. A write below the

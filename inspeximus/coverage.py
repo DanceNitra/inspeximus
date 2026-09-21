@@ -121,6 +121,32 @@ def _p_breaches(store):
     return len(ev), f"{len(ev)} breach record(s) with the 72-hour clock"
 
 
+def _p_literacy(store):
+    n = len(_entries(store, "literacy"))
+    return n, f"{n} AI-literacy measure(s) recorded, with audience and considerations"
+
+
+def _p_attestations(store):
+    ev = _entries(store, "attestation")
+    classes = {e.get("practice") for e in ev}
+    return len(classes), f"{len(classes)} of 10 prohibited-practice classes attested, {len(ev)} attestation(s)"
+
+
+def _p_responsibilities(store):
+    n = len(_entries(store, "responsibilities"))
+    return n, f"{n} value-chain agreement(s) recorded, with the parties and roles"
+
+
+def _p_declarations(store):
+    n = len(_entries(store, "declaration"))
+    return n, f"{n} EU declaration(s) of conformity recorded, with the Annex V items"
+
+
+def _p_documentation(store):
+    n = len(_entries(store, "documentation"))
+    return n, f"{n} documentation-retention attestation(s) over the Art. 18(1) documents"
+
+
 def _p_lifecycle(store):
     n = len(_entries(store, "lifecycle"))
     return n, f"{n} lifecycle event(s)"
@@ -194,9 +220,9 @@ def _p_anchor(store):
 OBLIGATIONS: list[dict[str, Any]] = [
     # ---- EU AI Act: every operator
     {"id": "aia-4", "law": "AI Act", "article": "Art. 4", "duty": "AI literacy of staff", "who": "provider, deployer",
-     "probe": None, "gap": "a `record_literacy` ledger event (who, what, when) and a count in the deployer report"},
+     "probe": _p_literacy, "artifact": "record_literacy() with the measure, audience and Art. 4 considerations; literacy_register(); the count in the deployer report"},
     {"id": "aia-5", "law": "AI Act", "article": "Art. 5", "duty": "prohibited practices are not used", "who": "provider, deployer",
-     "probe": None, "gap": "a signed `record_attestation` event per prohibited-practice class, dated, in the ledger"},
+     "probe": _p_attestations, "artifact": "record_attestation() per Art. 5(1) class, dated and signed; attestation_register() names the classes with none"},
     {"id": "aia-50", "law": "AI Act", "article": "Art. 50", "duty": "disclosure that the user interacts with an AI system; marking of generated content",
      "who": "provider, deployer", "probe": _p_disclosures, "artifact": "record_disclosure()"},
     # ---- EU AI Act: high-risk provider
@@ -219,7 +245,7 @@ OBLIGATIONS: list[dict[str, Any]] = [
      "probe": _p_report("compliance_report", "compliance"), "artifact": "compliance_report(), audit bundle",
      "partial": "the library stores and proves the QMS records; the QMS itself is the provider's"},
     {"id": "aia-18", "law": "AI Act", "article": "Art. 18", "duty": "keep the documentation ten years", "who": "provider",
-     "probe": None, "gap": "an `attest_documentation_retention` statement over annex_iv and the declaration, like attest_retention over logs"},
+     "probe": _p_documentation, "artifact": "attest_documentation_retention() over the Art. 18(1)(a) to (e) documents, with the ten-year end date"},
     {"id": "aia-19", "law": "AI Act", "article": "Art. 19", "duty": "keep the logs at least six months", "who": "provider",
      "probe": _p_retention, "artifact": "attest_retention(), archive under a signed checkpoint"},
     {"id": "aia-20", "law": "AI Act", "article": "Art. 20", "duty": "corrective actions: withdraw, disable, recall; inform the chain", "who": "provider",
@@ -227,9 +253,10 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "aia-21", "law": "AI Act", "article": "Art. 21", "duty": "cooperation with authorities: hand over documentation and logs", "who": "provider",
      "probe": _p_authority, "artifact": "authority_request() naming the request, its scope and what was provided (by reference); the audit bundle, export-trail and compliance_report() are what is handed over"},
     {"id": "aia-25", "law": "AI Act", "article": "Art. 25", "duty": "responsibilities along the value chain", "who": "provider, distributor, deployer",
-     "probe": None, "gap": "a signed `record_responsibilities` event naming the parties and the split"},
+     "probe": _p_responsibilities, "artifact": "record_responsibilities() with the parties, roles, the 25(1) trigger and the 25(2) items; responsibilities_register()"},
     {"id": "aia-43", "law": "AI Act", "article": "Art. 43, 47, 48", "duty": "conformity assessment, EU declaration of conformity, CE marking", "who": "provider",
-     "probe": None, "gap": "a `record_declaration` event with the Annex V fields, linked to annex_iv; the assessment itself is the provider's"},
+     "probe": _p_declarations, "artifact": "record_declaration() with the Annex V items, the Art. 43 procedure and the Art. 48 marking; declaration_document(seq)",
+     "partial": "the conformity assessment itself (Art. 43) is the provider's or the notified body's; the ledger holds the declaration drawn up from it"},
     {"id": "aia-49", "law": "AI Act", "article": "Art. 49, Annex VIII", "duty": "registration in the EU database", "who": "provider, some deployers",
      "probe": _p_report("registration_export", "technical_documentation"), "artifact": "registration_export() sections A, B, C"},
     {"id": "aia-72", "law": "AI Act", "article": "Art. 72", "duty": "post-market monitoring plan and reports", "who": "provider",

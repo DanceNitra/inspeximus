@@ -1797,6 +1797,150 @@ def breach_report(seq: int) -> dict:
 
 
 @mcp.tool()
+def record_literacy(actor: str, measure: str, audience: str, description: str, ts: float | None = None,
+                    system: str | None = None, context: str | None = None, considered: list[str] | None = None,
+                    persons_affected: list[str] | None = None, refers_to: list[int] | None = None) -> dict:
+    """Record one AI-literacy measure (EU AI Act Art. 4): `measure` is training, guidance, documentation,
+    briefing or assessment; `audience` is staff, contractor, operator_of_the_system or
+    other_person_on_behalf; `considered` lists the Art. 4 factors taken into account (technical_knowledge,
+    experience, education, training, context_of_use, persons_affected). The article asks for measures,
+    not a level reached by any individual, so no score is recorded."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.record_literacy(actor, measure, audience, description, ts=ts, system=system, context=context,
+                                considered=considered, persons_affected=persons_affected, refers_to=refers_to)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "measure": e["literacy_measure"], "audience": e["audience"], "hash": e["hash"],
+            "signed": "sig" in e}
+
+
+@mcp.tool()
+def literacy_register() -> dict:
+    """Every Art. 4 measure recorded, with counts by audience and by measure. Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).literacy_register()
+
+
+@mcp.tool()
+def record_attestation(actor: str, practice: str, statement: str, basis: str | None = None,
+                       ts: float | None = None, system: str | None = None) -> dict:
+    """Attest for one Art. 5(1) prohibited-practice class (a, b, ba, bb, c, d, e, f, g, h) that the system is
+    `not_used` for it, or that the class is `not_applicable` with the `basis` that rules it out. The register
+    shows the latest attestation per class and the classes with none."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.record_attestation(actor, practice, statement, basis=basis, ts=ts, system=system)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "practice": e["practice"], "statement": e["statement"], "hash": e["hash"],
+            "signed": "sig" in e}
+
+
+@mcp.tool()
+def attestation_register() -> dict:
+    """The latest Art. 5 attestation per prohibited-practice class, and the classes never attested. Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).attestation_register()
+
+
+@mcp.tool()
+def record_responsibilities(actor: str, agreement_ref: str, parties: list[dict], ts: float | None = None,
+                            agreement_sha256: str | None = None, trigger: str | None = None,
+                            cooperation: dict | None = None, not_to_be_changed_into_high_risk: bool = False,
+                            system: str | None = None) -> dict:
+    """Record who carries which obligations along the value chain (EU AI Act Art. 25). `parties` is a list of
+    {party, role, obligations} with roles provider, initial_provider, new_provider, product_manufacturer,
+    distributor, importer, deployer, authorised_representative, third_party_supplier; one party must carry
+    the provider's obligations. `trigger` is the 25(1) reason (name_or_trademark, substantial_modification,
+    changed_intended_purpose); `cooperation` maps the 25(2) items (technical_documentation,
+    known_limitations_and_failure_modes, targeted_technical_access) to references; `agreement_ref` names the
+    25(4) written agreement and `agreement_sha256` pins it."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.record_responsibilities(actor, agreement_ref, parties, ts=ts, agreement_sha256=agreement_sha256,
+                                        trigger=trigger, cooperation=cooperation,
+                                        not_to_be_changed_into_high_risk=not_to_be_changed_into_high_risk,
+                                        system=system)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "agreement_ref": e["agreement_ref"], "parties": [r["party"] for r in e["parties"]],
+            "trigger": e["trigger"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def responsibilities_register() -> dict:
+    """Every Art. 25 record: the agreement, the parties and roles, the trigger, the 25(2) items. Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).responsibilities_register()
+
+
+@mcp.tool()
+def record_declaration(actor: str, system_name: str, system_type: str, system_reference: str, provider_name: str,
+                       provider_address: str, conformity_procedure: str, place: str, signer_name: str,
+                       signer_function: str, signed_for: str, issue_ts: float | None = None,
+                       annex_iv_sha256: str | None = None, personal_data: bool = False,
+                       harmonised_standards: list[str] | None = None, common_specifications: list[str] | None = None,
+                       notified_body: dict | None = None, other_union_law: list[str] | None = None,
+                       ce_marking: dict | None = None, authorised_representative: dict | None = None) -> dict:
+    """Record an EU declaration of conformity (EU AI Act Art. 47) with the Annex V items: the system's name,
+    type and reference; the provider's name and address; the standards or common specifications used; the
+    Art. 43 procedure (annex_vi_internal_control or annex_vii_notified_body, the latter with the notified
+    body's {name, id, certificate}); the place, date and signer. `annex_iv_sha256` pins the technical
+    documentation the declaration rests on; `ce_marking` is {digital_access, affixed_to, notified_body_id}
+    (Art. 48). The assessment itself is the provider's or the notified body's."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.record_declaration(actor, system_name, system_type, system_reference, provider_name,
+                                   provider_address, conformity_procedure, place, signer_name, signer_function,
+                                   signed_for, issue_ts=issue_ts, annex_iv_sha256=annex_iv_sha256,
+                                   personal_data=personal_data, harmonised_standards=harmonised_standards,
+                                   common_specifications=common_specifications, notified_body=notified_body,
+                                   other_union_law=other_union_law, ce_marking=ce_marking,
+                                   authorised_representative=authorised_representative)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "system_reference": e["system_reference"], "conformity_procedure": e["conformity_procedure"],
+            "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def declaration_document(seq: int) -> dict:
+    """The declaration at `seq` as one machine-readable document in the Annex V order (Art. 47(1)), with the
+    Art. 43 procedure, the Art. 48 marking and the ledger hash that binds it. Read-only."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        return led.declaration_document(seq)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
+def attest_documentation_retention(actor: str, placed_on_market_ts: float, documents: list[dict],
+                                   declaration_seq: int | None = None, note: str | None = None) -> dict:
+    """Append a signed statement of which Art. 18(1) documents are at the authorities' disposal for ten years
+    after `placed_on_market_ts`: `documents` is a list of {kind, sha256 or ref, present, not_applicable_reason}
+    with kinds technical_documentation, quality_management_system, notified_body_changes,
+    notified_body_decisions, eu_declaration_of_conformity. Technical documentation and the declaration must be
+    present; the notified-body items are present or not applicable with a reason; a missing quality
+    management system is recorded as a gap. `declaration_seq` links the declaration entry."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.attest_documentation_retention(actor, placed_on_market_ts, documents, declaration_seq=declaration_seq,
+                                               note=note)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "retention_end_ts": e["retention_end_ts"], "within_period": e["within_period"],
+            "gaps": e["gaps"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
 def incident_report(seq: int) -> dict:
     """The Art. 73 report skeleton for incident `seq`: dates, the statutory deadline and whether it is
     overdue, the evidence entries with their memory state and any oversight on them, later entries that

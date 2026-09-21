@@ -106,6 +106,21 @@ def _args_for(name, sig, mod):
         # remember_in_partition names a partition that the sweep has not opened: an error dict, never a raise
         "partition": "sweep-partition",
         "agent_id": "urn:agent:sweep.example", "agent_version": "0.0.1",
+        # record_literacy / record_attestation / record_responsibilities / record_declaration /
+        # attest_documentation_retention (3.3.0): one Art. 4 measure, one Art. 5(1)(a) attestation, one
+        # Art. 25 agreement with a provider, an Annex VI declaration, and an Art. 18 statement with the two
+        # required documents present and the notified-body items not applicable; all five append one entry
+        "measure": "briefing", "audience": "staff", "description": "the retirement rule, in one page",
+        "practice": "a", "statement": "not_used",
+        "agreement_ref": "MSA-sweep", "parties": [{"party": "Acme", "role": "provider"}],
+        "system_name": "Assistant", "system_type": "chat", "system_reference": "asst-sweep",
+        "provider_name": "Acme", "provider_address": "Street 1", "conformity_procedure": "annex_vi_internal_control",
+        "place": "Bratislava", "signer_name": "R. D.", "signer_function": "CEO", "signed_for": "Acme",
+        "placed_on_market_ts": 0.0,
+        "documents": [{"kind": "technical_documentation", "sha256": "a" * 64},
+                      {"kind": "eu_declaration_of_conformity", "sha256": "b" * 64},
+                      {"kind": "notified_body_changes", "present": False, "not_applicable_reason": "Annex VI"},
+                      {"kind": "notified_body_decisions", "present": False, "not_applicable_reason": "Annex VI"}],
     }
     args = []
     for pname, p in sig.parameters.items():

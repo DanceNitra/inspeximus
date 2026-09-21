@@ -963,6 +963,72 @@ def main(argv=None):
     acbn.add_argument("--note", default=None)
     acbp = acsub.add_parser("breach-report", help="the Art. 33 and 34 record for breach SEQ")
     acbp.add_argument("seq", type=int)
+    acli = acsub.add_parser("literacy", help="record an AI-literacy measure (EU AI Act Art. 4)")
+    acli.add_argument("measure", choices=["training", "guidance", "documentation", "briefing", "assessment"])
+    acli.add_argument("--audience", required=True,
+                      choices=["staff", "contractor", "operator_of_the_system", "other_person_on_behalf"])
+    acli.add_argument("--description", required=True, help="what the measure was")
+    acli.add_argument("--actor", required=True)
+    acli.add_argument("--at", dest="ts", type=float, default=None, help="unix time delivered (default now)")
+    acli.add_argument("--system", default=None)
+    acli.add_argument("--context", default=None, help="the context of use the measure covered")
+    acli.add_argument("--considered", action="append", default=[],
+                      choices=["technical_knowledge", "experience", "education", "training", "context_of_use", "persons_affected"],
+                      help="an Art. 4 consideration taken into account; repeatable")
+    acli.add_argument("--refers-to", dest="refers_to", type=int, action="append", default=[], help="a ledger seq of the material; repeatable")
+    acsub.add_parser("literacy-register", help="every Art. 4 measure, by audience and by kind")
+    acat = acsub.add_parser("attest-practice", help="attest for one Art. 5(1) prohibited-practice class")
+    acat.add_argument("practice", choices=["a", "b", "ba", "bb", "c", "d", "e", "f", "g", "h"])
+    acat.add_argument("--statement", required=True, choices=["not_used", "not_applicable"])
+    acat.add_argument("--basis", default=None, help="for not_applicable: what about the system rules the class out")
+    acat.add_argument("--actor", required=True)
+    acat.add_argument("--at", dest="ts", type=float, default=None)
+    acat.add_argument("--system", default=None)
+    acsub.add_parser("attestation-register", help="the latest Art. 5 attestation per class, and the classes with none")
+    acrs = acsub.add_parser("responsibilities", help="record who carries which obligations along the value chain (Art. 25)")
+    acrs.add_argument("agreement_ref", help="the written agreement (Art. 25(4))")
+    acrs.add_argument("--party", action="append", default=[], required=True,
+                      help="NAME:ROLE[:obligation,obligation]; repeatable; one party must carry the provider's obligations")
+    acrs.add_argument("--actor", required=True)
+    acrs.add_argument("--sha256", dest="agreement_sha256", default=None, help="sha256 of the agreement's bytes")
+    acrs.add_argument("--trigger", default=None, choices=["name_or_trademark", "substantial_modification", "changed_intended_purpose"])
+    acrs.add_argument("--cooperation", action="append", default=[], help="ITEM=REF for an Art. 25(2) item; repeatable")
+    acrs.add_argument("--not-high-risk", dest="not_to_be_changed_into_high_risk", action="store_true",
+                      help="the Art. 25(2) opt-out: specified not to be changed into a high-risk system")
+    acrs.add_argument("--at", dest="ts", type=float, default=None)
+    acrs.add_argument("--system", default=None)
+    acsub.add_parser("responsibilities-register", help="every Art. 25 record")
+    acdc = acsub.add_parser("declaration", help="record an EU declaration of conformity (Art. 47, Annex V)")
+    acdc.add_argument("--system-name", dest="system_name", required=True)
+    acdc.add_argument("--system-type", dest="system_type", required=True)
+    acdc.add_argument("--system-reference", dest="system_reference", required=True, help="an unambiguous reference (Annex V item 1)")
+    acdc.add_argument("--provider", dest="provider_name", required=True)
+    acdc.add_argument("--address", dest="provider_address", required=True)
+    acdc.add_argument("--procedure", dest="conformity_procedure", required=True,
+                      choices=["annex_vi_internal_control", "annex_vii_notified_body"])
+    acdc.add_argument("--place", required=True)
+    acdc.add_argument("--signer", dest="signer_name", required=True)
+    acdc.add_argument("--function", dest="signer_function", required=True)
+    acdc.add_argument("--for", dest="signed_for", required=True, help="on whose behalf the signer signs")
+    acdc.add_argument("--actor", required=True)
+    acdc.add_argument("--issued", dest="issue_ts", type=float, default=None)
+    acdc.add_argument("--annex-iv", dest="annex_iv_sha256", default=None, help="sha256 of the technical documentation")
+    acdc.add_argument("--personal-data", dest="personal_data", action="store_true", help="Annex V item 5 applies")
+    acdc.add_argument("--standard", dest="harmonised_standards", action="append", default=[], help="a harmonised standard used; repeatable")
+    acdc.add_argument("--spec", dest="common_specifications", action="append", default=[], help="a common specification used; repeatable")
+    acdc.add_argument("--notified-body", dest="notified_body", default=None, help="NAME:ID[:CERTIFICATE] for an Annex VII assessment")
+    acdc.add_argument("--union-law", dest="other_union_law", action="append", default=[], help="other Union law the declaration also covers (Art. 47(3)); repeatable")
+    acdc.add_argument("--ce-digital", dest="ce_digital", default=None, help="where the digital CE marking is accessible (Art. 48(2))")
+    acdd = acsub.add_parser("declaration-document", help="the declaration SEQ as one machine-readable document")
+    acdd.add_argument("seq", type=int)
+    acdr = acsub.add_parser("attest-documentation", help="attest which Art. 18(1) documents are kept, ten years from placing on the market")
+    acdr.add_argument("--placed", dest="placed_on_market_ts", type=float, required=True, help="unix time placed on the market or put into service")
+    acdr.add_argument("--document", action="append", default=[], required=True,
+                      help="KIND=SHA256|ref:REF|na:REASON; kinds technical_documentation, quality_management_system, "
+                           "notified_body_changes, notified_body_decisions, eu_declaration_of_conformity; repeatable")
+    acdr.add_argument("--actor", required=True)
+    acdr.add_argument("--declaration", dest="declaration_seq", type=int, default=None)
+    acdr.add_argument("--note", default=None)
     acrp = acsub.add_parser("incident-reported", help="record that incident SEQ was reported, to whom and when")
     acrp.add_argument("seq", type=int)
     acrp.add_argument("--actor", required=True)
@@ -1677,7 +1743,7 @@ def main(argv=None):
             print(f"secret: {sk}\npublic: {pk}\n\n"
                   f"KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.")
     elif a.cmd == "actions":
-        from inspeximus.actions import ActionLedger
+        from inspeximus.actions import ActionLedger, DOCUMENTATION_RETENTION_YEARS
         led = ActionLedger(m)
         if a.actions_cmd == "list":
             ents = led.entries()[-a.n:]
@@ -1833,6 +1899,76 @@ def main(argv=None):
             print(f"recorded seq {e['seq']}: breach {a.seq} {e['event']} ({a.to})" + (" LATE" if e.get("late") else ""))
         elif a.actions_cmd == "breach-report":
             print(json.dumps(led.breach_report(a.seq), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "literacy":
+            e = led.record_literacy(a.actor, a.measure, a.audience, a.description, ts=a.ts, system=a.system,
+                                    context=a.context, considered=a.considered, refers_to=a.refers_to)
+            print(f"recorded #{e['seq']} literacy {e['literacy_measure']} for {e['audience']} by {e['actor']}")
+        elif a.actions_cmd == "literacy-register":
+            print(json.dumps(led.literacy_register(), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "attest-practice":
+            e = led.record_attestation(a.actor, a.practice, a.statement, basis=a.basis, ts=a.ts, system=a.system)
+            print(f"recorded #{e['seq']} attestation Art. 5(1)({e['practice']}) {e['statement']} by {e['actor']}")
+        elif a.actions_cmd == "attestation-register":
+            print(json.dumps(led.attestation_register(), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "responsibilities":
+            parties = []
+            for spec in a.party:
+                bits = spec.split(":", 2)
+                if len(bits) < 2:
+                    raise SystemExit(f"--party needs NAME:ROLE[:obligation,...], got {spec!r}")
+                parties.append({"party": bits[0], "role": bits[1],
+                                "obligations": [o for o in (bits[2].split(",") if len(bits) == 3 else []) if o]})
+            coop = {}
+            for spec in a.cooperation:
+                if "=" not in spec:
+                    raise SystemExit(f"--cooperation needs ITEM=REF, got {spec!r}")
+                k, v = spec.split("=", 1)
+                coop[k] = v
+            e = led.record_responsibilities(a.actor, a.agreement_ref, parties, ts=a.ts, agreement_sha256=a.agreement_sha256,
+                                            trigger=a.trigger, cooperation=coop or None,
+                                            not_to_be_changed_into_high_risk=a.not_to_be_changed_into_high_risk,
+                                            system=a.system)
+            print(f"recorded #{e['seq']} responsibilities under {e['agreement_ref']}: "
+                  + ", ".join(f"{r['party']} ({r['role']})" for r in e["parties"]))
+        elif a.actions_cmd == "responsibilities-register":
+            print(json.dumps(led.responsibilities_register(), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "declaration":
+            nb = None
+            if a.notified_body:
+                bits = a.notified_body.split(":", 2)
+                if len(bits) < 2:
+                    raise SystemExit(f"--notified-body needs NAME:ID[:CERTIFICATE], got {a.notified_body!r}")
+                nb = {"name": bits[0], "id": bits[1], "certificate": bits[2] if len(bits) == 3 else None}
+            ce = {"digital_access": a.ce_digital, "affixed_to": None, "notified_body_id": nb["id"] if nb else None} if (a.ce_digital or nb) else None
+            e = led.record_declaration(a.actor, a.system_name, a.system_type, a.system_reference, a.provider_name,
+                                       a.provider_address, a.conformity_procedure, a.place, a.signer_name,
+                                       a.signer_function, a.signed_for, issue_ts=a.issue_ts,
+                                       annex_iv_sha256=a.annex_iv_sha256, personal_data=a.personal_data,
+                                       harmonised_standards=a.harmonised_standards,
+                                       common_specifications=a.common_specifications, notified_body=nb,
+                                       other_union_law=a.other_union_law, ce_marking=ce)
+            print(f"recorded #{e['seq']} EU declaration of conformity for {e['system_reference']} "
+                  f"({e['conformity_procedure']}) signed by {e['signer']['name']}")
+        elif a.actions_cmd == "declaration-document":
+            print(json.dumps(led.declaration_document(a.seq), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "attest-documentation":
+            docs = []
+            for spec in a.document:
+                if "=" not in spec:
+                    raise SystemExit(f"--document needs KIND=SHA256|ref:REF|na:REASON, got {spec!r}")
+                k, v = spec.split("=", 1)
+                if v.startswith("na:"):
+                    docs.append({"kind": k, "present": False, "not_applicable_reason": v[3:]})
+                elif v.startswith("ref:"):
+                    docs.append({"kind": k, "ref": v[4:]})
+                else:
+                    docs.append({"kind": k, "sha256": v})
+            e = led.attest_documentation_retention(a.actor, a.placed_on_market_ts, docs,
+                                                   declaration_seq=a.declaration_seq, note=a.note)
+            years = DOCUMENTATION_RETENTION_YEARS
+            print(f"recorded #{e['seq']} documentation attestation: {years} years to "
+                  f"{time.strftime('%Y-%m-%d', time.gmtime(e['retention_end_ts']))}"
+                  + (f", gaps: {', '.join(e['gaps'])}" if e["gaps"] else ", no gaps"))
         elif a.actions_cmd == "incident-reported":
             e = led.incident_reported(a.seq, actor=a.actor, reported_to=a.reported_to, reported_ts=a.reported_ts,
                                       note=a.note)

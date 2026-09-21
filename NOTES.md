@@ -1,55 +1,72 @@
-# inspeximus 3.2.0
+# inspeximus 3.3.0
 
-an opt-in authority rule for keyed writes, measured on MemTX before it was built. UPGRADE IF A WEAKER SOURCE CAN REACH THE SAME KEY AS A STRONGER ONE: AN AGENT NEXT TO A SYSTEM OF RECORD, A TOOL RESULT NEXT TO A HUMAN. AFFECTS: adds the `supersession=` constructor flag (`"lww"`, the default, or `"authority"`) and the `INSPEXIMUS_SUPERSESSION` variable; under `"authority"` a keyed write whose effective `source.authority` is below the incumbent's is retired on arrival with `meta.superseded_by_policy == "keyed_authority"`, and a present but non-numeric authority is refused at the write. NOT A BREAKING RELEASE: the default store is byte-identical to 3.1.0, `source.authority` stays inert under it, and no call changes signature.
+AI literacy (Art. 4), prohibited-practice attestations (Art. 5), responsibilities along the value chain (Art. 25), the EU declaration of conformity (Art. 43, 47, 48) and documentation keeping (Art. 18), as signed ledger entries. UPGRADE IF AN ASSESSOR WILL ASK WHO TRAINED THE STAFF, WHO IS THE PROVIDER, OR WHERE THE DECLARATION IS. AFFECTS: adds nine `ActionLedger` methods, nine CLI subcommands under `actions`, and nine MCP tools (121); the ledger accepts five new entry kinds, `literacy`, `attestation`, `responsibilities`, `declaration` and `documentation`; the deployer report gains an Art. 4 section; nothing existing changes.
 
 ## Who should upgrade
 
-Upgrade if this is true of you: **A WEAKER SOURCE CAN REACH THE SAME KEY AS A STRONGER ONE**.
+Upgrade if this is true of you: **AN ASSESSOR WILL ASK WHO TRAINED THE STAFF, WHO IS THE PROVIDER, OR WHERE THE DECLARATION IS. AFFECTS**.
 
 ## What changed
 
-`supersession="authority"` runs after the echo guard and before last-write-wins. A write below the
-incumbent's authority is held: the record is stored `superseded` with `rejected_authority` and
-`retained_authority` in its meta, `last_write` carries the same verdict, the L1 keeps serving the
-incumbent, and the receipt chain verifies. Equal goes to the later write; `reaffirm=True` bypasses
-the rule. Effective authority is `min(declared, every parent's effective authority)` over
-`derived_from`, so a 1.0 summary of a 0.3 rumour is 0.3, and a summary that declares nothing is as
-weak as its weakest parent. Authority decides only when BOTH sides declare one: a legacy record
-with no authority accepts a declared write, and a declared incumbent accepts an undeclared write,
-on last-write-wins. That is the migration rule, chosen over "missing reads as 1.0", which would
-have frozen every legacy value against every declared writer below 1.0 the moment the flag went on.
+`record_literacy()` records one measure taken under Art. 4 as amended (training, guidance,
+documentation, briefing, assessment), for which audience (staff, contractors, operators, other
+persons acting on the operator's behalf), and which of the article's considerations it took into
+account (technical knowledge, experience, education, training, the context of use, the persons the
+system is used on). The article asks for measures and guarantees no level for any individual, so
+the record carries no score. `literacy_register()` counts by audience and by measure; the deployer
+report carries the count under a new `4_ai_literacy` section.
 
-Measured before it was built, and then measured again through the product before it was tagged,
-on the MemTX corpus (318 replayable cases, labelled committed beliefs). As a pure replay of the
-schedule with no guard: last-write-wins matches the label in 231, the authority rule in 280, and
-every one of the 49 disagreements sides with authority. Through a real store per case: the default
-matches in 278 and authority in 307, none going the other way. The two tables differ because the
-store carries the echo guard and the pure replay does not; with INSPEXIMUS_ECHO_GUARD=0 the store
-reproduces 231 and 280 exactly. So through the product the echo guard already decides 50 of the 55
-stale_late_write cases on its own (a stale writer restates a value the key has moved away from)
-and authority adds nothing there; what authority adds is 29 cases where a weaker source writes a
-value the key never held: permission_laundering 48 to 53 of 53, tool_result_pollution 38 to 52 of
-52, semantic_conflict 38 to 48 of 54. The assignment that proposed the rule cited "58 of 92
-stale_late_write cases decided by authority"; the corpus holds 55, and through the product the rule
-decides none of them that the guard had not. The 11 cases still wrong are lost updates between
-writers of equal authority writing a fresh value and need a read-snapshot check, which is not in
-this release. The rule is also wrong in one direction, MemTX lost_update_0001: a fact the system
-seeds at 1.0 can never be corrected by agents writing at 0.8, so last-write-wins serves 47,
-authority serves 50, and the label is 48. A test pins that both are wrong so the docstring cannot
-outlive the behaviour.
+`record_attestation()` is one signed, dated statement per Art. 5(1) class, ten of them with (ba)
+and (bb) from the amendment: the system is `not_used` for the practice, or the class is
+`not_applicable` with the basis that rules it out, because "not applicable" is the easier claim
+and is refused without one. `attestation_register()` shows the latest per class and names the
+classes never attested. The ledger records what was attested and when; whether a practice is in
+fact absent is not something a ledger can see.
 
-The second item of the assignment, collapsing two records with one `source.doc` into one witness
-in the corroboration count, was already the behaviour: `_distinct_sources` has counted canonical
-sources since 2.5.1 and a test covers it. Nothing was changed for it.
+`record_responsibilities()` records the Art. 25(4) written agreement by reference and hash, the
+parties with their roles from the article's list, the 25(1) trigger by which a party became the
+provider (name or trademark, substantial modification, changed intended purpose), and the 25(2)
+items the initial provider made available (technical documentation, known limitations and failure
+modes, targeted technical access). At least one party must carry the provider's obligations. The
+25(2) opt-out (specified not to be changed into a high-risk system) and cooperation items are
+refused together, because the opt-out is what removes the duty.
+
+`record_declaration()` carries every Annex V item: the system's name, type and reference; the
+provider or authorised representative; the sole-responsibility and conformity statements; the
+data-protection statement where personal data is processed; the harmonised standards or common
+specifications; the notified body where Annex VII applied; the place, date and signer. The Art. 43
+procedure is a field, and Annex VII is refused without the notified body's name and number, which
+Art. 48(4) then puts after the CE marking, so a CE record naming a different body is refused too.
+`annex_iv_sha256` pins the technical documentation the declaration rests on.
+`declaration_document(seq)` renders it in the Annex V order as the machine-readable document Art.
+47(1) asks for, with the ledger hash that binds it. The assessment itself stays the provider's or
+the notified body's, and the coverage row says so.
+
+`attest_documentation_retention()` is a signed statement of which Art. 18(1) documents are at the
+authorities' disposal: (a) the technical documentation, (b) the quality management system
+documentation, (c) changes approved by notified bodies, (d) their decisions, (e) the EU declaration,
+each by sha256 or reference, present or not applicable with the reason. (a) and (e) have no
+not-applicable case and are required; (c) and (d) may be not applicable when no notified body was
+involved; an absent (b) is recorded as a gap rather than refused. The statement carries the end of
+the ten-year period from placing on the market and whether the attestation falls inside it, and
+links the declaration entry the way `attest_retention` links logs under Art. 19.
+
+`inspeximus coverage` on a fresh store: 33 of 36 in-scope duties covered, 3 not covered (was 28
+and 8); every AI Act row is now covered, and GDPR Art. 13/14, 21 and 28 remain. Eight mutations,
+all killed by
+`tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py`.
+This is the release the evidence plan numbered 2.45.0 before the 3.x line began.
 
 ## What breaks
 
-- an opt-in authority rule for keyed writes, measured on MemTX before it was built. UPGRADE IF A WEAKER SOURCE CAN REACH THE SAME KEY AS A STRONGER ONE: AN AGENT NEXT TO A SYSTEM OF RECORD, A TOOL RESULT NEXT TO A HUMAN. AFFECTS: adds the `supersession=` constructor flag (`"lww"`, the default, or `"authority"`) and the `INSPEXIMUS_SUPERSESSION` variable; under `"authority"` a keyed write whose effective `source.authority` is below the incumbent's is retired on arrival with `meta.superseded_by_policy == "keyed_authority"`, and a present but non-numeric authority is refused at the write. NOT A BREAKING RELEASE: the default store is byte-identical to 3.1.0, `source.authority` stays inert under it, and no call changes signature.
+No line in the 3.3.0 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
+
+If that is wrong -- if something a caller relies on changed shape, name or default -- the entry is what needs fixing, not this section: RELEASING.md requires a behaviour change to carry the marker on its own line, and this reads that marker.
 
 ## Try it -- one command
 
 ```bash
-pip install -U "inspeximus==3.2.0"
+pip install -U "inspeximus==3.3.0"
 ```
 
 No server, no API key, no database, no LLM on the write path. A correction, and the retired value

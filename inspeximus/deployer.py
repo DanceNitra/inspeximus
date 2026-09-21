@@ -48,7 +48,7 @@ SIX_MONTHS_DAYS = 183  # documentation only: the floor is tested as six CALENDAR
 DEPLOYER_FIELDS = {
     "deployer": "26", "system_name": "26", "provider": "26",
     "high_risk_classification": "26 (applicability: Art. 6(1) or Art. 6(2) and the Annex III area)",
-    "oversight_persons": "26(2)", "oversight_competence_and_authority": "26(2)",
+    "oversight_persons": "26(2)", "oversight_competence_and_authority": "26(2)", "literacy_programme": "4",
     "input_data_controls": "26(4)", "monitoring_procedure": "26(5)",
     "workers_informed": "26(7)", "registration_reference": "26(8)",
     "persons_informed_how": "26(11)", "fria_required": "27(1) (applicability)",
@@ -453,6 +453,15 @@ def deployer_report(store, ledger=None, operator: dict | None = None, expected_p
             "evidence_note": "a substantial modification (Art. 3(23)) ends the Art. 111(2) grandfathering of a system "
                              "placed on the market before its date; the ledger records the event and its actor, not "
                              "whether the change was substantial",
+        },
+        "4_ai_literacy": {
+            "obligation": "take measures to support the development of AI literacy of staff and other persons "
+                          "dealing with the operation and use of the system on the deployer's behalf (Art. 4)",
+            "operator": {"literacy_programme": op("literacy_programme")},
+            "evidence": (_safe(lambda: ledger.literacy_register(), default={"measures": 0, "by_audience": {}, "by_measure": {}})
+                         if ledger is not None else {"measures": 0, "by_audience": {}, "by_measure": {}}),
+            "evidence_note": "the ledger counts the measures recorded, by audience and kind; Art. 4 asks for measures, "
+                             "not for a level reached by any individual",
         },
         "26_2_human_oversight_assigned": {
             "obligation": "assign human oversight to natural persons who have the necessary competence, training "
