@@ -73,7 +73,10 @@ merged in [agno#10146](https://github.com/agno-agi/agno/pull/10146) on 2026-09-2
 `mem0`, `zep`, `memori` and `dakera`. Their own README describes it as *"inspeximus for
 corrections that stay corrected."* We did not write that file's home and we do not maintain
 it, which is exactly why it is worth listing: it is one integration a reader can check
-without taking our word for anything.
+without taking our word for anything. The same holds for [agmi](https://github.com/tech4biz-yasha/agmi),
+an agent-memory integrity scorecard whose maintainer merged our three-row adapter,
+[`agmi/adapters/inspeximus_rows.py`](https://github.com/tech4biz-yasha/agmi/blob/main/agmi/adapters/inspeximus_rows.py),
+in [agmi#1](https://github.com/tech4biz-yasha/agmi/pull/1) after reproducing it himself.
 
 Not the right tool when you want a hosted service with a dashboard, a knowledge graph over
 documents, or the highest score on a conversational-recall benchmark. mem0, Zep and cognee lead

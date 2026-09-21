@@ -1369,7 +1369,7 @@ NON_CLAIM_TOKENS = {
               "the audit-trail example, whose transparent_statement(0, ...) names the record's "
               "position in the log; 11 since the action-ledger example (2.29.0): recall()[0] twice, "
               "what_it_knew(0), recalled_now[0] twice"),
-        "1": (11, "11 since 3.0.0: the enable_receipts example has [1][0], split(':', 1) and the documented result 1. The INSPEXIMUS_KEEP_CONVERSION_BACKUP=1 example, index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
+        "1": (12, "12 since 2026-09-21: agmi#1, the pull request number of the adapter the agmi maintainer merged (gh pr view 1 --repo tech4biz-yasha/agmi), an identifier. 11 since 3.0.0: the enable_receipts example has [1][0], split(':', 1) and the documented result 1. The INSPEXIMUS_KEEP_CONVERSION_BACKUP=1 example, index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
               "tamper-detection example; 6 since the action-ledger example (2.29.0): what_it_knew(1) and "
               "INSPEXIMUS_ACTIONS=1; 7 since 2.30.0: the paragraph digit in Art. 27(1); 8 since 2.36.0: "
               "--max-age-days 1 in the partitions example. None is a measurement"),
@@ -1538,8 +1538,9 @@ NON_CLAIM_TOKENS = {
     "index.html": {
         # A SETTING, not a measurement: the temperature the shared judge is pinned at.
         "0.0": (1, "the judge's temperature in the benchmark caveat -- the temperature the shared judge is pinned at; a parameter, not a result"),
-        "2026": (2, "the re-measurement date in the benchmark caveat, not a quantity; and the agno#10146 "
+        "2026": (3, "the re-measurement date in the benchmark caveat, not a quantity; the agmi#1 merge date 2026-09-21 on the second Maintained Upstream card; and the agno#10146 "
                  "merge date 2026-09-20 on the Maintained Upstream card (2026-09-21)"),
+        "1": (1, "agmi PR #1 on the second Maintained Upstream card, the pull request number of the merged adapter (gh pr view 1 --repo tech4biz-yasha/agmi), an identifier (2026-09-21)"),
         "0": (1, "the schema.org offer price, '0' USD -- a JSON-LD literal"),
         "01": (1, "a section beat label"),
         "02": (1, "a section beat label"),

@@ -415,6 +415,12 @@ anything.
 | project | where | merged |
 |---|---|---|
 | **agno** | [`cookbook/11_memory/integrations/inspeximus_integration.py`](https://github.com/agno-agi/agno/blob/main/cookbook/11_memory/integrations/inspeximus_integration.py) | [PR #10146](https://github.com/agno-agi/agno/pull/10146), 2026-09-20 |
+| **agmi** | [`agmi/adapters/inspeximus_rows.py`](https://github.com/tech4biz-yasha/agmi/blob/main/agmi/adapters/inspeximus_rows.py) | [PR #1](https://github.com/tech4biz-yasha/agmi/pull/1), 2026-09-21 |
 
 The agno integration sits in their cookbook alongside `mem0`, `zep`, `memori` and `dakera`:
 four other memory architectures, one directory, their review.
+
+The agmi adapter is three rows in an agent-memory integrity scorecard: the default read path, and
+the receipt chain with the store's directory held and with the config home held too. The maintainer
+reproduced 22 passed on macOS with inspeximus 3.0.0 before merging; the rows print through their
+`full_runner`, not ours.

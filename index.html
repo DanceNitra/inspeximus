@@ -346,8 +346,9 @@
       <section class="section">
         <h2 class="section__title">Maintained Upstream</h2>
         <p class="section__lede">
-          One of our framework integrations is not ours to maintain. agno ships an official
-          integration example in its own cookbook, reviewed and merged by their maintainers.
+          Two of our integrations are not ours to maintain. agno ships an official integration
+          example in its own cookbook, and agmi carries our adapter in its scorecard, each reviewed
+          and merged by their own maintainers.
         </p>
         <div class="cards">
           <article class="card spotlight">
@@ -359,6 +360,15 @@
               on 2026-09-20, alongside <code>mem0</code>, <code>zep</code>, <code>memori</code> and <code>dakera</code>.
               We did not write that file&rsquo;s home and we do not maintain it &mdash; which is
               exactly why it is worth listing.
+            </p>
+          </article>
+          <article class="card spotlight">
+            <div class="card__icon" data-i="adapter"></div>
+            <h3>agmi scorecard</h3>
+            <p>
+              <a href="https://github.com/tech4biz-yasha/agmi/blob/main/agmi/adapters/inspeximus_rows.py" target="_blank" rel="noopener">inspeximus_rows.py</a>
+              &mdash; three rows in an agent-memory integrity scorecard, merged in <a href="https://github.com/tech4biz-yasha/agmi/pull/1" target="_blank" rel="noopener">agmi PR #1</a>
+              on 2026-09-21 after the maintainer reproduced them himself. The rows print through their runner, not ours.
             </p>
           </article>
         </div>
