@@ -406,3 +406,15 @@ closes the contentâ†’restore path (and, in asymmetric mode, the on-box-harnessâ†
 stolen private key or authenticate a human. Adversarial receipt: `probes/authorized_revert_probe.py`
 (11/11: content blocked, harness-can't-mint, replay/retarget/forgery refused, principal path works).
 
+### Maintained upstream (not by us)
+
+These integration examples live in **someone else's repository**. We cannot change them, our CI
+does not run them, and that is the point: a reader can check them without taking our word for
+anything.
+
+| project | where | merged |
+|---|---|---|
+| **agno** | [`cookbook/11_memory/integrations/inspeximus_integration.py`](https://github.com/agno-agi/agno/blob/main/cookbook/11_memory/integrations/inspeximus_integration.py) | [PR #10146](https://github.com/agno-agi/agno/pull/10146), 2026-09-20 |
+
+The agno integration sits in their cookbook alongside `mem0`, `zep`, `memori` and `dakera`:
+four other memory architectures, one directory, their review.

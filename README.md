@@ -65,7 +65,15 @@ somebody can later ask what it knew and what it erased. That is the whole design
 | An agent that keeps confidently repeating a value you already corrected | `remember(key=...)`: the correction wins, the restatement does not bring the old value back, `revert()` is a recorded decision |
 | A right-to-erasure request, or an auditor asking what the agent knew when it acted | `forget_subject()` with `erasure_certificate()`; the signed action ledger with `matches()` |
 | Claude Code, Cursor, Windsurf, Codex or Cline, and no memory between sessions | the MCP server, one config line |
-| A framework (LangChain, LangGraph, ADK, agno, Hermes, Haystack) and no way to prove a memory write happened | the adapters and the receipt chain |
+| A framework (LangChain, LangGraph, ADK, Hermes, Haystack) and no way to prove a memory write happened | the adapters and the receipt chain |
+
+**agno is the one that is not ours.** It ships an official integration example in its own
+cookbook, [`cookbook/11_memory/integrations/inspeximus_integration.py`](https://github.com/agno-agi/agno/blob/main/cookbook/11_memory/integrations/inspeximus_integration.py),
+merged in [agno#10146](https://github.com/agno-agi/agno/pull/10146) on 2026-09-20, alongside
+`mem0`, `zep`, `memori` and `dakera`. Their own README describes it as *"inspeximus for
+corrections that stay corrected."* We did not write that file's home and we do not maintain
+it, which is exactly why it is worth listing: it is one integration a reader can check
+without taking our word for anything.
 
 Not the right tool when you want a hosted service with a dashboard, a knowledge graph over
 documents, or the highest score on a conversational-recall benchmark. mem0, Zep and cognee lead

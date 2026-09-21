@@ -481,6 +481,26 @@ NUMBER_CLAIMS = [
             "One territory (HU) served a certificate its own chain did not validate on the day of "
             "measurement and is reported unreachable rather than dropped."),
 
+    # ---- README.md "agno is the one that is not ours" (added 2026-09-21) ----
+    # The merge DATE on the same line reads as the year token 2026 to this audit, so it is declared
+    # beside the other README dates below rather than as its own row; the command here prints it.
+    _c("readme-agno-cookbook-pr", "README.md", ["10146"],
+       "merged in [agno#10146](https://github.com/agno-agi/agno/pull/10146) on 2026-09-20",
+       "agno-agi/agno pull request 10146, the cookbook example inspeximus_integration.py, merged "
+       "on 2026-09-20 (mergedAt in the evening, UTC) by a maintainer of that repository. The file sits on their main "
+       "beside mem0, zep, memori and dakera. Verified 2026-09-21.",
+       "REPRODUCIBLE-WITH-DEPS",
+       "gh pr view 10146 --repo agno-agi/agno --json state,mergedAt,files",
+       note="Needs the gh CLI and a GitHub token; the state and mergedAt fields are the claim. "
+            "The date on the README line is the same field."),
+    _c("site-agno-cookbook-pr", "index.html", ["10146"],
+       'rel="noopener">PR #10146</a>',
+       "The same pull request on the storefront card: agno-agi/agno#10146, merged 2026-09-20.",
+       "REPRODUCIBLE-WITH-DEPS",
+       "gh pr view 10146 --repo agno-agi/agno --json state,mergedAt,files",
+       note="Same command as the README row; the date sits on the next source line and is "
+            "declared with the page's other dates."),
+
     # ---- README.md "Opt in to authority" (added 2026-09-20) ----
     _c("readme-memtx-authority-replay", "README.md", ["278", "318", "307"],
        "default serves the labelled belief in 278 of 318 cases and authority in 307 of 318 cases",
@@ -1384,7 +1404,8 @@ NON_CLAIM_TOKENS = {
         "111": (1, "EU AI Act ARTICLE number (111(2), grandfathering) in the lifecycle sentence"),
         "26": (2, "EU AI Act ARTICLE number (deployer duties): the documents paragraph and the rotation paragraph"),
         "49": (1, "EU AI Act ARTICLE number (registration) in the documents paragraph, not a quantity"),
-        "2026": (1, "the year of the CNIL note on agentic AI, a citation date"),
+        "2026": (2, "the year of the CNIL note on agentic AI, a citation date; and the agno#10146 merge "
+                 "date 2026-09-20 on the README line the readme-agno-cookbook-pr row covers (2026-09-21)"),
         "200": (1, "the --max-records example in the partitions paragraph, an example argument"),
         "6": (1, "the paragraph digit in Art. 26(6) in the rotation paragraph, not a quantity"),
         "400": (1, "the --keep-days example in the rotation paragraph, an example argument"),
@@ -1517,7 +1538,8 @@ NON_CLAIM_TOKENS = {
     "index.html": {
         # A SETTING, not a measurement: the temperature the shared judge is pinned at.
         "0.0": (1, "the judge's temperature in the benchmark caveat -- the temperature the shared judge is pinned at; a parameter, not a result"),
-        "2026": (1, "the re-measurement date in the benchmark caveat, not a quantity"),
+        "2026": (2, "the re-measurement date in the benchmark caveat, not a quantity; and the agno#10146 "
+                 "merge date 2026-09-20 on the Maintained Upstream card (2026-09-21)"),
         "0": (1, "the schema.org offer price, '0' USD -- a JSON-LD literal"),
         "01": (1, "a section beat label"),
         "02": (1, "a section beat label"),
