@@ -2030,6 +2030,24 @@ def _durable_replace(path, payload, encoding: str = "utf-8") -> None:
                 pass
 
 
+class UnresolvedLineage(ValueError):
+    """Raised by remember() when strict_lineage=True and a declared derived_from id does not
+    resolve to a record in the store.
+
+    Carries `.unresolved` -- the list of ids that did not resolve -- so a programmatic caller
+    can repair the set and retry without parsing the message.
+    """
+
+    def __init__(self, unresolved):
+        self.unresolved = [str(x) for x in (unresolved or [])]
+        super().__init__(
+            "strict_lineage: %d declared derived_from id(s) do not exist in this store: %s. "
+            "The write was NOT committed (otherwise the record would carry taint from no parent, "
+            "be unreachable by forget_subject(), and be marked orphan). Create the parent record(s) "
+            "first, or correct the id(s)." % (len(self.unresolved), ", ".join(self.unresolved))
+        )
+
+
 class Inspeximus:
     def __init__(self, path: str | None = None, embed=None, receipts: bool = False,
                  receipt_key: str | None = None, receipt_pubkey: str | None = None,
@@ -2044,7 +2062,7 @@ class Inspeximus:
                  agent: str | None = None, observe_recall: bool = False,
                  writer_key: str | None = None, events: bool = True,
                  l1_size: int = 2000, l1_auto_refresh: bool = True,
-                 supersession: str | None = None):
+                 supersession: str | None = None, strict_lineage: bool = False):
         """path: optional JSON file to persist to. embed: optional fn(str)->list[float] for semantic
         recall; if omitted, recall uses lexical token overlap (zero dependencies). embed_query: optional
         SEPARATE fn for embedding the recall QUERY (defaults to `embed`) — set it for an asymmetric
@@ -2589,6 +2607,24 @@ class Inspeximus:
         # Why it exists at all: the flagged path (derived=True) measured 0.00% over 27,290 writes. A mechanism
         # that requires the writer to opt in is a mechanism that does not run.
         self.infer_lineage = max(0.0, min(1.0, float(infer_lineage or 0.0)))
+        # STRICT LINEAGE (opt-in, default OFF -> byte-identical legacy).
+        #
+        # Why: a caller who declares derived_from=[...] asserts parentage. When an id does not
+        # resolve, 3.2 and earlier kept the evidence (derived_from_unresolved + orphan=True) and
+        # let the write COMMIT. The CLI warned; the Python API (and therefore every in-process
+        # caller, including the MCP write path and the CREW OS persona builder) said nothing --
+        # `remember()` returned an id and the caller believed the lineage landed. Measured
+        # 2026-09-21: 11 persona layers were written under that belief, the store holding 0 of
+        # the declared parents and marking each one orphan. The gap was found by the caller's
+        # own coverage check, not by the write, which is the inversion this flag removes.
+        #
+        # Fail-closed HERE means the write does not commit: every unresolved id is named, so the
+        # caller fixes the id (or creates the parent first) rather than discovering months later
+        # that a derived record carries no taint and is unreachable by forget_subject().
+        # Deliberately opt-in: a parent erased by an earlier DSAR is an honest reason for an id
+        # not to resolve, and a store that hard-failed on it would refuse legitimate writes.
+        # That is a policy decision, so it belongs to the deployer, not to the default.
+        self.strict_lineage: bool = bool(strict_lineage)
         # _save() THROTTLE: serializing the whole store (json.dumps of every item) is O(store size); doing
         # it on EVERY recall/remember froze callers once the store grew (recall mutates access value, so it
         # used to re-serialize everything each call). Coalesce disk writes to at most once / _save_min_s;
@@ -3118,6 +3154,12 @@ class Inspeximus:
                 # Lineage was claimed and NONE of it resolved: the record is exactly the orphan case the
                 # `derived=True` rule below covers, reached by a different door. Same treatment.
                 rec["orphan"] = True
+            # STRICT LINEAGE GATE (opt-in). Raised BEFORE the record is appended, so a write that
+            # declared a parent which does not exist leaves no trace in the store -- not even an
+            # orphaned one. The message names every bad id, because "some derived_from id was bad"
+            # is not actionable and re-deriving the set is exactly the work the gate exists to save.
+            if unresolved and self.strict_lineage:
+                raise UnresolvedLineage(unresolved)
         # RECALL-WINDOW OBSERVATION (opt-in; see observe_recall in __init__). Everything above this line is
         # about CLAIMED lineage and has consequences. This is the other half of the same flow, recorded with
         # none: what the store SERVED just before this write. It is written even when `derived_from` was also
