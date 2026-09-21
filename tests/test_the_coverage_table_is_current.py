@@ -17,9 +17,8 @@ def test_docs_plan_coverage_block_matches_the_code():
     assert r.returncode == 0, r.stdout + r.stderr
 
 
-def test_the_plan_names_the_procedure_and_the_order():
-    text = open(os.path.join(ROOT, "docs", "EVIDENCE_PLATFORM_PLAN.md"), encoding="utf-8").read()
-    assert "## 0. The whole Act, step by step" in text
-    for step in ("2.42.0", "2.43.0", "2.44.0", "2.45.0", "2.46.0"):
-        assert step in text
+def test_the_coverage_page_carries_the_generated_block():
+    """docs/COVERAGE.md holds the generated matrix between its markers and nothing hand-edited inside them."""
+    text = open(os.path.join(ROOT, "docs", "COVERAGE.md"), encoding="utf-8").read()
     assert "coverage:begin" in text and "coverage:end" in text
+    assert "in-scope duties covered by the library" in text

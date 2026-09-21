@@ -65,7 +65,7 @@ FOREIGN_API = {
                          "provider's config panel; our provider implements it, the name is theirs",
     "register": "framework registry calls shown in the integration snippets",
     "verify_chain": "Cognee -- the tamper check on the SHA-256 audit ledger it shipped in PR #4476 "
-                    "(2026-08-14), named in docs/PRODUCT_PLAN.md where we compare their supersession "
+                    "(2026-08-14), where we compare their supersession "
                     "to ours",
 }
 
