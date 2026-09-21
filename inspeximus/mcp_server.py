@@ -474,7 +474,12 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
             # Say it in the RESULT, not only in the docs. A record with no source cannot be reached by
             # forget_subject/erasure_audit/slash, and the caller is the only one who can still fix that
             # -- at the moment of the write, while they still know where the text came from.
-            "attributable": bool(source) or bool(derived_from)}
+            "attributable": bool(source) or bool(derived_from),
+            # Say it at the write, too (3.5.0): a record the read guards quarantined is stored and will
+            # not come back from recall until a human releases it. The caller learns that here, not
+            # from a recall that quietly misses it later.
+            "quarantined": ((rec.get("meta") or {}).get("quarantined") or {}).get("shapes") or None,
+            "stuffed": ((rec.get("meta") or {}).get("stuffed") or {}).get("word") or None}
 
 
 @mcp.tool()
@@ -506,9 +511,15 @@ def remember_decision(decision: str, because: str = "", context: str = "", topic
     mid = _MEM.remember_decision(decision, because=because or None, context=context or None,
                                  topic=topic or None, source=source or None, project=_PROJECT,
                                  derived_from=derived_from or None)
+    rec = next((r for r in _MEM.items if r["id"] == mid), {})
     return {"id": mid, "decision": decision[:120], "topic": topic or None,
             "supersedes_by_key": bool(topic), "project": _PROJECT,
-            "attributable": bool(source) or bool(derived_from)}
+            "attributable": bool(source) or bool(derived_from),
+            # Say it at the write, too (3.5.0): a record the read guards quarantined is stored and will
+            # not come back from recall until a human releases it. The caller learns that here, not
+            # from a recall that quietly misses it later.
+            "quarantined": ((rec.get("meta") or {}).get("quarantined") or {}).get("shapes") or None,
+            "stuffed": ((rec.get("meta") or {}).get("stuffed") or {}).get("word") or None}
 
 
 @mcp.tool()
@@ -585,9 +596,11 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
            mmr: float | None = None, trusted_only: bool = False,
            user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
            rerank_by: str | None = None, resolve_conflicts: bool | None = None,
-           all_projects: bool = False, with_warrant: bool = False) -> list[dict]:
+           all_projects: bool = False, with_warrant: bool = False,
+           include_quarantined: bool = False) -> list[dict]:
     """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
-    knowledge before reasoning.
+    knowledge before reasoning. Records the read-path guards quarantined (instruction-shaped text, 3.5.0)
+    are left out unless `include_quarantined` is set; keyword-stuffed records never outrank clean ones.
 
     Compact by default: each hit is a small projection — {id, text, score, value, tags} — dropping internal
     bookkeeping fields the model doesn't reason over, which keeps recall cheap to drop into a prompt. FULL TEXT IS
@@ -625,7 +638,8 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
                        user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by,
                        resolve_conflicts=resolve_conflicts, with_warrant=with_warrant,
-                       project=None if all_projects else _PROJECT) or []
+                       project=None if all_projects else _PROJECT,
+                       include_quarantined=include_quarantined) or []
     if all_projects:
         # Say WHERE each cross-project hit came from. A search that deliberately crosses scopes and then
         # hands back scope-less results makes the caller guess the one thing they crossed scopes to learn.
@@ -2034,6 +2048,25 @@ def processing_roles() -> dict:
     """Every Art. 28 role declaration, with the current one named. Read-only."""
     from inspeximus.actions import ActionLedger
     return ActionLedger(_MEM, actor=_ACTOR).processing_roles()
+
+
+@mcp.tool()
+def read_guard_report() -> dict:
+    """What the read-path guards (3.5.0) hold back: every quarantined record (instruction-shaped text, with
+    the shapes that put it there and whether a human released it) and every keyword-stuffed record (the
+    repeated word and its share). Quarantined records are stored, exportable and erasable; they are kept
+    out of recall unless asked for. Read-only."""
+    return _MEM.read_guard_report()
+
+
+@mcp.tool()
+def release_quarantine(id: str, actor: str, reason: str | None = None) -> dict:
+    """A human decision that a quarantined record is a memory after all: it returns to recall and keeps
+    who released it and why."""
+    try:
+        return _MEM.release_quarantine(id, actor, reason=reason)
+    except ValueError as ex:
+        return {"error": str(ex)}
 
 
 @mcp.tool()

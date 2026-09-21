@@ -404,6 +404,7 @@ def test_pure_probes_count_toward_coverage():
 
 # ──────────────────── LEDGER surfaces: inventories, where the question is whether the number moves
 LEDGER_SURFACES = [
+    "read_guard_report",      # 3.5.0: the count of quarantined records must move when one is written
     "memory_report",
     "supersession_report",
     "pii_report",
@@ -460,7 +461,7 @@ def test_coverage_is_15_of_24_and_names_what_is_left():
     """The number a reader asks for. Untested is not the same as working, so the remaining nine are
     named rather than rounded away."""
     s = _receipted().audit_the_audits()["surfaces"]
-    assert s["available"] == 24, s
+    assert s["available"] == 25, s
     assert s["probed"] >= 15, s
     for name in LEDGER_SURFACES + PURE_SURFACES:
         assert name not in s["unprobed"], name
@@ -533,9 +534,9 @@ def test_every_surface_has_a_probe():
     grows a verification surface without a probe for it goes back to claiming what it has not
     shown."""
     s = _receipted().audit_the_audits()["surfaces"]
-    assert s["available"] == 24, s
+    assert s["available"] == 25, s
     assert s["unprobed"] == [], s["unprobed"]
-    assert s["probed"] == 24, s
+    assert s["probed"] == 25, s
 
 
 ARGUMENT_SURFACES_FULL = ARGUMENT_SURFACES + [

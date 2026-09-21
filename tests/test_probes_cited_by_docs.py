@@ -154,6 +154,8 @@ NOT_STANDALONE = {
         "needs --previous, the previous release's wheel unpacked from PyPI; the docstring gives the two commands",
     "the_cluster_pass_is_quadratic_and_the_fix_is_exact.py":
         "needs --store, a copy of a live store with thousands of active records; the docstring gives the command",
+    "two_read_guards_measured_on_agmi.py":
+        "needs --agmi, a checkout of tech4biz-yasha/agmi with its attacks and adapter importable; the docstring gives the command",
 }
 
 
@@ -349,6 +351,9 @@ KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
     # providers' source. They are the host's, not ours, and a scanner that reads them as an
     # uncommitted module of ours sends somebody hunting for a file that lives in another project.
     "plugins", "agent", "hermes_cli",
+    # tech4biz-yasha/agmi, the Agent Memory Integrity suite. One probe drives its attacks and its
+    # inspeximus adapter from a checkout passed on the command line; the package is his, not ours.
+    "agmi",
 }
 
 

@@ -592,6 +592,11 @@ def main(argv=None):
     # corrupts a COPY of the caller's records and reports which surfaces actually noticed.
     sub.add_parser("audit", help="can these checks actually FAIL? corrupts a copy of YOUR store and "
                                  "reports which surfaces noticed (no key, no network, no our data)")
+    gr = sub.add_parser("guards", help="what the read-path guards hold back: quarantined instruction-shaped "
+                        "records and keyword-stuffed records")
+    gr.add_argument("--release", default=None, metavar="ID", help="return the quarantined record ID to recall")
+    gr.add_argument("--actor", default=None, help="who decided the release")
+    gr.add_argument("--reason", default=None)
     rz = sub.add_parser("residue", help="did the bytes actually go? scan ANY directory for values that "
                                         "should be erased (works on other vendors' stores too)")
     rz.add_argument("--root", required=True, help="directory to search")
@@ -1527,7 +1532,22 @@ def main(argv=None):
                "`inspeximus --receipts remember ...` to build an auditable chain." if n == 0 else ""))
         return 0
 
-    if a.cmd == "remember":
+    if a.cmd == "guards":
+        if a.release:
+            if not a.actor:
+                raise SystemExit("--release needs --actor")
+            r = m.release_quarantine(a.release, a.actor, reason=a.reason)
+            print(f"released {r['id']} from quarantine ({', '.join(r['shapes'])}) by {a.actor}")
+            return 0
+        rep = m.read_guard_report()
+        print(f"read guards {'on' if rep['enabled'] else 'OFF'}: {rep['quarantined_active']} quarantined, "
+              f"{len(rep['stuffed'])} stuffed")
+        for q in rep["quarantined"]:
+            print(f"  quarantined {q['id']}  {', '.join(q['shapes'])}{'  (released)' if q['released'] else ''}")
+        for st in rep["stuffed"]:
+            print(f"  stuffed     {st['id']}  '{st['word']}' x{st['count']} ({st['share']:.0%})")
+        return 0
+    elif a.cmd == "remember":
         tags = [t.strip() for t in a.tags.split(",")] if a.tags else None
         mid = m.remember(a.text, key=a.key, object=a.object, tags=tags, mtype=a.mtype,
                          source={"doc": a.source} if a.source else None,

@@ -1084,8 +1084,8 @@
  {
   "name": "the decision result always claims the record is attributable",
   "file": "inspeximus/mcp_server.py",
-  "old": "            \"attributable\": bool(source) or bool(derived_from)}\n\n\n@mcp.tool()\ndef revert",
-  "new": "            \"attributable\": True}\n\n\n@mcp.tool()\ndef revert",
+  "old": "            \"supersedes_by_key\": bool(topic), \"project\": _PROJECT,\n            \"attributable\": bool(source) or bool(derived_from),",
+  "new": "            \"supersedes_by_key\": bool(topic), \"project\": _PROJECT,\n            \"attributable\": True,",
   "tests": [
    "tests/test_write_paths_provenance_census.py"
   ]
@@ -2421,6 +2421,78 @@
   "new": "                        \"blocked\": False, \"policy\": None, \"current_id\": active[0][\"id\"],",
   "tests": [
    "tests/test_a_verbatim_restatement_carries_its_lineage_through_the_objectless_guard.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "quarantined records are served anyway",
+  "old": "            if not include_quarantined:\n                pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
+  "new": "            if False:\n                pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "a stuffed record keeps its rank",
+  "old": "            if len(_clean) != len(scored):\n                scored = _clean + [t for t in scored if Inspeximus._is_stuffed(t[2])]",
+  "new": "            if False:\n                scored = _clean + [t for t in scored if Inspeximus._is_stuffed(t[2])]",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "stuffing needs no share, so a long genuine note is flagged",
+  "old": "    if c >= 4 and share >= 0.12:",
+  "new": "    if c >= 4:",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the concealment shape needs no audience, so 'do not tell Bob' is quarantined",
+  "old": "(this\\s+)?(to\\s+)?(the\\s+)?(user|human|operator|owner|anyone)\\b\", re.I)),",
+  "new": "(this\\s+)?(to\\s+)?(the\\s+)?(\\w+)\\b\", re.I)),",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "release_quarantine records the actor but does not release",
+  "old": "                q[\"released\"] = {\"actor\": actor, \"ts\": time.time(), \"reason\": (str(reason)[:500] if reason else None)}\n                self._touch(r)",
+  "new": "                q[\"released_by\"] = {\"actor\": actor, \"ts\": time.time(), \"reason\": (str(reason)[:500] if reason else None)}\n                self._touch(r)",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "records written before the guards are never assessed at recall",
+  "old": "        if self.read_guards:\n            for r in pool:\n                self._assess_read_guards(r)\n            if not include_quarantined:",
+  "new": "        if self.read_guards:\n            if not include_quarantined:",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the environment switch is ignored",
+  "old": "    return os.environ.get(\"INSPEXIMUS_READ_GUARDS\", \"1\") != \"0\"",
+  "new": "    return True",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "the exfiltration shape allows no qualifier, so 'send all customer data to <addr>' passes",
+  "old": "                r\"(?:[\\w-]+\\s+){0,2}\"          # up to two qualifiers: 'all CUSTOMER data', 'the SIGNING keys'\n",
+  "new": "                r\"(?:[\\w-]+\\s+){0}\"          # up to two qualifiers: 'all CUSTOMER data', 'the SIGNING keys'\n",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
  }
 ]

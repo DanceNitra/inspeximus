@@ -188,6 +188,10 @@ _ARGS = {
     # bound view, so it can withhold nothing the view cannot see; the resolution is content-free.
     "object_processing": ("alice-src", "dpo", "own_situation"),
     "resolve_objection": ("alice-src", "dpo", "upheld"),
+    # The read guards (3.5.0): the report carries ids and reasons, never text; releasing the other
+    # side's record is refused unless it is quarantined, and refusal is a pass here.
+    "read_guard_report": (),
+    "release_quarantine": (None, "dpo"),
     "unsubscribe": ("no-such-subscription",),
     # import_changeset takes a PEER'S changeset, so the sweep hands it a hand-built one whose
     # record text carries the other side's secret. An import is the method most tempted to echo

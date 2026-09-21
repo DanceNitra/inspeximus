@@ -1,3 +1,38 @@
+## 3.5.0 - two read-path guards, default on: instruction-shaped records are quarantined and keyword-stuffed records never outrank clean ones. UPGRADE IF AN AGENT READS MEMORY THAT OTHER PARTIES CAN WRITE. AFFECTS: adds the `read_guards` constructor flag (default on; `INSPEXIMUS_READ_GUARDS=0` turns it off), `include_quarantined` on `recall`, `read_guard_report()`, `release_quarantine()`, two MCP tools (130) and the `guards` CLI command; a record written before this release is assessed the first time recall sees it; a flagged record gains `meta.quarantined` or `meta.stuffed` and nothing else changes on disk. NOT byte-identical for a store that holds such a record; identical for one that does not.
+
+Measured before it was built. tech4biz-yasha/agmi#3 ran its four memory-specific attacks on
+inspeximus 3.0.0's default `recall` through the maintainer's adapter: user isolation held; a planted
+fact, an entry stuffed with a topic's question words, and an instruction disguised as a meeting recap
+all reached the agent's context, the stuffed entry in the first of three slots at relevance 1.0. The
+row reproduced on 3.4.0. None of the opt-in levers changed it, and `trusted_only` without trust seeds
+passed every cell with an empty answer, which is a defect in the suite's verdicts that we reported
+with a positive control.
+
+An instruction-shaped record is one whose text reads as an instruction to the model once it is in
+context: an order to override prior instructions, a persona switch, a reference to the system
+prompt, an order to send data to an address or URL, an order to hide something from the user, an
+order to run code. Seven shapes, each named in the record's `meta.quarantined.shapes`. Such a record
+is stored, exportable and erasable, and kept out of recall unless the caller asks with
+`include_quarantined=True`; `release_quarantine(id, actor, reason)` is the human decision that it
+was a memory after all, and the record keeps who decided. Transcript role labels and memories that
+mention instructions in passing ("we decided to ignore the old lunch policy") are not flagged, and
+the test file carries those controls.
+
+A keyword-stuffed record is one in which a single content word is repeated at least four times and
+holds at least 12% of all words, in a text of at least twelve words: the agmi entry repeats "menu"
+five times in 32 words (0.156); the six genuine memories beside it peak at one repeat, and a long
+note that names its topic ten times in 98 words sits at 0.10 and is not flagged. A stuffed record is
+demoted, never excluded: the sort is a stable partition with unflagged records first, so under
+lexical overlap, where the stuffed entry scores 1.0 by construction, it still ranks last. A score
+penalty would have left it on top; that was measured, which is why the partition exists.
+
+Measured on agmi through the maintainer's adapter, guards off and on
+(probes/two_read_guards_measured_on_agmi.py): guards off reproduces his row exactly; guards on,
+retrieval_hijack reads safe with all 3 of 3 slots genuine and indirect_prompt_injection reads safe
+with nothing delivered; memory_injection still surfaces, as predicted, because a plausible planted
+fact has no form to catch without provenance on the write; the victim's own memory is served in
+both arms, so no cell is earned by an empty answer. Seven mutations, all killed.
+
 ## 3.4.0 - GDPR Art. 13/14, 20, 21 and 28 as evidence, so every in-scope duty in the matrix is covered; an objection that withholds the subject from recall; the cluster pass at 2 s instead of 300; a lineage rewrite that lands. UPGRADE IF YOU RUN sleep() ON A STORE ABOVE A FEW HUNDRED RECORDS, OR SERVE DATA-SUBJECT REQUESTS. AFFECTS: adds `object_processing`, `resolve_objection` and `objections` on the store, `record_objection`, `resolve_objection` and a `basis="portability"` export in `subject_rights`, `record_notice`, `notice_register`, `record_processing_role` and `processing_roles` on the ledger, seven MCP tools (128), CLI subcommands under `subject` and `actions`, two new entry kinds, `notice` and `processing_role`, and one new sidecar, `<store>.objections.json`, written only once an objection exists; `_cluster_active` is rewritten with the same output; the objectless guard lets a verbatim restatement through and reports what it retires. The default store is otherwise byte-identical.
 
 `object_processing(subject, actor, ground)` records a GDPR Art. 21 objection on the store and, from
