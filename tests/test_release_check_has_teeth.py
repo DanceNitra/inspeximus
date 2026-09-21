@@ -629,3 +629,42 @@ def test_the_error_message_names_a_remedy_THAT_ACTUALLY_WORKS():
     assert todo.startswith("TODO"), todo
     # and the remedy the refusal names must be one of the two that work
     assert "AFFECTS NOBODY'S CODE" in todo
+
+
+def _map_tree(tmp_path):
+    """A tree with the generator, the core and the committed map, so the map check has its inputs."""
+    root = _tree(tmp_path)
+    (root / "tools").mkdir(exist_ok=True)
+    shutil.copy(os.path.join(ROOT, "tools", "gen_core_map.py"), root / "tools" / "gen_core_map.py")
+    (root / "docs").mkdir(exist_ok=True)
+    shutil.copy(os.path.join(ROOT, "docs", "CORE_MAP.md"), root / "docs" / "CORE_MAP.md")
+    return root
+
+
+def test_the_core_map_check_passes_on_a_current_map(tmp_path):
+    root = _map_tree(tmp_path)
+    rep = _Rep()
+    release_check.check_core_map(rep, root)
+    assert rep.status("core map") == release_check.PASS, rep.detail("core map")
+
+
+def test_the_core_map_check_fails_when_core_changes_after_the_map(tmp_path):
+    """The 2026-09-21 shape: a function added to core.py after the map was generated. The checklist
+    said READY; CI said stale. This is the one that has to go red."""
+    root = _map_tree(tmp_path)
+    core = root / "inspeximus" / "core.py"
+    core.write_text(core.read_text(encoding="utf-8") + "\n\ndef _added_after_the_map_was_made():\n    return 1\n",
+                    encoding="utf-8")
+    rep = _Rep()
+    release_check.check_core_map(rep, root)
+    assert rep.status("core map") == release_check.FAIL, rep.detail("core map")
+    assert "stale" in rep.detail("core map")
+
+
+def test_a_missing_generator_fails_rather_than_passing(tmp_path):
+    root = _map_tree(tmp_path)
+    (root / "tools" / "gen_core_map.py").unlink()
+    rep = _Rep()
+    release_check.check_core_map(rep, root)
+    assert rep.status("core map") == release_check.FAIL
+

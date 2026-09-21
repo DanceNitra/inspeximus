@@ -519,6 +519,31 @@ def restore_probe_snapshot(snapshot):
 
 # --------------------------------------------------------------------------- the suite
 
+def check_core_map(rep, root=ROOT):
+    """docs/CORE_MAP.md must describe the core.py that is about to ship.
+
+    Measured 2026-09-21: this checklist reported READY on 1106c3e while the map was stale, because
+    core.py had changed in that commit after the map was last generated and nothing here compared
+    them. CI does (`gen_core_map.py --check` in both the audit and the tests workflows), so the
+    release went out with the map red on every job that ran after the tag. The gate that says READY
+    has to run the same comparison. The generator takes --src and --out, so a copied tree is checked
+    against its own files and the teeth test can break one on purpose.
+    """
+    tool = root / "tools" / "gen_core_map.py"
+    src = root / "inspeximus" / "core.py"
+    out = root / "docs" / "CORE_MAP.md"
+    if not tool.exists():
+        rep.add("core map", FAIL, "tools/gen_core_map.py is missing; the map cannot be checked")
+        return
+    proc = subprocess.run([sys.executable, str(tool), "--check", "--src", str(src), "--out", str(out)],
+                          cwd=str(root), capture_output=True, text=True, errors="replace")
+    if proc.returncode == 0:
+        rep.add("core map", PASS, "docs/CORE_MAP.md describes the core.py in this tree")
+        return
+    rep.add("core map", FAIL, "docs/CORE_MAP.md is stale for this tree; run `python tools/gen_core_map.py` "
+            "and commit it. First lines: " + " | ".join(proc.stdout.strip().splitlines()[:3]))
+
+
 def check_tests(rep, root=ROOT, skip=False):
     if skip:
         rep.add("test suite", SKIP, "--skip-tests was passed; this run does NOT clear a release")
@@ -683,6 +708,7 @@ def run(root=ROOT, skip_tests=False):
         check_mcp_server(rep, root)
         check_audits(rep, root)
         check_published_table_matches_its_receipt(rep, root)
+        check_core_map(rep, root)
         check_release_notes(rep, root)
         check_tests(rep, root, skip=skip_tests)
         check_ci_on_head(rep, root)
