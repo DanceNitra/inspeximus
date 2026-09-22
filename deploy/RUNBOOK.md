@@ -89,6 +89,21 @@ sudo iptables -S INPUT
 sudo awk '/^\*filter/,/^COMMIT/' /etc/iptables/rules.v4 | grep -E '^-A INPUT'
 ```
 
+## Two notes for anyone witnessing this log
+
+**Install certifi beside the library: `pip install inspeximus certifi`.** Some Python builds carry a
+CA bundle that rejects the log's certificate with "certificate has expired" while curl and the
+browser on the same machine accept it. Measured 2026-09-22 on the Windows Store build of Python
+3.12, against a certificate valid from 22 September to 21 December 2026 (Let's Encrypt YE1). The
+witness uses certifi's bundle when certifi is installed. Without it the run exits 1 and says the
+failure is a trust problem in that Python, because a witness that cannot read the log has no verdict.
+
+**A red witness job is not always a claim about the history.** Both jobs in
+`DanceNitra/agora` `.github/workflows/witness.yml` commit to `main`, and on their first run they
+pushed at the same time: the loser was rejected and reported red while its verdict had been EXTENDS.
+The jobs now run in order (`needs: witness`) and both rebase before pushing. Read the verdict line
+before believing the colour: only FORK, ROLLBACK and MALFORMED (exit 2) say the history moved.
+
 ## Never delete from a store with raw SQL
 
 A `DELETE` issued outside the library removes a row and can silently change the CURRENT VALUE of a
