@@ -35,6 +35,9 @@ PROBES = os.path.join(ROOT, "probes")
 #: Cited probes that cannot run standalone, each with the reason. A probe here is still expected to EXIST
 #: and to be importable-looking; it is the execution that is excused, and only for a stated cause.
 NOT_STANDALONE = {
+    "register_against_the_hosted_log.py": "registers a real entry with the hosted transparency service over "
+                                          "the network; the 10.A.4 acceptance client, run by hand against the "
+                                          "live host, never by the suite",
     "fixture_corpus_sample_and_census.py": "samples the fixture directories the suite left in the user's Temp "
                                            "before tests/conftest.py redirected them; it needs that directory "
                                            "and an --out archive path, and the result beside it is the receipt",
