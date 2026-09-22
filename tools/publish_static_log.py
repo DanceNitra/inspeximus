@@ -43,7 +43,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 
 import hashlib                                                          # noqa: E402
 
-from inspeximus import cose, merkle                                     # noqa: E402
+from inspeximus import checkpoint, cose, merkle                                     # noqa: E402
 from inspeximus.scrapi import _cose_key                                 # noqa: E402
 from inspeximus.transparency import RegistrationPolicy, TransparencyService  # noqa: E402
 
@@ -279,7 +279,7 @@ def read_cosignatures(directory, head):
 
 
 def build(service: TransparencyService, out: str, base_url: str, title: str, witness_note: str,
-          cosignatures=None):
+          cosignatures=None, origin=None, secret_hex=None):
     os.makedirs(os.path.join(out, "entries"), exist_ok=True)
     head = service.head()
     n = service.size()
@@ -287,6 +287,21 @@ def build(service: TransparencyService, out: str, base_url: str, title: str, wit
 
     with open(os.path.join(out, "head.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(head, fh, indent=2, sort_keys=True)
+
+    # THE CHECKPOINT IS THE SAME HEAD IN THE FORMAT OTHER PEOPLE'S WITNESSES READ
+    # (c2sp.org/tlog-checkpoint). head.json is ours, and a stranger would have to write code for it;
+    # a checkpoint is three lines and a signature that existing implementations already verify.
+    # Written only when the log can sign it: the spec requires a public log's checkpoint to carry a
+    # signature by the log, so an unsigned file would be a checkpoint-shaped thing no witness may
+    # accept, which is worse than publishing none.
+    if origin and secret_hex and service.service_pubkey:
+        note = checkpoint.signed_checkpoint(origin, head["n_writes"],
+                                            bytes.fromhex(head["writes_tip"]),
+                                            secret_hex, service.service_pubkey)
+        with open(os.path.join(out, "checkpoint"), "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(note)
+        with open(os.path.join(out, "checkpoint.vkey"), "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(checkpoint.vkey(origin, service.service_pubkey) + "\n")
 
     key = _cose_key(service.service_pubkey)
     with open(os.path.join(out, "keys.cbor"), "wb") as fh:
@@ -418,6 +433,10 @@ def main(argv=None):
                     help="directory of witness co-signature JSON files. Each is VERIFIED against the "
                          "key it names before it is shown, because an unchecked co-signature is a "
                          "claim that somebody vouched for us, made by us")
+    ap.add_argument("--origin", default=None,
+                    help="the log's identity in its checkpoint, a schema-less URL such as "
+                         "example.com/log42. Given together with the signing key, the publisher "
+                         "writes a c2sp.org/tlog-checkpoint that other people's witnesses read")
     ap.add_argument("--witness-note",
                     default="No witness has co-signed this log yet, so nothing here is evidence "
                             "against that. Running one is the most useful thing an outsider can do.")
@@ -437,7 +456,8 @@ def main(argv=None):
 
     service = TransparencyService(a.log, RegistrationPolicy(a.policy_name), sign,
                                   lambda *_: True, service_pubkey=pub)
-    got = build(service, a.out, a.base_url, a.title, a.witness_note, a.cosignatures)
+    got = build(service, a.out, a.base_url, a.title, a.witness_note, a.cosignatures,
+                origin=a.origin, secret_hex=secret)
     good = sum(1 for c in got["cosignatures"] if c["valid"])
     print("wrote %s: %d entries, %d receipts, root %s"
           % (a.out, got["entries"], got["receipts"], got["head"]["writes_tip"][:16]), flush=True)
