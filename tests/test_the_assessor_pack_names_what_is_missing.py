@@ -141,3 +141,27 @@ def test_a_request_id_that_is_given_is_still_used(tmp_path):
     m.forget(mid, request_id="dsar-2026-001")
     m.flush()
     assert "dsar-2026-001" in m.governance_report()["by_request"]
+
+
+# -- the defect dogfooding the pack on our own store found -----------------------------------------
+def test_a_shared_field_names_every_document_it_lands_in(store):
+    """`used_by` used to keep whichever FIELD_GROUP came last, so a row could name a document it is
+    not in. Measured on our own store: rows under `registration_a` were labelled section B."""
+    answers = _all_answered(intake_form())
+    answers.pop("authorised_representative")
+    pack = assessor_pack(store, operator=answers)
+    rows = [r for r in pack["unfilled"] if r["field"] == "authorised_representative"]
+    assert rows, "the fixture stopped producing the shared field, so this test proves nothing"
+    for row in rows:
+        assert isinstance(row["used_by"], list)
+        assert len(row["used_by"]) > 1, "a field used by two sections must name both"
+    # and the form's answer and the pack's answer must agree, because they are two readings of one map
+    form_row = [r for r in intake_form()["fields"] if r["field"] == "authorised_representative"][0]
+    assert rows[0]["used_by"] == form_row["used_by"]
+
+
+def test_the_markdown_still_reads_with_a_list_of_places(store):
+    text = render_markdown(assessor_pack(store))
+    assert "## Not complete" in text
+    assert "[" not in text.split("## Documents")[0].split("## Not complete")[1][:4000], \
+        "a python list must not be printed into the markdown"

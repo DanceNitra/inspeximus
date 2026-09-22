@@ -175,12 +175,21 @@ def assessor_pack(store, ledger=None, operator: dict | None = None, expected_pub
         if missing:
             reported[name] = sorted(set(missing))
 
+    # EVERY place a field is used, not one of them. A dict comprehension over FIELD_GROUPS kept the
+    # LAST group that declared each field, so a field used by three documents reported whichever
+    # group happened to come last. Dogfooding the pack on our own store showed it: rows under
+    # `registration_a` were labelled "Annex VIII section B", which is neither wrong data nor the
+    # answer to the question the row is asking.
+    known: dict = {}
+    for spec in FIELD_GROUPS.values():
+        for field in _names(spec["fields"]):
+            known.setdefault(field, []).append(spec["used_by"])
+
     unfilled = []
-    known = {f: spec["used_by"] for spec in FIELD_GROUPS.values() for f in _names(spec["fields"])}
     for name, fields in reported.items():
         for field in fields:
             unfilled.append({"field": field, "document": name,
-                             "used_by": known.get(field, "this document")})
+                             "used_by": sorted(set(known.get(field) or ["this document"]))})
 
     return {
         "kind": "inspeximus.assessor-pack/1",
@@ -222,7 +231,8 @@ def render_markdown(pack: dict) -> str:
                   "%d field(s) are unanswered, and each is marked in the document that needs it."
                   % len(pack.get("unfilled") or []), ""]
         for row in pack.get("unfilled") or []:
-            lines.append("- `%s` for %s (%s)" % (row["field"], row["document"], row["used_by"]))
+            lines.append("- `%s` for %s (%s)" % (row["field"], row["document"],
+                                                       "; ".join(row["used_by"])))
         for path in pack.get("placeholders_in_output") or []:
             lines.append("- placeholder left in the output at `%s`" % path)
         for name, err in (pack.get("errors") or {}).items():
