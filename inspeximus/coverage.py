@@ -222,6 +222,35 @@ def _p_report(fn_name: str, module: str):
     return probe
 
 
+def _p_robustness(store):
+    """Art. 15 (3.6.0): the anchor as before, and the evidence rows must be present and none STALE."""
+    from .compliance import robustness_evidence
+    ev = robustness_evidence()
+    n_rows = len(ev["rows"])
+    if not n_rows:
+        return 0, "robustness_evidence.json carries no rows"
+    if ev["stale"]:
+        return 0, f"{len(ev['stale'])} of {n_rows} robustness evidence row(s) STALE: {', '.join(ev['stale'])}"
+    try:
+        anc = store.anchor()
+        n = int(anc.get("n_writes") or 0) + int(anc.get("n_tombstones") or 0)
+    except Exception as e:                                        # noqa: BLE001
+        return 0, f"anchor() unavailable: {type(e).__name__}"
+    # The rows describe the LIBRARY and are the same on every store, so they do not make a fresh
+    # store's row EVIDENCE: the count is the store's own anchor, as before, and the rows gate it.
+    return n, (f"{n_rows} robustness evidence row(s) ({', '.join(r['id'] for r in ev['rows'])}) verified, "
+               f"anchor over {anc.get('n_writes')} write(s)")
+
+
+def _p_qms(store):
+    led = _ledger(store)
+    if led is None:
+        return 0, "no action ledger, so no qms register"
+    reg = led.qms_register()
+    return reg["procedures"], (f"{reg['procedures']} qms procedure(s), {len(reg['overdue'])} overdue, "
+                               f"aspects covered: {''.join(reg['aspects_covered']) or 'none'}")
+
+
 def _p_anchor(store):
     try:
         anc = store.anchor()
@@ -257,11 +286,10 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "aia-14", "law": "AI Act", "article": "Art. 14", "duty": "human oversight: intervene, override, stop", "who": "provider, deployer",
      "probe": _p_oversight, "artifact": "record_oversight(): approve, refuse, override, stop, review"},
     {"id": "aia-15", "law": "AI Act", "article": "Art. 15", "duty": "accuracy, robustness, cybersecurity, resilience to poisoning", "who": "provider",
-     "probe": _p_anchor, "artifact": "receipt chain, verify_writes(), influence gate, echo guard, audit_the_audits()",
-     "partial": "the poisoning and split-view measurements live in probes/ and are not yet carried into compliance_report()"},
+     "probe": _p_robustness, "artifact": "receipt chain, verify_writes(), influence gate, echo guard, audit_the_audits(); "
+                                         "compliance_report().robustness_evidence: the echo, poisoning and split-view measurements as dated rows with the receipt sha"},
     {"id": "aia-17", "law": "AI Act", "article": "Art. 17", "duty": "quality management system", "who": "provider",
-     "probe": _p_report("compliance_report", "compliance"), "artifact": "compliance_report(), audit bundle",
-     "partial": "the library stores and proves the QMS records; the QMS itself is the provider's"},
+     "probe": _p_qms, "artifact": "record_qms() per procedure with owner, version, review date and the Art. 17(1) aspect; qms_register() names the overdue ones; compliance_report(), audit bundle"},
     {"id": "aia-18", "law": "AI Act", "article": "Art. 18", "duty": "keep the documentation ten years", "who": "provider",
      "probe": _p_documentation, "artifact": "attest_documentation_retention() over the Art. 18(1)(a) to (e) documents, with the ten-year end date"},
     {"id": "aia-19", "law": "AI Act", "article": "Art. 19", "duty": "keep the logs at least six months", "who": "provider",

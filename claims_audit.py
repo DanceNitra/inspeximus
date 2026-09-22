@@ -814,9 +814,9 @@ NUMBER_CLAIMS = [
        "The objection names our own headline number", "REPRODUCIBLE-WITH-DEPS", CMD),
 
     # ---- claude-code.html: the MCP setup page ---------------------------------------------------
-    _c("cc-tool-count", "claude-code.html", ["130"],
-       "<h2>130 tools any MCP host can call</h2>",
-       "The MCP server exposes 130 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("cc-tool-count", "claude-code.html", ["133"],
+       "<h2>133 tools any MCP host can call</h2>",
+       "The MCP server exposes 133 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
     _c("readme-echo-trials", "README.md", ["30"],
        "same task, same 30 trials",
@@ -844,9 +844,9 @@ NUMBER_CLAIMS = [
        "n = 30 per system",
        "Sample size per system, and the exact competitor version measured",
        "REPRODUCIBLE", "curl -s https://pypi.org/pypi/mem0ai/json"),
-    _c("readme-mcp-tool-count", "README.md", ["130"],
-       "**130 tools**",
-       "The MCP server exposes 130 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("readme-mcp-tool-count", "README.md", ["133"],
+       "**133 tools**",
+       "The MCP server exposes 133 tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Checked against the live @mcp.tool() count by _live_consistency(), not read from here."),
     _c("readme-own-source-coverage", "README.md", ["98.3", "0.01"],
        "98.3% populated and 0.01% re-fetchable",
@@ -1162,22 +1162,22 @@ NUMBER_CLAIMS = [
        "The bedrock synthesis was checked from ~8 directions", "EXTERNAL", "",
        "A count of the analytical directions taken, not a measurement. Left in because the sentence "
        "labels itself 'a synthesis over those cases, not a proof'."),
-    _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["130"],
-       "`inspeximus-mcp`, 130 tools",
-       "The MCP server exposes 130 tools", "REPRODUCIBLE",
+    _c("readme-mcp-tools", "docs/DEEP_DIVE.md", ["133"],
+       "`inspeximus-mcp`, 133 tools",
+       "The MCP server exposes 133 tools", "REPRODUCIBLE",
        'python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(112)+chr(99)+chr(112)+chr(46)+'
        "'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))\"",
        "Checked against the live @mcp.tool() count by _live_consistency(), not by reading it here."),
 
     # ---------------------------------------------------------- MCP_LISTINGS.md
-    _c("mcp-tool-count", "MCP_LISTINGS.md", ["130"],
-       "`inspeximus-mcp`, 130 tools",
-       "The MCP server exposes 130 tools", "REPRODUCIBLE",
+    _c("mcp-tool-count", "MCP_LISTINGS.md", ["133"],
+       "`inspeximus-mcp`, 133 tools",
+       "The MCP server exposes 133 tools", "REPRODUCIBLE",
        "python claims_audit.py --numbers",
        "Published as 30 until 2026-08-01 -- 26 short -- while the homepage said 15 in one place and 56 "
        "in another. Three surfaces, one server, no error anywhere. Now read from the code."),
-    _c("mcp-tool-list", "MCP_LISTINGS.md", ["130"],
-       "**Tools (130):**",
+    _c("mcp-tool-list", "MCP_LISTINGS.md", ["133"],
+       "**Tools (133):**",
        "The enumerated tool list matches the server", "REPRODUCIBLE",
        "python claims_audit.py --numbers"),
     _c("mcp-stale-30", "MCP_LISTINGS.md", ["30", "26", "2026"],
@@ -1186,20 +1186,26 @@ NUMBER_CLAIMS = [
        "WITHDRAWN", "python claims_audit.py --numbers"),
 
     # -------------------------------------------------------------- index.html
-    _c("site-mcp-tools-counter", "index.html", ["130", "0"],
-       'data-count="130">0</b><span>MCP tools',
-       "Homepage counter: 130 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
+    _c("site-mcp-tools-counter", "index.html", ["133", "0"],
+       'data-count="133">0</b><span>MCP tools',
+       "Homepage counter: 133 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- "
        "which is why the scanner hoists data-count out of the tag before stripping tags."),
-    _c("site-mcp-tools-heading", "index.html", ["130"],
-       "130 tools any MCP host can call",
-       "Homepage heading: 130 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
+    _c("site-mcp-tools-heading", "index.html", ["133"],
+       "133 tools any MCP host can call",
+       "Homepage heading: 133 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers"),
     _c("site-coverage-matrix", "index.html", ["3.4.0", "38", "36", "2", "0"],
        "prints the matrix since release 3.4.0: 38 rows, 36 with a library call that produces the evidence, 2 not applicable, 0 not covered",
        "The coverage matrix on a fresh store at 3.4.0 and later: 38 rows, 36 in scope with a producing call, 2 not applicable, 0 not covered",
        "REPRODUCIBLE", "python -m inspeximus.cli --path /tmp/fresh.json coverage",
        note="Added by the site commit d876b69 (2026-09-21) without a registry row; registered with the 3.5.0 release. "
             "The 36 of 36 result is what 3.4.0 shipped (tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py)."),
+    _c("site-art15-evidence-rows", "index.html", ["3.6.0", "3"],
+       "Since 3.6.0 the Art. 15 row carries the library's 3 robustness measurements",
+       "compliance_report() carries 3 robustness evidence rows (echo, poison, split_view) since 3.6.0, each with the receipt sha256",
+       "REPRODUCIBLE", "python tools/gen_robustness_evidence.py --check",
+       note="The rows are read from the probe receipts by tools/gen_robustness_evidence.py, never typed; "
+            "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py pins the count and the STALE control."),
     _c("site-adapters", "index.html", ["14", "0", "14", "14"],
        'data-count="14">0</b><span>integrations, 14 of 14 verified upstream',
        "Homepage counter: 14 integrations, 14 of 14 verified against current upstream", "REPRODUCIBLE",
@@ -1419,7 +1425,7 @@ NON_CLAIM_TOKENS = {
         "35": (1, "GDPR ARTICLE number (data protection impact assessment) in the documents paragraph"),
         "7": (1, "the paragraph digit in GDPR Art. 35(7), not a quantity"),
         "4": (1, "refers_to=[3, 4] in the incident example: a ledger seq number in a code snippet"),
-        "130,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
+        "133,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
                 "Was '68,' until 2026-08-25, when three places still said 68 or 71 while the server "
                 "had 73 tool defs: README's documentation table, two CLAIMS descriptions, and BOTH "
                 "og:description and twitter:description in claude-code.html -- the text search engines "
@@ -1573,7 +1579,9 @@ NON_CLAIM_TOKENS = {
         "01": (1, "a section beat label"),
         "02": (1, "a section beat label"),
         "03": (1, "a section beat label"),
-        "17": (2, "GDPR Art. 17 -- an article number, in the erasure card and in the evidence-layer rights card"),
+        "17": (3, "GDPR Art. 17 -- an article number, in the erasure card and in the evidence-layer rights card; "
+                  "AI Act Art. 17 in the 3.6.0 sentence of the evidence section"),
+        "15": (1, "AI Act Art. 15 -- an article number, in the 3.6.0 sentence of the evidence section"),
         "200": (2, "'200 OK' -- an HTTP status code"),
         "800": (1, "NIST SP 800-88 -- a standard's number"),
         "6962": (1, "RFC 6962 -- a standard's number"),

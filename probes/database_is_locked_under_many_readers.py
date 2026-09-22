@@ -83,8 +83,9 @@ def main():
         out["B_reader_loads"] = sum(r.get() for r in rs)
     print("B", json.dumps(out["B_writer_beside_readers"]), "reader loads", out["B_reader_loads"], flush=True)
     if full:   # the short form is a smoke run; the recorded result is the full one
-        with open(os.path.splitext(os.path.abspath(__file__))[0] + ".result.json", "w", encoding="utf-8") as fh:
-            json.dump(out, fh, indent=1)
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from _receipt import write_receipt
+        write_receipt(__file__, out)
     assert out["A_writer_alone"]["landed"] == writes and out["B_writer_beside_readers"]["landed"] == writes
 
 

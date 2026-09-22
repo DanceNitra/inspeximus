@@ -89,5 +89,6 @@ if __name__ == "__main__":
         res = fn(p)
         out["arms"][name] = res
         print(name, "->", json.dumps(res, default=str), "%.1fs" % (time.time() - t))
-    with open(os.path.splitext(os.path.abspath(__file__))[0] + ".result.json", "w", encoding="utf-8") as fh:
-        json.dump(out, fh, indent=1, default=str)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _receipt import write_receipt
+    write_receipt(__file__, json.loads(json.dumps(out, default=str)))

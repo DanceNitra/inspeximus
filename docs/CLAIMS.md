@@ -15,19 +15,19 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **682** numeric tokens are published across the 10 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html, erasure.html, audit-trail.html, migrate-from-mem0.html.
-- **297** of those are quantitative claims, in **145** registry rows below.
-- **119** rows (119/145) are reproducible by a command committed to this repository
+- **685** numeric tokens are published across the 10 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html, erasure.html, audit-trail.html, migrate-from-mem0.html.
+- **298** of those are quantitative claims, in **146** registry rows below.
+- **120** rows (120/146) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 26 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 385 tokens are declared non-claims — citation years,
+- The other 387 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 
 Counts by status:
 
-- `REPRODUCIBLE` — 57
+- `REPRODUCIBLE` — 58
 - `REPRODUCIBLE-WITH-DEPS` — 62
 - `PENDING-HARNESS` — 2
 - `EXTERNAL` — 22
@@ -38,8 +38,8 @@ Counts by status:
 | # | file | figure(s) | claim | status | command that reproduces it |
 |---|---|---|---|---|---|
 | 1 | `MCP_LISTINGS.md` | `30` `26` `2026` | WITHDRAWN: the previous '30 tools' figure, kept as the record of the correction | **WITHDRAWN** | `python claims_audit.py --numbers` |
-| 2 | `MCP_LISTINGS.md` | `130` | The MCP server exposes 130 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 3 | `MCP_LISTINGS.md` | `130` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 2 | `MCP_LISTINGS.md` | `133` | The MCP server exposes 133 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 3 | `MCP_LISTINGS.md` | `133` | The enumerated tool list matches the server | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 4 | `README.md` | `14` `14` `0` | Framework adapters: 14 of 14 verified against current upstream, 0 recorded broken | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 5 | `README.md` | `5` `5` | The five agmi at-rest attacks against a receipts-on store: 5 of 5 detected by verify_writes() | **REPRODUCIBLE** | `python probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py` |
 | 6 | `README.md` | `4` `5` | The same five attacks when the attacker holds the receipts sidecar AND the chain head in the config home: 4 of 5 detected, the tail truncation accepted; with the sidecar alone the head reports it, 5 of 5 | **REPRODUCIBLE** | `python probes/five_at_rest_attacks_on_the_store_with_receipts_off_and_on.py` |
@@ -58,7 +58,7 @@ Counts by status:
 | 19 | `README.md` | `0` `26` | Graphiti's bi-temporal invalidation held 26/26 corrections that were extracted pre-echo; its 13.3% raw resurrection is four extraction misses, not echo failures | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 20 | `README.md` | `0` | On echo-attributable resurrection specifically, Graphiti scores 0% -- the separator is whether the supersession link is recorded at write time, not which vendor recorded it | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 21 | `README.md` | `2026` `0.9` `2` `21` | The competitor version measured and its star count on the day of measurement, stamped rather than restated as current. | **EXTERNAL** | `gh api repos/vectorize-io/hindsight --jq '.stargazers_count'` |
-| 22 | `README.md` | `130` | The MCP server exposes 130 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 22 | `README.md` | `133` | The MCP server exposes 133 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 23 | `README.md` | `11` | The cases the authority rule leaves wrong through the store, the total minus the auth_store score of the row above: five stale_late_write and six semantic_conflict, all decided by write order between equal authorities writing a fresh value. | **REPRODUCIBLE-WITH-DEPS** | `python probes/memtx_replayed_through_keyed_supersession.py --store` |
 | 24 | `README.md` | `318` `278` `307` | The one-line restatement of the row above, on its own source line: MemTX, 318 replayable cases, the default mode 278 of 318 and the authority policy 307 of 318, both through a real store per case. Same probe, same run, same corpus. Measured 2026-09-20. | **REPRODUCIBLE-WITH-DEPS** | `python probes/memtx_replayed_through_keyed_supersession.py --store` |
 | 25 | `README.md` | `278` `318` `307` | The MemTX corpus (github.com/lxy1134/MEMTX_; every file with an event schedule) replayed through a fresh Inspeximus store per case and policy, the served value read with current(key): the default matches the labelled committed belief in 278 of 318 cases, supersession='authority' in 307 of 318, and every case where the two disagree sides with authority. The same replay as a pure function with no echo guard scores lower on both arms, and the store with INSPEXIMUS_ECHO_GUARD=0 reproduces those lower numbers exactly, so the gap is the echo guard; the probe prints both tables. Measured 2026-09-20. | **REPRODUCIBLE-WITH-DEPS** | `python probes/memtx_replayed_through_keyed_supersession.py --store` |
@@ -79,7 +79,7 @@ Counts by status:
 | 40 | `audit-trail.html` | `1,` | The memory state at the action held 1 record | **REPRODUCIBLE** | `python tools/page_runs.py ledger` |
 | 41 | `audit-trail.html` | `1` | actions verify reports 1 entry bound to the store | **REPRODUCIBLE** | `python tools/page_runs.py ledger` |
 | 42 | `audit-trail.html` | `1` | the bound verify re-hashes the 1 record against its receipt (2.39.1) | **REPRODUCIBLE** | `python tools/page_runs.py ledger` |
-| 43 | `claude-code.html` | `130` | The MCP server exposes 130 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 43 | `claude-code.html` | `133` | The MCP server exposes 133 tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 44 | `compare.html` | `0` | The control: with our own guard off, we keep the correction 0% of the time | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 45 | `compare.html` | `100` | The objection names our own headline number | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 46 | `compare.html` | `0` `86.7` `13.3` `95` `3.3` `26.7` | Graphiti keeps the correction 86.7%; resurrection 13.3%, 95% CI [3.3, 26.7] | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
@@ -111,7 +111,7 @@ Counts by status:
 | 72 | `docs/DEEP_DIVE.md` | `25` `0.83` `0.70` | LOCOMO retrieval-recall@25 = 0.83 (any evidence turn) / 0.70 (all), n=1536, reinforce=False | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
 | 73 | `docs/DEEP_DIVE.md` | `1536,` | The LoCoMo config size behind recall_any@1 | **PENDING-HARNESS** | `python probes/retrieval_recall_locomo.py --k 25` |
 | 74 | `docs/DEEP_DIVE.md` | `0.7839` `0.6484` `0.783` `0.648` `1536` | The OLD published pair reproduces exactly at its own operating point (reinforce=True) | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
-| 75 | `docs/DEEP_DIVE.md` | `130` | The MCP server exposes 130 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(112)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
+| 75 | `docs/DEEP_DIVE.md` | `133` | The MCP server exposes 133 tools | **REPRODUCIBLE** | `python -c "import re,pathlib;print(len(re.findall(chr(64)+chr(112)+chr(99)+chr(112)+chr(46)+'tool', pathlib.Path('inspeximus/mcp_server.py').read_text(encoding='utf-8'))))"` |
 | 76 | `docs/DEEP_DIVE.md` | `0.592` `0.544` `2` | MemOps answer accuracy: keep-all 0.592, mem0 0.544; ~2% of mem0 extractions failed to parse | **EXTERNAL** | — |
 | 77 | `docs/DEEP_DIVE.md` | `0.593` | MemOps answer accuracy: inspeximus 0.593 | **EXTERNAL** | — |
 | 78 | `docs/DEEP_DIVE.md` | `519` `917` `606` `24` | mem0's default pipeline spends 519-917 s (median 606) of LLM extraction per MemOps scenario | **EXTERNAL** | — |
@@ -154,34 +154,35 @@ Counts by status:
 | 115 | `erasure.html` | `2` | erasure-verify passes every check it ran, pinned to the writer's key, and attests 2 erasures | **REPRODUCIBLE** | `python tools/page_runs.py erasure` |
 | 116 | `index.html` | `14` `0` `14` `14` | Homepage counter: 14 integrations, 14 of 14 verified against current upstream | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 117 | `index.html` | `10146` | The same pull request on the storefront card: agno-agi/agno#10146, merged 2026-09-20. | **REPRODUCIBLE-WITH-DEPS** | `gh pr view 10146 --repo agno-agi/agno --json state,mergedAt,files` |
-| 118 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
-| 119 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 120 | `index.html` | `30` `26` `0.70` `0.75` `0.80` `0.7500` `0.05` | The judge is not deterministic at temperature 0.0: 30 runs on byte-identical contexts give 0.75 x26, 0.70 x2, 0.80 x2; mean 0.7500; the store is deterministic | **REPRODUCIBLE-WITH-DEPS** | `python probes/the_judge_is_not_deterministic_at_temperature_zero.py --runs 30` |
-| 121 | `index.html` | `0.80` `1.00` | Judge sensitivity among comparable judges is no larger than the same judge's run-to-run band | **REPRODUCIBLE-WITH-DEPS** | `python probes/does_the_headline_number_depend_on_who_judges_it.py --n 20` |
-| 122 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
-| 123 | `index.html` | `3.4.0` `38` `36` `2` `0` | The coverage matrix on a fresh store at 3.4.0 and later: 38 rows, 36 in scope with a producing call, 2 not applicable, 0 not covered | **REPRODUCIBLE** | `python -m inspeximus.cli --path /tmp/fresh.json coverage` |
-| 124 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 125 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 126 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 127 | `index.html` | `14` `14` `0` | 14 of 14 framework adapters verified against current upstream; 0 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
-| 128 | `index.html` | `130` `0` | Homepage counter: 130 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 129 | `index.html` | `130` | Homepage heading: 130 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
-| 130 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
-| 131 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 132 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 133 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
-| 134 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
-| 135 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
-| 136 | `migrate-from-mem0.html` | `4` `2` `0` | The dry run counts 4 memory items from 2 users, none without a user_id | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
-| 137 | `migrate-from-mem0.html` | `3` `3` | The erasure removes the 3 records and leaves 3 tombstones | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
-| 138 | `migrate-from-mem0.html` | `3` `3` `0` | The erasure preview for the imported user reaches 3 records, the retired value included | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
-| 139 | `migrate-from-mem0.html` | `3` `1` | The import writes 3 records and skips the 1 expired memory | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
-| 140 | `migrate-from-mem0.html` | `0` `4` | A second import writes 0 records and skips all 4 | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
-| 141 | `migrate-from-mem0.html` | `100` `30` | inspeximus keeps the correction in 100% of 30 trials (the compare.html measurement, restated) | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 142 | `migrate-from-mem0.html` | `53.3` | mem0 2.0.11 keeps the correction in 53.3% (the compare.html measurement, restated) | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
-| 143 | `migrate-from-mem0.html` | `0` `4` | A re-import after the erasure writes 0 records: the sidecar remembers the erased ids | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
-| 144 | `migrate-from-mem0.html` | `20,` `20` | mem0 2.0.11's get_all(top_k=20) default caps an export at 20 memories per call | **REPRODUCIBLE** | `python -c "import inspect, mem0.memory.main as m; print(inspect.signature(m.Memory.get_all))"` |
-| 145 | `quickstart.html` | `187` `190` `193` | Cold start to a corrected-and-reverted fact, from a clean directory: three consecutive runs, import included, no network and no model. Quoted as three runs rather than one number because the first draft of this page said '192 ms', which was one sample presented as a constant. | **REPRODUCIBLE** | `python -c "import time;t=time.time();from inspeximus import Inspeximus;m=Inspeximus('m.json');m.remember('a',key='k');m.remember('b',key='k');m.recall('a');m.revert('k');print(int((time.time()-t)*1000),'ms')"` |
+| 118 | `index.html` | `3.6.0` `3` | compliance_report() carries 3 robustness evidence rows (echo, poison, split_view) since 3.6.0, each with the receipt sha256 | **REPRODUCIBLE** | `python tools/gen_robustness_evidence.py --check` |
+| 119 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
+| 120 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 121 | `index.html` | `30` `26` `0.70` `0.75` `0.80` `0.7500` `0.05` | The judge is not deterministic at temperature 0.0: 30 runs on byte-identical contexts give 0.75 x26, 0.70 x2, 0.80 x2; mean 0.7500; the store is deterministic | **REPRODUCIBLE-WITH-DEPS** | `python probes/the_judge_is_not_deterministic_at_temperature_zero.py --runs 30` |
+| 122 | `index.html` | `0.80` `1.00` | Judge sensitivity among comparable judges is no larger than the same judge's run-to-run band | **REPRODUCIBLE-WITH-DEPS** | `python probes/does_the_headline_number_depend_on_who_judges_it.py --n 20` |
+| 123 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
+| 124 | `index.html` | `3.4.0` `38` `36` `2` `0` | The coverage matrix on a fresh store at 3.4.0 and later: 38 rows, 36 in scope with a producing call, 2 not applicable, 0 not covered | **REPRODUCIBLE** | `python -m inspeximus.cli --path /tmp/fresh.json coverage` |
+| 125 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 126 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 127 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 128 | `index.html` | `14` `14` `0` | 14 of 14 framework adapters verified against current upstream; 0 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
+| 129 | `index.html` | `133` `0` | Homepage counter: 133 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 130 | `index.html` | `133` | Homepage heading: 133 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 131 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
+| 132 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 133 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 134 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
+| 135 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
+| 136 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |
+| 137 | `migrate-from-mem0.html` | `4` `2` `0` | The dry run counts 4 memory items from 2 users, none without a user_id | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 138 | `migrate-from-mem0.html` | `3` `3` | The erasure removes the 3 records and leaves 3 tombstones | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 139 | `migrate-from-mem0.html` | `3` `3` `0` | The erasure preview for the imported user reaches 3 records, the retired value included | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 140 | `migrate-from-mem0.html` | `3` `1` | The import writes 3 records and skips the 1 expired memory | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 141 | `migrate-from-mem0.html` | `0` `4` | A second import writes 0 records and skips all 4 | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 142 | `migrate-from-mem0.html` | `100` `30` | inspeximus keeps the correction in 100% of 30 trials (the compare.html measurement, restated) | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 143 | `migrate-from-mem0.html` | `53.3` | mem0 2.0.11 keeps the correction in 53.3% (the compare.html measurement, restated) | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
+| 144 | `migrate-from-mem0.html` | `0` `4` | A re-import after the erasure writes 0 records: the sidecar remembers the erased ids | **REPRODUCIBLE** | `python tools/page_runs.py mem0` |
+| 145 | `migrate-from-mem0.html` | `20,` `20` | mem0 2.0.11's get_all(top_k=20) default caps an export at 20 memories per call | **REPRODUCIBLE** | `python -c "import inspect, mem0.memory.main as m; print(inspect.signature(m.Memory.get_all))"` |
+| 146 | `quickstart.html` | `187` `190` `193` | Cold start to a corrected-and-reverted fact, from a clean directory: three consecutive runs, import included, no network and no model. Quoted as three runs rather than one number because the first draft of this page said '192 ms', which was one sample presented as a constant. | **REPRODUCIBLE** | `python -c "import time;t=time.time();from inspeximus import Inspeximus;m=Inspeximus('m.json');m.remember('a',key='k');m.remember('b',key='k');m.recall('a');m.revert('k');print(int((time.time()-t)*1000),'ms')"` |
 
 ## Notes
 
@@ -235,6 +236,7 @@ Counts by status:
 - **readme-vault-hero** — Our own private Obsidian vault. There is no command; the text now says so instead of implying the reader could check it.
 - **site-adapters** — Was 6 while the README said nine and the package ships nine agent-framework adapters (autogen, crewai, google_adk, haystack, langchain, langgraph, llamaindex, openai_agents, pydantic_ai).
 - **site-agno-cookbook-pr** — Same command as the README row; the date sits on the next source line and is declared with the page's other dates.
+- **site-art15-evidence-rows** — The rows are read from the probe receipts by tools/gen_robustness_evidence.py, never typed; tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py pins the count and the STALE control.
 - **site-bench-judge-nondeterminism** — Needs OPENAI_API_KEY. Two runs an hour apart both returned 0.75 and that was written up as 'reproduces to the digit'; a third returned 0.70. The store arm is the control: 5 runs, 1 distinct context set. B=0 in every run, so the band is abstention.
 - **site-bench-judge-sensitivity** — Needs OPENAI_API_KEY. The first version of this row said 0.80-1.00 and mixed comparable with non-comparable columns: only gpt-4o-mini 0.75, gpt-5.4-nano 0.80 and gpt-5.4-mini 0.80 ran at temperature 0.0. gpt-5.5 (1.00) and gpt-5.6-luna (0.85) REFUSED temperature 0.0. The honest delta is +0.05, one case in twenty, McNemar p=1.0. B=0 in every column including the deterministic control at 1.00, so the spread is abstention, not disagreement about the revert.
 - **site-coverage-matrix** — Added by the site commit d876b69 (2026-09-21) without a registry row; registered with the 3.5.0 release. The 36 of 36 result is what 3.4.0 shipped (tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py).

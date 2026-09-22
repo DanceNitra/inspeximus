@@ -1,0 +1,20 @@
+{
+ "probe": "a_split_view_is_detected_and_an_honest_pair_is_not.py",
+ "inspeximus": "3.5.2",
+ "measured_at": "2026-09-22",
+ "property": "split-view detection from two witness co-signed heads",
+ "forked_pair": {
+  "fork": true,
+  "inconsistent": true,
+  "both_cosigned": true,
+  "n_writes": [
+   2,
+   2
+  ]
+ },
+ "honest_pair_control": {
+  "fork": false,
+  "both_cosigned": true
+ },
+ "verdict": "DETECTED"
+}

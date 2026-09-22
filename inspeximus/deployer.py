@@ -463,6 +463,15 @@ def deployer_report(store, ledger=None, operator: dict | None = None, expected_p
             "evidence_note": "the ledger counts the measures recorded, by audience and kind; Art. 4 asks for measures, "
                              "not for a level reached by any individual",
         },
+        "17_quality_management_register": {
+            "obligation": "a provider keeps a quality management system (Art. 17); a deployer that becomes a "
+                          "provider under Art. 25 inherits it",
+            "evidence": (_safe(lambda: ledger.qms_register(now=now),
+                               default={"procedures": 0, "overdue": [], "rows": []})
+                         if ledger is not None else {"procedures": 0, "overdue": [], "rows": []}),
+            "evidence_note": "the ledger lists the procedures recorded, their owners and review dates, and names "
+                             "the ones overdue; the procedures themselves are the provider's documents",
+        },
         "26_2_human_oversight_assigned": {
             "obligation": "assign human oversight to natural persons who have the necessary competence, training "
                           "and authority, and the necessary support",

@@ -1,0 +1,42 @@
+{
+ "kind": "inspeximus.robustness_evidence/1",
+ "note": "Measurements of the library, carried into compliance_report() as dated evidence rows. Each names the probe that recomputes it and the sha256 of its receipt; a receipt that no longer hashes to this reads STALE in the report. They describe the library, not any particular store, and they are not a certification.",
+ "rows": [
+  {
+   "id": "echo",
+   "article": "AI Act Art. 15",
+   "property": "resilience to a corrected fact being re-asserted",
+   "probe": "probes/echo_policy_panel.py",
+   "receipt": "probes/echo_policy_panel_result.json",
+   "receipt_sha256": "37e7b5e1a2a162712549f5cfa2befa989bd1d1754014678b2ebe12e4f18e5d9b",
+   "measured_at": "2026-07-27",
+   "metric": "echo_blocked under the default policy",
+   "value": 1.0,
+   "summary": "a restated stale value is retired on arrival (echo_blocked 1.00); the safe, context and trusting policies are the panel's other rows"
+  },
+  {
+   "id": "poison",
+   "article": "AI Act Art. 15",
+   "property": "resilience to memory poisoning",
+   "probe": "probes/agentpoison_influence_gate.py",
+   "receipt": "probes/agentpoison_influence_gate_result.json",
+   "receipt_sha256": "7f2196c2b8e9f8146f1465a948865e45e31720baed4c3d38c8e123ad5b61f32a",
+   "measured_at": "2026-07-26",
+   "metric": "influence_hijack across 3 dense retrievers (raw_hijack without the gate)",
+   "value": 0.0,
+   "summary": "AgentPoison-style planted memories hijack 0.875 to 1.000 of queries at the retriever and 0.000 once the influence gate decides what may DRIVE a response"
+  },
+  {
+   "id": "split_view",
+   "article": "AI Act Art. 15",
+   "property": "detection of operator-side tampering (a split view)",
+   "probe": "probes/a_split_view_is_detected_and_an_honest_pair_is_not.py",
+   "receipt": "probes/a_split_view_is_detected_and_an_honest_pair_is_not.result.json",
+   "receipt_sha256": "9070040a0eb9ef3aaaa6bf86547c5bc0dae59fa64bd9aaea7c9b28aee9589569",
+   "measured_at": "2026-09-22",
+   "metric": "fork detected on a forked co-signed pair; not on the honest pair",
+   "value": 1.0,
+   "summary": "two histories served to two readers are proven from one witness's two signatures (fork True), and an append-only pair is not flagged (control fork False)"
+  }
+ ]
+}

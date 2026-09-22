@@ -192,6 +192,9 @@ _ARGS = {
     # side's record is refused unless it is quarantined, and refusal is a pass here.
     "read_guard_report": (),
     "release_quarantine": (None, "dpo"),
+    # declare_out_of_band_deletion (3.6.0): aimed at the other side's record, which is present, so it is
+    # refused with a ValueError that names only the id; a refusal is content-free and a pass here.
+    "declare_out_of_band_deletion": (None, "dpo", "the sweep declares a deletion it did not make"),
     "unsubscribe": ("no-such-subscription",),
     # import_changeset takes a PEER'S changeset, so the sweep hands it a hand-built one whose
     # record text carries the other side's secret. An import is the method most tempted to echo

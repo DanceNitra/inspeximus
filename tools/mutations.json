@@ -2674,5 +2674,113 @@
   "tests": [
    "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
   ]
+ },
+ {
+  "file": "inspeximus/compliance.py",
+  "name": "3.6.0 a receipt that hashes to something else reads verified, so a mutated receipt is invisible",
+  "old": "            row[\"status\"] = \"verified\" if digest == r[\"receipt_sha256\"] else \"STALE\"",
+  "new": "            row[\"status\"] = \"verified\"",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/compliance.py",
+  "name": "3.6.0 the Art. 15 control no longer turns STALE_EVIDENCE on a stale row",
+  "old": "            if robustness[\"stale\"]:\n                row[\"status\"] = \"STALE_EVIDENCE\"",
+  "new": "            if False:\n                row[\"status\"] = \"STALE_EVIDENCE\"",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/compliance.py",
+  "name": "3.6.0 the evidence rows land on every Art. 15 control including GDPR's",
+  "old": "        if art == \"Art. 15\" and framework.startswith(\"EU AI Act\"):",
+  "new": "        if art == \"Art. 15\":",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/coverage.py",
+  "name": "3.6.0 the coverage probe for Art. 15 ignores a STALE row",
+  "old": "    if ev[\"stale\"]:\n        return 0, f\"{len(ev['stale'])} of {n_rows} robustness evidence row(s) STALE: {', '.join(ev['stale'])}\"",
+  "new": "    if False:\n        return 0, f\"{len(ev['stale'])} of {n_rows} robustness evidence row(s) STALE: {', '.join(ev['stale'])}\"",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "3.6.0 the qms register never reports a review as overdue",
+  "old": "                         \"overdue\": bool(due is not None and float(due) < now),",
+  "new": "                         \"overdue\": False,",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "3.6.0 the qms register reports the first entry per procedure, not the latest",
+  "old": "        for e in ev:\n            latest[e.get(\"procedure\")] = e",
+  "new": "        for e in ev:\n            latest.setdefault(e.get(\"procedure\"), e)",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "3.6.0 a qms entry accepts any aspect letter",
+  "old": "        if aspect is not None and aspect not in QMS_ASPECTS:\n            raise ValueError(f\"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}\")",
+  "new": "        if False:\n            raise ValueError(f\"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}\")",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/actions.py",
+  "name": "3.6.0 a qms entry accepts an empty owner",
+  "old": "        if not owner or not str(owner).strip():\n            raise ValueError(\"a qms record names the procedure's owner\")",
+  "new": "        if False:\n            raise ValueError(\"a qms record names the procedure's owner\")",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/deployer.py",
+  "name": "3.6.0 the deployer report drops the qms register",
+  "old": "            \"evidence\": (_safe(lambda: ledger.qms_register(now=now),\n                               default={\"procedures\": 0, \"overdue\": [], \"rows\": []})\n                         if ledger is not None else {\"procedures\": 0, \"overdue\": [], \"rows\": []}),",
+  "new": "            \"evidence\": {\"procedures\": 0, \"overdue\": [], \"rows\": []},",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.6.0 an out-of-band declaration is accepted for a record that is still in the store",
+  "old": "        if any(r.get(\"id\") == mid for r in self._items):\n            raise ValueError(f\"{mid} is still in the store; erase it with forget(), which writes its own tombstone\")",
+  "new": "        if False:\n            raise ValueError(f\"{mid} is still in the store; erase it with forget(), which writes its own tombstone\")",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.6.0 an out-of-band declaration is accepted for an id no receipt names",
+  "old": "        if not any(r.get(\"memory_id\") == mid for r in (self._receipts or [])):\n            raise ValueError(f\"no write receipt names {mid}, so there is nothing for the chain to account for\")",
+  "new": "        if False:\n            raise ValueError(f\"no write receipt names {mid}, so there is nothing for the chain to account for\")",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.6.0 the out-of-band tombstone no longer says it was out of band",
+  "old": "                                 basis=f\"out_of_band: {str(reason).strip()[:300]}\", authorized_by=str(actor).strip())",
+  "new": "                                 basis=f\"declared: {str(reason).strip()[:300]}\", authorized_by=str(actor).strip())",
+  "tests": [
+   "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
+  ]
  }
 ]

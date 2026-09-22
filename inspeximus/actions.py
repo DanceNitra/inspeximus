@@ -158,6 +158,24 @@ NOTICE_TIMINGS = ("at_collection", "within_one_month", "at_first_communication",
 #: GDPR Art. 28: the role this store's operator plays for the personal data in it.
 PROCESSING_ROLES = ("controller", "joint_controller", "processor", "sub_processor")
 
+#: The aspects Art. 17(1) lists for a quality management system, (a) to (m). A qms entry names the
+#: one its procedure covers, so the register can say which letters have a current procedure.
+QMS_ASPECTS = {
+    "a": "strategy for regulatory compliance, including conformity assessment and change management",
+    "b": "techniques, procedures and systematic actions for design, design control and design verification",
+    "c": "techniques, procedures and systematic actions for development, quality control and quality assurance",
+    "d": "examination, test and validation procedures before, during and after development, and their frequency",
+    "e": "technical specifications, including standards, and the means to meet the Chapter III, Section 2 requirements",
+    "f": "systems and procedures for data management",
+    "g": "the risk management system referred to in Article 9",
+    "h": "the setting-up, implementation and maintenance of a post-market monitoring system (Article 72)",
+    "i": "procedures related to the reporting of a serious incident (Article 73)",
+    "j": "the handling of communication with authorities, notified bodies, other operators, customers or other interested parties",
+    "k": "systems and procedures for record-keeping of all relevant documentation and information",
+    "l": "resource management, including security-of-supply related measures",
+    "m": "an accountability framework setting out the responsibilities of the management and other staff",
+}
+
 GENESIS = "0" * 64
 LEDGER_VERSION = 1
 
@@ -473,10 +491,10 @@ class ActionLedger:
         if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp",
                         "lifecycle", "risk", "monitoring", "corrective", "authority", "breach",
                         "literacy", "attestation", "responsibilities", "declaration", "documentation",
-                        "notice", "processing_role"):
+                        "notice", "processing_role", "qms"):
             raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
                              "lifecycle, risk, monitoring, corrective, authority, breach, literacy, attestation, "
-                             "responsibilities, declaration, documentation, notice or processing_role")
+                             "responsibilities, declaration, documentation, notice, processing_role or qms")
         self._refresh_if_changed()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -828,6 +846,7 @@ class ActionLedger:
             "documentation_attestations": len(kind("documentation")),
             "notices": len(kind("notice")),
             "processing_roles": len(kind("processing_role")),
+            "qms_procedures": len({e.get("procedure") for e in kind("qms")}),
             "objections": {"recorded": sum(1 for e in kind("rights") if e.get("event") == "objection"),
                            "resolved": sum(1 for e in kind("rights") if e.get("event") == "objection_resolved")},
             "chain": _chain_state(self),
@@ -837,7 +856,8 @@ class ActionLedger:
                              "GDPR Art. 33": "breaches", "Art. 4": "literacy_measures", "Art. 5": "attestations",
                              "Art. 25": "responsibilities_agreements", "Art. 47": "declarations",
                              "Art. 18": "documentation_attestations", "GDPR Art. 13, 14": "notices",
-                             "GDPR Art. 21": "objections", "GDPR Art. 28": "processing_roles"},
+                             "GDPR Art. 21": "objections", "GDPR Art. 28": "processing_roles",
+                             "Art. 17": "qms_procedures"},
             "store": {"records": len(list(self.store.items)) if self.store is not None else None,
                       "tombstones": len(getattr(self.store, "_tombstones", None) or []) if self.store is not None else None},
             "plan": ({"name": plan.get("name"), "version": plan.get("version"),
@@ -1428,6 +1448,65 @@ class ActionLedger:
                 "scope": ("The operator's own declaration of its role. Whether a party is in fact a controller "
                           "or a processor follows from the facts of the processing (Art. 4(7) and (8)), not "
                           "from what it recorded here.")}
+
+    # ------------------------------------------------------------------ Art. 17: quality management system
+    def record_qms(self, actor: str, procedure: str, version: str, owner: str, review_due_ts: float,
+                   aspect: str | None = None, ref: str | None = None, sha256: str | None = None,
+                   ts: float | None = None, meta: dict | None = None) -> dict:
+        """Record one procedure of the provider's quality management system (AI Act Art. 17): its name,
+        version, owner, the date its next review is due, the Art. 17(1) aspect it covers (a letter from
+        QMS_ASPECTS) and, where the document is a file, a reference and its sha256 so the ledger pins
+        which text the entry describes. A later entry for the same procedure is the current one.
+
+        The QMS itself is the provider's; this is the signed record that it exists, who owns it and
+        when it was last confirmed current, which is what an Art. 17 review asks for first."""
+        if not actor:
+            raise ValueError("a qms record needs an actor")
+        if not procedure or not str(procedure).strip():
+            raise ValueError("a qms record names the procedure it describes")
+        if not version or not str(version).strip():
+            raise ValueError("a qms record carries the procedure's version")
+        if not owner or not str(owner).strip():
+            raise ValueError("a qms record names the procedure's owner")
+        try:
+            due = float(review_due_ts)
+        except (TypeError, ValueError):
+            raise ValueError("review_due_ts is the epoch time the next review is due")
+        if aspect is not None and aspect not in QMS_ASPECTS:
+            raise ValueError(f"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}")
+        if sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(sha256)):
+            raise ValueError("sha256 must be a 64-hex sha256")
+        extra = {"procedure": str(procedure).strip(), "version": str(version).strip(), "owner": str(owner).strip(),
+                 "review_due_ts": due, "aspect": aspect, "ref": ref, "sha256": sha256,
+                 "declared_ts": float(ts) if ts is not None else time.time()}
+        return self.record(f"qms:{extra['procedure']}", inputs={"procedure": extra["procedure"], "version": extra["version"]},
+                           status="ok", actor=actor, meta=meta, kind="qms", extra=extra)
+
+    def qms_register(self, now: float | None = None) -> dict:
+        """The current procedure per name (latest entry wins), which ones are overdue for review at
+        `now`, and which Art. 17(1) aspects have a current procedure. Read-only."""
+        now = time.time() if now is None else float(now)
+        ev = [e for e in self._entries if e.get("kind") == "qms"]
+        latest: dict = {}
+        for e in ev:
+            latest[e.get("procedure")] = e
+        rows = []
+        for name, e in sorted(latest.items()):
+            due = e.get("review_due_ts")
+            rows.append({"seq": e["seq"], "procedure": name, "version": e.get("version"), "owner": e.get("owner"),
+                         "aspect": e.get("aspect"), "review_due_ts": due,
+                         "overdue": bool(due is not None and float(due) < now),
+                         "ref": e.get("ref"), "sha256": e.get("sha256"), "actor": e.get("actor"),
+                         "signed": "sig" in e})
+        covered = sorted({r["aspect"] for r in rows if r.get("aspect")})
+        return {"kind": "inspeximus.qms_register/1", "procedures": len(rows), "entries": len(ev),
+                "overdue": [r["procedure"] for r in rows if r["overdue"]],
+                "aspects_covered": covered,
+                "aspects_uncovered": sorted(set(QMS_ASPECTS) - set(covered)),
+                "rows": rows,
+                "scope": ("The provider's own record of its quality management system: which procedures exist, "
+                          "who owns them and when their review is due. Whether the system meets Art. 17 is "
+                          "assessed against the procedures themselves, not against this register.")}
 
     # ------------------------------------------------------------------ Art. 18: documentation keeping
     def attest_documentation_retention(self, actor: str, placed_on_market_ts: float, documents: list,

@@ -1287,7 +1287,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.5.2"
+__version__ = "3.6.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -7688,6 +7688,35 @@ class Inspeximus:
             if s >= dup_threshold and not _value_clash(text, h["text"]):
                 return h["id"]            # NO-OP: near-identical, same value -> skip the redundant append
         return self.remember(text, tags=tags, value=value, meta=meta, mtype=mtype)
+
+    def declare_out_of_band_deletion(self, memory_id: str, actor: str, reason: str) -> dict:
+        """Account, in the chain, for a record that a receipt vouches for and that is no longer in the
+        store, because something other than this library removed it (3.6.0).
+
+        `verify_writes()` reports such a record as "written but missing from the store (deleted
+        out-of-band)" and keeps reporting it, because `forget()` on an id that is already gone erases
+        nothing and writes no tombstone. This appends the tombstone the deletion should have carried,
+        with `actor` and `reason` inside the committed hash and the basis marked `out_of_band`, so the
+        chain reads as accounted for while the record of HOW it left the store stays on it. It is a
+        declaration by the operator, not evidence of what was deleted: the content is gone and the
+        receipt's commitment is all that remains of it. Refused when the record is still present (use
+        `forget()`), or when no receipt names it (there is nothing to account for).
+        Measured on the Crew OS store 2026-09-22: two records removed with a raw SQL DELETE.
+        """
+        mid = str(memory_id or "").strip()
+        if not mid:
+            raise ValueError("declare_out_of_band_deletion() needs a memory id")
+        if not str(actor or "").strip() or not str(reason or "").strip():
+            raise ValueError("an out-of-band deletion is declared by a named actor with a reason")
+        if any(r.get("id") == mid for r in self._items):
+            raise ValueError(f"{mid} is still in the store; erase it with forget(), which writes its own tombstone")
+        if not any(r.get("memory_id") == mid for r in (self._receipts or [])):
+            raise ValueError(f"no write receipt names {mid}, so there is nothing for the chain to account for")
+        if any(t.get("memory_id") == mid for t in (self._tombstones or [])):
+            return {"memory_id": mid, "declared": False, "note": "already tombstoned"}
+        t = self._emit_tombstone(mid, time.time(), request_id=f"out_of_band:{actor}",
+                                 basis=f"out_of_band: {str(reason).strip()[:300]}", authorized_by=str(actor).strip())
+        return {"memory_id": mid, "declared": True, "tombstone_seq": t["seq"], "signed": "sig" in t}
 
     def forget(self, ids=None, where=None, redact_links: bool = True,
                request_id: str | None = None, basis: str | None = None,
@@ -16858,6 +16887,7 @@ class _TenantView:
     def erasure_report(self, *a, **k):      return Inspeximus.erasure_report(self, *a, **k)
     def governance_report(self, *a, **k):   return Inspeximus.governance_report(self, *a, **k)
     def forget(self, *a, **k):              return Inspeximus.forget(self, *a, **k)
+    def declare_out_of_band_deletion(self, *a, **k): return Inspeximus.declare_out_of_band_deletion(self, *a, **k)
     def retract_lineage(self, *a, **k):     return Inspeximus.retract_lineage(self, *a, **k)
     # `retire` is a write against `self.items`, so it is rebound: an agent view ends only what it
     # may read, and a tenant view only its tenant's value for the key.

@@ -1059,6 +1059,16 @@ def main(argv=None):
     acpr.add_argument("--category", dest="categories", action="append", default=[])
     acpr.add_argument("--store-ref", dest="store_ref", default=None)
     acsub.add_parser("processing-roles", help="every Art. 28 role declaration, the current one named")
+    acq = acsub.add_parser("qms", help="record one procedure of the quality management system (AI Act Art. 17)")
+    acq.add_argument("procedure")
+    acq.add_argument("--actor", required=True)
+    acq.add_argument("--version", required=True, dest="qms_version")
+    acq.add_argument("--owner", required=True)
+    acq.add_argument("--review-due", required=True, dest="review_due", help="ISO date (YYYY-MM-DD) or epoch seconds")
+    acq.add_argument("--aspect", default=None, help="the Art. 17(1) letter, a to m")
+    acq.add_argument("--ref", default=None)
+    acq.add_argument("--sha256", default=None)
+    acsub.add_parser("qms-register", help="the current QMS procedures, the overdue ones, the Art. 17(1) aspects covered")
     acrp = acsub.add_parser("incident-reported", help="record that incident SEQ was reported, to whom and when")
     acrp.add_argument("seq", type=int)
     acrp.add_argument("--actor", required=True)
@@ -2074,6 +2084,25 @@ def main(argv=None):
             print(f"recorded #{e['seq']} processing role {e['role']}" + (f" for {e['controller']}" if e["controller"] else ""))
         elif a.actions_cmd == "processing-roles":
             print(json.dumps(led.processing_roles(), indent=2, ensure_ascii=False))
+        elif a.actions_cmd == "qms":
+            import datetime as _dt
+            due = a.review_due
+            try:
+                due_ts = float(due)
+            except ValueError:
+                due_ts = _dt.datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=_dt.timezone.utc).timestamp()
+            e = led.record_qms(a.actor, a.procedure, a.qms_version, a.owner, due_ts, aspect=a.aspect, ref=a.ref, sha256=a.sha256)
+            print(f"recorded #{e['seq']} qms procedure {e['procedure']!r} v{e['version']}, owner {e['owner']}, review due "
+                  + _dt.datetime.fromtimestamp(e["review_due_ts"], _dt.timezone.utc).strftime("%Y-%m-%d"))
+        elif a.actions_cmd == "qms-register":
+            reg = led.qms_register()
+            if a.json:
+                print(json.dumps(reg, indent=2, ensure_ascii=False))
+            else:
+                print(f"{reg['procedures']} procedure(s), {len(reg['overdue'])} overdue, aspects covered: "
+                      f"{''.join(reg['aspects_covered']) or 'none'}, uncovered: {''.join(reg['aspects_uncovered']) or 'none'}")
+                for r in reg["rows"]:
+                    print(f"  {'OVERDUE ' if r['overdue'] else ''}{r['procedure']} v{r['version']} ({r['owner']}, aspect {r['aspect'] or '-'})")
         elif a.actions_cmd == "incident-reported":
             e = led.incident_reported(a.seq, actor=a.actor, reported_to=a.reported_to, reported_ts=a.reported_ts,
                                       note=a.note)

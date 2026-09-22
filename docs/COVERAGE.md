@@ -17,8 +17,8 @@ The matrix below is generated from `inspeximus.coverage` on a fresh store by `to
 | AI Act | Art. 12 | automatic recording of events over the lifetime | provider | CAPABILITY | ActionLedger.record(); actions verify; export-trail |
 | AI Act | Art. 13 | instructions for use, including how to read the logs | provider | CAPABILITY | instructions_for_use() |
 | AI Act | Art. 14 | human oversight: intervene, override, stop | provider, deployer | CAPABILITY | record_oversight(): approve, refuse, override, stop, review |
-| AI Act | Art. 15 | accuracy, robustness, cybersecurity, resilience to poisoning | provider | CAPABILITY | receipt chain, verify_writes(), influence gate, echo guard, audit_the_audits(); partial: the poisoning and split-view measurements live in probes/ and are not yet carried into compliance_report() |
-| AI Act | Art. 17 | quality management system | provider | CAPABILITY | compliance_report(), audit bundle; partial: the library stores and proves the QMS records; the QMS itself is the provider's |
+| AI Act | Art. 15 | accuracy, robustness, cybersecurity, resilience to poisoning | provider | CAPABILITY | receipt chain, verify_writes(), influence gate, echo guard, audit_the_audits(); compliance_report().robustness_evidence: the echo, poisoning and split-view measurements as dated rows with the receipt sha |
+| AI Act | Art. 17 | quality management system | provider | CAPABILITY | record_qms() per procedure with owner, version, review date and the Art. 17(1) aspect; qms_register() names the overdue ones; compliance_report(), audit bundle |
 | AI Act | Art. 18 | keep the documentation ten years | provider | CAPABILITY | attest_documentation_retention() over the Art. 18(1)(a) to (e) documents, with the ten-year end date |
 | AI Act | Art. 19 | keep the logs at least six months | provider | CAPABILITY | attest_retention(), archive under a signed checkpoint |
 | AI Act | Art. 20 | corrective actions: withdraw, disable, recall; inform the chain | provider | CAPABILITY | corrective_action() with the parties informed; corrective_action_report(seq) |

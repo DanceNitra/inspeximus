@@ -1,6 +1,6 @@
 # inspeximus MCP — registry listing pack
 
-`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 130 tools). Registry manifest:
+`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 133 tools). Registry manifest:
 [`server.json`](server.json). Zero code — pure distribution.
 
 *(The tool count is checked, not typed: `python claims_audit.py --numbers` counts `@mcp.tool()` in
@@ -28,16 +28,16 @@ inspeximus-mcp            # stdio; persists to ./inspeximus_memory.json (set INS
 
 Or let the CLI write it: `inspeximus install --ide claude` (also cursor, windsurf, codex, cline).
 
-**Tools (130):** provenance and verification first, because that is what people ask for; the ordinary
+**Tools (133):** provenance and verification first, because that is what people ask for; the ordinary
 memory operations follow. The count and the names are both checked against `@mcp.tool()` in
 `inspeximus/mcp_server.py` (`python claims_audit.py --numbers`, plus `tests/test_readme_capabilities.py`),
 so this list cannot drift from the server again.
 
-*Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · check_sources · identifier_contract · admissibility_preconditions · audit_the_audits · state_digest · selection_integrity · index_coherence · actions_verify · actions_match · what_it_knew · record_oversight · record_disclosure · oversight_report · record_incident · incident_report · incident_reported · record_risk · risk_register · post_market_report · record_corrective_action · corrective_action_report · record_authority_request · decision_explanation · record_breach · breach_notified · breach_report · record_literacy · literacy_register · record_attestation · attestation_register · record_responsibilities · responsibilities_register · record_declaration · declaration_document · attest_documentation_retention · record_notice · notice_register · record_processing_role · processing_roles · archive_actions · attest_retention · timestamp_actions · action_timeline · export_audit_trail · record_lifecycle · open_partition · remember_in_partition · sweep_partitions · close_partition · partitions_report · technical_documentation · deployer_report · registration_export
+*Provenance & verification:* provenance · why_recalled · history · supersession_report · verify_attribution · verify_writes · audit_bundle · verify_audit_bundle · anchor · witness · verify_witness · verify_cosigned_anchor · detect_split_view · verify_consistency · check_sources · identifier_contract · admissibility_preconditions · audit_the_audits · state_digest · selection_integrity · index_coherence · actions_verify · actions_match · what_it_knew · record_oversight · record_disclosure · oversight_report · record_incident · incident_report · incident_reported · record_risk · risk_register · post_market_report · record_corrective_action · corrective_action_report · record_authority_request · decision_explanation · record_breach · breach_notified · breach_report · record_literacy · literacy_register · record_attestation · attestation_register · record_responsibilities · responsibilities_register · record_declaration · declaration_document · attest_documentation_retention · record_notice · notice_register · record_processing_role · processing_roles · record_qms · qms_register · archive_actions · attest_retention · timestamp_actions · action_timeline · export_audit_trail · record_lifecycle · open_partition · remember_in_partition · sweep_partitions · close_partition · partitions_report · technical_documentation · deployer_report · registration_export
 
 *Memory operations:* remember · remember_decision · memory_index · set_index_line · recall · recall_iterative · recall_followup · get · neighbors · as_of · token_report · route · observe · reopened · resolve_reopened · revert · check_conflict · contradictions · consolidate · consolidate_clusters · sleep · credit · value_by_cohort · where_am_i · projects · poll_memory_events · subscribe_memory_event · retire_key
 
-*Erasure & governance:* export_subject · rectify_subject · record_objection · resolve_objection · objections · read_guard_report · release_quarantine · forget · forget_subject · forget_pii · erasure_certificate · erasure_residue · erasure_audit · erasure_report · retention · coverage · compliance_report · compliance_check · governance_report · pii_report · irreversible_budget_report · influence_gate_report · memory_report · verify_claim · check_self_narration
+*Erasure & governance:* export_subject · rectify_subject · record_objection · resolve_objection · objections · read_guard_report · release_quarantine · forget · declare_out_of_band_deletion · forget_subject · forget_pii · erasure_certificate · erasure_residue · erasure_audit · erasure_report · retention · coverage · compliance_report · compliance_check · governance_report · pii_report · irreversible_budget_report · influence_gate_report · memory_report · verify_claim · check_self_narration
 
 *Agent access control:* grant · revoke · grants · grant_log · can_read · recall_as · get_as
 

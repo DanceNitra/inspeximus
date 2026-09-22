@@ -117,7 +117,9 @@ def main() -> int:
         print("   ", "served" if p["served"] else "withheld", p["shapes"], p["text"][:60])
     suffix = "" if not a.installed else f".{inspeximus.__version__}"
     path = os.path.join(HERE, os.path.basename(__file__).replace(".py", f"{suffix}.result.json"))
-    json.dump(out, io.open(path, "w", encoding="utf-8"), indent=2)
+    sys.path.insert(0, HERE)
+    from _receipt import write_json
+    write_json(path, out, indent=2)   # not under the suite: the committed receipt is the cited number
     return 0 if out["CONTROL_benign_all_served"] and out["CONTROL_the_suite_entry_is_demoted"] else 1
 
 

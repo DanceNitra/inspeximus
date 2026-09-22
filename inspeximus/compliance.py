@@ -13,9 +13,62 @@ the report is demonstrably true, not asserted.
 DPO-facing page; the CLI is `inspeximus compliance [--out report.html|--json]`.
 """
 from __future__ import annotations
+import hashlib as _hashlib
 import html as _html
+import json as _json
+import os as _os
 import time
 from .core import __version__
+
+
+def robustness_evidence(probes_dir: str | None = None) -> dict:
+    """The Art. 15 evidence rows (3.6.0): the library's own robustness measurements, dated, each naming
+    the probe that recomputes it and the sha256 of its receipt.
+
+    The rows ship inside the package (`robustness_evidence.json`, written by
+    tools/gen_robustness_evidence.py from the receipts in the source tree, never typed). Each row's
+    `status` is decided here, against the receipt file when one can be found:
+
+      verified   the receipt is present at `probes_dir` and hashes to the packaged sha256
+      STALE      the receipt is present and hashes to something else: it was edited after the
+                 evidence was packaged, so the row's number no longer describes that file
+      packaged   no receipt file is reachable (an installed wheel, no source tree): the row is the
+                 measurement as packaged at release, and the probe path says how to recompute it
+
+    `probes_dir` defaults to the `probes/` directory beside the package when this is a source
+    checkout. These rows describe the LIBRARY, not the caller's store, and they are not a
+    certification; the report's disclaimer covers them.
+    """
+    here = _os.path.dirname(_os.path.abspath(__file__))
+    try:
+        with open(_os.path.join(here, "robustness_evidence.json"), encoding="utf-8") as fh:
+            doc = _json.load(fh)
+    except FileNotFoundError:
+        return {"kind": "inspeximus.robustness_evidence/1", "rows": [], "probes_dir": None,
+                "note": "robustness_evidence.json is missing from this installation"}
+    if probes_dir is None:
+        # an operator who keeps the receipts elsewhere points at them; the coverage probe has no
+        # argument of its own, so this is also how a test hands it a mutated copy
+        probes_dir = _os.environ.get("INSPEXIMUS_PROBES_DIR") or None
+    if probes_dir is None:
+        cand = _os.path.join(_os.path.dirname(here), "probes")
+        probes_dir = cand if _os.path.isdir(cand) else None
+    rows = []
+    for r in doc.get("rows") or []:
+        row = dict(r)
+        path = _os.path.join(probes_dir, _os.path.relpath(r["receipt"], "probes")) if probes_dir else None
+        if path and _os.path.exists(path):
+            with open(path, "rb") as fh:
+                digest = _hashlib.sha256(fh.read()).hexdigest()
+            row["status"] = "verified" if digest == r["receipt_sha256"] else "STALE"
+            if row["status"] == "STALE":
+                row["receipt_sha256_now"] = digest
+        else:
+            row["status"] = "packaged"
+        rows.append(row)
+    return {"kind": doc.get("kind", "inspeximus.robustness_evidence/1"), "note": doc.get("note"),
+            "probes_dir": probes_dir, "rows": rows,
+            "stale": [r["id"] for r in rows if r["status"] == "STALE"]}
 
 # Obligation wording is conservative and traceable to the consolidated Reg (EU) 2024/1689 / Reg (EU) 2016/679
 # texts (see docs/COMPLIANCE.md, which was primary-source checked). "Evidence for", never "guarantees".
@@ -165,7 +218,7 @@ _CONTROLS = [
 ]
 
 
-def compliance_report(store, expected_pubkey: str | None = None) -> dict:
+def compliance_report(store, expected_pubkey: str | None = None, probes_dir: str | None = None) -> dict:
     """Article-labelled EVIDENCE report for the agent-memory compliance slice, with LIVE counts from `store`.
     Each control carries an honest per-store status: 'evidence' (the store actually exercises the primitive),
     'available' (shipped but not exercised in this store), or 'needs_receipts' (Art.12/19/30 need receipts=True).
@@ -189,6 +242,7 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
     except Exception:  # noqa: BLE001 - a store with no registry has no partitions
         live["partitions_open"] = 0
 
+    robustness = robustness_evidence(probes_dir)
     controls = []
     for framework, art, title, obligation, evidence, live_key in _CONTROLS:
         count = live.get(live_key) if live_key else None
@@ -200,11 +254,20 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
             status = "evidence"
         else:
             status = "available"
-        controls.append({
+        row = {
             "framework": framework, "article": art, "title": title,
             "obligation": obligation, "inspeximus_evidence": evidence,
             "live_count": count, "status": status,
-        })
+        }
+        if art == "Art. 15" and framework.startswith("EU AI Act"):
+            # 3.6.0: the measurements the footnote used to say lived only in probes/. A STALE row
+            # is named here too, so a reader of the control sees it without opening the section.
+            row["robustness_evidence"] = [
+                {"id": r["id"], "property": r["property"], "metric": r["metric"], "value": r["value"],
+                 "measured_at": r["measured_at"], "status": r["status"]} for r in robustness["rows"]]
+            if robustness["stale"]:
+                row["status"] = "STALE_EVIDENCE"
+        controls.append(row)
 
     return {
         "kind": "inspeximus.compliance_report/2",
@@ -220,6 +283,7 @@ def compliance_report(store, expected_pubkey: str | None = None) -> dict:
         "receipts_enabled": receipts_on,
         "action_ledger": ledger,
         "partitions": live.get("partitions"),
+        "robustness_evidence": robustness,
         "controls": controls,
         "summary": {
             "writes": n_writes,

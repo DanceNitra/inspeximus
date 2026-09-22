@@ -2081,6 +2081,45 @@ def processing_roles() -> dict:
 
 
 @mcp.tool()
+def declare_out_of_band_deletion(memory_id: str, actor: str, reason: str) -> dict:
+    """Account in the write chain for a record a receipt vouches for that is no longer in the store because
+    something other than inspeximus removed it (a raw SQL DELETE, a restored backup). verify_writes()
+    otherwise reports it as "deleted out-of-band" forever, and forget() on a gone id writes no tombstone.
+    This appends the tombstone with `actor` and `reason` inside the committed hash, basis `out_of_band`.
+    It is the operator's declaration, not evidence of what was deleted. Refused while the record is still
+    present (use forget) or when no receipt names it."""
+    try:
+        return _MEM.declare_out_of_band_deletion(memory_id, actor, reason)
+    except ValueError as ex:
+        return {"error": str(ex)}
+
+
+@mcp.tool()
+def record_qms(actor: str, procedure: str, version: str, owner: str, review_due_ts: float,
+               aspect: str | None = None, ref: str | None = None, sha256: str | None = None) -> dict:
+    """Record one procedure of the provider's quality management system (AI Act Art. 17): name, version,
+    owner, when its next review is due (epoch seconds), the Art. 17(1) aspect it covers (a letter a to m)
+    and, for a document, its reference and sha256. A later entry for the same procedure is the current
+    one. The QMS itself is the provider's; this is the signed record that it exists and who keeps it."""
+    from inspeximus.actions import ActionLedger
+    led = ActionLedger(_MEM, actor=_ACTOR)
+    try:
+        e = led.record_qms(actor, procedure, version, owner, review_due_ts, aspect=aspect, ref=ref, sha256=sha256)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "procedure": e["procedure"], "version": e["version"], "owner": e["owner"],
+            "review_due_ts": e["review_due_ts"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def qms_register() -> dict:
+    """The current QMS procedure per name, the ones overdue for review, and which Art. 17(1) aspects
+    have a current procedure. Read-only."""
+    from inspeximus.actions import ActionLedger
+    return ActionLedger(_MEM, actor=_ACTOR).qms_register()
+
+
+@mcp.tool()
 def read_guard_report() -> dict:
     """What the read-path guards (3.5.0) hold back: every quarantined record (instruction-shaped text, with
     the shapes that put it there and whether a human released it) and every keyword-stuffed record (the
