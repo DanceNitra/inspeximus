@@ -1,63 +1,38 @@
-# inspeximus 3.6.0
+# inspeximus 3.6.1
 
-the two partial rows of the coverage matrix close: the Art. 15 robustness measurements are carried into compliance_report() as dated evidence rows with the receipt sha, and Art. 17 has a signed QMS register; a deletion made outside the library can be declared so the write chain reads accounted for. UPGRADE IF YOU HAND compliance_report() OR THE DEPLOYER REPORT TO AN ASSESSOR, OR IF verify_writes() REPORTS A RECORD DELETED OUT-OF-BAND. AFFECTS: `compliance_report()` gains `robustness_evidence` and a `probes_dir` argument, and its AI Act Art. 15 control carries the rows (status `STALE_EVIDENCE` when a receipt no longer hashes to its packaged sha); `robustness_evidence()` is new, with `INSPEXIMUS_PROBES_DIR`; the package ships `robustness_evidence.json`; the ledger gains the `qms` entry kind, `record_qms()` and `qms_register()`, the deployer report a `17_quality_management_register` duty, `post_market_report()` a `qms_procedures` count; the store gains `declare_out_of_band_deletion()`; three MCP tools (133) and the CLI subcommands `actions qms` and `actions qms-register`. The default store is byte-identical.
+a receipt holder on another machine can check inclusion: the service serves the leaf; a static publish without the service key completes. UPGRADE IF YOU RUN THE HOSTED TRANSPARENCY SERVICE OR PUBLISH ITS STATIC COPY. AFFECTS: SCRAPI gains `GET /entries/{id}/leaf` (application/json, the exact bytes the tree hashed; 200 or 404); `tools/publish_static_log.py` without `INSPEXIMUS_SERVICE_SECRET` writes the head, the leaves, the key set, the verifier and the page with zero receipts instead of raising on the first entry; `probes/register_against_the_hosted_log.py` is the acceptance client for a hosted service. The default store is byte-identical; the library is untouched.
 
 ## Who should upgrade
 
-Upgrade if this is true of you: **YOU HAND compliance_report() OR THE DEPLOYER REPORT TO AN ASSESSOR, OR IF verify_writes() REPORTS A RECORD DELETED OUT-OF-BAND. AFFECTS**.
+Upgrade if this is true of you: **YOU RUN THE HOSTED TRANSPARENCY SERVICE OR PUBLISH ITS STATIC COPY. AFFECTS**.
 
 ## What changed
 
-The matrix said 36 of 36 with two footnotes, and a footnote is a row that is not closed. Art. 15
-said the poisoning and split-view measurements lived in `probes/` and were not carried into the
-report; Art. 17 said the library stores the QMS records but the QMS is the provider's. Both are
-now closed by what the footnote asked for, and the two footnotes that remain (Art. 43 and Art.
-72: the conformity assessment and the post-market plan are acts and documents of others) stay,
-because a footnote that states a fact is not a defect.
+Both found on 2026-09-22, the day the service went live on its own host (`deploy/RUNBOOK.md`).
 
-Art. 15. `tools/gen_robustness_evidence.py` reads three receipts in `probes/` and writes
-`inspeximus/robustness_evidence.json`, which the wheel ships: the echo panel (a re-asserted
-stale value is retired on arrival under the default policy, `echo_blocked 1.0`, measured
-2026-07-27), the AgentPoison influence gate (`raw_hijack` 0.875 to 1.0 at the retriever and
-`influence_hijack` 0.0 once the gate decides what may drive a response, three dense retrievers,
-2026-07-26), and a split view (two histories served to two readers proven from one witness's two
-signatures, with the honest pair as the control; a new probe, 2026-09-22). Each row carries the
-probe path, the receipt's sha256 and the date. `compliance_report()` reads the rows and, when the
-receipts are reachable (a source checkout, or `INSPEXIMUS_PROBES_DIR`), re-hashes each: `verified`,
-or `STALE` with the current hash beside the packaged one, in which case the Art. 15 control reads
-`STALE_EVIDENCE` and the coverage row for Art. 15 drops out of EVIDENCE. On an installed wheel with
-no receipts in reach the rows read `packaged`. The numbers are read from the receipts by the
-generator and pinned by a test against their source, never typed. The control is a test that
-copies the receipts, changes one value, and reads STALE on the row, the control and the coverage
-probe; the first version of that test stubbed the probe and the mutation survived.
+A receipt's payload is detached and the leaf carries fields the service assigned, its clock and the
+index, so a client that holds only its statement and the receipt could verify the signature and the
+proof's arithmetic but never the inclusion of its own entry: the first registration from another
+machine read "no leaf supplied: inclusion NOT checked". The leaf holds digests, an issuer and a
+subject and no payload, so serving it discloses nothing the receipt did not already commit to. With
+it, `cose.verify_receipt(receipt, verify, leaf_data=leaf, expected_root=root)` verifies against the
+root the key set publishes, and the leaf of a different entry does not (the test's control).
 
-Art. 17. `record_qms(actor, procedure, version, owner, review_due_ts, aspect, ref, sha256)` is one
-signed ledger entry per procedure of the provider's quality management system; `aspect` is the
-Art. 17(1) letter it covers, (a) to (m), validated. `qms_register()` names the current entry per
-procedure, the ones overdue for review at `now`, and which letters have a current procedure. The
-deployer report lists the register as a duty and `post_market_report()` counts the procedures.
-The QMS is still the provider's; what the ledger holds is the signed record that it exists, who
-owns it and when it was last confirmed current.
-
-A deletion made outside the library. Measured on the Crew OS store 2026-09-22: two records that a
-receipt vouched for had been removed with a raw SQL DELETE, `verify_writes()` reported them as
-"deleted out-of-band", and `forget()` on an id that is already gone erased nothing and wrote no
-tombstone, so the chain could never read as accounted for. `declare_out_of_band_deletion(id, actor,
-reason)` appends the tombstone the deletion should have carried, with the actor and the reason
-inside the committed hash and the basis marked `out_of_band`. It is the operator's declaration, not
-evidence of what was deleted; it is refused while the record is present or when no receipt names
-it. Twelve mutations, all killed.
+The static publisher's startup note said that without a key receipts are read from the log rather
+than re-signed; the loop then asked the no-op signer for one and raised on the first entry, so the
+service's first cron run wrote `head.json` and `log.jsonl` and died before `verify.py` and
+`index.html`. A receipt needs the service key by definition; the copy without them is still the
+head, the leaves and the key set, which is what a witness reads, and it now completes and verifies.
+Three mutations, all killed.
 
 ## What breaks
 
-No line in the 3.6.0 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
-
-If that is wrong -- if something a caller relies on changed shape, name or default -- the entry is what needs fixing, not this section: RELEASING.md requires a behaviour change to carry the marker on its own line, and this reads that marker.
+No line in the 3.6.1 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
 
 ## Try it -- one command
 
 ```bash
-pip install -U "inspeximus==3.6.0"
+pip install -U "inspeximus==3.6.1"
 ```
 
 No server, no API key, no database, no LLM on the write path. A correction, and the retired value

@@ -1,0 +1,34 @@
+services:
+  witness:
+    secrets: [witness_secret]
+    command: ["--secret-file", "/run/secrets/witness_secret"]
+  scitt:
+    secrets: [service_secret]
+    volumes:
+      - /srv/scitt-data:/data
+    command:
+      - --secret-file
+      - /run/secrets/service_secret
+      - --accept-any-issuer
+      - --policy-name
+      - inspeximus-log-frankfurt
+      - --witness
+      - http://witness:9810
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["443:443", "80:80"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /srv/static-log:/srv/static-log:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [scitt]
+secrets:
+  service_secret:
+    file: /etc/inspeximus/service.secret
+  witness_secret:
+    file: /etc/inspeximus/witness.secret
+volumes:
+  caddy-data:
+  caddy-config:

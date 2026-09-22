@@ -258,3 +258,31 @@ def test_an_unreachable_witness_is_reported_and_does_not_take_the_service_down()
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+def test_a_holder_on_another_machine_can_check_inclusion_from_the_leaf_endpoint(wired):
+    """3.6.1: the receipt's payload is detached and the leaf carries the service's clock and index,
+    so a client that only has its statement and the receipt could not check inclusion. Measured
+    2026-09-22 against the hosted service: 'no leaf supplied: inclusion NOT checked'. The leaf
+    endpoint serves the bytes the tree hashed; with them the receipt verifies against the root, and
+    a leaf for a different entry does not (the control)."""
+    ts, isign, sverify, base = wired
+    _post(base, _statement(isign, b"first")).read()
+    with _post(base, _statement(isign, b"second")) as r:
+        receipt = r.read()
+        location = r.headers["Location"]
+    with urllib.request.urlopen(base + location + "/leaf", timeout=10) as r:
+        assert r.status == 200 and r.headers["Content-Type"].startswith("application/json")
+        leaf = r.read()
+    assert leaf == ts.entry_leaf(int(location.rsplit("/", 1)[-1]))
+    with urllib.request.urlopen(base + "/.well-known/scitt-keys", timeout=10) as r:
+        ks = cose.decode(r.read())
+    out = cose.verify_receipt(receipt, sverify, leaf_data=leaf, expected_root=bytes.fromhex(ks["root"]))
+    assert out["ok"], out["problems"]
+    with urllib.request.urlopen(base + "/entries/1/leaf", timeout=10) as r:
+        other = r.read()
+    assert other != leaf
+    assert not cose.verify_receipt(receipt, sverify, leaf_data=other, expected_root=bytes.fromhex(ks["root"]))["ok"]
+    with pytest.raises(urllib.error.HTTPError) as e:
+        urllib.request.urlopen(base + "/entries/99/leaf", timeout=10)
+    assert e.value.code == 404

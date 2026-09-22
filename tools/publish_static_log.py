@@ -315,7 +315,19 @@ def build(service: TransparencyService, out: str, base_url: str, title: str, wit
                 row["entry"] = json.loads(leaf.decode("utf-8"))
             except Exception:                                           # noqa: BLE001
                 row["leaf_b64"] = base64.b64encode(leaf).decode()
-            receipt = service.receipt_for(i)
+            # WITHOUT A KEY THERE ARE NO RECEIPTS, AND THE PUBLISH STILL COMPLETES (3.6.1). The note
+            # printed at startup promised "receipts are read from the log rather than re-signed", and
+            # then `receipt_for` asked the no-op signer for a signature and raised on the first entry,
+            # so a keyless publish wrote head.json and log.jsonl and died before verify.py and
+            # index.html: measured 2026-09-22 on the hosted service's first cron run. A receipt needs
+            # the service key by definition; the static copy without them is still the head, the
+            # leaves and the key set, which is what a witness reads.
+            try:
+                receipt = service.receipt_for(i) if service.service_pubkey else None
+            except RuntimeError as e:
+                if "unsigned receipt" not in str(e):
+                    raise
+                receipt = None
             if receipt:
                 with open(os.path.join(out, "entries", "%d.cose" % i), "wb") as rf:
                     rf.write(receipt)

@@ -2782,5 +2782,32 @@
   "tests": [
    "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
   ]
+ },
+ {
+  "file": "inspeximus/scrapi.py",
+  "name": "3.6.1 the leaf endpoint serves the receipt instead of the leaf",
+  "old": "                if want_leaf:\n                    return self._send(200, \"application/json\", service.entry_leaf(index))",
+  "new": "                if False:\n                    return self._send(200, \"application/json\", service.entry_leaf(index))",
+  "tests": [
+   "tests/test_the_service_speaks_the_wire_protocol.py"
+  ]
+ },
+ {
+  "file": "inspeximus/scrapi.py",
+  "name": "3.6.1 the leaf endpoint serves the wrong entry's leaf",
+  "old": "                    return self._send(200, \"application/json\", service.entry_leaf(index))",
+  "new": "                    return self._send(200, \"application/json\", service.entry_leaf(0))",
+  "tests": [
+   "tests/test_the_service_speaks_the_wire_protocol.py"
+  ]
+ },
+ {
+  "file": "tools/publish_static_log.py",
+  "name": "3.6.1 a keyless publish asks the no-op signer for receipts again and dies",
+  "old": "            try:\n                receipt = service.receipt_for(i) if service.service_pubkey else None\n            except RuntimeError as e:\n                if \"unsigned receipt\" not in str(e):\n                    raise\n                receipt = None",
+  "new": "            receipt = service.receipt_for(i)",
+  "tests": [
+   "tests/test_a_log_a_stranger_can_check_without_us.py"
+  ]
  }
 ]

@@ -1,0 +1,7 @@
+92.5.74.17.sslip.io {
+    handle_path /log/* {
+        root * /srv/static-log
+        file_server
+    }
+    reverse_proxy scitt:9800
+}

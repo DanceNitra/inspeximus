@@ -344,6 +344,11 @@ KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
     # somebody hunting for a file that was never meant to exist.
     "mem0", "graphiti_core", "zep_python", "letta", "chromadb", "qdrant_client", "faiss",
     "requests", "httpx", "tqdm", "matplotlib", "seaborn", "sklearn", "scipy",
+    # certifi: pip ships it and requests depends on it, so it is on nearly every machine, but it is
+    # nobody's stdlib. The hosted-log acceptance probe uses its CA bundle because the Windows Store
+    # Python's default trust store rejected a live Let's Encrypt chain that curl and schannel
+    # accepted (2026-09-22). The probe falls back to the platform default when it is absent.
+    "certifi",
     # Our own declared extra: pyproject.toml has haystack = ["haystack-ai>=2"], and the integration
     # adapter, its parity script and two test modules import it. A probe that executes the published
     # integration page has to import it too, and without this entry the guard reads somebody else's

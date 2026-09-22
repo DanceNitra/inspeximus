@@ -262,3 +262,23 @@ def test_the_log_entries_carry_the_subject_and_not_only_a_hash(tmp_path):
     assert "s:0" in subjects and "s:2" in subjects, subjects
     for r in rows:
         assert "leaf_hash" in r
+
+
+def test_a_publish_without_the_service_key_completes_with_no_receipts(tmp_path):
+    """3.6.1. The startup note promised that without a key receipts are read rather than re-signed;
+    the loop then asked the no-op signer for one and raised on the first entry, so a keyless
+    publish wrote head.json and log.jsonl and died before verify.py: measured on the hosted
+    service's first cron run, 2026-09-22. Without the key there are no receipts, and the head,
+    the leaves and the key set are still published and still verify."""
+    module = _publisher()
+    service = _service(str(tmp_path / "log"), 3)
+    keyless = TransparencyService(str(tmp_path / "log"), RegistrationPolicy("static-test"),
+                                  lambda _b: b"", lambda *_: True, service_pubkey="")
+    out = tmp_path / "keyless"
+    got = module.build(keyless, str(out), "https://example.test/t", "test log", "no witness")
+    assert got["receipts"] == 0 and got["entries"] == service.size()
+    for name in ("head.json", "log.jsonl", "keys.json", "keys.cbor", "verify.py", "index.html"):
+        assert (out / name).exists(), name
+    code, text = _run_verifier(out)
+    assert code == 0, text
+    assert got["head"]["writes_tip"] == service.root().hex(), "the keyless copy is the same log"

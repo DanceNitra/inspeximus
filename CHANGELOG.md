@@ -1,3 +1,22 @@
+## 3.6.1 - a receipt holder on another machine can check inclusion: the service serves the leaf; a static publish without the service key completes. UPGRADE IF YOU RUN THE HOSTED TRANSPARENCY SERVICE OR PUBLISH ITS STATIC COPY. AFFECTS: SCRAPI gains `GET /entries/{id}/leaf` (application/json, the exact bytes the tree hashed; 200 or 404); `tools/publish_static_log.py` without `INSPEXIMUS_SERVICE_SECRET` writes the head, the leaves, the key set, the verifier and the page with zero receipts instead of raising on the first entry; `probes/register_against_the_hosted_log.py` is the acceptance client for a hosted service. The default store is byte-identical; the library is untouched.
+
+Both found on 2026-09-22, the day the service went live on its own host (`deploy/RUNBOOK.md`).
+
+A receipt's payload is detached and the leaf carries fields the service assigned, its clock and the
+index, so a client that holds only its statement and the receipt could verify the signature and the
+proof's arithmetic but never the inclusion of its own entry: the first registration from another
+machine read "no leaf supplied: inclusion NOT checked". The leaf holds digests, an issuer and a
+subject and no payload, so serving it discloses nothing the receipt did not already commit to. With
+it, `cose.verify_receipt(receipt, verify, leaf_data=leaf, expected_root=root)` verifies against the
+root the key set publishes, and the leaf of a different entry does not (the test's control).
+
+The static publisher's startup note said that without a key receipts are read from the log rather
+than re-signed; the loop then asked the no-op signer for one and raised on the first entry, so the
+service's first cron run wrote `head.json` and `log.jsonl` and died before `verify.py` and
+`index.html`. A receipt needs the service key by definition; the copy without them is still the
+head, the leaves and the key set, which is what a witness reads, and it now completes and verifies.
+Three mutations, all killed.
+
 ## 3.6.0 - the two partial rows of the coverage matrix close: the Art. 15 robustness measurements are carried into compliance_report() as dated evidence rows with the receipt sha, and Art. 17 has a signed QMS register; a deletion made outside the library can be declared so the write chain reads accounted for. UPGRADE IF YOU HAND compliance_report() OR THE DEPLOYER REPORT TO AN ASSESSOR, OR IF verify_writes() REPORTS A RECORD DELETED OUT-OF-BAND. AFFECTS: `compliance_report()` gains `robustness_evidence` and a `probes_dir` argument, and its AI Act Art. 15 control carries the rows (status `STALE_EVIDENCE` when a receipt no longer hashes to its packaged sha); `robustness_evidence()` is new, with `INSPEXIMUS_PROBES_DIR`; the package ships `robustness_evidence.json`; the ledger gains the `qms` entry kind, `record_qms()` and `qms_register()`, the deployer report a `17_quality_management_register` duty, `post_market_report()` a `qms_procedures` count; the store gains `declare_out_of_band_deletion()`; three MCP tools (133) and the CLI subcommands `actions qms` and `actions qms-register`. The default store is byte-identical.
 
 The matrix said 36 of 36 with two footnotes, and a footnote is a row that is not closed. Art. 15

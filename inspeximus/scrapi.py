@@ -12,6 +12,8 @@ THE ENDPOINTS, read from draft-ietf-scitt-scrapi-11, not remembered:
     GET  /.well-known/scitt-keys/{kid}        -> application/cbor, the same document (200 / 404)
     POST /entries          application/cose   -> application/cose, the Receipt (201 / 400 / 429)
     GET  /entries/{EntryID} Accept: cose      -> application/cose, the Receipt (200 / 204 / 404)
+    GET  /entries/{EntryID}/leaf              -> application/json, the leaf bytes the tree hashed (200 / 404);
+                                                 ours, not the draft's: what a holder needs to check inclusion
 
 Errors are `application/concise-problem-details+cbor`, which is what the draft specifies, and NOT the
 JSON problem type that a reader used to HTTP APIs expects. Emitting JSON there would be the sort of
@@ -160,13 +162,23 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
                 return self._send(200, CBOR, cose.encode(self._key_set()))
 
             if path.startswith("/entries/"):
-                raw = path.rsplit("/", 1)[-1]
+                # GET /entries/{id}/leaf (3.6.1): the exact leaf bytes the tree hashed for this
+                # entry. A receipt's payload is detached and the leaf carries fields the service
+                # assigned (its clock, the index), so a holder on another machine could verify the
+                # signature and the proof's arithmetic but never the INCLUSION of their own entry:
+                # measured 2026-09-22 against the hosted service, "no leaf supplied: inclusion NOT
+                # checked" on a fresh receipt. The leaf holds digests, an issuer and a subject and no
+                # payload, so serving it discloses nothing the receipt did not already commit to.
+                want_leaf = path.endswith("/leaf")
+                raw = path[: -len("/leaf")].rsplit("/", 1)[-1] if want_leaf else path.rsplit("/", 1)[-1]
                 try:
                     index = int(raw)
                 except ValueError:
                     return self._send(404, PROBLEM, _problem("no such entry", raw))
                 if not 0 <= index < service.size():
                     return self._send(404, PROBLEM, _problem("no such entry", raw))
+                if want_leaf:
+                    return self._send(200, "application/json", service.entry_leaf(index))
                 receipt = service.receipt_for(index)
                 if receipt is None:
                     # 204 is the draft's "registered, receipt not ready", and it is NOT 404: the
