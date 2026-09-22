@@ -20,8 +20,11 @@ OUT = os.path.join(ROOT, "inspeximus", "robustness_evidence.json")
 
 
 def _sha(path):
+    """sha256 over the receipt with line endings normalised to LF. A checkout with autocrlf holds
+    the same file as CRLF, and hashing the raw bytes made every row read STALE on the other
+    platform: measured 2026-09-22, three of three rows STALE on Linux CI, packaged on Windows."""
     with open(path, "rb") as fh:
-        return hashlib.sha256(fh.read()).hexdigest()
+        return hashlib.sha256(fh.read().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def _committed(path):

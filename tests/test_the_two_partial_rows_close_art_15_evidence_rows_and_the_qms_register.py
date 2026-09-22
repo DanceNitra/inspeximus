@@ -231,3 +231,20 @@ def test_an_out_of_band_deletion_is_declared_and_the_chain_reads_accounted_for(t
     again = Inspeximus(path, receipts=True)
     assert again.verify_writes()[0] is True, "the tombstone is on disk"
     assert again.current("k1")["text"] == "kept"
+
+
+def test_the_receipt_sha_is_the_same_under_lf_and_crlf_checkouts(tmp_path):
+    """CI checks the receipts out with LF and a Windows checkout with autocrlf holds CRLF. The first
+    3.6.0 tag hashed the raw bytes, so three of three rows read STALE on Linux while every local run
+    read verified. The hash is over LF-normalised bytes on both sides, and this pins it."""
+    lf = tmp_path / "lf"
+    crlf = tmp_path / "crlf"
+    lf.mkdir()
+    crlf.mkdir()
+    for r in robustness_evidence(PROBES)["rows"]:
+        raw = open(os.path.join(ROOT, r["receipt"]), "rb").read()
+        norm = raw.replace(b"\r\n", b"\n")
+        (lf / os.path.basename(r["receipt"])).write_bytes(norm)
+        (crlf / os.path.basename(r["receipt"])).write_bytes(norm.replace(b"\n", b"\r\n"))
+    assert all(x["status"] == "verified" for x in robustness_evidence(str(lf))["rows"])
+    assert all(x["status"] == "verified" for x in robustness_evidence(str(crlf))["rows"])

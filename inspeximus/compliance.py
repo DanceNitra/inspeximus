@@ -59,7 +59,9 @@ def robustness_evidence(probes_dir: str | None = None) -> dict:
         path = _os.path.join(probes_dir, _os.path.relpath(r["receipt"], "probes")) if probes_dir else None
         if path and _os.path.exists(path):
             with open(path, "rb") as fh:
-                digest = _hashlib.sha256(fh.read()).hexdigest()
+                # line endings normalised to LF, as the generator hashes them: a checkout with
+                # autocrlf must not turn every row STALE
+                digest = _hashlib.sha256(fh.read().replace(b"\r\n", b"\n")).hexdigest()
             row["status"] = "verified" if digest == r["receipt_sha256"] else "STALE"
             if row["status"] == "STALE":
                 row["receipt_sha256_now"] = digest
