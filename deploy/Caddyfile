@@ -1,23 +1,80 @@
 92.5.74.17.sslip.io {
-    # `/log` without the slash reached the SCRAPI service and returned 404, so anyone who pasted the
-    # URL we hand out into a browser saw a dead link. The witness tool never saw it: it appends
-    # `/head.json` to whatever it is given.
-    redir /log /log/ 308
-    redir /mirror /mirror/ 308
+	# WHAT THESE HEADERS DO AND DO NOT DO. None of them protects the log. The log is protected by
+	# the Ed25519 signature over the checkpoint, which a reader verifies without trusting this
+	# server, this certificate or these headers. What they do is stop a BROWSER from being turned
+	# into a weapon against the reader: no sniffing a data file into markup, no framing a page to
+	# dress it up as somebody else's, and no script at all on pages that need none.
+	header {
+		# A year, and the subdomains of our own label, which sslip.io resolves back to this host.
+		# NOT `preload`: that one is a submission to a browser list, it is slow to undo, and the
+		# name is a shared wildcard service rather than a domain we own.
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+	}
 
-    handle_path /log/* {
-        root * /srv/static-log
-        file_server
-    }
+	@log path /log/*
+	@mirror path /mirror/*
 
-    # A copy of what dancenitra.github.io/agora already publishes, refreshed daily. It exists so the
-    # published record survives the publisher, and it holds public pages only: the mirror is built by
-    # FETCHING the public site, not from a working tree, so a file that was never published cannot
-    # appear here.
-    handle_path /mirror/* {
-        root * /srv/mirror
-        file_server browse
-    }
+	# The published log is data plus one page of prose with a single inline <style> and no script.
+	# `script-src` falls to `default-src 'none'`, so a script injected into any of it does not run.
+	header @log Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
 
-    reverse_proxy scitt:9800
+	# The mirror is somebody else's HTML, copied. It gets the STRICTER treatment for that reason:
+	# an injection into the source site would arrive here as our own origin. Measured before
+	# choosing this: the mirrored pages carry four inline scripts, one of which says in its own
+	# comment that the content is fully visible without JavaScript, and the only external script is
+	# the analytics tag. Blocking all of it leaves the page readable and stops the copy reporting
+	# traffic as if it were the original.
+	header @mirror {
+		Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+		# A byte-identical copy of an indexed site is duplicate content. The mirror is for readers
+		# and for the record, not for search.
+		X-Robots-Tag "noindex"
+	}
+
+	# WITHOUT THIS, FIVE OF THE TEN PUBLISHED ARTIFACTS HAD NO CONTENT-TYPE AT ALL, measured on the
+	# live host: checkpoint, checkpoint.vkey, log.jsonl, verify.py and every .cose receipt. A
+	# browser then sniffs, and `nosniff` without a type turns the sniff into a refusal rather than
+	# a fix. Naming the type is the fix; nosniff makes the name binding.
+	#
+	# THIS IS A DEFAULT, NOT A LIST OF FOUR FILENAMES, and the difference is the whole point. The
+	# first version named the four files that were untyped that day. A control file dropped into
+	# the same directory came back untyped, which is exactly what happens the next time the
+	# publisher adds an artifact: the fix would have covered the instance and left the class alone.
+	# So anything under /log/ that Caddy cannot type from its extension is text, because every
+	# artifact this log publishes is text or one of the types named below.
+	@cose path /log/entries/*.cose
+	header @cose Content-Type "application/cose"
+	@logtext {
+		path /log/*
+		# Suffix patterns, not `/log/*.json`. Measured: the prefixed form excluded `/log/head.json`
+		# and did NOT exclude `/log/entries/0.leaf.json`, which the acceptance probe caught as a
+		# leaf receipt served as text. A suffix pattern has no depth to get wrong.
+		not path /log/ /log/*/ *.json *.cbor *.html *.css *.svg *.png *.cose
+	}
+	header @logtext Content-Type "text/plain; charset=utf-8"
+
+	# `/log` without the slash reached the SCRAPI service and returned 404, so anyone who pasted the
+	# URL we hand out into a browser saw a dead link. The witness tool never saw it: it appends
+	# `/head.json` to whatever it is given.
+	redir /log /log/ 308
+	redir /mirror /mirror/ 308
+
+	handle_path /log/* {
+		root * /srv/static-log
+		file_server
+	}
+
+	# A copy of what dancenitra.github.io/agora already publishes, refreshed daily. It exists so the
+	# published record survives the publisher, and it holds public pages only: the mirror is built by
+	# FETCHING the public site, not from a working tree, so a file that was never published cannot
+	# appear here.
+	handle_path /mirror/* {
+		root * /srv/mirror
+		file_server browse
+	}
+
+	reverse_proxy scitt:9800
 }

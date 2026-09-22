@@ -1,0 +1,16 @@
+{
+  "kind": "inspeximus.header-probe/1",
+  "host": "https://92.5.74.17.sslip.io",
+  "urls_checked": 12,
+  "missing_headers": [],
+  "untyped_artifacts": [],
+  "control_host": "https://dancenitra.github.io/agora/",
+  "control_missing": [
+    "https://dancenitra.github.io/agora/: strict-transport-security is 'max-age=31556952'",
+    "https://dancenitra.github.io/agora/: x-content-type-options is '(absent)'",
+    "https://dancenitra.github.io/agora/: x-frame-options is '(absent)'",
+    "https://dancenitra.github.io/agora/: content-security-policy is '(absent)'"
+  ],
+  "control_can_fail": true
+}
+OK: 12 URLs, four headers each, every artifact names its type; the control host is missing 4 of them.
