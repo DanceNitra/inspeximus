@@ -95,6 +95,11 @@ def _legacy(man):
     """A manifest as 1.82 wrote it: chain seeded at genesis, header bound to nothing."""
     legacy = copy.deepcopy(man)
     e = legacy["entries"][0]
+    # 1.82 had no coordinator scan, so the field is absent rather than present-and-unhashed. The
+    # difference matters: an entry that CARRIES `independent_scan` outside its own hash is a forged
+    # scan, and verify() must keep refusing that. Dropping it here is what makes this fixture a real
+    # legacy manifest instead of a tampered modern one.
+    e.pop("independent_scan", None)
     e["prev"] = _GENESIS
     e["hash"] = M._sha256({k: e[k] for k in ("target", "erased", "still_recoverable",
                                              "verified_absent", "error", "ts", "prev")})

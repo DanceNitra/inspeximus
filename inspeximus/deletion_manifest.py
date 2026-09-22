@@ -71,8 +71,60 @@ class ErasureTarget:
 
     def still_recoverable(self, subject: str, values) -> bool:
         """After erase(), is ANY of the subject's sensitive `values` still recoverable from THIS store?
-        Return True if recoverable (erasure incomplete here). This is the honest self-check the manifest records."""
+        Return True if recoverable (erasure incomplete here). This is the target's own CLAIM, and since
+        1.90.0 the manifest treats it as one: when `files()` names anything, the claim is compared with
+        the manifest's own read of those bytes (see `files`)."""
         raise NotImplementedError
+
+    def files(self) -> list:
+        """The file paths this target stores the subject's data in, for the manifest to read ITSELF.
+
+        WHY THIS EXISTS. `erase()` and `still_recoverable()` are both the target's methods, so a target
+        that deletes nothing and returns False is recorded as verified: the verification is performed by
+        the thing being verified. Found on 2026-09-22 in a joint probe run with a collaborator whose
+        coordinator had the identical shape, and it is the shape the caller cannot see.
+
+        Return an empty list when the store is not file-backed. The manifest then records
+        `independent_scan: null` and the entry says in words that the target vouched for itself, which
+        is a weaker claim and is now labelled as one rather than looking the same.
+        """
+        return []
+
+
+def _independent_scan(target, values) -> dict | None:
+    """Read the target's own files and count the subject's values in them, here rather than there.
+
+    Returns None when the target names no file, which is a statement about coverage and is recorded as
+    one. Bytes are matched case-sensitively as UTF-8 and as UTF-16-LE, because a store that writes
+    UTF-16 would otherwise read clean; a value that is not representable in a codec is skipped for that
+    codec. A file that cannot be read is reported in `unreadable` and counts as coverage the manifest
+    does NOT have, never as an absence.
+    """
+    try:
+        paths = list(target.files() or [])
+    except Exception:                                            # noqa: BLE001 - a target without the method
+        return None
+    if not paths:
+        return None
+    vals = [v for v in (values or []) if isinstance(v, str) and v]
+    matches, unreadable, read = 0, [], 0
+    for path in paths:
+        try:
+            with open(path, "rb") as fh:
+                blob = fh.read()
+        except Exception as exc:                                 # noqa: BLE001
+            unreadable.append({"path": str(path), "error": str(exc)[:120]})
+            continue
+        read += 1
+        for v in vals:
+            for codec in ("utf-8", "utf-16-le"):
+                try:
+                    needle = v.encode(codec)
+                except Exception:                                # noqa: BLE001
+                    continue
+                matches += blob.count(needle)
+    return {"files_named": len(paths), "files_read": read, "values_checked": len(vals),
+            "matches": matches, "unreadable": unreadable, "checked_by": "manifest"}
 
 
 class DeletionManifest:
@@ -94,18 +146,26 @@ class DeletionManifest:
         prev = _header_hash(subject, request_id, basis, authorized_by, [t.name for t in self._targets])
         entries = []
         for t in self._targets:
+            scan = None
             try:
                 res = t.erase(subject) or {}
                 erased = int(res.get("erased", 0))
                 recoverable = bool(t.still_recoverable(subject, values))
+                scan = _independent_scan(t, values)
                 err = None
             except Exception as e:                              # a target that errors is recorded, not hidden
                 erased, recoverable, err = 0, True, str(e)[:160]
+            # THE COORDINATOR'S OWN READ OUTRANKS THE TARGET'S CLAIM. A target that reports nothing
+            # recoverable while the bytes are still in a file it named is recorded as NOT verified, and
+            # the disagreement is kept in the entry rather than resolved silently.
+            if scan and scan.get("matches"):
+                recoverable = True
             e = {"target": t.name, "erased": erased, "still_recoverable": recoverable,
                  "verified_absent": (not recoverable) and err is None, "error": err,
-                 "ts": time.time(), "prev": prev}
+                 "independent_scan": scan, "ts": time.time(), "prev": prev}
             e["hash"] = _sha256({k: e[k] for k in ("target", "erased", "still_recoverable",
-                                                   "verified_absent", "error", "ts", "prev")})
+                                                   "verified_absent", "error", "independent_scan",
+                                                   "ts", "prev")})
             if self._sk and _HAVE_ED:
                 sk = _SK.from_private_bytes(bytes.fromhex(self._sk))
                 e["pubkey"] = self._pubkey
@@ -225,6 +285,12 @@ class DeletionManifest:
                 problems.append(f"entry {i} ({e.get('target')}): broken chain link")
             core = {k: e.get(k) for k in ("target", "erased", "still_recoverable", "verified_absent",
                                           "error", "ts", "prev")}
+            # A manifest written before 1.90.0 has no `independent_scan` key and its hash was taken
+            # without one, so adding it unconditionally would make every older manifest fail to
+            # verify. Keyed on presence, not on version: the field is in the hash exactly when the
+            # entry carries it.
+            if "independent_scan" in e:
+                core["independent_scan"] = e.get("independent_scan")
             if _sha256(core) != e.get("hash"):
                 problems.append(f"entry {i} ({e.get('target')}): hash mismatch (tampered)")
             if "sig" in e and _HAVE_ED:
