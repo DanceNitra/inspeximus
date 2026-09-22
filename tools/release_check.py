@@ -402,6 +402,45 @@ def check_mcp_server(rep, root=ROOT):
 
 # --------------------------------------------------------------------------- the release notes
 
+def check_mutation_targets(rep, root=ROOT):
+    """Every committed mutation still names one place in the tree, checked in seconds, before the
+    thirty-minute suite.
+
+    The mutation leg runs AFTER the suite, and `tests/test_mutation_check_harness.py` is the only
+    thing that refuses a mutation whose `old` text no longer occurs. So an edit to a line a
+    mutation targets, which is exactly what a release does, surfaced as a gate failure 35 minutes
+    in, twice in two releases (3.5.1 and 3.5.2: the retire() return and a CLI branch moved, and the
+    mutations aimed at their old wording would have been skipped, overstating the score). This leg
+    is that one check, moved to the front.
+    """
+    spec_path = root / "tools" / "mutations.json"
+    if not spec_path.exists():
+        rep.add("mutation targets", FAIL, "tools/mutations.json is missing")
+        return
+    sys.path.insert(0, str(root / "tools"))
+    try:
+        import mutation_check
+    except Exception as e:                                       # noqa: BLE001
+        rep.add("mutation targets", FAIL, "cannot import tools/mutation_check.py: %s" % e)
+        return
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    broken = []
+    for mut in spec:
+        target = root / mut["file"]
+        if not target.exists():
+            broken.append("%s [file gone: %s]" % (mut["name"], mut["file"]))
+            continue
+        src = target.read_text(encoding="utf-8")
+        hits = src.count(mutation_check._match_endings(mut["old"], src))
+        if hits != 1:
+            broken.append("%s [%d hits in %s]" % (mut["name"], hits, mut["file"]))
+    if broken:
+        rep.add("mutation targets", FAIL, "%d of %d mutation(s) no longer name one place in the tree, so the "
+                "gate would skip them: %s" % (len(broken), len(spec), " | ".join(b[:90] for b in broken[:4])))
+        return
+    rep.add("mutation targets", PASS, "%d mutations each name exactly one place in the tree" % len(spec))
+
+
 def check_release_notes(rep, root=ROOT):
     """The notes must BUILD for this version, and the example in them must actually run.
 
@@ -729,6 +768,7 @@ def run(root=ROOT, skip_tests=False):
         check_published_table_matches_its_receipt(rep, root)
         check_core_map(rep, root)
         check_release_notes(rep, root)
+        check_mutation_targets(rep, root)
         check_tests(rep, root, skip=skip_tests)
         check_ci_on_head(rep, root)
     finally:
