@@ -258,3 +258,107 @@ def build_request(old_size: int, proof, note: str) -> bytes:
     """The client half: the body an add-checkpoint POST carries."""
     lines = ["old %d" % old_size] + [base64.b64encode(h).decode("ascii") for h in (proof or [])]
     return ("\n".join(lines) + "\n\n" + note).encode("utf-8")
+
+
+# ---------------------------------------------------------------------------------- the HTTP side
+def make_handler(witness: "CheckpointWitness", prefix: str = ""):
+    """An http.server handler for POST <prefix>/add-checkpoint. Stdlib only, like the rest.
+
+    The body is read under the same ceiling the parser enforces, because a server that reads first
+    and checks after has already spent the memory. Every refusal carries the spec's status and the
+    spec's body: a 409 answers with our size in `text/x.tlog.size` so the client can catch up
+    without asking a second endpoint.
+    """
+    import http.server
+
+    route = (prefix.rstrip("/") + "/add-checkpoint") or "/add-checkpoint"
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        server_version = "inspeximus-witness/1"
+
+        def _send(self, status, ctype, body: bytes):
+            self.send_response(status)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_POST(self):                                       # noqa: N802 - http.server's name
+            if self.path.rstrip("/") != route.rstrip("/"):
+                return self._send(404, "text/plain", b"no such endpoint\n")
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return self._send(400, "text/plain", b"a Content-Length is required\n")
+            if length > MAX_BODY_BYTES:
+                # Refuse without reading it all, but drain a bounded amount first. A server that
+                # answers and closes mid-upload hands the client a connection reset instead of the
+                # 413 it was told about, which turns a clear refusal into "the witness is broken".
+                # Measured on the first run of the test below, which failed on the reset.
+                self.close_connection = True
+                remaining = min(length, MAX_BODY_BYTES * 4)
+                while remaining > 0:
+                    chunk = self.rfile.read(min(65536, remaining))
+                    if not chunk:
+                        break
+                    remaining -= len(chunk)
+                return self._send(413, "text/plain", b"the request body is larger than this witness reads\n")
+            body = self.rfile.read(length)
+            try:
+                status, ctype, out = witness.add_checkpoint(body)
+            except Refused as r:
+                return self._send(r.status, r.content_type, (r.body or (r.reason + "\n")).encode("utf-8"))
+            except Exception:                                    # noqa: BLE001 - never leak a traceback
+                return self._send(500, "text/plain", b"the witness failed to process this request\n")
+            return self._send(status, ctype, out.encode("utf-8"))
+
+        def do_GET(self):                                        # noqa: N802
+            # A witness has no read API in the spec. This answers the one question an operator asks.
+            if self.path.rstrip("/") in ("/health", ""):
+                return self._send(200, "text/plain", b"ok\n")
+            return self._send(404, "text/plain", b"no such endpoint\n")
+
+        def log_message(self, fmt, *args):                       # keep the key and the body out of logs
+            pass
+
+    return Handler
+
+
+def serve(witness: "CheckpointWitness", port: int = 9810, host: str = "127.0.0.1", prefix: str = ""):
+    """Run the witness (blocking). One thread per request, which is right for a cron-rate service."""
+    import http.server
+    import socketserver
+
+    class Threaded(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+        allow_reuse_address = True
+
+    httpd = Threaded((host, port), make_handler(witness, prefix))
+    httpd.serve_forever()
+
+
+# ------------------------------------------------------------------------------- the client side
+def submit(url: str, note: str, old_size: int = 0, proof=None, timeout: float = 30.0,
+           fetch_proof=None):
+    """Submit a checkpoint and return the cosignature lines the witness produced.
+
+    -> {"status", "cosignatures", "witness_size"}. On 409 the witness tells us the size it last
+    cosigned; when `fetch_proof(old, new)` is given, this retries once with that size and a proof
+    from it, which is the flow the spec describes for a client that lost its notes.
+    """
+    import urllib.error
+    import urllib.request
+
+    body = build_request(old_size, proof or [], note)
+    req = urllib.request.Request(url, data=body, method="POST",
+                                 headers={"Content-Type": "text/plain; charset=utf-8"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return {"status": r.status, "cosignatures": r.read().decode("utf-8"), "witness_size": None}
+    except urllib.error.HTTPError as e:
+        if e.code == 409 and fetch_proof is not None:
+            theirs = int(e.read().decode("utf-8").strip())
+            size = int(note.split("\n")[1])
+            return submit(url, note, theirs, fetch_proof(theirs, size), timeout, fetch_proof=None)
+        detail = e.read().decode("utf-8", "replace").strip()
+        raise Refused(e.code, detail or e.reason)

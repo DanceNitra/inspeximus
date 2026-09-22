@@ -227,3 +227,83 @@ def test_a_malformed_request_is_400_rather_than_a_traceback(witness):
         with pytest.raises(wc.Refused) as e:
             wc.parse_request(body)
         assert e.value.status == 400
+
+
+# -- the HTTP layer, because a class nobody can reach is not a service -----------------------------
+def _serve(witness):
+    """Start the real server on a loopback port and return (url, shutdown)."""
+    import http.server
+    import socketserver
+    import threading
+
+    class Threaded(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+        allow_reuse_address = True
+
+    httpd = Threaded(("127.0.0.1", 0), wc.make_handler(witness))
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    return "http://127.0.0.1:%d/add-checkpoint" % httpd.server_address[1], httpd.shutdown
+
+
+def test_a_checkpoint_submitted_over_http_comes_back_cosigned(witness, log_keys):
+    url, stop = _serve(witness)
+    try:
+        note = _checkpoint(log_keys, 4)
+        out = wc.submit(url, note, 0, [])
+        assert out["status"] == 200
+        ts = wc.verify_cosignature(cp.split_note(note)[0], out["cosignatures"].strip(),
+                                   witness.name, witness.pubkey)
+        assert ts > 0
+    finally:
+        stop()
+
+
+def test_http_carries_the_status_and_the_body_the_spec_prescribes(witness, log_keys):
+    """A 409 must arrive with our size in text/x.tlog.size, or the client cannot catch up."""
+    url, stop = _serve(witness)
+    try:
+        wc.submit(url, _checkpoint(log_keys, 4), 0, [])
+        with pytest.raises(wc.Refused) as e:
+            wc.submit(url, _checkpoint(log_keys, 9), 7,
+                      merkle.consistency_proof(_leaves(9), 7))
+        assert e.value.status == 409 and e.value.reason.strip() == "4"
+    finally:
+        stop()
+
+
+def test_the_client_recovers_from_a_409_when_it_can_build_the_proof(witness, log_keys):
+    """The flow the spec describes for a client that lost its notes: ask, then resubmit."""
+    url, stop = _serve(witness)
+    try:
+        wc.submit(url, _checkpoint(log_keys, 4), 0, [])
+        out = wc.submit(url, _checkpoint(log_keys, 9), 0, [],
+                        fetch_proof=lambda old, new: merkle.consistency_proof(_leaves(new), old))
+        assert out["status"] == 200
+        assert witness.latest(ORIGIN)["size"] == 9
+    finally:
+        stop()
+
+
+def test_an_oversized_body_is_refused_by_the_server_before_it_is_read(witness):
+    """413 on the Content-Length, not after reading 50 MB into memory."""
+    import urllib.error
+    import urllib.request
+    url, stop = _serve(witness)
+    try:
+        req = urllib.request.Request(url, data=b"x" * (wc.MAX_BODY_BYTES + 10), method="POST")
+        with pytest.raises(urllib.error.HTTPError) as e:
+            urllib.request.urlopen(req, timeout=10)
+        assert e.value.code == 413
+    finally:
+        stop()
+
+
+def test_another_path_is_404_and_the_health_endpoint_answers(witness):
+    import urllib.request
+    url, stop = _serve(witness)
+    try:
+        base = url.rsplit("/", 1)[0]
+        with urllib.request.urlopen(base + "/health", timeout=10) as r:
+            assert r.status == 200 and r.read() == b"ok\n"
+    finally:
+        stop()
