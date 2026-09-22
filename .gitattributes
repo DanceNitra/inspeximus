@@ -17,3 +17,13 @@ transparency/verify.py    -text
 
 # Receipts are COSE, so they are binary in fact as well as in name.
 transparency/entries/*.cose binary
+
+# The anchor fixtures, for exactly the same reason, found again a month later in a different place.
+# The receipts are stamped in Linux CI over LF bytes; the same head.json checked out on Windows has
+# CRLF, so an untampered file reports MISMATCH and the first person to check concludes tampering.
+# The rule above was written for `transparency/` and stopped there. Anything a signature, a receipt
+# or a timestamp commits to belongs here, wherever it lives.
+tests/fixtures/ots/head.json -text
+tests/fixtures/ots/block968177.header.hex -text
+tests/fixtures/ots/head.json.ots binary
+tests/fixtures/ots/upgrade.alice.bin binary
