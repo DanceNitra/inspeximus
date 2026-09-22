@@ -10542,7 +10542,13 @@ class Inspeximus:
         toms, _withheld = self._visible_tombstones()
         by_req: dict = {}
         for t in toms:
-            by_req.setdefault(t.get("request_id"), []).append(t.get("memory_id"))
+            # A MISSING REQUEST ID IS NAMED, NEVER LEFT AS None. A tombstone can be written without
+            # one (declare_out_of_band_deletion records a deletion nobody asked for through the API),
+            # and None as a dict KEY makes json.dumps(sort_keys=True) raise "'<' not supported
+            # between instances of 'str' and 'NoneType'". Measured on our own live store: the audit
+            # bundle and the assessor pack both died on it, and the report that is meant to be the
+            # evidence could not be serialised at all.
+            by_req.setdefault(t.get("request_id") or "(no request id)", []).append(t.get("memory_id"))
         return {
             "erasures_total": len(toms),
             "by_request": {rid: {"erased": len(ids), "memory_ids": sorted(i for i in ids if i)}
