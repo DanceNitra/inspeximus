@@ -3,10 +3,21 @@
     # URL we hand out into a browser saw a dead link. The witness tool never saw it: it appends
     # `/head.json` to whatever it is given.
     redir /log /log/ 308
+    redir /mirror /mirror/ 308
 
     handle_path /log/* {
         root * /srv/static-log
         file_server
     }
+
+    # A copy of what dancenitra.github.io/agora already publishes, refreshed daily. It exists so the
+    # published record survives the publisher, and it holds public pages only: the mirror is built by
+    # FETCHING the public site, not from a working tree, so a file that was never published cannot
+    # appear here.
+    handle_path /mirror/* {
+        root * /srv/mirror
+        file_server browse
+    }
+
     reverse_proxy scitt:9800
 }

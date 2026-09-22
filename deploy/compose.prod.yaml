@@ -21,6 +21,9 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - /srv/static-log:/srv/static-log:ro
+      # The public mirror. Read-only into the container: the web server serves it and the
+      # cron job on the host is the only writer.
+      - /srv/mirror:/srv/mirror:ro
       - caddy-data:/data
       - caddy-config:/config
     depends_on: [scitt]
