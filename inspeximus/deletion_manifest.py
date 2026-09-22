@@ -72,7 +72,7 @@ class ErasureTarget:
     def still_recoverable(self, subject: str, values) -> bool:
         """After erase(), is ANY of the subject's sensitive `values` still recoverable from THIS store?
         Return True if recoverable (erasure incomplete here). This is the target's own CLAIM, and since
-        1.90.0 the manifest treats it as one: when `files()` names anything, the claim is compared with
+        3.6.3 the manifest treats it as one: when `files()` names anything, the claim is compared with
         the manifest's own read of those bytes (see `files`)."""
         raise NotImplementedError
 
@@ -285,7 +285,7 @@ class DeletionManifest:
                 problems.append(f"entry {i} ({e.get('target')}): broken chain link")
             core = {k: e.get(k) for k in ("target", "erased", "still_recoverable", "verified_absent",
                                           "error", "ts", "prev")}
-            # A manifest written before 1.90.0 has no `independent_scan` key and its hash was taken
+            # A manifest written before 3.6.3 has no `independent_scan` key and its hash was taken
             # without one, so adding it unconditionally would make every older manifest fail to
             # verify. Keyed on presence, not on version: the field is in the hash exactly when the
             # entry carries it.
