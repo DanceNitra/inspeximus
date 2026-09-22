@@ -95,6 +95,13 @@ def looks_like_sqlite(path) -> bool:
 #: than a waiter is willing to wait makes the waiter give up on the lock and write
 #: unprotected. It was 30 against a 20 s lock wait, which is the wrong way round.
 BUSY_TIMEOUT_S = 10
+# `INSPEXIMUS_BUSY_TIMEOUT_S` overrides it (3.5.2) for an operator who has measured a longer
+# foreign hold and for tests that need a short one; the constraint above still applies, and
+# `Inspeximus._save_rows_retrying` multiplies it by the retry count.
+try:
+    BUSY_TIMEOUT_S = float(os.environ.get("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S))
+except ValueError:
+    pass
 
 
 def _connect(path):

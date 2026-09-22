@@ -1,3 +1,32 @@
+## 3.5.2 - a write the store could not persist says so where the caller looks, and a SQLite lock held by a client outside inspeximus is retried and named. UPGRADE IF ANY OTHER PROGRAM OPENS YOUR STORE FILE, OR IF MORE THAN ONE PROCESS WRITES IT. AFFECTS: `store.last_write` gains `persisted` (and `persist_error` when False) after every save; `retire()` returns the same two fields; the MCP `remember` and `remember_decision` results and the CLI `remember --json` output carry them, and the CLI exits 4 on a write that did not reach disk; a row write that meets `database is locked` is retried up to `INSPEXIMUS_SAVE_RETRIES` (default 2) more times; `INSPEXIMUS_BUSY_TIMEOUT_S` overrides the 10 s busy timeout; the inter-process lock key ignores the case of the path. Byte-identical for every store.
+
+Crew OS, 2026-09-22, on the live 23.7 MB row store with 14 processes open on it: `remember()`
+returned an id, `last_write` read `blocked: False`, the record was not on disk, and the only
+witness was `_persist_error`, a private field, holding "OperationalError: database is locked".
+Five calls in a row failed that way and the sixth landed. Their pattern is a fresh handle per
+write, so a transient failure became a permanent loss: the record lived in a handle that was
+dropped, and nothing retried it.
+
+Two things were wrong on our side. The failure branch of `_save` recorded the error, marked the
+store dirty for the next save and let `flush()` raise, as 1.54.0 designed, but it never told the
+write's own verdict: `last_write` was stamped before the save and read as landed after it failed.
+Now the branch stamps `persisted: False` and `persist_error` there, the success branch stamps
+`persisted: True`, and every surface that reports a write reports it. The second: the error said
+nothing about where the lock came from. The writer already holds the inter-process store lock, so
+a `database is locked` at that moment belongs to a client outside it, which on that machine is
+the reporter's own tooling opening raw sqlite3 connections to the store. A raw connection in
+Python's default isolation keeps a write transaction open until commit or close, and a script that
+sleeps between statements holds the file for as long as it sleeps. Readers do not cause it:
+measured on a copy of the same store with 12 processes opening a fresh handle in a loop, 354 loads
+in 90 s beside 40 keyed writes, 0 persist errors, 40 of 40 landed
+(probes/database_is_locked_under_many_readers.py). The row write is now retried a bounded number
+of times, the wait stays under the peer's lock budget, and the surviving error names the cause.
+
+The busy timeout and the retry count are environment knobs for an operator who has measured a
+longer foreign hold; the store lock key now passes the path through `normcase`, because two
+spellings of one path on a case-insensitive filesystem hashed to two lock files, which is no lock.
+Seven mutations, all killed. Nothing on disk changes.
+
 ## 3.5.1 - a retirement no longer loses to a peer's append on a row store; a write that did not land says so on every surface; the seven instruction shapes catch the paraphrases they were named for. UPGRADE IF MORE THAN ONE PROCESS WRITES ONE STORE, IF A SCRIPT OR AGENT REWRITES KEYED VALUES, OR IF YOU RUN THE 3.5.0 READ GUARDS AGAINST WRITERS WHO CAN REWORD. AFFECTS: the row-store merge on a changed file keeps the rows this handle edited instead of taking the disk copy; the MCP `remember` and `remember_decision` results and the CLI `remember --json` output gain `status`, `blocked`, `policy`, `current_id` and `lineage_dropped` (plus `note` and `previous` when set); the CLI exits 3 on a blocked keyed write; `retire()` and `retire_key` return `status` and `policy` beside the fields they had; `store.last_write` gains `previous` and `lineage_dropped` for a keyed write that landed; five of the seven patterns in `_INSTRUCTION_SHAPES` are wider. Nothing on disk changes shape. Byte-identical for a store that holds no record matching the new wordings.
 
 A retire() beside a concurrent writer returned `retired: 1` and left the key active. Crew OS,

@@ -463,7 +463,9 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
     Returns the new id, and the VERDICT on the write: `blocked` is true when a keyed write was retired
     on arrival (`policy` names the guard, `current_id` the value that stands, `note` what to do);
     `lineage_dropped` is the anchor count of the value this write followed when this write carries
-    no `derived_from`. A result with `blocked: true` is not a landed write."""
+    no `derived_from`; `persisted` is false when the save after the write failed (`persist_error`
+    says why; the server retries on its next write). A result with `blocked: true` or
+    `persisted: false` is not a landed write."""
     mid = _MEM.remember(text, tags=tags or [], value=value, mtype=mtype, key=key,
                         object=object, reaffirm=reaffirm,
                         source={"doc": source} if source else None,
@@ -495,7 +497,12 @@ def _write_verdict() -> dict:
     lw = getattr(_MEM, "last_write", None) or {}
     out = {"status": lw.get("status", "active"), "blocked": bool(lw.get("blocked")),
            "policy": lw.get("policy"), "current_id": lw.get("current_id"),
-           "lineage_dropped": int(lw.get("lineage_dropped") or 0)}
+           "lineage_dropped": int(lw.get("lineage_dropped") or 0),
+           # 3.5.2: a write the store could not persist is not a landed write either. The server
+           # keeps the record and retries it on its next save, but the client reads THIS result.
+           "persisted": bool(lw.get("persisted", True))}
+    if lw.get("persist_error"):
+        out["persist_error"] = lw["persist_error"]
     if lw.get("note"):
         out["note"] = lw["note"]
     if lw.get("previous"):

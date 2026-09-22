@@ -1,0 +1,25 @@
+{
+ "probe": "database_is_locked_under_many_readers.py",
+ "inspeximus": "3.5.1",
+ "store_bytes": 23719936,
+ "readers": 2,
+ "writes": 4,
+ "save_retries_env": null,
+ "A_writer_alone": {
+  "writes": 4,
+  "persist_errors": 0,
+  "landed": 4,
+  "elapsed_s": 1.7,
+  "persisted_field_seen": false,
+  "persisted_false": 0
+ },
+ "B_writer_beside_readers": {
+  "writes": 4,
+  "persist_errors": 0,
+  "landed": 4,
+  "elapsed_s": 2.5,
+  "persisted_field_seen": false,
+  "persisted_false": 0
+ },
+ "B_reader_loads": 78
+}

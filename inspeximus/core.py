@@ -1287,7 +1287,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.5.1"
+__version__ = "3.5.2"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1950,7 +1950,10 @@ class _StoreLock:
         # The tradeoff, stated: two users on one machine share the temp dir and therefore the lock,
         # which is what we want; two machines sharing a network mount do not -- but flock/LockFile
         # over SMB/NFS is unreliable anyway, so a co-located file would not have bought that either.
-        h = hashlib.sha256(os.path.abspath(str(path)).encode("utf-8", "replace")).hexdigest()[:16]
+        # `normcase`, because two spellings of one path on a case-insensitive filesystem are two
+        # lock files and therefore no lock at all: measured 2026-09-22, `C:\\Users\\...` and
+        # `c:\\users\\...` hashed to different keys while naming the same store.
+        h = hashlib.sha256(os.path.normcase(os.path.abspath(str(path))).encode("utf-8", "replace")).hexdigest()[:16]
         self._path = os.path.join(tempfile.gettempdir(), f"inspeximus-{h}.lock")
         self._fh = None
         self._tl = None
@@ -2937,8 +2940,10 @@ class Inspeximus:
         exists, `history(key)` shows it, and the current value is unchanged. The verdict for the call
         just made is `store.last_write`: {"id", "key", "status", "blocked", "policy", "current_id",
         "note"}, plus "previous" {"id", "status", "derived_from"} and "lineage_dropped" for a keyed
-        write that landed. Read it after every keyed write that must land; the MCP and CLI write
-        surfaces report the same fields.
+        write that landed, and "persisted" (False, with "persist_error", when the save that follows
+        the write failed; the record is still in memory and `flush()` retries it, so a caller that
+        drops the handle drops the record). Read it after every keyed write that must land; the MCP
+        and CLI write surfaces report the same fields.
 
         mtype in {episodic, semantic, procedural} sets the decay prior (episodic fades fast,
         semantic slow, procedural barely); inferred from the text if not given. Pass it explicitly
@@ -11037,7 +11042,11 @@ class Inspeximus:
         # `meta.superseded_by_policy == "retired"`. Measured on the Crew OS store 2026-09-21: an
         # audit reported `retired: 0` over four keys this call had just ended.
         return {"key": k, "retired": len(ids), "ids": sorted(ids), "reason": why[:500],
-                "status": "superseded", "policy": "retired"}
+                "status": "superseded", "policy": "retired",
+                # 3.5.2: the same verdict a write gets; a retirement that did not reach disk is
+                # still in memory and flush() retries it.
+                "persisted": self._persist_error is None,
+                **({"persist_error": self._persist_error["error"]} if self._persist_error else {})}
 
     def retract_lineage(self, subject: str, reason: str = "lineage_corrected",
                         allow_ambiguous: bool = False) -> dict:
@@ -16304,12 +16313,8 @@ class Inspeximus:
                     # `rows`, not `slim`: building the stripped copy costs one dict per record on
                     # every save, and the row writer only serialises what changed, so the copy was
                     # thrown away almost entirely. `keep_vec` tells it to drop the key instead.
-                    _res = _rows.save(self.path, rows, self._row_snapshot,
-                                      dirty=None if _reconcile else self._touched,
-                                      rewrite_all=self._rewrite_all,
-                                      keep_vec=self._persist_vectors,
-                                      events=self._pending_events if self._events_enabled else None,
-                                      auto_events=self._events_enabled)
+                    _res = self._save_rows_retrying(
+                        rows, dirty=None if _reconcile else self._touched)
                     self._rewrite_all = False
                     self._row_snapshot = _res["snapshot"]
                     self._touched = set()
@@ -16356,6 +16361,9 @@ class Inspeximus:
             self._last_save = now
             self._dirty = False
             self._persist_error = None
+            if isinstance(getattr(self, "last_write", None), dict):
+                self.last_write["persisted"] = True
+                self.last_write.pop("persist_error", None)
             if _committed_events and self._subscribers:
                 self._dispatch_events(self._events_seen)   # AFTER the commit and OUTSIDE the lock
         except StoreChangedOnDisk:
@@ -16370,6 +16378,53 @@ class Inspeximus:
             # RAISED by flush() — the call whose whole purpose is "make sure it is on disk".
             self._dirty = True
             self._persist_error = {"at": now, "error": f"{type(e).__name__}: {e}", "path": str(self.path)}
+            # SAY IT WHERE THE CALLER LOOKS (3.5.2). `_persist_error` is a private field and
+            # `last_write` read `blocked: False`, so a write that never reached disk looked like a
+            # landed one to every caller that followed the documented check. Measured on the Crew OS
+            # store 2026-09-22: five remember() calls in a row returned an id with "database is
+            # locked" in `_persist_error`, the sixth landed, and a fresh handle per call turned the
+            # transient into a permanent loss because nothing retried what a dropped handle held.
+            if isinstance(getattr(self, "last_write", None), dict):
+                self.last_write["persisted"] = False
+                self.last_write["persist_error"] = self._persist_error["error"]
+
+    def _save_rows_retrying(self, rows, dirty):
+        """One row write, retried a bounded number of times when SQLite reports the file locked.
+
+        The writer already holds the inter-process store lock, so a `database is locked` here comes
+        from a client OUTSIDE that lock: a raw sqlite3 connection with an open transaction, a
+        reader that held the file longer than the busy timeout, or a store lock that degraded to a
+        no-op on this platform. The wait is bounded so the whole save stays under `LOCK_WAIT_S`,
+        the budget a peer waits at the store lock: `INSPEXIMUS_SAVE_RETRIES` (default 2) extra
+        attempts, each after a short pause, so at most three busy timeouts in a row. The error that
+        survives names the cause, because "database is locked" alone sent the reporter to the
+        busy timeout, which was never the defect.
+        """
+        import sqlite3 as _sq
+        _tries = 2
+        try:
+            _tries = max(0, int(os.environ.get("INSPEXIMUS_SAVE_RETRIES", "2")))
+        except ValueError:
+            _tries = 2
+        _last = None
+        for _n in range(_tries + 1):
+            try:
+                return _rows.save(self.path, rows, self._row_snapshot, dirty=dirty,
+                                  rewrite_all=self._rewrite_all, keep_vec=self._persist_vectors,
+                                  events=self._pending_events if self._events_enabled else None,
+                                  auto_events=self._events_enabled)
+            except _sq.OperationalError as e:
+                if "locked" not in str(e).lower() or _n == _tries:
+                    _last = e
+                    break
+                time.sleep(0.3 * (_n + 1))
+        if _last is not None and "locked" in str(_last).lower():
+            raise _sq.OperationalError(
+                f"{_last} after {_tries + 1} attempt(s) while this process held the inspeximus store "
+                f"lock: another client is writing {self.path} outside inspeximus (a raw sqlite3 "
+                f"connection with an open transaction), or a reader held it longer than the busy "
+                f"timeout. The record is still in memory; flush() retries it.")
+        raise _last
 
     def flush(self):
         """Force-persist any pending throttled changes (call on clean shutdown).

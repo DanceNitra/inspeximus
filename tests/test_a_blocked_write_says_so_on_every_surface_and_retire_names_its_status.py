@@ -74,7 +74,8 @@ def test_retire_returns_the_status_it_set_and_there_is_no_retired_status(tmp_pat
     assert not [r for r in m.items if r.get("status") == "retired"], "no fourth status"
     assert [r for r in recs if (r.get("meta") or {}).get("superseded_by_policy") == "retired"] == recs
     assert m.retire(k, reason="again") == {"key": k, "retired": 0, "ids": [], "reason": "again",
-                                            "status": "superseded", "policy": "retired"}
+                                            "status": "superseded", "policy": "retired",
+                                            "persisted": True}   # 3.5.2 adds the save's verdict
 
 
 # ------------------------------------------------------------------ the MCP surface

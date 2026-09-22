@@ -2569,9 +2569,9 @@
  },
  {
   "file": "inspeximus/core.py",
-  "name": "3.5.1 retire() stops naming the status it set",
-  "old": "        return {\"key\": k, \"retired\": len(ids), \"ids\": sorted(ids), \"reason\": why[:500],\n                \"status\": \"superseded\", \"policy\": \"retired\"}",
-  "new": "        return {\"key\": k, \"retired\": len(ids), \"ids\": sorted(ids), \"reason\": why[:500]}",
+  "name": "3.5.1 retire() stops naming the status it set (re-anchored to the 3.5.2 wording)",
+  "old": "                \"status\": \"superseded\", \"policy\": \"retired\",\n                # 3.5.2: the same verdict a write gets; a retirement that did not reach disk is",
+  "new": "                # 3.5.2: the same verdict a write gets; a retirement that did not reach disk is",
   "tests": [
    "tests/test_a_blocked_write_says_so_on_every_surface_and_retire_names_its_status.py"
   ]
@@ -2587,9 +2587,9 @@
  },
  {
   "file": "inspeximus/cli.py",
-  "name": "3.5.1 the CLI exits 0 on a blocked write again",
-  "old": "            _flush_or_fail(m)\n            return 3\n        if _lw.get(\"lineage_dropped\"):",
-  "new": "            _flush_or_fail(m)\n        if _lw.get(\"lineage_dropped\"):",
+  "name": "3.5.1 the CLI exits 0 on a blocked write again (re-anchored to the 3.5.2 wording)",
+  "old": "            _flush_or_fail(m)\n            return 3\n        if _lw.get(\"persisted\") is False:",
+  "new": "            _flush_or_fail(m)\n        if _lw.get(\"persisted\") is False:",
   "tests": [
    "tests/test_a_blocked_write_says_so_on_every_surface_and_retire_names_its_status.py"
   ]
@@ -2610,6 +2610,69 @@
   "new": "        _edited = set()\n        self._items = []",
   "tests": [
    "tests/test_a_retirement_survives_a_peer_write_that_landed_first.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.2 a failed save no longer stamps persisted False on last_write",
+  "old": "            if isinstance(getattr(self, \"last_write\", None), dict):\n                self.last_write[\"persisted\"] = False\n                self.last_write[\"persist_error\"] = self._persist_error[\"error\"]",
+  "new": "            if False:\n                self.last_write[\"persisted\"] = False\n                self.last_write[\"persist_error\"] = self._persist_error[\"error\"]",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.2 the row write is never retried on a foreign lock",
+  "old": "                if \"locked\" not in str(e).lower() or _n == _tries:",
+  "new": "                if True:",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.2 the surviving error no longer names the client outside inspeximus",
+  "old": "        if _last is not None and \"locked\" in str(_last).lower():\n            raise _sq.OperationalError(",
+  "new": "        if False:\n            raise _sq.OperationalError(",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.2 retire() reports persisted True whatever the save did",
+  "old": "                \"persisted\": self._persist_error is None,",
+  "new": "                \"persisted\": True,",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+  ]
+ },
+ {
+  "file": "inspeximus/core.py",
+  "name": "3.5.2 the store lock key is case-sensitive again, so two spellings of one path are two locks",
+  "old": "        h = hashlib.sha256(os.path.normcase(os.path.abspath(str(path))).encode(\"utf-8\", \"replace\")).hexdigest()[:16]",
+  "new": "        h = hashlib.sha256(os.path.abspath(str(path)).encode(\"utf-8\", \"replace\")).hexdigest()[:16]",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+  ]
+ },
+ {
+  "file": "inspeximus/mcp_server.py",
+  "name": "3.5.2 the MCP result reports every write as persisted",
+  "old": "           \"persisted\": bool(lw.get(\"persisted\", True))}",
+  "new": "           \"persisted\": True}",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+  ]
+ },
+ {
+  "file": "inspeximus/cli.py",
+  "name": "3.5.2 the CLI exits 0 on a write the store could not persist",
+  "old": "            return 4\n        if _lw.get(\"lineage_dropped\"):",
+  "new": "        if _lw.get(\"lineage_dropped\"):",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
   ]
  }
 ]

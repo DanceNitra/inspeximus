@@ -1560,13 +1560,19 @@ def main(argv=None):
         _lw = getattr(m, "last_write", None) or {}
         _out({"id": mid, "key": a.key, "status": _lw.get("status", "active"),
               "blocked": bool(_lw.get("blocked")), "policy": _lw.get("policy"),
-              "current_id": _lw.get("current_id"), "lineage_dropped": int(_lw.get("lineage_dropped") or 0)},
+              "current_id": _lw.get("current_id"), "lineage_dropped": int(_lw.get("lineage_dropped") or 0),
+              "persisted": bool(_lw.get("persisted", True)),
+              **({"persist_error": _lw["persist_error"]} if _lw.get("persist_error") else {})},
              a.json) or print(f"remembered {mid}" + (f" [key={a.key}]" if a.key else ""))
         if _lw.get("blocked"):
             print(f"NOT LANDED: {_lw.get('policy')}: {_lw.get('note')} The current value is "
                   f"{_lw.get('current_id')}.", file=sys.stderr)
             _flush_or_fail(m)
             return 3
+        if _lw.get("persisted") is False:
+            print(f"NOT PERSISTED: {_lw.get('persist_error')} The record was not written; run the "
+                  f"command again once the other client is done.", file=sys.stderr)
+            return 4
         if _lw.get("lineage_dropped"):
             print(f"warning: the value this write followed had {_lw['lineage_dropped']} derived_from "
                   f"anchor(s) and this write carries none; lineage is declared, never inherited.",
