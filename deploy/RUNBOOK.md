@@ -190,6 +190,96 @@ UptimeRobot (free tier), HTTPS monitor on `https://92.5.74.17.sslip.io/.well-kno
 5 minutes, alerts to the owner's email. The measured uptime goes into the weekly channel brief; no
 number is promised anywhere.
 
+## What TLS protects here, and what it does not
+
+**The certificate is not what makes the log trustworthy. The signature is.** This is the sentence a
+customer needs, so it is written here in full rather than implied.
+
+Eavesdropping on this host costs us nothing. Every byte it serves is meant to be public, and a
+reader who fetches the log over plain HTTP learns exactly what a reader over HTTPS learns. The
+attack that matters is substitution: somebody serving a different log, or a different key, under our
+name.
+
+TLS defends against substitution only as far as the certificate authority chain does, and on this
+host that is further than it looks. `sslip.io` turns any IP address into a hostname anyone can
+claim for their own address, so an attacker who controls a name that resolves to their own machine
+can hold a valid certificate for it. Against that, a reader who checks the certificate is satisfied
+and wrong.
+
+A reader who verifies the Ed25519 signature over the checkpoint is safe anyway. The signature covers
+the origin, the tree size and the Merkle root, and it is made by a key that never reaches the web
+server. An attacker holding a valid certificate for our name still cannot produce a checkpoint that
+verifies under our key, and a checkpoint that does not verify is not our log however it arrived.
+That is why `tools/check_published_key.py` compares the key against the copy in the README rather
+than trusting the copy on the host, and why the external witness and the Bitcoin anchor are the
+independence rather than the certificate.
+
+So the order of defences, strongest first: the signature over the checkpoint, the witness that
+remembers a head we cannot reach, the anchor, then TLS, then the response headers.
+
+### Response headers
+
+Every response carries `Strict-Transport-Security` (a year, `includeSubDomains`, no `preload`),
+`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and a
+content security policy. None of them protects the log. They stop a browser being turned against
+the reader: no sniffing a data file into markup, no framing, and no script at all on `/log/` or
+`/mirror/`.
+
+Two things to know before changing them.
+
+**Content-Type under `/log/` is a default, not a list of filenames.** Five of the ten published
+artifacts had no Content-Type at all when this was measured (2026-09-22): `checkpoint`,
+`checkpoint.vkey`, `log.jsonl`, `verify.py`, and every `.cose` receipt. The rule now types anything
+Caddy cannot type from its extension, because a rule that named those five files would have left
+the next new artifact untyped.
+
+**To re-check the sniff defence after a publisher change**, put a file of HTML bytes into the served
+directory under a name with no extension, load it in a browser, and confirm it renders as literal
+text with the tab title showing the URL rather than the title the markup sets. Then delete it and
+re-run `tools/self_verify_log.py`. The published log is not the place to leave a test file:
+
+```sh
+printf '%s' '<html><body><h1>C</h1><script>document.title="EXECUTED";</script></body></html>' |
+  sudo tee /srv/static-log/sniff-control >/dev/null
+curl -sI https://92.5.74.17.sslip.io/log/sniff-control | grep -i content-type   # text/plain + nosniff
+sudo rm -f /srv/static-log/sniff-control
+```
+
+`probes/the_headers_the_browser_is_told_to_obey.py` checks all of it from outside and carries a
+second host as its control, so a run that cannot fail is visible as a run that cannot fail.
+
+### SSH algorithms
+
+`/etc/ssh/sshd_config.d/62-algorithms.conf` narrows the key exchange, ciphers, MACs and host keys.
+The post-quantum hybrid `sntrup761x25519-sha512` stays first. The NIST P-curve and finite-field
+exchanges, the 128-bit ciphers, the 64-bit and SHA-1 MACs, and the RSA and ECDSA host keys are gone.
+
+**Arm a rollback before reloading, and verify from a NEW session.** The procedure that worked:
+
+```sh
+sudo sshd -t                                     # syntax, before anything is live
+sudo bash -c 'nohup sh -c "sleep 180; rm -f /etc/ssh/sshd_config.d/62-algorithms.conf;   systemctl reload ssh" >/dev/null 2>&1 &'       # arm FIRST
+sudo systemctl reload ssh
+# from ANOTHER shell: ssh in fresh. Only then disarm.
+```
+
+Disarm it by PID. `sudo pkill -f "sleep 180"` also matches the SSH command line carrying that
+string, so it kills the session issuing it and returns 255, which reads like a lockout and is not
+one. Reconnect and confirm the drop-in is still there.
+
+The controls that show the narrowing is real, all four of which must fail to connect:
+
+```sh
+ssh -o Ciphers=aes128-ctr                 ubuntu@92.5.74.17 exit   # no matching cipher
+ssh -o MACs=hmac-sha1 -o Ciphers=aes256-ctr ubuntu@92.5.74.17 exit # no matching MAC
+ssh -o KexAlgorithms=diffie-hellman-group14-sha256 ubuntu@92.5.74.17 exit
+ssh -o HostKeyAlgorithms=rsa-sha2-512     ubuntu@92.5.74.17 exit   # offer: ssh-ed25519
+```
+
+**TLS 1.2 stays enabled, deliberately.** Refusing it buys little against a signed log, because the
+signature does not depend on the transport, and it can lock out a client we have not met. Revisit
+this when a measurement shows a reader who is hurt by it.
+
 ## What this deployment does not do
 
 - The witness runs under the same operator as the service. Its co-signature says the service did
