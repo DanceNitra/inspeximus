@@ -1361,7 +1361,7 @@ NON_CLAIM_TOKENS = {
         "8785,": (1, "RFC 8785, JSON Canonicalization Scheme, followed by a comma in prose -- a citation"),
         "9943": (2, "RFC 9943, SCITT architecture -- a citation, named twice"),
         "3161": (6, "Also the feature table on the first screen (2026-09-17). Also in the evidence table at the top (2026-09-17). RFC 3161, time-stamp protocol -- a citation, named four times since the ledger timestamp paragraph (2.32.0)"),
-        "41": (2, "Also eIDAS Art. 41 in the evidence table at the top (2026-09-17). eIDAS Article 41 -- an article number, in the same class as an RFC number: it "
+        "41": (4, "Twice more since 2026-09-23: `41dfe27a` is the four-byte key id of the published verification key, in the key line and in the sentence naming it. It is an identifier, not a quantity, and the signed-note spec says it is not a security boundary. Also eIDAS Art. 41 in the evidence table at the top (2026-09-17). eIDAS Article 41 -- an article number, in the same class as an RFC number: it "
                "names a text a reader can fetch, and there is nothing to reproduce about it"),
         "0,": (1, "'Two signers, two claims, one artifact' prose; the digit is part of a sentence, "
                "not a measurement"),
@@ -1410,7 +1410,8 @@ NON_CLAIM_TOKENS = {
                "paragraph, not a quantity"),
         "11": (1, "EU AI Act ARTICLE number (technical documentation) in the documents paragraph, not a quantity"),
         "13": (1, "EU AI Act Art. 13(3)(f) (instructions for use) in the documents paragraph, an article number"),
-        "3": (2, "the paragraph digits in Art. 13(3)(f) and Art. 3(23), not quantities"),
+        "3": (4, "the paragraph digits in Art. 13(3)(f) and Art. 3(23), plus two that are not digits at all: the base64 of the published verification key happens to contain '+3gN1yi', and the `sed -n '3p'` in the command that extracts that key from this file (2026-09-23)"),
+        "1017": (1, "the leading digits of the SHA-256 fingerprint of the published verification key, 1017ff22...783c. A hash of a published artifact, not a measurement (2026-09-23)"),
         "23": (1, "the definition number in Art. 3(23), substantial modification"),
         "111": (1, "EU AI Act ARTICLE number (111(2), grandfathering) in the lifecycle sentence"),
         "26": (2, "EU AI Act ARTICLE number (deployer duties): the documents paragraph and the rotation paragraph"),

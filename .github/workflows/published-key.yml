@@ -1,0 +1,72 @@
+# Do the two published copies of the verification key still agree?
+#
+# The key that verifies our hosted transparency log is published in two places: on the host itself at
+# /log/checkpoint.vkey, and in this repository's README. A reader who takes the key from the host is
+# asking the host how to check the host. Two copies do not make us trustworthy, because both are
+# ours; they raise the cost of a silent swap from one write to two, on two systems.
+#
+# TWO JOBS, BECAUSE THEY FAIL FOR DIFFERENT REASONS. The offline one is deterministic and gates every
+# push: the four-byte key id inside the README line must recompute from the key beside it, so a
+# hand-edited README fails here with no network involved. The online one runs daily and compares the
+# host's copy, then verifies the live checkpoint's signature under the README's key.
+#
+# A HOST THAT CANNOT BE REACHED IS NOT A MISMATCH. The tool exits 2 for an unreachable host and 1 for
+# a disagreement, and this job only fails on 1. A daily check that goes red whenever a free-tier VM
+# blinks is a check people learn to ignore.
+
+name: published key
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'README.md'
+      - 'tools/check_published_key.py'
+      - 'inspeximus/checkpoint.py'
+      - '.github/workflows/published-key.yml'
+  pull_request:
+    paths:
+      - 'README.md'
+      - 'tools/check_published_key.py'
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    name: the README copy is self-consistent
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --upgrade pip && pip install pytest cryptography
+      - name: the key id recomputes from the key beside it
+        run: python tools/check_published_key.py
+      - name: and the check can fail
+        run: python -m pytest tests/test_the_key_is_published_in_two_places.py -q
+
+  online:
+    name: the host publishes the same key, and signs with it
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --upgrade pip && pip install cryptography certifi
+      - name: compare the two copies
+        run: |
+          set +e
+          python tools/check_published_key.py --online
+          code=$?
+          set -e
+          if [ "$code" = "2" ]; then
+            echo "::warning::the host could not be reached; this is not a key mismatch"
+            exit 0
+          fi
+          exit $code
