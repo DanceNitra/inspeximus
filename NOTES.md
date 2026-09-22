@@ -1,38 +1,40 @@
-# inspeximus 3.6.1
+# inspeximus 3.6.2
 
-a receipt holder on another machine can check inclusion: the service serves the leaf; a static publish without the service key completes. UPGRADE IF YOU RUN THE HOSTED TRANSPARENCY SERVICE OR PUBLISH ITS STATIC COPY. AFFECTS: SCRAPI gains `GET /entries/{id}/leaf` (application/json, the exact bytes the tree hashed; 200 or 404); `tools/publish_static_log.py` without `INSPEXIMUS_SERVICE_SECRET` writes the head, the leaves, the key set, the verifier and the page with zero receipts instead of raising on the first entry; `probes/register_against_the_hosted_log.py` is the acceptance client for a hosted service. The default store is byte-identical; the library is untouched.
+witnessing a log you do not operate is now `pip install inspeximus` and one command. UPGRADE IF YOU WITNESS A TRANSPARENCY LOG, OR WANT TO INVITE SOMEBODY TO WITNESS YOURS. AFFECTS: the witness logic moves from `tools/witness_static_log.py` into the package as `inspeximus/witness_log.py`, reached by `inspeximus witness watch --url <log> --state <file>`; the tool keeps working and now wraps it; a log that cannot be READ exits 1 with one line instead of a traceback, and leaves the remembered head untouched; HTTPS uses certifi's bundle when certifi is installed, the platform's trust store otherwise. No dependency is added. The default store is byte-identical; the library is untouched.
 
 ## Who should upgrade
 
-Upgrade if this is true of you: **YOU RUN THE HOSTED TRANSPARENCY SERVICE OR PUBLISH ITS STATIC COPY. AFFECTS**.
+Upgrade if this is true of you: **YOU WITNESS A TRANSPARENCY LOG, OR WANT TO INVITE SOMEBODY TO WITNESS YOURS. AFFECTS**.
 
 ## What changed
 
-Both found on 2026-09-22, the day the service went live on its own host (`deploy/RUNBOOK.md`).
+The invitation was the defect. A witness is the one part of a transparency log its operator cannot
+run, so the ask goes to strangers, and until today the ask was "clone our repository and run a
+script out of `tools/`". Three invitations were about to go out with that in them.
 
-A receipt's payload is detached and the leaf carries fields the service assigned, its clock and the
-index, so a client that holds only its statement and the receipt could verify the signature and the
-proof's arithmetic but never the inclusion of its own entry: the first registration from another
-machine read "no leaf supplied: inclusion NOT checked". The leaf holds digests, an issuer and a
-subject and no payload, so serving it discloses nothing the receipt did not already commit to. With
-it, `cose.verify_receipt(receipt, verify, leaf_data=leaf, expected_root=root)` verifies against the
-root the key set publishes, and the leaf of a different entry does not (the test's control).
+`inspeximus witness watch` is dispatched before the CLI's Ed25519 check, because watching needs no
+key: an unsigned run still remembers the head it saw, and remembering is the half that refuses.
+Signing only makes the observation checkable by a third party. `deploy/witness-template.yml` drops
+its `curl` step and pins the version, so a witness runs the code they read.
 
-The static publisher's startup note said that without a key receipts are read from the log rather
-than re-signed; the loop then asked the no-op signer for one and raised on the first entry, so the
-service's first cron run wrote `head.json` and `log.jsonl` and died before `verify.py` and
-`index.html`. A receipt needs the service key by definition; the copy without them is still the
-head, the leaves and the key set, which is what a witness reads, and it now completes and verifies.
-Three mutations, all killed.
+Two failure modes that a stranger would have blamed on our server. A TLS or network failure raised
+a traceback and exited 1 from deep inside urllib; it now prints one line, says that an unreadable
+log is not a verdict, and does not touch the state file, because exit 2 means REFUSED and that is a
+claim about the publisher. And the Windows Store build of Python 3.12 rejected a current Let's
+Encrypt chain with "certificate has expired" on the day this shipped, while curl on the same machine
+accepted it: `certifi`, if it happens to be installed, is now the trust store.
+
+Measured against the live service at `https://92.5.74.17.sslip.io/log`: FIRST_CONTACT then EXTENDS
+over 9 entries, exit 0 both times, with no key and no checkout.
 
 ## What breaks
 
-No line in the 3.6.1 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
+No line in the 3.6.2 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
 
 ## Try it -- one command
 
 ```bash
-pip install -U "inspeximus==3.6.1"
+pip install -U "inspeximus==3.6.2"
 ```
 
 No server, no API key, no database, no LLM on the write path. A correction, and the retired value

@@ -16,6 +16,8 @@
 #   1. Mint a key and add it as a repository secret named INSPEXIMUS_WITNESS_SECRET:
 #        pip install inspeximus
 #        python -c "from inspeximus import new_receipt_keypair; print(new_receipt_keypair()[0])"
+#      To try the whole thing on your machine first, with no key and nothing committed:
+#        inspeximus witness watch --url <the LOG_URL below> --state /tmp/witness.json
 #   2. Set WITNESS_NAME below to whatever you want recorded beside your public key.
 #   3. Commit this file. The first run establishes a baseline and proves nothing; the second run
 #      onwards is where a rewrite would be caught.
@@ -36,7 +38,9 @@ permissions:
   contents: write          # only to commit this witness's own state and co-signature
 
 env:
-  LOG_URL: https://dancenitra.github.io/inspeximus/transparency
+  # The hosted transparency service. The project's other log, which records release claims, is at
+  # https://dancenitra.github.io/inspeximus/transparency and is witnessed the same way.
+  LOG_URL: https://92.5.74.17.sslip.io/log
   WITNESS_NAME: ''         # your name or handle, recorded beside your public key
 
 jobs:
@@ -48,19 +52,15 @@ jobs:
         with:
           python-version: '3.12'
 
-      - run: pip install inspeximus cryptography
-
-      - name: Fetch the witness script from the package repository
-        run: |
-          curl -sSfO https://raw.githubusercontent.com/DanceNitra/inspeximus/main/tools/witness_static_log.py
-          # Pin this to a commit rather than main if you would rather not run whatever we push. The
-          # script is short enough to read in one sitting, and reading it is encouraged.
+      # Pinned, so this job runs the version you read rather than whatever we push later. The
+      # witness code is ~200 lines in inspeximus/witness_log.py and reading it is encouraged.
+      - run: pip install "inspeximus==3.6.2" cryptography
 
       - name: Look at the log and refuse it if the history changed
         env:
           INSPEXIMUS_WITNESS_SECRET: ${{ secrets.INSPEXIMUS_WITNESS_SECRET }}
         run: |
-          python witness_static_log.py \
+          inspeximus witness watch \
             --url "$LOG_URL" \
             --state witness/state.json \
             --out witness/cosignatures \

@@ -1,4 +1,9 @@
 92.5.74.17.sslip.io {
+    # `/log` without the slash reached the SCRAPI service and returned 404, so anyone who pasted the
+    # URL we hand out into a browser saw a dead link. The witness tool never saw it: it appends
+    # `/head.json` to whatever it is given.
+    redir /log /log/ 308
+
     handle_path /log/* {
         root * /srv/static-log
         file_server

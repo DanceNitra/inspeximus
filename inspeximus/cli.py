@@ -238,6 +238,14 @@ def _witness_cmd(a) -> int:
       3 = undetermined (heads of different sizes: not decidable from head commitments alone)
       4 = Ed25519 unavailable
     """
+    if a.witness_cmd == "watch":
+        # Dispatched BEFORE the Ed25519 check, because watching a published log needs no key. The
+        # half that catches a rewrite is the state file, not the signature: an unsigned run still
+        # remembers the head it saw and still refuses the next run if the history moved under it.
+        # Requiring a key here would turn a zero-dependency invitation into an install problem.
+        from .witness_log import watch
+        return watch(a)
+
     rc = _need_ed25519()
     if rc:
         return rc
@@ -816,6 +824,15 @@ def main(argv=None):
                      help="shared secret enabling POST /bootstrap (needs --strict). Callers send it "
                           "as X-Bootstrap-Token. Without this the route is 403: an unauthenticated "
                           "bootstrap would defeat --strict, since anyone could declare any store id")
+
+    # `watch` is the one witness command aimed at a stranger: the whole setup is `pip install
+    # inspeximus`, and the log it reads belongs to somebody else. Its arguments live beside the code
+    # that uses them (witness_log.add_arguments) so the CLI and `python -m inspeximus.witness_log`
+    # cannot drift apart.
+    from .witness_log import add_arguments as _watch_arguments
+    _watch_arguments(wsub.add_parser(
+        "watch", help="watch a published transparency log over HTTPS and refuse to co-sign it if "
+                      "the history it showed you before changed (exit 2 = refused)"))
 
     wbs = wsub.add_parser("bootstrap", help="declare a legitimate FIRST CONTACT with a store, for a "
                                             "strict witness. Persisted in the state file")

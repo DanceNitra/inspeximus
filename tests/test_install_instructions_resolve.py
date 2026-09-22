@@ -33,6 +33,10 @@ _THIRD_PARTY = {
     "cryptography", "langgraph", "langchain", "langchain-core", "llama-index", "haystack-ai",
     "crewai", "autogen-agentchat", "google-adk", "pydantic-ai", "openai-agents", "mcp", "numpy",
     "pytest", "uv", "pipx", "ollama", "sentence-transformers", "agents",
+    # certifi: `inspeximus witness watch` names it when a TLS handshake fails, because the Windows
+    # Store build of Python 3.12 rejected a current Let's Encrypt chain that curl accepted. The
+    # witness uses certifi's bundle only if it is already installed, so it stays undeclared.
+    "certifi",
 }
 
 

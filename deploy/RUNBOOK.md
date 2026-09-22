@@ -89,6 +89,29 @@ sudo iptables -S INPUT
 sudo awk '/^\*filter/,/^COMMIT/' /etc/iptables/rules.v4 | grep -E '^-A INPUT'
 ```
 
+## Never delete from a store with raw SQL
+
+A `DELETE` issued outside the library removes a row and can silently change the CURRENT VALUE of a
+key. Measured on the live Crew OS store on 2026-09-22: a cleanup deleted two records with raw SQL,
+and one of them (`bedcef7981`) was the newest record under the key
+`decision::inspeximus-act-coverage-state`. Removing it un-retired its predecessor, so the store
+served a value that a later write had corrected away, and the corrected text is gone: a receipt
+holds hashes, not content.
+
+`verify_writes()` reported all three effects (two records "written but missing from the store", one
+"RETIRED ... and it is ACTIVE again"), which is what the write chain exists for. The repair, in
+order:
+
+```python
+m = Inspeximus(PATH, receipts=True)
+m.declare_out_of_band_deletion(memory_id, actor, reason)     # one per deleted record
+m.remember(current_value, key=the_key)                       # re-issue through the API
+Inspeximus(PATH, receipts=True).verify_writes()              # a FRESH handle -> (True, [])
+```
+
+To remove a record, call `forget()` or `retire()`: both leave a tombstone and keep supersession
+intact. Back up the store and every sidecar first, because the deleted text is not recoverable.
+
 ## Rebuild on a fresh instance (ten minutes)
 
 Tested 2026-09-22 by rebuilding into a throwaway container on the host (see the acceptance report).
@@ -143,7 +166,7 @@ Tested 2026-09-22 by rebuilding into a throwaway container on the host (see the 
    once by hand and check `https://92.5.74.17.sslip.io/log/head.json`.
 7. Acceptance from another machine: `python probes/register_against_the_hosted_log.py
    https://92.5.74.17.sslip.io` exits 0 (201, receipt verifies against the published root with the
-   leaf, control rejected); `tools/witness_static_log.py --url https://92.5.74.17.sslip.io/log`
+   leaf, control rejected); `inspeximus witness watch --url https://92.5.74.17.sslip.io/log --state s.json`
    answers EXTENDS against the state the mirror job holds.
 
 ## Monitoring

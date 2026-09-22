@@ -41,3 +41,6 @@ benchmarks/locomo/.cache/
 benchmarks/locomo/results/*.latest.json
 codex-marketplace/
 what_the_lock_is_actually_holding_back.void.json
+
+# scratch: probe runs, benchmark checkouts, witness state from manual runs
+tmp/

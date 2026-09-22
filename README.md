@@ -518,15 +518,22 @@ A log tells you it is internally consistent. It cannot tell you it is the same l
 shown, and no amount of signing by the operator fixes that. Only a party who REMEMBERS a previous
 head can catch a rewrite, and only if that memory lives somewhere the operator cannot reach.
 
-`tools/witness_static_log.py` is that party. It fetches a log it does not operate, recomputes the
+`inspeximus witness watch` is that party. It fetches a log it does not operate, recomputes the
 root from the leaves rather than reading it out of the head, and compares against the head it last
 accepted by rebuilding that head from the leaves published now. Verdicts are EXTENDS, FIRST_CONTACT
 (which says out loud that it proves nothing yet), FORK, ROLLBACK, and MALFORMED for a log that
 contradicts itself. A refusal does not update its memory, because a witness that forgets what it just
 caught reports EXTENDS on the rewritten log next time.
 
-`deploy/witness-template.yml` runs it from any public repository for nothing. Running one against our
-log is the most useful thing an outsider can do here, and it commits you to nothing: you are not
+Two commands are the whole setup, and the first run commits you to nothing:
+
+```bash
+pip install inspeximus
+inspeximus witness watch --url https://92.5.74.17.sslip.io/log --state witness.json
+```
+
+`deploy/witness-template.yml` runs the same command daily from any public repository for nothing.
+Running one against our log is the most useful thing an outsider can do here, and it commits you to nothing: you are not
 vouching that any entry is true, only recording whether the history shown to you today extends the
 one shown to you before.
 

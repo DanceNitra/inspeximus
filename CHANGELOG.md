@@ -1,3 +1,24 @@
+## 3.6.2 - witnessing a log you do not operate is now `pip install inspeximus` and one command. UPGRADE IF YOU WITNESS A TRANSPARENCY LOG, OR WANT TO INVITE SOMEBODY TO WITNESS YOURS. AFFECTS: the witness logic moves from `tools/witness_static_log.py` into the package as `inspeximus/witness_log.py`, reached by `inspeximus witness watch --url <log> --state <file>`; the tool keeps working and now wraps it; a log that cannot be READ exits 1 with one line instead of a traceback, and leaves the remembered head untouched; HTTPS uses certifi's bundle when certifi is installed, the platform's trust store otherwise. No dependency is added. The default store is byte-identical; the library is untouched.
+
+The invitation was the defect. A witness is the one part of a transparency log its operator cannot
+run, so the ask goes to strangers, and until today the ask was "clone our repository and run a
+script out of `tools/`". Three invitations were about to go out with that in them.
+
+`inspeximus witness watch` is dispatched before the CLI's Ed25519 check, because watching needs no
+key: an unsigned run still remembers the head it saw, and remembering is the half that refuses.
+Signing only makes the observation checkable by a third party. `deploy/witness-template.yml` drops
+its `curl` step and pins the version, so a witness runs the code they read.
+
+Two failure modes that a stranger would have blamed on our server. A TLS or network failure raised
+a traceback and exited 1 from deep inside urllib; it now prints one line, says that an unreadable
+log is not a verdict, and does not touch the state file, because exit 2 means REFUSED and that is a
+claim about the publisher. And the Windows Store build of Python 3.12 rejected a current Let's
+Encrypt chain with "certificate has expired" on the day this shipped, while curl on the same machine
+accepted it: `certifi`, if it happens to be installed, is now the trust store.
+
+Measured against the live service at `https://92.5.74.17.sslip.io/log`: FIRST_CONTACT then EXTENDS
+over 9 entries, exit 0 both times, with no key and no checkout.
+
 ## 3.6.1 - a receipt holder on another machine can check inclusion: the service serves the leaf; a static publish without the service key completes. UPGRADE IF YOU RUN THE HOSTED TRANSPARENCY SERVICE OR PUBLISH ITS STATIC COPY. AFFECTS: SCRAPI gains `GET /entries/{id}/leaf` (application/json, the exact bytes the tree hashed; 200 or 404); `tools/publish_static_log.py` without `INSPEXIMUS_SERVICE_SECRET` writes the head, the leaves, the key set, the verifier and the page with zero receipts instead of raising on the first entry; `probes/register_against_the_hosted_log.py` is the acceptance client for a hosted service. The default store is byte-identical; the library is untouched.
 
 Both found on 2026-09-22, the day the service went live on its own host (`deploy/RUNBOOK.md`).

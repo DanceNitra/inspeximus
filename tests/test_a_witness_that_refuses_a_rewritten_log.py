@@ -14,7 +14,9 @@ from __future__ import annotations
 
 import json
 import os
+import ssl
 import sys
+import urllib.error
 
 import pytest
 
@@ -36,7 +38,15 @@ def _module(name):
 
 @pytest.fixture(scope="module")
 def witness():
-    return _module("witness_static_log")
+    """The PACKAGE module, because that is the code a witness installs and runs.
+
+    The logic moved out of `tools/witness_static_log.py` into `inspeximus.witness_log` so that
+    `pip install inspeximus` is the whole setup for a stranger we invite to watch our log. The tool
+    is now a wrapper over the same functions, and `test_the_tools_wrapper_still_runs_the_same_code`
+    holds that path down, because it is the one named in other people's cron entries.
+    """
+    from inspeximus import witness_log
+    return witness_log
 
 
 @pytest.fixture(scope="module")
@@ -363,3 +373,49 @@ def test_no_signature_is_emitted_when_the_memory_cannot_be_written(witness, publ
     assert "signed   :" not in capsys.readouterr().out, \
         "the witness signed before its memory was durable"
     assert not out.exists(), "a co-signature was written despite the memory failing"
+
+
+# -- the paths a stranger uses ------------------------------------------------------------------------
+def test_the_tools_wrapper_still_runs_the_same_code(witness):
+    """`tools/witness_static_log.py` is in the RUNBOOK, in CI and in the first invitations."""
+    wrapper = _module("witness_static_log")
+    assert wrapper.main is witness.main
+
+
+def test_the_cli_watch_subcommand_reaches_the_same_judgement(witness, publisher, tmp_path,
+                                                             monkeypatch, capsys):
+    """`inspeximus witness watch` is the invitation: pip install, one command, no checkout.
+
+    It must also work with no Ed25519 available, which is why it is dispatched before the CLI's
+    key check: an unsigned run still remembers the head, and remembering is the half that refuses.
+    """
+    from inspeximus import cli
+    site, _ = _publish(publisher, tmp_path, "cliwatch", 3)
+    monkeypatch.setattr(witness, "read_log", lambda url, timeout: _read(witness, site))
+    state = tmp_path / "nested" / "state.json"
+
+    assert cli.main(["witness", "watch", "--url", "file:///x", "--state", str(state)]) == 0
+    assert "FIRST_CONTACT" in capsys.readouterr().out
+    assert cli.main(["witness", "watch", "--url", "file:///x", "--state", str(state)]) == 0
+    assert "EXTENDS" in capsys.readouterr().out
+    assert json.loads(state.read_text(encoding="utf-8"))["file:///x"]["n_writes"] == 4   # 3 + the policy entry
+
+
+def test_a_log_that_cannot_be_READ_is_not_a_verdict(witness, tmp_path, monkeypatch, capsys):
+    """A TLS failure or a 404 must not print a traceback into somebody's cron, and must not be 2.
+
+    Exit 2 means REFUSED, which is a claim about the publisher. An unreachable log supports no
+    claim at all, so it exits 1 and leaves the remembered head untouched.
+    """
+    from inspeximus import cli
+    state = tmp_path / "unreachable.json"
+    state.write_text(json.dumps({"https://x/log": {"n_writes": 7}}), encoding="utf-8")
+
+    def _boom(url, timeout):
+        raise urllib.error.URLError(ssl.SSLError("certificate verify failed"))
+    monkeypatch.setattr(witness, "read_log", _boom)
+
+    assert cli.main(["witness", "watch", "--url", "https://x/log", "--state", str(state)]) == 1
+    err = capsys.readouterr().err
+    assert "could not read https://x/log" in err and "not a verdict" in err
+    assert json.loads(state.read_text(encoding="utf-8"))["https://x/log"]["n_writes"] == 7

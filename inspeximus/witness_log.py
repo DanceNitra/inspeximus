@@ -1,0 +1,249 @@
+#!/usr/bin/env python
+"""Watch somebody else's published log and refuse to co-sign it if the history changed.
+
+    python tools/witness_static_log.py \\
+        --url https://dancenitra.github.io/inspeximus/transparency \\
+        --state my_witness_state.json --out cosignatures/
+
+RUN THIS AGAINST A LOG YOU DO NOT OPERATE. A witness under the same operator as the log is the
+operator wearing a second name: it co-signs whatever it is shown, and its signature means nothing.
+The whole value is that YOUR memory of what you saw is somewhere the log's publisher cannot edit.
+
+WHAT IT CATCHES, and it is narrow enough to state exactly. It remembers the head it last signed for
+a log. On the next run it recomputes that head's root from the first N leaves the log now publishes.
+If they differ, the publisher rewrote history that you had already seen: a FORK. If the log now has
+fewer entries than you remember, a ROLLBACK. Either way it refuses, loudly, and does not sign.
+
+WHAT IT DOES NOT CATCH: whether any entry is true, and whether the log showed a DIFFERENT history to
+somebody else in between your two visits. The second is why more than one witness matters and why
+they should be strangers to each other.
+
+NO CONSISTENCY PROOF IS USED OR NEEDED, which surprises people who know RFC 6962. A proof exists so a
+verifier who holds only two roots can check one extends the other. This log publishes every leaf
+hash, so a witness can simply rebuild the old root and compare. Fewer moving parts, and nothing to
+get wrong in a proof format.
+
+YOUR STATE FILE IS THE ENTIRE GUARANTEE. Delete it and this becomes a program that signs anything:
+it has no memory of a previous head, so it cannot tell an extension from a rewrite. Keep it, commit
+it, back it up.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import ssl
+import sys
+import time
+import urllib.error
+import urllib.request
+
+from . import merkle
+
+STH_FIELDS = ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")
+
+
+def _ssl_context():
+    """The trust store: certifi's bundle when it is installed, the platform's otherwise.
+
+    inspeximus needs no dependency and this adds none. It is here because the Windows Store build of
+    Python 3.12 rejected a current Let's Encrypt chain on 2026-09-22 with "certificate has expired"
+    while curl and the system TLS stack on the same machine accepted it. A witness that cannot read
+    the log reports nothing, and a stranger debugging our invitation would blame our server.
+    """
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return ssl.create_default_context()
+
+
+def fetch(base, name, timeout):
+    url = base.rstrip("/") + "/" + name
+    request = urllib.request.Request(url, headers={"User-Agent": "inspeximus-witness/1.0"})
+    with urllib.request.urlopen(request, timeout=timeout, context=_ssl_context()) as r:
+        return r.read()
+
+
+def sth_hash_of(head):
+    body = json.dumps({k: head.get(k) for k in STH_FIELDS},
+                      sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(body).hexdigest()
+
+
+def read_log(base, timeout):
+    """The published head and leaf hashes, with the root RECOMPUTED rather than believed.
+
+    Taking `writes_tip` from head.json and signing it would make this witness a rubber stamp: it
+    would attest to a number the publisher chose. The root is derived from the leaves here, and the
+    published one is only ever compared against it.
+    """
+    head = json.loads(fetch(base, "head.json", timeout).decode("utf-8"))
+    mtl = []
+    for line in fetch(base, "log.jsonl", timeout).decode("utf-8").splitlines():
+        line = line.strip()
+        if line:
+            mtl.append(bytes.fromhex(json.loads(line)["leaf_hash"]))
+    return head, mtl
+
+
+def _root(mtl):
+    if not mtl:
+        return hashlib.sha256(b"").digest()
+    return merkle._root_hashed(list(mtl))
+
+
+def judge(head, mtl, remembered):
+    """EXTENDS, FIRST_CONTACT, FORK, ROLLBACK or MALFORMED, with the reason spelled out."""
+    derived = _root(mtl).hex()
+    if len(mtl) != head.get("n_writes"):
+        return "MALFORMED", ("the head claims %s entries and the log publishes %d"
+                             % (head.get("n_writes"), len(mtl)))
+    if derived != head.get("writes_tip"):
+        return "MALFORMED", "the published root is not the root of the published leaves"
+    if sth_hash_of(head) != head.get("sth_hash"):
+        return "MALFORMED", "sth_hash does not follow from the head's own fields"
+
+    if not remembered:
+        return "FIRST_CONTACT", ("nothing was remembered about this log, so this run establishes a "
+                                 "baseline and proves nothing yet. The next run is the one that can "
+                                 "catch a rewrite.")
+    m = remembered["n_writes"]
+    if len(mtl) < m:
+        return "ROLLBACK", ("this log had %d entries when last seen and now publishes %d"
+                            % (m, len(mtl)))
+    rebuilt = _root(mtl[:m]).hex()
+    if rebuilt != remembered["writes_tip"]:
+        return "FORK", ("the first %d entries no longer produce the root signed before. Remembered "
+                        "%s, the log now yields %s from its own published leaves."
+                        % (m, remembered["writes_tip"][:16], rebuilt[:16]))
+    return "EXTENDS", "the %d entries seen before are unchanged; %d have been added since" % (
+        m, len(mtl) - m)
+
+
+def load_state(path):
+    if path and os.path.exists(path):
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    return {}
+
+
+def save_state(path, state):
+    """Write the witness's memory durably, creating its directory if it is not there.
+
+    The missing mkdir crashed the first CI run AFTER the witness had already signed. That ordering
+    is the real defect and it is fixed below: a signature emitted by a witness whose memory failed to
+    persist is worse than no signature, because the next run sees FIRST_CONTACT again and the witness
+    is permanently disarmed while still printing "signed".
+    """
+    parent = os.path.dirname(os.path.abspath(path))
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="") as fh:
+        json.dump(state, fh, indent=2, sort_keys=True)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+
+
+def add_arguments(ap):
+    """The `watch` arguments, shared by the CLI subcommand and the standalone entry point."""
+    ap.add_argument("--url", required=True, help="base URL of the published log")
+    ap.add_argument("--state", required=True, help="this witness's memory. Losing it disarms it")
+    ap.add_argument("--out", default=None, help="directory to write the co-signature into")
+    ap.add_argument("--key-file", default=None,
+                    help="Ed25519 secret hex. Also read from INSPEXIMUS_WITNESS_SECRET")
+    ap.add_argument("--timeout", type=float, default=30.0)
+    ap.add_argument("--name", default=None, help="a label for you, recorded in the co-signature")
+    return ap
+
+
+def watch(a) -> int:
+    """One observation of a published log: read it, judge it, remember it, then maybe sign it.
+
+    Exit codes are the contract: 0 recorded, 2 REFUSED (a fork, a rollback or a malformed head).
+    A refusal is the defence firing, so it is not reported as an error anywhere above this.
+    """
+    secret = None
+    if a.key_file:
+        with open(a.key_file, encoding="utf-8") as fh:
+            secret = fh.read().strip()
+    secret = secret or (os.environ.get("INSPEXIMUS_WITNESS_SECRET") or "").strip() or None
+
+    try:
+        head, mtl = read_log(a.url, a.timeout)
+    except Exception as e:                                             # noqa: BLE001
+        # A log this witness could not read is NOT a verdict, and a traceback in somebody's cron
+        # reads like our server broke. Exit 1 keeps it out of the 0/2 contract: nothing was
+        # observed, nothing was remembered, and the state file is left exactly as it was.
+        print("could not read %s: %s" % (a.url.rstrip("/"), e), file=sys.stderr)
+        if isinstance(e, urllib.error.URLError) and isinstance(e.reason, ssl.SSLError):
+            print("This is a TLS trust failure in THIS Python, not a verdict about the log. "
+                  "`pip install certifi` makes it use certifi's bundle.", file=sys.stderr)
+        return 1
+    state = load_state(a.state)
+    remembered = state.get(a.url)
+    verdict, why = judge(head, mtl, remembered)
+
+    print("log      : %s" % a.url)
+    print("entries  : %d" % len(mtl))
+    print("root     : %s" % head.get("writes_tip", "")[:32])
+    print("verdict  : %s" % verdict)
+    print("           %s" % why)
+
+    if verdict in ("FORK", "ROLLBACK", "MALFORMED"):
+        # The remembered head is NOT overwritten. A witness that updates its memory on a refusal
+        # forgets the thing it just caught, and the next run reports EXTENDS on the rewritten log.
+        print("")
+        print("REFUSING to co-sign, and keeping the head this witness remembers. Publish this "
+              "refusal: it is the only reason a witness is worth running.")
+        return 2
+
+    # REMEMBER FIRST, SIGN SECOND. The order is the requirement, not a preference, and it is the same
+    # rule `TransparencyService.register` follows for the same reason. A witness that signs and then
+    # fails to persist its memory has attested to a head it will not recognise next time: every later
+    # run reads FIRST_CONTACT, so it can never refuse anything, while its output still says "signed".
+    # Measured on the first CI run, where a missing directory crashed the save one line after the
+    # signature was printed.
+    state[a.url] = {"n_writes": len(mtl), "writes_tip": head["writes_tip"],
+                    "sth_hash": head["sth_hash"], "seen_utc": time.strftime(
+                        "%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    save_state(a.state, state)
+
+    signature, pub = None, None
+    if secret:
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey as SK
+        sk = SK.from_private_bytes(bytes.fromhex(secret))
+        pub = sk.public_key().public_bytes_raw().hex()
+        signature = sk.sign(head["sth_hash"].encode("ascii")).hex()
+        print("signed   : %s by %s" % (head["sth_hash"][:16], pub[:16]))
+    else:
+        print("NOT signed: no witness key was given, so this run only remembers. Set "
+              "INSPEXIMUS_WITNESS_SECRET to make the observation checkable by others.")
+
+    if a.out and signature:
+        os.makedirs(a.out, exist_ok=True)
+        record = {"kind": "static-log-cosignature", "log_url": a.url.rstrip("/"),
+                  "verdict": verdict, "n_writes": len(mtl),
+                  "writes_tip": head["writes_tip"], "sth_hash": head["sth_hash"],
+                  "witness_pubkey": pub, "witness_name": a.name or "",
+                  "signature": signature, "observed_utc": state[a.url]["seen_utc"],
+                  "scope": ("This says one witness saw this exact head and that it extends what the "
+                            "same witness saw before. It does NOT say any entry is true, and it "
+                            "cannot see a different history shown to somebody else between visits.")}
+        path = os.path.join(a.out, "%s.json" % pub[:16])
+        with open(path, "w", encoding="utf-8", newline="") as fh:
+            json.dump(record, fh, indent=2, sort_keys=True)
+        print("wrote    : %s" % path)
+    return 0
+
+
+def main(argv=None):
+    ap = add_arguments(argparse.ArgumentParser(description=__doc__.splitlines()[0]))
+    return watch(ap.parse_args(argv))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
