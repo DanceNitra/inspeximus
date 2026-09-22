@@ -125,8 +125,24 @@ def test_the_text_boundary_is_the_last_blank_line(keys):
 
 
 def test_the_vkey_carries_the_type_byte_and_the_key(keys):
+    """Split on the first two plus signs only: a key name cannot contain one, base64 can.
+
+    Found on the live log rather than here: the first reader of the published vkey split on every
+    plus and crashed on a key whose base64 happened to contain one. Go's note package uses
+    SplitN(vkey, "+", 3) for the same reason, and the test now reads it the way that reader does.
+    """
     _sk, pub = keys
-    name, kid, blob = cp.vkey(ORIGIN, pub).split("+")
+    name, kid, blob = cp.vkey(ORIGIN, pub).split("+", 2)
     assert name == ORIGIN and kid == cp.key_id(ORIGIN, pub).hex()
     raw = base64.b64decode(blob)
     assert raw[0] == cp.ED25519_SIGNATURE_TYPE and raw[1:].hex() == pub
+
+
+def test_a_vkey_whose_base64_contains_a_plus_still_parses(keys):
+    """The control for the line above: a key that produces no plus sign proves nothing."""
+    plussed = [k for k in (new_receipt_keypair() for _ in range(40))
+               if "+" in base64.b64encode(bytes([cp.ED25519_SIGNATURE_TYPE]) + bytes.fromhex(k[1])).decode()]
+    assert plussed, "no key in 40 produced a plus sign, so this control did not run"
+    _sk, pub = plussed[0]
+    name, kid, blob = cp.vkey(ORIGIN, pub).split("+", 2)
+    assert name == ORIGIN and base64.b64decode(blob)[1:].hex() == pub
