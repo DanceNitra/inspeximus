@@ -1,0 +1,106 @@
+# Does deploy/witness-template.yml actually work when a stranger copies it?
+#
+# THIS IS NOT US WITNESSING OUR OWN LOG, and the name says so. A witness under the same operator as
+# the log is the operator wearing a second name. Nothing here is committed, no co-signature is kept,
+# and no independence is claimed. It runs the template's own commands on a clean machine we do not
+# administer, which is the only way to know the file we hand to other people runs at all.
+#
+# WHAT IT PROVES, in one job so the state survives between runs:
+#   1. a first run establishes a baseline and says out loud that it proves nothing (FIRST_CONTACT)
+#   2. a second run against the same log EXTENDS it
+#   3. a corrupted memory is REFUSED as a FORK, exit 2, and the remembered head is NOT overwritten
+#   4. a log that cannot be read exits 1, which is not a verdict about anybody's log
+#
+# Step 3 is the reason the other three are worth reading. Without it this job cannot fail.
+
+name: witness template smoke
+
+on:
+  push:
+    paths:
+      - 'deploy/witness-template.yml'
+      - 'inspeximus/witness_log.py'
+      - '.github/workflows/witness-template-smoke.yml'
+  schedule:
+    - cron: '41 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  LOG_URL: https://92.5.74.17.sslip.io/log
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The template's own install line, read out of the template rather than retyped, so the two
+      # cannot drift. A smoke test that installs something else has tested something else.
+      - name: Install exactly what the template tells a stranger to install
+        run: |
+          line=$(grep -oP '(?<=- run: )pip install .*' deploy/witness-template.yml)
+          echo "template says: $line"
+          eval "$line"
+          python -c "import inspeximus; print('installed', inspeximus.__version__)"
+
+      - name: 1. a first run establishes a baseline and claims nothing
+        run: |
+          set +e
+          out=$(inspeximus witness watch --url "$LOG_URL" --state w.json 2>&1); code=$?
+          set -e
+          echo "$out"
+          [ "$code" = "0" ] || { echo "expected exit 0, got $code"; exit 1; }
+          echo "$out" | grep -q "FIRST_CONTACT" || { echo "expected FIRST_CONTACT"; exit 1; }
+
+      - name: 2. a second run extends it
+        run: |
+          set +e
+          out=$(inspeximus witness watch --url "$LOG_URL" --state w.json 2>&1); code=$?
+          set -e
+          echo "$out"
+          [ "$code" = "0" ] || { echo "expected exit 0, got $code"; exit 1; }
+          echo "$out" | grep -q "EXTENDS" || { echo "expected EXTENDS"; exit 1; }
+
+      - name: 3. CONTROL - a memory that disagrees is refused, and kept
+        # The corruption asserts it changed the bytes first. A control that replaces a string the
+        # file does not contain compares two identical files and reports that tampering is fine.
+        run: |
+          python - <<'PY'
+          import json
+          s = json.load(open("w.json"))
+          url = [k for k in s if k.startswith("http")][0]
+          before = s[url]["writes_tip"]
+          s[url]["writes_tip"] = "ff" * 32
+          assert s[url]["writes_tip"] != before, "the corruption changed nothing"
+          json.dump(s, open("w.json", "w"), indent=2)
+          open("remembered.txt", "w").write(before)
+          PY
+          set +e
+          out=$(inspeximus witness watch --url "$LOG_URL" --state w.json 2>&1); code=$?
+          set -e
+          echo "$out"
+          [ "$code" = "2" ] || { echo "a fork must exit 2, got $code"; exit 1; }
+          echo "$out" | grep -q "FORK" || { echo "expected FORK"; exit 1; }
+          python - <<'PY'
+          import json
+          s = json.load(open("w.json"))
+          url = [k for k in s if k.startswith("http")][0]
+          assert s[url]["writes_tip"] == "ff" * 32, \
+              "the refusal overwrote the remembered head, so the next run would report EXTENDS"
+          print("the remembered head survived the refusal")
+          PY
+
+      - name: 4. CONTROL - a log that cannot be read is not a verdict
+        run: |
+          set +e
+          out=$(inspeximus witness watch --url "$LOG_URL/not-a-log" --state w2.json 2>&1); code=$?
+          set -e
+          echo "$out"
+          [ "$code" = "1" ] || { echo "an unreadable log must exit 1, got $code"; exit 1; }
+          [ ! -f w2.json ] || { echo "nothing must be remembered about a log that was not read"; exit 1; }

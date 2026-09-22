@@ -14,10 +14,12 @@
 #
 # SETUP
 #   1. Mint a key and add it as a repository secret named INSPEXIMUS_WITNESS_SECRET:
-#        pip install inspeximus
+#        pip install inspeximus certifi
 #        python -c "from inspeximus import new_receipt_keypair; print(new_receipt_keypair()[0])"
 #      To try the whole thing on your machine first, with no key and nothing committed:
 #        inspeximus witness watch --url <the LOG_URL below> --state /tmp/witness.json
+#      Exit codes are the contract: 0 recorded, 1 the log could not be read, 2 REFUSED.
+#      A 1 is your network or your CA store; only a 2 is a statement about the log.
 #   2. Set WITNESS_NAME below to whatever you want recorded beside your public key.
 #   3. Commit this file. The first run establishes a baseline and proves nothing; the second run
 #      onwards is where a rewrite would be caught.
@@ -54,7 +56,10 @@ jobs:
 
       # Pinned, so this job runs the version you read rather than whatever we push later. The
       # witness code is ~200 lines in inspeximus/witness_log.py and reading it is encouraged.
-      - run: pip install "inspeximus==3.6.2" cryptography
+      # `certifi` is here because the witness fetches over HTTPS and some Python builds carry no
+      # usable CA store. Without it the run exits 1 with a TLS trust error, which is not a
+      # verdict about the log and reads like one.
+      - run: pip install "inspeximus==3.6.2" cryptography certifi
 
       - name: Look at the log and refuse it if the history changed
         env:
