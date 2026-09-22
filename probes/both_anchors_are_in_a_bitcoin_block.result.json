@@ -1,0 +1,93 @@
+{
+  "anchors": [
+    {
+      "block_hash": "00000000000000000000da19d18bc39596d5c8bf846954485ec7cf8c1cdaab74",
+      "calendars": [
+        {
+          "calendar": "https://alice.btc.calendar.opentimestamps.org",
+          "error": null,
+          "heights": [
+            968177
+          ]
+        },
+        {
+          "calendar": "https://finney.calendar.eternitywall.com",
+          "error": null,
+          "heights": [
+            968184
+          ]
+        },
+        {
+          "calendar": "https://bob.btc.calendar.opentimestamps.org",
+          "error": null,
+          "heights": [
+            968188
+          ]
+        },
+        {
+          "calendar": "https://btc.calendar.catallaxy.com",
+          "error": null,
+          "heights": [
+            968193
+          ]
+        }
+      ],
+      "control_changed_block": "MISMATCH",
+      "control_changed_head": "MISMATCH",
+      "head": "9-ea1864749e1c1063.head.json",
+      "height": 968177,
+      "heights": [
+        968177,
+        968184,
+        968188,
+        968193
+      ],
+      "log": "https://92.5.74.17.sslip.io/log",
+      "n_writes": 9,
+      "verdict": "ANCHORED",
+      "why": "these bytes were committed to the merkle root of block 968177"
+    },
+    {
+      "block_hash": "00000000000000000000da19d18bc39596d5c8bf846954485ec7cf8c1cdaab74",
+      "calendars": [
+        {
+          "calendar": "https://bob.btc.calendar.opentimestamps.org",
+          "error": null,
+          "heights": [
+            968188
+          ]
+        },
+        {
+          "calendar": "https://finney.calendar.eternitywall.com",
+          "error": null,
+          "heights": [
+            968184
+          ]
+        },
+        {
+          "calendar": "https://alice.btc.calendar.opentimestamps.org",
+          "error": null,
+          "heights": [
+            968177
+          ]
+        }
+      ],
+      "control_changed_block": "MISMATCH",
+      "control_changed_head": "MISMATCH",
+      "head": "281-2c1855934ea7da72.head.json",
+      "height": 968177,
+      "heights": [
+        968177,
+        968184,
+        968188
+      ],
+      "log": "https://dancenitra.github.io/inspeximus/transparency",
+      "n_writes": 281,
+      "verdict": "ANCHORED",
+      "why": "these bytes were committed to the merkle root of block 968177"
+    }
+  ],
+  "kind": "inspeximus.anchor-probe/1",
+  "measured_utc": "2026-09-22T23:44:49Z",
+  "scope": "An anchored proof says these exact head bytes existed before that block was mined. It says nothing about whether any entry is true, and it cannot see a history shown to somebody else."
+}

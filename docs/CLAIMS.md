@@ -15,13 +15,13 @@ page as "every number in the project is backed" would be exactly the over-read i
 
 ## The ratio
 
-- **690** numeric tokens are published across the 10 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html, erasure.html, audit-trail.html, migrate-from-mem0.html.
+- **693** numeric tokens are published across the 10 enforced files: README.md, docs/DEEP_DIVE.md, MCP_LISTINGS.md, index.html, compare.html, claude-code.html, quickstart.html, erasure.html, audit-trail.html, migrate-from-mem0.html.
 - **298** of those are quantitative claims, in **146** registry rows below.
 - **120** rows (120/146) are reproducible by a command committed to this repository
   (`REPRODUCIBLE` needs nothing but this checkout; `REPRODUCIBLE-WITH-DEPS` needs a service or
   dataset we cannot redistribute, named in the command column).
 - The remaining 26 are `PENDING-HARNESS`, `EXTERNAL` or `WITHDRAWN`.
-- The other 392 tokens are declared non-claims — citation years,
+- The other 395 tokens are declared non-claims — citation years,
   article numbers, ordinals, ports, example literals — each with a reason and an exact expected
   count, so adding one silently is not possible either.
 

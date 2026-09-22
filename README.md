@@ -537,6 +537,31 @@ Running one against our log is the most useful thing an outsider can do here, an
 vouching that any entry is true, only recording whether the history shown to you today extends the
 one shown to you before.
 
+### Checking the Bitcoin anchor, offline
+
+Each published head is stamped with OpenTimestamps, and the receipt is a `.ots` file. The usual way
+to check one is the `ots` command, which pulls in python-bitcoinlib; on Windows that import reaches
+for libssl through ctypes and crashes before reading a byte of the proof. So the check is built in.
+
+```bash
+inspeximus ots upgrade head.json.ots            # which block covers it? asks the calendars
+inspeximus ots verify head.json --upgrade     --block-header <the 80-byte header as hex>  # ANCHORED, or MISMATCH
+```
+
+You supply the block header, from your own node or from any explorer. That is what makes it
+offline: you choose where the block came from, and nothing about your data leaves the machine.
+`--upgrade` is the only part that uses the network, and it asks a calendar about a digest the
+calendar already holds.
+
+Exit codes: 0 ANCHORED, 1 MISMATCH, 3 PENDING or INCOMPLETE. A proof with only calendar promises is
+PENDING, which is neither an error nor a pass, so it has its own code rather than being folded into
+either. An anchored proof says these exact bytes existed before that block was mined. It says
+nothing about whether anything in them is true.
+
+If the verdict is MISMATCH and your file came out of a git checkout on Windows, read the line about
+line endings that the verifier prints: the receipts are stamped over LF bytes, and a converted copy
+differs from them without anybody having tampered with anything.
+
 ### The key you check the log with, published twice
 
 To verify our hosted log, you need our verification key. Fetching it from the host you are checking

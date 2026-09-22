@@ -228,6 +228,82 @@ def _flush_or_fail(m, required: bool = True) -> int:
         return 0
 
 
+def _ots_cmd(a) -> int:
+    """`inspeximus ots ...` - the Bitcoin anchor, checked without python-bitcoinlib or a node.
+
+    Reads files and, only with --upgrade, public calendar endpoints. It never opens a store and
+    never needs a key.
+
+    Exit codes: 0 ANCHORED, 1 MISMATCH or a proof that could not be read, 3 PENDING or INCOMPLETE.
+    PENDING is NOT an error and NOT a pass, so it gets its own code rather than being folded into
+    either.
+    """
+    import json as _json
+
+    from .opentimestamps import Malformed, upgrade, verify
+
+    if a.ots_cmd == "upgrade":
+        try:
+            out = upgrade(open(a.proof, "rb").read())
+        except Malformed as exc:
+            print("could not read %s: %s" % (a.proof, exc))
+            return 1
+        for row in out["calendars"]:
+            if row.get("error"):
+                print("%-48s could not be reached: %s" % (row["calendar"], row["error"]))
+            elif row.get("bitcoin"):
+                print("%-48s block %s" % (row["calendar"],
+                                          ", ".join(str(b["height"]) for b in row["bitcoin"])))
+            else:
+                print("%-48s still pending" % row["calendar"])
+        if out["heights"]:
+            print("")
+            print("To finish the check offline, fetch one of those block headers and run:")
+            print("  inspeximus ots verify <file> --upgrade --block-header <80 bytes of hex>")
+        return 0 if out["heights"] else 3
+
+    proof_path = a.proof or (a.file + ".ots")
+    try:
+        data = open(a.file, "rb").read()
+        ots = open(proof_path, "rb").read()
+    except OSError as exc:
+        print("could not read: %s" % exc)
+        return 1
+
+    extra = []
+    if a.upgrade:
+        try:
+            up = upgrade(ots)
+            extra = [b for r in up["calendars"] for b in r.get("bitcoin", [])]
+        except Exception as exc:                                 # noqa: BLE001
+            print("the calendars could not be asked: %s" % str(exc)[:160])
+
+    try:
+        out = verify(data, ots,
+                     block_header=bytes.fromhex(a.block_header) if a.block_header else None,
+                     merkle_root=a.merkle_root, extra_attestations=extra)
+    except Malformed as exc:
+        print("could not read %s: %s" % (proof_path, exc))
+        return 1
+
+    if a.json:
+        print(_json.dumps(out, indent=2, sort_keys=True))
+    else:
+        print("file     : %s" % a.file)
+        print("proof    : %s" % proof_path)
+        print("digest   : %s" % out["file_digest_of_your_data"])
+        print("verdict  : %s" % out["verdict"])
+        print("           %s" % out["why"])
+        if out.get("block_hash"):
+            print("block    : %s" % out["block_hash"])
+        if out.get("line_endings"):
+            print("")
+            print(out["line_endings"])
+        print("")
+        print("scope    : %s" % out["scope"])
+    return {"ANCHORED": 0, "MISMATCH": 1}.get(out["verdict"], 3)
+
+
 def _witness_cmd(a) -> int:
     """`inspeximus witness ...` — the transparency/witness surface. Touches only files, never a store.
 
@@ -765,6 +841,25 @@ def main(argv=None):
     tsq.add_argument("--when", default=None,
                      help="the moment to judge, ISO-8601 (default: now, which is the wrong question "
                           "for a stored token: pass the date it was made)")
+
+    ot = sub.add_parser("ots", help="check an OpenTimestamps anchor receipt offline, with no "
+                                    "third-party package and no node")
+    otsub = ot.add_subparsers(dest="ots_cmd", required=True)
+
+    otv = otsub.add_parser("verify", help="does this .ots proof cover these bytes, and is it in a block?")
+    otv.add_argument("file", help="the file the proof is about (the exact bytes that were stamped)")
+    otv.add_argument("--proof", default=None, help="the .ots file (default: <file>.ots)")
+    otv.add_argument("--block-header", default=None,
+                     help="the 80-byte Bitcoin block header as hex, from your own node or any source "
+                          "you trust. Without it the verdict is INCOMPLETE, never OK")
+    otv.add_argument("--merkle-root", default=None, help="that block's merkle root, instead of the header")
+    otv.add_argument("--upgrade", action="store_true",
+                     help="ask the calendars named in the proof what has been mined since. This is the "
+                          "only part that uses the network, and it sends a digest they already hold")
+    otv.add_argument("--json", action="store_true", help="print the whole verdict as json")
+
+    otu = otsub.add_parser("upgrade", help="ask the calendars which block covers a pending proof")
+    otu.add_argument("proof", help="the .ots file")
 
     wt = sub.add_parser("witness", help="witness network: independent co-signers that make a SPLIT VIEW "
                                         "(one history shown to one reader, another to another) detectable")
@@ -1350,6 +1445,9 @@ def main(argv=None):
     # The witness commands operate on FILES (anchors, keys, signatures) and must never open a store —
     # opening one CREATES it, and an auditor who mistyped a path would be handed a verdict about a store
     # the verification itself had just made. Same rule as `audit-verify` and `erasure-verify` above.
+    if a.cmd == "ots":
+        return _ots_cmd(a)
+
     if a.cmd == "witness":
         return _witness_cmd(a)
 
