@@ -248,3 +248,35 @@ def test_the_receipt_sha_is_the_same_under_lf_and_crlf_checkouts(tmp_path):
         (crlf / os.path.basename(r["receipt"])).write_bytes(norm.replace(b"\n", b"\r\n"))
     assert all(x["status"] == "verified" for x in robustness_evidence(str(lf))["rows"])
     assert all(x["status"] == "verified" for x in robustness_evidence(str(crlf))["rows"])
+
+
+# -- 3.6.3: the two remaining notes are a stated scope, not an open row --------------------------
+def test_the_last_two_notes_are_boundaries_rather_than_gaps():
+    """Art. 43 and Art. 72 name a document somebody else owns. That is a fact, not unfinished work.
+
+    The wording matters because a reader scanning for "partial" counts it as a gap, and then the
+    matrix reads as 34 of 36 to somebody who never opens the row.
+    """
+    import tempfile
+    from inspeximus import Inspeximus
+    from inspeximus.coverage import coverage, render_text
+    m = Inspeximus(os.path.join(tempfile.mkdtemp(), "m.json"))
+    rep = coverage(m)
+    rows = {r["id"]: r for r in rep["rows"]}
+    for rid in ("aia-43", "aia-72"):
+        assert rows[rid]["boundary"], rid
+        assert "not a gap in the library" in rows[rid]["boundary"], rid
+        assert rows[rid]["state"] in ("CAPABILITY", "EVIDENCE"), rid
+    text = render_text(rep)
+    assert "scope:" in text and "partial:" not in text
+
+
+def test_the_boundary_rows_still_count_as_covered():
+    """The control: a row explained away must not quietly leave the covered count."""
+    import tempfile
+    from inspeximus import Inspeximus
+    from inspeximus.coverage import coverage
+    m = Inspeximus(os.path.join(tempfile.mkdtemp(), "m.json"))
+    rep = coverage(m)
+    assert rep["counts"]["NOT COVERED"] == 0
+    assert rep["covered"] == rep["in_scope"] == 36

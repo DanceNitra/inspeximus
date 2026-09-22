@@ -302,12 +302,12 @@ OBLIGATIONS: list[dict[str, Any]] = [
      "probe": _p_responsibilities, "artifact": "record_responsibilities() with the parties, roles, the 25(1) trigger and the 25(2) items; responsibilities_register()"},
     {"id": "aia-43", "law": "AI Act", "article": "Art. 43, 47, 48", "duty": "conformity assessment, EU declaration of conformity, CE marking", "who": "provider",
      "probe": _p_declarations, "artifact": "record_declaration() with the Annex V items, the Art. 43 procedure and the Art. 48 marking; declaration_document(seq)",
-     "partial": "the conformity assessment itself (Art. 43) is the provider's or the notified body's; the ledger holds the declaration drawn up from it"},
+     "boundary": "the conformity assessment itself is carried out by the provider or a notified body. The ledger holds the declaration drawn up from it, which is the evidence side of this duty. This is a statement of who does what, not a gap in the library"},
     {"id": "aia-49", "law": "AI Act", "article": "Art. 49, Annex VIII", "duty": "registration in the EU database", "who": "provider, some deployers",
      "probe": _p_report("registration_export", "technical_documentation"), "artifact": "registration_export() sections A, B, C"},
     {"id": "aia-72", "law": "AI Act", "article": "Art. 72", "duty": "post-market monitoring plan and reports", "who": "provider",
      "probe": _p_monitoring, "artifact": "post_market_report() signed into the ledger, carrying the plan by name, version and hash",
-     "partial": "the plan itself is the operator's document; the Commission's template (Art. 72(3)) is not published yet"},
+     "boundary": "the monitoring plan is the provider's own document, and the Commission's template (Art. 72(3)) is not published yet. The library records the plan by name, version and hash and signs the reports against it. This is a statement of who does what, not a gap in the library"},
     {"id": "aia-73", "law": "AI Act", "article": "Art. 73", "duty": "serious incident reporting within the deadlines", "who": "provider",
      "probe": _p_incidents, "artifact": "record_incident(), incident_report() with the reporting clock"},
     # ---- EU AI Act: deployer
@@ -385,8 +385,13 @@ def coverage(store) -> dict:
             row["count"] = int(n)
             row["detail"] = detail
             row["artifact"] = ob.get("artifact")
-            if ob.get("partial"):
-                row["partial"] = ob["partial"]
+            # A NOTE THAT STATES A FACT IS NOT AN OPEN ROW. These two say which document belongs
+            # to the provider or a notified body rather than to this library, and reading them as
+            # unfinished work is what the rename is for. `partial` stays beside it for readers
+            # written before 3.6.3, and both carry the same text.
+            if ob.get("boundary"):
+                row["boundary"] = ob["boundary"]
+                row["partial"] = ob["boundary"]
         rows.append(row)
     counts = {s: sum(1 for r in rows if r["state"] == s) for s in (EVIDENCE, CAPABILITY, NOT_COVERED, NOT_APPLICABLE)}
     in_scope = counts[EVIDENCE] + counts[CAPABILITY] + counts[NOT_COVERED]
@@ -408,8 +413,8 @@ def render_text(rep: dict) -> str:
                NOT_APPLICABLE: "NOT APPLICABLE"}[r["state"]]
         lines.append(f"  {tag} {r['law']:<6} {r['article']:<{w}}  {r['duty']}")
         lines.append(f"  {'':14} {'':6} {'':{w}}  {r['detail']}")
-        if r.get("partial"):
-            lines.append(f"  {'':14} {'':6} {'':{w}}  partial: {r['partial']}")
+        if r.get("boundary"):
+            lines.append(f"  {'':14} {'':6} {'':{w}}  scope: {r['boundary']}")
     lines.append("")
     lines.append("  " + rep["scope"])
     return "\n".join(lines)
@@ -420,8 +425,8 @@ def render_markdown(rep: dict) -> str:
     out = ["| law | article | duty | who | state | artifact or gap |", "|---|---|---|---|---|---|"]
     for r in rep["rows"]:
         what = r.get("artifact") or r["detail"]
-        if r.get("partial"):
-            what += f"; partial: {r['partial']}"
+        if r.get("boundary"):
+            what += f"; scope: {r['boundary']}"
         out.append(f"| {r['law']} | {r['article']} | {r['duty']} | {r['who']} | {r['state']} | {what} |")
     return "\n".join(out)
 
