@@ -344,6 +344,13 @@ def build(service: TransparencyService, out: str, base_url: str, title: str, wit
                     raise
                 receipt = None
             if receipt:
+                # The leaf BYTES, exactly as the tree hashed them. log.jsonl carries the decoded
+                # entry, which re-serialises differently, so a verifier rebuilding the leaf from it
+                # gets a hash that never matches. Publishing the bytes is what lets anybody, and our
+                # own hourly self-check, verify INCLUSION rather than only the proof's arithmetic.
+                with open(os.path.join(out, "entries", "%d.leaf.json" % i), "wb") as lf:
+                    lf.write(leaf)
+                row["leaf"] = "entries/%d.leaf.json" % i
                 with open(os.path.join(out, "entries", "%d.cose" % i), "wb") as rf:
                     rf.write(receipt)
                 row["receipt"] = "entries/%d.cose" % i
