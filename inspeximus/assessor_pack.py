@@ -21,6 +21,9 @@ out in the order the Act asks for it.
 """
 from __future__ import annotations
 
+import contextlib
+import copy
+import hashlib
 import json
 import time
 
@@ -126,14 +129,97 @@ def _walk_for_placeholders(node, path="") -> list:
     return found
 
 
+# --------------------------------------------------------------------------- the pack-scoped memo
+#
+# THE PACK ASKED THE SAME QUESTION FOUR TIMES. Measured on a 7,696-record store: the pack took 95.7 s
+# and 86 s of it was `memory_report()`, called four times (twice by Annex IV, once by the deployer
+# report, once more through the registration export) with identical output each time. Each call
+# makes 400 `recall()` calls for its redundancy estimate. `pii_report()` ran four times and
+# `supersession_report()` six.
+#
+# A CACHE IS A STALENESS BUG WAITING FOR A WRITER, so every lookup re-derives a signature of the
+# store's state first, and a changed state is a miss. The signature covers every field of every
+# record except the ones the READ path writes: `recall()` sets `_stale_derived` and the read guards
+# set `meta.stuffed` and `meta.read_guards_v` on the records they return, so the first report of a
+# pack changes those fields while reading, and a signature that included them would miss every
+# time. The exclusion is the narrow direction on purpose: a derived field this list does not name
+# costs a recomputation, never a stale answer. Hashing the rows costs about 0.13 s on that store,
+# against about 21 s for one `memory_report()`.
+#
+# Measured after, same store: 95.9 s without the memo, 48.8 s with it, and the same 88 unfilled
+# fields and zero errors both ways. `memory_report()` still runs twice rather than once, and that is
+# the signature working: the first read put 38 records in quarantine through the read guards, which
+# is a real change of state, so the next caller gets a fresh computation.
+_MEMOIZED = ("memory_report", "pii_report", "supersession_report")
+_READ_PATH_META = frozenset({"stuffed", "read_guards_v"})
+
+
+def _state_signature(store) -> str:
+    h = hashlib.sha256()
+    for r in sorted(store._tenant_rows(), key=lambda x: str(x.get("id") or "")):
+        row = {k: v for k, v in r.items() if not str(k).startswith("_")}
+        meta = row.get("meta")
+        if isinstance(meta, dict):
+            row["meta"] = {k: v for k, v in meta.items() if k not in _READ_PATH_META}
+        h.update(json.dumps(row, sort_keys=True, default=str).encode("utf-8"))
+        h.update(b"")
+    h.update(repr(store._stat_sig()).encode("utf-8"))
+    return h.hexdigest()
+
+
+@contextlib.contextmanager
+def _memoized(store):
+    """Serve repeated reports from one computation while the store is unchanged, then restore.
+
+    Yields the work counters: how often each report was COMPUTED and how often it was REUSED. A
+    reused result is a deep copy, so a document that edits what it was handed cannot change what the
+    next document reads. A store that will not take an instance attribute is left alone and every
+    call computes, which is slower and never wrong.
+    """
+    cache: dict = {}
+    work = {"computed": {}, "reused": {}}
+    patched = []
+    for name in _MEMOIZED:
+        original = getattr(store, name, None)
+        if not callable(original):
+            continue
+
+        def wrapped(*a, _name=name, _original=original, **k):
+            key = (_name, repr(a), repr(sorted(k.items())), _state_signature(store))
+            if key in cache:
+                work["reused"][_name] = work["reused"].get(_name, 0) + 1
+            else:
+                cache[key] = _original(*a, **k)
+                work["computed"][_name] = work["computed"].get(_name, 0) + 1
+            return copy.deepcopy(cache[key])
+
+        try:
+            setattr(store, name, wrapped)
+        except (AttributeError, TypeError):
+            continue
+        patched.append(name)
+    try:
+        yield work
+    finally:
+        for name in patched:
+            try:
+                delattr(store, name)
+            except AttributeError:
+                pass
+
+
 def assessor_pack(store, ledger=None, operator: dict | None = None, expected_pubkey: str | None = None,
                   now: float | None = None, trail_path: str | None = None,
-                  agent_id: str | None = None, agent_version: str | None = None) -> dict:
+                  agent_id: str | None = None, agent_version: str | None = None,
+                  memo: bool = True) -> dict:
     """Render every document an assessor asks for, and name what is still missing.
 
     `complete` is True only when no document carries a placeholder AND no generator reported a
     missing field. The two are checked separately on purpose: the first reads the output, the second
     reads what each generator says about itself, and a disagreement between them is worth seeing.
+
+    `memo=False` computes every report every time it is asked for. The output is the same either
+    way, and `memo["computed"]` / `memo["reused"]` in the result say how much work was done.
     """
     operator = dict(operator or {})
     now = time.time() if now is None else now
@@ -146,24 +232,25 @@ def assessor_pack(store, ledger=None, operator: dict | None = None, expected_pub
         except Exception as exc:                                 # noqa: BLE001 - a pack reports, never hides
             errors[name] = "%s: %s" % (type(exc).__name__, str(exc)[:200])
 
-    build("technical_documentation",
-          lambda: _techdoc.annex_iv(store, ledger, operator=operator,
-                                    expected_pubkey=expected_pubkey))
-    build("deployer_report",
-          lambda: _deployer.deployer_report(store, ledger, operator=operator,
-                                            expected_pubkey=expected_pubkey))
-    for section in ("A", "B", "C"):
-        build("registration_%s" % section.lower(),
-              lambda s=section: _techdoc.registration_export(store, ledger, operator=operator,
-                                                             section=s, expected_pubkey=expected_pubkey))
-    from .audit_bundle import build_bundle
-    build("audit_bundle", lambda: build_bundle(store, expected_pubkey=expected_pubkey))
-    # The IETF trail is written to a FILE by design (it is JSONL a verifier streams), so the pack
-    # records where it went and what it covered rather than inlining it. A pack that quietly
-    # dropped it because the shape did not fit would be the worst of both.
-    if trail_path and ledger is not None:
-        build("agent_audit_trail",
-              lambda: _trail(ledger, trail_path, agent_id or "inspeximus", agent_version or __version__))
+    with (_memoized(store) if memo else contextlib.nullcontext({"computed": {}, "reused": {}})) as work:
+        build("technical_documentation",
+              lambda: _techdoc.annex_iv(store, ledger, operator=operator,
+                                        expected_pubkey=expected_pubkey))
+        build("deployer_report",
+              lambda: _deployer.deployer_report(store, ledger, operator=operator,
+                                                expected_pubkey=expected_pubkey))
+        for section in ("A", "B", "C"):
+            build("registration_%s" % section.lower(),
+                  lambda s=section: _techdoc.registration_export(store, ledger, operator=operator,
+                                                                 section=s, expected_pubkey=expected_pubkey))
+        from .audit_bundle import build_bundle
+        build("audit_bundle", lambda: build_bundle(store, expected_pubkey=expected_pubkey))
+        # The IETF trail is written to a FILE by design (it is JSONL a verifier streams), so the pack
+        # records where it went and what it covered rather than inlining it. A pack that quietly
+        # dropped it because the shape did not fit would be the worst of both.
+        if trail_path and ledger is not None:
+            build("agent_audit_trail",
+                  lambda: _trail(ledger, trail_path, agent_id or "inspeximus", agent_version or __version__))
 
     placeholders: list = []
     for name, doc in documents.items():
@@ -199,6 +286,7 @@ def assessor_pack(store, ledger=None, operator: dict | None = None, expected_pub
         "unfilled": unfilled,
         "placeholders_in_output": sorted(placeholders),
         "complete": not unfilled and not placeholders and not errors,
+        "memo": work,
         "scope": ("Evidence, in the order the Act asks for it. Not a conformity assessment, not a "
                   "certification, and not a finding that any artifact satisfies an assessor. Fields "
                   "the operator did not answer are named here and marked in the documents; nothing "

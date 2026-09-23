@@ -2809,5 +2809,50 @@
   "tests": [
    "tests/test_a_log_a_stranger_can_check_without_us.py"
   ]
+ },
+ {
+  "name": "assessor memo: a constant signature never sees a write",
+  "file": "inspeximus/assessor_pack.py",
+  "old": "key = (_name, repr(a), repr(sorted(k.items())), _state_signature(store))",
+  "new": "key = (_name, repr(a), repr(sorted(k.items())))",
+  "tests": [
+   "tests/test_the_assessor_pack_computes_each_report_once.py"
+  ]
+ },
+ {
+  "name": "assessor memo: every call computes, nothing is reused",
+  "file": "inspeximus/assessor_pack.py",
+  "old": "            if key in cache:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_assessor_pack_computes_each_report_once.py"
+  ]
+ },
+ {
+  "name": "assessor memo: a reused report is the shared object",
+  "file": "inspeximus/assessor_pack.py",
+  "old": "            return copy.deepcopy(cache[key])",
+  "new": "            return cache[key]",
+  "tests": [
+   "tests/test_the_assessor_pack_computes_each_report_once.py"
+  ]
+ },
+ {
+  "name": "assessor memo: the cache outlives the pack",
+  "file": "inspeximus/assessor_pack.py",
+  "old": "                delattr(store, name)",
+  "new": "                pass",
+  "tests": [
+   "tests/test_the_assessor_pack_computes_each_report_once.py"
+  ]
+ },
+ {
+  "name": "assessor memo: read-path fields are part of the signature",
+  "file": "inspeximus/assessor_pack.py",
+  "old": "        row = {k: v for k, v in r.items() if not str(k).startswith(\"_\")}",
+  "new": "        row = dict(r)",
+  "tests": [
+   "tests/test_the_assessor_pack_computes_each_report_once.py"
+  ]
  }
 ]
