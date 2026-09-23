@@ -35,6 +35,21 @@ PROBES = os.path.join(ROOT, "probes")
 #: Cited probes that cannot run standalone, each with the reason. A probe here is still expected to EXIST
 #: and to be importable-looking; it is the execution that is excused, and only for a stated cause.
 NOT_STANDALONE = {
+    # The anchor probe asks four OpenTimestamps calendars which block covers our receipts and then
+    # fetches that block's header from an explorer. Two network dependencies, neither of which a CI
+    # runner should carry, and the receipts themselves live in the agora repository rather than
+    # here. The offline half of the same code IS in the suite: tests/test_the_anchor_checks_out_...
+    # runs it against committed fixtures, including a real Bitcoin block header.
+    "both_anchors_are_in_a_bitcoin_block.py":
+        "needs the published anchors directory (--dir) plus the OpenTimestamps calendars and a "
+        "block explorer; the offline half runs in tests/test_the_anchor_checks_out_without_the_ots_tool.py",
+    # Deliberately measures the LIVE store rather than a fixture, because the question it answers is
+    # what a real operator has to supply on the store they actually have. On our 7,696-record store
+    # one pack takes 126 s and it builds two, so it also cannot fit a hang-detector budget. The
+    # behaviour it exercises is covered by tests/test_the_assessor_pack_names_what_is_missing.py.
+    "what_a_real_operator_must_answer.py":
+        "runs the assessor pack twice over a real store (260 s on ours), which is the point: a "
+        "fixture cannot say what onboarding costs; the pack's behaviour is tested separately",
     "register_against_the_hosted_log.py": "registers a real entry with the hosted transparency service over "
                                           "the network; the 10.A.4 acceptance client, run by hand against the "
                                           "live host, never by the suite",

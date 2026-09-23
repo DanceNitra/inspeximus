@@ -544,8 +544,8 @@ to check one is the `ots` command, which pulls in python-bitcoinlib; on Windows 
 for libssl through ctypes and crashes before reading a byte of the proof. So the check is built in.
 
 ```bash
-inspeximus ots upgrade head.json.ots            # which block covers it? asks the calendars
-inspeximus ots verify head.json --upgrade     --block-header <the 80-byte header as hex>  # ANCHORED, or MISMATCH
+inspeximus ots upgrade <the .ots receipt>          # which block covers it? asks the calendars
+inspeximus ots verify <the stamped file> --upgrade     --block-header <the 80-byte header as hex>     # ANCHORED, or MISMATCH
 ```
 
 You supply the block header, from your own node or from any explorer. That is what makes it
