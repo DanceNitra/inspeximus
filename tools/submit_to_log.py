@@ -50,6 +50,9 @@ except ImportError:                                                    # noqa: B
 HOST = "ubuntu@92.5.74.17"
 BASE = "https://dancenitra.github.io/inspeximus-log"
 SITE = "/srv/static-log-v2"
+# The host's monitor pairs every new log entry with a submission recorded here BEFORE it is made.
+# An entry with no record is reported as a signature nobody asked for.
+RECORD = "/var/lib/sentinel/submissions.jsonl"
 
 
 def _signer(key_path: str):
@@ -90,7 +93,8 @@ def _get(url: str) -> bytes:
 
 
 def submit(path: str, issuer: str, subject: str, key_path: str, host: str = HOST,
-           base: str = BASE, identity: str | None = None, publish: bool = True) -> dict:
+           base: str = BASE, identity: str | None = None, publish: bool = True,
+           record: str | None = RECORD) -> dict:
     document = open(path, "rb").read()
     digest = hashlib.sha256(document).hexdigest()
 
@@ -103,6 +107,18 @@ def submit(path: str, issuer: str, subject: str, key_path: str, host: str = HOST
     payload = json.dumps({"document_sha256": digest, "name": os.path.basename(path)},
                          sort_keys=True, separators=(",", ":")).encode("utf-8")
     statement = scitt.signed_statement(payload, issuer, subject, _signer(key_path))
+
+    # RECORD FIRST, SUBMIT SECOND. If the record cannot be written, nothing is submitted: an entry
+    # without its record would page the owner for our own work.
+    if record:
+        line = json.dumps({"statement_sha256": scitt.statement_digest(scitt.without_receipts(statement)),
+                           "issuer": issuer, "subject": subject,
+                           "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())},
+                          sort_keys=True) + "\n"
+        w = _ssh(host, "sudo tee -a %s >/dev/null" % record, stdin=line.encode("utf-8"), identity=identity)
+        if w.returncode != 0:
+            raise SystemExit("could not record the submission, so it was not made: %s"
+                             % w.stderr.decode("utf-8", "replace")[:200])
 
     # The service listens on loopback only. `curl --data-binary @-` hands it the bytes without ever
     # writing them to a file on the host.
@@ -177,13 +193,16 @@ def main(argv=None) -> int:
     ap.add_argument("--host", default=HOST)
     ap.add_argument("--base", default=BASE)
     ap.add_argument("--identity", default=None, help="ssh key file")
+    ap.add_argument("--no-record", action="store_true",
+                    help="do not record the submission for the host monitor (it will then alarm)")
     ap.add_argument("--no-publish", action="store_true",
                     help="record it but do not run the publisher; the proof will not exist yet")
     ap.add_argument("--out", default=None, help="write the submission record here")
     a = ap.parse_args(argv)
 
     out = submit(a.file, a.issuer, a.subject, a.key, host=a.host, base=a.base,
-                 identity=a.identity, publish=not a.no_publish)
+                 identity=a.identity, publish=not a.no_publish,
+                 record=None if a.no_record else RECORD)
     if a.out:
         with open(a.out, "w", encoding="utf-8", newline="\n") as fh:
             json.dump(out, fh, indent=2, sort_keys=True)

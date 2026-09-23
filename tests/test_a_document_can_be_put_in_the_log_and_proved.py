@@ -63,10 +63,17 @@ def world(tmp_path, monkeypatch):
 
     site = str(tmp_path / "site")
     published = {"count": 0}
+    record = {"lines": [], "fail": False, "order": []}
 
     def fake_ssh(host, command, stdin=None, identity=None):
         import urllib.error
         import urllib.request
+        if command.startswith("sudo tee -a "):
+            record["order"].append("record")
+            if record["fail"]:
+                return subprocess.CompletedProcess([], 1, b"", b"Permission denied")
+            record["lines"].append(json.loads(stdin.decode("utf-8")))
+            return subprocess.CompletedProcess([], 0, b"", b"")
         if "publish" in command:
             publisher.build(service, site, "file:///x", "t", "no witness")
             published["count"] += 1
@@ -78,6 +85,7 @@ def world(tmp_path, monkeypatch):
                 return subprocess.CompletedProcess([], 0, open(os.path.join(site, name), "rb").read(), b"")
             except FileNotFoundError:
                 return subprocess.CompletedProcess([], 1, b"", b"No such file")
+        record["order"].append("submit")
         req = urllib.request.Request("http://127.0.0.1:%d/entries" % port, data=stdin,
                                      headers={"Content-Type": "application/cose"})
         try:
@@ -93,7 +101,8 @@ def world(tmp_path, monkeypatch):
     monkeypatch.setattr(submit_to_log, "_get",
                         lambda url: pytest.fail("submit_to_log fetched %s over HTTP" % url))
     try:
-        yield {"site": site, "service": service, "tmp": tmp_path, "published": published}
+        yield {"site": site, "service": service, "tmp": tmp_path, "published": published,
+               "record": record}
     finally:
         server.shutdown()
 
@@ -193,3 +202,24 @@ def test_the_submission_record_says_what_it_does_not_prove(world):
                                base="file:///log", host="local")
     assert "does not say the document is true" in out["scope"]
     assert "history shown to somebody else" in out["scope"]
+
+
+def test_the_submission_is_recorded_before_it_is_made_and_matches_the_entry(world):
+    """The host monitor pairs each new entry with this record, so the digest must be the one the
+    log stores and the record must exist before the entry does."""
+    tmp = world["tmp"]
+    out = submit_to_log.submit(_document(tmp), "urn:agora:builder", "urn:s", _key(tmp),
+                               base="file:///log", host="local")
+    assert world["record"]["order"][:2] == ["record", "submit"]
+    entry = world["service"]._entries[out["index"]]
+    assert world["record"]["lines"][-1]["statement_sha256"] == entry["statement_sha256"]
+
+
+def test_nothing_is_submitted_when_the_record_cannot_be_written(world):
+    tmp = world["tmp"]
+    world["record"]["fail"] = True
+    before = len(world["service"]._entries)
+    with pytest.raises(SystemExit):
+        submit_to_log.submit(_document(tmp), "urn:agora:builder", "urn:s", _key(tmp),
+                             base="file:///log", host="local")
+    assert len(world["service"]._entries) == before and "submit" not in world["record"]["order"]
