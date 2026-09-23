@@ -16,6 +16,7 @@ on:
       - inspeximus/checkpoint.py
       - inspeximus/merkle.py
       - probes/interop_with_litewitness.py
+      - tools/send_to_witnesses.py
       - .github/workflows/tlog-witness-interop.yml
   schedule:
     - cron: '23 5 * * 1'
