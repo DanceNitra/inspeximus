@@ -1,40 +1,52 @@
-# inspeximus 3.6.2
+# inspeximus 3.7.0
 
-witnessing a log you do not operate is now `pip install inspeximus` and one command. UPGRADE IF YOU WITNESS A TRANSPARENCY LOG, OR WANT TO INVITE SOMEBODY TO WITNESS YOURS. AFFECTS: the witness logic moves from `tools/witness_static_log.py` into the package as `inspeximus/witness_log.py`, reached by `inspeximus witness watch --url <log> --state <file>`; the tool keeps working and now wraps it; a log that cannot be READ exits 1 with one line instead of a traceback, and leaves the remembered head untouched; HTTPS uses certifi's bundle when certifi is installed, the platform's trust store otherwise. No dependency is added. The default store is byte-identical; the library is untouched.
+checkpoints other people's witnesses can read, an offline Bitcoin-anchor check, the assessor pack, and signers that keep the key outside this process. UPGRADE IF YOU PUBLISH OR WITNESS A TRANSPARENCY LOG, VERIFY AN OPENTIMESTAMPS ANCHOR, OR PREPARE EU AI ACT DOCUMENTATION FROM A STORE. AFFECTS: new modules `inspeximus/checkpoint.py` (signed-note checkpoints and vkeys in the format used by transparency-log witnesses), `inspeximus/witness_checkpoint.py` (cosign another log's checkpoint, refuse when its tree moved), `inspeximus/opentimestamps.py` with `inspeximus ots verify` and `inspeximus ots upgrade`, `inspeximus/signers.py`, and `inspeximus/assessor_pack.py` (`intake_form()`, `assessor_pack()`); `governance_report()` names a tombstone with no request id as "(no request id)" instead of a None key; the two coverage notes for Art. 43 and Art. 72 move from `partial` to `boundary`, and `partial` still carries the same text. No dependency is added. The default store is byte-identical.
 
 ## Who should upgrade
 
-Upgrade if this is true of you: **YOU WITNESS A TRANSPARENCY LOG, OR WANT TO INVITE SOMEBODY TO WITNESS YOURS. AFFECTS**.
+Upgrade if this is true of you: **YOU PUBLISH OR WITNESS A TRANSPARENCY LOG, VERIFY AN OPENTIMESTAMPS ANCHOR, OR PREPARE EU AI ACT DOCUMENTATION FROM A STORE. AFFECTS**.
 
 ## What changed
 
-The invitation was the defect. A witness is the one part of a transparency log its operator cannot
-run, so the ask goes to strangers, and until today the ask was "clone our repository and run a
-script out of `tools/`". Three invitations were about to go out with that in them.
+**Checkpoints.** The log head is published as a signed note, `origin`, tree size and root, signed
+with Ed25519 under a key id derived the way the field derives it. `vkey()` and `verify_note()` read
+and write the same format, and a vkey is split on its first two plus signs, because the base64 key
+can contain a third. `witness_checkpoint` cosigns somebody else's checkpoint and refuses with a
+reason when the tree it remembered is no longer a prefix of the one it is shown.
 
-`inspeximus witness watch` is dispatched before the CLI's Ed25519 check, because watching needs no
-key: an unsigned run still remembers the head it saw, and remembering is the half that refuses.
-Signing only makes the observation checkable by a third party. `deploy/witness-template.yml` drops
-its `curl` step and pins the version, so a witness runs the code they read.
+**`inspeximus ots verify <file> --upgrade --block-header <hex>`** checks an OpenTimestamps proof
+without python-bitcoinlib, which crashes on Windows. You supply the block header, so the check runs
+offline. Exit codes: 0 ANCHORED, 1 MISMATCH, 3 PENDING or INCOMPLETE. A MISMATCH on a file that git
+checked out on Windows is usually line-ending conversion, not tampering: mark hashed files `-text`.
 
-Two failure modes that a stranger would have blamed on our server. A TLS or network failure raised
-a traceback and exited 1 from deep inside urllib; it now prints one line, says that an unreadable
-log is not a verdict, and does not touch the state file, because exit 2 means REFUSED and that is a
-claim about the publisher. And the Windows Store build of Python 3.12 rejected a current Let's
-Encrypt chain with "certificate has expired" on the day this shipped, while curl on the same machine
-accepted it: `certifi`, if it happens to be installed, is now the trust store.
+**The assessor pack.** `intake_form()` asks the operator once for the 66 fields only they can
+write, each listed with every document it feeds. `assessor_pack()` renders Annex IV, the deployer
+report with its DPIA and FRIA appendices, the Annex VIII export for sections A, B and C, the audit
+bundle and the IETF trail, and refuses to call itself complete while any field is unanswered. The
+gap check runs by two independent routes, the rendered text and each generator's own list, so one
+cannot report clean while the other carries a marker. Measured on a 7,696-record store: complete
+once the 66 fields are answered. It takes 126 s on that store; a pack-scoped cache is the next
+change and is not in this release.
 
-Measured against the live service at `https://92.5.74.17.sslip.io/log`: FIRST_CONTACT then EXTENDS
-over 9 entries, exit 0 both times, with no key and no checkout.
+**Fixed.** A tombstone written without a request id became a None dict key in
+`governance_report()`, and `json.dumps(sort_keys=True)` raised on it, so the audit bundle and the
+pack could not be serialised. A regression test fails when the None key is put back.
+
+**Signers.** `Inspeximus(..., receipt_signer=signer)` takes any callable `signer(hash_hex) ->
+sig_hex`, so the key that signs write receipts does not have to sit beside the store.
+`VaultTransitSigner` is the first implementation, against HashiCorp Vault's transit engine, which
+signs with Ed25519 and never returns the private key.
 
 ## What breaks
 
-No line in the 3.6.2 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
+No line in the 3.7.0 changelog entry carries a `BEHAVIOUR CHANGE` or `BREAKING` marker. That is a statement about the entry, which you can check against the source, and it is the only claim this section will make for you.
+
+If that is wrong -- if something a caller relies on changed shape, name or default -- the entry is what needs fixing, not this section: RELEASING.md requires a behaviour change to carry the marker on its own line, and this reads that marker.
 
 ## Try it -- one command
 
 ```bash
-pip install -U "inspeximus==3.6.2"
+pip install -U "inspeximus==3.7.0"
 ```
 
 No server, no API key, no database, no LLM on the write path. A correction, and the retired value
