@@ -2863,5 +2863,59 @@
   "tests": [
    "tests/test_a_successor_log_records_its_predecessor_in_entry_zero.py"
   ]
+ },
+ {
+  "name": "sender: the cosigned size is never remembered",
+  "file": "tools/send_to_witnesses.py",
+  "old": "        _save(state_path, state)",
+  "new": "        pass",
+  "tests": [
+   "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
+  ]
+ },
+ {
+  "name": "sender: every send starts from zero",
+  "file": "tools/send_to_witnesses.py",
+  "old": "        old = int(state.get(w[\"url\"], {}).get(\"size\", 0))",
+  "new": "        old = 0",
+  "tests": [
+   "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
+  ]
+ },
+ {
+  "name": "sender: a 409 is not recovered",
+  "file": "tools/send_to_witnesses.py",
+  "old": "fetch_proof=proof)",
+  "new": "fetch_proof=None)",
+  "tests": [
+   "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
+  ]
+ },
+ {
+  "name": "sender: a current witness is sent to again",
+  "file": "tools/send_to_witnesses.py",
+  "old": "        if old == size:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
+  ]
+ },
+ {
+  "name": "sender: the hourly rate is not enforced",
+  "file": "tools/send_to_witnesses.py",
+  "old": "        if last is not None and now_ts - float(last) < min_interval:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
+  ]
+ },
+ {
+  "name": "sender: a refused request does not count against the rate",
+  "file": "tools/send_to_witnesses.py",
+  "old": "        state.setdefault(w[\"url\"], {})[\"attempted_ts\"] = now_ts",
+  "new": "        pass",
+  "tests": [
+   "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
+  ]
  }
 ]
