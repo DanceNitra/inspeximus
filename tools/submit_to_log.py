@@ -48,7 +48,8 @@ except ImportError:                                                    # noqa: B
     CTX = ssl.create_default_context()
 
 HOST = "ubuntu@92.5.74.17"
-BASE = "https://92.5.74.17.sslip.io/log"
+BASE = "https://dancenitra.github.io/inspeximus-log/log"
+SITE = "/srv/static-log"
 
 
 def _signer(key_path: str):
@@ -65,6 +66,21 @@ def _ssh(host: str, command: str, stdin: bytes | None = None, identity: str | No
         argv += ["-i", identity]
     argv += [host, command]
     return subprocess.run(argv, input=stdin, capture_output=True)
+
+
+def _read_published(host: str, name: str, identity: str | None) -> bytes:
+    """A published file, read from the host's static site over SSH.
+
+    NOT OVER HTTPS, because the host serves nothing to the internet: the public copy is the Pages
+    mirror, which republishes only after its workflow verifies a snapshot, up to half an hour later.
+    The bytes read here are the ones the host pushes to that mirror, so the proof checked below is
+    the proof a reader downloads once the mirror catches up.
+    """
+    r = _ssh(host, "cat %s/%s" % (SITE, name), identity=identity)
+    if r.returncode != 0:
+        raise SystemExit("could not read %s from the host: %s"
+                         % (name, r.stderr.decode("utf-8", "replace")[:200]))
+    return r.stdout
 
 
 def _get(url: str) -> bytes:
@@ -112,9 +128,9 @@ def submit(path: str, issuer: str, subject: str, key_path: str, host: str = HOST
         if p.returncode != 0:
             raise SystemExit("publish failed: %s" % p.stderr.decode("utf-8", "replace")[:300])
 
-    head = json.loads(_get(base + "/head.json"))
-    proof = json.loads(_get("%s/entries/%d.proof.json" % (base, index)))
-    leaf = _get("%s/entries/%d.leaf.json" % (base, index))
+    head = json.loads(_read_published(host, "head.json", identity))
+    proof = json.loads(_read_published(host, "entries/%d.proof.json" % index, identity))
+    leaf = _read_published(host, "entries/%d.leaf.json" % index, identity)
     root = bytes.fromhex(head["writes_tip"])
 
     included = merkle.verify_inclusion(leaf, proof["index"], proof["tree_size"],

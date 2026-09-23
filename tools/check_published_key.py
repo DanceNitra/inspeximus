@@ -45,7 +45,7 @@ except ImportError:                                                    # noqa: B
     CTX = ssl.create_default_context()
 
 README = os.path.join(os.path.dirname(HERE), "README.md")
-HOST = "https://92.5.74.17.sslip.io/log"
+HOST = "https://dancenitra.github.io/inspeximus-log/log"
 
 #: The README carries the line between these markers so the check reads the published text rather
 #: than a copy kept somewhere else in the repository. A second copy is the problem, not the fix.

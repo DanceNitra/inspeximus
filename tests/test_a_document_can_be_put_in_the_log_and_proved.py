@@ -71,6 +71,13 @@ def world(tmp_path, monkeypatch):
             publisher.build(service, site, "file:///x", "t", "no witness")
             published["count"] += 1
             return subprocess.CompletedProcess([], 0, b"", b"")
+        if command.startswith("cat " + submit_to_log.SITE + "/"):
+            # The read-back goes over SSH now, because the host serves nothing to the internet.
+            name = command[len("cat " + submit_to_log.SITE + "/"):]
+            try:
+                return subprocess.CompletedProcess([], 0, open(os.path.join(site, name), "rb").read(), b"")
+            except FileNotFoundError:
+                return subprocess.CompletedProcess([], 1, b"", b"No such file")
         req = urllib.request.Request("http://127.0.0.1:%d/entries" % port, data=stdin,
                                      headers={"Content-Type": "application/cose"})
         try:
@@ -82,8 +89,9 @@ def world(tmp_path, monkeypatch):
             return subprocess.CompletedProcess([], 0, ("HTTP/1.1 %d\r\n\r\n" % e.code).encode(), b"")
 
     monkeypatch.setattr(submit_to_log, "_ssh", fake_ssh)
+    # Nothing may be fetched over HTTP any more; a call here means the read-back regressed.
     monkeypatch.setattr(submit_to_log, "_get",
-                        lambda url: open(os.path.join(site, url.split("/log/", 1)[-1]), "rb").read())
+                        lambda url: pytest.fail("submit_to_log fetched %s over HTTP" % url))
     try:
         yield {"site": site, "service": service, "tmp": tmp_path, "published": published}
     finally:

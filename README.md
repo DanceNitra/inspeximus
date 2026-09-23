@@ -529,7 +529,7 @@ Two commands are the whole setup, and the first run commits you to nothing:
 
 ```bash
 pip install inspeximus
-inspeximus witness watch --url https://92.5.74.17.sslip.io/log --state witness.json
+inspeximus witness watch --url https://dancenitra.github.io/inspeximus-log/log --state witness.json
 ```
 
 `deploy/witness-template.yml` runs the same command daily from any public repository for nothing.
@@ -566,8 +566,14 @@ differs from them without anybody having tampered with anything.
 
 To verify our hosted log, you need our verification key. Fetching it from the host you are checking
 means asking the host how to check the host: an operator who can rewrite the log can rewrite the key
-beside it, and every signature still verifies. So the key is published here as well, on different
-infrastructure under a different account.
+beside it, and every signature still verifies. So the key is published here as well.
+
+Both copies now live on GitHub under one account: this README, and the log's public mirror, which
+publishes a snapshot only after a workflow verifies it against the key pinned in that repository.
+That makes the two copies a check against a quiet split, not against GitHub or against us. The
+reference that is independent of both is the raw public key,
+`9fb780dd72894867c6dac8e140cc78d755617147d20cfd26bfe557190f65ac49`, which is also held on paper
+off-line.
 
 <!-- checkpoint-vkey:begin -->
 ```
@@ -578,13 +584,13 @@ infrastructure under a different account.
 SHA-256 of that line: `1017ff229193fa867e1f73758df24e440ebfad1710e1af49e296a5fe4f00783c`
 
 The same line is served at
-[`/log/checkpoint.vkey`](https://92.5.74.17.sslip.io/log/checkpoint.vkey). **The two must be
+[`/log/checkpoint.vkey`](https://dancenitra.github.io/inspeximus-log/log/checkpoint.vkey). **The two must be
 byte-identical.** If they differ, do not trust either one, and open an issue. `41dfe27a` is the
 four-byte key id from [c2sp.org/signed-note](https://c2sp.org/signed-note), which selects which key
 to try and is not a security boundary.
 
 ```bash
-diff <(curl -s https://92.5.74.17.sslip.io/log/checkpoint.vkey)      <(curl -s https://raw.githubusercontent.com/DanceNitra/inspeximus/main/README.md |
+diff <(curl -s https://dancenitra.github.io/inspeximus-log/log/checkpoint.vkey)      <(curl -s https://raw.githubusercontent.com/DanceNitra/inspeximus/main/README.md |
        sed -n '/checkpoint-vkey:begin/,/checkpoint-vkey:end/p' | sed -n '3p')
 ```
 

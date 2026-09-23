@@ -40,9 +40,10 @@ permissions:
   contents: write          # only to commit this witness's own state and co-signature
 
 env:
-  # The hosted transparency service. The project's other log, which records release claims, is at
+  # The hosted transparency log, read from its verified mirror on GitHub Pages: the host publishes
+  # nothing to the internet itself. The project's other log, which records release claims, is at
   # https://dancenitra.github.io/inspeximus/transparency and is witnessed the same way.
-  LOG_URL: https://92.5.74.17.sslip.io/log
+  LOG_URL: https://dancenitra.github.io/inspeximus-log/log
   WITNESS_NAME: ''         # your name or handle, recorded beside your public key
 
 jobs:
@@ -59,7 +60,7 @@ jobs:
       # `certifi` is here because the witness fetches over HTTPS and some Python builds carry no
       # usable CA store. Without it the run exits 1 with a TLS trust error, which is not a
       # verdict about the log and reads like one.
-      - run: pip install "inspeximus==3.6.2" cryptography certifi
+      - run: pip install "inspeximus==3.7.0" cryptography certifi
 
       - name: Look at the log and refuse it if the history changed
         env:
