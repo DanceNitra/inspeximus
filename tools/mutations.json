@@ -2867,8 +2867,8 @@
  {
   "name": "sender: the cosigned size is never remembered",
   "file": "tools/send_to_witnesses.py",
-  "old": "        _save(state_path, state)",
-  "new": "        pass",
+  "old": "                           \"cosigned_utc\": time.strftime(\"%Y-%m-%dT%H:%M:%SZ\", time.gmtime())}\n        _save(state_path, state)",
+  "new": "                           \"cosigned_utc\": time.strftime(\"%Y-%m-%dT%H:%M:%SZ\", time.gmtime())}\n        pass",
   "tests": [
    "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
   ]
