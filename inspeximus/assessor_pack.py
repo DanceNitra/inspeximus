@@ -232,6 +232,19 @@ def assessor_pack(store, ledger=None, operator: dict | None = None, expected_pub
         except Exception as exc:                                 # noqa: BLE001 - a pack reports, never hides
             errors[name] = "%s: %s" % (type(exc).__name__, str(exc)[:200])
 
+    # ASSESS EVERY RECORD ONCE, BEFORE THE FIRST DOCUMENT. The read guards stamp `meta.quarantined`
+    # on a record the first time a read sees it, and that is a real change of state: before this, the
+    # first `memory_report()` of a pack ran on the store as it was, stamped records as it read them,
+    # and the next one ran on a different store. Measured on an 8,463-record copy on 2026-09-23: two
+    # computations of `memory_report` inside one pack, and documents built on two different states.
+    # Assessing up front costs one regex pass over the text; after it, every document reads one state
+    # and the memo serves the repeats.
+    if getattr(store, "read_guards", False) and callable(getattr(store, "read_guard_report", None)):
+        try:
+            store.read_guard_report()
+        except Exception as exc:                                 # noqa: BLE001 - a pack reports, never hides
+            errors["read_guards"] = "%s: %s" % (type(exc).__name__, str(exc)[:200])
+
     with (_memoized(store) if memo else contextlib.nullcontext({"computed": {}, "reused": {}})) as work:
         build("technical_documentation",
               lambda: _techdoc.annex_iv(store, ledger, operator=operator,

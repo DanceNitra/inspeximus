@@ -1,0 +1,82 @@
+{
+ "rows": [
+  {
+   "memo": false,
+   "records": 8463,
+   "seconds": 133.9,
+   "unfilled": 88,
+   "errors": [],
+   "documents": [
+    "audit_bundle",
+    "deployer_report",
+    "registration_a",
+    "registration_b",
+    "registration_c",
+    "technical_documentation"
+   ],
+   "work": {
+    "computed": {},
+    "reused": {}
+   },
+   "code": "current"
+  },
+  {
+   "memo": true,
+   "records": 8463,
+   "seconds": 38.3,
+   "unfilled": 88,
+   "errors": [],
+   "documents": [
+    "audit_bundle",
+    "deployer_report",
+    "registration_a",
+    "registration_b",
+    "registration_c",
+    "technical_documentation"
+   ],
+   "work": {
+    "computed": {
+     "supersession_report": 1,
+     "memory_report": 1,
+     "pii_report": 1
+    },
+    "reused": {
+     "supersession_report": 2,
+     "pii_report": 3,
+     "memory_report": 3
+    }
+   },
+   "code": "current"
+  },
+  {
+   "memo": true,
+   "records": 8463,
+   "seconds": 69.7,
+   "unfilled": 88,
+   "errors": [],
+   "documents": [
+    "audit_bundle",
+    "deployer_report",
+    "registration_a",
+    "registration_b",
+    "registration_c",
+    "technical_documentation"
+   ],
+   "work": {
+    "computed": {
+     "supersession_report": 2,
+     "memory_report": 2,
+     "pii_report": 1
+    },
+    "reused": {
+     "pii_report": 3,
+     "supersession_report": 2,
+     "memory_report": 2
+    }
+   },
+   "code": "02eb383"
+  }
+ ],
+ "same_answer": true,
+ "reference": "02eb383"
+}

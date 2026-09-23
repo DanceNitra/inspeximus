@@ -2926,5 +2926,14 @@
   "tests": [
    "tests/test_raise_on_block_turns_a_blocked_write_into_an_error.py"
   ]
+ },
+ {
+  "name": "pack: the read guards assess every record before the first document",
+  "file": "inspeximus/assessor_pack.py",
+  "old": "            store.read_guard_report()",
+  "new": "            pass",
+  "tests": [
+   "tests/test_the_assessor_pack_computes_each_report_once.py"
+  ]
  }
 ]

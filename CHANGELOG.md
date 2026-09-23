@@ -1,3 +1,26 @@
+## 3.8.1 - the assessor pack reads one state of the store, and computes each repeated report once on a store written before 3.5.0. UPGRADE IF YOU BUILD ASSESSOR PACKS FROM A STORE THAT PREDATES THE READ GUARDS. AFFECTS: `assessor_pack()` calls `read_guard_report()` once before the first document when the store has read guards on. Nothing else changes, and the default store is byte-identical.
+
+The read guards stamp `meta.quarantined` on a record the first time a read sees it. On a store written
+before 3.5.0, the first `memory_report()` of a pack therefore ran on the store as it was and stamped
+records while reading, and the next document read a different store. The pack-scoped memo from 3.8.0
+saw a changed signature and computed `memory_report` and `supersession_report` twice, and the
+documents of one pack were built on two states. The pack now assesses every record once, before the
+first document, with one regex pass over the text; every document then reads the same state.
+
+Measured on an 8,463-record copy of a real store, each arm on its own fresh copy, one run of one probe:
+
+    no memo                      133.9 s   88 unfilled fields, 0 errors
+    memo, 3.8.0 (02eb383)         69.7 s   88 unfilled fields, 0 errors   memory_report computed 2x
+    memo, 3.8.1                   38.3 s   88 unfilled fields, 0 errors   every report computed 1x
+
+`probes/how_long_does_the_assessor_pack_take.py <store> --ref=02eb383` runs all three arms and requires
+the same unfilled fields, errors, documents and record count from each; with no store it builds a small
+pre-3.5.0-shaped store and runs standalone, and there 3.8.0 also computes `memory_report` twice. `tests/test_the_assessor_pack_computes_each_report_once.py`
+gains a store with an unassessed instruction-shaped record: the pack computes `memory_report` once, and a
+control shows that without the upfront pass the first read changes the state. Removing the pass fails
+that test; the mutation is registered. `governance_report`, `verify_writes` and `compliance_report` are
+still computed per call; on this store they are not where the time goes.
+
 ## 3.8.0 - `remember(raise_on_block=True)` turns a keyed write that a guard kept out into an error. UPGRADE IF A SCRIPT OR AGENT REWRITES KEYED VALUES AND DOES NOT READ `last_write`. AFFECTS: `remember()` gains a keyword `raise_on_block` (default False) and the package exports `WriteBlocked`; `assessor_pack()` computes `memory_report`, `pii_report` and `supersession_report` once per pack while the store is unchanged; `python -m inspeximus.scrapi` gains `--policy-notes-file`. The default `remember()` call returns the same id, nothing on disk changes shape, and the default store is byte-identical.
 
 `remember()` returns the new id whether or not the write became the current value. That is deliberate,
