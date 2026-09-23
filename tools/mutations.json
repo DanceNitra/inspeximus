@@ -2885,8 +2885,8 @@
  {
   "name": "sender: a 409 is not recovered",
   "file": "tools/send_to_witnesses.py",
-  "old": "fetch_proof=proof)",
-  "new": "fetch_proof=None)",
+  "old": "                state[w[\"url\"]][\"size\"] = int(theirs)",
+  "new": "                pass",
   "tests": [
    "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
   ]

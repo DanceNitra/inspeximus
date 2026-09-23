@@ -96,8 +96,11 @@ def test_a_lost_memory_recovers_through_the_409(world):
     os.remove(world["state"])
     _publish(world["site"], sk, pk, 9)
     out = stw.send(world["site"], world["witnesses"], world["state"], min_interval=0)
+    assert out["results"][0] == {"witness": "example.test/w", "result": "resynced", "size": 5}
+    assert world["calls"][-1].startswith(b"old 0\n"), "one request per run, even while resyncing"
+    out = stw.send(world["site"], world["witnesses"], world["state"], min_interval=0)
     assert out["results"][0]["result"] == "cosigned"
-    assert world["calls"][-2].startswith(b"old 0\n") and world["calls"][-1].startswith(b"old 5\n")
+    assert world["calls"][-1].startswith(b"old 5\n"), "the next run proves from the witness's size"
 
 
 def test_a_refusal_never_moves_the_remembered_size(world):

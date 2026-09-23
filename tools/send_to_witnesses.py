@@ -14,8 +14,8 @@ This runs on the log host after every publish and needs only outbound HTTPS.
 WHAT IT REMEMBERS is the size each witness last cosigned, per URL. It sends only when the log has
 grown past that size, and at most once an hour per witness, whether the last request was
 cosigned or refused. If the memory is
-lost, the witness answers 409 with its own size and the request is retried once with a proof from
-that size, which is the recovery the spec describes.
+lost, the witness answers 409 with its own size; that size is remembered and the next run, an hour
+later at the earliest, proves from it. There is no retry inside a run.
 
 Each cosigned checkpoint is written to `<site>/cosignatures/<witness>.note`: the checkpoint note
 with the witness's line added, a note any verifier reads.
@@ -87,8 +87,18 @@ def send(site: str, witnesses: list, state_path: str, timeout: float = 30.0,
         state.setdefault(w["url"], {})["attempted_ts"] = now_ts
         _save(state_path, state)
         try:
-            got = submit(url, note, old, proof(old, size), timeout=timeout, fetch_proof=proof)
+            # No retry inside a run: a 409 is answered in the NEXT window, so a witness never sees
+            # more than one request from us per hour, including while we resynchronise.
+            got = submit(url, note, old, proof(old, size), timeout=timeout, fetch_proof=None)
         except Refused as e:
+            theirs = str(e.reason).strip()
+            if e.status == 409 and theirs.isdigit() and int(theirs) <= size:
+                # The witness knows our log at another size than we remembered. Its answer is the
+                # size it last cosigned, so remember that and prove from it next time.
+                state[w["url"]]["size"] = int(theirs)
+                _save(state_path, state)
+                out["results"].append({"witness": w["name"], "result": "resynced", "size": int(theirs)})
+                continue
             out["results"].append({"witness": w["name"], "result": "refused", "detail": str(e)})
             continue
         except OSError as e:
@@ -120,7 +130,8 @@ def main(argv=None) -> int:
     out = send(a.site, witnesses, a.state)
     for r in out["results"]:
         print(json.dumps(r))
-    return 0 if all(r["result"] in ("cosigned", "current", "waiting") for r in out["results"]) else 1
+    return 0 if all(r["result"] in ("cosigned", "current", "waiting", "resynced")
+                    for r in out["results"]) else 1
 
 
 if __name__ == "__main__":
