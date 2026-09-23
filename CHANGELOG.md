@@ -1,3 +1,37 @@
+## 3.8.0 - `remember(raise_on_block=True)` turns a keyed write that a guard kept out into an error. UPGRADE IF A SCRIPT OR AGENT REWRITES KEYED VALUES AND DOES NOT READ `last_write`. AFFECTS: `remember()` gains a keyword `raise_on_block` (default False) and the package exports `WriteBlocked`; `assessor_pack()` computes `memory_report`, `pii_report` and `supersession_report` once per pack while the store is unchanged; `python -m inspeximus.scrapi` gains `--policy-notes-file`. The default `remember()` call returns the same id, nothing on disk changes shape, and the default store is byte-identical.
+
+`remember()` returns the new id whether or not the write became the current value. That is deliberate,
+because callers store the id, and since 3.5.1 the verdict is on `store.last_write`, the MCP results and
+the CLI. It still let a caller miss it: Crew OS rewrote one layer without an `object` four times on
+2026-09-21, got four ids, and the old value stayed current each time. With `raise_on_block=True`, a
+keyed write that the objectless guard, the echo guard or the authority rule retired on arrival raises
+`WriteBlocked` carrying `policy`, `current_id` and the whole verdict. The raise comes after the save
+and the write receipt, so the record it names is on disk and in `history(key)`; nothing is rolled back.
+A keyless write never raises.
+
+`tests/test_raise_on_block_turns_a_blocked_write_into_an_error.py`, six tests, three of them controls:
+the default returns an id and raises nothing, a write that lands does not raise with the flag on, and a
+keyless write never raises. Removing the raise fails three tests, and that mutation is registered in
+`tools/mutations.json`.
+
+**The assessor pack computes each repeated report once.** `assessor_pack()` called `memory_report()`
+four times with identical output, 86 of its 95.7 s on a 7,696-record store. A pack-scoped memo, keyed
+on a signature of every record's fields except the two the read path writes, serves the repeats, and a
+write between two calls changes the signature and forces a recomputation. Measured on that store: 95.9 s
+without the memo, 48.8 s with it, the same 88 unfilled fields and zero errors.
+`tests/test_the_assessor_pack_computes_each_report_once.py` carries five mutations, one per test.
+`governance_report`, `verify_writes` and `compliance_report` are not memoized yet.
+
+**A successor log records its predecessor.** `python -m inspeximus.scrapi --policy-notes-file` writes
+the given notes into the registration policy in entry 0, which is how the second hosted log names the
+frozen first one.
+
+Checked and left unchanged: the 2.40.0 nonce was asked to cover "the scope text of the certificate". It
+has nothing to cover there. `erasure_certificate()` carries a fixed scope text and tombstones that
+commit to surrogate ids, timestamps and the request, never to record content, so no hash in it can
+confirm a guessed text. The caveat that `mem.json.receipts.json` stays personal data is already limited
+to receipts written before 2.40.0 on `erasure.html`, which is where it still applies.
+
 ## 3.7.0 - checkpoints other people's witnesses can read, an offline Bitcoin-anchor check, the assessor pack, and signers that keep the key outside this process. UPGRADE IF YOU PUBLISH OR WITNESS A TRANSPARENCY LOG, VERIFY AN OPENTIMESTAMPS ANCHOR, OR PREPARE EU AI ACT DOCUMENTATION FROM A STORE. AFFECTS: new modules `inspeximus/checkpoint.py` (signed-note checkpoints and vkeys in the format used by transparency-log witnesses), `inspeximus/witness_checkpoint.py` (cosign another log's checkpoint, refuse when its tree moved), `inspeximus/opentimestamps.py` with `inspeximus ots verify` and `inspeximus ots upgrade`, `inspeximus/signers.py`, and `inspeximus/assessor_pack.py` (`intake_form()`, `assessor_pack()`); `governance_report()` names a tombstone with no request id as "(no request id)" instead of a None key; the two coverage notes for Art. 43 and Art. 72 move from `partial` to `boundary`, and `partial` still carries the same text. No dependency is added. The default store is byte-identical.
 
 **Checkpoints.** The log head is published as a signed note, `origin`, tree size and root, signed

@@ -2917,5 +2917,14 @@
   "tests": [
    "tests/test_the_log_sends_its_checkpoint_to_its_witnesses.py"
   ]
+ },
+ {
+  "name": "remember: raise_on_block raises on a blocked keyed write",
+  "file": "inspeximus/core.py",
+  "old": "            raise WriteBlocked(self.last_write)",
+  "new": "            pass",
+  "tests": [
+   "tests/test_raise_on_block_turns_a_blocked_write_into_an_error.py"
+  ]
  }
 ]

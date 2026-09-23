@@ -7,6 +7,7 @@ Public API (stable as of 1.0.0). Submodules for the governance/erasure tooling:
 """
 from .core import (
     AmbiguousSubject,  # noqa: F401
+    WriteBlocked,  # noqa: F401
     Inspeximus,
     new_receipt_keypair,
     receipt_key_for,
@@ -84,6 +85,7 @@ __all__ = [
     "verify_audit_trail",
     "Partitions",
     "AmbiguousSubject",
+    "WriteBlocked",
     "new_receipt_keypair",
     "receipt_key_for",
     "new_source_keypair",

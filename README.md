@@ -195,6 +195,8 @@ the retirement is a record you can audit, revert, and prove.
 do, and it is where most stores differ from this one: writing `db-3` a third time, under the same
 key, leaves `db-7` current. Going back is a decision you make on purpose, with
 `remember(..., reaffirm=True)` — the guard cannot un-supersede on its own.
+After a keyed write, read `m.last_write["blocked"]`, or pass `raise_on_block=True` to get a
+`WriteBlocked` error instead of an id when a guard kept the old value.
 
 **The limit, because it is keyed:** a statement written with *no* key is a new fact, not a
 correction, and it is outside the guard. If your pipeline re-ingests a stale document without keys,

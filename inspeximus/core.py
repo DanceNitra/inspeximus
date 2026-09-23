@@ -1287,7 +1287,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.7.0"
+__version__ = "3.8.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1598,6 +1598,29 @@ class _TrackedList(list):
 
     def __reduce__(self):
         return (list, (list(self),))
+
+
+class WriteBlocked(RuntimeError):
+    """A keyed write that a guard retired on arrival, raised only when the caller asked for it.
+
+    `remember()` returns the new id whether or not the write became the current value, and keeps
+    doing so by default: changing the return type would break every caller that stores it. A caller
+    that cannot afford to miss a blocked write passes `raise_on_block=True` and gets this instead.
+    Crew OS, 2026-09-21: an objectless rewrite of one layer returned an id four times in a row while
+    the old value stayed current, and only `last_write` said so.
+
+    The record EXISTS when this is raised: it was written, retired and saved, so `history(key)`
+    shows it. Nothing is rolled back. `verdict` is the full `last_write` for the call."""
+
+    def __init__(self, verdict: dict):
+        self.verdict = dict(verdict)
+        self.id = verdict.get("id")
+        self.key = verdict.get("key")
+        self.policy = verdict.get("policy")
+        self.current_id = verdict.get("current_id")
+        super().__init__("keyed write %s on %r was blocked by %s; the current value is still %s. %s"
+                         % (self.id, self.key, self.policy, self.current_id,
+                            verdict.get("note") or ""))
 
 
 class StoreChangedOnDisk(RuntimeError):
@@ -2932,7 +2955,7 @@ class Inspeximus:
                  object: str | None = None, reaffirm: bool = False, capability: str | None = None,
                  pii=None, identity_confidence: float | None = None,
                  user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
-                 project: str | None = None) -> str:
+                 project: str | None = None, raise_on_block: bool = False) -> str:
         """Append-only raw capture. Stamped with an absolute UTC time; never edited afterward.
 
         RETURNS THE NEW ID WHETHER OR NOT THE WRITE BECAME THE CURRENT VALUE. A keyed write can be
@@ -2943,7 +2966,9 @@ class Inspeximus:
         write that landed, and "persisted" (False, with "persist_error", when the save that follows
         the write failed; the record is still in memory and `flush()` retries it, so a caller that
         drops the handle drops the record). Read it after every keyed write that must land; the MCP
-        and CLI write surfaces report the same fields.
+        and CLI write surfaces report the same fields. `raise_on_block=True` turns a blocked keyed
+        write into `WriteBlocked` (with `policy`, `current_id` and the whole verdict) after the record
+        is saved, for callers that would rather fail than check; the default return is unchanged.
 
         mtype in {episodic, semantic, procedural} sets the decay prior (episodic fades fast,
         semantic slow, procedural barely); inferred from the text if not given. Pass it explicitly
@@ -3464,6 +3489,9 @@ class Inspeximus:
         self._save(force=True)        # a new memory is real content - persist immediately, not throttled
         if self.receipts_enabled:
             self._emit_write_receipt(rec, retires=_retired)
+        # After the save and the receipt, so the record the exception names is on disk and verifiable.
+        if raise_on_block and key is not None and (self.last_write or {}).get("blocked"):
+            raise WriteBlocked(self.last_write)
         return mid
 
     def _evict_to_capacity(self, protect_id: str | None = None) -> None:
