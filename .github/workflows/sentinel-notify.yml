@@ -1,0 +1,72 @@
+# Sentinel: tell the owner within seconds when this repository changes.
+#
+# Runs on push (any branch), branch or tag create/delete, release and a change to public. It sends
+# one Telegram message through a SEND-ONLY bot (NOTIFY_BOT_TOKEN), never the bot the owner answers,
+# because anyone who can push here could read this repository's secrets with a changed workflow.
+# Collaborator changes and a switch to private are not workflow events; the owner's PC watcher
+# covers those. A copy of this file is pinned by hash in the private sentinel repository, and the
+# judge there alarms when it changes or disappears.
+#
+# Event data reaches the script only through environment variables, never by expanding ${{ }}
+# inside the script, so a commit message cannot inject a command.
+
+name: sentinel-notify
+
+on:
+  push:
+  create:
+  delete:
+  release:
+    types: [published, created, edited, deleted, prereleased, released]
+  public:
+
+permissions: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Tell the owner
+        env:
+          NOTIFY_BOT_TOKEN: ${{ secrets.NOTIFY_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          REF: ${{ github.ref }}
+          PAYLOAD: ${{ toJSON(github.event) }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          e = os.environ; ev = e["EVENT"]; p = json.loads(e.get("PAYLOAD") or "{}")
+          repo, actor, ref = e["REPO"], e["ACTOR"], e["REF"]
+          loud = True
+          if ev == "push":
+              commits = p.get("commits") or []
+              head = (p.get("head_commit") or {})
+              first = (head.get("message") or "").splitlines()[0][:80] if head else ""
+              forced = " FORCED" if p.get("forced") else ""
+              deleted = " (branch deleted)" if p.get("deleted") else ""
+              text = "%s: push%s to %s by %s, %d commit(s), head %s \"%s\"%s" % (
+                  repo, forced, ref, actor, len(commits), (p.get("after") or "")[:7], first, deleted)
+              # Our own ordinary pushes arrive silently; a forced push or anyone else is loud.
+              loud = bool(p.get("forced") or p.get("deleted") or actor != "DanceNitra")
+          elif ev in ("create", "delete"):
+              text = "%s: %s %s %s by %s" % (repo, p.get("ref_type"), ev + "d", p.get("ref"), actor)
+          elif ev == "release":
+              r = p.get("release") or {}
+              text = "%s: release %s %s by %s" % (repo, r.get("tag_name"), p.get("action"), actor)
+          elif ev == "public":
+              text = "%s: the repository was made PUBLIC by %s" % (repo, actor)
+          else:
+              text = "%s: %s by %s" % (repo, ev, actor)
+          token, chat = e.get("NOTIFY_BOT_TOKEN"), e.get("TELEGRAM_CHAT_ID")
+          if not token or not chat:
+              print("no NOTIFY_BOT_TOKEN yet; would have sent (loud=%s): %s" % (loud, text))
+              raise SystemExit(0)
+          data = urllib.parse.urlencode({"chat_id": chat, "text": "SENTINEL GitHub\n" + text,
+                                         "disable_notification": "false" if loud else "true"}).encode()
+          with urllib.request.urlopen("https://api.telegram.org/bot%s/sendMessage" % token, data, timeout=20) as r:
+              print("delivered:", json.loads(r.read()).get("ok"), "loud:", loud)
+          PY
