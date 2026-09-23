@@ -4,38 +4,34 @@ services:
     command: ["--secret-file", "/run/secrets/witness_secret"]
   scitt:
     secrets: [service_secret]
+    # THE SECOND LOG, origin dancenitra.github.io/inspeximus-log, from 2026-09-23. The first one,
+    # origin 92.5.74.17.sslip.io/log, is frozen at 10 entries in /srv/scitt-data and stays readable
+    # on the Pages mirror under /log/. Its last signed checkpoint is in this log's entry 0, through
+    # the policy notes, so the handover sits under every root this log signs.
+    #
+    # A NEW FILE NAME, not only a new directory. The service derives its witness id from the log's
+    # path inside the container, and the witness remembers the old log at size 10; the same path
+    # would read to it as a rollback to size 1 and it would refuse to cosign.
     volumes:
-      - /srv/scitt-data:/data
+      - /srv/scitt-data-v2:/data
+      - /etc/inspeximus/succession.json:/run/succession.json:ro
     command:
+      - --log
+      - /data/registrations-v2.log
       - --secret-file
       - /run/secrets/service_secret
       - --accept-any-issuer
       - --policy-name
-      - inspeximus-log-frankfurt
+      - inspeximus-log-v2
+      - --policy-notes-file
+      - /run/succession.json
       - --witness
       - http://witness:9810
-  caddy:
-    # PINNED TO A DIGEST, not to the moving `caddy:2` tag. A `docker compose pull` against a tag
-    # replaces the binary that terminates TLS for our public log with whatever upstream has
-    # published, with no review and no record of what changed. Read the digest back with
-    # `docker inspect caddy:2 --format '{{json .RepoDigests}}'` before changing this line.
-    image: caddy:2@sha256:14a9c00d4e833ebc2b65d36515b37bde3b73f0b323a2663aaafc88953d8c4e3f
-    restart: unless-stopped
-    ports: ["443:443", "80:80"]
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - /srv/static-log:/srv/static-log:ro
-      # The public mirror. Read-only into the container: the web server serves it and the
-      # cron job on the host is the only writer.
-      - /srv/mirror:/srv/mirror:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    depends_on: [scitt]
+  # NO CADDY SINCE 2026-09-23. The host serves nothing to the internet: the public log is the
+  # Pages mirror (DanceNitra/inspeximus-log), which republishes a snapshot only after its workflow
+  # verifies it. The container was stopped with restart=no; the Caddyfile stays for the record.
 secrets:
   service_secret:
     file: /etc/inspeximus/service.secret
   witness_secret:
     file: /etc/inspeximus/witness.secret
-volumes:
-  caddy-data:
-  caddy-config:

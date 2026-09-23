@@ -50,6 +50,13 @@ NOT_STANDALONE = {
     "what_a_real_operator_must_answer.py":
         "runs the assessor pack twice over a real store (260 s on ours), which is the point: a "
         "fixture cannot say what onboarding costs; the pack's behaviour is tested separately",
+    # It measured the headers of the Caddy front end on the hosted log's box. That front end was
+    # stopped on 2026-09-23 when the public copy moved to the verified Pages mirror, so the host
+    # refuses the connection and there is nothing left for the probe to measure. The result file
+    # beside it is the record of what the headers were while the host served them.
+    "the_headers_the_browser_is_told_to_obey.py": "measured the retired public front end of the hosted "
+                                                  "log; the host serves nothing to the internet since "
+                                                  "2026-09-23, and the result file is the record",
     "register_against_the_hosted_log.py": "registers a real entry with the hosted transparency service over "
                                           "the network; the 10.A.4 acceptance client, run by hand against the "
                                           "live host, never by the suite",
