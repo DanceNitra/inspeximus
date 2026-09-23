@@ -1412,6 +1412,7 @@ NON_CLAIM_TOKENS = {
         "13": (1, "EU AI Act Art. 13(3)(f) (instructions for use) in the documents paragraph, an article number"),
         "3": (5, "One more since 2026-09-23: `ots verify` exit code 3 for PENDING or INCOMPLETE. the paragraph digits in Art. 13(3)(f) and Art. 3(23), plus two that are not digits at all: the base64 of the published verification key happens to contain '+3gN1yi', and the `sed -n '3p'` in the command that extracts that key from this file (2026-09-23)"),
         "1017": (1, "the leading digits of the SHA-256 fingerprint of the published verification key, 1017ff22...783c. A hash of a published artifact, not a measurement (2026-09-23)"),
+        "9": (1, "the leading digit of the raw Ed25519 verification key, 9fb780dd...ac49, printed in the paragraph that names it as the reference held on paper. A key, not a quantity (2026-09-23)"),
         "23": (1, "the definition number in Art. 3(23), substantial modification"),
         "111": (1, "EU AI Act ARTICLE number (111(2), grandfathering) in the lifecycle sentence"),
         "26": (2, "EU AI Act ARTICLE number (deployer duties): the documents paragraph and the rotation paragraph"),
