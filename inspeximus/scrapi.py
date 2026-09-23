@@ -274,6 +274,16 @@ def _service_secret(a):
     return (os.environ.get("INSPEXIMUS_SERVICE_SECRET") or "").strip() or None
 
 
+def policy_from_args(a) -> RegistrationPolicy:
+    """The policy this process registers under, including notes read from `--policy-notes-file`."""
+    notes = ""
+    if getattr(a, "policy_notes_file", None):
+        with open(a.policy_notes_file, encoding="utf-8") as fh:
+            notes = fh.read()
+    return RegistrationPolicy(a.policy_name, accepted_issuers=[] if a.accept_any_issuer else None,
+                              notes=notes)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="python -m inspeximus.scrapi", description=__doc__.splitlines()[0])
     ap.add_argument("--port", type=int, default=9800)
@@ -290,6 +300,10 @@ def main(argv=None) -> int:
                          "repeatable. REQUIRED: a service that cannot authenticate an issuer is "
                          "recording bytes, not statements")
     ap.add_argument("--policy-name", default="scrapi-default")
+    ap.add_argument("--policy-notes-file", default=None,
+                    help="text for the policy's `notes` field, read from this file. The policy is "
+                         "entry 0 of a new log, so this is how a log that SUCCEEDS another one "
+                         "records the predecessor's last signed checkpoint in its own first leaf")
     ap.add_argument("--witness", action="append", default=[],
                     help="URL of an independent witness to co-sign the log head; repeatable. Without "
                          "one, nothing this service serves is evidence against equivocation")
@@ -328,7 +342,7 @@ def main(argv=None) -> int:
         # signature; we simply cannot say whose. Accepting it here is what --accept-any-issuer means.
         return bool(a.accept_any_issuer)
 
-    policy = RegistrationPolicy(a.policy_name, accepted_issuers=[] if a.accept_any_issuer else None)
+    policy = policy_from_args(a)
     service = TransparencyService(a.log, policy, sk.sign, verify_issuer, service_pubkey=pub)
     wits = []
     if a.witness:

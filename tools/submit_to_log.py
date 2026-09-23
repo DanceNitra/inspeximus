@@ -48,8 +48,8 @@ except ImportError:                                                    # noqa: B
     CTX = ssl.create_default_context()
 
 HOST = "ubuntu@92.5.74.17"
-BASE = "https://dancenitra.github.io/inspeximus-log/log"
-SITE = "/srv/static-log"
+BASE = "https://dancenitra.github.io/inspeximus-log"
+SITE = "/srv/static-log-v2"
 
 
 def _signer(key_path: str):

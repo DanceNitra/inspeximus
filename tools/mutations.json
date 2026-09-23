@@ -2854,5 +2854,14 @@
   "tests": [
    "tests/test_the_assessor_pack_computes_each_report_once.py"
   ]
+ },
+ {
+  "name": "scrapi: the notes file is read and then dropped",
+  "file": "inspeximus/scrapi.py",
+  "old": "                              notes=notes)",
+  "new": "                              notes=\"\")",
+  "tests": [
+   "tests/test_a_successor_log_records_its_predecessor_in_entry_zero.py"
+  ]
  }
 ]
