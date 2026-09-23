@@ -42,6 +42,10 @@ jobs:
           e = os.environ; ev = e["EVENT"]; p = json.loads(e.get("PAYLOAD") or "{}")
           repo, actor, ref = e["REPO"], e["ACTOR"], e["REF"]
           loud = True
+          # DANGER leads the line, so the owner tells it apart at a glance at night: a forced push,
+          # a deleted branch, tag or release, a switch to public, or a push to main by anyone but
+          # the owner. Ordinary pushes and creates carry no mark.
+          danger = False
           if ev == "push":
               commits = p.get("commits") or []
               head = (p.get("head_commit") or {})
@@ -52,21 +56,27 @@ jobs:
                   repo, forced, ref, actor, len(commits), (p.get("after") or "")[:7], first, deleted)
               # Our own ordinary pushes arrive silently; a forced push or anyone else is loud.
               loud = bool(p.get("forced") or p.get("deleted") or actor != "DanceNitra")
+              danger = bool(p.get("forced") or p.get("deleted")
+                            or (ref == "refs/heads/main" and actor != "DanceNitra"))
           elif ev in ("create", "delete"):
               text = "%s: %s %s %s by %s" % (repo, p.get("ref_type"), ev + "d", p.get("ref"), actor)
+              danger = ev == "delete"
           elif ev == "release":
               r = p.get("release") or {}
               text = "%s: release %s %s by %s" % (repo, r.get("tag_name"), p.get("action"), actor)
+              danger = p.get("action") == "deleted"
           elif ev == "public":
               text = "%s: the repository was made PUBLIC by %s" % (repo, actor)
+              danger = True
           else:
               text = "%s: %s by %s" % (repo, ev, actor)
           token, chat = e.get("NOTIFY_BOT_TOKEN"), e.get("TELEGRAM_CHAT_ID")
           if not token or not chat:
-              print("no NOTIFY_BOT_TOKEN yet; would have sent (loud=%s): %s" % (loud, text))
+              print("no NOTIFY_BOT_TOKEN yet; would have sent (loud=%s, danger=%s): %s" % (loud, danger, text))
               raise SystemExit(0)
-          data = urllib.parse.urlencode({"chat_id": chat, "text": "SENTINEL GitHub\n" + text,
+          mark = "\U0001F6A8 " if danger else ""
+          data = urllib.parse.urlencode({"chat_id": chat, "text": mark + "SENTINEL GitHub\n" + text,
                                          "disable_notification": "false" if loud else "true"}).encode()
           with urllib.request.urlopen("https://api.telegram.org/bot%s/sendMessage" % token, data, timeout=20) as r:
-              print("delivered:", json.loads(r.read()).get("ok"), "loud:", loud)
+              print("delivered:", json.loads(r.read()).get("ok"), "loud:", loud, "danger:", danger)
           PY
