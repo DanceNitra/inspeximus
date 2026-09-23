@@ -37,7 +37,12 @@ import submit_to_log                                                   # noqa: E
 
 pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519")
 
-PORT = 9878
+#: NO FIXED PORT. The first version hardcoded 9878, and under twelve xdist workers two of them bound
+#: it at once: a test on one worker submitted its statement into ANOTHER worker's transparency
+#: service, read back an index from that service, and then looked for the proof in its own site
+#: directory. It failed with `assert 6 == 5` and a missing `5.proof.json`, which reads like a defect
+#: in the submission code and is not one. Port 0 lets the OS pick, and the test reads back what it
+#: got, so two of these can never reach each other's log.
 
 
 @pytest.fixture()
@@ -51,7 +56,8 @@ def world(tmp_path, monkeypatch):
     for i in range(3):
         service.register(scitt.signed_statement(b"seed %d" % i, "urn:seed", "s:%d" % i, sk.sign))
 
-    server = scrapi.make_server(service, "127.0.0.1", PORT)
+    server = scrapi.make_server(service, "127.0.0.1", 0)
+    port = server.server_address[1]
     threading.Thread(target=server.serve_forever, daemon=True).start()
     time.sleep(0.3)
 
@@ -65,7 +71,7 @@ def world(tmp_path, monkeypatch):
             publisher.build(service, site, "file:///x", "t", "no witness")
             published["count"] += 1
             return subprocess.CompletedProcess([], 0, b"", b"")
-        req = urllib.request.Request("http://127.0.0.1:%d/entries" % PORT, data=stdin,
+        req = urllib.request.Request("http://127.0.0.1:%d/entries" % port, data=stdin,
                                      headers={"Content-Type": "application/cose"})
         try:
             with urllib.request.urlopen(req, timeout=20) as r:
