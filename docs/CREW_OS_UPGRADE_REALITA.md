@@ -1,6 +1,6 @@
 # Inspeximus x CREW OS — co REALNE chyba (overene proti kodu)
 
-> Overene 2026-09-20 priamo v `C:\Users\Danculus\inspeximus-repo`, verzia 2.44.0.
+> Overene 2026-09-20 priamo v checkoute `inspeximus-repo`, verzia 2.44.0.
 > Manual z Notebooku navrhuje 5 modulov; toto je realita. Kazde tvrdenie ma dokaz z kodu.
 
 | Kategoria | Co | Stav | Dokaz |

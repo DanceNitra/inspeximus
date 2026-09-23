@@ -48,7 +48,7 @@ import uuid
 
 HERE = pathlib.Path(__file__).resolve().parent
 HOST = pathlib.Path(os.path.expandvars(r"%LOCALAPPDATA%\hermes\hermes-agent"))
-ENV = pathlib.Path(r"C:\Users\Danculus\agora\server\.env")
+ENV = pathlib.Path.home() / "agora" / "server" / ".env"
 REPEATS = int(os.environ.get("REPEATS", "2"))
 STYLES = ("explicit", "implicit")
 

@@ -245,7 +245,7 @@
   }
  },
  "dataset": {
-  "path": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\batch2\\b2-locomo-e2e\\benchmarks\\locomo\\data\\locomo10.json",
+  "path": "~\\AppData\\Local\\Temp\\batch2\\b2-locomo-e2e\\benchmarks\\locomo\\data\\locomo10.json",
   "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
   "expected_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
   "matches_pin": true,

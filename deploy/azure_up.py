@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Create or update the Azure Container App that hosts the transparency service.
 
-    python deploy/azure_up.py --key-file C:/Users/Danculus/inspeximus-deploy/service.key
+    python deploy/azure_up.py --key-file ~/inspeximus-deploy/service.key
 
 Idempotent: every step checks for what it is about to create and skips it if it is already there, so
 a second run after a failure continues rather than starting over.

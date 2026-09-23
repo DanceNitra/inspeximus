@@ -21,7 +21,7 @@
  },
  "operating_point": {
   "dataset": "longmemeval_s",
-  "dataset_path": "C:\\Users\\Danculus\\.cache\\longmemeval\\longmemeval_s.json",
+  "dataset_path": "~\\.cache\\longmemeval\\longmemeval_s.json",
   "dataset_sha256": "08d8dad4be43ee2049a22ff5674eb86725d0ce5ff434cde2627e5e8e7e117894",
   "dataset_sha256_pinned": "08d8dad4be43ee2049a22ff5674eb86725d0ce5ff434cde2627e5e8e7e117894",
   "dataset_matches_pin": true,

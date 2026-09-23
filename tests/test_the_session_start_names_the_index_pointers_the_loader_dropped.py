@@ -93,7 +93,8 @@ def test_a_dropped_line_pointing_at_an_entry_the_window_has_is_not_reported():
 def test_the_standalone_entry_point_reads_the_saved_before_state_to_four_names():
     """The same-day before/after published on claude-code#70555 came from a probe; the shipped module
     must read the same file to the same four names or the two instruments disagree on the cut rule."""
-    saved = os.path.join(os.path.expanduser("~"), ".claude", "projects", "C--Users-Danculus-agora",
+    saved = os.path.join(os.path.expanduser("~"), ".claude", "projects", os.environ.get("INSPEXIMUS_CLAUDE_PROJECT",
+                                   "C--Users-%s-agora" % os.path.basename(os.path.expanduser("~"))),
                          "memory", "MEMORY.md.pre-compaction-2026-09-13")
     if not os.path.isfile(saved):
         pytest.skip("the saved pre-compaction index is not on this machine")

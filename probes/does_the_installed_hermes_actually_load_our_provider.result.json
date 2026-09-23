@@ -54,6 +54,6 @@
   "inspeximus_version": "2.27.4",
   "description_in_list": "",
   "provider_dir": "None",
-  "host": "C:\\Users\\Danculus\\AppData\\Local\\hermes\\hermes-agent",
+  "host": "~\\AppData\\Local\\hermes\\hermes-agent",
   "host_commit": "6e07eb4838 2026-09-10 01:14:30 -0500"
 }

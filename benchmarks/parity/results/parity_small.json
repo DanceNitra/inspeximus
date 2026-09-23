@@ -8,7 +8,7 @@
  },
  "k": 6,
  "generated": "2026-08-01T23:10:30",
- "inspeximus_path": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\batch2\\b4-parity\\inspeximus\\__init__.py",
+ "inspeximus_path": "~\\AppData\\Local\\Temp\\batch2\\b4-parity\\inspeximus\\__init__.py",
  "inspeximus_version": "1.89.0",
  "reader": "top_value(): first retrieved item mentioning either candidate wins; both in one item, or neither anywhere, is `unclear`",
  "arms": [

@@ -15,7 +15,7 @@ TWO MEASUREMENTS.
      that produced 3.0.0 required 100% backward compatibility; this is the corpus it can be measured
      on rather than asserted.
 
-    python probes/fixture_corpus_sample_and_census.py --n 20000 --out C:/Users/Danculus/inspeximus-corpus
+    python probes/fixture_corpus_sample_and_census.py --n 20000 --out ~/inspeximus-corpus
 """
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 {
  "probe": "recall_over_a_time_gap",
  "gap_seconds": 2.0,
- "locomo_path": "C:\\Users\\Danculus\\agora\\agora_output\\lab\\data\\locomo10.json",
+ "locomo_path": "~\\agora\\agora_output\\lab\\data\\locomo10.json",
  "n_conversations": 4,
  "natural_order": {
   "hit1_before": 0.25625,

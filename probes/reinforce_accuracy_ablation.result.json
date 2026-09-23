@@ -18,7 +18,7 @@
   "ceiling": 0.99
  },
  "guard_fired": false,
- "locomo_path": "C:\\Users\\Danculus\\agora\\agora_output\\lab\\data\\locomo10.json",
+ "locomo_path": "~\\agora\\agora_output\\lab\\data\\locomo10.json",
  "corpora": [
   {
    "corpus": "synthetic",

@@ -1,5 +1,5 @@
 {
-  "root": "C:\\Users\\Danculus\\AppData\\Local\\hermes\\hermes-agent",
+  "root": "~\\AppData\\Local\\hermes\\hermes-agent",
   "providers": [
     "byterover",
     "hindsight",

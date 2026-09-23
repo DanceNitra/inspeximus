@@ -7,8 +7,9 @@ and the Python API said nothing. 11 persona layers were written under the belief
 lineage had landed. This test pins BOTH halves: the default still preserves the audit
 evidence, and the opt-in refuses to commit.
 """
+import os
 import sys
-sys.path.insert(0, r"C:\Users\Danculus\inspeximus-repo")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import Inspeximus
 from inspeximus.core import UnresolvedLineage
 

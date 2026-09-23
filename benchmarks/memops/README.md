@@ -39,8 +39,11 @@ That is a cost difference, not a quality one, and it is the only claim this run 
 
 ## Reproducing
 
-The dataset is not redistributed here. Get it from [MemTensor/MemOps](https://github.com/MemTensor/MemOps)
-(MIT) and place the long-context scenarios in `data_lc/` and the evidence conversations in `data/`.
+The dataset IS redistributed here, in `data/` (evidence conversations) and `data_lc/` (long-context
+scenarios). Both are copied from [MemTensor/MemOps](https://github.com/MemTensor/MemOps), where they
+sit under `generated_result/`, and are MIT licensed, Copyright (c) 2026 MemTensor. The license text is
+in [`LICENSE-MemOps`](LICENSE-MemOps). The names and email addresses in those files come from
+MemOps's generated scenarios, not from us.
 
 ```bash
 pip install inspeximus mem0ai rank-bm25

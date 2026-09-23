@@ -200,6 +200,6 @@
     "registration_B": 0.12,
     "registration_C": 28.26
   },
-  "store": "C:\\Users\\Danculus\\.inspeximus\\mcp_memory_chain.json",
+  "store": "~\\.inspeximus\\mcp_memory_chain.json",
   "where_the_time_goes": "Profiled on this store (cProfile, annex_iv alone): 68 s in memory_report(), which makes 400 recall() calls for its redundancy estimate, and 20 s in compliance_report(). Inside that one document, supersession_report, governance_report and verify_writes are each called TWICE, and every other document recomputes them again from scratch. No single generator is slow; the pack re-derives the same store-wide analysis six times. A pack-scoped memo is the fix, and it needs its own staleness control rather than being bolted onto this measurement."
 }

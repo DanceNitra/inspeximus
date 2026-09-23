@@ -33,7 +33,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import sqlite_store as ss                    # noqa: E402
 from _receipt import write_json  # noqa: E402
 
-LIVE = r"C:/Users/Danculus/agora/.inspeximus/coding_memory.json"
+LIVE = os.path.join(os.path.expanduser("~"), "agora", ".inspeximus", "coding_memory.json")
 N = 32538
 
 
