@@ -204,6 +204,18 @@ a snapshot of the service's own key set, byte-identical (`fab0b625...`), served 
 rather than the `text/html` the proxy was labelling it. The SCRAPI service still runs, bound to
 `127.0.0.1:9800`, reachable only from the machine itself.
 
+**That snapshot is refreshed by `publish-static-log.sh`, and it has to be.** The body embeds the
+entry count and the current root, so a file written once and never updated would advertise a stale
+root beside a log that has moved. That is worse than publishing nothing: a reader compares it with
+`head.json` and concludes the log contradicts itself. The publisher fetches it from the loopback
+service after every publish and warns on stderr if it could not.
+
+```sh
+$ sha256sum /srv/static-log/.well-known/scitt-keys
+$ curl -s -H 'Accept: application/cbor' http://127.0.0.1:9800/.well-known/scitt-keys | sha256sum
+# the two must be identical after every publish
+```
+
 ```sh
 curl -s -o /dev/null -w "%{http_code}
 " -X POST --data-binary x https://92.5.74.17.sslip.io/entries
