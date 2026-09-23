@@ -315,10 +315,15 @@ def build(service: TransparencyService, out: str, base_url: str, title: str, wit
                            "the same one shown to anyone else; only a witness can."},
                   fh, indent=2)
 
+    # Every leaf, read once. An inclusion proof needs the WHOLE tree, so reading them inside the
+    # loop would re-read the log n times; on a log of any size that is the difference between a
+    # publish and a job that times out.
+    leaves_so_far = [service.entry_leaf(k) for k in range(n)]
+
     written = 0
     with open(os.path.join(out, "log.jsonl"), "w", encoding="utf-8", newline="\n") as fh:
         for i in range(n):
-            leaf = service.entry_leaf(i)
+            leaf = leaves_so_far[i]
             # The RFC 6962 leaf hash, SHA-256(0x00 || data), and NOT sha256(data). The 0x00 prefix is
             # the leaf/node domain separation, and a verifier handed the wrong one rebuilds a root
             # that never matches.
@@ -354,6 +359,34 @@ def build(service: TransparencyService, out: str, base_url: str, title: str, wit
                 with open(os.path.join(out, "entries", "%d.cose" % i), "wb") as rf:
                     rf.write(receipt)
                 row["receipt"] = "entries/%d.cose" % i
+                # THE AUDIT PATH AS PLAIN JSON, beside the COSE receipt that already carries it.
+                # The receipt is the RFC 9942 artifact and it is the one to cite; this file exists
+                # so a verifier can check inclusion with a hash function and a list, without a
+                # COSE parser and without asking this server anything. A document that names a log
+                # root is only honest if the reader can check that the root CONTAINS the document,
+                # and making that a two-line check rather than a library dependency is the
+                # difference between a claim people verify and a claim people believe.
+                path = [h.hex() for h in merkle.inclusion_proof(leaves_so_far, i)]
+                proof = {
+                    "kind": "inspeximus.inclusion-proof/1",
+                    "index": i,
+                    "tree_size": n,
+                    "leaf": "entries/%d.leaf.json" % i,
+                    "leaf_hash": row["leaf_hash"],
+                    "root": head["writes_tip"],
+                    "audit_path": path,
+                    "how": ("Hash the leaf file with SHA-256(0x00 || bytes), then fold the audit "
+                            "path in order with SHA-256(0x01 || left || right), RFC 6962. The "
+                            "result must equal `root`, which is the value the signed checkpoint "
+                            "carries."),
+                    "scope": ("Proves this entry is in the tree whose root is named here. It does "
+                              "not prove the entry is true, and it cannot see a history shown to "
+                              "somebody else: that is what the witness is for."),
+                }
+                with open(os.path.join(out, "entries", "%d.proof.json" % i), "w",
+                          encoding="utf-8", newline=chr(10)) as pf:
+                    json.dump(proof, pf, indent=2, sort_keys=True)
+                row["proof"] = "entries/%d.proof.json" % i
                 written += 1
             fh.write(json.dumps(row, sort_keys=True) + "\n")
 

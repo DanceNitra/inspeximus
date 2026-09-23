@@ -125,3 +125,61 @@ def test_the_verdict_says_what_it_cannot_prove(site, tmp_path):
     scope = json.load(open(out_path, encoding="utf-8"))["scope"]
     assert "operator checking the operator" in scope
     assert "witness" in scope, "the file must point at what independence actually comes from"
+
+
+# -- the inclusion proof a reader can check with a hash function and a list ------------------------
+def test_every_entry_publishes_an_audit_path_that_verifies_offline(site):
+    """A document that names a log root is only honest if the reader can check that the root CONTAINS
+    the document. The COSE receipt already carries this proof; the JSON file exists so checking it
+    needs no COSE parser and no question asked of the server."""
+    import json as _json
+
+    from inspeximus import merkle
+
+    head = _json.load(open(os.path.join(site, "head.json"), encoding="utf-8"))
+    root = bytes.fromhex(head["writes_tip"])
+    proofs = sorted(f for f in os.listdir(os.path.join(site, "entries")) if f.endswith(".proof.json"))
+    assert len(proofs) == head["n_writes"], "every entry needs a proof, not most of them"
+
+    for name in proofs:
+        p = _json.load(open(os.path.join(site, "entries", name), encoding="utf-8"))
+        leaf = open(os.path.join(site, p["leaf"]), "rb").read()
+        assert p["root"] == head["writes_tip"]
+        assert p["tree_size"] == head["n_writes"]
+        assert merkle.leaf_hash(leaf).hex() == p["leaf_hash"]
+        assert merkle.verify_inclusion(leaf, p["index"], p["tree_size"],
+                                       [bytes.fromhex(h) for h in p["audit_path"]], root), name
+
+
+def test_CONTROL_a_tampered_leaf_fails_its_own_audit_path(site):
+    """Without this the test above cannot tell a working proof from arithmetic that accepts anything."""
+    import json as _json
+
+    from inspeximus import merkle
+
+    root = bytes.fromhex(_json.load(open(os.path.join(site, "head.json"), encoding="utf-8"))["writes_tip"])
+    p = _json.load(open(os.path.join(site, "entries", "2.proof.json"), encoding="utf-8"))
+    leaf = bytearray(open(os.path.join(site, p["leaf"]), "rb").read())
+    leaf[20] ^= 0x01
+    assert bytes(leaf) != open(os.path.join(site, p["leaf"]), "rb").read()
+    assert not merkle.verify_inclusion(bytes(leaf), p["index"], p["tree_size"],
+                                       [bytes.fromhex(h) for h in p["audit_path"]], root)
+
+
+def test_CONTROL_a_proof_read_against_the_wrong_index_fails(site):
+    import json as _json
+
+    from inspeximus import merkle
+
+    root = bytes.fromhex(_json.load(open(os.path.join(site, "head.json"), encoding="utf-8"))["writes_tip"])
+    p = _json.load(open(os.path.join(site, "entries", "2.proof.json"), encoding="utf-8"))
+    leaf = open(os.path.join(site, p["leaf"]), "rb").read()
+    assert not merkle.verify_inclusion(leaf, p["index"] + 1, p["tree_size"],
+                                       [bytes.fromhex(h) for h in p["audit_path"]], root)
+
+
+def test_the_proof_says_what_it_does_not_prove(site):
+    import json as _json
+    p = _json.load(open(os.path.join(site, "entries", "0.proof.json"), encoding="utf-8"))
+    assert "does not prove the entry is true" in p["scope"]
+    assert "witness" in p["scope"]
