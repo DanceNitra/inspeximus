@@ -1,3 +1,30 @@
+{
+	# TIMEOUTS ARE THE SLOW-CONNECTION DEFENCE. A connection that opens and then dribbles bytes costs
+	# almost nothing to make and holds a worker until it is closed. Caddy's defaults leave the header
+	# read open indefinitely, which is the whole of slowloris.
+	#
+	# The numbers, and why. `read_header` 5s: a real client sends its request line and headers in one
+	# packet; 5s is two orders of magnitude more than that and still closes a dribbler immediately.
+	# `read_body` 5s: this site accepts no bodies at all (see request_body below), so any body is a
+	# mistake or an attack. `write` 30s: the largest file here is under 100 KB, so 30s covers a very
+	# slow mobile link. `idle` 30s: keep-alive is worth having in front of a CDN, and half a minute
+	# is long enough for a verifier fetching a handful of files in sequence.
+	servers {
+		timeouts {
+			read_body 5s
+			read_header 5s
+			write 30s
+			idle 30s
+		}
+		max_header_size 16KB
+	}
+	# The admin endpoint stays ON, bound to localhost inside the container and not published, which
+	# is Caddy's default. `admin off` was the first version of this line and it is wrong here: it
+	# also removes the reload path, so every config change becomes a container restart and a gap in
+	# service. The port is not reachable from outside the container; `docker port` shows it is not
+	# mapped, and the compose file publishes only 80 and 443.
+}
+
 92.5.74.17.sslip.io {
 	# WHAT THESE HEADERS DO AND DO NOT DO. None of them protects the log. The log is protected by
 	# the Ed25519 signature over the checkpoint, which a reader verifies without trusting this
@@ -12,6 +39,13 @@
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 		Referrer-Policy "no-referrer"
+	}
+
+	# NO BODIES. Every public path here is a static file fetched with GET. A body is either a
+	# mistake or someone probing for a write surface, and 4 KB is far more than either needs to be
+	# refused with a 413 rather than read into memory on a 954 MB box.
+	request_body {
+		max_size 4KB
 	}
 
 	@log path /log/*
@@ -33,6 +67,20 @@
 		# and for the record, not for search.
 		X-Robots-Tag "noindex"
 	}
+
+	# CACHE HEADERS, so a CDN in front answers almost everything without touching this box. The
+	# split is by how often a file changes, not by how important it is.
+	#
+	# `head.json`, `checkpoint` and `self-verification.json` change when the log grows or the hourly
+	# check runs, so they get 60s: long enough to absorb a burst, short enough that a verifier is
+	# never told a stale head is current. Everything else under /log/ is IMMUTABLE once written: an
+	# entry's leaf and its receipt are committed to by the root and can never change without the
+	# whole log changing, so they get a year. The mirror is rebuilt daily, so it gets an hour.
+	@logvolatile path /log/head.json /log/checkpoint /log/self-verification.json /log/log.jsonl /log/ /log/index.html
+	header @logvolatile Cache-Control "public, max-age=60, stale-while-revalidate=300"
+	@logimmutable path /log/entries/* /log/keys.cbor /log/keys.json /log/checkpoint.vkey /log/verify.py
+	header @logimmutable Cache-Control "public, max-age=31536000, immutable"
+	header @mirror Cache-Control "public, max-age=3600"
 
 	# WITHOUT THIS, FIVE OF THE TEN PUBLISHED ARTIFACTS HAD NO CONTENT-TYPE AT ALL, measured on the
 	# live host: checkpoint, checkpoint.vkey, log.jsonl, verify.py and every .cose receipt. A
@@ -76,5 +124,28 @@
 		file_server browse
 	}
 
-	reverse_proxy scitt:9800
+	# THE KEY SET IS A FILE NOW, NOT A SERVICE. It used to be proxied to the SCRAPI service, and
+	# that proxy was the whole write surface: measured 2026-09-23 from the public internet,
+	# `POST /entries` returned 400 with "the statement's signature does not verify; no Issuer claim;
+	# no Subject claim", which is a live registration endpoint telling a stranger exactly what to
+	# fix. The service runs a policy of --accept-any-issuer, so anyone who fixed those three things
+	# got an entry in the log we ask people to verify, on a box with 954 MB of memory.
+	#
+	# The proxy also mislabelled this response as `text/html`, which nosniff now turns into a
+	# browser refusal. Serving it as a file fixes the type and closes the write path in one change.
+	handle /.well-known/scitt-keys {
+		root * /srv/static-log
+		rewrite * /.well-known/scitt-keys
+		header Content-Type "application/cbor"
+		header Cache-Control "public, max-age=60"
+		file_server
+	}
+
+	# NOTHING ELSE. Every public path is a file that already exists; there is no endpoint that
+	# computes on request, no query parameter that selects work, and no way to write. The SCRAPI
+	# service still runs, bound to 127.0.0.1 on the host, and is reachable only from the machine
+	# itself.
+	handle {
+		respond "This host serves a static transparency log. Start at /log/ and /mirror/. There is nothing here to POST to." 404
+	}
 }

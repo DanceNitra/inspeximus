@@ -190,6 +190,74 @@ UptimeRobot (free tier), HTTPS monitor on `https://92.5.74.17.sslip.io/.well-kno
 5 minutes, alerts to the owner's email. The measured uptime goes into the weekly channel brief; no
 number is promised anywhere.
 
+## The public surface, and what it can take
+
+**A live registration endpoint was reachable from the internet until 2026-09-23.** The site's
+catch-all was `reverse_proxy scitt:9800`, so `POST /entries` reached the SCRAPI service and answered
+`400` with `the statement's signature does not verify; no Issuer claim; no Subject claim`: a write
+path telling a stranger exactly what to fix, on a service running `--accept-any-issuer`, on a box
+with 954 MB of memory. Anyone who fixed those three things would have had an entry in the log we ask
+people to verify.
+
+The proxy is gone. Every public path is now a file that already exists. `/.well-known/scitt-keys` is
+a snapshot of the service's own key set, byte-identical (`fab0b625...`), served as `application/cbor`
+rather than the `text/html` the proxy was labelling it. The SCRAPI service still runs, bound to
+`127.0.0.1:9800`, reachable only from the machine itself.
+
+```sh
+curl -s -o /dev/null -w "%{http_code}
+" -X POST --data-binary x https://92.5.74.17.sslip.io/entries
+# 404, and the body says there is nothing here to POST to
+```
+
+### What the box actually does under load
+
+Measured 2026-09-23 from the host itself, so the number is the server rather than the link. The
+burst tool is `/tmp/burst.py` on the host, standard library only.
+
+| what | result |
+|---|---|
+| new TLS connection per request, 64 workers | **42.7 req/s**, 0 errors, p50 1.25 s, p99 4.6 s |
+| the same at 256 workers | 44.9 req/s, 0 errors: the ceiling is not concurrency |
+| two burst processes at once | 20.3 + 21.7 = 42 req/s, so the ceiling is the BOX, not the client |
+| plain HTTP, no TLS, 64 workers | 104.7 req/s, 3.5% timeouts |
+| **one kept-alive connection** | **518 req/s**, p50 0.46 ms |
+| memory high-water during all of it | **523 MB of 954**. The OOM killer never fired. |
+| peak CPU, user plus system | 30% |
+
+**The cost is the TLS handshake and nothing else.** One handshake takes about 0.10 s on this
+burstable vCPU, so fresh connections cap the box at roughly 43 a second while a reused connection
+serves 518. That is the whole argument for a CDN: it terminates TLS for the public and holds a few
+keep-alive connections to the origin, which is the shape this box is twelve times better at.
+
+The failure mode to watch is NOT memory. Nothing measured came close.
+
+### Caps, and the numbers
+
+Caddy's global block (`deploy/Caddyfile`) sets the timeouts: `read_header` and `read_body` 5 s,
+`write` 30 s, `idle` 30 s. A slow-header client is cut after 6.0 s, measured. A declared 100 MB body
+is refused after 128 KB in 0.52 s with no change in memory.
+
+Three iptables rules in DOCKER-USER, installed by `https-rate-limits.service`:
+
+| rule | number | why |
+|---|---|---|
+| per-IP concurrent connections | 64 | a browser opens about 6 per origin; a verifier fetching the whole log uses a handful |
+| per-IP new connections | 120/min, burst 120 | a full verification run is about 25 files, so this allows nearly five runs a minute from one address |
+| global concurrent ceiling | 600 | keeps the box alive rather than fair: past this, new connections are refused for everyone instead of the OOM killer choosing a container |
+
+**DOCKER-USER, not INPUT.** Measured: the INPUT rule for dport 443 had passed ZERO packets while the
+site was serving, because published container ports are DNAT-ed and traverse FORWARD. A rule in INPUT
+would have looked like a limit and enforced nothing.
+
+Proved able to fire: a 24-worker burst from another machine was refused for 59% of its connections,
+and rule 2's counter moved by 1392 packets. Cache headers are 60 s for the head, the checkpoint and
+the self-verification file, a year and `immutable` for entries and keys, an hour for the mirror.
+
+**When a CDN goes in front, the per-IP rules must be replaced by rules on the CDN's ranges.** Every
+request will then arrive from a handful of CDN addresses, and a per-IP cap would throttle the CDN
+itself.
+
 ## What TLS protects here, and what it does not
 
 **The certificate is not what makes the log trustworthy. The signature is.** This is the sentence a
