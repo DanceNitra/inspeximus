@@ -57,6 +57,9 @@ NOT_STANDALONE = {
     "the_headers_the_browser_is_told_to_obey.py": "measured the retired public front end of the hosted "
                                                   "log; the host serves nothing to the internet since "
                                                   "2026-09-23, and the result file is the record",
+    "interop_with_litewitness.py": "drives litewitness, a Go tlog-witness the suite does not build; "
+                                   "it runs in .github/workflows/tlog-witness-interop.yml against a witness "
+                                   "that job compiles and configures",
     "register_against_the_hosted_log.py": "registers a real entry with the hosted transparency service over "
                                           "the network; the 10.A.4 acceptance client, run by hand against the "
                                           "live host, never by the suite",

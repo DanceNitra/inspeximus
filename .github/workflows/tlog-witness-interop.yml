@@ -1,0 +1,82 @@
+# Does a witness we did not write accept what our client sends, and refuse what it should?
+#
+# litewitness (filippo.io/torchwood) implements c2sp.org/tlog-witness. This job builds it, gives it
+# two logs to witness, a throwaway test log and our live one, and runs
+# probes/interop_with_litewitness.py against it. Our own witness agreeing with our own client proves
+# the two halves match each other; this is the check that they match the protocol.
+
+name: tlog-witness interop
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - inspeximus/witness_checkpoint.py
+      - inspeximus/checkpoint.py
+      - inspeximus/merkle.py
+      - probes/interop_with_litewitness.py
+      - .github/workflows/tlog-witness-interop.yml
+  schedule:
+    - cron: '23 5 * * 1'
+
+permissions:
+  contents: read
+
+env:
+  # The live log's key, pinned here and not fetched: the check must not trust the host it checks.
+  LIVE_ORIGIN: dancenitra.github.io/inspeximus-log
+  LIVE_VKEY: dancenitra.github.io/inspeximus-log+c8ae81d8+AZ+3gN1yiUhnxtrI4UDMeNdVYXFH0gz9Jr/lVxkPZaxJ
+  TEST_ORIGIN: example.test/inspeximus-interop
+  WITNESS_NAME: example.test/witness
+
+jobs:
+  interop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e . cryptography
+
+      - name: Build litewitness and witnessctl
+        run: |
+          go install filippo.io/torchwood/cmd/litewitness@latest filippo.io/torchwood/cmd/witnessctl@latest
+          go version -m "$(go env GOPATH)/bin/litewitness" | grep -E "mod|torchwood" | head -3
+
+      - name: Configure the witness with both logs
+        run: |
+          python probes/interop_with_litewitness.py keygen --out /tmp/ix
+          W="$(go env GOPATH)/bin/witnessctl"
+          "$W" add-log -db /tmp/w.db -origin "$TEST_ORIGIN"
+          "$W" add-key -db /tmp/w.db -origin "$TEST_ORIGIN" -key "$(cat /tmp/ix/log.vkey)"
+          "$W" add-log -db /tmp/w.db -origin "$LIVE_ORIGIN"
+          "$W" add-key -db /tmp/w.db -origin "$LIVE_ORIGIN" -key "$LIVE_VKEY"
+
+      - name: Start litewitness with its key in an ssh-agent
+        run: |
+          ssh-agent -a /tmp/agent.sock > /dev/null
+          ssh-keygen -q -t ed25519 -N '' -f /tmp/witness
+          SSH_AUTH_SOCK=/tmp/agent.sock ssh-add /tmp/witness
+          FP=$(ssh-keygen -lf /tmp/witness.pub | awk '{print $2}')
+          nohup "$(go env GOPATH)/bin/litewitness" -db /tmp/w.db -name "$WITNESS_NAME" -key "$FP" \
+            -ssh-agent /tmp/agent.sock -listen localhost:7380 > /tmp/litewitness.log 2>&1 &
+          for i in $(seq 1 30); do
+            if (echo > /dev/tcp/127.0.0.1/7380) 2>/dev/null; then echo "listening"; exit 0; fi
+            sleep 1
+          done
+          cat /tmp/litewitness.log; exit 1
+
+      - name: Our client against litewitness
+        run: |
+          python probes/interop_with_litewitness.py run --url http://localhost:7380 --state /tmp/ix \
+            --witness-name "$WITNESS_NAME" --witness-ssh-pub /tmp/witness.pub \
+            --live-checkpoint-url "https://dancenitra.github.io/inspeximus-log/checkpoint"
+
+      - name: What litewitness logged
+        if: always()
+        run: cat /tmp/litewitness.log || true
