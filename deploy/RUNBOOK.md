@@ -258,6 +258,65 @@ the self-verification file, a year and `immutable` for entries and keys, an hour
 request will then arrive from a handful of CDN addresses, and a per-IP cap would throttle the CDN
 itself.
 
+## Putting a CDN in front, when there is a domain
+
+**NOT DONE, and the blocker is a purchase and a sign-up.** Today the published address IS the
+origin, so there is nothing to bypass: an attacker who wants to flood this box simply does. One Free
+Tier instance on one link has no absorption capacity, and no rule on the host changes that. The
+address therefore stays out of anything printed.
+
+Cloudflare's free tier covers this class at no cost. What it needs that this session cannot do: a
+domain name, and an account.
+
+The steps, in order, so nobody has to work them out later.
+
+1. **Point the domain at Cloudflare**, proxied (the orange cloud), with an A record to
+   `92.5.74.17`. Verify the public name no longer resolves to the origin:
+
+   ```sh
+   dig +short <the name>          # must be Cloudflare addresses, never 92.5.74.17
+   ```
+
+2. **Change the site name in `deploy/Caddyfile`** from `92.5.74.17.sslip.io` to the new name, and
+   reload. Let's Encrypt issues over TLS-ALPN on 443, which works behind Cloudflare in Full (strict)
+   mode; if it does not, switch the site to `tls internal` and let Cloudflare terminate.
+
+3. **Restrict 443 to Cloudflare's ranges, and only then.** Doing this before step 1 takes the site
+   down. The ranges are published at `https://www.cloudflare.com/ips-v4` and
+   `https://www.cloudflare.com/ips-v6` and they change, so this belongs in a script that refetches
+   them rather than in a one-off command.
+
+   ```sh
+   # ARM A ROLLBACK FIRST. The same discipline as the SSH narrowing: a wrong rule here takes the
+   # public site off the internet and nothing but this brings it back.
+   sudo bash -c 'nohup sh -c "sleep 300; iptables -F DOCKER-USER;      /usr/local/bin/https-rate-limits.sh" >/dev/null 2>&1 &'
+
+   for net in $(curl -s https://www.cloudflare.com/ips-v4); do
+     sudo iptables -I DOCKER-USER 1 -p tcp --dport 443 -s "$net" -j RETURN
+   done
+   sudo iptables -A DOCKER-USER -p tcp --dport 443 -j REJECT --reject-with tcp-reset
+   ```
+
+   Acceptance, run from a machine that is not Cloudflare:
+
+   ```sh
+   curl --resolve <the name>:443:92.5.74.17 https://<the name>/log/head.json   # must FAIL
+   curl https://<the name>/log/head.json                                        # must succeed
+   ```
+
+4. **Replace the per-IP rules.** Every request will then arrive from a handful of Cloudflare
+   addresses, so `per-IP concurrent cap` and `per-IP new-connection rate` would throttle the CDN
+   itself. Rate limiting moves to Cloudflare's own rules, and the host keeps only the global ceiling.
+
+5. **Restore the real client address** for the logs: `trusted_proxies` in Caddy, reading
+   `CF-Connecting-IP`. Without it every log line records a Cloudflare address, and an abuse report
+   becomes unanswerable.
+
+**What the CDN buys, in one measured line.** This box serves 42.7 requests a second when every
+request opens a new TLS connection, and 518 on one kept-alive connection. A CDN terminates TLS for
+the public and holds a few keep-alive connections to the origin, which is the shape this box is
+twelve times better at.
+
 ## What TLS protects here, and what it does not
 
 **The certificate is not what makes the log trustworthy. The signature is.** This is the sentence a

@@ -15,7 +15,11 @@ services:
       - --witness
       - http://witness:9810
   caddy:
-    image: caddy:2
+    # PINNED TO A DIGEST, not to the moving `caddy:2` tag. A `docker compose pull` against a tag
+    # replaces the binary that terminates TLS for our public log with whatever upstream has
+    # published, with no review and no record of what changed. Read the digest back with
+    # `docker inspect caddy:2 --format '{{json .RepoDigests}}'` before changing this line.
+    image: caddy:2@sha256:14a9c00d4e833ebc2b65d36515b37bde3b73f0b323a2663aaafc88953d8c4e3f
     restart: unless-stopped
     ports: ["443:443", "80:80"]
     volumes:
