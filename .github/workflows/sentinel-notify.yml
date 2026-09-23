@@ -25,6 +25,10 @@ permissions: {}
 jobs:
   notify:
     runs-on: ubuntu-latest
+    # The bot token lives in the `notify` environment, not in repository secrets. In inspeximus-log
+    # that environment admits only `main`, because the host's deploy key can push a workflow to
+    # `incoming`, and a repository secret is readable by any workflow that runs.
+    environment: notify
     timeout-minutes: 2
     steps:
       - name: Tell the owner
