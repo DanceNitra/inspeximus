@@ -677,6 +677,122 @@ def check_tests(rep, root=ROOT, skip=False):
     rep.add("mutation set", PASS, msummary)
 
 
+
+# --------------------------------------------------------------------------- fast phase
+
+#: Always in the fast phase: the file that failed 3.8.1's first gate after 35 minutes. It is one xdist
+#: group, so run whole it executes every cited probe on one worker, 20+ minutes by itself. The fast
+#: phase takes its checks whole and runs only the probes changed since the last tag; the full suite
+#: still runs every probe.
+FAST_ALWAYS = ("tests/test_probes_cited_by_docs.py",)
+
+
+def _last_release_tag(root):
+    try:
+        return subprocess.run(["git", "describe", "--tags", "--abbrev=0", "--match", "v[0-9]*"],
+                              cwd=str(root), capture_output=True, text=True).stdout.strip() or None
+    except Exception:
+        return None
+
+
+def fast_selection(root):
+    """The tests most likely to fail first: every test file changed since the last release tag or in
+    the working tree, every test file that names a changed module other than core.py (core is
+    imported by nearly every test, so naming it would select the whole suite), and FAST_ALWAYS."""
+    tag = _last_release_tag(root)
+    names = set()
+    for args in ((["diff", "--name-only", tag + "..HEAD"] if tag else None),
+                 ["diff", "--name-only"], ["ls-files", "--others", "--exclude-standard"]):
+        if args:
+            out = subprocess.run(["git"] + args, cwd=str(root), capture_output=True, text=True).stdout
+            names.update(l.strip() for l in out.splitlines() if l.strip())
+    tests = {n for n in names if n.startswith("tests/test_") and n.endswith(".py")
+             and (root / n).exists()}
+    stems = {pathlib.Path(n).stem for n in names
+             if n.startswith(("inspeximus/", "tools/")) and n.endswith(".py")
+             and pathlib.Path(n).stem not in ("core", "__init__")}
+    if stems:
+        for t in (root / "tests").glob("test_*.py"):
+            src = t.read_text(encoding="utf-8", errors="replace")
+            if any(re.search(r"\b%s\b" % re.escape(st), src) for st in stems):
+                tests.add("tests/" + t.name)
+    tests.difference_update(FAST_ALWAYS)
+    probes = sorted(pathlib.Path(n).stem for n in names
+                    if n.startswith("probes/") and n.endswith(".py") and (root / n).exists())
+    return sorted(tests), tag, probes
+
+
+def check_fast_tests(rep, root=ROOT, workers=8):
+    """Minutes, not half an hour: the tests that failed last time, then the tests nearest the change,
+    each with -x so the first failure ends the run. The full suite runs only when this passes.
+    Measured 2026-09-23: 3.8.1's first gate failed after 35 minutes on a test that takes three."""
+    sel, tag, probes = fast_selection(root)
+    lf = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-rfE", "-x", "--lf",
+                         "--lfnf=none", "-n", str(workers)], cwd=str(root),
+                        capture_output=True, text=True, errors="replace")
+    if lf.returncode not in (0, 5):                     # 5 = nothing failed last time, nothing to run
+        rep.add("fast: last failed", FAIL, _pytest_summary(lf))
+        return False
+    summaries = []
+    if sel:
+        proc = subprocess.run([sys.executable, "-m", "pytest"] + sel +
+                              ["-q", "-rfE", "-x", "-n", str(workers)], cwd=str(root),
+                              capture_output=True, text=True, errors="replace")
+        if proc.returncode != 0:
+            rep.add("fast: nearest tests", FAIL, _pytest_summary(proc))
+            return False
+        summaries.append(_pytest_summary(proc))
+    # The cited-probe checks whole, and a probe run only for the probes this change touched.
+    k = " or ".join(["not still_runs"] + probes)
+    proc = subprocess.run([sys.executable, "-m", "pytest"] + [f for f in FAST_ALWAYS if (root / f).exists()] +
+                          ["-q", "-rfE", "-x", "-n", "0", "-k", k], cwd=str(root),
+                          capture_output=True, text=True, errors="replace")
+    if proc.returncode != 0:
+        rep.add("fast: cited probes", FAIL, _pytest_summary(proc))
+        return False
+    summaries.append(_pytest_summary(proc))
+    rep.add("fast tests", PASS, "%d file(s) near the change since %s, %d changed probe(s), last-failed set: %s"
+            % (len(sel), tag or "the first commit", len(probes), " | ".join(summaries)))
+    return True
+
+
+def _pytest_summary(proc):
+    tail = [ln for ln in (proc.stdout or "").strip().splitlines() if ln.strip()]
+    named = [ln.strip() for ln in tail if ln.startswith(("FAILED ", "ERROR "))]
+    out = tail[-1] if tail else "no output"
+    if named:
+        out += "\n" + "\n".join("      " + n for n in named[:10])
+    return out
+
+
+# --------------------------------------------------------------------------- ready notice
+
+NOTIFY_ENV = pathlib.Path.home() / ".agora_sentinel" / "notify.env"
+
+
+def notify_ready(version, env_path=NOTIFY_ENV):
+    """One Telegram line when the gate says READY, so the owner knows the moment to answer.
+    Send-only bot; the token is read from a file and never printed. A missing file is not a failure."""
+    try:
+        vals = {}
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            m = re.match(r'\s*(NOTIFY_BOT_TOKEN|TELEGRAM_CHAT_ID)\s*=\s*"?([^"\s]+)"?', line)
+            if m:
+                vals[m.group(1)] = m.group(2)
+        if len(vals) < 2:
+            return "no notify.env"
+        import urllib.parse
+        import urllib.request
+        data = urllib.parse.urlencode({"chat_id": vals["TELEGRAM_CHAT_ID"],
+                                       "text": "inspeximus %s je pripraveny na vydanie, napis ano" % version}).encode()
+        with urllib.request.urlopen("https://api.telegram.org/bot%s/sendMessage" % vals["NOTIFY_BOT_TOKEN"],
+                                    data, timeout=20) as r:
+            return "delivered" if json.loads(r.read()).get("ok") else "not delivered"
+    except FileNotFoundError:
+        return "no notify.env"
+    except Exception as exc:                                      # noqa: BLE001 - a notice never fails a gate
+        return "not delivered: %s" % type(exc).__name__
+
 # --------------------------------------------------------------------------- main
 
 def _tree_fingerprint(root):
@@ -769,7 +885,16 @@ def run(root=ROOT, skip_tests=False):
         check_core_map(rep, root)
         check_release_notes(rep, root)
         check_mutation_targets(rep, root)
-        check_tests(rep, root, skip=skip_tests)
+        # FAST FIRST. Every check above takes seconds; if one failed, or the fast tests fail, the
+        # half-hour suite would only confirm what is already known.
+        if skip_tests:
+            check_tests(rep, root, skip=True)
+        elif rep.exit_code() == 1:
+            rep.add("test suite", SKIP, "not run: a check above failed, fix it first")
+        elif check_fast_tests(rep, root):
+            check_tests(rep, root)
+        else:
+            rep.add("test suite", SKIP, "not run: the fast phase failed, fix it first")
         check_ci_on_head(rep, root)
     finally:
         # Reported, never silent: a guard that quietly repairs something teaches nobody it fired.
@@ -797,6 +922,7 @@ def run(root=ROOT, skip_tests=False):
     if code == 0:
         print("READY: every check ran and passed. Nothing here publishes anything -- "
               "tagging and PyPI stay a deliberate, separate act.")
+        print("  ready notice: %s" % notify_ready(pyproject_version(root)))
     elif code == 1:
         print("NOT READY: %d check(s) FAILED." % sum(1 for _, s, _ in rep.rows if s == FAIL))
     else:

@@ -29,7 +29,9 @@ permissions:
   contents: read
 
 env:
-  LOG_URL: https://92.5.74.17.sslip.io/log
+  # The published log. The host serves nothing since 2026-09-23 (the ports are closed and Caddy is
+  # stopped); readers and witnesses use the verified Pages mirror, and this smoke test is one of them.
+  LOG_URL: https://dancenitra.github.io/inspeximus-log
 
 jobs:
   smoke:

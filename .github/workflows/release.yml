@@ -66,9 +66,17 @@ jobs:
     #
     # The integrations leg specifically: the base environment skips ~100 tests behind import guards, and
     # the manifest-version assertions that caught 1.86.0 run in BOTH legs. Mirrors ci.yml's install.
-    name: the test suite must pass first
+    name: the test suite must pass first (shard ${{ matrix.shard }}/4)
     if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     runs-on: ubuntu-latest
+    # 2026-09-24: one job ran the whole suite in 15 to 25 minutes, between the owner's yes and PyPI.
+    # The same suite now runs in four parallel shards (`--shard i/4`, tests/conftest.py); the cited
+    # probes, which must share one worker, have shard 3 to themselves. `tests total` below proves the
+    # four green shards ran every collected test exactly once, so the split cannot drop a test.
+    strategy:
+      fail-fast: true
+      matrix:
+        shard: [0, 1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -86,17 +94,42 @@ jobs:
           # nothing to catch it with. The pyproject floor is the real fix -- one source, every
           # install site -- and this line is what makes the next stub loud instead of silent.
           python -c "import autogen_core, agents; print('autogen_core and agents both import')"
-      - run: python -m pytest tests/ -q
+      - name: this shard of the suite
+        env:
+          SHARD_REPORT: shard-${{ matrix.shard }}.json
+        run: python -m pytest tests/ -q --shard ${{ matrix.shard }}/4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-shard-report-${{ matrix.shard }}
+          path: shard-${{ matrix.shard }}.json
       # The mutation set is deselected from the default (it edits source in place). A release must
-      # not ship without it: run it serially and explicitly.
-      - run: python -m pytest tests/ -n 0 -m mutation -q
+      # not ship without it: run it serially and explicitly, once, in the lightest shard.
+      - name: mutation set (serial)
+        if: matrix.shard == 0
+        run: python -m pytest tests/ -n 0 -m mutation -q
+
+  tests-total:
+    name: every collected test ran exactly once
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-shard-report-*
+          path: shard-reports
+          merge-multiple: true
+      - run: python tools/shard_total.py "shard-reports/*.json" --expect 4
 
   build:
     name: build sdist + wheel
     # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
     # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
     if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
-    needs: [audit, tests]
+    needs: [audit, tests, tests-total]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

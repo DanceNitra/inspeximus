@@ -152,3 +152,54 @@ def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory):
     if not os.environ.get("INSPEXIMUS_KEY_HOME"):
         os.environ["INSPEXIMUS_KEY_HOME"] = str(tmp_path_factory.mktemp("config-home"))
     yield
+
+
+# ── sharding: one suite, split across parallel CI jobs ───────────────────────────────────────────────
+# `--shard i/n` keeps the tests whose key lands in bucket i of n and deselects the rest. The key is the
+# xdist group when a test declares one, so tests that must share a worker also share a shard, and the
+# node id otherwise. crc32 rather than hash(): Python randomises str hashes per process, and every
+# shard must compute the same partition. The union of the n shards is the whole suite and no test is
+# in two; tests/test_the_shards_partition_the_suite.py checks both.
+def pytest_addoption(parser):
+    parser.addoption("--shard", default=None, help="run bucket i of n, written i/n (0-based)")
+
+
+LONG_GROUP = "group:cited_probes"
+
+
+def _shard_key(item):
+    group = item.get_closest_marker("xdist_group")
+    if group is not None:
+        return "group:" + str(group.args[0] if group.args else group.kwargs.get("name"))
+    return item.nodeid
+
+
+def pytest_collection_modifyitems(config, items):
+    spec = config.getoption("--shard")
+    if not spec:
+        return
+    import zlib
+    i, n = (int(x) for x in spec.split("/"))
+    if not (n > 0 and 0 <= i < n):
+        raise ValueError("--shard must be i/n with 0 <= i < n, got %r" % spec)
+    keep, drop = [], []
+    for it in items:
+        key = _shard_key(it)
+        # The cited-probe group is the longest single unit and cannot be split (its budgets assume one
+        # worker), so it gets the last shard to itself and everything else spreads over the others.
+        if n > 1:
+            bucket = n - 1 if key == LONG_GROUP else zlib.crc32(key.encode("utf-8")) % (n - 1)
+        else:
+            bucket = 0
+        (keep if bucket == i else drop).append(it)
+    report = os.environ.get("SHARD_REPORT")
+    if report:
+        # What tools/shard_total.py compares across shards: every shard must have collected the same
+        # suite, and together they must have kept all of it, each test exactly once.
+        import json
+        with open(report, "w", encoding="utf-8") as fh:
+            json.dump({"shard": spec, "all": sorted(it.nodeid for it in items),
+                       "mine": sorted(it.nodeid for it in keep)}, fh)
+    if drop:
+        config.hook.pytest_deselected(items=drop)
+    items[:] = keep

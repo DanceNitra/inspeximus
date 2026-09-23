@@ -1,0 +1,84 @@
+{
+ "kind": "inspeximus.probe/time-to-first-success/1",
+ "measured_utc": "2026-09-23T22:39:39Z",
+ "python": "3.12.10",
+ "platform": "win32",
+ "installed_version": "3.8.1",
+ "install_line": "pip install inspeximus",
+ "steps": [
+  {
+   "step": "create venv",
+   "seconds": 7.22,
+   "ok": true
+  },
+  {
+   "step": "README: pip install inspeximus",
+   "seconds": 4.1,
+   "ok": true,
+   "stderr_tail": "\n[notice] A new release of pip is available: 25.0.1 -> 26.2.1\n[notice] To update, run: C:\\Users\\Danculus\\AppData\\Local\\Temp\\ttfs_bpznyrpx\\venv\\Scripts\\python.exe -m pip install --upgrade pip\n"
+  },
+  {
+   "step": "README block as a script",
+   "seconds": 0.38,
+   "ok": true,
+   "stdout": "",
+   "stderr_tail": ""
+  },
+  {
+   "step": "README block pasted into python",
+   "seconds": 0.37,
+   "ok": true,
+   "stderr_tail": ""
+  }
+ ],
+ "checks": [
+  {
+   "line": "m.recall(\"which staging database\")[0][\"text\"]",
+   "promised": "'The staging database is db-7.internal'",
+   "saw": "'The staging database is db-7.internal'",
+   "ok": true
+  },
+  {
+   "line": "(probe) recall after revert",
+   "promised": "db-3 is back",
+   "saw": "The staging database is db-3.internal",
+   "ok": true
+  }
+ ],
+ "first_success": true,
+ "seconds_to_first_success": 11.69,
+ "stuck_points": [
+  {
+   "severity": "no visible result",
+   "step": "script",
+   "saw": "the script ran and printed nothing: the values the README's comments promise are only shown by an interactive console"
+  },
+  {
+   "severity": "unexplained output",
+   "step": "interactive",
+   "line": "m.remember(\"The staging database is db-3.internal\", key=\"staging-db\")",
+   "saw": "'9e9fd1234e'",
+   "promised": "(no value shown in the README)"
+  },
+  {
+   "severity": "unexplained output",
+   "step": "interactive",
+   "line": "m.remember(\"The staging database is db-7.internal\", key=\"staging-db\")   # a correction",
+   "saw": "'d9659213dc'",
+   "promised": "(no value shown in the README)"
+  },
+  {
+   "severity": "unexplained output",
+   "step": "interactive",
+   "line": "m.revert(\"staging-db\")                            # and it is reversible, on purpose",
+   "saw": "{'ok': True, 'restored': '01adc7de67', 'superseded': 'd9659213dc', 'reverted_to_object': None, 'reverted_to_text': 'The staging database is db-3.internal'}",
+   "promised": "(no value shown in the README)"
+  },
+  {
+   "severity": "no visible result",
+   "step": "interactive",
+   "line": "m.revert(\"staging-db\")",
+   "saw": "the README shows no line that confirms the revert; the probe confirmed it: True"
+  }
+ ]
+}

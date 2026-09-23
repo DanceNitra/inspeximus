@@ -88,8 +88,18 @@ jobs:
       - name: the gate must be able to go red
         run: python -m pytest tests/test_perf_gate_can_fail.py -q
 
+  # THE FULL SUITE, IN FOUR PARALLEL SHARDS. One job ran all of it in 10 to 15 minutes, and a release
+  # waited on it twice (here and again in release.yml). `--shard i/4` (tests/conftest.py) splits the
+  # collection: the cited-probe group, which must stay on one worker, gets shard 3 to itself, and the
+  # rest spread over 0-2. `integrations total` below proves the four green shards ran every collected
+  # test exactly once, which a set of green jobs cannot say on its own.
   integrations:
+    name: integrations (shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -111,8 +121,20 @@ jobs:
           # instead, after the extras, where it touches one package rather than the whole graph.
           pip install -U "openai-agents>=0.18"
           python -c "import autogen_core, agents; print('autogen_core and agents both import')"
-      - name: Run tests
-        run: python -m pytest tests/ -q -rs
+      - name: Run tests (this shard)
+        env:
+          SHARD_REPORT: shard-${{ matrix.shard }}.json
+        run: python -m pytest tests/ -q -rs --shard ${{ matrix.shard }}/4
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shard-report-${{ matrix.shard }}
+          path: shard-${{ matrix.shard }}.json
+      # The mutation set is deselected from the default run. It edits source in place, so it runs
+      # serially, once, in the shard that carries the least other work.
+      - name: mutation set (serial, full environment)
+        if: matrix.shard == 0
+        run: python -m pytest tests/ -n 0 -m mutation -q
       # --require-all is the point of running it HERE: this job installs every framework, so a SKIP is
       # an install failure, not an acceptable outcome. Without it a botched pip line would leave the
       # adapters unchecked and the job green. `continue-on-error` because the suite currently records
@@ -120,9 +142,26 @@ jobs:
       # pytest step above is what gates, by comparing every adapter against that recorded ledger, so a
       # NEW breakage still turns the job red while a known one does not hide behind an exit code.
       - name: Integration conformance (verified / skipped / broken)
-        if: always()
+        if: always() && matrix.shard == 0
         continue-on-error: true
         run: python tools/integration_conformance.py --require-all
       - name: How much is still not running here
-        if: always()
+        if: always() && matrix.shard == 0
         run: python tools/skip_census.py
+
+  integrations-total:
+    name: integrations total
+    needs: integrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: shard-report-*
+          path: shard-reports
+          merge-multiple: true
+      - name: the four shards ran every collected test exactly once
+        run: python tools/shard_total.py "shard-reports/*.json" --expect 4

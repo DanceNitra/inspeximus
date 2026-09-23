@@ -40,6 +40,10 @@ NOT_STANDALONE = {
     # runner should carry, and the receipts themselves live in the agora repository rather than
     # here. The offline half of the same code IS in the suite: tests/test_the_anchor_checks_out_...
     # runs it against committed fixtures, including a real Bitcoin block header.
+    # Measures what a new user sees: it creates a virtual environment and installs inspeximus from
+    # PyPI over the network, which a test run must not do, and it rewrites its receipt each time.
+    "time_to_first_success.py":
+        "creates a venv and pip-installs the published package from PyPI; run it by hand after a release",
     "both_anchors_are_in_a_bitcoin_block.py":
         "needs the published anchors directory (--dir) plus the OpenTimestamps calendars and a "
         "block explorer; the offline half runs in tests/test_the_anchor_checks_out_without_the_ots_tool.py",

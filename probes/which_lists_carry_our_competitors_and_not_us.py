@@ -57,9 +57,26 @@ def refuse(why):
     raise SystemExit(2)
 
 
+def _gh_api(path, attempts=4):
+    """`gh api path`, waiting out a rate limit instead of failing on it.
+
+    The search API allows 30 requests a minute. On 2026-09-23 three runs of this workflow started
+    within 40 seconds (main and two release tags) and all three failed with "API rate limit exceeded",
+    which is a statement about the calendar, not about the project. A rate limit is retried after the
+    window resets; any other failure returns at once."""
+    import time
+    out = None
+    for i in range(attempts):
+        out = subprocess.run(["gh", "api", path], capture_output=True, text=True,
+                             encoding="utf-8", errors="replace", timeout=90)
+        if out.returncode == 0 or "rate limit" not in (out.stderr or "").lower() or i == attempts - 1:
+            return out
+        time.sleep(65)
+    return out
+
+
 def gh(path):
-    p = subprocess.run(["gh", "api", path], capture_output=True, text=True,
-                       encoding="utf-8", errors="replace", timeout=90)
+    p = _gh_api(path)
     if p.returncode:
         return None
     return json.loads(p.stdout)
