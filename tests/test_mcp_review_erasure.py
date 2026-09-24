@@ -249,9 +249,6 @@ def test_forget_on_a_signed_store_keeps_the_chain_verifiable(monkeypatch, tmp_pa
 
 
 # ── erasure_certificate ─────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="erasure_certificate: module docstring 'INSPEXIMUS_RECEIPT_PUBKEY ... Set it whenever "
-                          "the store is signed'; the certificate's self_check ignores it and verifies a chain "
-                          "re-signed under a foreign key", **XFAIL)
 def test_erasure_certificate_self_check_honours_the_configured_pubkey(monkeypatch, tmp_path, signed_store):
     """Module docstring, INSPEXIMUS_RECEIPT_PUBKEY: "Set it whenever the store is signed: without it the
     tamper-evidence tools verify that receipts are signed by SOMEBODY".
@@ -276,8 +273,6 @@ def test_erasure_certificate_self_check_honours_the_configured_pubkey(monkeypatc
 
 
 # ── erasure_residue ─────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="erasure_residue: 'A file it could not read makes the verdict False'; a directory "
-                          "it could not list is dropped silently and the verdict is ok=True", **XFAIL)
 def test_erasure_residue_an_unreadable_directory_is_not_clean(server, tmp_path, monkeypatch):
     """erasure_residue: "A file it could not read makes the verdict False: "clean" must never mean "we did
     not look at that part"."
@@ -306,9 +301,6 @@ def test_erasure_residue_an_unreadable_directory_is_not_clean(server, tmp_path, 
     assert r.get("ok") is False, f"a directory that could not be read produced a clean verdict: {r}"
 
 
-@pytest.mark.xfail(reason="erasure_residue: 'clean must never mean we did not look at that part'; a "
-                          "symlinked directory under root is not followed, not reported, and the verdict is "
-                          "ok=True", **XFAIL)
 def test_erasure_residue_a_symlinked_directory_is_not_clean(server, tmp_path):
     """erasure_residue: "A file it could not read makes the verdict False: "clean" must never mean "we did
     not look at that part"."

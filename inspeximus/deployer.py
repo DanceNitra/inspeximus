@@ -37,7 +37,8 @@ from typing import Any
 
 from .core import __version__
 from .actions import six_months_before
-from .technical_documentation import OPERATOR_INPUT, instructions_for_use, render_markdown as _render
+from .technical_documentation import (OPERATOR_INPUT, SAME_KEY, _ledger_key, instructions_for_use,
+                                      render_markdown as _render)
 
 __all__ = ["deployer_report", "dpia_appendix", "fria_appendix", "render_markdown",
            "DEPLOYER_FIELDS", "DPIA_FIELDS", "FRIA_FIELDS"]
@@ -177,10 +178,11 @@ def _log_retention(store, ledger, now: float) -> dict:
     return out
 
 
-def _integrity(store, ledger, expected_pubkey: str | None) -> dict:
+def _integrity(store, ledger, expected_pubkey: str | None, ledger_pubkey=SAME_KEY) -> dict:
     gov = _safe(lambda: store.governance_report(expected_pubkey))
     proof = gov.get("proof") if isinstance(gov, dict) else None
-    led = _safe(lambda: ledger.verify(expected_pubkey=expected_pubkey)) if ledger is not None else None
+    led = (_safe(lambda: ledger.verify(expected_pubkey=_ledger_key(expected_pubkey, ledger_pubkey)))
+           if ledger is not None else None)
     return {
         "memory_chain_verified": (proof or {}).get("verified") if isinstance(proof, dict) else None,
         "action_ledger_verified": led[0] if isinstance(led, tuple) else None,
@@ -314,12 +316,13 @@ def _rights(ledger) -> dict:
 # ----------------------------------------------------------------------------- the appendices
 
 def dpia_appendix(store, ledger=None, operator: dict | None = None, expected_pubkey: str | None = None,
-                  now: float | None = None, include_identities: bool = False) -> dict:
+                  now: float | None = None, include_identities: bool = False, *,
+                  ledger_pubkey=SAME_KEY) -> dict:
     """GDPR Art. 35(7): the DPIA contents, with (a) inventory and (d) measures filled from evidence."""
     operator = dict(operator or {})
     now = time.time() if now is None else now
     personal = _personal_data(store)
-    integrity = _integrity(store, ledger, expected_pubkey)
+    integrity = _integrity(store, ledger, expected_pubkey, ledger_pubkey)
     retention = _log_retention(store, ledger, now)
     rights = _rights(ledger)
     return {
@@ -424,19 +427,24 @@ def fria_appendix(store, ledger=None, operator: dict | None = None, expected_pub
 # ----------------------------------------------------------------------------- the report
 
 def deployer_report(store, ledger=None, operator: dict | None = None, expected_pubkey: str | None = None,
-                    now: float | None = None, include_identities: bool = False) -> dict:
+                    now: float | None = None, include_identities: bool = False, *,
+                    ledger_pubkey=SAME_KEY) -> dict:
     """The Art. 26 duties with the evidence each one can draw from the store and ledger, plus the DPIA and
     FRIA appendices. Every field the deployer must write is marked OPERATOR INPUT REQUIRED.
 
     Identities stay out by default: oversight actors, disclosure sessions and erasure request ids are
     counted, not listed, because a report travels further than the ledger does (an auditor, a register,
-    a court). `include_identities=True` lists the oversight actors for the deployer's own copy."""
+    a court). `include_identities=True` lists the oversight actors for the deployer's own copy.
+
+    `expected_pubkey` pins the memory chain; `ledger_pubkey` pins the action ledger and defaults to the
+    same key."""
     operator = dict(operator or {})
     now = time.time() if now is None else now
     op = lambda f: _op(operator, f)  # noqa: E731
     oversight = _oversight(ledger, include_identities)
     incidents = _incidents(ledger, now)
-    dpia = dpia_appendix(store, ledger, operator, expected_pubkey, now, include_identities)
+    dpia = dpia_appendix(store, ledger, operator, expected_pubkey, now, include_identities,
+                         ledger_pubkey=ledger_pubkey)
     fria = fria_appendix(store, ledger, operator, expected_pubkey, now, include_identities=include_identities)
 
     duties = {

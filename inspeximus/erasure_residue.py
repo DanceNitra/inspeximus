@@ -218,7 +218,16 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
     checked = 0
     limit = int(max_file_mb * 1024 * 1024)
 
-    for dirpath, dirnames, filenames in os.walk(root, followlinks=follow_symlinks):
+    def _unlisted(err: OSError) -> None:
+        # A DIRECTORY THAT COULD NOT BE LISTED IS NOT CLEAN EITHER. os.walk() drops a listing error
+        # unless it is given `onerror`, so a subdirectory the scanner may not read (permission denied)
+        # vanished from the scan and the verdict came back ok=True, while an unreadable FILE in the
+        # same place already failed it (review E4, audits/2026-09-24/mcp-tools-review.md).
+        where = err.filename if err.filename is not None else root
+        skipped.append({"path": os.path.relpath(os.fspath(where), root),
+                        "why": f"directory could not be listed ({type(err).__name__})"})
+
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=follow_symlinks, onerror=_unlisted):
         pruned = [d for d in dirnames if d in skip]
         dirnames[:] = [d for d in dirnames if d not in skip]
         for d in pruned:
@@ -229,6 +238,14 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
             skipped.append({"path": os.path.relpath(os.path.join(dirpath, d), root),
                             "why": "directory not searched (in skip_dirs); pass skip_dirs=set() to "
                                    "include it"})
+        if not follow_symlinks:
+            # THE SAME RULE FOR A SYMLINKED DIRECTORY. os.walk lists it and does not enter it, so the
+            # subtree behind it went unsearched and unreported (review E11). Not following links stays
+            # the default; leaving what it did not enter out of the verdict was the defect.
+            for d in [d for d in dirnames if os.path.islink(os.path.join(dirpath, d))]:
+                skipped.append({"path": os.path.relpath(os.path.join(dirpath, d), root),
+                                "why": "symlinked directory not entered; scan its target directly, or "
+                                       "pass follow_symlinks=True"})
         for name in filenames:
             path = os.path.join(dirpath, name)
             rel = os.path.relpath(path, root)
