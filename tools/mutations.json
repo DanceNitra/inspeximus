@@ -3354,5 +3354,23 @@
   "tests": [
    "tests/test_verify_writes_is_linear_and_as_strict.py::test_a_large_chain_is_verified_in_one_pass"
   ]
+ },
+ {
+  "name": "the receipt sidecar goes back to the pure-Python encoder (indent)",
+  "file": "inspeximus/core.py",
+  "old": "    return json.dumps(entries, ensure_ascii=False)\n",
+  "new": "    return json.dumps(entries, indent=2, ensure_ascii=False)\n",
+  "tests": [
+   "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py::test_a_receipted_write_does_not_run_the_pure_python_encoder"
+  ]
+ },
+ {
+  "name": "the receipt sidecar drops the newest receipt",
+  "file": "inspeximus/core.py",
+  "old": "    return json.dumps(entries, ensure_ascii=False)\n",
+  "new": "    return json.dumps(entries[:-1], ensure_ascii=False)\n",
+  "tests": [
+   "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py"
+  ]
  }
 ]

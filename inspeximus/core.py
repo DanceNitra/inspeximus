@@ -466,6 +466,25 @@ def _dump_store(items) -> str:
     return "[\n " + inner + "\n]"
 
 
+def _dump_chain(entries) -> str:
+    """Serialize the write-receipt chain for its sidecar: one JSON array, C encoder, no `indent`.
+
+    The sidecar is rewritten whole on every receipted write, and it was written with `indent=2`, which
+    forces CPython's pure-Python encoder -- the reason `_dump_store` above gives for not using it on
+    the store. audits/2026-09-24/scale.md measured +165-184 ms per remember() at 10k receipts and
+    +870-900 ms at 50k over receipts off, most of it this call. On the 10k fixture chain (Windows,
+    CPython 3.12, one machine, min of 5): indent=2 626 ms / 9.22 MB; this 134 ms / 8.25 MB; one receipt
+    per line (`_dump_store`'s layout) 287 ms, because it pays one dumps() call per receipt.
+
+    THE FORMAT IS THE SAME DOCUMENT. Every version reads the sidecar with `json.loads` and nothing parses
+    its whitespace, so a sidecar written here opens in older versions and theirs opens here. What changes
+    is that it is one line; `python -m json.tool <file>` prints it indented. Still an atomic replace with
+    fsync, not an append: a torn sidecar reads as a TAMPERED chain (see `_atomic_write`), and peers
+    merge on the whole file (`_reconcile_receipts_with_disk`). `allow_nan` stays at json's default, as
+    it was, so what serialises and what raises is unchanged."""
+    return json.dumps(entries, ensure_ascii=False)
+
+
 def new_receipt_keypair():
     """Return (private_key_hex, public_key_hex) for signing inspeximus write receipts. Needs `cryptography`."""
     if not _HAVE_ED:
@@ -4054,7 +4073,7 @@ class Inspeximus:
         if self._receipts_path:
             try:
                 Inspeximus._atomic_write(self._receipts_path,
-                                         json.dumps(self._receipts, indent=2, ensure_ascii=False))
+                                         _dump_chain(self._receipts))
                 self._receipts_sig = self._receipts_disk_sig()
             except Exception as e:
                 # The receipt chain IS the evidence. Losing it silently was worse than losing a record:
@@ -4396,7 +4415,7 @@ class Inspeximus:
             return
         try:
             Inspeximus._atomic_write(self._receipts_path,
-                                     json.dumps(self._receipts, indent=2, ensure_ascii=False))
+                                     _dump_chain(self._receipts))
             self._receipts_sig = self._receipts_disk_sig()
             self._sidecar_errors.pop("receipts", None)
         except Exception as e:
