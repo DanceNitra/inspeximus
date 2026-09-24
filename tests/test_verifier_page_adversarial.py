@@ -48,6 +48,7 @@ import test_verifier_page as base  # noqa: E402
 from test_verifier_page import browser, documents, page, site  # noqa: E402,F401  (fixtures)
 from inspeximus import Inspeximus  # noqa: E402
 from inspeximus.audit_bundle import _bundle_hash, verify_bundle  # noqa: E402
+import inspeximus.core as _core  # noqa: E402
 from inspeximus.core import (_GENESIS, _canon, _sha256_hex, sth_hash_of,  # noqa: E402
                              verify_erasure_certificate)
 from inspeximus.merkle import root as merkle_root  # noqa: E402
@@ -535,7 +536,10 @@ def _bundle_with_certificate_fields(documents, tamper_bundle: bool):
     b.update({"inspeximus_erasure_certificate": "1.0", "tombstones": toms,
               "pubkey": next(r["pubkey"] for r in b["write_chain"] if r.get("pubkey")), "scoped_to": None,
               "request_ids": sorted({t["request_id"] for t in toms if t["request_id"] is not None}),
-              "erased_memory_ids": ids, "count": len(ids)})
+              "erased_memory_ids": ids, "count": len(ids),
+              # A complete certificate says what it does not certify (3.9.5 refuses one without it).
+              "scope": _core._CERT_SCOPE, "scope_covers": list(_core._CERT_SCOPE_COVERS),
+              "scope_excludes": list(_core._CERT_SCOPE_EXCLUDES)})
     return b
 
 
