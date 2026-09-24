@@ -22,7 +22,7 @@ GROUPED = "tests/test_probes_cited_by_docs.py"
 def _collect(targets, *extra):
     out = subprocess.run([sys.executable, "-m", "pytest"] + list(targets) +
                          ["--collect-only", "-q", "-n", "0", "-p", "no:cacheprovider"] + list(extra),
-                         cwd=ROOT, capture_output=True, text=True, errors="replace").stdout
+                         cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     return {ln.strip() for ln in out.splitlines() if "::" in ln}
 
 

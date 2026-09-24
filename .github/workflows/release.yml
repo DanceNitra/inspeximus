@@ -108,31 +108,24 @@ jobs:
         if: matrix.shard == 0
         run: python -m pytest tests/ -n 0 -m mutation -q
 
-  tests-total:
-    name: every collected test ran exactly once
-    needs: tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: release-shard-report-*
-          path: shard-reports
-          merge-multiple: true
-      - run: python tools/shard_total.py "shard-reports/*.json" --expect 4
-
   build:
     name: build sdist + wheel
     # "core tags start with v, anything else is a wrapper" -- naming the langgraph prefix here meant every
     # new wrapper family had to be added in four places, and a forgotten one publishes the CORE by mistake.
     if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
-    needs: [audit, tests, tests-total]
+    needs: [audit, tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Nothing is built until the four test shards are shown to have run every collected test
+      # exactly once: green shards alone cannot say that.
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-shard-report-*
+          path: shard-reports
+          merge-multiple: true
+      - name: every collected test ran exactly once
+        run: python tools/shard_total.py "shard-reports/*.json" --expect 4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
