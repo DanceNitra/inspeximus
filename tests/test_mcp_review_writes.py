@@ -228,14 +228,14 @@ def test_remember_reports_the_lineage_that_was_stored(monkeypatch, tmp_path):
         f"the stored record has derived_from={rec.get('derived_from')!r}, orphan={rec.get('orphan')!r}"
 
 
-@pytest.mark.xfail(reason="remember: every write extends the receipt chain; on a signed store the server appends "
-                          "an UNSIGNED receipt (it cannot be given a key) and verify_writes turns false", **XFAIL)
 def test_remember_on_a_signed_store_keeps_the_chain_verifiable(monkeypatch, tmp_path):
     """Module docstring, INSPEXIMUS_RECEIPT_PUBKEY: "Set it whenever the store is signed"; remember: "Store a
     memory". Guard parity: the same write through the library, with the store's key, keeps verify_writes ok.
 
-    open_store() is called without receipt_key/receipt_signer and no environment variable supplies one,
-    so the server's receipt is unsigned; a chain "signed in places" fails verification from then on.
+    open_store() was called without receipt_key/receipt_signer and no environment variable supplied one,
+    so the server's receipt was unsigned; a chain "signed in places" fails verification from then on.
+    FIXED: the server takes the store's key where the CLI and receipt_key_for take it, here
+    INSPEXIMUS_RECEIPT_KEY. Without the key it cannot sign at all, so the test hands it over.
     """
     pytest.importorskip("cryptography")
     from inspeximus.core import new_receipt_keypair
@@ -245,7 +245,7 @@ def test_remember_on_a_signed_store_keeps_the_chain_verifiable(monkeypatch, tmp_
     lib = Inspeximus(path=str(tmp_path / "store.json"), receipts=True, receipt_key=sk)
     lib.remember("the office is on elm street")
     del lib
-    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_PUBKEY=pk)
+    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_PUBKEY=pk, INSPEXIMUS_RECEIPT_KEY=sk)
     if not call(mod, "verify_writes").data.get("ok"):
         pytest.fail("precondition: the signed store verifies against its pinned key")
     wrote = call(mod, "remember", text="the region is frankfurt").data

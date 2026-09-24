@@ -121,9 +121,6 @@ _LEDGER_WRITERS = [
 ]
 
 
-@pytest.mark.xfail(reason="ledger writers: with INSPEXIMUS_ACTIONS=1 the ledger is 'one signed, hash-chained "
-                          "entry per call' (module docstring); these tools append through a second, keyless "
-                          "ActionLedger, so the entry is unsigned and actions_verify fails", **XFAIL)
 @pytest.mark.parametrize("tool,args,seq_field", _LEDGER_WRITERS, ids=[t[0] for t in _LEDGER_WRITERS])
 def test_a_ledger_writing_tool_keeps_a_signed_ledger_signed(monkeypatch, tmp_path, tool, args, seq_field):
     """Module docstring: "INSPEXIMUS_ACTIONS  1 to record every tool call in the ACTION LEDGER
@@ -436,8 +433,6 @@ def _two_incidents_then_truncate(mod, tmp_path):
     return damaged
 
 
-@pytest.mark.xfail(reason="actions_verify: 'Recomputes every hash, link and signature'; a ledger file that is "
-                          "not JSON is loaded as an empty chain and verified ok=True, entries=0", **XFAIL)
 def test_actions_verify_does_not_pass_a_ledger_it_cannot_read(monkeypatch, tmp_path):
     """actions_verify: "Verify the ACTION LEDGER beside this store ... Recomputes every hash, link and
     signature".
@@ -455,9 +450,6 @@ def test_actions_verify_does_not_pass_a_ledger_it_cannot_read(monkeypatch, tmp_p
     assert v["ok"] is False, f"actions_verify over a ledger file that is not JSON: {v}"
 
 
-@pytest.mark.xfail(reason="record_risk: 'Append one entry to the risk register'; on a ledger file it cannot "
-                          "parse it starts a new chain at seq 0 and overwrites the file, destroying the earlier "
-                          "entries", **XFAIL)
 def test_a_ledger_write_does_not_overwrite_a_ledger_it_cannot_read(monkeypatch, tmp_path):
     """record_risk: "Append one entry to the risk register (EU AI Act Art. 9)."
 

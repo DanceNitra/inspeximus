@@ -573,6 +573,19 @@ def _guard_key_location(kdir, store_path) -> None:
             f"whatever they like. Set INSPEXIMUS_KEY_HOME to somewhere else.")
 
 
+def _receipt_key_file(store_path) -> str:
+    """Where `receipt_key_for` keeps the key for `store_path` in the key home, whether or not it exists.
+
+    Split out so a caller can ask whether a key is THERE without the location guard firing first: the MCP
+    server looks here for the store's key, and must not refuse to start merely because a key home it
+    never uses sits inside the store's directory."""
+    import hashlib as _h
+    home = os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA") \
+        or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    tag = _h.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
+    return os.path.join(home, "inspeximus", "keys", f"{tag}.key")
+
+
 def receipt_key_for(store_path, create: bool = True) -> str:
     """The receipt signing key for `store_path`, minted on first use, kept OUTSIDE the store's directory.
 
@@ -604,7 +617,6 @@ def receipt_key_for(store_path, create: bool = True) -> str:
 
     `create=False` returns "" instead of minting, for a caller that wants to know rather than act.
     """
-    import hashlib as _h
     env = os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip()
     if env:
         if len(env) == 64 and all(c in "0123456789abcdefABCDEF" for c in env):
@@ -620,11 +632,8 @@ def receipt_key_for(store_path, create: bool = True) -> str:
                          f"nor a path that exists. Refusing to guess and silently sign with a "
                          f"different key than you configured.")
 
-    home = os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA") \
-        or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
-    kdir = os.path.join(home, "inspeximus", "keys")
-    tag = _h.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
-    kf = os.path.join(kdir, f"{tag}.key")
+    kf = _receipt_key_file(store_path)
+    kdir = os.path.dirname(kf)
 
     _guard_key_location(kdir, store_path)
 

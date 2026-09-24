@@ -21,7 +21,10 @@ Config (environment):
                            (no stamp, no filter). `--project <name>` on the command line wins over this.
     INSPEXIMUS_ACTIONS     1 to record every tool call in the ACTION LEDGER (<store>.actions.json): one
                            signed, hash-chained entry per call carrying the store's state digest and the ids
-                           the last recall returned. INSPEXIMUS_ACTOR names the actor. Off by default.
+                           the last recall returned. INSPEXIMUS_ACTOR names the actor. Off by default. Every
+                           ledger tool writes through the same handle, signed with the store's receipt key
+                           when the server holds one, else with the writer key (INSPEXIMUS_WRITER_KEY_FILE /
+                           INSPEXIMUS_WRITER_KEY); a ledger already signed by one of the two keeps that one.
     INSPEXIMUS_EMBED_URL   optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall
     INSPEXIMUS_EMBED_MODEL embedding model id (default: text-embedding-3-small)
     INSPEXIMUS_EMBED_KEY   bearer key for that endpoint
@@ -43,6 +46,14 @@ Config (environment):
                            verify that receipts are signed by SOMEBODY, which a party who rewrites the
                            store and re-signs it with a key of their own satisfies. Public half only —
                            it is a verification pin, not a signing key, and is safe in a config file.
+    INSPEXIMUS_RECEIPT_KEY_FILE  a file holding the hex Ed25519 SECRET key this server signs receipts and
+                           tombstones with (the CLI reads the same variable). Or INSPEXIMUS_RECEIPT_KEY: the hex
+                           key, or a path to it. With neither, the key receipt_key_for(<store path>) keeps in the
+                           key home (INSPEXIMUS_KEY_HOME, else the per-user config dir) is used when the store
+                           keeps receipts and its chain is signed with it or empty. Never minted here. A key
+                           that did not sign the store, that the pin rejects, or (configured) on an unsigned
+                           chain stops the server at startup: signing on would break the chain. Without a key
+                           on a signed store every write appends an unsigned receipt; where_am_i says which.
   With no embedder configured, inspeximus uses its lexical-overlap fallback — it runs anywhere, today.
 """
 from __future__ import annotations
@@ -269,8 +280,127 @@ _PERSIST_VECTORS = _flag_from_env("INSPEXIMUS_PERSIST_VECTORS")
 # stamped at WRITE time and `forget_pii()` hard-deletes what carries the tag: turning it on changes
 # what a later data-minimization sweep removes, which is an operator's decision and not a default.
 _PII_DETECT = _flag_from_env("INSPEXIMUS_PII_DETECT")
+
+
+# ── RECEIPT SIGNING ─────────────────────────────────────────────────────────────────────────────────────
+# THIS SERVER COULD NOT SIGN. open_store() below was called with no receipt_key, and nothing supplied one,
+# while this docstring described signed stores. So on a store the library signs, one `remember` through
+# the server appended an UNSIGNED receipt and one `forget` or `retention(apply=True)` an unsigned
+# tombstone, and verify_writes failed from then on: "a chain signed in places is not signed". Measured
+# 2026-09-24 (MCP tool review, X1: W7 and E6).
+#
+# The key is looked up where the CLI and the library already look for it, and never minted here:
+#   INSPEXIMUS_RECEIPT_KEY_FILE  a file holding the hex key (the CLI's variable, read the way it reads it)
+#   INSPEXIMUS_RECEIPT_KEY       the hex key, or a path to it (receipt_key_for's variable)
+#   the key home                 the file receipt_key_for(<store path>) keeps for this store under
+#                                <INSPEXIMUS_KEY_HOME | APPDATA | XDG_CONFIG_HOME | ~/.config>/inspeximus/keys/
+# So a store the library opened with `receipt_key=receipt_key_for(path)` is signed by this server with
+# the same key and no configuration at all.
+#
+# A key that does not fit the store is REFUSED AT STARTUP, not used and not ignored: a chain signed by two
+# keys, or signed in places, fails verify_writes exactly like the defect above, and a server that
+# discovers that one write later has already made it permanent. The one exception is a key found only in
+# the key home, which is not used on a store whose chain is unsigned or whose receipts are off: nobody
+# asked for signing there, and starting it would break the chain or create a sidecar unasked.
+class ReceiptKeyError(ValueError):
+    """A receipt signing key was configured or found, and this server cannot sign this store with it."""
+
+
+def _public_half(sk_hex: str) -> str:
+    """The Ed25519 public key (hex) of a secret key (hex)."""
+    from inspeximus.core import _HAVE_ED
+    if not _HAVE_ED:
+        raise ReceiptKeyError("signing needs the `cryptography` package: pip install \"inspeximus[crypto]\"")
+    from cryptography.hazmat.primitives import serialization as _ser
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    try:
+        sk = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(sk_hex))
+    except Exception as e:
+        raise ReceiptKeyError("the receipt key is not a 32-byte Ed25519 private key as hex") from e
+    return sk.public_key().public_bytes(_ser.Encoding.Raw, _ser.PublicFormat.Raw).hex()
+
+
+def _chain_on_disk(path) -> tuple:
+    """(entries, public keys of the signed ones) across the store's receipt and tombstone sidecars, read
+    before the store is opened. An unreadable sidecar counts as empty, which is how the store reads it."""
+    n, signers = 0, set()
+    for suffix in (".receipts.json", ".tombstones.json"):
+        try:
+            with open(str(path) + suffix, encoding="utf-8") as f:
+                rows = json.load(f)
+        except (OSError, ValueError):
+            continue
+        for r in rows if isinstance(rows, list) else ():
+            if isinstance(r, dict):
+                n += 1
+                if r.get("sig"):
+                    signers.add(r.get("pubkey"))
+    return n, signers
+
+
+def _receipt_key_from_env(path) -> tuple:
+    """(secret key hex, where it came from), or (None, None) when nothing supplies one."""
+    from inspeximus.core import _receipt_key_file, receipt_key_for
+    f = os.environ.get("INSPEXIMUS_RECEIPT_KEY_FILE", "").strip()
+    if f:
+        try:
+            with open(f, encoding="utf-8") as fh:
+                key = fh.read().strip()
+        except OSError as e:
+            raise ReceiptKeyError(f"INSPEXIMUS_RECEIPT_KEY_FILE={f!r} cannot be read ({e}). Refusing to "
+                                  f"start unsigned when a signing key was configured.") from None
+        return key or None, "INSPEXIMUS_RECEIPT_KEY_FILE"
+    if os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip():
+        return receipt_key_for(path, create=False) or None, "INSPEXIMUS_RECEIPT_KEY"
+    if path and os.path.exists(_receipt_key_file(path)):
+        return receipt_key_for(path, create=False) or None, "key home"
+    return None, None
+
+
+def _receipt_signing(path, receipts_on: bool, pin: str | None) -> dict:
+    """Decide the key this server signs receipts and tombstones with. Returns {key, pubkey, source, note}:
+    `key` is None when the server writes unsigned, and `note` says why when that matters. Raises
+    ReceiptKeyError for a key that cannot sign this store without breaking its chain."""
+    key, source = _receipt_key_from_env(path)
+    n, signers = _chain_on_disk(path) if path else (0, set())
+    if not key:
+        note = None
+        if signers:
+            note = (f"this store's chain is signed ({len(signers)} key(s): "
+                    f"{', '.join(sorted(str(k)[:12] for k in signers))}) and this server holds no receipt key, "
+                    f"so each write or erasure through it appends an UNSIGNED entry that verify_writes reports. "
+                    f"Set INSPEXIMUS_RECEIPT_KEY_FILE or INSPEXIMUS_RECEIPT_KEY to the store's key.")
+        return {"key": None, "pubkey": None, "source": None, "note": note}
+    pub = _public_half(key)
+    named = f"the receipt key from {source} (public {pub[:12]})"
+    if pin and pub != pin:
+        raise ReceiptKeyError(f"{named} is not INSPEXIMUS_RECEIPT_PUBKEY ({pin[:12]}): this server would sign "
+                              f"receipts its own tamper-evidence tools reject. Configure the key that "
+                              f"public half belongs to, or correct the pin.")
+    if signers and pub not in signers:
+        raise ReceiptKeyError(f"{named} did not sign this store: its chain is signed by "
+                              f"{', '.join(sorted(str(k)[:12] for k in signers))}. Signing on with another "
+                              f"key would leave a chain signed by two keys, which verify_writes reports as "
+                              f"an attack. Configure the store's own key.")
+    if n and not signers:
+        if source != "key home":
+            raise ReceiptKeyError(f"{named} cannot sign this store: its chain holds {n} UNSIGNED entries, and "
+                                  f"signing from here on leaves it signed in places, which verify_writes "
+                                  f"reports as tampering. Unset {source} to keep writing it unsigned.")
+        return {"key": None, "pubkey": None, "source": None,
+                "note": f"a receipt key for this store path is in the key home, and is NOT used: the chain "
+                        f"holds {n} unsigned entries, and signing from here on would leave it signed in places."}
+    if source == "key home" and not receipts_on:
+        return {"key": None, "pubkey": None, "source": None,
+                "note": "a receipt key for this store path is in the key home, and is NOT used: this store "
+                        "keeps no receipts. Set INSPEXIMUS_RECEIPTS=1 to keep a signed chain."}
+    return {"key": key, "pubkey": pub, "source": source, "note": None}
+
+
+_SIGNING = _receipt_signing(_PATH, _RECEIPTS or os.path.exists(str(_PATH) + ".receipts.json"),
+                            _RECEIPT_PUBKEY)
 _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
-                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
+                  receipt_key=_SIGNING["key"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
                   persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)
 
 
@@ -360,19 +490,60 @@ _ACTOR = os.environ.get("INSPEXIMUS_ACTOR") or None
 _LED = None
 
 
-def _action_ledger():
-    """The ledger beside the store, opened once, only when INSPEXIMUS_ACTIONS is set to 1, true or yes."""
+def _ledger():
+    """THE action ledger beside the store: one handle, one signing key, for every tool that reads or writes it.
+
+    TWO HANDLES WAS THE BUG. The boundary below signed with the writer key, while twenty-two tools (every
+    record_* tool, the rights tools, post_market_report and decision_explanation with an actor) each built
+    their own `ActionLedger(_MEM, actor=_ACTOR)`. That constructor signs with the store's receipt key and
+    nothing else, so each of those entries went into a signed chain UNSIGNED, and `actions_verify` answered
+    ok=False ("seq N: no signature") for the rest of the ledger's life. Measured 2026-09-24 (MCP tool
+    review, L1 and S5): one `export_subject` was enough.
+
+    Opened whether INSPEXIMUS_ACTIONS is on or not, because the record_* and rights tools write their entry
+    either way, as they always have; the flag decides only the per-call boundary entry. Re-read when another
+    handle changed the file (one stat when it has not), which a fresh handle per call used to give the
+    read tools for free."""
     global _LED
-    if os.environ.get("INSPEXIMUS_ACTIONS", "").strip().lower() not in ("1", "true", "yes"):
-        return None
     if _LED is None:
         from inspeximus.actions import ActionLedger
-        # Signed with the store's receipt key when it has one, else with the server's writer key: a
-        # server that attests its writes and left its action ledger unsigned was the first thing the
-        # ledger showed when we turned it on for our own store (2026-09-16, "seq 0: no signature").
-        _LED = ActionLedger(_MEM, actor=_ACTOR,
-                            signing_key=(getattr(_MEM, "_receipt_sk", None) or _WRITER_KEY or None))
+        keys = _ledger_key_candidates()
+        led = ActionLedger(_MEM, actor=_ACTOR, signing_key=keys[0] if keys else None)
+        if len(keys) > 1:
+            # A ledger ALREADY signed keeps its key. The receipt key is new to this server, and taking it
+            # first would put a second key into a chain the writer key has signed so far, which verify()
+            # reports as "chain signed by 2 different keys".
+            signed_by = {e.get("pubkey") for e in led.entries() if e.get("sig")}
+            if (led.archived or {}).get("sig"):
+                signed_by.add(led.archived.get("pubkey"))
+
+            def pub(k):
+                try:
+                    return _public_half(k)
+                except ReceiptKeyError:
+                    return None
+            if signed_by and pub(keys[0]) not in signed_by and pub(keys[1]) in signed_by:
+                led = ActionLedger(_MEM, actor=_ACTOR, signing_key=keys[1])
+        _LED = led
+    else:
+        _LED._refresh_if_changed()
     return _LED
+
+
+def _ledger_key_candidates() -> list:
+    """The keys the action ledger may be signed with, in order: the store's receipt key when this server
+    holds one (one key then covers the memory chain and the action chain, the library's own default),
+    else the server's writer key (a server that attests its writes and left its action ledger unsigned
+    was the first thing the ledger showed when we turned it on for our own store, 2026-09-16)."""
+    return [k for k in (getattr(_MEM, "_receipt_sk", None), _WRITER_KEY) if k]
+
+
+def _action_ledger():
+    """The ledger when INSPEXIMUS_ACTIONS is set to 1, true or yes, else None. The SAME handle every other
+    ledger tool uses (`_ledger()`): this function decides only whether each tool call is recorded."""
+    if os.environ.get("INSPEXIMUS_ACTIONS", "").strip().lower() not in ("1", "true", "yes"):
+        return None
+    return _ledger()
 
 
 mcp = _FreshFastMCP("inspeximus")
@@ -782,6 +953,10 @@ def where_am_i() -> dict:
             "cwd": os.getcwd(),
             "memories": len(getattr(_MEM, "items", [])),
             "receipts": bool(_RECEIPTS),
+            # who signs what this server appends: the receipt key's public half and where it came from,
+            # or null with the reason, when the server writes unsigned
+            "receipt_signing": {"signed": bool(_SIGNING["key"]), "pubkey": _SIGNING["pubkey"],
+                                "key_source": _SIGNING["source"], "note": _SIGNING["note"]},
             "embedder": _EMB_ID,
             "version": _INSPEXIMUS_VERSION}
 
@@ -1439,9 +1614,10 @@ def compliance_check(require_receipts: bool = True, max_pii_age_days: float | No
 def retention(max_age_days: float, pii_only: bool = True, apply: bool = False,
               basis: str = "", request_id: str = "") -> dict:
     """STORAGE-LIMITATION enforcement (GDPR Art. 5(1)(e); read-only unless apply=True): find ACTIVE records
-    older than `max_age_days` and, with apply=True, hard-delete them — each erasure leaving a signed tombstone,
-    so the enforcement is itself auditable. DRY-RUN by default: returns {eligible, ids, applied, erased} so you
-    review before enforcing. `pii_only` (default True) restricts to PII-tagged records.
+    older than `max_age_days` and, with apply=True, hard-delete them — each erasure leaving a tombstone, signed
+    when this server holds the store's receipt key (see where_am_i), so the enforcement is itself auditable.
+    DRY-RUN by default: returns {eligible, ids, applied, erased} so you review before enforcing. `pii_only`
+    (default True) restricts to PII-tagged records.
 
     `basis` and `request_id` are recorded with each erasure (Art.30). Neither was on this surface, so a
     retention sweep run over MCP produced tombstones with no stated ground and no ticket to trace them to."""
@@ -1564,8 +1740,7 @@ def actions_verify(expected_pubkey: str | None = None) -> dict:
     INSPEXIMUS_ACTIONS=1), bound to what the store held at that moment. Recomputes every hash, link and
     signature and checks that each entry's memory_state.last_receipt still exists in the store's receipt
     chain, so a rewritten memory history is caught from the action side too. Read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     ok, problems = led.verify(expected_pubkey=expected_pubkey)
     return {"ok": ok, "entries": len(led), "path": str(led.path), "problems": problems,
             "recording": _action_ledger() is not None}
@@ -1578,8 +1753,7 @@ def record_oversight(event: str, actor: str, reason: str | None = None, refers_t
     or review (EU AI Act Art. 14, GDPR Art. 22). `actor` is the person or role who decided and is required.
     `refers_to` is the seq of the action it concerns and must exist. `decision` is what the human
     substituted, stored as a digest."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.oversight(event, actor, reason=reason, refers_to=refers_to, decision=decision)
     except ValueError as ex:
@@ -1596,8 +1770,7 @@ def record_disclosure(session: str, shown: str, channel: str = "ui", kind: str =
     with an AI system), generated_content (output marked as generated), or another Art. 50 case. `agent`
     names the agent that disclosed and `principal` who it acts for, as the Commission's Art. 50 guidelines
     ask for at each new interaction."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.disclosure(session, shown, channel=channel, kind=kind, locale=locale, agent=agent,
                            principal=principal)
@@ -1612,8 +1785,7 @@ def oversight_report() -> dict:
     """Counts from the action ledger an auditor asks for: actions, oversight events by type and by actor,
     actions with a human decision attached, error actions with no oversight after them, stops, and
     disclosures by session. Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).oversight_report()
+    return _ledger().oversight_report()
 
 
 @mcp.tool()
@@ -1625,10 +1797,9 @@ def export_subject(subject: str, request_id: str | None = None, include_text: bo
     entry to the action ledger carrying the export's manifest hash. With basis="portability" the same
     document is the Art. 20 response: labelled, with a versioned format and per-record portable flags,
     logged as rights:portability. Refuses an ambiguous subject unless allow_ambiguous is set."""
-    from inspeximus.actions import ActionLedger
     from inspeximus.subject_rights import export_subject as _export
     try:
-        return _export(_MEM, subject, ledger=ActionLedger(_MEM, actor=_ACTOR), allow_ambiguous=allow_ambiguous,
+        return _export(_MEM, subject, ledger=_ledger(), allow_ambiguous=allow_ambiguous,
                        include_text=include_text, actor=_ACTOR, request_id=request_id, basis=basis)
     except Exception as ex:  # AmbiguousSubject and friends: return, do not crash the server
         return {"error": f"{type(ex).__name__}: {ex}"}
@@ -1641,10 +1812,9 @@ def record_objection(subject: str, actor: str, ground: str, scope: str = "all",
     recall withholds every record whose source resolves to `subject`, including later writes, until the
     objection is resolved. `ground` is own_situation (21(1)) or direct_marketing (21(2), never overridable);
     `scope` is all or profiling. The records stay exportable under Art. 15; erasure is forget_subject."""
-    from inspeximus.actions import ActionLedger
     from inspeximus.subject_rights import record_objection as _obj
     try:
-        return _obj(_MEM, subject, actor, ground, scope=scope, ledger=ActionLedger(_MEM, actor=_ACTOR),
+        return _obj(_MEM, subject, actor, ground, scope=scope, ledger=_ledger(),
                     request_id=request_id, allow_ambiguous=allow_ambiguous)
     except Exception as ex:
         return {"error": f"{type(ex).__name__}: {ex}"}
@@ -1656,10 +1826,9 @@ def resolve_objection(subject: str, actor: str, outcome: str, grounds: str | Non
     """Close the standing Art. 21 objection by `subject`: `upheld` (records stay withheld) or `overridden`
     (Art. 21(1) compelling legitimate grounds, which `grounds` must state; recall resumes). A
     direct-marketing objection is refused an override."""
-    from inspeximus.actions import ActionLedger
     from inspeximus.subject_rights import resolve_objection as _res
     try:
-        return _res(_MEM, subject, actor, outcome, grounds=grounds, ledger=ActionLedger(_MEM, actor=_ACTOR),
+        return _res(_MEM, subject, actor, outcome, grounds=grounds, ledger=_ledger(),
                     request_id=request_id)
     except Exception as ex:
         return {"error": f"{type(ex).__name__}: {ex}"}
@@ -1678,11 +1847,10 @@ def rectify_subject(key: str, text: str, actor: str, reason: str, subject: str |
     """GDPR Art. 16 rectification: supersede the value under `key` with `text` through the ordinary keyed
     write (every write guard applies), and record who asked and why as a rights:rectify entry on the action
     ledger bound to the memory receipt. `actor` and `reason` are required."""
-    from inspeximus.actions import ActionLedger
     from inspeximus.subject_rights import rectify as _rectify
     try:
         return _rectify(_MEM, key=key, text=text, actor=actor, reason=reason,
-                        ledger=ActionLedger(_MEM, actor=_ACTOR), subject=subject, request_id=request_id)
+                        ledger=_ledger(), subject=subject, request_id=request_id)
     except ValueError as ex:
         return {"error": str(ex)}
 
@@ -1694,8 +1862,7 @@ def record_incident(title: str, severity: str, actor: str, description: str | No
     """Record a serious incident (EU AI Act Art. 73) in the action ledger with its reporting clock: severity
     serious (15 days), widespread (2 days), death (10 days) or other. `evidence` lists ledger seqs that
     document it; each must exist. `aware_ts` is when the provider became aware (default now)."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.incident(title, severity, actor, description=description, refers_to=evidence,
                          aware_ts=aware_ts, subject=subject)
@@ -1718,8 +1885,7 @@ def record_risk(risk_id: str, hazard: str, harm: str, source: str, actor: str, l
     fundamental_rights; `measure_kind` is eliminate, mitigate or inform (9(5)); `residual` plus
     `residual_acceptable` is the 9(5) judgement; `tests` lists {metric, threshold, observed, passed}
     against a threshold defined before the test (9(8)); `refers_to` lists ledger seqs and each must exist."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.risk(risk_id, hazard, harm, source, actor, likelihood=likelihood, severity=severity,
                      measure=measure, measure_kind=measure_kind, residual=residual,
@@ -1738,8 +1904,7 @@ def risk_register() -> dict:
     length, days since the last review, and the counts an assessor asks for (by source and harm, open
     risks without a measure, without evidence, without a test, residual not judged or not acceptable,
     vulnerable groups). Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).risk_register()
+    return _ledger().risk_register()
 
 
 @mcp.tool()
@@ -1750,8 +1915,7 @@ def post_market_report(since: float, until: float | None = None, actor: str | No
     from post-market data), retention, lifecycle, disclosures, the chain verifier's verdict, and the
     store's size. `plan` is the operator's monitoring plan, carried by name, version and hash. With
     `actor` the report is signed into the ledger as a `monitoring` entry; without it, read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         return led.post_market_report(since, until=until, actor=actor, plan=plan, note=note)
     except ValueError as ex:
@@ -1767,8 +1931,7 @@ def record_corrective_action(kind: str, actor: str, non_conformity: str, refers_
     `informed` a list of {party, ts, how} among distributor, deployer, authorised_representative, importer,
     market_surveillance_authority, notified_body; `presents_risk` the Art. 79(1) case where the authority
     must be informed (20(2)). The report names which parties were not informed."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.corrective_action(kind, actor, non_conformity, refers_to=refers_to, informed=informed,
                                   causes=causes, presents_risk=presents_risk)
@@ -1783,8 +1946,7 @@ def corrective_action_report(seq: int) -> dict:
     """The Art. 20 record for corrective action `seq`: the non-conformity, the action, the causes, the
     parties informed and those not, whether the authority was informed when the system presented a
     risk, the evidence entries and later entries that refer to it. Read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         return led.corrective_action_report(seq)
     except ValueError as ex:
@@ -1799,8 +1961,7 @@ def record_authority_request(authority: str, reference: str, actor: str, scope: 
     """Record a reasoned request from a competent authority (EU AI Act Art. 21) and what was handed over.
     `scope` is documentation (21(1)), logs (21(2)) or both; `provided` lists {item, sha256} references
     to what was given, never the content (21(3) confidentiality)."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.authority_request(authority, reference, actor, scope, received_ts=received_ts, provided=provided,
                                   provided_ts=provided_ts, language=language, note=note)
@@ -1818,8 +1979,7 @@ def decision_explanation(seq: int, actor: str | None = None, subject: str | None
     now), the oversight events on it, the disclosures in its session, and the incidents, risks and
     corrective actions that refer to it, in one document from the chain. With `actor` the fact that an
     explanation was produced is logged as a rights:explanation entry carrying the document's hash."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         return led.decision_explanation(seq, actor=actor, subject=subject, request_id=request_id)
     except ValueError as ex:
@@ -1836,8 +1996,7 @@ def record_breach(title: str, actor: str, nature: str, aware_ts: float | None = 
     and the Art. 33(3) content as far as known: nature, categories and approximate numbers of subjects
     and records, contact point, likely consequences, measures. `high_risk` is the Art. 34(1) judgement
     that decides whether the subjects must be told. `refers_to` lists ledger seqs; each must exist."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.breach(title, actor, nature, aware_ts=aware_ts, subjects_approx=subjects_approx,
                        records_approx=records_approx, categories=categories, consequences=consequences,
@@ -1856,8 +2015,7 @@ def breach_notified(seq: int, actor: str, to: str, ts: float | None = None, reas
     (Art. 34(1)) or the public (Art. 34(3)(c)). After 72 hours a notification to the authority needs
     `reasons_for_delay`. With `exemption` (protected, mitigated, disproportionate) the entry records why
     the subjects were not told directly (Art. 34(3))."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.breach_notified(seq, actor, to, ts=ts, reasons_for_delay=reasons_for_delay, exemption=exemption, note=note)
     except ValueError as ex:
@@ -1871,8 +2029,7 @@ def breach_report(seq: int) -> dict:
     """The Art. 33 and 34 record for breach `seq`: the 33(3) content, the 72-hour clock and whether the
     authority was notified in time, the subject communication or the 34(3) exemption, the 33(5)
     documentation, the evidence entries and the fields the controller adds. Read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         return led.breach_report(seq)
     except ValueError as ex:
@@ -1888,8 +2045,7 @@ def record_literacy(actor: str, measure: str, audience: str, description: str, t
     other_person_on_behalf; `considered` lists the Art. 4 factors taken into account (technical_knowledge,
     experience, education, training, context_of_use, persons_affected). The article asks for measures,
     not a level reached by any individual, so no score is recorded."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.record_literacy(actor, measure, audience, description, ts=ts, system=system, context=context,
                                 considered=considered, persons_affected=persons_affected, refers_to=refers_to)
@@ -1902,8 +2058,7 @@ def record_literacy(actor: str, measure: str, audience: str, description: str, t
 @mcp.tool()
 def literacy_register() -> dict:
     """Every Art. 4 measure recorded, with counts by audience and by measure. Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).literacy_register()
+    return _ledger().literacy_register()
 
 
 @mcp.tool()
@@ -1912,8 +2067,7 @@ def record_attestation(actor: str, practice: str, statement: str, basis: str | N
     """Attest for one Art. 5(1) prohibited-practice class (a, b, ba, bb, c, d, e, f, g, h) that the system is
     `not_used` for it, or that the class is `not_applicable` with the `basis` that rules it out. The register
     shows the latest attestation per class and the classes with none."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.record_attestation(actor, practice, statement, basis=basis, ts=ts, system=system)
     except ValueError as ex:
@@ -1925,8 +2079,7 @@ def record_attestation(actor: str, practice: str, statement: str, basis: str | N
 @mcp.tool()
 def attestation_register() -> dict:
     """The latest Art. 5 attestation per prohibited-practice class, and the classes never attested. Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).attestation_register()
+    return _ledger().attestation_register()
 
 
 @mcp.tool()
@@ -1941,8 +2094,7 @@ def record_responsibilities(actor: str, agreement_ref: str, parties: list[dict],
     changed_intended_purpose); `cooperation` maps the 25(2) items (technical_documentation,
     known_limitations_and_failure_modes, targeted_technical_access) to references; `agreement_ref` names the
     25(4) written agreement and `agreement_sha256` pins it."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.record_responsibilities(actor, agreement_ref, parties, ts=ts, agreement_sha256=agreement_sha256,
                                         trigger=trigger, cooperation=cooperation,
@@ -1957,8 +2109,7 @@ def record_responsibilities(actor: str, agreement_ref: str, parties: list[dict],
 @mcp.tool()
 def responsibilities_register() -> dict:
     """Every Art. 25 record: the agreement, the parties and roles, the trigger, the 25(2) items. Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).responsibilities_register()
+    return _ledger().responsibilities_register()
 
 
 @mcp.tool()
@@ -1975,8 +2126,7 @@ def record_declaration(actor: str, system_name: str, system_type: str, system_re
     body's {name, id, certificate}); the place, date and signer. `annex_iv_sha256` pins the technical
     documentation the declaration rests on; `ce_marking` is {digital_access, affixed_to, notified_body_id}
     (Art. 48). The assessment itself is the provider's or the notified body's."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.record_declaration(actor, system_name, system_type, system_reference, provider_name,
                                    provider_address, conformity_procedure, place, signer_name, signer_function,
@@ -1995,8 +2145,7 @@ def record_declaration(actor: str, system_name: str, system_type: str, system_re
 def declaration_document(seq: int) -> dict:
     """The declaration at `seq` as one machine-readable document in the Annex V order (Art. 47(1)), with the
     Art. 43 procedure, the Art. 48 marking and the ledger hash that binds it. Read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         return led.declaration_document(seq)
     except ValueError as ex:
@@ -2012,8 +2161,7 @@ def attest_documentation_retention(actor: str, placed_on_market_ts: float, docum
     notified_body_decisions, eu_declaration_of_conformity. Technical documentation and the declaration must be
     present; the notified-body items are present or not applicable with a reason; a missing quality
     management system is recorded as a gap. `declaration_seq` links the declaration entry."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.attest_documentation_retention(actor, placed_on_market_ts, documents, declaration_seq=declaration_seq,
                                                note=note)
@@ -2034,8 +2182,7 @@ def record_notice(actor: str, subject: str, channel: str, items: list[str], arti
     provision_required, automated_decision_making; for Art. 14 also data_categories, data_source), and
     `text_sha256` pinning the text. Art. 14 needs `source` and `timing` (at_collection, within_one_month,
     at_first_communication, at_first_disclosure). The entry lists the items it did not carry."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.record_notice(actor, subject, channel, items, article=article, ts=ts, text_sha256=text_sha256,
                               source=source, timing=timing, request_id=request_id)
@@ -2048,8 +2195,7 @@ def record_notice(actor: str, subject: str, channel: str, items: list[str], arti
 @mcp.tool()
 def notice_register() -> dict:
     """The latest Art. 13 or 14 notice per subject and the items each one left out. Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).notice_register()
+    return _ledger().notice_register()
 
 
 @mcp.tool()
@@ -2062,8 +2208,7 @@ def record_processing_role(actor: str, role: str, controller: str | None = None,
     joint_controller, processor or sub_processor. A processor names the `controller` and the written
     `instructions_ref` (28(3)), pinned by `instructions_sha256`; `sub_processors` lists
     {name, authorised_by, authorised_ts} (28(2)); `purposes` and `categories` describe the processing."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.record_processing_role(actor, role, controller=controller, instructions_ref=instructions_ref,
                                        instructions_sha256=instructions_sha256, sub_processors=sub_processors,
@@ -2076,8 +2221,7 @@ def record_processing_role(actor: str, role: str, controller: str | None = None,
 @mcp.tool()
 def processing_roles() -> dict:
     """Every Art. 28 role declaration, with the current one named. Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).processing_roles()
+    return _ledger().processing_roles()
 
 
 @mcp.tool()
@@ -2101,8 +2245,7 @@ def record_qms(actor: str, procedure: str, version: str, owner: str, review_due_
     owner, when its next review is due (epoch seconds), the Art. 17(1) aspect it covers (a letter a to m)
     and, for a document, its reference and sha256. A later entry for the same procedure is the current
     one. The QMS itself is the provider's; this is the signed record that it exists and who keeps it."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     try:
         e = led.record_qms(actor, procedure, version, owner, review_due_ts, aspect=aspect, ref=ref, sha256=sha256)
     except ValueError as ex:
@@ -2115,8 +2258,7 @@ def record_qms(actor: str, procedure: str, version: str, owner: str, review_due_
 def qms_register() -> dict:
     """The current QMS procedure per name, the ones overdue for review, and which Art. 17(1) aspects
     have a current procedure. Read-only."""
-    from inspeximus.actions import ActionLedger
-    return ActionLedger(_MEM, actor=_ACTOR).qms_register()
+    return _ledger().qms_register()
 
 
 @mcp.tool()
@@ -2143,8 +2285,7 @@ def incident_report(seq: int) -> dict:
     """The Art. 73 report skeleton for incident `seq`: dates, the statutory deadline and whether it is
     overdue, the evidence entries with their memory state and any oversight on them, later entries that
     refer to the incident, and the fields the provider must add. Read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     if seq < 0 or seq >= len(led):
         return {"error": f"no entry #{seq}; the ledger has {len(led)} entries"}
     try:
@@ -2161,7 +2302,6 @@ def technical_documentation(operator_json: str | None = None, expected_pubkey: s
     `operator_json` is a JSON object string with the provider's own fields. Includes the Art. 13(3)(f)
     instructions-for-use section. Not a conformity assessment."""
     import json as _json
-    from inspeximus.actions import ActionLedger
     from inspeximus.technical_documentation import annex_iv
     operator = {}
     if operator_json:
@@ -2169,7 +2309,7 @@ def technical_documentation(operator_json: str | None = None, expected_pubkey: s
             operator = _json.loads(operator_json)
         except ValueError as ex:
             return {"error": f"operator_json is not valid JSON: {ex}"}
-    return annex_iv(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator, expected_pubkey=expected_pubkey)
+    return annex_iv(_MEM, ledger=_ledger(), operator=operator, expected_pubkey=expected_pubkey)
 
 
 @mcp.tool()
@@ -2180,7 +2320,6 @@ def deployer_report(operator_json: str | None = None, expected_pubkey: str | Non
     evidence, the FRIA cross-referencing the DPIA per Art. 27(4). `operator_json` is a JSON object string with the
     deployer's own fields; every field it cannot write is marked OPERATOR INPUT REQUIRED. Not an assessment."""
     import json as _json
-    from inspeximus.actions import ActionLedger
     from inspeximus.deployer import deployer_report as _deployer_report
     operator = {}
     if operator_json:
@@ -2188,7 +2327,7 @@ def deployer_report(operator_json: str | None = None, expected_pubkey: str | Non
             operator = _json.loads(operator_json)
         except ValueError as ex:
             return {"error": f"operator_json is not valid JSON: {ex}"}
-    return _deployer_report(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator,
+    return _deployer_report(_MEM, ledger=_ledger(), operator=operator,
                             expected_pubkey=expected_pubkey)
 
 
@@ -2200,7 +2339,6 @@ def registration_export(section: str = "A", operator_json: str | None = None, ex
     the instructions for use and, for C, the FRIA and DPIA summaries; everything else is marked OPERATOR INPUT
     REQUIRED. The content of a registration, not the registration itself."""
     import json as _json
-    from inspeximus.actions import ActionLedger
     from inspeximus.technical_documentation import registration_export as _reg
     operator = {}
     if operator_json:
@@ -2209,7 +2347,7 @@ def registration_export(section: str = "A", operator_json: str | None = None, ex
         except ValueError as ex:
             return {"error": f"operator_json is not valid JSON: {ex}"}
     try:
-        return _reg(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator, section=section,
+        return _reg(_MEM, ledger=_ledger(), operator=operator, section=section,
                     expected_pubkey=expected_pubkey)
     except ValueError as ex:
         return {"error": str(ex)}
@@ -2381,8 +2519,7 @@ def actions_match(seq: int, inputs=None, output=None) -> dict:
     "Is this what the model was given, and is this what came back", for an entry whose content the ledger
     does not keep. Each side is true, false, or null when not passed or not digested. Needs the ledger's
     salt file beside the ledger. Read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     if seq < 0 or seq >= len(led):
         return {"error": f"no action #{seq}; the ledger has {len(led)} entries"}
     return led.matches(seq, inputs=inputs, output=output)
@@ -2393,8 +2530,7 @@ def what_it_knew(seq: int) -> dict:
     """What the agent KNEW when it performed action number `seq` in the action ledger: the store's state
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.
     Answers "which facts were current when it did this" from the chain, not from memory. Read-only."""
-    from inspeximus.actions import ActionLedger
-    led = ActionLedger(_MEM, actor=_ACTOR)
+    led = _ledger()
     if seq < 0 or seq >= len(led):
         return {"error": f"no action #{seq}; the ledger has {len(led)} entries"}
     return led.what_it_knew(seq)
@@ -2749,6 +2885,11 @@ def main(argv=None):
     # server had opened, and with a cwd-relative default that is half of "my memories disappeared".
     sys.stderr.write(f"inspeximus {_INSPEXIMUS_VERSION}: store={Path(_PATH).absolute()} "
                      f"[{_path_source()}] project={_PROJECT or '(unscoped)'}\n")
+    if _SIGNING["key"]:
+        sys.stderr.write(f"inspeximus-mcp: signing receipts and tombstones with {_SIGNING['pubkey'][:12]} "
+                         f"({_SIGNING['source']})\n")
+    elif _SIGNING["note"]:
+        sys.stderr.write(f"inspeximus-mcp: WARNING: {_SIGNING['note']}\n")
     # once-a-day, opt-out "newer version exists" courtesy. MUST go to stderr — stdout is the JSON-RPC channel.
     try:
         from inspeximus import __version__

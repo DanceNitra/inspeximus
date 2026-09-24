@@ -304,7 +304,11 @@ Shell: `inspeximus actions list | record ACTION | verify [FILE] | knew SEQ | mat
 opens no store. `matches` needs the salt file beside the ledger; without it the digests cannot be re-derived.
 The LangChain callback digests a chat-model call as every message's role, content and tool calls; rebuild
 that value with `inspeximus.integrations.langchain.context_messages(messages)` before calling `matches`.
-MCP: `INSPEXIMUS_ACTIONS=1` records every tool call; tools `actions_verify`, `what_it_knew`.
+MCP: `INSPEXIMUS_ACTIONS=1` records every tool call; tools `actions_verify`, `what_it_knew`. Every ledger tool
+writes through one handle, signed with the store's receipt key when the server holds one, else the writer key.
+The server takes the receipt key from `INSPEXIMUS_RECEIPT_KEY_FILE`, `INSPEXIMUS_RECEIPT_KEY`, or the file
+`receipt_key_for(path)` keeps in the key home, and refuses to start with a key that would break the store's chain.
+A ledger file that exists and cannot be read fails `verify()` and raises `LedgerUnreadable` on every write.
 LangChain: `inspeximus.integrations.langchain.InspeximusActionCallback(led)` in `config={"callbacks": [...]}`.
 Probe: `probes/what_the_agent_knew_when_it_acted.py` (three tamper controls).
 

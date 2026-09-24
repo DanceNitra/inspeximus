@@ -1472,8 +1472,8 @@
  {
   "name": "the MCP server reads the observe flag and never passes it to the store",
   "file": "inspeximus/mcp_server.py",
-  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
-  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
   "tests": [
    "tests/test_mcp_observe_recall.py"
   ]
@@ -1580,8 +1580,8 @@
  {
   "name": "the MCP server reads the persist-vectors flag and never passes it to the store",
   "file": "inspeximus/mcp_server.py",
-  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
-  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY, pii_detect=_PII_DETECT)",
+  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY, pii_detect=_PII_DETECT)",
   "tests": [
    "tests/test_the_server_can_keep_the_vectors_it_paid_for.py"
   ]
@@ -1589,8 +1589,8 @@
  {
   "name": "the MCP server reads the PII flag and never passes it to the store",
   "file": "inspeximus/mcp_server.py",
-  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
-  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS)",
+  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS)",
   "tests": [
    "tests/test_the_server_can_keep_the_vectors_it_paid_for.py"
   ]
@@ -2952,6 +2952,80 @@
   "new": "            if (getattr(stream, \"encoding\", \"\") or \"\").lower() not in (\"utf-8\", \"utf8\"):",
   "tests": [
    "tests/test_a_partly_signed_certificate_does_not_verify.py"
+  ]
+ },
+ {
+  "name": "mcp: the server finds the store's receipt key and never passes it to the store",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL,",
+  "new": "                  observe_recall=_OBSERVE_RECALL,",
+  "tests": [
+   "tests/test_mcp_review_writes.py",
+   "tests/test_mcp_review_erasure.py",
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
+  ]
+ },
+ {
+  "name": "mcp: a key that did not sign the store is used anyway, so the chain is signed by two keys",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    if signers and pub not in signers:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
+  ]
+ },
+ {
+  "name": "mcp: a configured key on an unsigned chain is used anyway, so the chain is signed in places",
+  "file": "inspeximus/mcp_server.py",
+  "old": "        if source != \"key home\":\n            raise ReceiptKeyError(",
+  "new": "        if False:\n            raise ReceiptKeyError(",
+  "tests": [
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
+  ]
+ },
+ {
+  "name": "mcp: a rights tool builds its own keyless ledger again",
+  "file": "inspeximus/mcp_server.py",
+  "old": "        return _export(_MEM, subject, ledger=_ledger(),",
+  "new": "        return _export(_MEM, subject, ledger=__import__(\"inspeximus.actions\", fromlist=[\"x\"]).ActionLedger(_MEM, actor=_ACTOR),",
+  "tests": [
+   "tests/test_mcp_review_rights_access.py"
+  ]
+ },
+ {
+  "name": "mcp: the ledger takes the receipt key over the writer key that already signs it",
+  "file": "inspeximus/mcp_server.py",
+  "old": "            if signed_by and pub(keys[0]) not in signed_by and pub(keys[1]) in signed_by:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
+  ]
+ },
+ {
+  "name": "ledger: a file that is not JSON loads as an empty chain again",
+  "file": "inspeximus/actions.py",
+  "old": "                self._load_error = f\"cannot read {self.path}: {type(e).__name__}: {e}\"\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_mcp_review_ledger.py"
+  ]
+ },
+ {
+  "name": "ledger: action() refuses an unreadable ledger only after the block has run",
+  "file": "inspeximus/actions.py",
+  "old": "        self.require_readable()\n        ctx = ActionContext(self, action, inputs, meta)\n",
+  "new": "        ctx = ActionContext(self, action, inputs, meta)\n",
+  "tests": [
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
+  ]
+ },
+ {
+  "name": "rights: a rectification lands before the ledger is checked",
+  "file": "inspeximus/subject_rights.py",
+  "old": "    _ledger_can_take_the_entry(ledger)\n    prev = None\n",
+  "new": "    prev = None\n",
+  "tests": [
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
   ]
  }
 ]
