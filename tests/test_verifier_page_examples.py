@@ -118,7 +118,8 @@ def test_make_examples_writes_the_same_bytes_on_every_run(tmp_path):
         shutil.copy(base.PAGE, page)
         env = {k: v for k, v in os.environ.items() if k != "PYTHONHASHSEED"} | {"PYTHONHASHSEED": seed}
         r = subprocess.run([sys.executable, SCRIPT, "--out", str(out), "--page", str(page)],
-                           capture_output=True, text=True, env=env, timeout=300)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace",
+                           env=env, timeout=300)
         assert r.returncode == 0, r.stdout[-400:] + r.stderr[-1200:]
         outs.append({p.name: p.read_bytes() for p in sorted(out.iterdir())})
     assert sorted(outs[0]) == sorted([n + ".json" for n in EXPECT] + ["index.html"])
