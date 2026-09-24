@@ -34,6 +34,9 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The probe imports its sibling `_receipt`, so `probes/` must be importable. It passed in the full suite
+# only because another test put it on the path first; run alone, the import failed.
+sys.path.insert(0, os.path.join(ROOT, "probes"))
 
 from inspeximus import Inspeximus  # noqa: E402
 
