@@ -6,7 +6,7 @@ a rewrite on ONE timeline (verify_consistency), but not a SPLIT-VIEW: an operato
 history and client B another. Independent witnesses that co-sign the head close that -- an honest witness
 refuses to co-sign a fork, so a client requiring k-of-n cannot be shown a forked head that reaches threshold.
 
-Run: python examples/07_witness_pool.py
+Run: pip install "inspeximus[crypto]"  &&  python examples/07_witness_pool.py
 """
 from inspeximus.core import Inspeximus
 from inspeximus.witness_pool import Witness, collect_cosignatures
