@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # A manual run on any branch: CI on a branch without opening a pull request.
+  workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
