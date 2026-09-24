@@ -27,3 +27,7 @@ tests/fixtures/ots/head.json -text
 tests/fixtures/ots/block968177.header.hex -text
 tests/fixtures/ots/head.json.ots binary
 tests/fixtures/ots/upgrade.alice.bin binary
+
+# The browser verifier embeds the Try-it examples byte for byte (docs/verify/examples/make_examples.py
+# --check), so a checkout must not rewrite LF to CRLF in the page on Windows. Same reason as above.
+docs/verify/** -text
