@@ -61,6 +61,14 @@ cryptographically tamper-evident logs or AI-Act alignment. Send us a correction 
   six-month floor has been observed. `inspeximus actions archive --keep-days N` rotates the older entries into
   an archive file under a signed checkpoint: nothing is deleted, the chain is unbroken, the verifier follows the
   checkpoint into the archive, and the live file alone reports the archived range as not verified.
+- **Art. 47(1) and Art. 18(1)(e) — the EU declaration of conformity, kept ten years.** Art. 47(1) keeps the
+  declaration "at the disposal of the national competent authorities for 10 years after the high-risk AI
+  system has been placed on the market or put into service". `record_declaration()` writes it as an entry in
+  the hash-chained action ledger, with its issue date and the Annex V items, so a later change to it breaks
+  `inspeximus actions verify`. `attest_documentation_retention(declaration_seq=...)` appends a signed
+  statement naming the declaration, the ten-year end date counted from `placed_on_market_ts`, and whether the
+  attestation falls inside that period. The library records and attests; keeping the file for ten years is
+  the provider's.
 - **Art. 11 / Annex IV, Art. 13(3)(f), Art. 26, Art. 27, Art. 49 / Annex VIII, GDPR Art. 35(7) — the documents
   (2.29.0 to 2.31.0).** `inspeximus technical-documentation` writes the Annex IV skeleton with the evidence
   sections filled and the 24 provider fields marked; `inspeximus deployer-report` writes the Art. 26 duties with

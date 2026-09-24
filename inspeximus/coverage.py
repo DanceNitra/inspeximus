@@ -301,7 +301,7 @@ OBLIGATIONS: list[dict[str, Any]] = [
     {"id": "aia-25", "law": "AI Act", "article": "Art. 25", "duty": "responsibilities along the value chain", "who": "provider, distributor, deployer",
      "probe": _p_responsibilities, "artifact": "record_responsibilities() with the parties, roles, the 25(1) trigger and the 25(2) items; responsibilities_register()"},
     {"id": "aia-43", "law": "AI Act", "article": "Art. 43, 47, 48", "duty": "conformity assessment, EU declaration of conformity, CE marking", "who": "provider",
-     "probe": _p_declarations, "artifact": "record_declaration() with the Annex V items, the Art. 43 procedure and the Art. 48 marking; declaration_document(seq)",
+     "probe": _p_declarations, "artifact": "record_declaration() with the Annex V items, the Art. 43 procedure and the Art. 48 marking; declaration_document(seq). Kept ten years (Art. 47(1)): the declaration is a hash-chained ledger entry carrying its issue date, and attest_documentation_retention(declaration_seq=...) signs the ten-year end date for it",
      "boundary": "the conformity assessment itself is carried out by the provider or a notified body. The ledger holds the declaration drawn up from it, which is the evidence side of this duty. This is a statement of who does what, not a gap in the library"},
     {"id": "aia-49", "law": "AI Act", "article": "Art. 49, Annex VIII", "duty": "registration in the EU database", "who": "provider, some deployers",
      "probe": _p_report("registration_export", "technical_documentation"), "artifact": "registration_export() sections A, B, C"},
