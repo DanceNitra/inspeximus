@@ -90,3 +90,38 @@ def test_a_store_written_by_3_9_1_still_verifies(golden):
     cert = m.erasure_certificate(expected_pubkey=meta["receipt_pubkey"])
     res = verify_erasure_certificate(cert, store_items=list(m.items), expected_pubkey=meta["receipt_pubkey"])
     assert res["valid"] is True, res["problems"]
+
+
+# -- a receipt moved after a peer's (the rechain path) -----------------------------------------------
+def test_a_rechained_amendment_keeps_what_it_amends_why_and_when(tmp_path, monkeypatch):
+    """SURVIVORS core.py:3742-3745 -- the keys `_append_receipt` copies onto a rechained receipt
+    (`"ts"` -> `"XXtsXX"` / `"TS"`, `"amends"` / `"amend_reason"` renamed, `r[k] = old[k]` ->
+    `r[k] = None`).
+
+    The one rechain test moves an ORDINARY write, which carries neither `amends` nor `amend_reason`,
+    and never compares the moved receipt's time with the original's. Here the receipt that has to
+    move is a confirmation -- an amendment of `status_sha256` with a stated reason. Dropped on the
+    move, the chain no longer forgives the provisional record's first receipt, and a fresh handle
+    reports an honest store as edited after write."""
+    monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "rows")
+    p = str(tmp_path / "s.json")
+    a = Inspeximus(path=p, receipts=True)
+    a.remember("a one", key="a1", object="1")
+    prov = a.remember("the rota is in PagerDuty", key="rota", object="pd", provisional=True)
+    b = Inspeximus(path=p, receipts=True)
+    monkeypatch.setattr(Inspeximus, "_reconcile_receipts_with_disk", lambda self: 0)
+    b.confirm(prov, by="ops-lead")                       # b's chain: [a1, prov, amend]
+    amend = dict(b._receipts[-1])
+    assert amend.get("amends") == ["status_sha256"], "the fixture did not produce an amendment"
+    a.remember("a two", key="a2", object="2")            # a's chain [a1, prov, a2] lands on disk
+    monkeypatch.undo()
+    monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "rows")
+    b.refresh()                                          # b adopts disk and moves its amendment after a2
+    moved = b._receipts[-1]
+    assert moved.get("rechained_from") == amend["hash"]
+    assert moved["amends"] == amend["amends"]
+    assert moved["amend_reason"] == amend["amend_reason"]
+    assert moved["ts"] == amend["ts"] and moved["commit"] == amend["commit"]
+    b.remember("b two", key="b2", object="2")            # the next emit persists the merged chain
+    ok, problems = Inspeximus(path=p, receipts=True).verify_writes()
+    assert ok, problems
