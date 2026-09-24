@@ -14,6 +14,9 @@ character except a lone surrogate, and `erasure-verify` quotes a tampered field 
 UTF-8 console a certificate with a lone surrogate in a field printed a traceback and no verdict (review
 I1). The guard now applies to every console.
 
+The `erasure-verify` NOT WITNESSED limit said a trimmed chain passes when "re-anchored by the key holder".
+Trimming the newest tombstones and recomputing the anchor needs no key at all, so the limit now says so.
+
 `tests/test_a_partly_signed_certificate_does_not_verify.py` builds the forged certificate from the review,
 keeps a fully signed and a fully unsigned control, and runs `erasure-verify` on a lone surrogate. Both
 fixes are registered mutations, and the test kills both.
