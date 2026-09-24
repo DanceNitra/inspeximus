@@ -1,3 +1,41 @@
+## 3.9.5 - BREAKING FOR VERIFICATION: an erasure certificate verifies only as the library issues it, `verify_inclusion()` needs the root you witnessed, and a lost ledger or witness state is refused. UPGRADE IF YOU VERIFY ERASURE CERTIFICATES, CHECK INCLUSION PROOFS, OR RUN AN ACTION LEDGER OR A CHECKPOINT WITNESS. AFFECTS: `verify_erasure_certificate()`, `Inspeximus.verify_inclusion()`, `ActionLedger`, `CheckpointWitness` and the browser verifier at docs/verify; a document or call that passed before can fail now, in the cases below.
+
+Behaviour changes, each a verdict that used to be VALID or a write that used to go through:
+
+- **`verify_erasure_certificate()` returns `valid: false` for a certificate:**
+  - whose tombstones are signed by more than one key. With the certificate's `pubkey` deleted, each
+    signature was checked against the key it names, so a tombstone signed by any other key verified.
+  - whose `self_check.verified` is false, meaning the issuing store failed its own `verify_writes()`
+    at issue time. The field is not signed: this catches an honest issuer with a broken store, not a
+    forger. New check: `checks["issuer_self_check"]`.
+  - that has no `scope`, `scope_covers` or `scope_excludes`. A missing statement read as "not
+    checked", so deleting all three left a certificate that claimed nothing about its limits and still
+    verified. Every certificate this library issues carries all three; a hand-built one must too.
+  The browser verifier at docs/verify reaches the same verdict on each.
+- **`Inspeximus.verify_inclusion(bundle)` without `expected_root` returns False.** It fell back to the
+  root inside the bundle, and a bundle checked against its own root proves nothing: a one-leaf "tree"
+  built from any text returned True. To check only that a bundle is self-consistent, say so:
+  `verify_inclusion(b, b["root"])`.
+- **`ActionLedger` refuses to write over a ledger file it cannot read, and `verify()` reports it.** An
+  unparseable file, or one holding a JSON object instead of a list, was read as an empty chain, and the
+  next `record()` wrote a new one-entry chain over the history, which `verify()` then read as clean.
+  Now `record()` raises RuntimeError and `verify()` returns "the ledger file could not be read" first.
+- **`CheckpointWitness` refuses with 500 when its state file cannot be read.** Any read error was a
+  first run, so a corrupted state reset every log to size 0 and the witness would cosign a smaller tree
+  that forks the one it had already cosigned. Only a missing file is a first run now.
+
+One consequence to check before upgrading: a store written by the CLI **without a receipt key**
+has no write receipts (`remember` writes receipts only with a key or `--receipts`), while
+`erasure-certificate` opens it with receipts on. Its `self_check` then fails, and the certificate no
+longer verifies. Keep receipts on from the first write (`--receipts`, or a receipt key) on any store
+whose erasures you want to certify. `examples/11_verifiable_erasure.py` now does so on its unsigned
+path.
+
+Found by the verifier review of 2026-09-24 (items 5, 7 and 8); item 5 is also F1 of the mutation
+review of the evidence modules. `tests/test_a_certificate_verifies_only_as_issued.py` and
+`tests/test_a_lost_history_is_not_a_fresh_start.py` hold one test per case with a control, including
+one that runs every certificate case through the browser page. Eleven mutations, all killed.
+
 ## 3.9.4 - `verify_writes()` reports four store states it passed. UPGRADE IF YOU RELY ON `verify_writes()` TO CATCH EDITS MADE OUTSIDE THE LIBRARY. AFFECTS: `verify_writes()` returns `ok: false` on a store it used to pass in four cases below, and one of its problems is reworded. A store written only through the library verifies as before.
 
 Four store states returned `(True, [])`, each reproduced on 3.9.1 by the verifier review of 2026-09-24:

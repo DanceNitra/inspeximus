@@ -42,12 +42,21 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 
 
+#: `--receipts` on every store command when there is no key. With a key the CLI keeps receipts on its
+#: own; without one `remember` writes no receipt, while `erasure-certificate` opens the store WITH
+#: receipts, finds records no receipt covers, and its self-check fails, so since 3.9.5 the certificate
+#: does not verify. A store whose erasures you want to certify keeps receipts from the first write.
+RECEIPTS_FLAG: list = []
+
+
 def run(*args, env=None, cwd=None):
     """One `inspeximus ...` invocation. Returns (exit_code, merged stdout+stderr).
 
     `-m inspeximus.cli` rather than the console script so this runs from a source checkout with no
     install step; the two are the same program.
     """
+    if args[:1] == ("--path",):
+        args = args[:2] + tuple(RECEIPTS_FLAG) + args[2:]
     proc = subprocess.run([sys.executable, "-m", "inspeximus.cli", *args],
                           capture_output=True, env=env, cwd=cwd)
     return proc.returncode, _text(proc.stdout) + _text(proc.stderr)
@@ -117,6 +126,7 @@ def main() -> int:
         print(f"receipt public key: {pk}")
     except RuntimeError as e:                # cryptography not installed
         signed_path, pk = False, None
+        RECEIPTS_FLAG.append("--receipts")
         print(f"NOTE: signing unavailable ({e}). The chain still proves integrity, not authorship, "
               f"and the verifier will report signatures_valid: n/a rather than OK.")
 

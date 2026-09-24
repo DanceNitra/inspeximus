@@ -1,6 +1,6 @@
 {
   "kind": "inspeximus.audit_bundle/1",
-  "inspeximus_version": "3.9.4",
+  "inspeximus_version": "3.9.5",
   "generated_ts": 1788253228.0,
   "tenant": null,
   "store_id": "insp1:27d58f4265c32f9f1502617acf879451",
@@ -157,5 +157,5 @@
     }
   ],
   "grants": [],
-  "bundle_hash": "f5c09bead0a947b8e48adcd2d24c2c97cb1716136e2b6ccd8c25fbc5d5e77258"
+  "bundle_hash": "5c7801073a7dd554d5fc5b27455fe55291575d8eac1e41b5eae7c6e9bc19b7b0"
 }

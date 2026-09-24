@@ -1332,7 +1332,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.9.4"
+__version__ = "3.9.5"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -10960,7 +10960,7 @@ class Inspeximus:
     def verify_inclusion(bundle: dict, expected_root: str | None = None) -> bool:
         """Check an inclusion_proof() bundle offline against the root YOU witnessed.
 
-        Returns False without `expected_root`. Until 3.9.4 it fell back to the root inside the bundle,
+        Returns False without `expected_root`. Until 3.9.5 it fell back to the root inside the bundle,
         and a bundle checked against its own root proves nothing: a one-leaf "tree" built from any text
         at all returned True (session E review, item 8, 2026-09-24). To check only that a bundle is
         self-consistent, say so: `verify_inclusion(b, b["root"])`."""
