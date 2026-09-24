@@ -1,3 +1,24 @@
+## 3.9.4 - `verify_writes()` reports four store states it passed. UPGRADE IF YOU RELY ON `verify_writes()` TO CATCH EDITS MADE OUTSIDE THE LIBRARY. AFFECTS: `verify_writes()` returns `ok: false` on a store it used to pass in four cases below, and one of its problems is reworded. A store written only through the library verifies as before.
+
+Four store states returned `(True, [])`, each reproduced on 3.9.1 by the verifier review of 2026-09-24:
+
+- **One id, two records.** A copy of a record with its id and a different value, inserted ahead of
+  the original, was served by `current()`, `recall` and `history()` while this check compared the
+  untouched original. It now reports `memory <id>: N records share this id`.
+- **An erased record back in the store.** A record erased with `forget_subject()` and restored from a
+  copy of the store file still matched its write receipt. It now reports that a deletion tombstone
+  names it and it is in the store again.
+- **A chain signed by two keys, unpinned.** A tombstone signed with a second key, covering a record
+  deleted out of band, and a chain written by two handles with two keys both verified when no key was
+  pinned. It now reports `the chain is signed by N different keys`. With `expected_pubkey`, the
+  existing "signed by an unexpected key" still names each entry.
+- **Signed, but no Ed25519 backend.** With `expected_pubkey` and no `cryptography`, a signed receipt
+  or tombstone was reported as "unsigned, but a signature was required". It now says the signature
+  cannot be verified here and names the package. It is still a problem, because nothing was checked.
+
+`tests/test_verify_writes_sees_what_the_store_serves.py` has one test per case, each with a control,
+and a control that a store signed by one key throughout still verifies. Five mutations, all killed.
+
 ## 3.9.3 - the 3.9.2 release, published; 3.9.2 was tagged but never reached PyPI. UPGRADE IF YOU RUN THE DEMO OR POINT SOMEONE AT IT. AFFECTS: exactly what 3.9.2 below lists (the demo signs its stores and needs `inspeximus[crypto]`); the library is otherwise identical to 3.9.2.
 
 The `v3.9.2` tag exists and points at a commit whose release workflow installed the optional
