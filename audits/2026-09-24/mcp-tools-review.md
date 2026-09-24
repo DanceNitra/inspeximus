@@ -23,7 +23,111 @@ and is not counted as the expected failure.
 **No library code was changed.** The branch adds this report, the harness and the tests.
 **Environment:** Python 3.11.15, mcp 1.30.0, pytest 9.1.1 with xdist.
 
-Status: families 1-6 are written up; the remaining families follow as they are finished.
+## Verdict
+
+60 mismatches across the 7 tool families: **24 High, 30 Medium, 6 Low**. Each one has a reproducing
+test, 98 strict xfails in all. Run them in parallel with `python -m pytest tests/test_mcp_review_*.py`
+(about 10 s), or one at a time with `-n 0`. All 98 xfail. Run with `--runxfail`, every one of them fails
+on its final `AssertionError`, not on a precondition.
+
+**What holds.** The core write and read guards behave through the tools most clients use. Through
+`remember` and `remember_decision`:
+- The echo guard retires a restated retired value, verbatim or reworded.
+- The objectless guard retires a keyed write that carries no object.
+- A write the guards retire is reported as `blocked`, with its `policy`.
+
+Across the recall family:
+- Instruction-shaped records stay quarantined out of recall.
+- Keyword-stuffed records do not outrank clean ones.
+- The server that recorded an Art. 21 objection withholds the subject's records from every recall
+  variant.
+- Access grants fail closed.
+
+Erasure scrubs links, and its dry runs change nothing. `verify_writes` and `governance_report` honour the
+configured key pin. Families 3, 4, 6 and 7 checked their read-only tools byte for byte, and each left the
+store file and its sidecars unchanged. The exception is `audit_the_audits` (I5), whose leftovers land
+outside the store.
+
+**Where it breaks.** Most of the 60 come down to seven causes. Each is a gap between what `remember`,
+`recall` and `verify_writes` do and what a later tool re-implemented around them:
+
+| | Root cause | Findings |
+|---|---|---|
+| X1 | **The server cannot sign.** `open_store()` is called without `receipt_key`/`receipt_signer` (`mcp_server.py:272`), and no environment variable supplies one. Yet the module docstring describes signed stores. On a store the library signed, one MCP write or erasure appends an unsigned receipt or tombstone, and `verify_writes` fails from then on. `retention` says its tombstones are signed, and on this server they never are. | W7, E6 |
+| X2 | **`INSPEXIMUS_RECEIPT_PUBKEY` is honoured only by `verify_writes` and `governance_report`**, the two tools that call `_pin()`. Eight other tools that give a tamper-evidence verdict pass the caller's argument or nothing, so they certify a chain re-signed under a foreign key that `verify_writes` on the same server rejects: `erasure_certificate`, `compliance_check`, `compliance_report`, `verify_attribution`, `audit_bundle`, `technical_documentation`, `deployer_report` and `registration_export`. | E5, I1, I2, I3, I6, L2 |
+| X3 | **Twenty-two tools write to the action ledger through a second, keyless `ActionLedger`.** 19 were measured, and the other 3 use the same construction in the code. The boundary ledger signs with the writer key (`mcp_server.py:373-374`). One call to any `record_*` or rights tool leaves an unsigned entry in a signed chain, and `actions_verify` answers `ok: false` for the rest of the ledger's life. | L1, S5 |
+| X4 | **The project scope is applied only by `remember`, `remember_decision` and the recall family.** Six write tools stamp no project: `revert`, `route`, `resolve_reopened`, `remember_in_partition`, `rectify_subject` and `deprecate_symbol`. An unstamped record is global, so a reverted or rectified value leaks into every project. Four reads cross projects: `recall_as`, `why_recalled` (quoting record text), `token_report` and `check_sources`. | W2, E7, S7, R1, R6, M5 |
+| X5 | **Several tools change the store and return before the change is on disk.** `release_quarantine`, `credit`, `consolidate` and `consolidate_clusters` end with the throttled `_save()`. Within 5 s of the previous save that only marks the store dirty, and nothing flushes at exit. `sleep(keep)` never saves its budget pass in the call that reports it. | W4, M1, M4 |
+| X6 | **Write tools that bypass `_write_verdict()`.** `route`, `remember_in_partition`, `rectify_subject` and `deprecate_symbol` report a write the echo or objectless guard retired on arrival as a landed write. `rectify_subject` also logs it to the ledger as an `ok` rectification. | W1, E3, S2, S4 |
+| X7 | **State kept in sidecars, or held in memory, is not re-read by the per-call `refresh()`.** A second server on the same store misses an Art. 21 objection and a spent influence budget. A running server's `verify_consistency` trusts the receipt chain in memory over a rolled-back disk. | S1, M9, I4 |
+
+The remaining findings are local: a report that counts the wrong thing, a description that drifted from
+the library, a scan with a hole in it. The per-family sections give each one's cause.
+
+### Findings index
+
+| ID | Severity | Family | Finding |
+|---|---|---|---|
+| W1 | High | 1 writes | `route` reports a write the objectless guard retired as `remembered` |
+| W7 | High | 1 writes | on a signed store, one ordinary write through the server breaks the receipt chain |
+| E1 | High | 3 erasure | `close_partition` leaves a context partition's superseded records in the store |
+| E2 | High | 3 erasure | `sweep_partitions` leaves expired superseded records in place |
+| E3 | High | 3 erasure | `remember_in_partition` reports a write the guard retired as landed |
+| E4 | High | 3 erasure | `erasure_residue` returns a clean verdict over a directory it could not list |
+| E5 | High | 3 erasure | `erasure_certificate` ignores `INSPEXIMUS_RECEIPT_PUBKEY` |
+| E6 | High | 3 erasure | on a signed store, MCP erasures break the chain, and `retention`'s tombstones are never signed |
+| I1 | High | 4 integrity | `compliance_check` passes a chain the configured pin rejects |
+| I2 | High | 4 integrity | `compliance_report` reports `integrity_verified: true` over the same chain |
+| I3 | High | 4 integrity | `verify_attribution` is a tamper-evidence check that cannot be pinned |
+| I4 | High | 4 integrity | on a running server, `verify_consistency` misses a rollback made on disk |
+| I5 | High | 4 integrity | `audit_the_audits` leaves copies of the store, erased text included, in the temp directory |
+| L1 | High | 5 ledger | 18 ledger-writing tools append unsigned entries to a signed ledger |
+| L2 | High | 5 ledger | the documentation tools report `memory_chain_verified: true` against the configured pin |
+| L3 | High | 5 ledger | `actions_verify` passes a ledger it cannot read |
+| L4 | High | 5 ledger | a ledger write replaces a ledger it cannot read with a new chain |
+| S1 | High | 6 rights/access | an Art. 21 objection recorded through one server is not honoured by another on the same store |
+| S2 | High | 6 rights/access | `rectify_subject` reports a correction the guard retired as done, and logs it as done |
+| S3 | High | 6 rights/access | `subscribe_memory_event`'s default cursor never delivers anything |
+| S4 | High | 6 rights/access | `deprecate_symbol` returns a deprecation the echo guard retired as "the recorded deprecation" |
+| S5 | High | 6 rights/access | rights ledger entries break a signed action ledger |
+| M1 | High | 7 maintenance | `credit` reports an update that never reaches the store file |
+| M2 | High | 7 maintenance | `credit` records a positive number as a **bad** outcome |
+| W2 | Medium | 1 writes | writes other than `remember` ignore the server's project scope |
+| W3 | Medium | 1 writes | `observe(object="")` reopens on a single, uncorroborated observation |
+| W4 | Medium | 1 writes | `release_quarantine` can leave the release only in memory |
+| R1 | Medium | 2 reads | `why_recalled` explains, and quotes, records that recall never shows this project |
+| R2 | Medium | 2 reads | `recall(full=True)` does not return complete records |
+| R3 | Medium | 2 reads | `recall(trusted_only=True)` returns a bare `[]`, and no trust root can be configured |
+| R4 | Medium | 2 reads | `where_am_i` reports receipts off for a store that keeps them on |
+| R5 | Medium | 2 reads | `supersession_report` gives counts, not the per-key ledger it describes |
+| E7 | Medium | 3 erasure | `remember_in_partition` ignores the server's project scope |
+| E8 | Medium | 3 erasure | re-opening a partition echoes rules that are not in force |
+| E9 | Medium | 3 erasure | `pii_report` does not count PII held in superseded records |
+| E10 | Medium | 3 erasure | `forget_subject` returns no `scrubbed_links` |
+| E11 | Medium | 3 erasure | `erasure_residue` returns a clean verdict without entering a symlinked directory |
+| I6 | Medium | 4 integrity | `audit_bundle` exports `verified: true` under the configured pin |
+| I7 | Medium | 4 integrity | `admissibility_preconditions` does not check the receipt invariant it describes |
+| L5 | Medium | 5 ledger | `operator_json` is refused whenever it is a JSON object string |
+| L6 | Medium | 5 ledger | after `archive_actions`, three tools refuse entries that are still live |
+| L7 | Medium | 5 ledger | `post_market_report` counts a reported incident twice and keeps it overdue |
+| L8 | Medium | 5 ledger | a risk that refers to an entry is not listed as referring to it |
+| L9 | Medium | 5 ledger | a risk with free-text `evidence` breaks four tools |
+| S6 | Medium | 6 rights/access | "stop serving their records" holds for recall only |
+| S7 | Medium | 6 rights/access | `rectify_subject`, `recall_as` and `deprecate_symbol` ignore the server's project scope |
+| S8 | Medium | 6 rights/access | on a JSON-format store, `poll_memory_events` reports no events after writes, with no error |
+| M3 | Medium | 7 maintenance | `credit` with a negative `weight` shrinks the counts it says only grow |
+| M4 | Medium | 7 maintenance | `consolidate`, `consolidate_clusters` and `sleep(keep=...)` report changes they do not save |
+| M5 | Medium | 7 maintenance | `check_sources` is not scoped to the server's project |
+| M6 | Medium | 7 maintenance | `check_sources` says `ok: true` when nothing was checked |
+| M7 | Medium | 7 maintenance | `verify_claim` says `stale_superseded` with `current: None` |
+| M8 | Medium | 7 maintenance | `memory_report` and `selection_integrity` overwrite the recall-window observation |
+| M9 | Medium | 7 maintenance | `irreversible_budget_report` never changes after its first call |
+| W5 | Low | 1 writes | `remember` says recall raises a memory's value; it does not |
+| W6 | Low | 1 writes | `route` accepts an unknown `policy` without an error |
+| W8 | Low | 1 writes | `remember` reports lineage that was never stored |
+| R6 | Low | 2 reads | `token_report` does not size "the SAME top-k recall" |
+| R7 | Low | 2 reads | `why_recalled` does not name the quarantine when that is why a record did not surface |
+| I8 | Low | 4 integrity | `anchor`'s "SIGNED HEAD COMMITMENT" carries no signature |
 
 Severity: **High**: a guard is bypassed, data is wrongly written, erased or exposed, or a failure reads as
 success or as a clean result. **Medium**: a promised field or behaviour is wrong or missing. **Low**:
@@ -864,3 +968,197 @@ as rows (SQLite) even when it is named `.json`, and an existing JSON store is co
 | `subscribe_memory_event` | With a concrete type, polling from the cursor returns exactly the later events. (S3 aside.) |
 | `deprecate_symbol` | Goes through the keyed write with `object=new`, so the echo guard applies. A new replacement supersedes. Receipts are extended. (S4 and S7 aside.) |
 | `symbol_status` / `check_code` | Verdicts as described. Whole-identifier matching, so `old_fn(` and `obj.old_fn` match and `old_fnx` does not. Read-only. |
+
+---
+
+## Family 7: maintenance, conflict checks and store analysis
+
+Tools: `consolidate`, `sleep`, `consolidate_clusters`, `contradictions`, `check_conflict`, `verify_claim`,
+`check_self_narration`, `selection_integrity`, `value_by_cohort`, `memory_report`, `index_coherence`,
+`identifier_contract`, `check_sources`, `influence_gate_report`, `irreversible_budget_report`, `credit`,
+`memory_index`, `set_index_line`. Tests: `tests/test_mcp_review_maintenance.py`.
+
+M1 to M4 share a cause with W4 (X5 in the verdict). An unforced `_save()` within 5 s of the
+previous save only marks the handle dirty (`core.py:2764`, `:16284`), and nothing flushes at exit:
+`main()` ends in `mcp.run()` (`mcp_server.py:2761`). An end-to-end run through a real stdio server process
+shows the loss. `remember`, then `credit(outcome="good")`, returns `updated: [id]`. After the client closes
+the session, the store file has no `good` on that record.
+
+### M1 (High): `credit` reports an update that never reaches the store file
+
+- **Description** (`mcp_server.py:957-961`): "call credit(those ids, outcome) so each memory's track record
+  updates. Future `recall` then ranks by WAS-IT-RIGHT ... Counts only grow ... Returns what updated."
+- **What happens:** the result is `updated: [id]` and memory says `good: 1.0`. A fresh handle on the file
+  has no `good`. The outcome signal is lost, and nothing recomputes it.
+- **Cause:** `core.py:13889` ends with an unforced `_save()`.
+- **Test:** `test_credit_reaches_the_store_file`
+
+### M2 (High): `credit` records a positive number as a **bad** outcome
+
+- **Description** (`mcp_server.py:960-961`): "`outcome`: 'good'/'right'/'correct' vs 'bad'/'wrong'/'failed'
+  (or pass a bool / a signed number)."
+- **What happens:** the schema is `outcome: string`, so JSON `true`, `1`, `2.5` and `-1` are all rejected.
+  The string forms `"1"`, `"+1"` and `"2"` are accepted and recorded as `outcome: 'bad'`, so the record's
+  `bad` count goes up. So does any word outside the list, such as "success", "yes" or "ok".
+- **Cause:** `mcp_server.py:956` types `outcome` as `str`. `core.py:13828-13834` parses numbers only when
+  they arrive as int or float, and treats every other unlisted string as bad.
+- **Test:** `test_credit_accepts_a_positive_signed_number_as_a_good_outcome`
+
+### M3 (Medium): `credit` with a negative `weight` shrinks the counts it says only grow
+
+- **Description** (`mcp_server.py:961`): "Counts only grow; raw text is never edited."
+- **What happens:** `credit(outcome="bad", weight=2)` then `credit(outcome="bad", weight=-5)` leaves
+  `bad = -3`. The same works on `good` and `good_warranted`. A caller can wipe a record's recorded failures,
+  which the influence gate reads.
+- **Cause:** `core.py:13883` adds `float(weight)` with no check on its sign.
+- **Test:** `test_credit_counts_only_grow`
+
+### M4 (Medium): `consolidate`, `consolidate_clusters` and `sleep(keep=...)` report changes they do not save
+
+- **Description:**
+  - `consolidate` (`mcp_server.py:866-870`): "(if `keep` is given) supersede the lowest-value surplus".
+  - `consolidate_clusters`: "consolidate a semantic cluster only once it has grown past `threshold`".
+  - `sleep`: "prunes/re-affirms the memory budget".
+- **What happens:**
+  - `consolidate(keep=2)` over five records reports `active: 2`. A fresh handle sees five active.
+  - A ripe preference flip reports `toggled: 1` in `consolidate_clusters`. On disk the older record is
+    still active.
+  - `sleep(keep=2)` never saves its budget pass in the call that reports it, however long it has been
+    since the last write. `consolidate_clusters()` runs first (`core.py:15437`) and its save resets the
+    throttle clock, so `consolidate`'s save (`core.py:15439 -> 15281`) always lands inside the 5 s window.
+    `sleep` is meant for idle time, which is exactly when no later write comes along to carry the change
+    to disk.
+  - With receipts on, `consolidate(keep)` writes its retirement receipts to the sidecar at once while the
+    rows stay active on disk. A fresh handle's `verify_writes` still says ok.
+- **Cause:** `core.py:15281` and `:15389` end with unforced saves.
+- **Tests:** `test_consolidate_keep_budget_reaches_the_store_file`,
+  `test_consolidate_clusters_reaches_the_store_file`, `test_sleep_keep_budget_reaches_the_store_file`
+
+### M5 (Medium): `check_sources` is not scoped to the server's project
+
+- **Description** (`mcp_server.py:1211`): "Scoped to the bound tenant/project when there is one."
+- **What happens:** on a server with `INSPEXIMUS_PROJECT=a`, `recall` sees only project a's record.
+  `check_sources` returns `checked: 2` and names project b's drifted record in `drifted`, which makes the
+  verdict `ok: false`.
+- **Cause:** the server's project is passed per call and never bound to the store. `mcp_server.py:1212`
+  passes nothing, and `core.py:5891` walks every record of the tenant. See X4.
+- **Test:** `test_check_sources_is_scoped_to_the_servers_project`
+
+### M6 (Medium): `check_sources` says `ok: true` when nothing was checked
+
+- **Description** (`mcp_server.py:1203-1208`): "`ok` is false whenever NOTHING was checkable, and the report
+  says so — zero drifted over zero checked is the same sentence as a clean store."
+- **What happens:** records written without a `source` (the default for `remember`) are filed as
+  `NOT_BINDABLE`, a bucket the description never mentions. The result is `checked: 0, ok: true`, next to a
+  `problem` saying "this verified NOTHING". A writer-name source gives `UNCHECKABLE` and `ok: false`, as
+  described.
+- **Cause:** `core.py:5913` and `:6099-6100` made this change on purpose (see
+  `tests/test_not_bindable_is_not_a_backlog.py`). The tool description was not updated. The fix is probably
+  the description.
+- **Test:** `test_check_sources_ok_is_false_when_nothing_was_checked`
+
+### M7 (Medium): `verify_claim` says `stale_superseded` with `current: None`
+
+- **Description** (`mcp_server.py:916-917`): "'stale_superseded' (matches a value that has since been
+  CORRECTED/reverted — the reply is citing an outdated fact; 'current' is the truth now)".
+- **What happens:** a region is corrected from frankfurt to osaka. With `key` and `object`, the answer is
+  `stale_superseded, current: 'osaka'`. Without them it is `stale_superseded, current: None`, although the
+  retired record's key has a current value.
+- **Cause:** `core.py:16047`. The path without a key does not look up the retired record's key.
+- **Test:** `test_verify_claim_stale_superseded_names_the_current_value`
+
+### M8 (Medium): `memory_report` and `selection_integrity` overwrite the recall-window observation
+
+- **Description:** `memory_report` (`mcp_server.py:2476`): "Read-only". `selection_integrity`
+  (`mcp_server.py:939`): "(read-only, no LLM)". `INSPEXIMUS_OBSERVE_RECALL` (`mcp_server.py:35-36`):
+  "record which memories were served immediately before each write, as an observation".
+- **What happens:** with `INSPEXIMUS_OBSERVE_RECALL=1`, run `recall` (serves D), then `memory_report()`,
+  then a write. The write's `recall_window` holds the ids of whatever `memory_report` sampled, not D.
+  `selection_integrity` does the same, and returns none of the ids it puts there. The false observation
+  lands with the next write, with a fresh timestamp.
+- **Cause:** `core.py:15050` and `:16077` call `recall` with the default `observe=True`. The library has
+  `observe=False` "for a maintenance sweep" (`core.py:13340-13352`).
+- **Tests:** `test_memory_report_leaves_the_recall_window_alone`,
+  `test_selection_integrity_leaves_the_recall_window_alone`
+
+### M9 (Medium): `irreversible_budget_report` never changes after its first call
+
+- **Description** (`mcp_server.py:2468-2470`): "Audit view of the per-source lifetime IRREVERSIBLE-influence
+  budget: how much durable pull each source has spent against its cap".
+- **What happens:** the first call answers `{}`. Another handle then spends 0.7 of 1.0. The server still
+  answers `{}`, while a freshly started one shows the spend. No MCP tool spends this budget, so every spend
+  the report could show comes from another handle.
+- **Cause:** `core.py:14385` loads the sidecar once. `refresh()` never reloads it.
+- **Test:** `test_irreversible_budget_report_shows_a_spend_made_after_its_first_call`
+
+### Holds
+
+| Tool | Checked |
+|---|---|
+| `consolidate` / `sleep` / `consolidate_clusters` | Raw text and record count unchanged. `keep=N` retires the lowest-value records. A polarity flip retires the older side. A second immediate `sleep` does no new work (15 randomised stores). Report keys present. (M4 aside.) |
+| `contradictions` | Pairs `{a, b, a_text, b_text}`. Resolves nothing. Read-only. |
+| `check_conflict` | A pure duplicate returns `[]`, keyless or with the same object. Numeric, negation and keyed changes are flagged. Read-only. |
+| `verify_claim` | All five verdicts are reachable. Shape `{verdict, current, matched}`. Read-only. (M7 aside.) |
+| `check_self_narration` | `{self_narration, markers}`, matching whole words. |
+| `selection_integrity` | Shape as described. Without a trust root it says so. Store bytes unchanged. (M8 aside.) |
+| `value_by_cohort`, `index_coherence`, `identifier_contract`, `influence_gate_report` | Shapes as described. Read-only. |
+| `memory_report` | Counts and the duplicate estimate are present. Store bytes unchanged. (M8 aside.) |
+| `check_sources` | FRESH, DRIFTED, ORPHANED and UNCHECKABLE all reached. Drift or orphan gives `ok: false`. (M5 and M6 aside.) |
+| `credit` | `warrant` reaches the library and raises `good_warranted`. A warrant equal to the record's own source does not. (M1, M2 and M3 aside.) |
+| `memory_index` | Never drops a record. A budget too small is reported as exceeded. `needs_line` and `limits` present. |
+| `set_index_line` | Empty and whitespace-only lines are refused. The line persists on disk, and `verify_writes` stays ok. |
+
+---
+
+## Observations that are not description mismatches
+
+These were found along the way. Either no tool's description promises otherwise, or the behaviour is a
+documented library choice. They are listed because each one changes how a result should be read.
+
+- **Two ways to report an error.** 45 tools report a failure inside a successful result, as
+  `{"error": ...}` with `isError: false`. The rest raise, which reaches the client as `isError: true`. A
+  client that checks only `isError` misses the first kind. With `INSPEXIMUS_ACTIONS=1`, the boundary logs a
+  `{"error": ...}` result as an action with status `ok`.
+- **FastMCP's JSON pre-parse.** This is L5's cause, and it reaches every `str | None` parameter. A string
+  argument that happens to parse as JSON is decoded before validation. So
+  `record_oversight(decision='{"amount": 100}')` is refused, and `record_lifecycle(note="null")` stores no
+  note.
+- **No trust root on this server.** `selection_integrity` can never give a verdict over MCP, for the same
+  reason as R3. Even with every write attested through `INSPEXIMUS_WRITER_KEY`, its note still tells the
+  user to "attest writes".
+- **`forget(where_contains=...)` crosses projects.** On a project-scoped server it matches and deletes other
+  projects' records. Its description promises no project scoping.
+- **Rights and `record_*` tools write the ledger even when it is off.** They write `<store>.actions.json`
+  with `INSPEXIMUS_ACTIONS` unset. Meanwhile `incident_reported`, `archive_actions`, `record_lifecycle` and
+  four more refuse when it is off. So an incident recorded over MCP with the ledger off can never be marked
+  reported.
+- **`verify_audit_bundle(store_path=<legacy JSON store>)` changes the file.** It converts the file to rows
+  in place and leaves a `.pre-rows.bak` beside it. That is the library's convert-on-open, applied to the
+  auditor's evidence file.
+- **The audit bundle carries metadata.** It is content-free of record text, but carries grant keys, agent
+  ids and request ids, and keys can themselves hold identifiers.
+- **`check_conflict` with a key and no object.** On a key whose records carry objects, it flags even a
+  verbatim duplicate as `keyed_value_unchecked`. The library does this on purpose; the description does not
+  mention it.
+- **`value_by_cohort` counts access grants.** It counts ACL grant rows as untagged memories.
+- **Throttled saves also affect receipts.** `consolidate(keep)` inside the throttle window writes its
+  retirement receipts to the sidecar at once, while the rows stay active on disk.
+- **Environment flags are parsed two ways.** `INSPEXIMUS_ACTIONS` accepts `1/true/yes` but not `on`
+  (`mcp_server.py:366`). `_flag_from_env` accepts `on`, and its docstring says it is "One spelling rule for
+  every on/off environment flag this server reads". `INSPEXIMUS_READ_RESOLVER` accepts only `1` (`mcp_server.py:667`).
+- **Head files in `~/.config`.** A receipted store records its chain head under `INSPEXIMUS_KEY_HOME`,
+  which defaults to `~/.config/inspeximus/heads`. The shared harness now points it into `tmp_path`. Before
+  that change, runs of this review left head files for their throwaway `/tmp` stores in the container's
+  `~/.config`. Those files were removed.
+
+## Reproducing
+
+```bash
+pip install "mcp[cli]>=1.28,<2" cryptography pytest pytest-xdist
+python -m pytest tests/test_mcp_review_*.py            # 98 xfailed
+python -m pytest tests/test_mcp_review_*.py -n 0 --runxfail -q   # each fails on its own assertion
+```
+
+`tests/_mcp_review.py` holds the shared harness. It reloads `inspeximus.mcp_server` on `tmp_path/store.json`
+with every server environment variable cleared, points the key home into `tmp_path`, and calls tools through
+an in-memory MCP client session.
