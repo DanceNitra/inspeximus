@@ -94,13 +94,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: disappearing. Exactly +3, no slack: 166 + 3 = 169.
 #: 2.31.0: +1, the LangChain action-callback test (model and principal attribution), which needs
 #: langchain_core and runs in the integrations job. 169 + 1 = 170.
-#: +82 on 2026-09-24. +70 for the MCP tool review's reproducers (test_mcp_review_erasure.py 12,
-#: _integrity.py 8, _ledger.py 11, _maintenance.py 12, _reads.py 7, _rights_access.py 10, _writes.py 10)
-#: and +12 for test_the_mcp_server_signs_with_the_stores_key.py. Each one calls the server through an MCP
-#: client session, because what a client gets (argument validation, isError, the JSON a result becomes) is
-#: what the review measures, so none of them can run without the SDK. The integrations job installs
-#: .[mcp,...] and runs them all. Exactly +82, no slack: 170 + 82 = 252.
-MAX_HIDDEN_IN_BASE_ENV = 252
+#: +87 on 2026-09-24/25 for the MCP tool review (audits/2026-09-24/mcp-tools-review.md) and the fixes
+#: merged for 3.10.0: its seven tests/test_mcp_review_*.py files (erasure 12, integrity 8, ledger 11,
+#: maintenance 12, reads 7, rights_access 10, writes 10 = 70), test_the_mcp_server_signs_with_the_stores_key.py
+#: (12, review X1/X3) and test_mcp_scope_and_write_verdicts.py (5, review X4/X6). Every one drives a tool
+#: through a real MCP client session, so the SDK is the thing under test and none can run without it. They
+#: run in the `integrations` job, which installs .[mcp,...]. Exactly +87, no slack: 170 + 87 = 257.
+MAX_HIDDEN_IN_BASE_ENV = 257
 
 
 def _base_env_census():
