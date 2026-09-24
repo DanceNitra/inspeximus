@@ -1,0 +1,80 @@
+{
+  "inspeximus_erasure_certificate": "1.0",
+  "issued_ts": 1788253226.0,
+  "issued_iso": "2026-09-01T09:00:26Z",
+  "scoped_to": "DSAR-EXAMPLE-0001",
+  "request_ids": [
+    "DSAR-EXAMPLE-0001"
+  ],
+  "erased_memory_ids": [
+    "5ab18f160f",
+    "fc501d2b4d"
+  ],
+  "count": 2,
+  "tombstones": [
+    {
+      "seq": 0,
+      "memory_id": "5ab18f160f",
+      "ts": 1788253221.0,
+      "request_id": "DSAR-EXAMPLE-0001",
+      "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+      "auth": {
+        "basis": "GDPR Art. 17 (example request)",
+        "authorized_by": null,
+        "authorization": null
+      },
+      "hash": "57d33ce4a370cc39fdb8c4bf127df6dfb4c2581827039acadb16c7d49618332a",
+      "pubkey": "43035d7eff54707c1f064e318e2ca4449de12633ef8f53bdf5059da2b87027c1",
+      "sig": "33476570e81d91ddacc37a31af0795a19488afa93dd6afab8be9ee70bfa6a6429b24ff8fd8559830139a5984fa92b86682efb0cf2dfad0b02340ceb495273209"
+    },
+    {
+      "seq": 1,
+      "memory_id": "fc501d2b4d",
+      "ts": 1788253221.0,
+      "request_id": "DSAR-EXAMPLE-0001",
+      "prev": "57d33ce4a370cc39fdb8c4bf127df6dfb4c2581827039acadb16c7d49618332a",
+      "auth": {
+        "basis": "GDPR Art. 17 (example request)",
+        "authorized_by": null,
+        "authorization": null
+      },
+      "hash": "785d45fe19d40cfcb4013f19f5da4d7e8960d7dcdb3b3e506bebede8f9f6da1c",
+      "pubkey": "43035d7eff54707c1f064e318e2ca4449de12633ef8f53bdf5059da2b87027c1",
+      "sig": "2d664c32804e407463f0054810e4186ead4186b5b7abecd3fa0b1fb8627d5132199ce21fb56b31f7a2e0920401d7c71bf9169e6fd38b95d4bbc3ba31fb40eb0d"
+    }
+  ],
+  "pubkey": "43035d7eff54707c1f064e318e2ca4449de12633ef8f53bdf5059da2b87027c1",
+  "anchor": {
+    "n_writes": 3,
+    "writes_tip": "eaec60d50402c792dfc05b48f3ded503c545e3249cd1e76ed8c9da764770dcb2",
+    "n_tombstones": 2,
+    "tombstones_tip": "785d45fe19d40cfcb4013f19f5da4d7e8960d7dcdb3b3e506bebede8f9f6da1c",
+    "ts": 1788253227.0,
+    "writes_root": "90f50ea557a7201aab7650c70a18acf3304ed14d07e8760bd14b97095166e3d4",
+    "tombstones_root": "44370e4d6a92708dd6850b887ceda899d95ff8a0834e9df71ff2b310c8a8553f",
+    "merkle": "rfc6962-sha256",
+    "sth_hash": "6effd8d79e525d0a65c029844116f0f7fdac79e1be7bcccc04ed087793abf60a",
+    "root_hash": "630b74643839650999f78579e29178f0c9c4f78d065a6854b8751f7e4df719c5"
+  },
+  "self_check": {
+    "verified": true,
+    "problems": []
+  },
+  "conversion_backup": {
+    "state": "none"
+  },
+  "scope": "Erasure is within THIS inspeximus store only (not the app's vector store, prompt logs, or backups); covers the subject PLUS its derived_from lineage. Tamper-evident integrity primitive, NOT a compliance certification. The tombstone proves the ACT of deletion, never the content; its signature is load-bearing only against a non-holder of receipt_key — witness the anchor externally (see verify_consistency).",
+  "scope_covers": [
+    "this store's records whose source resolves to the subject",
+    "records derived from them (derived_from lineage)",
+    "erasure targets registered with register_erasure_target, as reported by them"
+  ],
+  "scope_excludes": [
+    "copies in a vector index or any store not registered as an erasure target",
+    "prompt logs and transcripts",
+    "backups and snapshots",
+    "model weights",
+    "text a model produced from the record before the erasure"
+  ],
+  "verify_with": "inspeximus.verify_erasure_certificate(cert, store_path=<file>)  # or store_items=<list>"
+}

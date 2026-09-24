@@ -116,8 +116,9 @@ jobs:
   # THE BROWSER VERIFIER (docs/verify/) is a JavaScript copy of verify_erasure_certificate and
   # verify_bundle, and a second copy of a decision is how this repository has drifted before. Its
   # test drives the page in Chromium and requires the Python verdict on every generated document and
-  # every one-byte edit. Every other job lacks a browser, so there those tests skip, one line each;
-  # here VERIFIER_PAGE_REQUIRED turns a skip into a failure.
+  # every one-byte edit, and clicks each "Try it" example for the verdict the page promises. Every
+  # other job lacks a browser, so there those tests skip, one line each; here VERIFIER_PAGE_REQUIRED
+  # turns a skip into a failure.
   verifier-page:
     name: browser verifier agrees with the CLI
     runs-on: ubuntu-latest
@@ -134,7 +135,7 @@ jobs:
       - name: run the page against the Python verifiers
         env:
           VERIFIER_PAGE_REQUIRED: "1"
-        run: python -m pytest tests/test_verifier_page.py tests/test_verifier_page_adversarial.py -n 0 -q -rs
+        run: python -m pytest tests/test_verifier_page.py tests/test_verifier_page_adversarial.py tests/test_verifier_page_examples.py -n 0 -q -rs
 
   # THE FULL SUITE, IN FOUR PARALLEL SHARDS. One job ran all of it in 10 to 15 minutes, and a release
   # waited on it twice (here and again in release.yml). `--shard i/4` (tests/conftest.py) splits the

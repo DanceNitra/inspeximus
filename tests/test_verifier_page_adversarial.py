@@ -419,8 +419,10 @@ def test_no_external_script_and_no_request_after_load(browser, site, documents):
     remote = lambda: [u for u in seen if not u.startswith("data:")]
     try:
         assert remote() == [site], seen
+        # One executable script, inline. The rest are inert data: the constants, then the four "Try it"
+        # examples (tests/test_verifier_page_examples.py), none with a src.
         scripts = p.evaluate("() => [...document.scripts].map(s => [s.type, s.src])")
-        assert scripts == [["application/json", ""], ["", ""]], scripts
+        assert scripts == [["application/json", ""]] * 5 + [["", ""]], scripts
         refs = p.evaluate("() => [...document.querySelectorAll('[src],[href],[srcset],[action],[data],[poster]')]"
                           ".map(e => e.getAttribute('src') || e.getAttribute('href') || e.getAttribute('action'))")
         assert all(r.startswith("data:") for r in refs), refs
