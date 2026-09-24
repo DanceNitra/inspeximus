@@ -100,6 +100,7 @@ def test_a_failed_self_check_is_invalid(tmp_path):
 
 
 @pytest.mark.parametrize("keys", [("scope",), ("scope_covers",), ("scope_excludes",),
+                                  ("scope", "scope_excludes"),        # session T's reproduction on 3.9.2
                                   ("scope", "scope_covers", "scope_excludes")])
 def test_a_removed_scope_statement_is_invalid(tmp_path, keys):
     r = verify_erasure_certificate(_without(_cert(tmp_path), *keys))
