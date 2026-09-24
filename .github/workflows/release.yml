@@ -86,8 +86,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-xdist cryptography numpy pyyaml
-          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents]"
-          pip install haystack-ai
+          # THE SAME INSTALL AS ci.yml's integrations job, line for line. This installed the extras without
+          # the openai-agents upgrade that job does, so the release shards resolved an openai-agents with no
+          # `agents.testing` and v3.9.2's release failed on tests main CI passed (2026-09-24).
+          pip install -e ".[mcp,langgraph,langchain,llamaindex,autogen,pydantic-ai,crewai,google-adk,openai-agents,haystack]"
+          pip install -U "openai-agents>=0.18"
+          python -c "import autogen_core, agents; print('autogen_core and agents both import')"
           # A release path with no import check will ship whatever pip called a success. On
           # 2026-08-24 the nine-extra solve settled on `autogen-core-0.0.2`, a placeholder that
           # satisfies the name and ships no module; ci.yml caught it here and this file had
