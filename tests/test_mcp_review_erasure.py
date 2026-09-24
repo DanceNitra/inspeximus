@@ -213,18 +213,16 @@ def test_pii_report_counts_pii_held_in_superseded_records(monkeypatch, tmp_path)
 
 
 # ── retention / forget on a signed store ────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="retention: 'with apply=True, hard-delete them — each erasure leaving a signed "
-                          "tombstone'; the server has no receipt key, so the tombstone is unsigned and a "
-                          "signed store's chain then fails verification", **XFAIL)
 def test_retention_apply_leaves_a_signed_tombstone(monkeypatch, tmp_path, signed_store):
     """retention: "find ACTIVE records older than `max_age_days` and, with apply=True, hard-delete them —
     each erasure leaving a signed tombstone, so the enforcement is itself auditable."
 
-    No server configuration reaches the store's receipt_key/receipt_signer (open_store is called without
-    either), so every tombstone this server appends is unsigned, even on a store that is signed.
+    No server configuration reached the store's receipt_key/receipt_signer (open_store was called without
+    either), so every tombstone this server appended was unsigned, even on a store that is signed. FIXED:
+    the server takes the store's key through INSPEXIMUS_RECEIPT_KEY (or _FILE, or the key home).
     """
-    _sk, pk, (_a, b) = signed_store
-    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_PUBKEY=pk)
+    sk, pk, (_a, b) = signed_store
+    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_PUBKEY=pk, INSPEXIMUS_RECEIPT_KEY=sk)
     before = call(mod, "verify_writes").data
     if not before.get("ok"):
         pytest.fail(f"precondition: the signed store verifies against its pinned key: {before}")
@@ -237,18 +235,16 @@ def test_retention_apply_leaves_a_signed_tombstone(monkeypatch, tmp_path, signed
         f"retention tombstone signed={'sig' in tomb}; verify_writes after the sweep: {after.get('problems')}")
 
 
-@pytest.mark.xfail(reason="forget: guard parity; an erasure through the server on a signed store appends an "
-                          "unsigned tombstone and verify_writes turns false (the library with its key stays "
-                          "ok)", **XFAIL)
 def test_forget_on_a_signed_store_keeps_the_chain_verifiable(monkeypatch, tmp_path, signed_store):
     """forget: "TRULY DELETE memories ... Use for an erasure / right-to-be-forgotten request".
 
     Guard parity (audit brief, check 3): every write extends the receipt chain and verify_writes stays
     ok. On a signed store the same forget() through the library keeps it ok; through this server the chain
     becomes "signed in places", which verify_writes reports as "something without the key appended to it".
+    FIXED: the server is handed the store's key (INSPEXIMUS_RECEIPT_KEY) and signs the tombstone.
     """
-    _sk, pk, (_a, b) = signed_store
-    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_PUBKEY=pk)
+    sk, pk, (_a, b) = signed_store
+    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_PUBKEY=pk, INSPEXIMUS_RECEIPT_KEY=sk)
     if not call(mod, "verify_writes").data.get("ok"):
         pytest.fail("precondition: the signed store verifies against its pinned key")
     res = call(mod, "forget", ids=[b], basis="gdpr_art17", request_id="DSAR-2")

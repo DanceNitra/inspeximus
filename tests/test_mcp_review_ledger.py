@@ -121,9 +121,6 @@ _LEDGER_WRITERS = [
 ]
 
 
-@pytest.mark.xfail(reason="ledger writers: with INSPEXIMUS_ACTIONS=1 the ledger is 'one signed, hash-chained "
-                          "entry per call' (module docstring); these tools append through a second, keyless "
-                          "ActionLedger, so the entry is unsigned and actions_verify fails", **XFAIL)
 @pytest.mark.parametrize("tool,args,seq_field", _LEDGER_WRITERS, ids=[t[0] for t in _LEDGER_WRITERS])
 def test_a_ledger_writing_tool_keeps_a_signed_ledger_signed(monkeypatch, tmp_path, tool, args, seq_field):
     """Module docstring: "INSPEXIMUS_ACTIONS  1 to record every tool call in the ACTION LEDGER

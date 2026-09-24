@@ -20,7 +20,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import anyio
+import pytest
+
+# The MCP SDK is an extra the base CI job does not install. Every test file that imports this module guards
+# it first; this module guards it too, so importing it can never be a collection error on its own
+# (tests/test_a_test_that_needs_an_extra_must_guard_it.py).
+pytest.importorskip("mcp")
+
+import anyio  # noqa: E402  (installed with the MCP SDK)
 
 # The repository root, so `import inspeximus` resolves to this checkout under a bare `pytest` too.
 _ROOT = str(Path(__file__).resolve().parent.parent)
@@ -38,7 +45,7 @@ SERVER_ENV = (
     "INSPEXIMUS_WRITER_KEY_FILE", "INSPEXIMUS_ECHO_GUARD", "INSPEXIMUS_EMBED_URL", "INSPEXIMUS_EMBED_MODEL",
     "INSPEXIMUS_EMBED_KEY", "INSPEXIMUS_OBSERVE_RECALL", "INSPEXIMUS_PII_DETECT", "INSPEXIMUS_PERSIST_VECTORS",
     "INSPEXIMUS_READ_RESOLVER", "INSPEXIMUS_MAX_K", "INSPEXIMUS_SNIPPET_CHARS", "INSPEXIMUS_NO_UPDATE_CHECK",
-    "INSPEXIMUS_STORE_FORMAT", "INSPEXIMUS_KEY_HOME",
+    "INSPEXIMUS_STORE_FORMAT", "INSPEXIMUS_KEY_HOME", "INSPEXIMUS_RECEIPT_KEY", "INSPEXIMUS_RECEIPT_KEY_FILE",
 )
 
 

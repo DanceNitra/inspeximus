@@ -58,7 +58,7 @@ try:  # optional, only to sign
 except Exception:  # pragma: no cover - exercised only where cryptography is absent
     _HAVE_ED = False
 
-__all__ = ["ActionLedger", "ActionContext", "verify_file", "GENESIS", "LEDGER_VERSION",
+__all__ = ["ActionLedger", "ActionContext", "LedgerUnreadable", "verify_file", "GENESIS", "LEDGER_VERSION",
            "OVERSIGHT_EVENTS", "DISCLOSURE_KINDS", "INCIDENT_SEVERITIES", "INCIDENT_DEADLINES_DAYS",
            "RISK_SOURCES", "RISK_HARMS", "RISK_MEASURES", "RISK_LEVELS", "CORRECTIVE_ACTIONS",
            "INFORMED_PARTIES", "AUTHORITY_REQUEST_SCOPES", "BREACH_NOTIFY_TARGETS", "BREACH_EXEMPTIONS",
@@ -295,6 +295,18 @@ class ActionContext:
         self._error = error if isinstance(error, str) else f"{type(error).__name__}: {error}"
 
 
+class LedgerUnreadable(RuntimeError):
+    """The ledger file exists and cannot be read as a ledger, so nothing may be appended to it.
+
+    `_load` used to read such a file as an empty chain: `verify()` then passed it (0 entries, no
+    problems) and the next `record()` numbered its entry 0 from GENESIS and replaced the file, so the
+    entries on disk were gone and the call reported an ordinary success. Measured 2026-09-24 (MCP tool
+    review, L3 and L4): a ledger holding two incidents, truncated to half its bytes, then one
+    `record_risk`. A torn copy or a disk-full restore is exactly the file this meets, and a ledger
+    that starts over is worse than one that stops: the loss reads as a fresh chain. Restore the file,
+    or move it aside deliberately to start a new one."""
+
+
 class ActionLedger:
     """A hash-chained, optionally signed ledger of agent actions bound to the memory state."""
 
@@ -319,6 +331,7 @@ class ActionLedger:
         self._checkpoint: dict | None = None       # the header a rotated ledger starts with, see archive()
         self._salt: bytes | None = None
         self._seen_recall: int | None = None       # id() of the recall window the last entry consumed
+        self._load_error: str | None = None        # why the file on disk is not a ledger; see LedgerUnreadable
         self._load()
 
     @property
@@ -359,17 +372,19 @@ class ActionLedger:
         self._checkpoint = None
         # AN UNREADABLE LEDGER IS NOT AN EMPTY ONE. This read a file it could not parse as [], and the
         # next record() wrote a fresh one-entry chain over it: the history was replaced and verify()
-        # read the new file clean. Measured 2026-09-24 (session E review, item 7). The handle now
-        # remembers why, verify() reports it, and _save() refuses to overwrite the file.
-        self._unreadable = None
+        # read the new file clean. Measured 2026-09-24 (session E review, item 7, and MCP review L3,
+        # L4). The handle remembers why, verify() reports it, and no write lands on the file.
+        self._load_error = None
         if self.path.exists():
+            # A file that is there and is not a ledger is NOT an empty ledger. The wording matches
+            # verify_file, the offline check, so both verifiers name the same failure.
             try:
                 data = json.loads(self.path.read_text(encoding="utf-8"))
             except (OSError, ValueError) as e:
-                self._unreadable = "%s: %s" % (type(e).__name__, str(e)[:160])
+                self._load_error = f"cannot read {self.path}: {type(e).__name__}: {str(e)[:160]}"
                 data = []
-            if not isinstance(data, list) and self._unreadable is None:
-                self._unreadable = "the file holds a JSON %s, not a list of entries" % type(data).__name__
+            if not isinstance(data, list) and self._load_error is None:
+                self._load_error = f"{self.path} is not a ledger (expected a JSON array)"
             data = list(data) if isinstance(data, list) else []
             if data and isinstance(data[0], dict) and data[0].get("kind") == "checkpoint":
                 self._checkpoint = data[0]
@@ -387,12 +402,25 @@ class ActionLedger:
         if self._stat_sig() != getattr(self, "_sig", None):
             self._load()
 
+    def require_readable(self) -> None:
+        """Raise LedgerUnreadable when the ledger file on disk cannot be read, after re-reading it if
+        another handle changed it. Every write calls this before it changes anything; a caller that
+        changes something ELSE before it writes here (a memory rectification, an objection) calls it
+        first, so a refused ledger write cannot leave the other half done."""
+        self._refresh_if_changed()
+        self._refuse_if_unreadable()
+
+    def _refuse_if_unreadable(self) -> None:
+        """The one refusal, shared by require_readable() and the _save() backstop, so the wording and
+        the condition cannot drift apart and one change disables both (the mutation test relies on it)."""
+        if self._load_error:
+            raise LedgerUnreadable(
+                f"the action ledger could not be read ({self._load_error}); refusing to write over "
+                f"it. Refusing to append: a new entry would start a new chain over the entries that "
+                f"file holds. Restore it from a copy, or move it aside to start a new ledger deliberately.")
+
     def _save(self) -> None:
-        if getattr(self, "_unreadable", None):
-            raise RuntimeError(
-                f"the action ledger {self.path} could not be read ({self._unreadable}); refusing to write "
-                f"over it, because that would replace its history with a new chain. Restore it from a "
-                f"copy, or move it aside to start a new ledger.")
+        self._refuse_if_unreadable()               # the backstop; every writer checks before it mutates
         tmp = self.path.with_name(self.path.name + ".tmp.%d" % os.getpid())
         body = ([self._checkpoint] if self._checkpoint else []) + self._entries
         tmp.write_text(json.dumps(body, indent=1, ensure_ascii=False), encoding="utf-8")
@@ -508,7 +536,7 @@ class ActionLedger:
             raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
                              "lifecycle, risk, monitoring, corrective, authority, breach, literacy, attestation, "
                              "responsibilities, declaration, documentation, notice, processing_role or qms")
-        self._refresh_if_changed()
+        self.require_readable()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
         out = self.redact(output) if (self.redact and output is not None) else output
@@ -563,7 +591,11 @@ class ActionLedger:
     def action(self, action: str, inputs: Any = None, meta: dict | None = None, actor: str | None = None,
                model: str | None = None, principal: str | None = None, session: str | None = None):
         """Record an action around a block of code. The block's exception, if any, is recorded as the
-        action's error and re-raised. `model`, `principal` and `session` are recorded as on record()."""
+        action's error and re-raised. `model`, `principal` and `session` are recorded as on record().
+
+        An unreadable ledger raises LedgerUnreadable HERE, before the block runs: refusing only at the
+        end would let the action happen and then leave it unrecorded."""
+        self.require_readable()
         ctx = ActionContext(self, action, inputs, meta)
         before = self.memory_state()          # what the agent knew BEFORE it acted, not after
         try:
@@ -1648,6 +1680,7 @@ class ActionLedger:
     def _resolve_ref(self, refers_to):
         if refers_to is None:
             return None
+        self.require_readable()     # else a reference into an unreadable file reads as "not in the ledger"
         if isinstance(refers_to, int):
             return {"seq": refers_to, "hash": self._at(refers_to)["hash"]}
         for e in self._entries:
@@ -1894,7 +1927,7 @@ class ActionLedger:
         now = time.time() if now is None else now
         if before_ts is None and keep_days is None:
             raise ValueError("archive needs keep_days or before_ts")
-        self._refresh_if_changed()
+        self.require_readable()
         cutoff = float(before_ts) if before_ts is not None else now - float(keep_days) * 86400.0
         if self._sk is None and (any("sig" in e for e in self._entries) or (self._checkpoint and "sig" in self._checkpoint)):
             raise ValueError("this ledger is signed; open it with its signing key to rotate it, or the checkpoint "
@@ -1988,13 +2021,16 @@ class ActionLedger:
         That is the witness's job (`anchor()` co-signed by an independent party, `detect_split_view`),
         not this function's. And the memory binding needs the store present; the offline check of the
         ledger file alone (`verify_file`) covers hashes, links and signatures only. Returns
-        (ok, problems); problems is empty when ok."""
+        (ok, problems); problems is empty when ok.
+
+        A ledger file that cannot be read fails, as it does in `verify_file`. It used to load as an
+        empty chain, and an empty chain verifies (see LedgerUnreadable)."""
+        if self._load_error:
+            return False, [f"the ledger file could not be read ({self._load_error}); nothing in it was "
+                           f"verified"]
         problems, _tail, _archived = _verify_chain(self._checkpoint, self._entries, self.path.parent,
                                                    expected_pubkey=expected_pubkey,
                                                    require_signatures=require_signatures)
-        if getattr(self, "_unreadable", None):
-            problems.insert(0, f"the ledger file could not be read ({self._unreadable}); nothing in it "
-                               f"was verified")
         if bind_to_store and self.store is not None:
             chain = [r.get("hash") for r in (getattr(self.store, "_receipts", None) or [])]
             pos = {h: i for i, h in enumerate(chain)}

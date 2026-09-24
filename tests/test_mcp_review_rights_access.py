@@ -162,9 +162,6 @@ def test_record_objection_stops_serving_the_subject_outside_recall(server, tool)
 
 
 # ── export_subject (and every rights tool: record_objection, resolve_objection, rectify_subject) ────
-@pytest.mark.xfail(reason="export_subject: 'Writes one rights:export entry to the action ledger'; on a server "
-                          "that signs its ledger (INSPEXIMUS_WRITER_KEY + INSPEXIMUS_ACTIONS) the rights entry is "
-                          "unsigned and actions_verify turns false", **XFAIL)
 def test_export_subject_rights_entry_keeps_the_signed_action_ledger_verifiable(server):
     """export_subject: "Writes one rights:export entry to the action ledger carrying the export's manifest
     hash." Server config: "INSPEXIMUS_ACTIONS 1 to record every tool call in the ACTION LEDGER: one signed,

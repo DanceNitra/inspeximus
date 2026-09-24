@@ -47,6 +47,17 @@ EXPORT_FORMAT = {"name": "inspeximus.subject_export", "version": 1, "media_type"
                  "encoding": "utf-8", "canonical_hash": "sha256 over the JSON-canonical body, key manifest_sha256"}
 
 
+def _ledger_can_take_the_entry(ledger) -> None:
+    """Refuse BEFORE the store changes when the ledger could not take the entry afterwards.
+
+    Each act here changes the store and then records itself, so a ledger file that cannot be read
+    (actions.LedgerUnreadable) used to be found only after the rectification or the objection had
+    landed: the act stood, unrecorded, and the caller got an error for it. An export reads the
+    ledger for the actions taken on the subject's records, so it would come back incomplete."""
+    if ledger is not None and hasattr(ledger, "require_readable"):
+        ledger.require_readable()
+
+
 def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = False,
                    include_text: bool = True, actor: str | None = None, request_id: str | None = None,
                    basis: str = "access") -> dict:
@@ -66,6 +77,7 @@ def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = Fal
     same refusal `forget_subject` makes, unless `allow_ambiguous=True`."""
     if basis not in ("access", "portability"):
         raise ValueError("basis must be access (Art. 15) or portability (Art. 20)")
+    _ledger_can_take_the_entry(ledger)
     cand, ids, collisions = store._resolve_subject(subject, allow_ambiguous=allow_ambiguous, destructive=True)
     if collisions and not allow_ambiguous:
         raise store._ambiguous_error(subject, collisions, "export_subject")
@@ -161,6 +173,7 @@ def record_objection(store, subject: str, actor: str, ground: str, scope: str = 
     """Serve a GDPR Art. 21 objection: the store stops serving the subject's records (see
     `Inspeximus.object_processing`) and, with a ledger, one `rights:objection` entry records who asked, on
     which ground, and how many records were withheld at that moment."""
+    _ledger_can_take_the_entry(ledger)
     row = store.object_processing(subject, actor, ground, scope=scope, request_id=request_id,
                                   allow_ambiguous=allow_ambiguous)
     if ledger is not None:
@@ -177,6 +190,7 @@ def resolve_objection(store, subject: str, actor: str, outcome: str, grounds: st
                       request_id: str | None = None) -> dict:
     """Close an objection as `upheld` or `overridden` (see `Inspeximus.resolve_objection`) and record the
     decision as a `rights:objection_resolved` entry carrying the outcome and the grounds."""
+    _ledger_can_take_the_entry(ledger)
     row = store.resolve_objection(subject, actor, outcome, grounds=grounds, request_id=request_id)
     if ledger is not None:
         entry = ledger.record("rights:objection_resolved", inputs={"subject": subject, "outcome": outcome},
@@ -204,6 +218,7 @@ def rectify(store, key: str, text: str, actor: str, reason: str, ledger=None, su
     Returns {previous_id, new_id, key, receipt} and the ledger entry when one was written."""
     if not actor or not reason:
         raise ValueError("a rectification needs an actor (who asked or approved) and a reason")
+    _ledger_can_take_the_entry(ledger)
     prev = None
     for r in store.items:
         if r.get("key") == key and r.get("status") == "active":
