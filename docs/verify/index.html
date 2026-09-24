@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Nothing leaves this page. The policy below forbids every fetch, image, font, frame and form
+     target, so the "computed in your browser" claim is enforced by the browser, not promised by us. -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:,">
+<title>Inspeximus verifier</title>
+<meta name="description" content="Check an inspeximus erasure certificate or audit bundle in your browser. Nothing is uploaded.">
+<style>
+:root {
+  --bg: #fbfbf9; --fg: #1b1d21; --muted: #5d636e; --line: #d9dce1; --panel: #ffffff;
+  --ok: #0f6b3a; --ok-bg: #e5f4ec; --bad: #a3161b; --bad-bg: #fbe9e9;
+  --warn: #7a4d00; --warn-bg: #fdf1dc; --accent: #2449a8; --code: #f1f2f4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161a; --fg: #e7e9ed; --muted: #9aa1ad; --line: #30343c; --panel: #1b1e23;
+    --ok: #6fd69c; --ok-bg: #12301f; --bad: #ff8a8f; --bad-bg: #3a1618;
+    --warn: #f5c063; --warn-bg: #362709; --accent: #8fb0ff; --code: #23262c;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161a; --fg: #e7e9ed; --muted: #9aa1ad; --line: #30343c; --panel: #1b1e23;
+  --ok: #6fd69c; --ok-bg: #12301f; --bad: #ff8a8f; --bad-bg: #3a1618;
+  --warn: #f5c063; --warn-bg: #362709; --accent: #8fb0ff; --code: #23262c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+       font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 8px; }
+h2 { font-size: 1.1rem; margin: 40px 0 8px; }
+p { margin: 8px 0; }
+.lede { color: var(--muted); margin-bottom: 24px; }
+code, pre, textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code); padding: 10px 12px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+#drop { border: 2px dashed var(--line); border-radius: 10px; background: var(--panel); padding: 14px; }
+#drop.over { border-color: var(--accent); }
+textarea { width: 100%; min-height: 200px; resize: vertical; border: 1px solid var(--line); border-radius: 6px;
+           background: var(--bg); color: var(--fg); padding: 10px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+button, .filebtn { font: inherit; font-size: 0.95rem; border-radius: 6px; padding: 7px 16px; cursor: pointer;
+                   border: 1px solid var(--line); background: var(--panel); color: var(--fg); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+.filebtn input { display: none; }
+.hint { color: var(--muted); font-size: 0.9rem; }
+#result { margin-top: 24px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); padding: 16px 18px; }
+#result[hidden] { display: none; }
+#verdict { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.02em; display: inline-block;
+           padding: 2px 12px; border-radius: 6px; }
+#verdict.VALID { color: var(--ok); background: var(--ok-bg); }
+#verdict.INVALID { color: var(--bad); background: var(--bad-bg); }
+#verdict.CANNOT, #verdict.WORKING { color: var(--warn); background: var(--warn-bg); }
+#kind { color: var(--muted); margin-left: 10px; }
+#reason { margin: 10px 0 4px; font-weight: 600; }
+#result h3 { font-size: 0.95rem; margin: 16px 0 4px; }
+#result ul { margin: 4px 0; padding-left: 20px; }
+#result li { margin: 3px 0; overflow-wrap: anywhere; }
+.bad-li { color: var(--bad); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+<h1>Verify an erasure certificate or audit bundle</h1>
+<p class="lede">Paste or drop a file made by inspeximus's <code>erasure_certificate()</code> or <code>audit_bundle()</code>.
+The page checks it in your browser and shows <b>VALID</b> or <b>INVALID</b> with the reason. Nothing is uploaded:
+the page's security policy blocks all network requests, and it makes none after loading.</p>
+
+<div id="drop">
+  <textarea id="input" spellcheck="false" autocomplete="off" aria-label="Certificate or bundle JSON"
+            placeholder="Paste the JSON here, or drop the .json file on this box."></textarea>
+  <div class="row">
+    <button id="verify" class="primary" type="button">Verify</button>
+    <label class="filebtn">Choose file…<input id="file" type="file" accept=".json,application/json"></label>
+    <button id="clear" type="button">Clear</button>
+    <span class="hint">Your file is read locally with the File API.</span>
+  </div>
+</div>
+
+<section id="result" hidden aria-live="polite">
+  <div><span id="verdict"></span><span id="kind"></span></div>
+  <p id="reason"></p>
+  <div id="details"></div>
+</section>
+
+<h2>What this checks</h2>
+<p>The page runs the same checks as the command-line verifiers, with no options:</p>
+<pre>inspeximus erasure-verify certificate.json
+inspeximus audit-verify bundle.json</pre>
+<p>For a <b>certificate</b> it re-derives every tombstone hash from genesis and checks each Ed25519 signature.
+It checks the anchor's tip, count, RFC 6962 Merkle root and <code>sth_hash</code>, and re-derives the summary
+(<code>erased_memory_ids</code>, <code>count</code>, <code>request_ids</code>) from the chain. It also confirms the
+scope statement is the one the library issues and that the certificate covers at least one erasure. For an
+<b>audit bundle</b> it checks <code>bundle_hash</code>, re-walks both chains, re-derives the anchor's hashes and
+roots, checks every signature against the key the entry names, and runs the governance, coverage and access-control
+consistency checks.</p>
+<p>Hashes use Python's <code>json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)</code>
+encoded as UTF-8, rebuilt byte for byte here, including Python's float formatting and code-point key order.
+Signatures are Ed25519 over the 32 raw bytes of each entry's SHA-256 <code>hash</code>.</p>
+
+<h2>What it does not check</h2>
+<ul>
+  <li><b>That the records are gone from the store.</b> Run the CLI with <code>--store store.json</code>.</li>
+  <li><b>Whose key signed it.</b> Signatures are checked against the key the file carries, which proves
+      the signer held a key pair, not which one. Pin the key you got out of band with <code>--expected-pubkey</code>.</li>
+  <li><b>An anchor or witness you trust.</b> <code>--expected-anchor</code>, <code>--witnesses</code> and
+      <code>--require-signed</code> are CLI-only. Without them, anyone can remove the newest tombstones and
+      recompute the anchor, with no key at all, and the shorter certificate still verifies. Whoever holds the
+      signing key can also rewrite and re-sign the whole history.</li>
+</ul>
+<p>When the page cannot reproduce the Python verifier exactly, it says <b>CANNOT VERIFY HERE</b> and never
+INVALID. That covers: a browser without Ed25519, and a signature over a small-order or mixed-order Ed25519
+point that OpenSSL (which the CLI uses) would accept but a browser may not. It also covers text Python rejects
+before verifying (a byte-order mark, invalid UTF-8, an unpaired surrogate, an integer longer than 4300 digits)
+and fields whose types would make the Python verifier stop with an error. Use the CLI for those. If another
+check has already failed, the answer is INVALID either way, and the page says so.</p>
+
+<h2>Browser support</h2>
+<p>Hashing uses WebCrypto SHA-256, which every current browser has. Signatures need WebCrypto
+<b>Ed25519</b>, available from:</p>
+<table>
+  <thead><tr><th>Browser</th><th>Ed25519 in WebCrypto from</th></tr></thead>
+  <tbody>
+    <tr><td>Chrome, Chrome for Android, Android WebView</td><td>137</td></tr>
+    <tr><td>Edge</td><td>137</td></tr>
+    <tr><td>Opera</td><td>121 (Opera for Android 90)</td></tr>
+    <tr><td>Firefox, Firefox for Android</td><td>129</td></tr>
+    <tr><td>Safari, Safari on iOS</td><td>17</td></tr>
+    <tr><td>Samsung Internet</td><td>30</td></tr>
+  </tbody>
+</table>
+<p class="hint">Source: MDN browser compatibility data (<code>@mdn/browser-compat-data</code> 8.1.2,
+<code>api.SubtleCrypto.verify.ed25519</code> and <code>importKey.ed25519</code>), checked 2026-09-24.
+The Opera, WebView and Samsung Internet rows are MDN's Chrome figure mapped to that browser's first release on
+Chromium 137 or later. On an older browser, an unsigned file still verifies. A signed one reports
+CANNOT VERIFY HERE, never INVALID.</p>
+</main>
+
+<!-- Constants the verifier compares against. They must equal the library's own; tests/test_verifier_page.py
+     reads this block and fails if inspeximus changes them and this page is not updated. -->
+<script type="application/json" id="inspeximus-constants">
+{
+  "bundle_kind": "inspeximus.audit_bundle/1",
+  "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
+  "sth_fields": ["n_writes", "writes_tip", "n_tombstones", "tombstones_tip"],
+  "root_fields": ["n_writes", "writes_root", "n_tombstones", "tombstones_root", "merkle"],
+  "cert_scope": "Erasure is within THIS inspeximus store only (not the app's vector store, prompt logs, or backups); covers the subject PLUS its derived_from lineage. Tamper-evident integrity primitive, NOT a compliance certification. The tombstone proves the ACT of deletion, never the content; its signature is load-bearing only against a non-holder of receipt_key — witness the anchor externally (see verify_consistency).",
+  "cert_scope_covers": [
+    "this store's records whose source resolves to the subject",
+    "records derived from them (derived_from lineage)",
+    "erasure targets registered with register_erasure_target, as reported by them"
+  ],
+  "cert_scope_excludes": [
+    "copies in a vector index or any store not registered as an erasure target",
+    "prompt logs and transcripts",
+    "backups and snapshots",
+    "model weights",
+    "text a model produced from the record before the erasure"
+  ]
+}
+</script>
+
+<script>
+(function () {
+"use strict";
+
+// ─── Python value model ─────────────────────────────────────────────────────────────────────────────
+// JSON.parse cannot be used: it turns 1.0 into 1 (Python keeps a float and writes "1.0"), rounds big
+// integers, and drops the int/float distinction Python's == and json.dumps both depend on. So the page
+// parses into the types Python's json.loads produces: null, true/false, str, PyInt (BigInt), PyFloat,
+// list (Array) and PyDict (insertion-ordered Map, last duplicate wins, as dict(pairs) does).
+
+class CannotVerify extends Error {}
+class JSONError extends Error {}
+class PyInt { constructor(v) { this.v = v; } }
+class PyFloat { constructor(v) { this.v = v; } }
+class PyDict {
+  constructor(pairs) { this.m = new Map(pairs || []); }
+  get(k) { return this.m.has(k) ? this.m.get(k) : null; }
+  has(k) { return this.m.has(k); }
+  keys() { return Array.from(this.m.keys()); }
+  get size() { return this.m.size; }
+}
+
+const CONST = JSON.parse(document.getElementById("inspeximus-constants").textContent);
+const GENESIS = CONST.genesis;
+
+const LONE_SURROGATE = /[\ud800-\udbff](?![\udc00-\udfff])|(?:^|[^\ud800-\udbff])[\udc00-\udfff]/;
+
+function isDigit(c) { return c !== undefined && c >= "0" && c <= "9"; }
+
+// Python json.loads with the C scanner: strict strings, NaN/Infinity accepted, "Extra data" refused.
+function parsePyJSON(s) {
+  if (s.charCodeAt(0) === 0xfeff) {
+    throw new CannotVerify("the text starts with a byte-order mark. Python's json refuses it " +
+                           "(\"Unexpected UTF-8 BOM\"), so the CLI stops before verifying anything. " +
+                           "Save the file as UTF-8 without a BOM.");
+  }
+  const n = s.length;
+  let i = 0;
+  // Python's json.loads nests to about 1000 levels on 3.11 and about 3000 on 3.12. 900 is under both,
+  // so a document this page parses is one every supported Python parses too.
+  const MAX_DEPTH = 900;
+  const ws = () => { while (i < n) { const c = s.charCodeAt(i); if (c === 32 || c === 9 || c === 10 || c === 13) i++; else break; } };
+  const fail = (msg, at) => { throw new JSONError(msg + " (character " + at + ")"); };
+
+  function str() {
+    const start = i;
+    let j = i + 1, out = "", chunk = j;
+    for (;;) {
+      if (j >= n) fail("Unterminated string", start);
+      const c = s.charCodeAt(j);
+      if (c === 0x22) { out += s.slice(chunk, j); i = j + 1; return out; }
+      if (c === 0x5c) {
+        out += s.slice(chunk, j);
+        const e = s[j + 1];
+        if (e === undefined) fail("Unterminated string", start);
+        if (e === "u") {
+          const h = s.slice(j + 2, j + 6);
+          if (!/^[0-9a-fA-F]{4}$/.test(h)) fail("Invalid \\uXXXX escape", j + 1);
+          out += String.fromCharCode(parseInt(h, 16));
+          j += 6;
+        } else {
+          const m = { '"': '"', "\\": "\\", "/": "/", b: "\b", f: "\f", n: "\n", r: "\r", t: "\t" }[e];
+          if (m === undefined) fail("Invalid \\escape", j);
+          out += m;
+          j += 2;
+        }
+        chunk = j;
+        continue;
+      }
+      if (c < 0x20) fail("Invalid control character", j);
+      j++;
+    }
+  }
+
+  function num() {
+    const start = i;
+    let j = i;
+    if (s[j] === "-") j++;
+    if (s[j] >= "1" && s[j] <= "9") { j++; while (isDigit(s[j])) j++; }
+    else if (s[j] === "0") j++;
+    else fail("Expecting value", start);
+    let isFloat = false;
+    if (s[j] === "." && isDigit(s[j + 1])) { j += 2; while (isDigit(s[j])) j++; isFloat = true; }
+    if (s[j] === "e" || s[j] === "E") {
+      let k = j + 1;
+      if (s[k] === "+" || s[k] === "-") k++;
+      if (isDigit(s[k])) { while (isDigit(s[k])) k++; j = k; isFloat = true; }
+    }
+    const lex = s.slice(start, j);
+    i = j;
+    if (isFloat) return new PyFloat(Number(lex));
+    if (lex.replace("-", "").length > 4300) {
+      throw new CannotVerify("the document holds an integer longer than 4300 digits. Python 3.11+ refuses " +
+                             "to parse it (sys.set_int_max_str_digits), so the CLI stops with an error.");
+    }
+    return new PyInt(BigInt(lex));
+  }
+
+  function value(depth) {
+    if (depth > MAX_DEPTH) throw new CannotVerify("the document is nested more than " + MAX_DEPTH + " levels deep. " +
+      "How deep Python parses depends on its version (about 1000 levels on 3.11, 3000 on 3.12), so this " +
+      "page does not guess whether the CLI reaches a verdict here.");
+    if (i >= n) fail("Expecting value", i);
+    const c = s[i];
+    if (c === '"') return str();
+    if (c === "{") {
+      const d = new PyDict();
+      i++; ws();
+      if (s[i] === "}") { i++; return d; }
+      for (;;) {
+        if (s[i] !== '"') fail("Expecting property name enclosed in double quotes", i);
+        const k = str();
+        ws();
+        if (s[i] !== ":") fail("Expecting ':' delimiter", i);
+        i++; ws();
+        d.m.set(k, value(depth + 1));
+        ws();
+        if (s[i] === "}") { i++; return d; }
+        if (s[i] !== ",") fail("Expecting ',' delimiter", i);
+        i++; ws();
+      }
+    }
+    if (c === "[") {
+      const a = [];
+      i++; ws();
+      if (s[i] === "]") { i++; return a; }
+      for (;;) {
+        a.push(value(depth + 1));
+        ws();
+        if (s[i] === "]") { i++; return a; }
+        if (s[i] !== ",") fail("Expecting ',' delimiter", i);
+        i++; ws();
+      }
+    }
+    if (s.startsWith("null", i)) { i += 4; return null; }
+    if (s.startsWith("true", i)) { i += 4; return true; }
+    if (s.startsWith("false", i)) { i += 5; return false; }
+    if (s.startsWith("NaN", i)) { i += 3; return new PyFloat(NaN); }
+    if (s.startsWith("Infinity", i)) { i += 8; return new PyFloat(Infinity); }
+    if (s.startsWith("-Infinity", i)) { i += 9; return new PyFloat(-Infinity); }
+    return num();
+  }
+
+  ws();
+  const v = value(0);
+  ws();
+  if (i !== n) fail("Extra data", i);
+  return v;
+}
+
+// ─── canonical JSON, byte for byte with Python ──────────────────────────────────────────────────────
+// json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+
+function pyStrLiteral(s) {
+  const out = ['"'];
+  let chunk = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    if (c >= 0x20 && c !== 0x22 && c !== 0x5c) continue;
+    out.push(s.slice(chunk, i));
+    if (c === 0x22) out.push('\\"');
+    else if (c === 0x5c) out.push("\\\\");
+    else if (c === 0x0a) out.push("\\n");
+    else if (c === 0x0d) out.push("\\r");
+    else if (c === 0x09) out.push("\\t");
+    else if (c === 0x08) out.push("\\b");
+    else if (c === 0x0c) out.push("\\f");
+    else out.push("\\u" + c.toString(16).padStart(4, "0"));
+    chunk = i + 1;
+  }
+  out.push(s.slice(chunk), '"');
+  return out.join("");
+}
+
+// float.__repr__: the shortest digits that round-trip (Number#toString picks the same digits, and
+// the closest when several are shortest), laid out the way Python does it: positional when the
+// decimal exponent is in [-4, 16), otherwise d.ddde±XX. A whole number keeps its ".0".
+function pyFloatRepr(x) {
+  if (Number.isNaN(x)) return "NaN";
+  if (x === Infinity) return "Infinity";
+  if (x === -Infinity) return "-Infinity";
+  if (x === 0) return Object.is(x, -0) ? "-0.0" : "0.0";
+  const neg = x < 0;
+  const t = String(Math.abs(x));
+  let mant = t, e = 0;
+  const k = t.indexOf("e");
+  if (k >= 0) { mant = t.slice(0, k); e = parseInt(t.slice(k + 1), 10); }
+  const dot = mant.indexOf(".");
+  const ip = dot >= 0 ? mant.slice(0, dot) : mant;
+  const fp = dot >= 0 ? mant.slice(dot + 1) : "";
+  let digits = ip + fp;
+  let point = ip.length + e;
+  const lead = /^0*/.exec(digits)[0].length;
+  digits = digits.slice(lead).replace(/0+$/, "");
+  point -= lead;
+  const exp = point - 1;
+  let body;
+  if (exp < -4 || exp >= 16) {
+    body = digits[0] + (digits.length > 1 ? "." + digits.slice(1) : "") + "e" +
+           (exp < 0 ? "-" : "+") + String(Math.abs(exp)).padStart(2, "0");
+  } else if (exp >= 0) {
+    body = digits.length <= point ? digits + "0".repeat(point - digits.length) + ".0"
+                                  : digits.slice(0, point) + "." + digits.slice(point);
+  } else {
+    body = "0." + "0".repeat(-exp - 1) + digits;
+  }
+  return (neg ? "-" : "") + body;
+}
+
+// Python orders str by code point; JS's default sort orders by UTF-16 unit, which puts U+10000 and
+// above BEFORE U+E000..U+FFFF. Comparing codePointAt at the first differing unit fixes that.
+function cmpCodePoints(a, b) {
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) {
+    if (a.charCodeAt(i) !== b.charCodeAt(i)) return a.codePointAt(i) - b.codePointAt(i);
+  }
+  return a.length - b.length;
+}
+
+function canonInto(v, out) {
+  if (v === null) out.push("null");
+  else if (v === true) out.push("true");
+  else if (v === false) out.push("false");
+  else if (typeof v === "string") out.push(pyStrLiteral(v));
+  else if (v instanceof PyInt) out.push(v.v.toString());
+  else if (v instanceof PyFloat) out.push(pyFloatRepr(v.v));
+  else if (Array.isArray(v)) {
+    out.push("[");
+    for (let i = 0; i < v.length; i++) { if (i) out.push(","); canonInto(v[i], out); }
+    out.push("]");
+  } else if (v instanceof PyDict) {
+    const ks = v.keys().sort(cmpCodePoints);
+    out.push("{");
+    for (let i = 0; i < ks.length; i++) {
+      if (i) out.push(",");
+      out.push(pyStrLiteral(ks[i]), ":");
+      canonInto(v.m.get(ks[i]), out);
+    }
+    out.push("}");
+  } else throw new Error("internal: unknown value type");
+}
+
+function canonText(v) { const out = []; canonInto(v, out); return out.join(""); }
+
+function canonBytes(v) {
+  const s = canonText(v);
+  if (LONE_SURROGATE.test(s)) {
+    throw new CannotVerify("a hashed field holds an unpaired surrogate (\\ud800-\\udfff). Python cannot " +
+                           "encode it as UTF-8, so the CLI stops with an error instead of a verdict.");
+  }
+  return new TextEncoder().encode(s);
+}
+
+// ─── Python semantics the verifiers lean on ─────────────────────────────────────────────────────────
+
+function truthy(v) {
+  if (v === null || v === false) return false;
+  if (v === true) return true;
+  if (typeof v === "string" || Array.isArray(v)) return v.length > 0;
+  if (v instanceof PyInt) return v.v !== 0n;
+  if (v instanceof PyFloat) return v.v !== 0;          // NaN is truthy in Python, and NaN !== 0
+  if (v instanceof PyDict) return v.size > 0;
+  return true;
+}
+const pyOr = (a, b) => (truthy(a) ? a : b);
+const isNumeric = v => v === true || v === false || v instanceof PyInt || v instanceof PyFloat;
+const isPyInt = v => v === true || v === false || v instanceof PyInt;       // isinstance(x, int): bool is an int
+const toBig = v => (v === true ? 1n : v === false ? 0n : v.v);
+const I = n => new PyInt(BigInt(n));
+
+function numEq(a, b) {
+  const fa = a instanceof PyFloat, fb = b instanceof PyFloat;
+  if (!fa && !fb) return toBig(a) === toBig(b);
+  if (fa && fb) return a.v === b.v;
+  const f = fa ? a.v : b.v, n = fa ? toBig(b) : toBig(a);
+  return Number.isInteger(f) && BigInt(f) === n;        // exact, as Python compares int with float
+}
+
+function pyEq(a, b) {
+  if (isNumeric(a) || isNumeric(b)) return isNumeric(a) && isNumeric(b) && numEq(a, b);
+  if (a === null || b === null) return a === b;
+  if (typeof a === "string" || typeof b === "string") return a === b;
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (!elemEq(a[i], b[i])) return false;
+    return true;
+  }
+  if (a instanceof PyDict && b instanceof PyDict) {
+    if (a.size !== b.size) return false;
+    for (const [k, v] of a.m) if (!b.has(k) || !elemEq(v, b.m.get(k))) return false;
+    return true;
+  }
+  return false;
+}
+
+// json.loads returns ONE float('nan') object for every NaN it reads, and Python compares the members of
+// a list, a dict or a set by identity first. So nan == nan is False, while [nan] == [nan] is True and
+// nan in {nan} is True. pyEq above is the top-level ==; elemEq is == inside a container.
+const isNaNFloat = v => v instanceof PyFloat && Number.isNaN(v.v);
+function elemEq(a, b) { return (isNaNFloat(a) && isNaNFloat(b)) || pyEq(a, b); }
+
+// hash(): equal values share a key (1, 1.0 and True are one key, as in Python); unhashable raises.
+function hashKey(v) {
+  if (typeof v === "string") return "s" + v;
+  if (v === null) return "z";
+  if (isNaNFloat(v)) return "nan";
+  if (v instanceof PyFloat) {
+    if (Number.isInteger(v.v)) return "n" + BigInt(v.v).toString();
+    return "f" + pyFloatRepr(v.v);
+  }
+  if (isPyInt(v)) return "n" + toBig(v).toString();
+  crash("a list or an object is used where Python needs a hashable value (TypeError: unhashable type)");
+}
+// iter(): a list gives its items, a string its characters, an object its keys; anything else raises.
+function pyIter(v, what) {
+  if (Array.isArray(v)) return v;
+  if (typeof v === "string") return Array.from(v);
+  if (v instanceof PyDict) return v.keys();
+  crash("`" + what + "` is not iterable (TypeError)");
+}
+// set(): the first of each group of equal values is kept, as Python keeps the first.
+function pySet(values) {
+  const m = new Map();
+  for (const v of values) { const k = hashKey(v); if (!m.has(k)) m.set(k, v); }
+  return m;
+}
+// sorted(): strings by code point, numbers by value; mixing kinds, or ordering around a NaN, is where
+// Python raises or gives an order this page cannot promise to reproduce.
+function pySorted(values) {
+  const vs = Array.from(values);
+  if (vs.length < 2) return vs;
+  if (vs.every(v => typeof v === "string")) return vs.sort(cmpCodePoints);
+  if (vs.every(isNumeric)) {
+    if (vs.some(isNaNFloat)) throw new CannotVerify("a list to be sorted holds NaN next to other numbers; " +
+      "Python's order for it depends on the input order, so this page does not guess it. Use the CLI.");
+    return vs.sort((a, b) => numCmp(a, b));
+  }
+  crash("a list to be sorted mixes kinds Python cannot compare (TypeError: '<' not supported)");
+}
+function numCmp(a, b) {
+  if (!(a instanceof PyFloat) && !(b instanceof PyFloat)) { const x = toBig(a), y = toBig(b); return x < y ? -1 : x > y ? 1 : 0; }
+  const x = a instanceof PyFloat ? a.v : Number(toBig(a)), y = b instanceof PyFloat ? b.v : Number(toBig(b));
+  return x < y ? -1 : x > y ? 1 : 0;
+}
+const sameList = (a, b) => a.length === b.length && a.every((x, i) => elemEq(x, b[i]));
+
+// Where the Python verifier would stop with a TypeError/AttributeError, there is no verdict to match.
+function crash(what) {
+  throw new CannotVerify(what + " — the Python verifier stops with an error on this document instead of " +
+                         "returning a verdict, so this page will not invent one.");
+}
+function mustDict(v, what) { if (!(v instanceof PyDict)) crash(what + " is not a JSON object"); return v; }
+function get(d, k) { if (!(d instanceof PyDict)) crash("a value read as an object is not one"); return d.get(k); }
+function listOrEmpty(v, what) {
+  if (!truthy(v)) return [];
+  if (!Array.isArray(v)) crash("`" + what + "` is not a list");
+  return v;
+}
+const short = (v, n) => String(v).slice(0, n);
+function pyReprish(v) { return typeof v === "string" ? JSON.stringify(v) : canonText(v); }
+
+// ─── hashing ────────────────────────────────────────────────────────────────────────────────────────
+
+function subtle() {
+  if (!(window.crypto && window.crypto.subtle)) {
+    throw new CannotVerify("this browser exposes no WebCrypto here (crypto.subtle needs https or a local file).");
+  }
+  return window.crypto.subtle;
+}
+async function sha256(bytes) { return new Uint8Array(await subtle().digest("SHA-256", bytes)); }
+const hex = b => Array.from(b, x => x.toString(16).padStart(2, "0")).join("");
+async function sha256hex(bytes) { return hex(await sha256(bytes)); }
+function concatBytes(...parts) {
+  const len = parts.reduce((a, p) => a + p.length, 0);
+  const out = new Uint8Array(len);
+  let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}
+
+// RFC 6962 Merkle tree hash over raw leaf data (inspeximus/merkle.py `root`).
+async function merkleRoot(leaves) {
+  if (!leaves.length) return sha256(new Uint8Array(0));
+  const hashed = [];
+  for (const d of leaves) hashed.push(await sha256(concatBytes(Uint8Array.of(0), d)));
+  const rootOf = async m => {
+    if (m.length === 1) return m[0];
+    let k = 1;
+    while (k * 2 < m.length) k *= 2;
+    return sha256(concatBytes(Uint8Array.of(1), await rootOf(m.slice(0, k)), await rootOf(m.slice(k))));
+  };
+  return rootOf(hashed);
+}
+
+// ─── Ed25519, matched to what `cryptography` (OpenSSL) accepts ─────────────────────────────────────
+// Python: Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub)).verify(bytes.fromhex(sig), bytes.fromhex(hash)).
+// OpenSSL refuses S >= L, refuses a key that is not on the curve, and otherwise checks cofactorless
+// [S]B == R + [k]A by comparing encodings. Browsers agree on canonical, prime-order points; they may
+// not agree with OpenSSL on non-canonical, small-order or mixed-order ones (WebCrypto rejects some that
+// OpenSSL accepts). Those are sent to the CLI rather than guessed.
+
+const P = (1n << 255n) - 19n;
+const L = (1n << 252n) + 27742317777372353535851937790883648493n;
+const md = a => { const r = a % P; return r >= 0n ? r : r + P; };
+function powmod(b, e) { let r = 1n; b = md(b); while (e > 0n) { if (e & 1n) r = r * b % P; b = b * b % P; e >>= 1n; } return r; }
+const D = md(-121665n * powmod(121666n, P - 2n));
+const SQRTM1 = powmod(2n, (P - 1n) / 4n);
+function leToBig(b) { let x = 0n; for (let i = b.length - 1; i >= 0; i--) x = (x << 8n) | BigInt(b[i]); return x; }
+function padd(p, q) {
+  const A = md((p[1] - p[0]) * (q[1] - q[0])), B = md((p[1] + p[0]) * (q[1] + q[0]));
+  const C = md(2n * p[3] * q[3] * D), DD = md(2n * p[2] * q[2]);
+  const E = B - A, F = DD - C, G = DD + C, H = B + A;
+  return [md(E * F), md(G * H), md(F * G), md(E * H)];
+}
+function pmul(s, p) { let q = [0n, 1n, 1n, 0n]; while (s > 0n) { if (s & 1n) q = padd(q, p); p = padd(p, p); s >>= 1n; } return q; }
+const isIdentity = q => q[0] === 0n && q[1] === q[2];
+const pointClass = new Map();
+// "ok": canonical, on the curve, in the prime-order subgroup, not the identity.
+// "invalid": not on the curve. "noncanonical": y >= p, or x = 0 with the sign bit set.
+// "identity": the canonical identity. "torsion": small order or mixed order.
+function classifyPoint(bytes) {
+  const key = hex(bytes);
+  if (pointClass.has(key)) return pointClass.get(key);
+  let res;
+  const y = leToBig(Uint8Array.from(bytes, (b, i) => (i === 31 ? b & 0x7f : b)));
+  const sign = bytes[31] >> 7;
+  if (y >= P) res = "noncanonical";
+  else {
+    const y2 = y * y % P, u = md(y2 - 1n), v = md(D * y2 + 1n);
+    const x2 = u * powmod(v, P - 2n) % P;
+    let x = powmod(x2, (P + 3n) / 8n);
+    if (md(x * x - x2) !== 0n) x = x * SQRTM1 % P;
+    if (md(x * x - x2) !== 0n) res = "invalid";
+    else if (x === 0n && sign === 1) res = "noncanonical";
+    else {
+      if (Number(x & 1n) !== sign) x = md(-x);
+      const pt = [x, y, 1n, x * y % P];
+      res = isIdentity(pt) ? "identity" : isIdentity(pmul(L, pt)) ? "ok" : "torsion";
+    }
+  }
+  pointClass.set(key, res);
+  return res;
+}
+
+// bytes.fromhex: pairs of hex digits, ASCII whitespace allowed only between pairs.
+function pyFromhex(v) {
+  if (typeof v !== "string") return null;
+  const out = [];
+  const n = v.length;
+  const hv = c => (c >= 48 && c <= 57 ? c - 48 : c >= 97 && c <= 102 ? c - 87 : c >= 65 && c <= 70 ? c - 55 : -1);
+  let i = 0;
+  for (;;) {
+    while (i < n) { const c = v.charCodeAt(i); if (c === 32 || (c >= 9 && c <= 13)) i++; else break; }
+    if (i >= n) break;
+    const hi = hv(v.charCodeAt(i));
+    if (hi < 0 || i + 1 >= n) return null;
+    const lo = hv(v.charCodeAt(i + 1));
+    if (lo < 0) return null;
+    out.push(hi * 16 + lo);
+    i += 2;
+  }
+  return new Uint8Array(out);
+}
+
+// OpenSSL's own equation, for the degenerate points only: decode A leniently (y taken mod p, a
+// "negative zero" x accepted), k = SHA-512(R || A bytes || M) mod L, and compare R's bytes with the
+// canonical encoding of [S]B - [k]A. The page uses it to be CERTAIN of a rejection. Where it says
+// OpenSSL would accept, the page still does not call the signature valid: the browser may disagree,
+// and a signature over a small-order key proves nothing about who made it.
+const BASE = (() => {
+  const y = md(4n * powmod(5n, P - 2n)), y2 = y * y % P;
+  const x2 = md(y2 - 1n) * powmod(md(D * y2 + 1n), P - 2n) % P;
+  let x = powmod(x2, (P + 3n) / 8n);
+  if (md(x * x - x2) !== 0n) x = x * SQRTM1 % P;
+  if (x & 1n) x = md(-x);
+  return [x, y, 1n, x * y % P];
+})();
+function encodePoint(q) {
+  const zi = powmod(q[2], P - 2n), x = q[0] * zi % P, y = q[1] * zi % P;
+  const v = y | ((x & 1n) << 255n), out = new Uint8Array(32);
+  for (let i = 0, t = v; i < 32; i++, t >>= 8n) out[i] = Number(t & 0xffn);
+  return out;
+}
+async function opensslAccepts(pk, sig, msg) {
+  const S = leToBig(sig.subarray(32));
+  if (S >= L) return false;
+  const y = md(leToBig(Uint8Array.from(pk, (b, i) => (i === 31 ? b & 0x7f : b))));
+  const y2 = y * y % P, x2 = md(y2 - 1n) * powmod(md(D * y2 + 1n), P - 2n) % P;
+  let x = powmod(x2, (P + 3n) / 8n);
+  if (md(x * x - x2) !== 0n) x = x * SQRTM1 % P;
+  if (md(x * x - x2) !== 0n) return false;
+  if (Number(x & 1n) !== pk[31] >> 7) x = md(-x);
+  const negA = [md(-x), y, 1n, md(-x * y)];
+  const h = new Uint8Array(await subtle().digest("SHA-512", concatBytes(sig.subarray(0, 32), pk, msg)));
+  const k = leToBig(h) % L;
+  const got = encodePoint(padd(pmul(S, BASE), pmul(k, negA)));
+  return got.every((b, i) => b === sig[i]);
+}
+
+const ED_MISSING = "this browser has no WebCrypto Ed25519, so the signatures cannot be checked here. " +
+                   "Ed25519 needs Chrome/Edge 137+, Firefox 129+ or Safari 17+.";
+const ED_DEGENERATE = "a signature uses a small-order or mixed-order Ed25519 point. OpenSSL, which the CLI " +
+                      "uses, accepts it; browsers may not, and such a signature proves nothing about who made it.";
+
+// "ok", "bad", or {unknown: reason} when the browser cannot settle what OpenSSL would say.
+async function sigCheck(pkVal, sigVal, hashVal) {
+  const pk = pyFromhex(pkVal), sig = pyFromhex(sigVal), msg = pyFromhex(hashVal);
+  if (!pk || !sig || !msg || pk.length !== 32 || sig.length !== 64) return "bad";
+  if (leToBig(sig.subarray(32)) >= L) return "bad";
+  const a = classifyPoint(pk);
+  if (a === "invalid") return "bad";                          // OpenSSL cannot decode the key
+  const r = classifyPoint(sig.subarray(0, 32));
+  if (a !== "ok" || r === "identity") {
+    return (await opensslAccepts(pk, sig, msg)) ? { unknown: ED_DEGENERATE } : "bad";
+  }
+  // With A in the prime-order subgroup, OpenSSL's answer on an odd R is fixed: [S]B - [k]A is then
+  // a prime-order point, and its canonical encoding cannot equal a non-canonical R, an R off the
+  // curve, or an R with a torsion component.
+  if (r !== "ok") return "bad";
+  let key;
+  try { key = await subtle().importKey("raw", pk, { name: "Ed25519" }, false, ["verify"]); }
+  catch (e) { return { unknown: ED_MISSING + " (" + (e && e.name) + ")" }; }
+  try { return (await subtle().verify({ name: "Ed25519" }, key, sig, msg)) ? "ok" : "bad"; }
+  catch (e) { return { unknown: ED_MISSING + " (" + (e && e.name) + ")" }; }
+}
+
+// ─── chain preimages (Inspeximus._tombstone_core / _chain_core) ─────────────────────────────────────
+
+function tombstoneCore(t) {
+  const core = new PyDict(["seq", "memory_id", "ts", "request_id", "prev"].map(k => [k, get(t, k)]));
+  if (truthy(get(t, "auth"))) core.m.set("auth", get(t, "auth"));
+  return core;
+}
+function chainCore(r, kind) {
+  if (kind !== "write") return tombstoneCore(r);
+  const core = new PyDict(["seq", "ts", "memory_id", "commit", "prev"].map(k => [k, get(r, k)]));
+  for (const k of ["amends", "amend_reason", "backfill"]) if (truthy(get(r, k))) core.m.set(k, get(r, k));
+  return core;
+}
+
+// ─── verify_erasure_certificate(cert), no store / pin / anchor (inspeximus/core.py) ─────────────────
+
+async function verifyCertificate(cert) {
+  const problems = [], limits = [], checks = {};
+  mustDict(cert, "the certificate");
+  const toms = listOrEmpty(get(cert, "tombstones"), "tombstones");
+  toms.forEach((t, j) => mustDict(t, "tombstone " + j));
+  const pub = get(cert, "pubkey");
+  const unsettled = [];                  // signatures this browser cannot settle; see verdictFrom()
+
+  let tprev = GENESIS, chainOk = true, sigsOk = true;
+  for (let j = 0; j < toms.length; j++) {
+    const t = toms[j];
+    const core = tombstoneCore(t);
+    if (!pyEq(get(t, "prev"), tprev)) {
+      problems.push(`tombstone ${j}: broken chain link (a prior tombstone was altered/removed)`);
+      chainOk = false;
+    }
+    if (!pyEq(await sha256hex(canonBytes(core)), get(t, "hash"))) {
+      problems.push(`tombstone ${j}: hash mismatch (tampered)`);
+      chainOk = false;
+    }
+    if (t.has("sig")) {
+      const res = await sigCheck(pyOr(pyOr(get(t, "pubkey"), pub), ""), get(t, "sig"), get(t, "hash"));
+      if (res.unknown && truthy(pub) && truthy(get(t, "pubkey")) && !pyEq(get(t, "pubkey"), pub)) {
+        problems.push(`tombstone ${j}: signed by an unexpected key`);
+        sigsOk = false;
+      } else if (res.unknown) {
+        unsettled.push(`tombstone ${j}: ${res.unknown}`);
+      } else if (res !== "ok") {
+        problems.push(`tombstone ${j}: invalid signature`);
+        sigsOk = false;
+      } else if (truthy(pub) && truthy(get(t, "pubkey")) && !pyEq(get(t, "pubkey"), pub)) {
+        problems.push(`tombstone ${j}: signed by an unexpected key`);
+        sigsOk = false;
+      }
+    }
+    tprev = get(t, "hash");
+  }
+  checks.chain_intact = chainOk;
+  const signed = toms.filter(t => truthy(get(t, "sig")));
+  if (!signed.length) {
+    checks.signatures_valid = null;
+    checks.signed = false;
+    limits.push("UNSIGNED: no tombstone carries a signature, so nothing was verified against `pubkey` — " +
+                "the chain proves integrity, not authorship. Set receipt_key to sign.");
+  } else {
+    checks.signatures_valid = sigsOk;
+    checks.signed = true;
+    // inspeximus 3.9.1: a chain signed in places fails, as verify_bundle's does. As a note it let a party
+    // without the key append an unsigned tombstone for an id that was never erased (review F7).
+    if (signed.length !== toms.length) {
+      const unsignedIds = toms.filter(t => !truthy(get(t, "sig"))).map(t => get(t, "memory_id")).slice(0, 5);
+      problems.push(`PARTIALLY SIGNED: ${toms.length - signed.length} of ${toms.length} tombstones carry no ` +
+                    `signature (${canonText(unsignedIds)}); a chain that is signed in places is not signed, and an ` +
+                    "unsigned tombstone can be appended without the key");
+      sigsOk = false;
+      checks.signatures_valid = false;
+    }
+  }
+
+  const anc = pyOr(get(cert, "anchor"), new PyDict());
+  mustDict(anc, "`anchor`");
+  let tip = GENESIS;
+  if (toms.length) {
+    const last = toms[toms.length - 1];
+    if (!last.has("hash")) crash("the last tombstone has no `hash`");
+    tip = get(last, "hash");
+  }
+  checks.anchor_matches_tip = pyEq(get(anc, "tombstones_tip"), tip);
+  if (!checks.anchor_matches_tip) problems.push("anchor tombstones_tip does not match the tombstone chain tip");
+
+  let anchorOk = true;
+  const nT = get(anc, "n_tombstones");
+  if (nT !== null && !pyEq(nT, I(toms.length))) {
+    problems.push(`anchor n_tombstones says ${canonText(nT)} but the certificate carries ${toms.length} ` +
+                  "tombstone(s): a tombstone was removed or added after the anchor");
+    anchorOk = false;
+  }
+  if (get(anc, "tombstones_root") !== null) {
+    const root = hex(await merkleRoot(toms.map(t => canonBytes(tombstoneCore(t)))));
+    if (!pyEq(root, get(anc, "tombstones_root"))) {
+      problems.push("anchor tombstones_root does not re-derive from the tombstones carried");
+      anchorOk = false;
+    }
+  }
+  if (get(anc, "sth_hash") !== null && CONST.sth_fields.every(k => anc.has(k))) {
+    const sth = new PyDict(CONST.sth_fields.map(k => [k, anc.m.get(k)]));
+    if (!pyEq(await sha256hex(canonBytes(sth)), get(anc, "sth_hash"))) {
+      problems.push("anchor sth_hash does not re-derive from its four fields");
+      anchorOk = false;
+    }
+  }
+  checks.anchor_consistent = anchorOk;
+  checks.anchor_witnessed = null;
+
+  // verify_erasure_certificate: the scope, then sorted(set(...)) on both sides of each summary field.
+  let scopeToms;
+  if (cert.has("scoped_to")) {
+    const sc = get(cert, "scoped_to");
+    scopeToms = sc === null ? toms : toms.filter(t => pyEq(get(t, "request_id"), sc));
+  } else {
+    const claimed = pySet(pyIter(pyOr(get(cert, "request_ids"), []), "request_ids"));
+    scopeToms = claimed.size
+      ? toms.filter(t => { const r = get(t, "request_id"); return claimed.has(hashKey(r)) || r === null; })
+      : toms;
+  }
+  const claimedReqs = get(cert, "request_ids");
+  const derivedIds = pySorted(pySet(scopeToms.map(t => get(t, "memory_id")).filter(truthy)).values());
+  const derivedReqs = pySorted(pySet(scopeToms.map(t => get(t, "request_id")).filter(r => r !== null)).values());
+  let summaryOk = true;
+  const claimedIdsRaw = pyOr(get(cert, "erased_memory_ids"), []);
+  if (!sameList(pySorted(pySet(pyIter(claimedIdsRaw, "erased_memory_ids")).values()), derivedIds)) {
+    problems.push(`erased_memory_ids does not match the tombstone chain (certificate claims ${pyLen(claimedIdsRaw, "erased_memory_ids")}, ` +
+                  `the chain shows ${derivedIds.length})`);
+    summaryOk = false;
+  }
+  const count = get(cert, "count");
+  if (count !== null && !pyEq(count, I(derivedIds.length))) {
+    problems.push(`count says ${canonText(count)} but the tombstone chain holds ${derivedIds.length}`);
+    summaryOk = false;
+  }
+  if (claimedReqs !== null) {
+    const claimedSorted = pySorted(pySet(pyIter(claimedReqs, "request_ids")).values());
+    if (!sameList(claimedSorted, derivedReqs)) {
+      problems.push(`request_ids names ${canonText(claimedSorted)} but the chain holds ${canonText(derivedReqs)} for them`);
+      summaryOk = false;
+    }
+  }
+  checks.summary_derivable = summaryOk;
+
+  checks.attests_an_erasure = scopeToms.length > 0;
+  if (!scopeToms.length) {
+    const why = !toms.length ? "the tombstone chain is empty"
+      : "no tombstone in the chain falls within this certificate's scope (" +
+        (cert.has("scoped_to") ? "request_id=" + pyReprish(get(cert, "scoped_to")) : "the claimed request_ids") + ")";
+    problems.push(`this certificate attests to ZERO erasures: ${why}. Nothing was erased under it, so every ` +
+                  "other check below passed vacuously - 'nothing was audited' is not the same as 'the data is gone'");
+  }
+  checks.store_absent = null;
+  checks.store_bound = null;
+
+  const scopeTxt = get(cert, "scope");
+  if (scopeTxt !== null && !pyEq(scopeTxt, CONST.cert_scope)) {
+    checks.scope_intact = false;
+    problems.push("the `scope` statement does not match the one this library issues — the certificate's own " +
+                  "declaration of what it does NOT certify has been altered");
+  } else {
+    checks.scope_intact = scopeTxt !== null ? true : null;
+  }
+  for (const [key, want] of [["scope_excludes", CONST.cert_scope_excludes], ["scope_covers", CONST.cert_scope_covers]]) {
+    const got = get(cert, key);
+    if (got === null) continue;
+    const asList = pyIter(got, key);        // list(got): items, characters, or an object's keys
+    if (!pyEq(asList, want)) {
+      checks.scope_intact = false;
+      problems.push(`the \`${key}\` list does not match the one this library issues; an exclusion removed from a ` +
+                    "certificate is the certificate claiming more than it verified");
+    }
+  }
+
+  const valid = chainOk && sigsOk && checks.anchor_matches_tip && anchorOk && summaryOk &&
+                checks.scope_intact !== false && checks.attests_an_erasure;
+  limits.push("NOT WITNESSED: no expected anchor, so the anchor was checked against itself only; a chain " +
+              "trimmed at its tail and re-anchored passes, and that needs no key. " +
+              "`inspeximus erasure-verify --expected-anchor` pins one.");
+  limits.push("ABSENCE NOT CHECKED: this page does not read the store. `inspeximus erasure-verify --store` " +
+              "confirms every erased id is gone from it.");
+  return { valid, unsettled, checks, problems, limits, count: derivedIds.length };
+}
+
+// ─── verify_bundle(bundle), all options at their defaults (inspeximus/audit_bundle.py) ──────────────
+
+async function rewalk(records, kind) {
+  let prev = GENESIS;
+  for (let i = 0; i < records.length; i++) {
+    const r = records[i];
+    if (!pyEq(get(r, "prev"), prev)) return [prev, i];
+    if (!pyEq(await sha256hex(canonBytes(chainCore(r, kind))), get(r, "hash"))) return [prev, i];
+    prev = get(r, "hash");
+  }
+  return [prev, -1];
+}
+
+function pyLen(v, what) {
+  if (typeof v === "string") return Array.from(v).length;
+  if (Array.isArray(v)) return v.length;
+  if (v instanceof PyDict) return v.size;
+  crash("`" + what + "` has no length");
+}
+
+async function verifyBundle(bundle) {
+  const checks = [], problems = [], limits = [];
+  const ok = m => checks.push(m), bad = m => problems.push(m);
+  if (!(bundle instanceof PyDict) || !pyEq(get(bundle, "kind"), CONST.bundle_kind)) {
+    return { ok: false, checks: [], problems: [`not an ${CONST.bundle_kind} bundle`], limits: [], summary: {} };
+  }
+  const without = new PyDict(Array.from(bundle.m).filter(([k]) => k !== "bundle_hash"));
+  if (pyEq(get(bundle, "bundle_hash"), await sha256hex(canonBytes(without)))) ok("bundle_hash matches (no field was altered after export)");
+  else bad("bundle_hash MISMATCH -- the bundle was modified after export");
+
+  const anchor = mustDict(pyOr(get(bundle, "anchor"), new PyDict()), "`anchor`");
+  const wc = listOrEmpty(get(bundle, "write_chain"), "write_chain");
+  const tc = listOrEmpty(get(bundle, "tombstone_chain"), "tombstone_chain");
+  wc.forEach((r, i) => mustDict(r, "write_chain[" + i + "]"));
+  tc.forEach((r, i) => mustDict(r, "tombstone_chain[" + i + "]"));
+
+  const [wTip, wBad] = await rewalk(wc, "write");
+  if (wBad !== -1) bad(`write chain breaks at index ${wBad} (bad prev-link or hash)`);
+  else if (!pyEq(wTip, get(anchor, "writes_tip")) || !pyEq(I(wc.length), get(anchor, "n_writes"))) {
+    bad(`write chain tip/count does not match anchor (chain: ${wc.length} recs tip ${short(wTip, 12)}..., ` +
+        `anchor: ${canonText(get(anchor, "n_writes"))} tip ${short(canonText(get(anchor, "writes_tip")), 12)}...)`);
+  } else ok(`write chain verifies from genesis: ${wc.length} append-only records -> anchor tip`);
+
+  const [tTip, tBad] = await rewalk(tc, "tombstone");
+  if (tBad !== -1) bad(`tombstone chain breaks at index ${tBad} (bad prev-link or hash)`);
+  else if (!pyEq(tTip, get(anchor, "tombstones_tip")) || !pyEq(I(tc.length), get(anchor, "n_tombstones"))) {
+    bad("tombstone chain tip/count does not match anchor");
+  } else ok(`erasure chain verifies from genesis: ${tc.length} tombstones -> anchor tip`);
+
+  const sth = new PyDict(CONST.sth_fields.map(k => [k, get(anchor, k)]));
+  if (pyEq(await sha256hex(canonBytes(sth)), get(anchor, "sth_hash"))) ok("anchor sth_hash is internally consistent");
+  else bad("anchor sth_hash does not match its own fields");
+
+  for (const [kind, recs, field] of [["write", wc, "writes_root"], ["tombstone", tc, "tombstones_root"]]) {
+    if (!anchor.has(field)) continue;
+    const re = hex(await merkleRoot(recs.map(r => canonBytes(chainCore(r, kind)))));
+    if (!pyEq(re, get(anchor, field))) bad(`anchor ${field} does not match the ${kind} chain in this bundle`);
+    else ok(`anchor ${field} re-derives from the ${kind} chain`);
+  }
+  if (anchor.has("root_hash")) {
+    const rf = new PyDict(CONST.root_fields.map(k => [k, get(anchor, k)]));
+    if (!pyEq(await sha256hex(canonBytes(rf)), get(anchor, "root_hash"))) bad("anchor root_hash does not match its own root fields");
+  }
+
+  let signedN = 0, verified = 0, badsig = 0;
+  const unsettled = [];
+  for (const r of wc.concat(tc)) {
+    if (!truthy(get(r, "sig"))) continue;
+    signedN++;
+    const pk = get(r, "pubkey");
+    if (!truthy(pk)) continue;
+    const res = await sigCheck(pk, get(r, "sig"), get(r, "hash"));
+    if (res.unknown) unsettled.push(`${canonText(get(r, "memory_id"))}: ${res.unknown}`);
+    else if (res === "ok") verified++;
+    else badsig++;
+  }
+  const total = wc.length + tc.length;
+  if (total) {
+    if (badsig) bad(`${badsig} chain signature(s) DO NOT VERIFY against the key they name`);
+    if (signedN === 0) {
+      limits.push(`UNSIGNED: 0 of ${total} chain entries carry a signature. The chain is internally consistent, ` +
+                  "which is not the same as attributable -- an editor who can rewrite the sidecar can rewrite the chain too.");
+    } else if (signedN < total) {
+      bad(`PARTIALLY SIGNED: ${signedN} of ${total} chain entries carry a signature -- a chain that is signed in places is not signed`);
+    } else {
+      limits.push(`${signedN} of ${total} chain entries carry a signature, PRESENT BUT UNVERIFIED: no expected_pubkey ` +
+                  "was supplied, so they can only be checked against a key carried inside this same artifact -- which " +
+                  "proves the writer owned a keypair, not which one. `inspeximus audit-verify --expected-pubkey` pins it.");
+    }
+  }
+
+  const cosigs = get(anchor, "cosignatures");
+  const sid = get(bundle, "store_id_derived");
+  if (truthy(cosigs) && typeof sid === "string" && sid.startsWith("unkeyed:")) {
+    bad("this bundle carries witness co-signatures over a store with NO receipt chain: the anchor they signed " +
+        "commits to nothing, so the signatures are valid and vouch for nothing");
+  }
+  if (truthy(cosigs)) ok(`anchor carries ${pyLen(cosigs, "cosignatures")} co-signature(s) (pass --witnesses to the CLI to verify them)`);
+  else {
+    limits.push("SELF-CERTIFIED: this anchor carries no external co-signature. Every check above is the operator's " +
+                "own record-keeping verified against itself -- an operator holding receipt_key can rewrite the whole " +
+                "history and re-sign it so it verifies internally.");
+  }
+  const refusals = get(anchor, "witness_refusals");
+  if (truthy(refusals)) {
+    if (!Array.isArray(refusals)) crash("`witness_refusals` is not a list");
+    const reasons = refusals.slice(0, 3).map(r => {
+      mustDict(r, "a witness refusal");
+      if (!r.has("reason")) return "";
+      const why = get(r, "reason");
+      if (typeof why === "string") return Array.from(why).slice(0, 80).join("");
+      if (Array.isArray(why)) return canonText(why.slice(0, 80));
+      crash("a witness refusal's `reason` is not text");
+    });
+    bad(`${refusals.length} witness(es) REFUSED to co-sign this anchor at export: ${JSON.stringify(reasons)}. ` +
+        "An honest witness refuses only a fork or a rollback.");
+  }
+
+  const gov = mustDict(pyOr(get(bundle, "governance"), new PyDict()), "`governance`");
+  const proof = mustDict(pyOr(get(gov, "proof"), new PyDict()), "`governance.proof`");
+  if (get(proof, "verified") === false) {
+    const pp = get(proof, "problems");
+    let detail = "";
+    if (truthy(pp)) {
+      if (Array.isArray(pp)) detail = ": " + pp.map(x => (typeof x === "string" ? x : canonText(x))).join("; ");
+      else if (typeof pp === "string") detail = ": " + Array.from(pp).join("; ");
+      else if (pp instanceof PyDict) detail = ": " + pp.keys().join("; ");
+      else crash("`governance.proof.problems` is not a list");
+    }
+    bad("the store reported its own write-verification as FAILED at export time" + detail +
+        " -- the chains below re-walk consistently, but the RECORDS no longer match their receipts");
+  }
+  const govTotal = get(gov, "erasures_total");
+  if (isPyInt(govTotal) && !pyEq(govTotal, I(tc.length))) {
+    bad(`governance.erasures_total says ${canonText(govTotal)} but the tombstone chain carries ${tc.length} ` +
+        "tombstone(s) -- the summary and the evidence in this same bundle disagree");
+  }
+  const byReq = get(gov, "by_request");
+  if (byReq instanceof PyDict && isPyInt(govTotal)) {
+    // sum(v.get("erased", 0) ...): exact while every count is an int, float arithmetic from the first float.
+    let summed = I(0);
+    for (const v of byReq.m.values()) {
+      if (!(v instanceof PyDict) || !v.has("erased")) continue;
+      const e = v.get("erased");
+      if (!isNumeric(e)) crash("a `by_request[...].erased` count is not a number (TypeError in sum)");
+      summed = (summed instanceof PyFloat || e instanceof PyFloat)
+        ? new PyFloat((summed instanceof PyFloat ? summed.v : Number(toBig(summed))) + (e instanceof PyFloat ? e.v : Number(toBig(e))))
+        : new PyInt(toBig(summed) + toBig(e));
+    }
+    if (!pyEq(summed, govTotal)) {
+      bad(`governance.by_request accounts for ${canonText(summed)} erasure(s) but erasures_total says ${canonText(govTotal)} ` +
+          "-- the per-request breakdown does not add up to its own total");
+    }
+  }
+
+  let nRecords = get(bundle, "n_records");
+  if (truthy(get(bundle, "cross_tenant_chain"))) {
+    limits.push("record-count coverage NOT CHECKED: this bundle's chain spans tenants while its record count is " +
+                "tenant-scoped, so the two are not comparable.");
+    nRecords = null;
+  }
+  if (wc.length && isPyInt(nRecords) && toBig(nRecords) > BigInt(wc.length)) {
+    bad(`only ${wc.length} of ${toBig(nRecords)} record(s) are covered by a write receipt -- the remaining ` +
+        `${toBig(nRecords) - BigInt(wc.length)} were written with receipts disabled and are NOT protected by this chain`);
+  }
+  if (!wc.length && !tc.length) {
+    if (truthy(nRecords)) bad(`this bundle carries NO write or tombstone receipts, yet the store holds ${canonText(nRecords)} record(s)`);
+    else if (pyEq(nRecords, I(0))) ok("store is empty: nothing to verify (this is not evidence of anything)");
+    else bad("this bundle carries NO write or tombstone receipts -- nothing here to verify, which is not the same as verified");
+  }
+
+  const acts = listOrEmpty(get(bundle, "grants"), "grants");
+  let live = 0;
+  if (acts.length) {
+    const receipted = pySet(wc.map(r => get(r, "memory_id")));
+    acts.forEach(a => mustDict(a, "a grant"));
+    const missing = acts.map(a => get(a, "id")).filter(id => !receipted.has(hashKey(id)));
+    const full = wc.length > 0 && isPyInt(nRecords) && toBig(nRecords) <= BigInt(wc.length);
+    live = acts.filter(a => pyEq(get(a, "status"), "active") && pyEq(get(a, "state"), "granted")).length;
+    if (missing.length && full) {
+      bad(`${missing.length} access-control act(s) in this bundle are covered by NO write receipt ` +
+          `(${missing.slice(0, 5).map(x => typeof x === "string" ? x : canonText(x)).join(", ")}${missing.length > 5 ? " ..." : ""}) -- the ACL summary claims a grant ` +
+          "the store's own write chain never recorded");
+    } else if (missing.length) {
+      limits.push(`${missing.length} access-control act(s) predate this store's write receipts, so the ACL summary ` +
+                  "is not backed by the chain for those -- not an accusation");
+    } else {
+      ok(`access control: ${acts.length} grant/revocation act(s), all covered by the write chain; ${live} grant(s) in force at export`);
+    }
+  }
+  limits.push("CONTENT NOT CHECKED: this bundle is content-free by design, so a clean chain over substituted text " +
+              "verifies here. `inspeximus audit-verify --store` binds it to the store's content.");
+  limits.push("NOT OPERATOR-ADVERSARIAL: without witness co-signatures on a prior anchor, a key-holder rewrite is " +
+              "internally consistent by construction.");
+
+  // Evaluated for the summary on the Python side, so a shape that crashes it there must not verify here.
+  const br = get(gov, "by_request");
+  if (truthy(br)) pyLen(br, "governance.by_request");
+  mustDict(pyOr(get(bundle, "supersession"), new PyDict()), "`supersession`");
+
+  return {
+    ok: problems.length === 0, unsettled, checks, problems, limits,
+    summary: { writes: get(anchor, "n_writes"), erasures: get(anchor, "n_tombstones") },
+  };
+}
+
+// ─── front door ─────────────────────────────────────────────────────────────────────────────────────
+
+function detectKind(doc) {
+  if (!(doc instanceof PyDict)) return null;
+  if ((doc.has("inspeximus_erasure_certificate") || doc.has("tombstones")) && (doc.has("kind") || doc.has("bundle_hash"))) return null;
+  if (doc.has("inspeximus_erasure_certificate")) return "certificate";
+  if (doc.has("kind") || doc.has("bundle_hash")) return "bundle";
+  if (doc.has("tombstones")) return "certificate";
+  return null;
+}
+
+const CLI = { certificate: "inspeximus erasure-verify certificate.json",
+              bundle: "inspeximus audit-verify bundle.json" };
+
+async function verifyText(text) {
+  let kind = null;
+  try {
+    if (LONE_SURROGATE.test(text)) {
+      throw new CannotVerify("the text holds an unpaired surrogate, so it is not valid Unicode and no UTF-8 " +
+                             "file could contain it.");
+    }
+    let doc;
+    try { doc = parsePyJSON(text); }
+    catch (e) {
+      if (e instanceof JSONError) {
+        return { verdict: "INVALID", kind: null, reason: "Not valid JSON: " + e.message + ".",
+                 problems: [], limits: [], checks: null };
+      }
+      throw e;
+    }
+    kind = detectKind(doc);
+    if (kind === "certificate" || kind === "bundle") {
+      const r = kind === "certificate" ? await verifyCertificate(doc) : await verifyBundle(doc);
+      const passed = kind === "certificate" ? r.valid : r.ok;
+      const base = { kind, problems: r.problems, limits: r.limits, checks: r.checks };
+      // Python's verdict is an AND of its checks. A check that failed for certain decides it, whatever a
+      // signature this browser could not settle would have said; only when everything else passed does
+      // an unsettled signature leave the verdict open.
+      if (!passed) {
+        return { ...base, verdict: "INVALID",
+                 reason: r.problems[0] || (kind === "certificate" ? "The certificate does not verify." : "The bundle does not verify.") };
+      }
+      if (r.unsettled.length) {
+        return { ...base, verdict: "CANNOT", cli: CLI[kind],
+                 reason: "Cannot verify here, use the CLI: every other check passed, but " + r.unsettled[0],
+                 problems: r.unsettled };
+      }
+      return { ...base, verdict: "VALID",
+               reason: kind === "certificate" ? `The certificate verifies: ${r.count} erasure(s) attested.`
+                 : `The audit bundle verifies: ${canonText(r.summary.writes)} writes, ${canonText(r.summary.erasures)} erasures.` };
+    }
+    return { verdict: "INVALID", kind: null,
+             reason: "This is not an inspeximus erasure certificate or audit bundle.",
+             problems: [], limits: [], checks: null };
+  } catch (e) {
+    const why = e instanceof CannotVerify ? e.message : "the page hit an internal error (" + e + ")";
+    return { verdict: "CANNOT", kind, reason: "Cannot verify here, use the CLI: " + why,
+             problems: [], limits: [], checks: null, cli: CLI[kind] || CLI.certificate + "\n" + CLI.bundle };
+  }
+}
+
+// For tests and for anyone checking the encoding by hand: the canonical text of a JSON document.
+function canonicalize(text) { return canonText(parsePyJSON(text)); }
+
+window.inspeximusVerifier = { verifyText, canonicalize };
+
+// ─── UI ─────────────────────────────────────────────────────────────────────────────────────────────
+
+const $ = id => document.getElementById(id);
+const input = $("input"), result = $("result"), verdictEl = $("verdict");
+
+function el(tag, text, cls) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; }
+function list(title, items, cls) {
+  const frag = document.createDocumentFragment();
+  if (!items.length) return frag;
+  frag.appendChild(el("h3", title));
+  const ul = el("ul");
+  items.forEach(t => ul.appendChild(el("li", t, cls)));
+  frag.appendChild(ul);
+  return frag;
+}
+
+function show(r) {
+  result.hidden = false;
+  result.dataset.verdict = r.verdict;
+  verdictEl.className = r.verdict;
+  verdictEl.textContent = r.verdict === "CANNOT" ? "CANNOT VERIFY HERE" : r.verdict === "WORKING" ? "Checking…" : r.verdict;
+  $("kind").textContent = r.kind === "certificate" ? "erasure certificate" : r.kind === "bundle" ? "audit bundle" : "";
+  $("reason").textContent = r.reason || "";
+  const d = $("details");
+  d.textContent = "";
+  if (r.cli) { d.appendChild(el("h3", "Run instead")); d.appendChild(el("pre", r.cli)); }
+  d.appendChild(list("Problems", r.problems || [], "bad-li"));
+  if (r.checks && !Array.isArray(r.checks)) {
+    const items = Object.entries(r.checks).map(([k, v]) => (v === true ? "OK   " : v === false ? "FAIL " : "n/a  ") + k);
+    d.appendChild(list("Checks", items));
+  } else if (Array.isArray(r.checks)) {
+    d.appendChild(list("Checks passed", r.checks));
+  }
+  d.appendChild(list("Not checked, or checked only against the file itself", r.limits || []));
+}
+
+let runId = 0;
+async function run(text) {
+  const mine = ++runId;
+  if (!text.trim()) { result.hidden = true; return; }
+  show({ verdict: "WORKING", reason: "" });
+  const r = await verifyText(text);
+  if (mine === runId) show(r);
+}
+
+async function runFile(file) {
+  const buf = new Uint8Array(await file.arrayBuffer());
+  let text;
+  try { text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(buf); }
+  catch (e) {
+    runId++;
+    show({ verdict: "CANNOT", kind: null, problems: [], limits: [], checks: null,
+           reason: "Cannot verify here, use the CLI: the file is not valid UTF-8, and the CLI reads it as UTF-8 and stops with an error.",
+           cli: CLI.certificate + "\n" + CLI.bundle });
+    return;
+  }
+  input.value = text;
+  run(text);
+}
+
+$("verify").addEventListener("click", () => run(input.value));
+input.addEventListener("input", () => { runId++; result.hidden = true; });
+$("clear").addEventListener("click", () => { runId++; input.value = ""; result.hidden = true; input.focus(); });
+$("file").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) runFile(f); e.target.value = ""; });
+const drop = $("drop");
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", e => {
+  e.preventDefault();
+  drop.classList.remove("over");
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) runFile(f);
+  else if (e.dataTransfer) { const t = e.dataTransfer.getData("text/plain"); if (t) { input.value = t; run(t); } }
+});
+})();
+</script>
+</body>
+</html>

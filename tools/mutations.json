@@ -2935,5 +2935,23 @@
   "tests": [
    "tests/test_the_assessor_pack_computes_each_report_once.py"
   ]
+ },
+ {
+  "name": "certificate: a partly signed chain no longer fails the verdict",
+  "file": "inspeximus/core.py",
+  "old": "            sigs_ok = False\n            checks[\"signatures_valid\"] = False\n",
+  "new": "            checks[\"signatures_valid\"] = False\n",
+  "tests": [
+   "tests/test_a_partly_signed_certificate_does_not_verify.py"
+  ]
+ },
+ {
+  "name": "cli: UTF-8 consoles keep strict errors, so a lone surrogate crashes the print",
+  "file": "inspeximus/cli.py",
+  "old": "            if getattr(stream, \"errors\", None) != \"backslashreplace\":",
+  "new": "            if (getattr(stream, \"encoding\", \"\") or \"\").lower() not in (\"utf-8\", \"utf8\"):",
+  "tests": [
+   "tests/test_a_partly_signed_certificate_does_not_verify.py"
+  ]
  }
 ]

@@ -151,9 +151,11 @@ Chapter III Sections 1–3 from 2 Aug 2026 to:
 - **2 Dec 2027** — standalone high-risk systems (Art. 6(2) / Annex III), where Art. 10/12/13/14/15/19 sit;
 - **2 Aug 2028** — high-risk AI embedded in regulated products (Art. 6(1) / Annex I).
 
-Unchanged by the deferral: Chapters I–II and the Art. 5 prohibitions (since 2 Feb 2025); GPAI, governance and
-penalty provisions (since 2 Aug 2025, except Art. 101); the Art. 50 transparency duties and the Art. 4 AI
-literacy duty.
+Unchanged by the deferral: Chapters I–II and the Art. 5 prohibitions (since 2 Feb 2025), except Art. 5(1),
+first subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b), which apply from **2 Dec 2026**; GPAI, governance and penalty provisions (since 2 Aug 2025, except Art. 101); the
+Art. 50 transparency duties and the Art. 4 AI literacy duty. The amendment also added a point (d) to Art. 113:
+**Art. 102 to 110 apply from 27 Jul 2026**. Both from Regulation (EU) 2026/1744, Art. 1(40), read verbatim on
+EUR-Lex on 24 Sep 2026.
 
 **What this means for this document, stated plainly:** the record-keeping duties these tools produce evidence
 for are **not yet in application** — they bite in Dec 2027. Nothing here should be read as "you are required to

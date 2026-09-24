@@ -1,0 +1,42 @@
+diff --git a/docs/verify/index.html b/docs/verify/index.html
+index 7b0019e..4f3885e 100644
+--- a/docs/verify/index.html
++++ b/docs/verify/index.html
+@@ -684,7 +684,10 @@ async function verifyCertificate(cert) {
+     }
+     if (t.has("sig")) {
+       const res = await sigCheck(pyOr(pyOr(get(t, "pubkey"), pub), ""), get(t, "sig"), get(t, "hash"));
+-      if (res.unknown) {
++      if (res.unknown && truthy(pub) && truthy(get(t, "pubkey")) && !pyEq(get(t, "pubkey"), pub)) {
++        problems.push(`tombstone ${j}: signed by an unexpected key`);
++        sigsOk = false;
++      } else if (res.unknown) {
+         unsettled.push(`tombstone ${j}: ${res.unknown}`);
+       } else if (res !== "ok") {
+         problems.push(`tombstone ${j}: invalid signature`);
+@@ -1047,6 +1050,7 @@ async function verifyBundle(bundle) {
+ 
+ function detectKind(doc) {
+   if (!(doc instanceof PyDict)) return null;
++  if ((doc.has("inspeximus_erasure_certificate") || doc.has("tombstones")) && (doc.has("kind") || doc.has("bundle_hash"))) return null;
+   if (doc.has("inspeximus_erasure_certificate")) return "certificate";
+   if (doc.has("kind") || doc.has("bundle_hash")) return "bundle";
+   if (doc.has("tombstones")) return "certificate";
+@@ -1158,6 +1162,7 @@ async function runFile(file) {
+   let text;
+   try { text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(buf); }
+   catch (e) {
++    runId++;
+     show({ verdict: "CANNOT", kind: null, problems: [], limits: [], checks: null,
+            reason: "Cannot verify here, use the CLI: the file is not valid UTF-8, and the CLI reads it as UTF-8 and stops with an error.",
+            cli: CLI.certificate + "\n" + CLI.bundle });
+@@ -1168,7 +1173,8 @@ async function runFile(file) {
+ }
+ 
+ $("verify").addEventListener("click", () => run(input.value));
+-$("clear").addEventListener("click", () => { input.value = ""; result.hidden = true; input.focus(); });
++input.addEventListener("input", () => { runId++; result.hidden = true; });
++$("clear").addEventListener("click", () => { runId++; input.value = ""; result.hidden = true; input.focus(); });
+ $("file").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) runFile(f); e.target.value = ""; });
+ const drop = $("drop");
+ drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
