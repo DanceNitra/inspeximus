@@ -124,12 +124,20 @@ jobs:
       - name: Run tests (this shard)
         env:
           SHARD_REPORT: shard-${{ matrix.shard }}.json
+          SHARD_TIMES: times-${{ matrix.shard }}.json
         run: python -m pytest tests/ -q -rs --shard ${{ matrix.shard }}/4
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: shard-report-${{ matrix.shard }}
           path: shard-${{ matrix.shard }}.json
+      # Measured seconds per test on this runner: the input tools/shard_durations.py turns into the
+      # committed durations file the shards are balanced on.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shard-times-${{ matrix.shard }}
+          path: times-${{ matrix.shard }}.json
       # The mutation set is deselected from the default run. It edits source in place, so it runs
       # serially, once, in the shard that carries the least other work.
       - name: mutation set (serial, full environment)

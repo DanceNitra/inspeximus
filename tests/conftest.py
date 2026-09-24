@@ -174,6 +174,7 @@ def _shard_key(item):
     return item.nodeid
 
 
+@pytest.hookimpl(trylast=True)
 def pytest_collection_modifyitems(config, items):
     spec = config.getoption("--shard")
     if not spec:
@@ -205,3 +206,36 @@ def pytest_collection_modifyitems(config, items):
     if drop:
         config.hook.pytest_deselected(items=drop)
     items[:] = keep
+
+
+# ── measured time per test, the input for balancing the shards ─────────────────────────────────────
+# With SHARD_TIMES set, the controlling process writes {node id: seconds} at the end of the run, setup +
+# call + teardown summed. Under xdist every worker's report reaches the controller, so only it writes.
+# Taken out of the environment at configure time for the same reason as SHARD_REPORT: a test that runs
+# pytest in a subprocess must not overwrite the file with its own few tests.
+def pytest_configure(config):
+    if not hasattr(config, "workerinput"):
+        config._shard_times_path = os.environ.pop("SHARD_TIMES", None)
+        config._shard_times = {}
+
+
+def pytest_runtest_logreport(report):
+    times = getattr(pytest_runtest_logreport, "_sink", None)
+    if times is not None:
+        node = report.nodeid.split("@")[0]
+        times[node] = times.get(node, 0.0) + float(getattr(report, "duration", 0.0) or 0.0)
+
+
+def pytest_sessionstart(session):
+    config = session.config
+    if getattr(config, "_shard_times_path", None):
+        pytest_runtest_logreport._sink = config._shard_times
+
+
+def pytest_sessionfinish(session):
+    config = session.config
+    path = getattr(config, "_shard_times_path", None)
+    if path:
+        import json
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump({k: round(v, 3) for k, v in sorted(config._shard_times.items())}, fh, indent=0)
