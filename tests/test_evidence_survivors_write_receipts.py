@@ -155,7 +155,8 @@ def _unreceipted(tmp_path, n=8):
 def test_the_backfill_genesis_root_commits_to_the_records_it_covers(tmp_path):
     """SURVIVORS core.py:4111 `_canon(c)` -> `_canon(None)` (core:4111:29:466f261b) and the
     backfill marker's fields (core.py:4112-4114: `now` -> None, the keys `n` / `at` / `reason`
-    renamed, the "unstated" default and the 200-character cut).
+    renamed, the "unstated" default and the 200-character cut; core.py:4046 the `reason=""`
+    parameter default).
 
     `genesis_root` is what the backfill offers an auditor: an RFC 6962 root over the commitments
     it vouches for. The tests check that it exists and is 64 hex characters, which a root over
@@ -172,9 +173,10 @@ def test_the_backfill_genesis_root_commits_to_the_records_it_covers(tmp_path):
     assert marker["genesis_root"] == out["genesis_root"] and marker["n"] == 8
     assert before <= marker["at"] <= __import__("time").time()
     assert marker["reason"] == "the store predates its chain"
-    _p2, ix2 = _unreceipted(tmp_path / "second")
-    ix2.enable_receipts(reason="   ")
-    assert ix2._receipts[0]["backfill"]["reason"] == "unstated"
+    for i, kw in enumerate(({}, {"reason": "   "})):             # the default, and a blank one
+        _p2, ix2 = _unreceipted(tmp_path / f"unstated{i}", n=2)
+        ix2.enable_receipts(**kw)
+        assert ix2._receipts[0]["backfill"]["reason"] == "unstated", kw
     _p3, ix3 = _unreceipted(tmp_path / "third")
     ix3.enable_receipts(reason="x" * 300)
     assert ix3._receipts[0]["backfill"]["reason"] == "x" * 200

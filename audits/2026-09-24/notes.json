@@ -739,6 +739,1146 @@
   "category": "soundness",
   "why": "the scope tests alter `scope` and `scope_excludes`; none altered `scope_covers`, so a loop that looked it up under the wrong key -- never comparing it -- passed a certificate that claims more coverage than it verified"
  },
+ "core:3586:12:3d0c1533": {
+  "category": "soundness",
+  "why": "the guessing test compares the receipt with sha256({text, key}), the pre-2.40 formula; a preimage with `nonce: null` fails that comparison too, while being exactly as guessable -- the attacker adds the null"
+ },
+ "core:3586:17:0ac304b6": {
+  "category": "format",
+  "why": "the nonce's key name inside the three content hashes: producer and verifier share _write_commit, so the rename is consistent everywhere; it breaks only receipts already on disk, which no test re-verified"
+ },
+ "core:3586:17:fdd964ca": {
+  "category": "format",
+  "why": "the nonce's key name inside the three content hashes: producer and verifier share _write_commit, so the rename is consistent everywhere; it breaks only receipts already on disk, which no test re-verified"
+ },
+ "core:3586:33:757d5d92": {
+  "category": "format",
+  "why": "the nonce's key name inside the three content hashes: producer and verifier share _write_commit, so the rename is consistent everywhere; it breaks only receipts already on disk, which no test re-verified"
+ },
+ "core:3586:33:d9b279d7": {
+  "category": "format",
+  "why": "the nonce's key name inside the three content hashes: producer and verifier share _write_commit, so the rename is consistent everywhere; it breaks only receipts already on disk, which no test re-verified"
+ },
+ "core:3586:49:296301e9": {
+  "category": "format",
+  "why": "the nonce's key name inside the three content hashes: producer and verifier share _write_commit, so the rename is consistent everywhere; it breaks only receipts already on disk, which no test re-verified"
+ },
+ "core:3586:49:4a2137a9": {
+  "category": "format",
+  "why": "the nonce's key name inside the three content hashes: producer and verifier share _write_commit, so the rename is consistent everywhere; it breaks only receipts already on disk, which no test re-verified"
+ },
+ "core:3628:53:e65398f1": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3628:53:fd4fd405": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3629:53:37b17132": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3629:53:c5a91fc6": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3641:52:2b4ef825": {
+  "category": "legacy-default",
+  "why": "`born_status` falls back to 'active' only for a record with no status, and every record the store writes gets one (core.py:3167); only a hand-inserted record plus a backfill reaches it, which no test builds"
+ },
+ "core:3641:52:c8831073": {
+  "category": "legacy-default",
+  "why": "`born_status` falls back to 'active' only for a record with no status, and every record the store writes gets one (core.py:3167); only a hand-inserted record plus a backfill reaches it, which no test builds"
+ },
+ "core:3658:51:180c74ac": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3658:51:9a103653": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3659:51:8d95354e": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3659:51:f8334781": {
+  "category": "format",
+  "why": "a key inside status_sha256 / time_sha256: producer and verifier share _write_commit, so the rename verifies in every same-run test and breaks every receipt already on disk; nothing re-verified an older store"
+ },
+ "core:3712:16:878957c9": {
+  "category": "equivalent",
+  "why": "equivalent: a handle with receipts off has no in-memory chain, so reconciling it adopts the sidecar into a list nothing reads until receipts are enabled, and enable_receipts reconciles anyway"
+ },
+ "core:3713:19:f0bd72ca": {
+  "category": "unread-output",
+  "why": "the number of adopted receipts `_reconcile_receipts_with_disk` returns; every caller ignores it"
+ },
+ "core:3715:33:baf332e7": {
+  "category": "equivalent",
+  "why": "equivalent: `_receipts_sig` is set in __init__, so the getattr default is never used"
+ },
+ "core:3716:19:f2adba42": {
+  "category": "unread-output",
+  "why": "the number of adopted receipts `_reconcile_receipts_with_disk` returns; every caller ignores it"
+ },
+ "core:3718:30:c6b19df6": {
+  "category": "platform",
+  "why": "encoding=None reads the sidecar in the locale encoding, UTF-8 here; 'UTF-8' is the same codec"
+ },
+ "core:3718:69:bd68567a": {
+  "category": "platform",
+  "why": "encoding=None reads the sidecar in the locale encoding, UTF-8 here; 'UTF-8' is the same codec"
+ },
+ "core:3720:19:61943802": {
+  "category": "unread-output",
+  "why": "the number of adopted receipts `_reconcile_receipts_with_disk` returns; every caller ignores it"
+ },
+ "core:3722:19:4f17b586": {
+  "category": "unread-output",
+  "why": "the number of adopted receipts `_reconcile_receipts_with_disk` returns; every caller ignores it"
+ },
+ "core:3724:12:707674a7": {
+  "category": "condition",
+  "why": "starting the prefix scan at 1 skips comparing receipt 0; every reconcile test shares a genesis receipt, so a chain that forks AT genesis was never reconciled"
+ },
+ "core:3725:33:000839d1": {
+  "category": "unexecuted-combo",
+  "why": "`<=` indexes one past the disk chain when the disk is a strict prefix of this handle's chain and moved; no test makes the sidecar shorter than a live handle's chain"
+ },
+ "core:3727:8:68677834": {
+  "category": "performance",
+  "why": "equivalent in behaviour: the disk signature is re-read and the sidecar re-parsed on every emit instead of when it changed"
+ },
+ "core:3729:19:a0764c5d": {
+  "category": "unread-output",
+  "why": "the number of adopted receipts `_reconcile_receipts_with_disk` returns; every caller ignores it"
+ },
+ "core:3734:15:71e80371": {
+  "category": "unread-output",
+  "why": "the number of adopted receipts `_reconcile_receipts_with_disk` returns; every caller ignores it"
+ },
+ "core:3742:37:318bc11c": {
+  "category": "coverage-depth",
+  "why": "the one rechain test moves an ordinary write, which has no `amends` / `amend_reason`, and never compares the moved receipt's time with the original's"
+ },
+ "core:3742:37:c5c0a48b": {
+  "category": "coverage-depth",
+  "why": "the one rechain test moves an ordinary write, which has no `amends` / `amend_reason`, and never compares the moved receipt's time with the original's"
+ },
+ "core:3743:22:4c60aea8": {
+  "category": "coverage-depth",
+  "why": "the one rechain test moves an ordinary write, which has no `amends` / `amend_reason`, and never compares the moved receipt's time with the original's"
+ },
+ "core:3743:22:b91b92d8": {
+  "category": "coverage-depth",
+  "why": "the one rechain test moves an ordinary write, which has no `amends` / `amend_reason`, and never compares the moved receipt's time with the original's"
+ },
+ "core:3743:32:5f2d3908": {
+  "category": "coverage-depth",
+  "why": "the one rechain test moves an ordinary write, which has no `amends` / `amend_reason`, and never compares the moved receipt's time with the original's"
+ },
+ "core:3743:32:ebb3592d": {
+  "category": "coverage-depth",
+  "why": "the one rechain test moves an ordinary write, which has no `amends` / `amend_reason`, and never compares the moved receipt's time with the original's"
+ },
+ "core:3745:20:68f765a1": {
+  "category": "coverage-depth",
+  "why": "the one rechain test moves an ordinary write, which has no `amends` / `amend_reason`, and never compares the moved receipt's time with the original's"
+ },
+ "core:3754:22:94c79e2b": {
+  "category": "unexecuted",
+  "why": "no test's receipt signer raises or returns an empty signature, so these refusals never ran (only their messages are mutable here)"
+ },
+ "core:3754:61:44f65350": {
+  "category": "unexecuted",
+  "why": "no test's receipt signer raises or returns an empty signature, so these refusals never ran (only their messages are mutable here)"
+ },
+ "core:3757:22:321182f4": {
+  "category": "unexecuted",
+  "why": "no test's receipt signer raises or returns an empty signature, so these refusals never ran (only their messages are mutable here)"
+ },
+ "core:3757:35:b4d3077b": {
+  "category": "unexecuted",
+  "why": "no test's receipt signer raises or returns an empty signature, so these refusals never ran (only their messages are mutable here)"
+ },
+ "core:3757:35:e583e5bb": {
+  "category": "unexecuted",
+  "why": "no test's receipt signer raises or returns an empty signature, so these refusals never ran (only their messages are mutable here)"
+ },
+ "core:3758:35:0ed370af": {
+  "category": "unexecuted",
+  "why": "no test's receipt signer raises or returns an empty signature, so these refusals never ran (only their messages are mutable here)"
+ },
+ "core:3758:35:dbd72d00": {
+  "category": "unexecuted",
+  "why": "no test's receipt signer raises or returns an empty signature, so these refusals never ran (only their messages are mutable here)"
+ },
+ "core:3769:79:09d31bd0": {
+  "category": "equivalent",
+  "why": "equivalent through the library: every caller that passes `amends` also passes `reason` explicitly, so the default is never used"
+ },
+ "core:3777:19:1caf6dd6": {
+  "category": "unread-output",
+  "why": "no test compares a receipt's `ts` with its record's; `ts` is inside the hash, so a receipt with ts None is a consistent link that says nothing about when"
+ },
+ "core:3777:27:e0789e69": {
+  "category": "unread-output",
+  "why": "no test compares a receipt's `ts` with its record's; `ts` is inside the hash, so a receipt with ts None is a consistent link that says nothing about when"
+ },
+ "core:3777:27:fc38149b": {
+  "category": "unread-output",
+  "why": "no test compares a receipt's `ts` with its record's; `ts` is inside the hash, so a receipt with ts None is a consistent link that says nothing about when"
+ },
+ "core:3809:41:95e7a358": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:3809:41:96931bdb": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:3809:41:b95e90d9": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:3809:41:c13b6ec4": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:3809:75:3310e7e1": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:3809:91:939cbbfe": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:3815:16:ae566aae": {
+  "category": "message",
+  "why": "the text of the sidecar error; verify_writes reports the error whatever it says"
+ },
+ "core:3815:77:2dc7d4c0": {
+  "category": "message",
+  "why": "the text of the sidecar error; verify_writes reports the error whatever it says"
+ },
+ "core:4046:38:ad54062a": {
+  "category": "unread-output",
+  "why": "enable_receipts() is never asserted to record 'unstated' when called without a reason"
+ },
+ "core:4070:22:63927337": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4070:33:1c78bc80": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4070:33:6bc966fc": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4072:22:d2af5f47": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4072:35:47eee7a0": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4072:35:f4899871": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4073:35:27279f45": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4073:35:4e164d4f": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4078:22:5f82469f": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4078:33:810a663b": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4078:33:b992f935": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4078:33:c29e94f8": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4079:33:3c522af0": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4079:33:7d01fcb9": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4081:22:ca89a339": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4081:33:85add911": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4081:33:d794f6e3": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4082:33:7d3e5057": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4082:33:d57e6484": {
+  "category": "message",
+  "why": "wording of a refusal; the only one any test reaches (a different key) is asserted with pytest.raises(ValueError) alone"
+ },
+ "core:4085:8:44e4ca90": {
+  "category": "equivalent",
+  "why": "equivalent: with was_enabled None the sidecar is loaded here even when receipts were already on, but only if the in-memory chain is empty, and then _reconcile_receipts_with_disk on the next line adopts the same file"
+ },
+ "core:4087:11:413a65bf": {
+  "category": "unreachable",
+  "why": "the receipts path is always set at construction, so `self._receipts_path is None` never holds and the path is never rebuilt here"
+ },
+ "core:4087:31:51931b75": {
+  "category": "unreachable",
+  "why": "the receipts path is always set at construction, so `self._receipts_path is None` never holds and the path is never rebuilt here"
+ },
+ "core:4088:12:259cb596": {
+  "category": "unreachable",
+  "why": "the receipts path is always set at construction, so `self._receipts_path is None` never holds and the path is never rebuilt here"
+ },
+ "core:4088:34:0259d3a9": {
+  "category": "unreachable",
+  "why": "the receipts path is always set at construction, so `self._receipts_path is None` never holds and the path is never rebuilt here"
+ },
+ "core:4088:54:61b6098c": {
+  "category": "unreachable",
+  "why": "the receipts path is always set at construction, so `self._receipts_path is None` never holds and the path is never rebuilt here"
+ },
+ "core:4088:71:55667206": {
+  "category": "unreachable",
+  "why": "the receipts path is always set at construction, so `self._receipts_path is None` never holds and the path is never rebuilt here"
+ },
+ "core:4088:71:62df7546": {
+  "category": "unreachable",
+  "why": "the receipts path is always set at construction, so `self._receipts_path is None` never holds and the path is never rebuilt here"
+ },
+ "core:4089:11:3b127083": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4089:11:4a76c428": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4089:11:54b2faa7": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4089:11:f55e4acc": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4089:88:7e59104a": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4092:16:1b3bb5db": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4092:33:da770cf4": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4092:44:119ca4b0": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4092:83:4eb93d14": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4092:83:9a4c73b8": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4094:16:370b90ad": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4095:12:71d7c200": {
+  "category": "redundant",
+  "why": "loading the sidecar here is redundant with _reconcile_receipts_with_disk two lines below, which adopts the same chain; with the load skipped, broken or inverted, the chain comes out the same, and the branch that loads it has never run"
+ },
+ "core:4099:59:5b05e382": {
+  "category": "unread-output",
+  "why": "`retirements_declared` of the idempotent second call is never read"
+ },
+ "core:4099:59:658d3beb": {
+  "category": "unread-output",
+  "why": "`retirements_declared` of the idempotent second call is never read"
+ },
+ "core:4099:83:38a9a8b8": {
+  "category": "unread-output",
+  "why": "`retirements_declared` of the idempotent second call is never read"
+ },
+ "core:4103:51:92b50ccf": {
+  "category": "unread-output",
+  "why": "only the signed case of the `signed` flag is asserted; an unsigned backfill reporting signed: True passed"
+ },
+ "core:4103:67:25e4c26f": {
+  "category": "unread-output",
+  "why": "only the signed case of the `signed` flag is asserted; an unsigned backfill reporting signed: True passed"
+ },
+ "core:4105:15:bd7b4ac3": {
+  "category": "condition",
+  "why": "no test enables receipts on a store with nothing to cover and then looks for the sidecar"
+ },
+ "core:4105:39:c52f9341": {
+  "category": "condition",
+  "why": "no test enables receipts on a store with nothing to cover and then looks for the sidecar"
+ },
+ "core:4108:38:14f1cf76": {
+  "category": "coverage-depth",
+  "why": "the backfill tests never compare the order of the backfill receipts with the order the records were written"
+ },
+ "core:4108:38:db6c1711": {
+  "category": "coverage-depth",
+  "why": "the backfill tests never compare the order of the backfill receipts with the order the records were written"
+ },
+ "core:4108:44:3c465d2a": {
+  "category": "coverage-depth",
+  "why": "the backfill tests never compare the order of the backfill receipts with the order the records were written"
+ },
+ "core:4108:44:8ee6c4b7": {
+  "category": "coverage-depth",
+  "why": "the backfill tests never compare the order of the backfill receipts with the order the records were written"
+ },
+ "core:4108:53:d7cd2ec8": {
+  "category": "coverage-depth",
+  "why": "the backfill tests never compare the order of the backfill receipts with the order the records were written"
+ },
+ "core:4111:29:466f261b": {
+  "category": "soundness",
+  "why": "the tests assert genesis_root exists and is 64 hex characters, which a root over nulls also is; nothing re-derived it from the commitments it claims to cover"
+ },
+ "core:4112:8:0d3760fd": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4113:40:65dcae79": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4113:40:ab6919d0": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4113:61:686131b5": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4113:61:989c3ac9": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4114:18:4bec6235": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4114:18:b8e31706": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4114:29:67e98f97": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4114:29:8ba4a222": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4114:52:169bec32": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4114:52:ddc0c942": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4114:65:d63980aa": {
+  "category": "unread-output",
+  "why": "the backfill marker's `n` / `at` / `reason` are never read back (only genesis_root is)"
+ },
+ "core:4116:34:5a9a6fd6": {
+  "category": "unread-output",
+  "why": "the backfill receipts' `ts` is never compared with the records'"
+ },
+ "core:4116:34:839c1e21": {
+  "category": "unread-output",
+  "why": "the backfill receipts' `ts` is never compared with the records'"
+ },
+ "core:4116:40:ea08bb6f": {
+  "category": "unread-output",
+  "why": "the backfill receipts' `ts` is never compared with the records'"
+ },
+ "core:4116:48:16627fe0": {
+  "category": "unread-output",
+  "why": "the backfill receipts' `ts` is never compared with the records'"
+ },
+ "core:4116:48:50a2976f": {
+  "category": "unread-output",
+  "why": "the backfill receipts' `ts` is never compared with the records'"
+ },
+ "core:4129:34:10f91c76": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4129:34:b92bc949": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4129:40:edff809e": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4129:48:578ecf4e": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4129:48:c96de037": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4130:34:33865400": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4130:34:ae2228e8": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4131:45:0d2f6829": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4131:45:7d506f28": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4132:34:512641fc": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4132:34:77f1415c": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4132:50:38ed28e3": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4132:50:e83d3117": {
+  "category": "coverage-depth",
+  "why": "the one test of a retirement declared at backfill checks that the store verifies afterwards; a declaration without `commit` is checked against nothing, so it verified too"
+ },
+ "core:4146:37:0e9d3c35": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:4146:37:13a2aecd": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:4146:37:a163c3c2": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:4146:37:ad491e99": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:4146:71:77097393": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:4146:87:680b4d69": {
+  "category": "format",
+  "why": "layout of the receipt sidecar on disk (indent, escaping); every reader parses it"
+ },
+ "core:4147:12:c004ff18": {
+  "category": "performance",
+  "why": "equivalent in behaviour: the next emit re-reads the sidecar it just wrote"
+ },
+ "core:4148:12:195f8dae": {
+  "category": "condition",
+  "why": "no test recovers from a failed sidecar write, so the error left behind by it is never shown to be cleared"
+ },
+ "core:4148:37:b1344cc5": {
+  "category": "condition",
+  "why": "no test recovers from a failed sidecar write, so the error left behind by it is never shown to be cleared"
+ },
+ "core:4148:37:dd1d2f11": {
+  "category": "condition",
+  "why": "no test recovers from a failed sidecar write, so the error left behind by it is never shown to be cleared"
+ },
+ "core:4150:12:789dc219": {
+  "category": "unexecuted",
+  "why": "no test makes the backfill's sidecar write fail"
+ },
+ "core:4150:33:af5e79cd": {
+  "category": "unexecuted",
+  "why": "no test makes the backfill's sidecar write fail"
+ },
+ "core:4150:33:cb741f1c": {
+  "category": "unexecuted",
+  "why": "no test makes the backfill's sidecar write fail"
+ },
+ "core:4150:73:ca36c612": {
+  "category": "unexecuted",
+  "why": "no test makes the backfill's sidecar write fail"
+ },
+ "core:4160:11:93004117": {
+  "category": "unreachable",
+  "why": "differ only for a head that recorded zero writes, or one with no tip; verify_writes checks the head only when its genesis matches a non-empty chain, which such a head never has"
+ },
+ "core:4160:13:8287593b": {
+  "category": "unreachable",
+  "why": "differ only for a head that recorded zero writes, or one with no tip; verify_writes checks the head only when its genesis matches a non-empty chain, which such a head never has"
+ },
+ "core:4160:17:cb144993": {
+  "category": "unreachable",
+  "why": "differs only for a head with n_writes <= 1 or no tip; verify_writes consults the head only when its genesis equals the chain's first hash, and then position 0 holds the tip by construction"
+ },
+ "core:4161:19:2ea2e41b": {
+  "category": "unreachable",
+  "why": "differs only for a head with n_writes <= 1 or no tip; verify_writes consults the head only when its genesis equals the chain's first hash, and then position 0 holds the tip by construction"
+ },
+ "core:4162:24:2d2f5cc1": {
+  "category": "equivalent",
+  "why": "equivalent: the positional check is subsumed by the `any(...)` fallback on the next line, which finds the tip at any position"
+ },
+ "core:4162:35:9e0141d4": {
+  "category": "equivalent",
+  "why": "equivalent: the positional check is subsumed by the `any(...)` fallback on the next line, which finds the tip at any position"
+ },
+ "core:4162:49:d7712527": {
+  "category": "equivalent",
+  "why": "equivalent: the positional check is subsumed by the `any(...)` fallback on the next line, which finds the tip at any position"
+ },
+ "core:4162:56:04360ea8": {
+  "category": "equivalent",
+  "why": "equivalent: the positional check is subsumed by the `any(...)` fallback on the next line, which finds the tip at any position"
+ },
+ "core:4162:56:d885e07b": {
+  "category": "equivalent",
+  "why": "equivalent: the positional check is subsumed by the `any(...)` fallback on the next line, which finds the tip at any position"
+ },
+ "core:4164:19:2d286acc": {
+  "category": "equivalent",
+  "why": "equivalent in reachable states: without a rechain the tip is where the positional check looks, and a rechained tip is found through `rechained_from`"
+ },
+ "core:4164:25:90500da8": {
+  "category": "equivalent",
+  "why": "equivalent in reachable states: without a rechain the tip is where the positional check looks, and a rechained tip is found through `rechained_from`"
+ },
+ "core:4164:25:bb466108": {
+  "category": "equivalent",
+  "why": "equivalent in reachable states: without a rechain the tip is where the positional check looks, and a rechained tip is found through `rechained_from`"
+ },
+ "core:435:27:172f4d4a": {
+  "category": "unexecuted",
+  "why": "the no-cryptography branch: the suite always has `cryptography`"
+ },
+ "core:6290:59:70ad7b24": {
+  "category": "defensive",
+  "why": "rows loaded from the store are always dicts with an id, so `or` and `and` agree on every row the loader returns"
+ },
+ "core:6297:23:6605cd75": {
+  "category": "defensive",
+  "why": "rows loaded from the store are always dicts with an id, so `or` and `and` agree on every row the loader returns"
+ },
+ "core:6305:63:edb7e999": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6311:24:8cb837e9": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6311:41:330ef837": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6311:41:87ac0155": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6311:41:e398c97b": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6312:24:5f4f857a": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6314:24:d7257fd9": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6314:41:2162d973": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6314:41:a14b6a0f": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6314:41:c9165453": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6323:54:79cfbeec": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6323:75:d82ed169": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6323:88:18df85d1": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6325:28:5877e618": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6326:41:ab39ef98": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6326:71:aa650a5b": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6326:91:14163d2d": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6326:91:a0791a86": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6329:24:917b7093": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6330:24:1d5c5002": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6330:24:29022f60": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6331:43:aff7f7aa": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6331:64:e3f860ff": {
+  "category": "message",
+  "why": "detail of the 'store not persisted' problem (which ids, which fields differ, how many are listed); the verdict comes from whether the problem is raised"
+ },
+ "core:6335:12:1dc92ace": {
+  "category": "message",
+  "why": "problems.append(None) still records a problem, and the verdict is `len(problems) == 0`"
+ },
+ "core:6340:26:ad3158d4": {
+  "category": "equivalent",
+  "why": "equivalent: both attributes are set in __init__, so the getattr default is never used"
+ },
+ "core:6343:26:a058bf1d": {
+  "category": "equivalent",
+  "why": "equivalent: both attributes are set in __init__, so the getattr default is never used"
+ },
+ "core:6346:11:e14b16f1": {
+  "category": "equivalent",
+  "why": "equivalent: the default only has to be falsy"
+ },
+ "core:6350:11:e28d6a22": {
+  "category": "equivalent",
+  "why": "equivalent: `_persist_error` is set in __init__"
+ },
+ "core:6364:16:56f937f8": {
+  "category": "message",
+  "why": "problems.append(None) still records a problem, and the verdict is `len(problems) == 0`"
+ },
+ "core:6374:20:2f081473": {
+  "category": "unexecuted",
+  "why": "no test presents a receipt whose signature fails, or pins a key over an unsigned chain, so these lines never ran (the flag they set is `len(problems)`, so only None-appends are mutable)"
+ },
+ "core:6376:16:e6be422d": {
+  "category": "unexecuted",
+  "why": "no test presents a receipt whose signature fails, or pins a key over an unsigned chain, so these lines never ran (the flag they set is `len(problems)`, so only None-appends are mutable)"
+ },
+ "core:6412:103:c92f2a5a": {
+  "category": "equivalent",
+  "why": "equivalent: every receipt carries a `seq`, so the `.get` default is never used"
+ },
+ "core:6412:72:746a062c": {
+  "category": "equivalent",
+  "why": "equivalent: every receipt carries a `seq`, so the `.get` default is never used"
+ },
+ "core:6412:72:84d1246c": {
+  "category": "equivalent",
+  "why": "equivalent: every receipt carries a `seq`, so the `.get` default is never used"
+ },
+ "core:6412:85:b78f85d2": {
+  "category": "equivalent",
+  "why": "equivalent: every receipt carries a `seq`, so the `.get` default is never used"
+ },
+ "core:6412:90:69642cb5": {
+  "category": "equivalent",
+  "why": "equivalent: every receipt carries a `seq`, so the `.get` default is never used"
+ },
+ "core:6412:90:c7b0998a": {
+  "category": "equivalent",
+  "why": "equivalent: every receipt carries a `seq`, so the `.get` default is never used"
+ },
+ "core:6442:24:4c8e2f27": {
+  "category": "message",
+  "why": "which id is added to legacy_flagged; the problem is raised whenever the set is non-empty, and only its count changes"
+ },
+ "core:6443:21:1c8a2a2c": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6443:21:62152691": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6443:26:c8a4923c": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6443:26:fa1f90d8": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6443:39:b86cc493": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:105:4e60d63d": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:72:2eac2506": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:72:849adbbc": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:72:8fda0524": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:72:dcdb80d1": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:78:5a103dd9": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:78:b63034fa": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:85:7bd3cc9f": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:92:057eadf1": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:92:308b0fa6": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:92:80bfc157": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:92:c77987f9": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:98:0e3ca80a": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6444:98:a5acfdb3": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6445:20:1748af6f": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6447:20:4728af46": {
+  "category": "legacy",
+  "why": "the pre-1.68 receipt path with legacy_strict=False ('only the latest receipt binds'); no test builds a legacy receipt whose latest version mismatches under that flag"
+ },
+ "core:6456:68:ad836d98": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6456:68:fdbf6a75": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6456:77:06b0b095": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6456:77:6e50c82d": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6456:77:dc5b5895": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6457:29:c1b84b5b": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6457:29:e190c08d": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6457:45:a740febc": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6457:45:d2ffabcc": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6457:45:fe3c250c": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6458:46:e7d9e2eb": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6459:44:b2dc25b6": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6459:44:c741ada4": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6460:44:63b53893": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6461:29:53fa173c": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6461:29:ba1ac455": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6461:47:afb00ab2": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6461:47:ded30efa": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6467:33:44bcb3ea": {
+  "category": "message",
+  "why": "the human description of which committed field changed (`_WHAT` and how it is joined); the problem is raised either way"
+ },
+ "core:6469:28:7fe53ed4": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6469:28:ec887877": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6470:33:5ad210ef": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6470:33:945828bd": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6480:16:8b4a9edc": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6482:16:dc990817": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6488:24:773fad69": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6490:20:1cf87825": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6492:16:bbbe6d50": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6498:59:07247d45": {
+  "category": "unexecuted-combo",
+  "why": "differs only for a store whose receipts are unsigned while a tombstone is signed (the `or` short-circuits on signed receipts); a single key signs both, so the combination does not arise, and warn_unpinned is never asked of an unsigned store with tombstones"
+ },
+ "core:6498:63:526809bd": {
+  "category": "unexecuted-combo",
+  "why": "differs only for a store whose receipts are unsigned while a tombstone is signed (the `or` short-circuits on signed receipts); a single key signs both, so the combination does not arise, and warn_unpinned is never asked of an unsigned store with tombstones"
+ },
+ "core:6498:63:79fe0dbd": {
+  "category": "unexecuted-combo",
+  "why": "differs only for a store whose receipts are unsigned while a tombstone is signed (the `or` short-circuits on signed receipts); a single key signs both, so the combination does not arise, and warn_unpinned is never asked of an unsigned store with tombstones"
+ },
+ "core:6498:69:f49e618e": {
+  "category": "unexecuted-combo",
+  "why": "differs only for a store whose receipts are unsigned while a tombstone is signed (the `or` short-circuits on signed receipts); a single key signs both, so the combination does not arise, and warn_unpinned is never asked of an unsigned store with tombstones"
+ },
+ "core:6499:28:2478c5ba": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6500:28:eb51c260": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6500:28:febc5d66": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6517:19:36cde2dc": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:19:901d0227": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:19:c45beea6": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:25:1218529a": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:25:9ae8fa7e": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:32:d75ba646": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:34:39a43055": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:38:61d8d4d6": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:38:e4d54e1c": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:73:57b63d8d": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:73:974ac088": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6517:81:d266695b": {
+  "category": "equivalent",
+  "why": "equivalent: receipts carry strictly increasing `seq`, so `>=` and `>` pick the same latest receipt, the defaults are never used, and a lookup that always returns -1 still ends on the last receipt per record"
+ },
+ "core:6532:40:31120caa": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6532:61:8ad95db3": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:23:5081d4d2": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:23:860ee4dd": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:29:5912faac": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:46:ebda7e51": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:72:a3b78d67": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:75:4788272c": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:82:8f3eeef8": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6533:88:e720faef": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6554:23:d53ceca1": {
+  "category": "message",
+  "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
  "core:7916:67:47da4962": {
   "category": "unread-output",
   "why": "no test reads a tombstone's ts; stored under another key, the hash commits to ts=None consistently, so every chain still verifies while the time of the erasure act leaves the commitment"
