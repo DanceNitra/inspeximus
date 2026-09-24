@@ -23,7 +23,7 @@ and is not counted as the expected failure.
 **No library code was changed.** The branch adds this report, the harness and the tests.
 **Environment:** Python 3.11.15, mcp 1.30.0, pytest 9.1.1 with xdist.
 
-Status: families 1-5 are written up; the remaining families follow as they are finished.
+Status: families 1-6 are written up; the remaining families follow as they are finished.
 
 Severity: **High**: a guard is bypassed, data is wrongly written, erased or exposed, or a failure reads as
 success or as a clean result. **Medium**: a promised field or behaviour is wrong or missing. **Low**:
@@ -723,3 +723,144 @@ behaviour where it is described as read-only. What was checked:
   `isError`.
 - **Read-only:** `oversight_report`, `risk_register`, `breach_report` and the other reports change nothing
   when the action ledger is off.
+
+---
+
+## Family 6: subject rights, access grants, events and the code guard
+
+Tools: `export_subject`, `record_objection`, `resolve_objection`, `objections`, `rectify_subject`, `grant`,
+`revoke`, `grants`, `grant_log`, `can_read`, `recall_as`, `get_as`, `poll_memory_events`,
+`subscribe_memory_event`, `deprecate_symbol`, `symbol_status`, `check_code`. Tests:
+`tests/test_mcp_review_rights_access.py`.
+
+A correction to the brief's working assumption: the default store is **not** JSON. A new store is written
+as rows (SQLite) even when it is named `.json`, and an existing JSON store is converted when it is opened
+(`core.py:8651-8672`). The event tools therefore work on the default store.
+
+### S1 (High): an Art. 21 objection recorded through one server is not honoured by another on the same store
+
+- **Description** (`mcp_server.py:1640-1643`): "GDPR Art. 21: record the subject's objection and stop
+  serving their records. From this call on, recall withholds every record whose source resolves to
+  `subject`, including later writes, until the objection is resolved."
+- **What happens:** two server instances run on one store file, which is what two MCP processes, or the
+  server and the Claude Code hook, amount to. The server documents that set-up at `mcp_server.py:277-345`.
+  An objection recorded through server B makes B withhold the record. Server A goes on returning it until A
+  restarts:
+  - A's `recall` still returns the record, and a new write through A sourced to the subject is served too.
+  - A's `objections()` answers `{objections: [], standing: 0}`.
+  - An override on B leaves A withholding, which is the same fault in reverse.
+- **Cause:** objections are read from `<store>.objections.json` only in `Inspeximus.__init__`
+  (`core.py:2909-2915`). `refresh()` and `_merge_with_disk()` never read it again. Recording an objection
+  writes only that sidecar, so the store file's signature does not change, and the per-call `refresh()`
+  returns early.
+- **Test:** `test_record_objection_is_honoured_by_every_server_on_the_store`
+
+### S2 (High): `rectify_subject` reports a correction the guard retired as done, and logs it as done
+
+- **Description** (`mcp_server.py:1678-1680`): "GDPR Art. 16 rectification: supersede the value under `key`
+  with `text` through the ordinary keyed write (every write guard applies), and record who asked and why as
+  a rights:rectify entry on the action ledger".
+- **What happens:** the tool takes no `object`. On a key whose value was written with one, as `remember`
+  asks callers to do, the objectless guard retires every rectification on arrival, and recall keeps
+  serving the old value. The tool returns `{key, previous_id, new_id, memory_receipt, previous_status:
+  "active", ledger_entry}`. That has no `blocked`, no `policy` and no `status`, so it reads as a landed
+  correction. It also writes a `rights:rectify` ledger entry with `status="ok"`. The echo guard behaves the
+  same way. The guard applying matches the description. Reporting nothing when it applies does not.
+- **Cause:** `mcp_server.py:1684-1685` passes the library result through without `_write_verdict()`.
+  `subject_rights.py:214` ignores `store.last_write`, and `subject_rights.py:223-224` records `status="ok"`
+  unconditionally.
+- **Test:** `test_rectify_subject_reports_a_rectification_the_objectless_guard_retired`
+
+### S3 (High): `subscribe_memory_event`'s default cursor never delivers anything
+
+- **Description** (`mcp_server.py:2612-2615`): "returns the cursor to poll from ({event_type, since_seq})
+  ... call `poll_memory_events` with this `since_seq` (and `event_type`) to receive everything published
+  after this moment."
+- **What happens:** the default subscription returns `event_type: "*"`. `poll_memory_events(since_seq,
+  event_type="*")` returns `{events: []}` after every write, indefinitely. The same poll without
+  `event_type` returns the events. A tail following the documented recipe reads "no changes" for ever.
+- **Cause:** `mcp_server.py:2616` hands back `"*"` (the in-process subscription wildcard, `core.py:4036`).
+  `poll_memory_events` passes it on, and `sqlite_store.py:292` filters on it literally, as `AND type=?`.
+- **Test:** `test_subscribe_memory_event_default_cursor_receives_the_later_events`
+
+### S4 (High): `deprecate_symbol` returns a deprecation the echo guard retired as "the recorded deprecation"
+
+- **Description** (`mcp_server.py:1524-1529`): "A later deprecate_symbol of the same `old` supersedes the
+  replacement. ... Returns the recorded deprecation."
+- **What happens:** `old_fn -> new_fn`, then `old_fn -> newer_fn`, then `old_fn -> new_fn` again (a change
+  of mind). The third write restates a retired object, so the echo guard retires it on arrival. The tool
+  returns `{replacement: new_fn}`, while `symbol_status` and `check_code` keep saying `newer_fn`.
+- **Cause:** `code_guard.py:88` ignores `store.last_write`, and `code_guard.py:91` builds the result from
+  its arguments. `mcp_server.py:1530` passes it through.
+- **Test:** `test_deprecate_symbol_reports_a_deprecation_the_echo_guard_retired`
+
+### S5 (High): rights ledger entries break a signed action ledger
+
+- **Description:** `export_subject` (`mcp_server.py:1624-1625`): "Writes one rights:export entry to the
+  action ledger". The module docstring: "one signed, hash-chained entry per call".
+- **What happens:** with a writer key and `INSPEXIMUS_ACTIONS=1`, `actions_verify` is ok. One
+  `export_subject` later it answers `ok: false` ("seq 2: no signature") for good. A legitimate access
+  request leaves the tamper-evidence check permanently failed. `record_objection`, `resolve_objection` and
+  `rectify_subject` build the same keyless ledger.
+- **Cause:** `mcp_server.py:1631, 1647, 1662, 1685`: `ActionLedger(_MEM, actor=_ACTOR)`. Same as L1; see
+  X3.
+- **Test:** `test_export_subject_rights_entry_keeps_the_signed_action_ledger_verifiable`
+
+### S6 (Medium): "stop serving their records" holds for recall only
+
+- **Description:** `record_objection`: "record the subject's objection and stop serving their records.
+  From this call on, recall withholds ...". The second sentence names recall. The first promises more.
+- **What happens:** every recall variant withholds the records: `recall`, `recall_iterative`,
+  `recall_followup`, `neighbors`, `recall_as`, `token_report`, `selection_integrity` and the top hits of
+  `why_recalled`. Other reads still serve a withheld record's text:
+  - `memory_index`, described as "THE ALWAYS-LOADED INDEX", still carries the record's line.
+  - `verify_claim` answers `supported` and quotes the record.
+  - `check_conflict`, `get`, `get_as` and `why_recalled(id=...)` return it too. Of these, `get` and
+    `get_as` need the id, which recall no longer hands out.
+- **Cause:** the library filters only recall's candidate pool (`core.py:12727-12733`).
+- **Test:** `test_record_objection_stops_serving_the_subject_outside_recall[memory_index|verify_claim]`
+
+### S7 (Medium): `rectify_subject`, `recall_as` and `deprecate_symbol` ignore the server's project scope
+
+- **Description:** `INSPEXIMUS_PROJECT`: "Writes are stamped with it and recalls are filtered to it".
+  `recall_as`: "the same ranking as `recall`, hard-filtered to what that agent owns or has an active grant
+  for".
+- **What happens:**
+  - A rectified record carries no project stamp. The subject's corrected value, whose original was
+    confined to project alpha, is recalled from project beta.
+  - `recall_as(bob)` on a server scoped to alpha returns project beta's granted record. On this server
+    `recall_as` is the only recall variant that crosses projects. The ACL itself holds.
+  - A deprecation recorded in repo alpha is an unscoped record, so every project recalls it.
+- **Cause:** `mcp_server.py:1684`, `:2567` and `:1530` pass no project. `code_guard.py:88` takes no
+  project parameter. See X4.
+- **Tests:** `test_rectify_subject_stamps_the_servers_project_scope`,
+  `test_recall_as_honours_the_servers_project_scope`, `test_deprecate_symbol_stamps_the_servers_project_scope`
+
+### S8 (Medium): on a JSON-format store, `poll_memory_events` reports no events after writes, with no error
+
+- **Description** (`mcp_server.py:2587-2592`): "What changed in the store since `since_seq`, from the
+  `memory_events` table ... Another process's write is visible on the next call."
+- **What happens:** the store is JSON-format, because it is pinned with `INSPEXIMUS_STORE_FORMAT=json`, is
+  encrypted, or failed to convert to rows. After two writes the tool returns `{events: [], tip: 0}` with no
+  error and no note, and `subscribe_memory_event` returns `since_seq: 0`. The library's own
+  `publish_event` raises on the same store.
+- **Cause:** `core.py:3965` and `:4002` return `[]` and `0` when rows are unavailable.
+- **Test:** `test_poll_memory_events_on_a_json_store_does_not_read_as_no_changes`
+
+### Holds
+
+| Tool | Checked |
+|---|---|
+| `export_subject` | Returns direct and inherited records, their provenance and history. Writes one `rights:export` entry carrying the manifest hash. `basis="portability"` gives the Art. 20 form and a `rights:portability` entry. An ambiguous subject comes back as `{"error"}`, and `allow_ambiguous` exports. Store and receipts are unchanged. (S5 aside.) |
+| `record_objection` | The server that records it withholds at once, including later writes. A neighbouring subject is not withheld. Persists across a restart. Bad ground, bad scope, no actor, a duplicate or an ambiguous subject comes back as `{"error"}`. (S1 and S6 aside.) |
+| `resolve_objection` | `overridden` without grounds, and any override of a direct-marketing objection, are refused. `overridden` resumes recall, and `upheld` keeps withholding. |
+| `objections` | `{objections, standing}`. Read-only. |
+| `grant` / `revoke` | Two selectors, no selector, or `ids=[]` are refused. Each act adds one receipt, and `verify_writes` stays ok. `was_granted` is correct. A revoke takes effect on the next read and leaves other grants alone. |
+| `grants` / `grant_log` | In force only, or every act, newest first. Read-only. |
+| `can_read` | `{allowed, reason, via}`, where `via` is a grant id, `"owner"` or `None`. |
+| `recall_as` | Fail-closed for an agent with no grants. Quarantined records are held out, and objections are honoured. (S7 aside.) |
+| `get_as` | `{}` for an unknown id and for no access, indistinguishably. |
+| `poll_memory_events` | Events carry key, status and mtype, never text. `tip` is the highest seq. Another handle's write shows up on the next call. The `event_type` filter works for concrete types. (S3 and S8 aside.) |
+| `subscribe_memory_event` | With a concrete type, polling from the cursor returns exactly the later events. (S3 aside.) |
+| `deprecate_symbol` | Goes through the keyed write with `object=new`, so the echo guard applies. A new replacement supersedes. Receipts are extended. (S4 and S7 aside.) |
+| `symbol_status` / `check_code` | Verdicts as described. Whole-identifier matching, so `old_fn(` and `obj.old_fn` match and `old_fnx` does not. Read-only. |
