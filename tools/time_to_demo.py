@@ -1,10 +1,12 @@
 """Time from a clean environment to a passing `inspeximus demo`, with a budget that fails the run.
 
-A new user's first minute: `pip install inspeximus`, then `inspeximus demo`. This creates a fresh
-virtual environment, installs the package (this checkout by default, or a release from PyPI), runs the
-demo with `--json`, and reports the seconds of each step. It exits 1 when the demo does not pass all
-three checks, or when install plus demo take longer than the budget (60 s by default). Creating the
-venv is timed and reported, but not charged to the budget: it is the machine's cost, not ours.
+A new user's first minute: `pip install "inspeximus[crypto]"`, then `inspeximus demo`. The demo signs
+its stores, so it needs the `crypto` extra; without it, it says so and exits 2. This creates a fresh
+virtual environment, installs the package with that extra (this checkout by default, or a release from
+PyPI), runs the demo with `--json`, and reports the seconds of each step. It exits 1 when the demo does
+not pass all three checks, or when install plus demo take longer than the budget (60 s by default).
+Creating the venv is timed and reported, but not charged to the budget: it is the machine's cost, not
+ours.
 
     python tools/time_to_demo.py [--source .|pypi] [--version X.Y.Z] [--budget 60] [--out result.json]
     python tools/time_to_demo.py --summary result.json     (a Markdown table of an earlier result)
@@ -78,7 +80,8 @@ def main(argv=None) -> int:
         if p.returncode != 0:
             print("could not create a venv: " + p.stderr[-400:], file=sys.stderr)
             return 2
-        target = ROOT if a.source == "." else ("inspeximus==" + a.version if a.version else "inspeximus")
+        target = (ROOT + "[crypto]" if a.source == "." else
+                  ("inspeximus[crypto]==" + a.version if a.version else "inspeximus[crypto]"))
         p, install_s = _timed([py, "-m", "pip", "install", "--no-cache-dir", "-q", target], work)
         if p.returncode != 0:
             print("pip install failed: " + p.stderr[-800:], file=sys.stderr)
