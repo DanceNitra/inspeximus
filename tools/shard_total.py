@@ -7,6 +7,13 @@ different suites (different dependencies, a different commit), when a test is in
 test is in two.
 
     python tools/shard_total.py shard-reports/*.json [--expect N]
+
+The total is what CI RUNS, so it is not the number a local release check prints, and it is not meant
+to be. Measured on 2026-09-24 (60fbdc6): the Linux CI runner collects 4,947 tests where this Windows
+machine collects 4,957. The 10 are tests/test_crewai_backend.py, which skips at import in CI because
+installing every extra together backtracks crewai to a release without `crewai.memory.storage.backend`
+(the reason is in that file). The mutation set (31 tests) is deselected from every shard and runs
+serially in shard 0 as its own step, so it is not in this total either.
 """
 from __future__ import annotations
 

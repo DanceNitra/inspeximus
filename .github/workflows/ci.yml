@@ -90,9 +90,10 @@ jobs:
 
   # THE FULL SUITE, IN FOUR PARALLEL SHARDS. One job ran all of it in 10 to 15 minutes, and a release
   # waited on it twice (here and again in release.yml). `--shard i/4` (tests/conftest.py) splits the
-  # collection: the cited-probe group, which must stay on one worker, gets shard 3 to itself, and the
-  # rest spread over 0-2. `integrations total` below proves the four green shards ran every collected
-  # test exactly once, which a set of green jobs cannot say on its own.
+  # collection by measured time (tests/shard_durations.json, refreshed with tools/shard_durations.py
+  # from this job's shard-times artifacts), and splits the long cited-probe group across the shards.
+  # `integrations total` below proves the four green shards ran every collected test exactly once,
+  # which a set of green jobs cannot say on its own.
   integrations:
     name: integrations (shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-latest
@@ -142,7 +143,14 @@ jobs:
       # serially, once, in the shard that carries the least other work.
       - name: mutation set (serial, full environment)
         if: matrix.shard == 0
+        env:
+          SHARD_TIMES: mutation-times.json
         run: python -m pytest tests/ -n 0 -m mutation -q
+      - uses: actions/upload-artifact@v4
+        if: always() && matrix.shard == 0
+        with:
+          name: mutation-times
+          path: mutation-times.json
       # --require-all is the point of running it HERE: this job installs every framework, so a SKIP is
       # an install failure, not an acceptable outcome. Without it a botched pip line would leave the
       # adapters unchecked and the job green. `continue-on-error` because the suite currently records

@@ -155,23 +155,85 @@ def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory):
 
 
 # ── sharding: one suite, split across parallel CI jobs ───────────────────────────────────────────────
-# `--shard i/n` keeps the tests whose key lands in bucket i of n and deselects the rest. The key is the
-# xdist group when a test declares one, so tests that must share a worker also share a shard, and the
-# node id otherwise. crc32 rather than hash(): Python randomises str hashes per process, and every
-# shard must compute the same partition. The union of the n shards is the whole suite and no test is
-# in two; tests/test_the_shards_partition_the_suite.py checks both.
+# `--shard i/n` keeps bucket i of n and deselects the rest. The buckets are balanced on MEASURED time:
+# tests/shard_durations.json holds seconds per test from a CI run (tools/shard_durations.py writes it),
+# and a greedy longest-first pass puts each test where the shard's estimated wall time grows least.
+#
+# The estimate is the larger of two things, because a shard is n_workers processes, not one queue:
+#   * everything in the shard divided by the workers (the parallel part), and
+#   * the largest xdist group in the shard, since a group runs whole on ONE worker (the serial part).
+# That second term is why the old key failed: it kept the cited-probe group whole, so one shard ran
+# its ~13 minutes serially while the others finished in 3 to 7. A group only has to share a worker
+# WITHIN a shard (its budgets assume nothing else of its kind runs beside it), so it may be split
+# ACROSS shards, which are separate machines, and each part still runs on one worker there.
+#
+# The pass is deterministic: every shard sorts the same collection the same way and computes the same
+# partition. A test missing from the durations file is charged the median. The union of the n shards
+# is the whole suite and no test is in two; tests/test_the_shards_partition_the_suite.py checks both.
 def pytest_addoption(parser):
     parser.addoption("--shard", default=None, help="run bucket i of n, written i/n (0-based)")
 
 
-LONG_GROUP = "group:cited_probes"
+SHARD_DURATIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "shard_durations.json")
+#: GitHub's ubuntu-latest runners have 4 vCPUs, so `-n auto` starts 4 workers in each shard.
+SHARD_WORKERS = 4
+#: Key in the durations file for the serial mutation set, which shard 0 runs AFTER its tests. The plan
+#: charges it to shard 0 up front, so that shard gets less of the suite.
+MUTATION_KEY = "@mutation_set"
 
 
-def _shard_key(item):
+def _plain_id(nodeid):
+    # xdist's loadgroup appends "@<group>" to the node id; durations are stored without it.
+    return nodeid.split("@")[0]
+
+
+def _group_of(item):
     group = item.get_closest_marker("xdist_group")
-    if group is not None:
-        return "group:" + str(group.args[0] if group.args else group.kwargs.get("name"))
-    return item.nodeid
+    if group is None:
+        return None
+    return str(group.args[0] if group.args else group.kwargs.get("name"))
+
+
+def shard_plan(tests, n, durations, workers=SHARD_WORKERS):
+    """Assign each test to one of n shards. `tests` is a list of (node id, group or None).
+
+    Returns (bucket per test, estimated seconds per shard). Pure, so the balancing is testable without
+    a collection."""
+    tail = {0: durations.get(MUTATION_KEY, 0.0)} if n > 0 else {}
+    durations = {k: v for k, v in durations.items() if k != MUTATION_KEY}
+    known = sorted(durations.values())
+    default = known[len(known) // 2] if known else 1.0
+    cost = [durations.get(_plain_id(t), default) for t, _ in tests]
+    order = sorted(range(len(tests)), key=lambda k: (-cost[k], _plain_id(tests[k][0])))
+    total = [0.0] * n
+    groups = [dict() for _ in range(n)]
+    longest = [0.0] * n
+    bucket = [0] * len(tests)
+
+    def wall(j, extra=0.0, group=None):
+        serial = max(groups[j].values(), default=0.0)
+        if group is not None:
+            serial = max(serial, groups[j].get(group, 0.0) + extra)
+        return max((total[j] + extra) / workers, serial, longest[j], extra) + tail.get(j, 0.0)
+
+    for k in order:
+        group = tests[k][1]
+        j = min(range(n), key=lambda b: (wall(b, cost[k], group), total[b], b))
+        bucket[k] = j
+        total[j] += cost[k]
+        longest[j] = max(longest[j], cost[k])
+        if group is not None:
+            groups[j][group] = groups[j].get(group, 0.0) + cost[k]
+    return bucket, [wall(j) for j in range(n)]
+
+
+def _load_durations():
+    import json
+    try:
+        with open(SHARD_DURATIONS, encoding="utf-8") as fh:
+            return {k: float(v) for k, v in json.load(fh).items()}
+    except FileNotFoundError:
+        return {}
 
 
 @pytest.hookimpl(trylast=True)
@@ -179,22 +241,12 @@ def pytest_collection_modifyitems(config, items):
     spec = config.getoption("--shard")
     if not spec:
         return
-    import zlib
     i, n = (int(x) for x in spec.split("/"))
     if not (n > 0 and 0 <= i < n):
         raise ValueError("--shard must be i/n with 0 <= i < n, got %r" % spec)
-    keep, drop = [], []
-    for it in items:
-        key = _shard_key(it)
-        # The cited-probe group is the longest single unit and cannot be split (its budgets assume one
-        # worker), so it gets the last shard to itself and everything else spreads over the others.
-        if n > 1:
-            bucket = n - 1 if key == LONG_GROUP else zlib.crc32(key.encode("utf-8")) % (n - 1)
-        else:
-            bucket = 0
-        (keep if bucket == i else drop).append(it)
-    # Popped, not read: a test that runs pytest in a subprocess would otherwise inherit the path and
-    # overwrite this shard's report with its own small collection (seen in CI on 7aca0f6).
+    bucket, _ = shard_plan([(it.nodeid, _group_of(it)) for it in items], n, _load_durations())
+    keep = [it for it, b in zip(items, bucket) if b == i]
+    drop = [it for it, b in zip(items, bucket) if b != i]
     report = os.environ.pop("SHARD_REPORT", None)
     if report:
         # What tools/shard_total.py compares across shards: every shard must have collected the same

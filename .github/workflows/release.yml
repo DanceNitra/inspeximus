@@ -70,8 +70,8 @@ jobs:
     if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     runs-on: ubuntu-latest
     # 2026-09-24: one job ran the whole suite in 15 to 25 minutes, between the owner's yes and PyPI.
-    # The same suite now runs in four parallel shards (`--shard i/4`, tests/conftest.py); the cited
-    # probes, which must share one worker, have shard 3 to themselves. `tests total` below proves the
+    # The same suite now runs in four parallel shards (`--shard i/4`, tests/conftest.py), balanced on
+    # the measured time per test in tests/shard_durations.json. `tests total` below proves the
     # four green shards ran every collected test exactly once, so the split cannot drop a test.
     strategy:
       fail-fast: true
