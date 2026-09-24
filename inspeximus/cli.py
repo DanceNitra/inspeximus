@@ -1443,8 +1443,8 @@ def main(argv=None):
         if anchor is None:
             res.setdefault("limits", []).append(
                 "NOT WITNESSED: no --expected-anchor, so the anchor was checked against itself only; "
-                "a chain trimmed and re-anchored by the key holder passes. Pin an anchor you obtained "
-                "outside the operator's control.")
+                "a chain trimmed at its tail and re-anchored passes, and that needs no key. Pin an anchor "
+                "you obtained outside the operator's control.")
         if a.json:
             _out(res, True)
         else:
