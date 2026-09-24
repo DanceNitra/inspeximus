@@ -357,11 +357,19 @@ class ActionLedger:
 
     def _load(self) -> None:
         self._checkpoint = None
+        # AN UNREADABLE LEDGER IS NOT AN EMPTY ONE. This read a file it could not parse as [], and the
+        # next record() wrote a fresh one-entry chain over it: the history was replaced and verify()
+        # read the new file clean. Measured 2026-09-24 (session E review, item 7). The handle now
+        # remembers why, verify() reports it, and _save() refuses to overwrite the file.
+        self._unreadable = None
         if self.path.exists():
             try:
                 data = json.loads(self.path.read_text(encoding="utf-8"))
-            except (OSError, ValueError):
+            except (OSError, ValueError) as e:
+                self._unreadable = "%s: %s" % (type(e).__name__, str(e)[:160])
                 data = []
+            if not isinstance(data, list) and self._unreadable is None:
+                self._unreadable = "the file holds a JSON %s, not a list of entries" % type(data).__name__
             data = list(data) if isinstance(data, list) else []
             if data and isinstance(data[0], dict) and data[0].get("kind") == "checkpoint":
                 self._checkpoint = data[0]
@@ -380,6 +388,11 @@ class ActionLedger:
             self._load()
 
     def _save(self) -> None:
+        if getattr(self, "_unreadable", None):
+            raise RuntimeError(
+                f"the action ledger {self.path} could not be read ({self._unreadable}); refusing to write "
+                f"over it, because that would replace its history with a new chain. Restore it from a "
+                f"copy, or move it aside to start a new ledger.")
         tmp = self.path.with_name(self.path.name + ".tmp.%d" % os.getpid())
         body = ([self._checkpoint] if self._checkpoint else []) + self._entries
         tmp.write_text(json.dumps(body, indent=1, ensure_ascii=False), encoding="utf-8")
@@ -1979,6 +1992,9 @@ class ActionLedger:
         problems, _tail, _archived = _verify_chain(self._checkpoint, self._entries, self.path.parent,
                                                    expected_pubkey=expected_pubkey,
                                                    require_signatures=require_signatures)
+        if getattr(self, "_unreadable", None):
+            problems.insert(0, f"the ledger file could not be read ({self._unreadable}); nothing in it "
+                               f"was verified")
         if bind_to_store and self.store is not None:
             chain = [r.get("hash") for r in (getattr(self.store, "_receipts", None) or [])]
             pos = {h: i for i, h in enumerate(chain)}

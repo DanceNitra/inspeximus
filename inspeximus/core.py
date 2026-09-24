@@ -10958,12 +10958,17 @@ class Inspeximus:
 
     @staticmethod
     def verify_inclusion(bundle: dict, expected_root: str | None = None) -> bool:
-        """Check an inclusion_proof() bundle offline. Pass the root YOU witnessed, not the one in the
-        bundle -- a bundle that carries its own root and is checked against it proves nothing, which
-        is why `expected_root` defaults to None and falls back only for a self-consistency check."""
+        """Check an inclusion_proof() bundle offline against the root YOU witnessed.
+
+        Returns False without `expected_root`. Until 3.9.4 it fell back to the root inside the bundle,
+        and a bundle checked against its own root proves nothing: a one-leaf "tree" built from any text
+        at all returned True (session E review, item 8, 2026-09-24). To check only that a bundle is
+        self-consistent, say so: `verify_inclusion(b, b["root"])`."""
         from inspeximus.merkle import verify_inclusion as _vi
+        if not expected_root:
+            return False
         try:
-            root_hex = expected_root or bundle.get("root")
+            root_hex = expected_root
             return _vi(str(bundle["leaf"]).encode("utf-8"), int(bundle["index"]),
                        int(bundle["tree_size"]),
                        [bytes.fromhex(h) for h in bundle.get("audit_path", [])],

@@ -156,11 +156,22 @@ class CheckpointWitness:
 
     # -- state ---------------------------------------------------------------------------------
     def _load(self) -> dict:
+        # ONLY A MISSING FILE IS A FIRST RUN. Any read error used to return the empty state, so a
+        # corrupted state file reset every log to size 0, and the witness then cosigned a smaller tree
+        # that forks the one it had already cosigned. Measured 2026-09-24 (session E review, item 8).
+        # A witness that has lost its memory must stop signing, not start over.
         try:
             with open(self.state_path, encoding="utf-8") as fh:
-                return json.load(fh)
-        except Exception:                                        # noqa: BLE001 - a first run has no file
+                state = json.load(fh)
+        except FileNotFoundError:
             return {"kind": "inspeximus.witness-checkpoint/1", "logs": {}}
+        except Exception as exc:                                 # noqa: BLE001
+            raise Refused(500, "the witness state file cannot be read (%s); this witness signs "
+                               "nothing until it is restored" % type(exc).__name__)
+        if not isinstance(state, dict) or not isinstance(state.get("logs"), dict):
+            raise Refused(500, "the witness state file is not a witness state; this witness signs "
+                               "nothing until it is restored")
+        return state
 
     def _save(self, state: dict) -> None:
         parent = os.path.dirname(os.path.abspath(self.state_path))

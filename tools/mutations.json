@@ -3007,5 +3007,104 @@
   "tests": [
    "tests/test_verify_writes_sees_what_the_store_serves.py"
   ]
+ },
+ {
+  "name": "certificate: tombstones signed by two keys verify again",
+  "file": "inspeximus/core.py",
+  "old": "    if len(_tkeys) > 1:\n",
+  "new": "    if len(_tkeys) > 2:\n",
+  "tests": [
+   "tests/test_a_certificate_verifies_only_as_issued.py"
+  ]
+ },
+ {
+  "name": "certificate: a missing scope statement passes as not checked",
+  "file": "inspeximus/core.py",
+  "old": "    elif _scope_txt is None:\n",
+  "new": "    elif _scope_txt is None and False:\n",
+  "tests": [
+   "tests/test_a_certificate_verifies_only_as_issued.py"
+  ]
+ },
+ {
+  "name": "certificate: a missing scope list is skipped",
+  "file": "inspeximus/core.py",
+  "old": "        if got is None:\n            checks[\"scope_intact\"] = False\n",
+  "new": "        if got is None:\n            continue\n",
+  "tests": [
+   "tests/test_a_certificate_verifies_only_as_issued.py"
+  ]
+ },
+ {
+  "name": "certificate: a failed issuer self_check no longer fails the verdict",
+  "file": "inspeximus/core.py",
+  "old": "             and checks[\"issuer_self_check\"] is not False\n",
+  "new": "\n",
+  "tests": [
+   "tests/test_a_certificate_verifies_only_as_issued.py"
+  ]
+ },
+ {
+  "name": "page: tombstones signed by two keys verify again",
+  "file": "docs/verify/index.html",
+  "old": "  if (tkeys.size > 1) {\n",
+  "new": "  if (tkeys.size > 2) {\n",
+  "tests": [
+   "tests/test_a_certificate_verifies_only_as_issued.py"
+  ]
+ },
+ {
+  "name": "page: a missing scope statement passes as not checked",
+  "file": "docs/verify/index.html",
+  "old": "  } else if (scopeTxt === null) {\n",
+  "new": "  } else if (scopeTxt === null && false) {\n",
+  "tests": [
+   "tests/test_a_certificate_verifies_only_as_issued.py"
+  ]
+ },
+ {
+  "name": "page: a failed issuer self_check no longer fails the verdict",
+  "file": "docs/verify/index.html",
+  "old": "                checks.issuer_self_check !== false &&\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_certificate_verifies_only_as_issued.py"
+  ]
+ },
+ {
+  "name": "ledger: an unreadable file is overwritten again",
+  "file": "inspeximus/actions.py",
+  "old": "        if getattr(self, \"_unreadable\", None):\n            raise RuntimeError(",
+  "new": "        if getattr(self, \"_unreadable\", None) and False:\n            raise RuntimeError(",
+  "tests": [
+   "tests/test_a_lost_history_is_not_a_fresh_start.py"
+  ]
+ },
+ {
+  "name": "ledger: verify is silent on an unreadable file",
+  "file": "inspeximus/actions.py",
+  "old": "            problems.insert(0, f\"the ledger file could not be read",
+  "new": "            (lambda *a: None)(0, f\"the ledger file could not be read",
+  "tests": [
+   "tests/test_a_lost_history_is_not_a_fresh_start.py"
+  ]
+ },
+ {
+  "name": "witness: an unreadable state is a first run again",
+  "file": "inspeximus/witness_checkpoint.py",
+  "old": "        except FileNotFoundError:\n",
+  "new": "        except Exception:\n",
+  "tests": [
+   "tests/test_a_lost_history_is_not_a_fresh_start.py"
+  ]
+ },
+ {
+  "name": "verify_inclusion: falls back to the bundle's own root again",
+  "file": "inspeximus/core.py",
+  "old": "        if not expected_root:\n            return False\n",
+  "new": "        if not expected_root:\n            expected_root = bundle.get(\"root\")\n",
+  "tests": [
+   "tests/test_a_lost_history_is_not_a_fresh_start.py"
+  ]
  }
 ]
