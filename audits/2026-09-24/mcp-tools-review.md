@@ -62,7 +62,7 @@ Tools: `remember`, `remember_decision`, `revert`, `route`, `observe`, `reopened`
     see any of alpha's values before the revert.
   - `route` writes every fact it remembers unstamped.
   - `resolve_reopened(decision="reaffirm_prior")` writes the reaffirmed value unstamped.
-- **Cause:** `mcp_server.py:570`, `:588` and `:622` pass no project. The library calls behind them take none:
+- **Cause:** `mcp_server.py:570`, `:588` and `:621` pass no project. The library calls behind them take none:
   `core.py:11343` (revert), `core.py:11646` (route) and `core.py:7706` (resolve_reopened). Other families
   report the same gap for other write tools: see the cross-family section.
 - **Tests:** `test_revert_keeps_the_restored_value_inside_the_project`, `test_route_stamps_the_server_project`,
