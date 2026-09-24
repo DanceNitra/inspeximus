@@ -23,7 +23,7 @@ and is not counted as the expected failure.
 **No library code was changed.** The branch adds this report, the harness and the tests.
 **Environment:** Python 3.11.15, mcp 1.30.0, pytest 9.1.1 with xdist.
 
-Status: families 1-4 are written up; the remaining families follow as they are finished.
+Status: families 1-5 are written up; the remaining families follow as they are finished.
 
 Severity: **High**: a guard is bypassed, data is wrongly written, erased or exposed, or a failure reads as
 success or as a clean result. **Medium**: a promised field or behaviour is wrong or missing. **Low**:
@@ -505,7 +505,7 @@ that `verify_writes` on that server rejects the chain ("signed by an unexpected 
 
 ### I6 (Medium): `audit_bundle` exports `verified: true` under the configured pin
 
-- **Description** (`mcp_server.py:1451-1452`): "Export a portable, CONTENT-FREE audit bundle of this store's
+- **Description** (`mcp_server.py:1455-1456`): "Export a portable, CONTENT-FREE audit bundle of this store's
   whole write + erasure history (EU AI Act Art. 12/19)". The bundle carries `governance.proof.verified`.
 - **What happens:** with the pin set, the exported bundle says `verified: true, expected_pubkey: null`. This
   is Medium because an auditor running `verify_audit_bundle(expected_pubkey=...)` still rejects the chain.
@@ -556,3 +556,170 @@ that `verify_writes` on that server rejects the chain ("signed by an unexpected 
 Read-only sweep: the store file, every sidecar, the key home and the temp directory were snapshotted around
 every tool in this family. This was done three times: with receipts, with receipts plus the action ledger,
 and with neither. Nothing changed except the documented one ledger entry per call, and I5.
+
+---
+
+## Family 5: the action ledger and its regulatory registers
+
+Tools: `actions_verify`, `record_oversight`, `record_disclosure`, `oversight_report`, `record_incident`,
+`incident_report`, `incident_reported`, `record_risk`, `risk_register`, `post_market_report`,
+`record_corrective_action`, `corrective_action_report`, `record_authority_request`, `decision_explanation`,
+`record_breach`, `breach_notified`, `breach_report`, `record_literacy`, `literacy_register`,
+`record_attestation`, `attestation_register`, `record_responsibilities`, `responsibilities_register`,
+`record_declaration`, `declaration_document`, `attest_documentation_retention`, `record_notice`,
+`notice_register`, `record_processing_role`, `processing_roles`, `record_qms`, `qms_register`,
+`archive_actions`, `record_lifecycle`, `export_audit_trail`, `action_timeline`, `timestamp_actions`,
+`attest_retention`, `actions_match`, `what_it_knew`, `technical_documentation`, `deployer_report`,
+`registration_export`. Also the recording done at the tool boundary (`_FreshFastMCP.tool`,
+`_action_ledger()`). Tests: `tests/test_mcp_review_ledger.py`: 38 strict xfails from 11 test functions,
+4 of them parametrized over tools.
+
+### L1 (High): 18 ledger-writing tools append unsigned entries to a signed ledger
+
+- **Description:**
+  - The module docstring (`mcp_server.py:22-24`): "INSPEXIMUS_ACTIONS 1 to record every tool call in the
+    ACTION LEDGER (<store>.actions.json): one signed, hash-chained entry per call".
+  - `_action_ledger()`: "Signed with the store's receipt key when it has one, else with the server's
+    writer key".
+  - Three tools say it outright: `post_market_report` ("signed into the ledger as a `monitoring` entry"),
+    `attest_documentation_retention` ("Append a signed statement") and `record_qms` ("the signed record").
+- **What happens:** with `INSPEXIMUS_ACTIONS=1` and a writer key, the boundary entries are signed. Each
+  of these tools writes its own entry without a signature and returns `signed: false`:
+  - every `record_*` tool
+  - `breach_notified` and `attest_documentation_retention`
+  - `post_market_report(actor=...)` and `decision_explanation(actor=...)`
+
+  From then on, `actions_verify` answers `ok: false` ("seq N: no signature") on every call, and
+  `post_market_report.chain` and `technical_documentation` report the failure too. The chain does not fork,
+  because `record()` re-reads the file first (`actions.py:498`). Only the signing is wrong.
+- **Cause:** each tool builds `ActionLedger(_MEM, actor=_ACTOR)` without a key. That constructor falls back
+  to `store._receipt_sk` (`actions.py:317`), which this server never has. Only `_LED` gets the writer key
+  (`mcp_server.py:373-374`). Once any entry is signed, verification requires every entry to be signed. See
+  X3.
+- **Test:** `test_a_ledger_writing_tool_keeps_a_signed_ledger_signed[<18 tools>]`
+
+### L2 (High): the documentation tools report `memory_chain_verified: true` against the configured pin
+
+- **Description:** the module docstring's `INSPEXIMUS_RECEIPT_PUBKEY` promise (`mcp_server.py:41-44`).
+  The three tools report "chain verification".
+- **What happens:** the receipts are signed with key A and the server is pinned to key B. `governance_report`
+  says the chain is not verified. `technical_documentation`, `deployer_report` and `registration_export`,
+  called with their defaults as a client would call them, say `memory_chain_verified: true`. So the Annex
+  IV, DPIA/FRIA and registration evidence all certify a foreign-signed chain.
+- **Cause:** `mcp_server.py:2172`, `:2191-2192` and `:2212-2213` pass `expected_pubkey` through instead of
+  `_pin(expected_pubkey)`. Fix note: the same argument also goes to the action ledger's `verify()`. That
+  ledger is signed with the writer key, not the receipt key, so a fix should pin only the memory side.
+- **Test:** `test_the_documentation_tools_honour_the_configured_receipt_pubkey[...]`
+
+### L3 (High): `actions_verify` passes a ledger it cannot read
+
+- **Description** (`mcp_server.py:1563-1566`): "Verify the ACTION LEDGER beside this store ... Recomputes
+  every hash, link and signature".
+- **What happens:** `<store>.actions.json` holds two incidents and is truncated to half its bytes. The tool
+  returns `{ok: true, entries: 0, problems: []}`. The offline `verify_file` on the same file says "cannot
+  read". Every register reads the same file as empty.
+- **Cause:** `ActionLedger._load` turns an unparseable or non-list file into `[]` (`actions.py:363-365`),
+  and an empty chain verifies.
+- **Test:** `test_actions_verify_does_not_pass_a_ledger_it_cannot_read`
+
+### L4 (High): a ledger write replaces a ledger it cannot read with a new chain
+
+- **Description:** `record_risk` (`mcp_server.py:1715`): "Append one entry to the risk register". The other
+  `record_*` tools "Record ... in the action ledger". `archive_actions`: "Nothing is deleted".
+- **What happens:** on the truncated ledger from L3, `record_risk` returns an ordinary success at
+  `seq: 0`. It rewrites the file from genesis with only the new entry, and the two incident records are
+  gone. With `INSPEXIMUS_ACTIONS=1`, the first call of any tool does the same through the boundary.
+- **Cause:** `_load` yields `[]` (`actions.py:363-365`). `record()` then numbers from genesis, and `_save()`
+  replaces the file (`actions.py:382-388`).
+- **Test:** `test_a_ledger_write_does_not_overwrite_a_ledger_it_cannot_read`
+
+### L5 (Medium): `operator_json` is refused whenever it is a JSON object string
+
+- **Description** (`mcp_server.py:2161`, and the same text in the other two tools): "`operator_json` is a
+  JSON object string with the provider's own fields".
+- **What happens:** `technical_documentation(operator_json='{"system_name": "Support agent"}')` through an
+  MCP session is an error: "operator_json: Input should be a valid string [input_type=dict]". The plain
+  Python function accepts the same string. No MCP client can supply operator fields, so every field stays
+  OPERATOR INPUT REQUIRED.
+- **Cause:** FastMCP decodes any string argument that parses as JSON when the parameter's annotation is not
+  exactly `str` (`mcp/server/fastmcp/utilities/func_metadata.py:179`, mcp 1.30.0). `operator_json: str |
+  None` (`mcp_server.py:2157, 2176, 2196`) therefore arrives as a dict and fails validation. The same
+  mechanism reaches other `str | None` parameters. `record_oversight(decision='{"amount": 100}')` is
+  refused. `record_lifecycle(note="null")` quietly stores no note.
+- **Test:** `test_the_documentation_tools_accept_operator_json_through_mcp[...]`
+
+### L6 (Medium): after `archive_actions`, three tools refuse entries that are still live
+
+- **Description:** `what_it_knew` (`mcp_server.py:2393`): "What the agent KNEW when it performed action
+  number `seq`". `actions_match` and `incident_report` make the same promise for a given seq.
+  `archive_actions`: "the chain verifies across the files".
+- **What happens:** after seqs 0-2 are archived, the live file holds seq 3 onwards. `what_it_knew(3)` and
+  `actions_match(3)` answer "no action #3; the ledger has 3 entries". `incident_report(4)` refuses an
+  incident that exists.
+- **Cause:** `if seq < 0 or seq >= len(led)` at `mcp_server.py:2148`, `:2386` and `:2398`. After rotation,
+  live seqs start at `base_seq`, so the live count is the wrong bound. The library's own lookups are
+  correct.
+- **Test:** `test_a_live_entry_is_found_after_the_ledger_was_rotated[...]`
+
+### L7 (Medium): `post_market_report` counts a reported incident twice and keeps it overdue
+
+- **Description** (`mcp_server.py:1748-1749`): "the Art. 72 post-market monitoring report ... incidents and
+  their clocks".
+- **What happens:** one serious incident, 30 days old, is followed by `incident_reported`.
+  `incident_report` and `oversight_report` treat it as closed. `post_market_report` says `{opened: 2,
+  by_severity: {serious: 2}, overdue: [0]}`.
+- **Cause:** `actions.py:816` counts the `incident:reported` follow-up as an incident. `actions.py:827-830`
+  reads `reported_ts` off the incident entry itself, instead of using `_reported_ts()` as the other two
+  reports do.
+- **Test:** `test_post_market_report_counts_a_reported_incident_once_and_not_overdue`
+
+### L8 (Medium): a risk that refers to an entry is not listed as referring to it
+
+- **Description:** `incident_report`: "later entries that refer to the incident". `corrective_action_report`:
+  "later entries that refer to it". `decision_explanation`: "the incidents, risks and corrective actions
+  that refer to it". `archive_actions`: "anything a kept entry refers to stay[s] live".
+- **What happens:** `record_risk(refers_to=[X])` is missing from all three reports, and `archive_actions`
+  archives X even though the kept risk refers to it.
+- **Cause:** the scans read `refers_to` only when it is a single dict, and otherwise treat `evidence` as the
+  list of references (`actions.py:925, 989, 1614, 1909`). A risk stores `refers_to` as a list and
+  `evidence` as free text.
+- **Tests:** `test_a_risk_that_refers_to_an_entry_is_listed_as_referring_to_it[...]`,
+  `test_archive_actions_keeps_live_what_a_kept_risk_refers_to`
+
+### L9 (Medium): a risk with free-text `evidence` breaks four tools
+
+- **Description:** the reports promise "The Art. 73 report skeleton for incident `seq`", "The Art. 20
+  record ..." and "The material for an Art. 86 explanation". `record_risk` takes `evidence: list[str]`,
+  documented as free references such as "a probe path, a receipt hash, a test name".
+- **What happens:** after one `record_risk(evidence=["probes/x.py"])`, `incident_report`,
+  `corrective_action_report` and `decision_explanation` raise `'str' object has no attribute 'get'` for
+  every earlier entry, and `archive_actions` raises the same error. The error is reported, but the reports
+  can no longer be produced.
+- **Cause:** the same scan lines as L8 call `.get("seq")` on each evidence string.
+- **Tests:** `test_a_risk_with_free_text_evidence_does_not_break_the_reports[...]`,
+  `test_archive_actions_rotates_past_a_risk_with_free_text_evidence`
+
+### Holds
+
+Every tool in the family was checked for its return shape, its validation and refusals, and read-only
+behaviour where it is described as read-only. What was checked:
+
+- **Refused as described:**
+  - A `refers_to` or `evidence` seq that does not exist.
+  - An unknown event, severity, measure, audience, practice or role.
+  - An Annex VII declaration without a notified body.
+  - A notification more than 72 h late without `reasons_for_delay`.
+  - `not_applicable` without a basis.
+  - A processor without a controller.
+  - Art. 14 without a source.
+  - A decommission without a disposition.
+- **Reports and exports:**
+  - Registers give the latest entry per id, with the counts each description lists (for example
+    `qms_register.overdue` and `attestation_register.missing`).
+  - `export_audit_trail` writes JSONL that passes `verify_jsonl`, with the 12 mandatory fields.
+  - `timestamp_actions` on an unreachable URL returns `{"error": "URLError ..."}` and writes nothing.
+- **Tool boundary** (with `INSPEXIMUS_ACTIONS=1`): one content-free `mcp:<tool>` entry per call. The
+  memory state is captured before the call. A raising tool gives a `status=error` entry together with
+  `isError`.
+- **Read-only:** `oversight_report`, `risk_register`, `breach_report` and the other reports change nothing
+  when the action ledger is off.
