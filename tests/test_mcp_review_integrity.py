@@ -91,9 +91,6 @@ def _disk_counts(store_path):
 
 
 # ── INSPEXIMUS_RECEIPT_PUBKEY: "the tamper-evidence tools" ─────────────────────────────────────────────
-@pytest.mark.xfail(reason="compliance_check: integrity_failed = 'the chain fails verify_writes'; with "
-                          "INSPEXIMUS_RECEIPT_PUBKEY set it ignores the pin and passes a foreign-signed chain",
-                   **XFAIL)
 def test_compliance_check_reports_integrity_failed_for_a_chain_the_configured_pin_rejects(server):
     """compliance_check: "violations include ... integrity_failed (Art.12/15)" -- documented in the library as
     "the receipt/tombstone chain fails verify_writes". Module docstring: INSPEXIMUS_RECEIPT_PUBKEY is the key
@@ -111,8 +108,6 @@ def test_compliance_check_reports_integrity_failed_for_a_chain_the_configured_pi
         f"the gate passed a chain the configured pin rejects: {res.data}"
 
 
-@pytest.mark.xfail(reason="compliance_report: INSPEXIMUS_RECEIPT_PUBKEY is not the default pin, so "
-                          "summary.integrity_verified is True over a foreign-signed chain", **XFAIL)
 def test_compliance_report_integrity_verdict_is_bound_to_the_configured_pin(server):
     """compliance_report: "EU AI Act AGENT-MEMORY compliance EVIDENCE ... with LIVE counts from this store and
     an honest per-control status". Module docstring: INSPEXIMUS_RECEIPT_PUBKEY pins "the tamper-evidence
@@ -126,9 +121,6 @@ def test_compliance_report_integrity_verdict_is_bound_to_the_configured_pin(serv
         "the evidence report certifies chain integrity for a chain the configured pin rejects"
 
 
-@pytest.mark.xfail(reason="audit_bundle: INSPEXIMUS_RECEIPT_PUBKEY is not the default pin, so the exported "
-                          "governance.proof says verified=True (expected_pubkey null) over a foreign-signed chain",
-                   **XFAIL)
 def test_audit_bundle_governance_verdict_is_bound_to_the_configured_pin(server):
     """audit_bundle: "Export a portable, CONTENT-FREE audit bundle of this store's whole write + erasure
     history (EU AI Act Art. 12/19)". The bundle carries `governance.proof.verified`; module docstring:
@@ -143,8 +135,6 @@ def test_audit_bundle_governance_verdict_is_bound_to_the_configured_pin(server):
         f"the exported bundle states verified=True under expected_pubkey={proof['expected_pubkey']!r}"
 
 
-@pytest.mark.xfail(reason="verify_attribution: a TAMPER-EVIDENCE tool that never consults "
-                          "INSPEXIMUS_RECEIPT_PUBKEY; ok=True over a relabel re-signed under a foreign key", **XFAIL)
 def test_verify_attribution_is_bound_to_the_configured_pin(server):
     """verify_attribution: "TAMPER-EVIDENCE for the attribution / poison-defense layer: are k, the influence
     budget, the influence gate, and the slash ledger internally consistent and unedited?" Module docstring:
@@ -160,9 +150,6 @@ def test_verify_attribution_is_bound_to_the_configured_pin(server):
 
 
 # ── verify_consistency ──────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="verify_consistency: 'nothing was rewritten, rolled back'; on a running server a "
-                          "store rolled back on disk reports consistent=True (the refresh merge re-adds "
-                          "the rolled-back entries in memory)", **XFAIL)
 def test_verify_consistency_on_a_running_server_catches_a_rollback_on_disk(server):
     """verify_consistency: "confirm the store is a consistent forward-extension of the witnessed anchor
     (nothing was rewritten, rolled back, or re-signed away)".
@@ -201,9 +188,6 @@ def test_verify_consistency_on_a_running_server_catches_a_rollback_on_disk(serve
 
 
 # ── admissibility_preconditions ─────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="admissibility_preconditions: receipt_chain_covers_records is described as 'if "
-                          "receipts are enabled and records exist, the chain is not empty'; that exact shape "
-                          "reports applicable=false, holds=true, ok=true", **XFAIL)
 def test_admissibility_receipt_invariant_fires_when_receipts_are_enabled_and_the_chain_is_empty(server):
     """admissibility_preconditions: "receipt_chain_covers_records   if receipts are enabled and records exist,
     the chain is not empty" ... "the third is the same shape found in our own 450-record store, which had
@@ -230,8 +214,6 @@ def test_admissibility_receipt_invariant_fires_when_receipts_are_enabled_and_the
 
 
 # ── audit_the_audits ────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="audit_the_audits: 'Corrupts a temporary COPY'; the copies of the store (content "
-                          "included) are left in the system temp dir and survive a later erasure", **XFAIL)
 def test_audit_the_audits_leaves_no_copy_of_the_store_behind(server, monkeypatch, tmp_path):
     """audit_the_audits: "Corrupts a temporary COPY (never your store) in ways each surface claims to detect".
 

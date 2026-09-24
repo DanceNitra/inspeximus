@@ -35,6 +35,18 @@ __all__ = ["annex_iv", "instructions_for_use", "registration_export", "render_ma
 
 OPERATOR_INPUT = "OPERATOR INPUT REQUIRED"
 
+#: `ledger_pubkey`'s default: the action ledger is checked against the same key as the memory chain,
+#: which is what a caller holding one key for both passes once. The two chains need not share a key:
+#: the MCP server pins the memory chain to INSPEXIMUS_RECEIPT_PUBKEY while its ledger is signed with
+#: the writer key, and pinning that ledger to the receipt key would fail an honest ledger. A sentinel
+#: rather than None, because None already means "the ledger is not pinned".
+SAME_KEY = object()
+
+
+def _ledger_key(expected_pubkey, ledger_pubkey):
+    return expected_pubkey if ledger_pubkey is SAME_KEY else ledger_pubkey
+
+
 #: The Annex IV fields the ledger cannot fill. Each maps to the Annex IV item it belongs to.
 OPERATOR_FIELDS = {
     "system_name": "1(a)", "intended_purpose": "1(a)", "provider": "1(a)", "system_version": "1(a)",
@@ -158,7 +170,8 @@ REGISTRATION_FIELDS = {
 
 
 def registration_export(store, ledger=None, operator: dict | None = None, section: str = "A",
-                        expected_pubkey: str | None = None, now: float | None = None) -> dict:
+                        expected_pubkey: str | None = None, now: float | None = None, *,
+                        ledger_pubkey=SAME_KEY) -> dict:
     """The Annex VIII fields for registration in the EU database (Art. 49), as a JSON document: the
     operator's fields where only the provider or deployer can write them, and from the evidence the
     traceability reference (A.4, B.4), the description of the information the system uses (A.6), the
@@ -208,7 +221,7 @@ def registration_export(store, ledger=None, operator: dict | None = None, sectio
     if section == "C":
         from .deployer import dpia_appendix, fria_appendix
         fria = fria_appendix(store, ledger, operator, expected_pubkey, now=now)
-        dpia = dpia_appendix(store, ledger, operator, expected_pubkey, now=now)
+        dpia = dpia_appendix(store, ledger, operator, expected_pubkey, now=now, ledger_pubkey=ledger_pubkey)
         # C.4 is "a summary of the FINDINGS" of the FRIA: those are the deployer's, so the summary is the
         # operator's text and the evidence block lists only what the assessment rested on, as counts
         out_fields["fria_summary"]["evidence"] = {
@@ -247,8 +260,12 @@ def registration_export(store, ledger=None, operator: dict | None = None, sectio
     return doc
 
 
-def annex_iv(store, ledger=None, operator: dict | None = None, expected_pubkey: str | None = None) -> dict:
-    """The Annex IV skeleton with the evidence sections filled from the store and ledger."""
+def annex_iv(store, ledger=None, operator: dict | None = None, expected_pubkey: str | None = None, *,
+             ledger_pubkey=SAME_KEY) -> dict:
+    """The Annex IV skeleton with the evidence sections filled from the store and ledger.
+
+    `expected_pubkey` pins the memory chain; `ledger_pubkey` pins the action ledger and defaults to the
+    same key."""
     operator = dict(operator or {})
     from .compliance import compliance_report
     rep = _safe(lambda: compliance_report(store, expected_pubkey))
@@ -257,7 +274,8 @@ def annex_iv(store, ledger=None, operator: dict | None = None, expected_pubkey: 
     gov = _safe(lambda: store.governance_report(expected_pubkey))
     anchor = _safe(lambda: store.anchor())
     oversight = _safe(lambda: ledger.oversight_report()) if ledger is not None else None
-    ledger_ok = _safe(lambda: ledger.verify(expected_pubkey=expected_pubkey)) if ledger is not None else None
+    ledger_ok = (_safe(lambda: ledger.verify(expected_pubkey=_ledger_key(expected_pubkey, ledger_pubkey)))
+                 if ledger is not None else None)
 
     def op(field):
         v = operator.get(field)
