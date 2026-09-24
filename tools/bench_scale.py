@@ -393,7 +393,10 @@ def worker_measure(a: dict) -> dict:
         m.flush()
     res["files_bytes_after"] = _files(os.path.dirname(path))
     res["phases"] = ph
-    res["peak_rss_mb"] = _maxrss_mb()
+    # The max of the per-phase peaks, not ru_maxrss: resetting VmHWM through clear_refs also resets
+    # what ru_maxrss reports, so after the first reset it only covers the phase since the last one.
+    peaks = [v["peak_rss_mb"] for v in ph.values() if v.get("peak_rss_mb") is not None]
+    res["peak_rss_mb"] = max(peaks) if peaks else _maxrss_mb()
     return res
 
 
@@ -716,7 +719,9 @@ def summarise(data: dict) -> dict:
         "verify_writes_s": lambda r: r["phases"]["verify_writes"]["seconds"],
         "forget_subject_s": lambda r: r["phases"]["forget_subject"]["seconds"],
         "erasure_certificate_s": lambda r: r["phases"]["erasure_certificate"]["seconds"],
-        "peak_rss_mb": lambda r: r["peak_rss_mb"],
+        # From the phases, so results written before the ru_maxrss fix render correctly too.
+        "peak_rss_mb": lambda r: max([v["peak_rss_mb"] for v in r["phases"].values()
+                                      if v.get("peak_rss_mb") is not None] or [r["peak_rss_mb"]]),
         "open_peak_rss_mb": lambda r: r["phases"]["open"]["peak_rss_mb"],
         "rss_after_open_mb": lambda r: r["phases"]["open"]["rss_after_mb"],
     }
