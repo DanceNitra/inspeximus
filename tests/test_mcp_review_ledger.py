@@ -217,9 +217,6 @@ def test_the_documentation_tools_honour_the_configured_receipt_pubkey(monkeypatc
 
 
 # ── operator_json through the MCP boundary ───────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="technical_documentation/deployer_report/registration_export: '`operator_json` is a "
-                          "JSON object string'; FastMCP pre-parses any JSON string for a `str | None` "
-                          "parameter, so every JSON object string is refused by argument validation", **XFAIL)
 @pytest.mark.parametrize("tool,args", _DOC_TOOLS, ids=[t[0] for t in _DOC_TOOLS])
 def test_the_documentation_tools_accept_operator_json_through_mcp(monkeypatch, tmp_path, tool, args):
     """technical_documentation: "`operator_json` is a JSON object string with the provider's own fields."
@@ -244,9 +241,6 @@ def test_the_documentation_tools_accept_operator_json_through_mcp(monkeypatch, t
 _SEQ_TOOLS = ["what_it_knew", "actions_match", "incident_report"]
 
 
-@pytest.mark.xfail(reason="what_it_knew/actions_match/incident_report: an entry in the live ledger is refused "
-                          "as 'no entry #N' once archive_actions has rotated the ledger (bounds checked "
-                          "against len(led), not against the live seq range)", **XFAIL)
 @pytest.mark.parametrize("tool", _SEQ_TOOLS)
 def test_a_live_entry_is_found_after_the_ledger_was_rotated(monkeypatch, tmp_path, tool):
     """what_it_knew: "What the agent KNEW when it performed action number `seq` in the action ledger".
@@ -280,9 +274,6 @@ def test_a_live_entry_is_found_after_the_ledger_was_rotated(monkeypatch, tmp_pat
 
 
 # ── post_market_report after incident_reported ───────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="post_market_report: 'incidents and their clocks'; an incident closed by "
-                          "incident_reported is still listed overdue, and the report entry is counted as a "
-                          "second incident opened", **XFAIL)
 def test_post_market_report_counts_a_reported_incident_once_and_not_overdue(monkeypatch, tmp_path):
     """post_market_report: "The Art. 72 post-market monitoring report for one period, from the ledgers: ...
     incidents and their clocks". incident_reported: "A later entry that names the incident".
@@ -325,9 +316,6 @@ def _referring_seqs(tool, doc):
 _REF_TOOLS = ["incident_report", "corrective_action_report", "decision_explanation"]
 
 
-@pytest.mark.xfail(reason="incident_report/corrective_action_report/decision_explanation: 'later entries that "
-                          "refer to it' / 'the ... risks ... that refer to it'; a risk's list-valued refers_to "
-                          "is never read, so a risk that refers to the entry is left out", **XFAIL)
 @pytest.mark.parametrize("tool", _REF_TOOLS)
 def test_a_risk_that_refers_to_an_entry_is_listed_as_referring_to_it(monkeypatch, tmp_path, tool):
     """incident_report: "later entries that refer to the incident". corrective_action_report: "the evidence
@@ -350,9 +338,6 @@ def test_a_risk_that_refers_to_an_entry_is_listed_as_referring_to_it(monkeypatch
         f"{tool}({target}) lists {_referring_seqs(tool, doc)} as referring to it; the risk at seq {risk} refers to it"
 
 
-@pytest.mark.xfail(reason="incident_report/corrective_action_report/decision_explanation: a later risk with "
-                          "free-text `evidence` (as record_risk documents it) makes the report raise "
-                          "AttributeError for every earlier entry", **XFAIL)
 @pytest.mark.parametrize("tool", _REF_TOOLS)
 def test_a_risk_with_free_text_evidence_does_not_break_the_reports(monkeypatch, tmp_path, tool):
     """incident_report: "The Art. 73 report skeleton for incident `seq`". corrective_action_report: "The
@@ -375,8 +360,6 @@ def test_a_risk_with_free_text_evidence_does_not_break_the_reports(monkeypatch, 
         f"{tool}({target}) after a risk with evidence: {res.text[:200] if res.is_error else res.data}"
 
 
-@pytest.mark.xfail(reason="archive_actions: 'anything a kept entry refers to stay live'; an entry a kept risk "
-                          "refers to is archived (list-valued refers_to is not read)", **XFAIL)
 def test_archive_actions_keeps_live_what_a_kept_risk_refers_to(monkeypatch, tmp_path):
     """archive_actions: "Nothing is deleted and the chain verifies across the files; an open incident and
     anything a kept entry refers to stay live."
@@ -399,8 +382,6 @@ def test_archive_actions_keeps_live_what_a_kept_risk_refers_to(monkeypatch, tmp_
     assert 0 in live, f"the action the kept risk refers to was archived: live seqs {live}, rotation {arc}"
 
 
-@pytest.mark.xfail(reason="archive_actions: a kept risk with free-text `evidence` makes the rotation raise "
-                          "AttributeError instead of rotating", **XFAIL)
 def test_archive_actions_rotates_past_a_risk_with_free_text_evidence(monkeypatch, tmp_path):
     """archive_actions: "Rotate the action ledger: move entries older than `keep_days` into a signed archive
     file ... Returns what was archived".

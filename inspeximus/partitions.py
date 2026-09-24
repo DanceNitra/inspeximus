@@ -137,8 +137,15 @@ class Partitions:
         p[key] = int(p.get(key) or 0) + n
         self._save()
 
-    def _records(self, name: str) -> list[dict]:
-        return [r for r in getattr(self.store, "items", []) if _active(r) and _in(r, name)]
+    def _records(self, name: str, held: bool = False) -> list[dict]:
+        """The partition's ACTIVE records, or with `held=True` every record it still holds.
+
+        A keyed write inside a partition supersedes the partition's earlier value, and the superseded
+        record keeps its text and its partition tag. Closing and expiry walked the active records only,
+        so a context partition's superseded records survived its close and expired ones survived the
+        sweep, readable through history() (mcp-tools-review E1, E2). Erasure reaches every held record;
+        the cap still counts active ones, which is the working set it bounds."""
+        return [r for r in getattr(self.store, "items", []) if (held or _active(r)) and _in(r, name)]
 
     # ----------------------------------------------------------------- lifecycle
     def open(self, name: str, kind: str = "process", max_age_days: float | None = None,
@@ -183,7 +190,7 @@ class Partitions:
         for name, p in self._reg["partitions"].items():
             if p.get("closed_at"):
                 continue
-            live = sorted(self._records(name), key=lambda r: r.get("ts") or 0)
+            live = sorted(self._records(name, held=True), key=lambda r: r.get("ts") or 0)
             expired = []
             if p.get("max_age_days") is not None:
                 cutoff = now - p["max_age_days"] * 86400.0
@@ -191,7 +198,7 @@ class Partitions:
             over = []
             cap = p.get("max_records")
             if cap:
-                rest = [r for r in live if r not in expired]
+                rest = [r for r in live if r not in expired and _active(r)]
                 if len(rest) > cap:
                     over = rest[: len(rest) - cap]
             erased = 0
@@ -227,7 +234,7 @@ class Partitions:
             disposition = "erased" if p.get("delete_at_close") else "retained"
         if disposition not in DISPOSITIONS:
             raise ValueError(f"disposition must be one of {DISPOSITIONS}")
-        live = self._records(name)
+        live = self._records(name, held=True)
         erased = 0
         if disposition == "erased" and live:
             self.store.forget(ids=[r["id"] for r in live], basis=f"partition_close:{name}")
@@ -255,16 +262,19 @@ class Partitions:
         tagged = set()
         for name, p in self._reg["partitions"].items():
             live = self._records(name)
+            held = self._records(name, held=True)
             tagged |= {r["id"] for r in live}
             ages = [(now - (r.get("ts") or now)) / 86400.0 for r in live]
             past = 0
             if p.get("max_age_days") is not None:
-                past = sum(1 for a in ages if a > p["max_age_days"])
+                # Every HELD record past expiry, superseded ones included: the sweep erases them too.
+                past = sum(1 for r in held if (now - (r.get("ts") or now)) / 86400.0 > p["max_age_days"])
             over = max(0, len(live) - p["max_records"]) if p.get("max_records") else 0
             rows.append({
                 "name": name, "kind": p.get("kind"), "agent": p.get("agent"),
                 "max_age_days": p.get("max_age_days"), "max_records": p.get("max_records"),
-                "records": len(live), "oldest_age_days": round(max(ages), 3) if ages else None,
+                "records": len(live), "superseded_records": len(held) - len(live),
+                "oldest_age_days": round(max(ages), 3) if ages else None,
                 "past_expiry_now": past, "over_cap_now": over, "sweep_due": bool(past or over),
                 "expired_total": p.get("expired", 0), "evicted_total": p.get("evicted", 0),
                 "closed_at": p.get("closed_at"), "disposition": p.get("disposition"),

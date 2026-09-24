@@ -99,8 +99,6 @@ def test_remember_in_partition_stamps_the_server_project(monkeypatch, tmp_path):
 
 
 # ── close_partition / sweep_partitions ──────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="close_partition: 'A context partition erases its records'; a record of the "
-                          "partition that a later keyed write superseded survives the close", **XFAIL)
 def test_close_partition_erases_every_record_of_a_context_partition(server):
     """close_partition: "Close a partition when its process ends. A context partition erases its records
     (disposition erased)". open_partition: "a context partition erases its records at close".
@@ -122,8 +120,6 @@ def test_close_partition_erases_every_record_of_a_context_partition(server):
     assert not left, f"records of the closed context partition are still in the store: {left}"
 
 
-@pytest.mark.xfail(reason="sweep_partitions: 'records past max_age_days ... are hard-deleted'; a superseded "
-                          "partition record past its expiry is left in place", **XFAIL)
 def test_sweep_partitions_erases_every_expired_partition_record(server):
     """sweep_partitions: "Apply every open partition's expiry and cap now: records past max_age_days and
     beyond max_records are hard-deleted with a tombstone whose basis names the partition and the rule."
@@ -142,9 +138,6 @@ def test_sweep_partitions_erases_every_expired_partition_record(server):
 
 
 # ── open_partition ──────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="open_partition: re-opening an existing name with other rules echoes the requested "
-                          "kind/cap/expiry as if applied, while the partition keeps its original rules",
-                   **XFAIL)
 def test_open_partition_reports_the_rules_actually_in_force(server):
     """open_partition: "Open a memory partition: a named scope ... with a size cap and an expiry ... `kind`
     is context, process or agent" and "a context partition erases its records at close".
@@ -167,8 +160,6 @@ def test_open_partition_reports_the_rules_actually_in_force(server):
 
 
 # ── forget_subject ──────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="forget_subject: 'Returns a receipt (forgotten count, ids, scrubbed_links)'; the "
-                          "result has no scrubbed_links (the count of links scrubbed is dropped)", **XFAIL)
 def test_forget_subject_returns_scrubbed_links(server):
     """forget_subject: "delete every memory about `subject` AND scrub its id from survivors' links/
     supersession pointers ... Returns a receipt (forgotten count, ids, scrubbed_links) you can keep as
@@ -190,8 +181,6 @@ def test_forget_subject_returns_scrubbed_links(server):
 
 
 # ── pii_report ──────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="pii_report: 'What PII the store currently holds'; PII held in a superseded "
-                          "record is not counted, while forget_pii (its pair) erases it", **XFAIL)
 def test_pii_report_counts_pii_held_in_superseded_records(monkeypatch, tmp_path):
     """pii_report: "What PII the store currently holds, by type (emails, phones, cards, …) — a
     data-minimization / audit view. Read-only; pair with forget_pii to act on it."
@@ -316,9 +305,6 @@ def test_erasure_residue_an_unreadable_directory_is_not_clean(server, tmp_path, 
     assert r.get("ok") is False, f"a directory that could not be read produced a clean verdict: {r}"
 
 
-@pytest.mark.xfail(reason="erasure_residue: 'clean must never mean we did not look at that part'; a "
-                          "symlinked directory under root is not followed, not reported, and the verdict is "
-                          "ok=True", **XFAIL)
 def test_erasure_residue_a_symlinked_directory_is_not_clean(server, tmp_path):
     """erasure_residue: "A file it could not read makes the verdict False: "clean" must never mean "we did
     not look at that part"."

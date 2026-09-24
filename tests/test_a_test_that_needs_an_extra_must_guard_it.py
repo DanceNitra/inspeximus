@@ -47,6 +47,7 @@ except ModuleNotFoundError:               # pragma: no cover - older interpreter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TESTS = os.path.join(ROOT, "tests")
 IMPORT = re.compile(r"^\s*(?:from|import)\s+([A-Za-z_][A-Za-z0-9_.]*)", re.M)
+MODULE_SCOPE_IMPORT = re.compile(r"^(?:from|import)\s+([A-Za-z_][A-Za-z0-9_.]*)", re.M)
 
 
 def _ci_installs():
@@ -128,11 +129,18 @@ def test_the_carrier_set_names_a_module_we_actually_ship():
 @pytest.mark.parametrize("name", sorted(f for f in os.listdir(TESTS) if f.endswith(".py")))
 def test_an_unguarded_extra_import_would_error_on_collection(name):
     text = io.open(os.path.join(TESTS, name), encoding="utf-8", errors="replace").read()
-    tops = {m.split(".")[0] for m in IMPORT.findall(text)}
+    # A HELPER PYTEST NEVER COLLECTS fails only through what it imports at MODULE scope: it is loaded
+    # by the test files that import it, and an import inside one of its functions runs when that
+    # function is called, after the importing file's own importorskip. tests/_mcp_review.py imports
+    # the MCP SDK inside `call()` for exactly that reason, and every file that uses it guards first.
+    # A collected file (test_*.py, conftest.py) keeps the stricter reading below.
+    collected = name.startswith("test_") or name == "conftest.py"
+    pattern = IMPORT if collected else MODULE_SCOPE_IMPORT
+    tops = {m.split(".")[0] for m in pattern.findall(text)}
     needs = sorted(tops & _must_guard())
     # INDIRECT, through one of our own modules that carries the extra. Reported under the extra's
     # name, because that is what the reader has to guard against and what the failure will say.
-    imported = set(IMPORT.findall(text))
+    imported = set(pattern.findall(text))
     for mod, extras in _first_party_carriers().items():
         tail = mod.split(".")[-1]
         if mod in imported or ("from inspeximus import %s" % tail) in text:

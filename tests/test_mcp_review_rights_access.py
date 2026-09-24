@@ -107,8 +107,6 @@ def test_rectify_subject_stamps_the_servers_project_scope(server):
 
 
 # ── record_objection ────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="record_objection: 'From this call on, recall withholds every record whose source "
-                          "resolves to subject'; a second server on the same store keeps serving them", **XFAIL)
 def test_record_objection_is_honoured_by_every_server_on_the_store(server):
     """record_objection: "GDPR Art. 21: record the subject's objection and stop serving their records. From
     this call on, recall withholds every record whose source resolves to `subject`, including later
@@ -132,8 +130,6 @@ def test_record_objection_is_honoured_by_every_server_on_the_store(server):
         "a standing Art. 21 objection on this store, and this server's recall still serves the subject's record"
 
 
-@pytest.mark.xfail(reason="record_objection: 'stop serving their records'; memory_index and verify_claim still "
-                          "serve the text of a record the objection withholds from recall", **XFAIL)
 @pytest.mark.parametrize("tool", ["memory_index", "verify_claim"])
 def test_record_objection_stops_serving_the_subject_outside_recall(server, tool):
     """record_objection: "GDPR Art. 21: record the subject's objection and stop serving their records. From
@@ -215,9 +211,6 @@ def test_recall_as_honours_the_servers_project_scope(server):
 
 
 # ── subscribe_memory_event / poll_memory_events ─────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="subscribe_memory_event: 'call poll_memory_events with this since_seq (and event_type) "
-                          "to receive everything published after this moment'; the default event_type '*' matches "
-                          "no event, so the poll is empty forever", **XFAIL)
 def test_subscribe_memory_event_default_cursor_receives_the_later_events(server):
     """subscribe_memory_event: "Start a tail: returns the cursor to poll from ({event_type, since_seq}) ...
     call `poll_memory_events` with this `since_seq` (and `event_type`) to receive everything published
@@ -238,8 +231,6 @@ def test_subscribe_memory_event_default_cursor_receives_the_later_events(server)
         f"polling the cursor subscribe_memory_event returned ({sub}) gave {got}"
 
 
-@pytest.mark.xfail(reason="poll_memory_events: 'What changed in the store since since_seq'; on a JSON-format "
-                          "store it answers {events: [], tip: 0} after writes, with no error or note", **XFAIL)
 def test_poll_memory_events_on_a_json_store_does_not_read_as_no_changes(server):
     """poll_memory_events: "What changed in the store since `since_seq`, from the `memory_events` table the
     row writer appends to ... Another process's write is visible on the next call."

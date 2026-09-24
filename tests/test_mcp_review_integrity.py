@@ -160,9 +160,6 @@ def test_verify_attribution_is_bound_to_the_configured_pin(server):
 
 
 # ── verify_consistency ──────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="verify_consistency: 'nothing was rewritten, rolled back'; on a running server a "
-                          "store rolled back on disk reports consistent=True (the refresh merge re-adds "
-                          "the rolled-back entries in memory)", **XFAIL)
 def test_verify_consistency_on_a_running_server_catches_a_rollback_on_disk(server):
     """verify_consistency: "confirm the store is a consistent forward-extension of the witnessed anchor
     (nothing was rewritten, rolled back, or re-signed away)".
