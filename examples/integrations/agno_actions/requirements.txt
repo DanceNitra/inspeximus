@@ -1,0 +1,6 @@
+# The agno version this example and its tests were run against. test_agno_actions.py fails when the
+# installed agno is a different one, so a green run always means this version.
+agno==3.0.11
+# Ed25519 signing of the ledger and the store's write receipts.
+cryptography>=42
+# inspeximus itself comes from this checkout: pip install -e . from the repository root.

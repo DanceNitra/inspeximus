@@ -114,6 +114,11 @@ of a user's turns with a signed, content-free deletion tombstone (`session.forge
 **tamper-evident** history (`store.verify_writes()` with receipts enabled). Receipt:
 `probes/inspeximus_session_adapter_probe.py` (11/11). Adapters live under `inspeximus.integrations` (opt-in extras).
 
+**Every tool call in the action ledger:** [examples/integrations/openai_agents](../examples/integrations/openai_agents/)
+records each tool call of an Agents SDK run, with what it was based on, in the signed action ledger through
+`RunHooks`; `verify_ledger.py` checks the run offline and fails on a one-byte edit. Tested against
+openai-agents 0.22.3.
+
 ### Current-truth memory for AutoGen: `InspeximusMemory` (0.7.0+)
 `inspeximus.integrations.autogen.InspeximusMemory` implements AutoGen's [`Memory`](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memory.html)
 protocol (`add`/`query`/`update_context`/`clear`/`close`) — and here inspeximus's value is not incidental. Unlike a
@@ -269,6 +274,11 @@ an `extractor=` so plain `save()` calls auto-key. Duck-typed: CrewAI is matched 
 imported, so the zero-dependency core is untouched (`import inspeximus` pulls nothing). Receipt:
 `probes/inspeximus_crewai_adapter_probe.py` (6/6, incl. "corrected value not returned").
 
+**Every tool call in the action ledger:** [examples/integrations/crewai](../examples/integrations/crewai/)
+runs a crew on inspeximus memory and records each tool call, with what the agent knew when it made it, in
+the signed action ledger; `verify_ledger.py` checks the run offline and fails on a one-byte edit. Tested
+against crewai 1.15.22.
+
 ### Memory provider for Hermes Agent: `InspeximusMemoryProvider` (2.27.2+)
 
 Hermes Agent selects one external memory provider by name in `memory.provider`. inspeximus publishes
@@ -303,6 +313,12 @@ directory beside the package and this one is a single module: `hermes inspeximus
 description in the provider list. The dashboard config panel is unaffected; it is built from
 `get_config_schema()`. `probes/does_the_installed_hermes_actually_load_our_provider.py` drives the
 installed host's real loader and records its commit, so a breakage in a later Hermes can be dated.
+
+### Action receipts for agno: every tool call in the ledger
+[examples/integrations/agno_actions](../examples/integrations/agno_actions/) puts one tool hook on an agno
+agent that writes each call into the signed action ledger, with the memory it recalled before acting. The
+run corrects a fact between two calls, so the ledger shows two actions based on two different values;
+`verify.py` checks the run offline and fails on a one-byte edit. Tested against agno 3.0.11.
 
 ### Make the governance layer key itself over free text: the `extractor` hook (0.7.5+)
 inspeximus's supersession, `echo_guard`, `check_conflict`, and `forget_subject` all key on the `(key, object)` of a
