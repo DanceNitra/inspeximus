@@ -44,7 +44,7 @@ def test_the_sidecar_holds_exactly_the_chain_in_memory():
 
 def test_a_sidecar_an_older_version_wrote_opens_verifies_and_extends():
     p, m = _store()
-    old = json.dumps(m._receipts, indent=2, ensure_ascii=False)           # what <= 3.9.2 wrote
+    old = json.dumps(m._receipts, indent=2, ensure_ascii=False)           # what <= 3.9.3 wrote
     with open(_sidecar(p), "w", encoding="utf-8") as fh:
         fh.write(old)
     again = Inspeximus(path=p, receipts=True)
