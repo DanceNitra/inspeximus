@@ -134,7 +134,7 @@ jobs:
       - name: run the page against the Python verifiers
         env:
           VERIFIER_PAGE_REQUIRED: "1"
-        run: python -m pytest tests/test_verifier_page.py -n 0 -q -rs
+        run: python -m pytest tests/test_verifier_page.py tests/test_verifier_page_adversarial.py -n 0 -q -rs
 
   # THE FULL SUITE, IN FOUR PARALLEL SHARDS. One job ran all of it in 10 to 15 minutes, and a release
   # waited on it twice (here and again in release.yml). `--shard i/4` (tests/conftest.py) splits the

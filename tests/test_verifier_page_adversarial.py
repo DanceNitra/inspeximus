@@ -10,10 +10,11 @@ here, named in the table. Two kinds of test:
     signature from another key, empty and huge input, and the network policy. The page and the
     Python verifier agree on every one of them today, and these tests keep it that way.
 
-  * FINDINGS (xfail, strict, AssertionError only). Each asserts what the page SHOULD do and fails
-    today because it does not. When a fix lands the test passes, strict xfail turns that into a
-    failure, and the marker comes off. Preconditions use pytest.fail, not assert, so a broken
-    precondition fails the run instead of hiding inside the expected failure.
+  * FINDINGS F1 to F8. Each asserts what the page SHOULD do. They were written as strict xfails at
+    6117486 and every one is fixed: F1 to F6 and F8 on the page, F7 in inspeximus 3.9.1 and on the
+    page, I1 in 3.9.1's CLI. They now run as plain tests. `finding()` stays for the next one: mark it,
+    fix it, remove the mark. Preconditions use pytest.fail, not assert, so a broken precondition fails
+    the run instead of hiding inside an expected failure.
 
 The oracle is the Python verifier, exactly as in tests/test_verifier_page.py, whose helpers and
 fixtures this module reuses. Browser tests need Playwright and a Chromium; set
@@ -728,7 +729,6 @@ def test_F8_a_nan_inside_a_list_scope_is_cannot_verify(page):
 # ═══ SHARED WITH THE CLI: the page matches Python, and Python is where the gap is ═══════════════════
 
 @GROUP
-@finding("F7", "a certificate's PARTIALLY SIGNED is a note, where a bundle's is a failure")
 def test_F7_an_unsigned_tombstone_appended_without_the_key_is_not_valid(page, documents):
     cert = copy.deepcopy(documents["cert-unscoped"])
     _require(all(t.get("sig") for t in cert["tombstones"]), "a fully signed certificate")
@@ -757,14 +757,14 @@ def test_F7_a_tail_trimmed_and_reanchored_without_the_key_is_valid_in_both(page,
     _agree(page, {"trimmed": dumps(cert)}, {"trimmed": "VALID"})
 
 
-def test_I1_the_cli_prints_a_traceback_where_the_function_returns_invalid(documents, tmp_path):
-    """INFO. The page's oracle is verify_erasure_certificate(); the CLI then prints the problems, and
-    a problem that quotes a lone surrogate kills the print. The page says INVALID; the CLI prints a
-    traceback and no VERDICT line (exit 1 either way)."""
+def test_I1_the_cli_prints_a_verdict_where_a_problem_quotes_a_lone_surrogate(documents, tmp_path):
+    """Was INFO: the CLI printed a traceback and no verdict when a problem quoted a lone surrogate, on a
+    UTF-8 console. Fixed in inspeximus 3.9.1 (the console guard covers UTF-8 too), so the CLI now
+    agrees with the function and the page: FAIL."""
     cert = copy.deepcopy(documents["cert-ascii"])
     cert["count"] = "\ud800"
     assert python_verdict(json.dumps(cert)) == "INVALID"
-    assert _cli(tmp_path, "erasure-verify", cert) == "CRASH"
+    assert _cli(tmp_path, "erasure-verify", cert) == "FAIL"
 
 
 def test_I2_without_cryptography_the_cli_fails_every_signed_certificate(documents, monkeypatch):
