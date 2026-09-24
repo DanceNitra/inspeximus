@@ -1,0 +1,5 @@
+# The OpenAI Agents SDK, pinned: ledger_hooks.py leans on RunHooks, ToolContext and agents.testing as they
+# behave in exactly this version (measured 2026-09-24). Re-run the tests before moving the pin.
+openai-agents==0.22.3
+# inspeximus with Ed25519 signing: the store's receipts and the action ledger are both signed.
+inspeximus[crypto]

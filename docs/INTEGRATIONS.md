@@ -114,6 +114,11 @@ of a user's turns with a signed, content-free deletion tombstone (`session.forge
 **tamper-evident** history (`store.verify_writes()` with receipts enabled). Receipt:
 `probes/inspeximus_session_adapter_probe.py` (11/11). Adapters live under `inspeximus.integrations` (opt-in extras).
 
+**Every tool call in the action ledger:** [examples/integrations/openai_agents](../examples/integrations/openai_agents/)
+records each tool call of an Agents SDK run, with what it was based on, in the signed action ledger through
+`RunHooks`; `verify_ledger.py` checks the run offline and fails on a one-byte edit. Tested against
+openai-agents 0.22.3.
+
 ### Current-truth memory for AutoGen: `InspeximusMemory` (0.7.0+)
 `inspeximus.integrations.autogen.InspeximusMemory` implements AutoGen's [`Memory`](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memory.html)
 protocol (`add`/`query`/`update_context`/`clear`/`close`) — and here inspeximus's value is not incidental. Unlike a
