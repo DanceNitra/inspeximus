@@ -48,16 +48,39 @@ LEDGER = crew_mod.STORE_NAME + ".actions.json"
 # Loaded into the crew's subprocess as sitecustomize: every outbound connection attempt is logged and
 # refused. It writes a marker when it loads, so "no attempts" cannot be the result of a guard that
 # never ran.
+# Loopback is let through and logged apart: on Windows, asyncio builds its event loop's self-pipe with a
+# socketpair that connects to 127.0.0.1, so refusing loopback stopped crew.py before it did anything
+# (14 errors on Windows, none on Linux, where socketpair is native). Every other address is refused.
 NETWORK_GUARD = r'''
-import os, socket
+import ipaddress, os, socket
 _log = os.environ["NETWORK_GUARD_LOG"]
 open(_log + ".loaded", "w").close()
-def _deny(*a, **k):
-    with open(_log, "a") as f:
-        f.write(repr(a[1:]) + "\n")
+_real_connect, _real_connect_ex = socket.socket.connect, socket.socket.connect_ex
+def _is_loopback(addr):
+    try:
+        return isinstance(addr, tuple) and ipaddress.ip_address(addr[0]).is_loopback
+    except ValueError:
+        return False
+def _note(path, addr):
+    with open(path, "a") as f:
+        f.write(repr(addr) + "\n")
+def _connect(self, addr, *a, **k):
+    if _is_loopback(addr):
+        _note(_log + ".loopback", addr)
+        return _real_connect(self, addr, *a, **k)
+    _note(_log, addr)
     raise OSError("network disabled by the test")
-socket.socket.connect = _deny
-socket.socket.connect_ex = _deny
+def _connect_ex(self, addr, *a, **k):
+    if _is_loopback(addr):
+        _note(_log + ".loopback", addr)
+        return _real_connect_ex(self, addr, *a, **k)
+    _note(_log, addr)
+    raise OSError("network disabled by the test")
+def _deny(*a, **k):
+    _note(_log, a[:1])
+    raise OSError("network disabled by the test")
+socket.socket.connect = _connect
+socket.socket.connect_ex = _connect_ex
 socket.create_connection = _deny
 '''
 

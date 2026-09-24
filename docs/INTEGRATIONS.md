@@ -269,6 +269,11 @@ an `extractor=` so plain `save()` calls auto-key. Duck-typed: CrewAI is matched 
 imported, so the zero-dependency core is untouched (`import inspeximus` pulls nothing). Receipt:
 `probes/inspeximus_crewai_adapter_probe.py` (6/6, incl. "corrected value not returned").
 
+**Every tool call in the action ledger:** [examples/integrations/crewai](../examples/integrations/crewai/)
+runs a crew on inspeximus memory and records each tool call, with what the agent knew when it made it, in
+the signed action ledger; `verify_ledger.py` checks the run offline and fails on a one-byte edit. Tested
+against crewai 1.15.22.
+
 ### Memory provider for Hermes Agent: `InspeximusMemoryProvider` (2.27.2+)
 
 Hermes Agent selects one external memory provider by name in `memory.provider`. inspeximus publishes

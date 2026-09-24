@@ -92,6 +92,25 @@ jobs:
           name: time-to-first-success
           path: time-to-first-success.json
 
+  # CrewAI: the runnable example in examples/integrations/crewai, against the version it pins
+  # (crewai==1.15.22). It installs that requirements file and this checkout, then runs the example's own tests.
+  # The example's test fails when a different version is installed, so a green job means that version.
+  example-crewai:
+    name: CrewAI example (crewai==1.15.22)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned framework and this checkout
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r examples/integrations/crewai/requirements.txt pytest
+          pip install -e ".[crypto]"
+      - name: the example's tests
+        run: python -m pytest examples/integrations/crewai -q -rs -o addopts=""
+
   perf:
     # A REGRESSION GATE, not a benchmark -- our benchmark is RAMR. It compares WORK COUNTERS (atomic
     # writes, whole-store serializations) against perf/baseline.json, because wall-clock on a shared
