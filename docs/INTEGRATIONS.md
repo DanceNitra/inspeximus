@@ -309,6 +309,12 @@ description in the provider list. The dashboard config panel is unaffected; it i
 `get_config_schema()`. `probes/does_the_installed_hermes_actually_load_our_provider.py` drives the
 installed host's real loader and records its commit, so a breakage in a later Hermes can be dated.
 
+### Action receipts for agno: every tool call in the ledger
+[examples/integrations/agno_actions](../examples/integrations/agno_actions/) puts one tool hook on an agno
+agent that writes each call into the signed action ledger, with the memory it recalled before acting. The
+run corrects a fact between two calls, so the ledger shows two actions based on two different values;
+`verify.py` checks the run offline and fails on a one-byte edit. Tested against agno 3.0.11.
+
 ### Make the governance layer key itself over free text: the `extractor` hook (0.7.5+)
 inspeximus's supersession, `echo_guard`, `check_conflict`, and `forget_subject` all key on the `(key, object)` of a
 fact. That's great when you write structured facts, but a conversation `Session` or a chat turn is free text
