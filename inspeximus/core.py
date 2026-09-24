@@ -6354,6 +6354,27 @@ class Inspeximus:
                             f"(in-memory state has not reached {self._persist_error['path']})")
         prev = _GENESIS
         by_id = {it["id"]: it for it in self.items}
+        # ONE ID, ONE RECORD. `by_id` keeps the LAST record with an id, while current(), recall and
+        # history() serve the FIRST. So a copy of a record with its id, inserted ahead of the original
+        # with a different value, was served as current while this check compared the untouched
+        # original and reported clean. Measured 2026-09-24 on a JSON store: current() returned the
+        # forged value and verify_writes returned (True, []). Only the offline bundle caught it.
+        _id_count: dict = {}
+        for it in self.items:
+            _id_count[it["id"]] = _id_count.get(it["id"], 0) + 1
+        for _rid in sorted(k for k, n in _id_count.items() if n > 1):
+            problems.append(f"memory {_rid}: {_id_count[_rid]} records share this id, and the store "
+                            f"serves the first of them (inserted out of band)")
+        # AN ERASED RECORD MUST STAY ERASED. A tombstone accounts for a record that is missing, and this
+        # loop never asked the reverse: is a record that a tombstone names back in the store? Measured
+        # 2026-09-24: copy the store file aside, forget_subject(), copy the file back. The subject's
+        # record was on disk again and verify_writes returned (True, []), because its write receipt
+        # still matched it. Every legitimate path removes the record in the same call that emits its
+        # tombstone.
+        _tombed = {t.get("memory_id") for t in self._tombstones}
+        for _rid in sorted(k for k in _id_count if k in _tombed):
+            problems.append(f"memory {_rid}: a deletion tombstone says it was erased, and it is in the "
+                            f"store again (restored from a copy, or written back out of band)")
         for i, r in enumerate(self._receipts):
             # ONE definition, shared with anchor() and the offline bundle verifier -- see _chain_core.
             # `amends` must be inside the hash: it decides which fields a later receipt forgives, so an
@@ -6372,6 +6393,12 @@ class Inspeximus:
                         problems.append(f"receipt {i}: signed by an unexpected key")
                 except Exception:
                     problems.append(f"receipt {i}: invalid signature")
+            elif expected_pubkey and "sig" in r:
+                # SIGNED, BUT NOT CHECKABLE HERE. Without `cryptography` the signature is present and
+                # cannot be verified, and this said "unsigned", which sends an auditor looking for a
+                # missing signature instead of a missing package. Still a problem: nothing was checked.
+                problems.append(f"receipt {i}: signed, but the signature cannot be verified here "
+                                f"(no Ed25519 backend: pip install cryptography)")
             elif expected_pubkey:
                 problems.append(f"receipt {i}: unsigned, but a signature was required")
             cur = by_id.get(r["memory_id"])
@@ -6488,6 +6515,9 @@ class Inspeximus:
                         problems.append(f"tombstone {j}: signed by an unexpected key")
                 except Exception:
                     problems.append(f"tombstone {j}: invalid signature")
+            elif expected_pubkey and "sig" in t:
+                problems.append(f"tombstone {j}: signed, but the signature cannot be verified here "
+                                f"(no Ed25519 backend: pip install cryptography)")
             elif expected_pubkey:
                 problems.append(f"tombstone {j}: unsigned, but a signature was required")
             tprev = t.get("hash")
@@ -6554,7 +6584,20 @@ class Inspeximus:
                     f"{len(_chain) - _signed} of {len(_chain)} chain entries carry NO signature "
                     f"while {_signed} do. A chain signed in places is not signed: something without "
                     f"the key appended to it.")
-            elif _signed == 0 and require_signed:
+            # ONE CHAIN, ONE KEY, pinned or not. Unpinned, each signature was checked against the key
+            # it carries, so an entry signed by any key at all verified. Measured 2026-09-24: a tombstone
+            # signed with a second key, covering a record deleted out of band, returned (True, []), and
+            # so did a store written by two handles with two different keys, which the docstring of
+            # receipt_key_for() says is reported. With a pin, "signed by an unexpected key" already
+            # names each entry, so this speaks only when nothing is pinned.
+            _keys = sorted({r.get("pubkey") or "" for r in _chain if r.get("sig")})
+            if len(_keys) > 1 and not expected_pubkey:
+                problems.append(
+                    f"the chain is signed by {len(_keys)} different keys "
+                    f"({', '.join(k[:12] or '(none named)' for k in _keys)}). One store signs with one "
+                    f"key, so an entry signed by another was added by whoever holds that key. Pin the "
+                    f"key you trust with expected_pubkey= to see which entries it did not sign.")
+            if _signed == 0 and require_signed:
                 problems.append(
                     f"UNSIGNED: none of the {len(_chain)} chain entries carry a signature. The chain "
                     f"is internally consistent, which is not the same as attributable -- an editor "

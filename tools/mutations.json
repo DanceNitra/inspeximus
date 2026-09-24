@@ -2962,5 +2962,50 @@
   "tests": [
    "tests/test_readme_blocks_run.py"
   ]
+ },
+ {
+  "name": "verify_writes: two records with one id are no longer reported",
+  "file": "inspeximus/core.py",
+  "old": "        for _rid in sorted(k for k, n in _id_count.items() if n > 1):\n",
+  "new": "        for _rid in sorted(k for k, n in _id_count.items() if n > 2):\n",
+  "tests": [
+   "tests/test_verify_writes_sees_what_the_store_serves.py"
+  ]
+ },
+ {
+  "name": "verify_writes: an erased record back in the store is no longer reported",
+  "file": "inspeximus/core.py",
+  "old": "        for _rid in sorted(k for k in _id_count if k in _tombed):\n",
+  "new": "        for _rid in sorted(k for k in _id_count if k in _tombed and not k):\n",
+  "tests": [
+   "tests/test_verify_writes_sees_what_the_store_serves.py"
+  ]
+ },
+ {
+  "name": "verify_writes: a chain signed by two keys is no longer reported unpinned",
+  "file": "inspeximus/core.py",
+  "old": "            if len(_keys) > 1 and not expected_pubkey:\n",
+  "new": "            if len(_keys) > 2 and not expected_pubkey:\n",
+  "tests": [
+   "tests/test_verify_writes_sees_what_the_store_serves.py"
+  ]
+ },
+ {
+  "name": "verify_writes: a signed receipt with no backend is called unsigned again",
+  "file": "inspeximus/core.py",
+  "old": "            elif expected_pubkey and \"sig\" in r:\n",
+  "new": "            elif expected_pubkey and \"sig\" in r and False:\n",
+  "tests": [
+   "tests/test_verify_writes_sees_what_the_store_serves.py"
+  ]
+ },
+ {
+  "name": "verify_writes: a signed tombstone with no backend is called unsigned again",
+  "file": "inspeximus/core.py",
+  "old": "            elif expected_pubkey and \"sig\" in t:\n",
+  "new": "            elif expected_pubkey and \"sig\" in t and False:\n",
+  "tests": [
+   "tests/test_verify_writes_sees_what_the_store_serves.py"
+  ]
  }
 ]
