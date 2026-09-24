@@ -57,6 +57,10 @@ PAIRS = {
     }),
     "check_sources": ("check_sources", {}, {
         "resolver": "same: a callable. The default file reader is what MCP gets.",
+        # the tool passes the SERVER's scope (--project / INSPEXIMUS_PROJECT), as recall does. A
+        # per-call project would let a scoped server report on another project's records, which is
+        # what review finding M5 was; the docstring states the scoping.
+        "project": "the server's own project scope is passed; stated in the tool docstring",
     }),
 }
 

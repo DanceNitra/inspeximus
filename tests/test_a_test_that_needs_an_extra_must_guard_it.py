@@ -125,36 +125,37 @@ def test_the_carrier_set_names_a_module_we_actually_ship():
         "mcp_server imports the MCP SDK at module scope and must be listed: %s" % sorted(carriers))
 
 
-def _helper_carriers():
-    """Helpers in tests/ that import an extra: modules named with a leading underscore, which pytest
-    never collects.
+def _is_helper(name: str) -> bool:
+    """A module in tests/ that pytest never collects: not test_*.py and not conftest.py (which every
+    run imports). It cannot error on collection itself; a test file that imports it can."""
+    return not name.startswith("test_") and name != "conftest.py"
 
-    A helper cannot error at collection itself, because nothing collects it. What errors is the TEST
-    FILE that imports it without a guard, so a helper is checked the way a first-party carrier is:
-    through its importers. The first one was tests/_mcp_review.py, the MCP review harness
-    (audits/2026-09-24/mcp-tools-review.md). Checking it as a test file failed it for an import
-    inside a function, while every file that imports it calls importorskip("mcp") first.
-    """
+
+def _helper_carriers() -> dict:
+    """{helper module name -> extras it imports}, for the helpers in tests/ that import an extra.
+
+    Same argument as the first-party carriers: an import through a helper is the same failure with
+    one more step, so a helper that imports `mcp` makes every test file importing it need a guard."""
     guard, out = _must_guard(), {}
     for fn in sorted(os.listdir(TESTS)):
-        if not (fn.startswith("_") and fn.endswith(".py")):
-            continue
-        text = io.open(os.path.join(TESTS, fn), encoding="utf-8", errors="replace").read()
-        hit = sorted({m.split(".")[0] for m in IMPORT.findall(text)} & guard)
-        if hit:
-            out[fn[:-3]] = hit
+        if fn.endswith(".py") and _is_helper(fn):
+            text = io.open(os.path.join(TESTS, fn), encoding="utf-8", errors="replace").read()
+            hit = sorted({m.split(".")[0] for m in IMPORT.findall(text)} & guard)
+            if hit:
+                out[fn[:-3]] = hit
     return out
 
 
 def test_the_helper_carrier_set_names_the_mcp_review_harness():
-    """CONTROL, for the same reason as the one above: an empty set would pass every importer."""
-    assert _helper_carriers().get("_mcp_review") == ["mcp"], _helper_carriers()
+    """CONTROL for the helper half. tests/_mcp_review.py imports the MCP SDK; if the derivation stops
+    seeing it, its importers are checked for nothing and the skip above hides that."""
+    assert "mcp" in _helper_carriers().get("_mcp_review", []), _helper_carriers()
 
 
 @pytest.mark.parametrize("name", sorted(f for f in os.listdir(TESTS) if f.endswith(".py")))
 def test_an_unguarded_extra_import_would_error_on_collection(name):
-    if name.startswith("_"):
-        pytest.skip("a helper pytest never collects; the test files importing it are checked instead")
+    if _is_helper(name):
+        pytest.skip("not collected; the test files that import it are checked for its extras")
     text = io.open(os.path.join(TESTS, name), encoding="utf-8", errors="replace").read()
     tops = {m.split(".")[0] for m in IMPORT.findall(text)}
     needs = sorted(tops & _must_guard())
@@ -166,8 +167,8 @@ def test_an_unguarded_extra_import_would_error_on_collection(name):
         if mod in imported or ("from inspeximus import %s" % tail) in text:
             needs = sorted(set(needs) | {"%s (via %s)" % (e, mod) for e in extras})
     for mod, extras in _helper_carriers().items():
-        if mod in imported:
-            needs = sorted(set(needs) | {"%s (via %s)" % (e, mod) for e in extras})
+        if mod in {m.split(".")[0] for m in imported}:
+            needs = sorted(set(needs) | {"%s (via tests/%s.py)" % (e, mod) for e in extras})
     if not needs:
         pytest.skip("imports no extra that CI omits")
     assert "importorskip" in text, (
