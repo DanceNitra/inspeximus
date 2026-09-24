@@ -113,8 +113,9 @@ Signatures are Ed25519 over the 32 raw bytes of each entry's SHA-256 <code>hash<
   <li><b>Whose key signed it.</b> Signatures are checked against the key the file carries, which proves
       the signer held a key pair, not which one. Pin the key you got out of band with <code>--expected-pubkey</code>.</li>
   <li><b>An anchor or witness you trust.</b> <code>--expected-anchor</code>, <code>--witnesses</code> and
-      <code>--require-signed</code> are CLI-only. Without them, whoever holds the signing key can rewrite and re-sign
-      the whole history, and it will still verify.</li>
+      <code>--require-signed</code> are CLI-only. Without them, anyone can remove the newest tombstones and
+      recompute the anchor, with no key at all, and the shorter certificate still verifies. Whoever holds the
+      signing key can also rewrite and re-sign the whole history.</li>
 </ul>
 <p>When the page cannot reproduce the Python verifier exactly, it says <b>CANNOT VERIFY HERE</b> and never
 INVALID. That covers: a browser without Ed25519, and a signature over a small-order or mixed-order Ed25519
@@ -206,7 +207,9 @@ function parsePyJSON(s) {
   }
   const n = s.length;
   let i = 0;
-  const MAX_DEPTH = 200;
+  // Python's json.loads nests to about 1000 levels on 3.11 and about 3000 on 3.12. 900 is under both,
+  // so a document this page parses is one every supported Python parses too.
+  const MAX_DEPTH = 900;
   const ws = () => { while (i < n) { const c = s.charCodeAt(i); if (c === 32 || c === 9 || c === 10 || c === 13) i++; else break; } };
   const fail = (msg, at) => { throw new JSONError(msg + " (character " + at + ")"); };
 
@@ -265,7 +268,9 @@ function parsePyJSON(s) {
   }
 
   function value(depth) {
-    if (depth > MAX_DEPTH) throw new CannotVerify("the document is nested more than " + MAX_DEPTH + " levels deep");
+    if (depth > MAX_DEPTH) throw new CannotVerify("the document is nested more than " + MAX_DEPTH + " levels deep. " +
+      "How deep Python parses depends on its version (about 1000 levels on 3.11, 3000 on 3.12), so this " +
+      "page does not guess whether the CLI reaches a verdict here.");
     if (i >= n) fail("Expecting value", i);
     const c = s[i];
     if (c === '"') return str();
@@ -448,16 +453,67 @@ function pyEq(a, b) {
   if (typeof a === "string" || typeof b === "string") return a === b;
   if (Array.isArray(a) || Array.isArray(b)) {
     if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) if (!pyEq(a[i], b[i])) return false;
+    for (let i = 0; i < a.length; i++) if (!elemEq(a[i], b[i])) return false;
     return true;
   }
   if (a instanceof PyDict && b instanceof PyDict) {
     if (a.size !== b.size) return false;
-    for (const [k, v] of a.m) if (!b.has(k) || !pyEq(v, b.m.get(k))) return false;
+    for (const [k, v] of a.m) if (!b.has(k) || !elemEq(v, b.m.get(k))) return false;
     return true;
   }
   return false;
 }
+
+// json.loads returns ONE float('nan') object for every NaN it reads, and Python compares the members of
+// a list, a dict or a set by identity first. So nan == nan is False, while [nan] == [nan] is True and
+// nan in {nan} is True. pyEq above is the top-level ==; elemEq is == inside a container.
+const isNaNFloat = v => v instanceof PyFloat && Number.isNaN(v.v);
+function elemEq(a, b) { return (isNaNFloat(a) && isNaNFloat(b)) || pyEq(a, b); }
+
+// hash(): equal values share a key (1, 1.0 and True are one key, as in Python); unhashable raises.
+function hashKey(v) {
+  if (typeof v === "string") return "s" + v;
+  if (v === null) return "z";
+  if (isNaNFloat(v)) return "nan";
+  if (v instanceof PyFloat) {
+    if (Number.isInteger(v.v)) return "n" + BigInt(v.v).toString();
+    return "f" + pyFloatRepr(v.v);
+  }
+  if (isPyInt(v)) return "n" + toBig(v).toString();
+  crash("a list or an object is used where Python needs a hashable value (TypeError: unhashable type)");
+}
+// iter(): a list gives its items, a string its characters, an object its keys; anything else raises.
+function pyIter(v, what) {
+  if (Array.isArray(v)) return v;
+  if (typeof v === "string") return Array.from(v);
+  if (v instanceof PyDict) return v.keys();
+  crash("`" + what + "` is not iterable (TypeError)");
+}
+// set(): the first of each group of equal values is kept, as Python keeps the first.
+function pySet(values) {
+  const m = new Map();
+  for (const v of values) { const k = hashKey(v); if (!m.has(k)) m.set(k, v); }
+  return m;
+}
+// sorted(): strings by code point, numbers by value; mixing kinds, or ordering around a NaN, is where
+// Python raises or gives an order this page cannot promise to reproduce.
+function pySorted(values) {
+  const vs = Array.from(values);
+  if (vs.length < 2) return vs;
+  if (vs.every(v => typeof v === "string")) return vs.sort(cmpCodePoints);
+  if (vs.every(isNumeric)) {
+    if (vs.some(isNaNFloat)) throw new CannotVerify("a list to be sorted holds NaN next to other numbers; " +
+      "Python's order for it depends on the input order, so this page does not guess it. Use the CLI.");
+    return vs.sort((a, b) => numCmp(a, b));
+  }
+  crash("a list to be sorted mixes kinds Python cannot compare (TypeError: '<' not supported)");
+}
+function numCmp(a, b) {
+  if (!(a instanceof PyFloat) && !(b instanceof PyFloat)) { const x = toBig(a), y = toBig(b); return x < y ? -1 : x > y ? 1 : 0; }
+  const x = a instanceof PyFloat ? a.v : Number(toBig(a)), y = b instanceof PyFloat ? b.v : Number(toBig(b));
+  return x < y ? -1 : x > y ? 1 : 0;
+}
+const sameList = (a, b) => a.length === b.length && a.every((x, i) => elemEq(x, b[i]));
 
 // Where the Python verifier would stop with a TypeError/AttributeError, there is no verdict to match.
 function crash(what) {
@@ -471,13 +527,6 @@ function listOrEmpty(v, what) {
   if (!Array.isArray(v)) crash("`" + what + "` is not a list");
   return v;
 }
-function strList(v, what) {
-  if (!Array.isArray(v)) crash("`" + what + "` is not a list");
-  for (const x of v) if (typeof x !== "string") crash("`" + what + "` holds a value that is not a string");
-  return v;
-}
-const sortedUnique = arr => Array.from(new Set(arr)).sort(cmpCodePoints);
-const sameStrList = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
 const short = (v, n) => String(v).slice(0, n);
 function pyReprish(v) { return typeof v === "string" ? JSON.stringify(v) : canonText(v); }
 
@@ -684,7 +733,10 @@ async function verifyCertificate(cert) {
     }
     if (t.has("sig")) {
       const res = await sigCheck(pyOr(pyOr(get(t, "pubkey"), pub), ""), get(t, "sig"), get(t, "hash"));
-      if (res.unknown) {
+      if (res.unknown && truthy(pub) && truthy(get(t, "pubkey")) && !pyEq(get(t, "pubkey"), pub)) {
+        problems.push(`tombstone ${j}: signed by an unexpected key`);
+        sigsOk = false;
+      } else if (res.unknown) {
         unsettled.push(`tombstone ${j}: ${res.unknown}`);
       } else if (res !== "ok") {
         problems.push(`tombstone ${j}: invalid signature`);
@@ -706,9 +758,15 @@ async function verifyCertificate(cert) {
   } else {
     checks.signatures_valid = sigsOk;
     checks.signed = true;
+    // inspeximus 3.9.1: a chain signed in places fails, as verify_bundle's does. As a note it let a party
+    // without the key append an unsigned tombstone for an id that was never erased (review F7).
     if (signed.length !== toms.length) {
-      limits.push(`PARTIALLY SIGNED: ${toms.length - signed.length} of ${toms.length} tombstones carry ` +
-                  "no signature; the authorship evidence covers only part of the chain");
+      const unsignedIds = toms.filter(t => !truthy(get(t, "sig"))).map(t => get(t, "memory_id")).slice(0, 5);
+      problems.push(`PARTIALLY SIGNED: ${toms.length - signed.length} of ${toms.length} tombstones carry no ` +
+                    `signature (${canonText(unsignedIds)}); a chain that is signed in places is not signed, and an ` +
+                    "unsigned tombstone can be appended without the key");
+      sigsOk = false;
+      checks.signatures_valid = false;
     }
   }
 
@@ -747,42 +805,24 @@ async function verifyCertificate(cert) {
   checks.anchor_consistent = anchorOk;
   checks.anchor_witnessed = null;
 
-  const hashableRequestId = t => {
-    const r = get(t, "request_id");
-    if (Array.isArray(r) || r instanceof PyDict) crash("a tombstone's `request_id` is a list or object");
-    return r;
-  };
+  // verify_erasure_certificate: the scope, then sorted(set(...)) on both sides of each summary field.
   let scopeToms;
   if (cert.has("scoped_to")) {
     const sc = get(cert, "scoped_to");
     scopeToms = sc === null ? toms : toms.filter(t => pyEq(get(t, "request_id"), sc));
   } else {
-    const claimed = strList(pyOr(get(cert, "request_ids"), []), "request_ids");
-    scopeToms = claimed.length
-      ? toms.filter(t => { const r = hashableRequestId(t); return claimed.some(c => pyEq(c, r)) || r === null; })
+    const claimed = pySet(pyIter(pyOr(get(cert, "request_ids"), []), "request_ids"));
+    scopeToms = claimed.size
+      ? toms.filter(t => { const r = get(t, "request_id"); return claimed.has(hashKey(r)) || r === null; })
       : toms;
   }
   const claimedReqs = get(cert, "request_ids");
-  const idsOf = [];
-  for (const t of scopeToms) {
-    const mid = get(t, "memory_id");
-    if (!truthy(mid)) continue;
-    if (typeof mid !== "string") crash("a tombstone's `memory_id` is not a string");
-    idsOf.push(mid);
-  }
-  const derivedIds = sortedUnique(idsOf);
-  const reqsOf = [];
-  for (const t of scopeToms) {
-    const r = get(t, "request_id");
-    if (r === null) continue;
-    if (typeof r !== "string") crash("a tombstone's `request_id` is not a string");
-    reqsOf.push(r);
-  }
-  const derivedReqs = sortedUnique(reqsOf);
+  const derivedIds = pySorted(pySet(scopeToms.map(t => get(t, "memory_id")).filter(truthy)).values());
+  const derivedReqs = pySorted(pySet(scopeToms.map(t => get(t, "request_id")).filter(r => r !== null)).values());
   let summaryOk = true;
   const claimedIdsRaw = pyOr(get(cert, "erased_memory_ids"), []);
-  if (!sameStrList(sortedUnique(strList(claimedIdsRaw, "erased_memory_ids")), derivedIds)) {
-    problems.push(`erased_memory_ids does not match the tombstone chain (certificate claims ${claimedIdsRaw.length}, ` +
+  if (!sameList(pySorted(pySet(pyIter(claimedIdsRaw, "erased_memory_ids")).values()), derivedIds)) {
+    problems.push(`erased_memory_ids does not match the tombstone chain (certificate claims ${pyLen(claimedIdsRaw, "erased_memory_ids")}, ` +
                   `the chain shows ${derivedIds.length})`);
     summaryOk = false;
   }
@@ -791,9 +831,12 @@ async function verifyCertificate(cert) {
     problems.push(`count says ${canonText(count)} but the tombstone chain holds ${derivedIds.length}`);
     summaryOk = false;
   }
-  if (claimedReqs !== null && !sameStrList(sortedUnique(strList(claimedReqs, "request_ids")), derivedReqs)) {
-    problems.push(`request_ids names ${canonText(sortedUnique(claimedReqs))} but the chain holds ${canonText(derivedReqs)} for them`);
-    summaryOk = false;
+  if (claimedReqs !== null) {
+    const claimedSorted = pySorted(pySet(pyIter(claimedReqs, "request_ids")).values());
+    if (!sameList(claimedSorted, derivedReqs)) {
+      problems.push(`request_ids names ${canonText(claimedSorted)} but the chain holds ${canonText(derivedReqs)} for them`);
+      summaryOk = false;
+    }
   }
   checks.summary_derivable = summaryOk;
 
@@ -819,10 +862,7 @@ async function verifyCertificate(cert) {
   for (const [key, want] of [["scope_excludes", CONST.cert_scope_excludes], ["scope_covers", CONST.cert_scope_covers]]) {
     const got = get(cert, key);
     if (got === null) continue;
-    let asList;
-    if (Array.isArray(got)) asList = got;
-    else if (typeof got === "string") asList = Array.from(got);
-    else crash("`" + key + "` is not a list");
+    const asList = pyIter(got, key);        // list(got): items, characters, or an object's keys
     if (!pyEq(asList, want)) {
       checks.scope_intact = false;
       problems.push(`the \`${key}\` list does not match the one this library issues; an exclusion removed from a ` +
@@ -833,7 +873,8 @@ async function verifyCertificate(cert) {
   const valid = chainOk && sigsOk && checks.anchor_matches_tip && anchorOk && summaryOk &&
                 checks.scope_intact !== false && checks.attests_an_erasure;
   limits.push("NOT WITNESSED: no expected anchor, so the anchor was checked against itself only; a chain " +
-              "trimmed and re-anchored by the key holder passes. `inspeximus erasure-verify --expected-anchor` pins one.");
+              "trimmed at its tail and re-anchored passes, and that needs no key. " +
+              "`inspeximus erasure-verify --expected-anchor` pins one.");
   limits.push("ABSENCE NOT CHECKED: this page does not read the store. `inspeximus erasure-verify --store` " +
               "confirms every erased id is gone from it.");
   return { valid, unsettled, checks, problems, limits, count: derivedIds.length };
@@ -978,15 +1019,18 @@ async function verifyBundle(bundle) {
   }
   const byReq = get(gov, "by_request");
   if (byReq instanceof PyDict && isPyInt(govTotal)) {
-    let summed = 0n;
+    // sum(v.get("erased", 0) ...): exact while every count is an int, float arithmetic from the first float.
+    let summed = I(0);
     for (const v of byReq.m.values()) {
       if (!(v instanceof PyDict) || !v.has("erased")) continue;
       const e = v.get("erased");
-      if (!isPyInt(e)) crash("a `by_request[...].erased` count is not an integer");
-      summed += toBig(e);
+      if (!isNumeric(e)) crash("a `by_request[...].erased` count is not a number (TypeError in sum)");
+      summed = (summed instanceof PyFloat || e instanceof PyFloat)
+        ? new PyFloat((summed instanceof PyFloat ? summed.v : Number(toBig(summed))) + (e instanceof PyFloat ? e.v : Number(toBig(e))))
+        : new PyInt(toBig(summed) + toBig(e));
     }
-    if (summed !== toBig(govTotal)) {
-      bad(`governance.by_request accounts for ${summed} erasure(s) but erasures_total says ${canonText(govTotal)} ` +
+    if (!pyEq(summed, govTotal)) {
+      bad(`governance.by_request accounts for ${canonText(summed)} erasure(s) but erasures_total says ${canonText(govTotal)} ` +
           "-- the per-request breakdown does not add up to its own total");
     }
   }
@@ -1010,15 +1054,14 @@ async function verifyBundle(bundle) {
   const acts = listOrEmpty(get(bundle, "grants"), "grants");
   let live = 0;
   if (acts.length) {
-    const idOk = v => { if (v !== null && typeof v !== "string") crash("a record id is not a string"); return v; };
-    const receipted = new Set(wc.map(r => idOk(get(r, "memory_id"))));
+    const receipted = pySet(wc.map(r => get(r, "memory_id")));
     acts.forEach(a => mustDict(a, "a grant"));
-    const missing = acts.map(a => idOk(get(a, "id"))).filter(id => !receipted.has(id));
+    const missing = acts.map(a => get(a, "id")).filter(id => !receipted.has(hashKey(id)));
     const full = wc.length > 0 && isPyInt(nRecords) && toBig(nRecords) <= BigInt(wc.length);
     live = acts.filter(a => pyEq(get(a, "status"), "active") && pyEq(get(a, "state"), "granted")).length;
     if (missing.length && full) {
       bad(`${missing.length} access-control act(s) in this bundle are covered by NO write receipt ` +
-          `(${missing.slice(0, 5).join(", ")}${missing.length > 5 ? " ..." : ""}) -- the ACL summary claims a grant ` +
+          `(${missing.slice(0, 5).map(x => typeof x === "string" ? x : canonText(x)).join(", ")}${missing.length > 5 ? " ..." : ""}) -- the ACL summary claims a grant ` +
           "the store's own write chain never recorded");
     } else if (missing.length) {
       limits.push(`${missing.length} access-control act(s) predate this store's write receipts, so the ACL summary ` +
@@ -1047,6 +1090,7 @@ async function verifyBundle(bundle) {
 
 function detectKind(doc) {
   if (!(doc instanceof PyDict)) return null;
+  if ((doc.has("inspeximus_erasure_certificate") || doc.has("tombstones")) && (doc.has("kind") || doc.has("bundle_hash"))) return null;
   if (doc.has("inspeximus_erasure_certificate")) return "certificate";
   if (doc.has("kind") || doc.has("bundle_hash")) return "bundle";
   if (doc.has("tombstones")) return "certificate";
@@ -1158,6 +1202,7 @@ async function runFile(file) {
   let text;
   try { text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(buf); }
   catch (e) {
+    runId++;
     show({ verdict: "CANNOT", kind: null, problems: [], limits: [], checks: null,
            reason: "Cannot verify here, use the CLI: the file is not valid UTF-8, and the CLI reads it as UTF-8 and stops with an error.",
            cli: CLI.certificate + "\n" + CLI.bundle });
@@ -1168,7 +1213,8 @@ async function runFile(file) {
 }
 
 $("verify").addEventListener("click", () => run(input.value));
-$("clear").addEventListener("click", () => { input.value = ""; result.hidden = true; input.focus(); });
+input.addEventListener("input", () => { runId++; result.hidden = true; });
+$("clear").addEventListener("click", () => { runId++; input.value = ""; result.hidden = true; input.focus(); });
 $("file").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) runFile(f); e.target.value = ""; });
 const drop = $("drop");
 drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
