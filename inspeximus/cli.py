@@ -1644,7 +1644,8 @@ def main(argv=None):
             with open(a.prior_anchor, encoding="utf-8") as f:
                 prior = json.load(f)
         res = compliance_check(m, require_receipts=not a.allow_no_receipts,
-                               max_pii_age_days=a.max_pii_age_days, prior_anchor=prior)
+                               max_pii_age_days=a.max_pii_age_days, prior_anchor=prior,
+                               expected_pubkey=a.expected_pubkey)
         if a.json:
             _out(res, True)
         else:

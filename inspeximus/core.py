@@ -526,6 +526,25 @@ def _head_path(store_path) -> "str | None":
     return os.path.join(home, "inspeximus", "heads", f"{tag}.json")
 
 
+def _remove_scratch(scratch: str) -> "str | None":
+    """Delete a directory of store copies, and the chain heads those copies recorded outside it.
+
+    A receipted copy records its head under the key home (see `_head_path`), one small file per copy
+    path, so removing the directory alone still leaves a file per copy in the user's config directory.
+    Returns the directory if it is still there afterwards, so the caller can say so; None when it is
+    gone."""
+    for dirpath, _dirs, files in os.walk(scratch):
+        for f in files:
+            hp = _head_path(os.path.join(dirpath, f))
+            if hp and os.path.exists(hp):
+                try:
+                    os.remove(hp)
+                except OSError:
+                    pass
+    shutil.rmtree(scratch, ignore_errors=True)
+    return scratch if os.path.exists(scratch) else None
+
+
 def _guard_key_location(kdir, store_path) -> None:
     """Refuse a key directory that is inside the store's own directory.
 
@@ -4268,7 +4287,7 @@ class Inspeximus:
         self._record_head(force=True)
         return {"before": before, "after": self.read_head()}
 
-    def admissibility_preconditions(self) -> dict:
+    def admissibility_preconditions(self, receipts_configured: bool = False) -> dict:
         """Is this store in a state where an applicability question can be ANSWERED at all?
 
         `evaluate_applicability` asks whether a record is admissible now. This asks the question
@@ -4293,6 +4312,9 @@ class Inspeximus:
 
         A precondition that cannot apply is reported as `applicable: False`, never as holding. A
         store with no keys has not passed the key-agreement check; it has not taken it.
+
+        `receipts_configured=True` says receipts are this deployment's standing configuration rather
+        than how one reader happened to open the file (see invariant 3 below).
 
         Returns {"ok", "preconditions": [...], "limits": [...]}.
         """
@@ -4357,17 +4379,29 @@ class Inspeximus:
         # The store's own property is whether a receipt sidecar EXISTS. A store written without
         # receipts has not failed this precondition -- it never took it, whoever opens it and
         # however. A store that HAS a chain and left it empty or short has.
+        #
+        # A DEPLOYMENT THAT DECLARES RECEIPTS IS THE OTHER WAY IN, and it is not a reader's flag. The
+        # MCP server passes `receipts_configured` from INSPEXIMUS_RECEIPTS: every write it makes is
+        # receipted, and verify_writes on the same server already fails a store it serves with receipts
+        # on and an empty chain. Reporting `applicable: False` there left this surface the one tool on
+        # that server calling the state fine (review I7, audits/2026-09-24/mcp-tools-review.md). A probe
+        # that opens somebody's store with receipts=True does not pass it, so the regression above
+        # cannot come back through this argument.
         side = getattr(self, "_receipts_path", None)
         has_chain_file = bool(side) and Path(str(side)).exists()
+        declared = bool(receipts_configured) and bool(getattr(self, "receipts_enabled", False))
+        applies = has_chain_file or declared
         chain = len(getattr(self, "_receipts", []) or [])
         out.append({
             "id": "receipt_chain_covers_records",
-            "asserts": "if this store was WRITTEN with receipts, the chain covers its records",
-            "applicable": has_chain_file and bool(rows),
-            "holds": (not has_chain_file) or (not rows) or chain > 0,
+            "asserts": ("if receipts are enabled and records exist, the chain is not empty" if declared else
+                        "if this store was WRITTEN with receipts, the chain covers its records"),
+            "applicable": applies and bool(rows),
+            "holds": (not applies) or (not rows) or chain > 0,
             "records": len(rows), "chain_entries": chain,
             "chain_file_on_disk": has_chain_file,
             "opened_with_receipts": bool(getattr(self, "receipts_enabled", False)),
+            "receipts_configured": declared,
             "why_it_matters": "a chain that exists and is empty verifies nothing while reading as "
                               "enabled; a store that never had one has a different problem, and "
                               "conflating them lets the caller's own flag manufacture a finding",
@@ -4439,6 +4473,24 @@ class Inspeximus:
         Returns {"probes": [...], "noticed": n, "missed": [...], "control_failed": [...],
         "surfaces_covered": n, "surfaces_available": n, "limits": [...]}.
         """
+        # EVERY COPY IS MADE UNDER ONE SCRATCH DIRECTORY, AND THE DIRECTORY GOES IN `finally`. The
+        # copies used to be made with a bare mkdtemp() per probe and never removed: one call on a
+        # two-record store left 24 full copies of it in the system temp directory, where a later
+        # erasure of the live store does not reach, so the erased text outlived the erasure there
+        # (review I5, audits/2026-09-24/mcp-tools-review.md). An audit of the checks must not become
+        # the copy an erasure misses.
+        scratch = tempfile.mkdtemp(prefix="inspeximus-audit-")
+        try:
+            out = self._audit_the_audits_in(scratch, probes)
+        finally:
+            left = _remove_scratch(scratch)
+        if left:
+            out["limits"].append(f"the temporary copies this audit made could not all be removed: {left} "
+                                 f"still holds copies of this store, record text included. Delete it.")
+        return out
+
+    def _audit_the_audits_in(self, scratch: str, probes: list | None) -> dict:
+        """The body of `audit_the_audits`; every temporary directory it makes is under `scratch`."""
         import copy as _copy
         import json as _json
         import shutil as _shutil
@@ -4693,7 +4745,7 @@ class Inspeximus:
             needs = entry[5] if len(entry) > 5 else None
             fixture_shape = entry[6] if len(entry) > 6 else None
 
-            work = _tempfile.mkdtemp()
+            work = _tempfile.mkdtemp(dir=scratch)
             path = os.path.join(work, "copy.json")
             docs = os.path.join(work, "docs")
             os.makedirs(docs, exist_ok=True)
@@ -4738,7 +4790,7 @@ class Inspeximus:
                                             "defect in the surface and not a clean bill"})
                         continue
                     tier, tier_why, shape = "fixture", why_not, fixture_shape
-                    fwork = _tempfile.mkdtemp()
+                    fwork = _tempfile.mkdtemp(dir=scratch)
                     try:
                         path, fsrc = _build_fixture(fwork, shape)
                     except Exception as ex:                                # noqa: BLE001
@@ -4891,7 +4943,7 @@ class Inspeximus:
             """(store, why). A copy of the caller's store, or None with the reason it is not one."""
             if not getattr(self, "path", None):
                 return None, "this store has no file on disk to copy, so every subject here is built"
-            work = _tempfile.mkdtemp(prefix="seed_%s_" % tag)
+            work = _tempfile.mkdtemp(prefix="seed_%s_" % tag, dir=scratch)
             import glob as _g
             for f in _g.glob(str(self.path) + "*"):
                 try:
@@ -5026,7 +5078,7 @@ class Inspeximus:
                                 "tier": _seed_tier["tier"], "mode": "pure function",
                                 "why": "the surface does not exist on this class"})
                 continue
-            work = _tempfile.mkdtemp(prefix="pure_")
+            work = _tempfile.mkdtemp(prefix="pure_", dir=scratch)
             try:
                 good, bad = build(work)
             except Exception as ex:                                        # noqa: BLE001
@@ -5154,7 +5206,7 @@ class Inspeximus:
 
         for name, surface, make, counter, change, truth, c_delta, t_delta, catches in ledger_catalogue:
             _seed_tier["tier"], _seed_tier["why"] = "your store", ""
-            work = _tempfile.mkdtemp(prefix="ledger_")
+            work = _tempfile.mkdtemp(prefix="ledger_", dir=scratch)
             try:
                 ix = make(work)
                 c0, t0 = counter(ix), truth(ix)
@@ -5401,7 +5453,7 @@ class Inspeximus:
 
         for name, surface, probe, catches in argument_catalogue:
             _seed_tier["tier"], _seed_tier["why"] = "your store", ""
-            work = _tempfile.mkdtemp(prefix="arg_")
+            work = _tempfile.mkdtemp(prefix="arg_", dir=scratch)
             try:
                 good_clean, bad_clean = probe(work)
             except Exception as ex:                                        # noqa: BLE001
@@ -6702,7 +6754,7 @@ class Inspeximus:
             self._save(force=True)
         return {"recommitted": done, "skipped": skipped, "problems": []}
 
-    def verify_attribution(self) -> dict:
+    def verify_attribution(self, expected_pubkey: str | None = None) -> dict:
         """Tamper-evidence for the ATTRIBUTION FLOOR. k, the influence budget, the influence gate and slash are all
         keyed on a memory's canonical source id; a post-hoc RELABEL (rewriting a record's source, or stripping its
         inherited derived_from taint) therefore voids all of them at once, silently, with no inner layer to appeal
@@ -6725,6 +6777,10 @@ class Inspeximus:
            verify_attribution() only catches a relabel by an actor who can edit the store but NOT the .receipts
            sidecar (e.g. an out-of-band DB edit). For the 'loud' property to hold against a store-capable attacker
            you MUST pass receipt_key=... (Ed25519) with the key out of reach, or anchor the chain head externally.
+           And signed is not enough on its own: each signature is checked against the key its receipt CARRIES,
+           which a store-capable attacker who re-signs the chain under a key of their own also satisfies.
+           `expected_pubkey` binds the verdict to the key you expect, exactly as it does for verify_writes():
+           a receipt signed by any other key, or not signed at all, fails chain_ok and is named in `problems`.
         Requires receipts enabled at write time. The crypto is textbook (Haber-Stornetta 1991 hash-chains,
         Schneier-Kelsey 1998 tamper-evident logs); the only new bit is committing attribution so a source-keyed
         defense set's single silent failure (relabel) becomes detectable."""
@@ -6732,7 +6788,8 @@ class Inspeximus:
         # whether stored content was later LEGITIMATELY mutated (e.g. slash changes mtype) — that is the relabeled
         # question below, not a log-integrity failure.
         chain_ok, prev = True, _GENESIS
-        for r in self._receipts:
+        key_problems: list[str] = []
+        for i, r in enumerate(self._receipts):
             # THE FIFTH SITE, and it was already WRONG. A hand-written copy of the write preimage,
             # frozen at the pre-1.68.0 shape, so it missed `amends` (1.68.0) and `amend_reason`
             # (2.10.0) -- the drift `_chain_core`'s own docstring records as "four definitions of one
@@ -6747,8 +6804,14 @@ class Inspeximus:
                 try:
                     _Ed25519PK.from_public_bytes(bytes.fromhex(r["pubkey"])).verify(
                         bytes.fromhex(r["sig"]), bytes.fromhex(r["hash"]))
+                    if expected_pubkey and r.get("pubkey") != expected_pubkey:
+                        chain_ok = False
+                        key_problems.append(f"receipt {i}: signed by an unexpected key")
                 except Exception:
                     chain_ok = False
+            elif expected_pubkey:
+                chain_ok = False
+                key_problems.append(f"receipt {i}: unsigned, but a signature was required")
             prev = r.get("hash")
         by_id = {it["id"]: it for it in self.items}
         committed = {}                         # latest committed attribution hash per memory id (None if pre-attrib)
@@ -6773,7 +6836,7 @@ class Inspeximus:
             if cur.get("status") == "active" and mid not in committed:
                 uncommitted.append(mid)
 
-        problems: list[str] = []
+        problems: list[str] = list(key_problems)
         if not self.receipts_enabled and self.items:
             # The sibling one call site over, `verify_writes`, has said exactly this since 1.62.0. Silence
             # here is how the same store answered False there and True here in the same breath.
@@ -10906,21 +10969,58 @@ class Inspeximus:
         auditor runs against an anchor they recorded out of band. Re-derives each chain's tip over its first
         prior_anchor['n_*'] entries and confirms it equals the anchored tip, AND that the log did not shrink.
         A mismatch means the operator REWROTE or ROLLED BACK history after the anchor — caught even though they
-        hold receipt_key and the rewrite verifies internally. Returns (ok, problems)."""
+        hold receipt_key and the rewrite verifies internally. Returns (ok, problems).
+
+        BOTH COPIES OF EACH CHAIN ARE CHECKED: the one this handle holds and the one in its sidecar on disk.
+        The anchor was witnessed over the STORE, and a long-lived handle's memory is not the store. An MCP
+        server refreshes before every call, and that merge keeps the longer in-memory chain whenever the
+        disk chain is a prefix of it, so a store rolled back on disk while the server ran read as consistent
+        here while a freshly opened handle on the same files said "shrank" (review I4,
+        audits/2026-09-24/mcp-tools-review.md). The in-memory chain is still checked too: a handle whose own
+        chain was cut is not a consistent extension either, whatever the disk says."""
         problems: list[str] = []
-        for kind, records, ntag, tiptag in (("write", self._receipts, "n_writes", "writes_tip"),
-                                            ("tombstone", self._tombstones, "n_tombstones", "tombstones_tip")):
+        for kind, records, ntag, tiptag, side in (
+                ("write", self._receipts, "n_writes", "writes_tip", getattr(self, "_receipts_path", None)),
+                ("tombstone", self._tombstones, "n_tombstones", "tombstones_tip",
+                 getattr(self, "_tombstones_path", None))):
             n0 = int(prior_anchor.get(ntag, 0))
-            if len(records) < n0:
-                problems.append(f"{kind} log shrank: {len(records)} < anchored {n0} (rolled back / truncated)")
-                continue
-            tip = self._recompute_tip(records, n0, kind)
-            if tip is None:
-                problems.append(f"{kind} chain broken within the first {n0} entries (a prior entry was altered)")
-            elif tip != prior_anchor.get(tiptag):
-                problems.append(f"{kind} history rewritten after the anchor: tip {tip[:12]}.. != "
-                                f"anchored {str(prior_anchor.get(tiptag))[:12]}.. (fork detected)")
+            copies = [("", records)]
+            disk, err = self._chain_on_disk(side)
+            if err:
+                problems.append(f"{kind} chain on disk could not be read ({err}), so the store's own history "
+                                f"was not checked against the anchor")
+            elif disk is not None and [r.get("hash") for r in disk] != [r.get("hash") for r in records]:
+                copies.append(("on disk: ", disk))
+            for where, chain in copies:
+                if len(chain) < n0:
+                    problems.append(f"{where}{kind} log shrank: {len(chain)} < anchored {n0} "
+                                    f"(rolled back / truncated)")
+                    continue
+                tip = self._recompute_tip(chain, n0, kind)
+                if tip is None:
+                    problems.append(f"{where}{kind} chain broken within the first {n0} entries "
+                                    f"(a prior entry was altered)")
+                elif tip != prior_anchor.get(tiptag):
+                    problems.append(f"{where}{kind} history rewritten after the anchor: tip {tip[:12]}.. != "
+                                    f"anchored {str(prior_anchor.get(tiptag))[:12]}.. (fork detected)")
         return (len(problems) == 0, problems)
+
+    def _chain_on_disk(self, side) -> tuple:
+        """(chain, error) for a chain sidecar as it is on disk now; (None, None) when this handle has nothing
+        on disk to compare, i.e. no path, or neither the store file nor the sidecar exists. A missing sidecar
+        beside a store that exists is an EMPTY chain, not an absent one: deleting the file is a rollback."""
+        if not side or not self.path:
+            return None, None
+        side = Path(str(side))
+        if not side.exists():
+            return ([], None) if self.path.exists() else (None, None)
+        try:
+            chain = json.loads(side.read_text(encoding="utf-8"))
+        except Exception as e:                                             # noqa: BLE001
+            return None, f"{side.name}: {type(e).__name__}"
+        if not isinstance(chain, list) or not all(isinstance(r, dict) for r in chain):
+            return None, f"{side.name}: not a list of entries"
+        return chain, None
 
     @staticmethod
     def verify_cosigned_anchor(anchor: dict, cosignatures, witnesses, threshold: int = 1) -> dict:

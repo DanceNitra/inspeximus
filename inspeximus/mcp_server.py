@@ -1088,13 +1088,14 @@ def admissibility_preconditions() -> dict:
       observation_channel_alive      if records carry locators, some carry a read-time observation
       receipt_chain_covers_records   if receipts are enabled and records exist, the chain is not empty
 
+    "Enabled" is this server's INSPEXIMUS_RECEIPTS or a receipt sidecar beside the store; either one
+    makes an empty chain over existing records a failure, as it is for verify_writes on this server.
     A precondition that cannot apply reports `applicable: false` and does NOT count as holding -- a
     question that did not arise has not been answered.
 
     The layer and the first two invariants are @Stratogain's (safal207/Causal-Memory-Layer#289); the
-    third is the same shape found in our own 450-record store, which had receipts enabled, an empty
-    chain, and 107 locators with zero observations."""
-    return _MEM.admissibility_preconditions()
+    third is the same shape: a mechanism switched on and producing nothing."""
+    return _MEM.admissibility_preconditions(receipts_configured=_RECEIPTS)
 
 
 @mcp.tool()
@@ -1411,14 +1412,22 @@ def compliance_report(expected_pubkey: str = "") -> dict:
     Art. 12/15/19; GDPR Art. 17/30/5(1)(d)) with LIVE counts from this store and an honest per-control status
     ('evidence' / 'available' / 'needs_receipts'). Scope: the agent-memory slice only — EVIDENCE, not a
     certification; obligations bind the deployer, not the tool. For the record-keeping controls, enable the
-    tamper-evident chain with the env var INSPEXIMUS_RECEIPTS=1."""
+    tamper-evident chain with the env var INSPEXIMUS_RECEIPTS=1.
+
+    `expected_pubkey` (hex, optional) binds `summary.integrity_verified` to the key the receipts should be
+    signed by; defaults to INSPEXIMUS_RECEIPT_PUBKEY. Without either, `limits` says what it does not cover."""
     from .compliance import compliance_report as _cr
-    return _cr(_MEM, expected_pubkey=(expected_pubkey or None))
+    pin = _pin(expected_pubkey)
+    out = _cr(_MEM, expected_pubkey=pin)
+    limits = _key_binding_limits(pin)
+    if limits:
+        out["limits"] = limits
+    return out
 
 
 @mcp.tool()
 def compliance_check(require_receipts: bool = True, max_pii_age_days: float | None = None,
-                     prior_anchor: dict | None = None) -> dict:
+                     prior_anchor: dict | None = None, expected_pubkey: str = "") -> dict:
     """CI/CONTINUOUS compliance GATE (read-only, no LLM): assert the invariants a store claiming AI-Act
     record-keeping must hold and report any regression. Returns {ok, violations, checked} — violations include
     receipts_disabled (Art.12/19), integrity_failed (Art.12/15), pii_over_retention (GDPR 5(1)(e)). ok=False
@@ -1429,10 +1438,13 @@ def compliance_check(require_receipts: bool = True, max_pii_age_days: float | No
     surface used to drop the argument, so that violation could never fire here however the store was
     rewritten — `checked` never listed append_only, but the CLI's own `--prior-anchor` did the check and
     the tool docstring advertised the violation. The one operator-ADVERSARIAL check of the four is the
-    one an auditor is most likely to want."""
+    one an auditor is most likely to want.
+
+    `expected_pubkey` (hex, optional) binds integrity_failed to the key the receipts should be signed by;
+    defaults to INSPEXIMUS_RECEIPT_PUBKEY, the same pin verify_writes uses."""
     from .compliance import compliance_check as _cc
     return _cc(_MEM, require_receipts=require_receipts, max_pii_age_days=max_pii_age_days,
-               prior_anchor=prior_anchor)
+               prior_anchor=prior_anchor, expected_pubkey=_pin(expected_pubkey))
 
 
 @mcp.tool()
@@ -1454,9 +1466,11 @@ def retention(max_age_days: float, pii_only: bool = True, apply: bool = False,
 def audit_bundle(expected_pubkey: str = "") -> dict:
     """Export a portable, CONTENT-FREE audit bundle of this store's whole write + erasure history (EU AI Act
     Art. 12/19). An auditor verifies it OFFLINE with verify_audit_bundle — no live store, no key. Needs
-    INSPEXIMUS_RECEIPTS=1 (else the chain is empty). Save the returned dict as json to hand over."""
+    INSPEXIMUS_RECEIPTS=1 (else the chain is empty). Save the returned dict as json to hand over.
+    `expected_pubkey` (hex, optional) pins `governance.proof` to the key the receipts should be signed by;
+    defaults to INSPEXIMUS_RECEIPT_PUBKEY."""
     from .audit_bundle import build_bundle
-    return build_bundle(_MEM, expected_pubkey=(expected_pubkey or None))
+    return build_bundle(_MEM, expected_pubkey=_pin(expected_pubkey))
 
 
 @mcp.tool()
@@ -1513,8 +1527,9 @@ def erasure_residue(root: str, values: list[str], max_file_mb: float = 512.0) ->
     log or backup still has it; nothing reclaims that on its own).
 
     Never echoes the values you pass — findings carry a 12-char fingerprint, because a tool that hunts a
-    secret and then prints it into a transcript is itself the leak. A file it could not read makes the
-    verdict False: "clean" must never mean "we did not look at that part"."""
+    secret and then prints it into a transcript is itself the leak. A file it could not read, a directory
+    it could not list, or a symlinked directory it did not enter makes the verdict False and is named in
+    `skipped`: "clean" must never mean "we did not look at that part"."""
     from .erasure_residue import scan_residue
     return scan_residue(root, values, max_file_mb=max_file_mb)
 
@@ -2159,7 +2174,9 @@ def technical_documentation(operator_json: str | None = None, expected_pubkey: s
     filled from the store and its action ledger (logs and how to verify them, memory and PII counts, oversight
     events, chain verification, the 22-control report), every other field marked OPERATOR INPUT REQUIRED.
     `operator_json` is a JSON object string with the provider's own fields. Includes the Art. 13(3)(f)
-    instructions-for-use section. Not a conformity assessment."""
+    instructions-for-use section. Not a conformity assessment.
+    `expected_pubkey` (hex, optional) pins the memory chain verdict and defaults to INSPEXIMUS_RECEIPT_PUBKEY; the
+    action ledger is signed with the writer key, so it is pinned only to a key passed here."""
     import json as _json
     from inspeximus.actions import ActionLedger
     from inspeximus.technical_documentation import annex_iv
@@ -2169,7 +2186,8 @@ def technical_documentation(operator_json: str | None = None, expected_pubkey: s
             operator = _json.loads(operator_json)
         except ValueError as ex:
             return {"error": f"operator_json is not valid JSON: {ex}"}
-    return annex_iv(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator, expected_pubkey=expected_pubkey)
+    return annex_iv(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator,
+                    expected_pubkey=_pin(expected_pubkey), ledger_pubkey=expected_pubkey or None)
 
 
 @mcp.tool()
@@ -2178,7 +2196,9 @@ def deployer_report(operator_json: str | None = None, expected_pubkey: str | Non
     recorded, incidents and the Art. 73 clock, log age against the six-month floor, disclosures, personal data
     inventory, chain verification), plus the GDPR Art. 35(7) DPIA and Art. 27(1) FRIA appendices built from the same
     evidence, the FRIA cross-referencing the DPIA per Art. 27(4). `operator_json` is a JSON object string with the
-    deployer's own fields; every field it cannot write is marked OPERATOR INPUT REQUIRED. Not an assessment."""
+    deployer's own fields; every field it cannot write is marked OPERATOR INPUT REQUIRED. Not an assessment.
+    `expected_pubkey` (hex, optional) pins the memory chain verdict and defaults to INSPEXIMUS_RECEIPT_PUBKEY; the
+    action ledger is signed with the writer key, so it is pinned only to a key passed here."""
     import json as _json
     from inspeximus.actions import ActionLedger
     from inspeximus.deployer import deployer_report as _deployer_report
@@ -2189,7 +2209,7 @@ def deployer_report(operator_json: str | None = None, expected_pubkey: str | Non
         except ValueError as ex:
             return {"error": f"operator_json is not valid JSON: {ex}"}
     return _deployer_report(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator,
-                            expected_pubkey=expected_pubkey)
+                            expected_pubkey=_pin(expected_pubkey), ledger_pubkey=expected_pubkey or None)
 
 
 @mcp.tool()
@@ -2198,7 +2218,9 @@ def registration_export(section: str = "A", operator_json: str | None = None, ex
     high-risk system (Art. 49(1)); B: provider relying on Art. 6(3) (Art. 49(2)); C: deployer that is a public
     authority (Art. 49(3)). Evidence fills the traceability reference, the description of the information used,
     the instructions for use and, for C, the FRIA and DPIA summaries; everything else is marked OPERATOR INPUT
-    REQUIRED. The content of a registration, not the registration itself."""
+    REQUIRED. The content of a registration, not the registration itself.
+    `expected_pubkey` (hex, optional) pins the memory chain verdict and defaults to INSPEXIMUS_RECEIPT_PUBKEY; the
+    action ledger is signed with the writer key, so it is pinned only to a key passed here."""
     import json as _json
     from inspeximus.actions import ActionLedger
     from inspeximus.technical_documentation import registration_export as _reg
@@ -2210,7 +2232,7 @@ def registration_export(section: str = "A", operator_json: str | None = None, ex
             return {"error": f"operator_json is not valid JSON: {ex}"}
     try:
         return _reg(_MEM, ledger=ActionLedger(_MEM, actor=_ACTOR), operator=operator, section=section,
-                    expected_pubkey=expected_pubkey)
+                    expected_pubkey=_pin(expected_pubkey), ledger_pubkey=expected_pubkey or None)
     except ValueError as ex:
         return {"error": str(ex)}
 
@@ -2411,8 +2433,9 @@ def erasure_report() -> dict:
 def erasure_certificate(request_id: str = "", expected_pubkey: str = "") -> dict:
     """A portable, INDEPENDENTLY-VERIFIABLE erasure certificate — the auditor-grade receipt proving records were
     erased (optionally scoped to one `request_id`). Hand it to a third party who can check it WITHOUT your store;
-    pass `expected_pubkey` to also assert a specific signing key. The GDPR Art.17 / EU AI Act Art.12 proof object."""
-    return _MEM.erasure_certificate(request_id=request_id or None, expected_pubkey=expected_pubkey or None)
+    pass `expected_pubkey` to also assert a specific signing key (defaults to INSPEXIMUS_RECEIPT_PUBKEY, which
+    `self_check` is then bound to). The GDPR Art.17 / EU AI Act Art.12 proof object."""
+    return _MEM.erasure_certificate(request_id=request_id or None, expected_pubkey=_pin(expected_pubkey))
 
 
 @mcp.tool()
@@ -2457,10 +2480,12 @@ def as_of(key: str, when: float, as_recorded: float = 0.0) -> dict:
 
 
 @mcp.tool()
-def verify_attribution() -> dict:
+def verify_attribution(expected_pubkey: str = "") -> dict:
     """TAMPER-EVIDENCE for the attribution / poison-defense layer: are k, the influence budget, the influence gate,
-    and the slash ledger internally consistent and unedited? The integrity check for the poison-resistance state."""
-    return _MEM.verify_attribution()
+    and the slash ledger internally consistent and unedited? The integrity check for the poison-resistance state.
+    `expected_pubkey` (hex, optional) binds the verdict to the key the receipts should be signed by; defaults to
+    INSPEXIMUS_RECEIPT_PUBKEY. Unpinned, attribution re-signed under a foreign key verifies clean."""
+    return _MEM.verify_attribution(expected_pubkey=_pin(expected_pubkey))
 
 
 @mcp.tool()

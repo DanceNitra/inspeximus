@@ -337,7 +337,8 @@ def _ledger_counts(store) -> dict:
 
 
 def compliance_check(store, require_receipts: bool = True, max_pii_age_days: float | None = None,
-                     prior_anchor: dict | None = None, now_ts: float | None = None) -> dict:
+                     prior_anchor: dict | None = None, now_ts: float | None = None,
+                     expected_pubkey: str | None = None) -> dict:
     """CI / CONTINUOUS compliance GATE (read-only, no LLM): assert the invariants a store claiming AI-Act
     record-keeping must hold, and FAIL if the posture regressed. The read-side complement of the point-in-time
     compliance_report — same relationship as `check-code` to a code review. Returns {ok, violations, checked}:
@@ -346,7 +347,10 @@ def compliance_check(store, require_receipts: bool = True, max_pii_age_days: flo
       - not_append_only    (Art. 12/19) : history is not a consistent extension of a pinned `prior_anchor`
       - pii_over_retention (GDPR 5(1)(e)): active PII records older than `max_pii_age_days` (storage limitation)
     `ok` is True iff no violations — wire `inspeximus compliance --check` into CI so the AI-Act posture cannot
-    silently regress. `now_ts` overrides the clock for the retention check (testability)."""
+    silently regress. `now_ts` overrides the clock for the retention check (testability).
+
+    `expected_pubkey` binds integrity_failed to the key the receipts should be signed by, as it does for
+    verify_writes. Unpinned, a store rewritten and re-signed under a key of the rewriter's own passes."""
     violations, checked = [], []
     # Count the ACTUAL receipt chain, not the receipts_enabled flag: a store WRITTEN without receipts has an
     # empty chain even when reopened with receipts=True (no sidecar to reload), and that is the real regression.
@@ -386,7 +390,7 @@ def compliance_check(store, require_receipts: bool = True, max_pii_age_days: flo
 
     checked.append("chain_integrity")
     if n_receipts:
-        gov = store.governance_report()
+        gov = store.governance_report(expected_pubkey)
         if (gov.get("proof") or {}).get("verified") is False:
             violations.append({"code": "integrity_failed", "article": "Art. 12/15",
                                "detail": "receipt/tombstone chain failed verify_writes — the log was altered out of band"})

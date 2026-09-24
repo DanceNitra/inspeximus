@@ -179,10 +179,6 @@ def _memory_chain_verdicts(doc):
 _DOC_TOOLS = [("technical_documentation", {}), ("deployer_report", {}), ("registration_export", {"section": "C"})]
 
 
-@pytest.mark.xfail(reason="technical_documentation/deployer_report/registration_export: INSPEXIMUS_RECEIPT_PUBKEY "
-                          "is the pin the tamper-evidence verdicts are bound to (module docstring); these tools "
-                          "pass expected_pubkey through unpinned and report a foreign-signed chain as verified",
-                   **XFAIL)
 @pytest.mark.parametrize("tool,args", _DOC_TOOLS, ids=[t[0] for t in _DOC_TOOLS])
 def test_the_documentation_tools_honour_the_configured_receipt_pubkey(monkeypatch, tmp_path, tool, args):
     """Module docstring: "INSPEXIMUS_RECEIPT_PUBKEY  hex Ed25519 PUBLIC key the write receipts are expected to
