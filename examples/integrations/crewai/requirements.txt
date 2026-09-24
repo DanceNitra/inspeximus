@@ -1,0 +1,10 @@
+# The CrewAI release this example is tested against. Pinned exactly: CrewAI replaced its memory
+# storage protocol wholesale inside the 1.x line, and the tool hooks this example records through
+# arrived there too, so "1.x" is not a range this example can promise. See README.md.
+crewai==1.15.22
+# Ed25519 for the signed receipts and the signed ledger. CrewAI already depends on it; it is named
+# here because the verifier needs it and the verifier does not need CrewAI.
+cryptography>=41
+pytest
+# inspeximus itself: `pip install "inspeximus[crypto]"`, or run from a checkout of this repository
+# (conftest.py and the commands in README.md put the checkout first on the path).
