@@ -23,7 +23,7 @@ and is not counted as the expected failure.
 **No library code was changed.** The branch adds this report, the harness and the tests.
 **Environment:** Python 3.11.15, mcp 1.30.0, pytest 9.1.1 with xdist.
 
-Status: families 1-3 are written up; the remaining families follow as they are finished.
+Status: families 1-4 are written up; the remaining families follow as they are finished.
 
 Severity: **High**: a guard is bypassed, data is wrongly written, erased or exposed, or a failure reads as
 success or as a clean result. **Medium**: a promised field or behaviour is wrong or missing. **Low**:
@@ -420,3 +420,139 @@ Tools: `forget`, `forget_subject`, `forget_pii`, `pii_report`, `retention`, `era
 | `partitions_report` | Shape as described. Read-only. |
 | `pii_report` | Shape `{records_with_pii, by_type, ids, coverage}`. With detection off, it says so. (E9 aside.) |
 | `erasure_residue` | A missing root, a root that is a file, empty `values` and an oversized file all give `ok: false`. Findings carry a 12-character fingerprint, never the value. (E4 and E11 aside.) |
+
+---
+
+## Family 4: tamper evidence, audit and compliance reports
+
+Tools: `verify_writes`, `anchor`, `verify_consistency`, `verify_cosigned_anchor`, `detect_split_view`,
+`witness`, `verify_witness`, `state_digest`, `governance_report`, `admissibility_preconditions`,
+`audit_the_audits`, `audit_bundle`, `verify_audit_bundle`, `verify_attribution`, `compliance_report`,
+`compliance_check`, `coverage`. Tests: `tests/test_mcp_review_integrity.py`.
+
+F1 to F4 all use the same setup. A library holder rewrites the store and re-signs it under a key the owner
+never held, which is the attack the module docstring names for `INSPEXIMUS_RECEIPT_PUBKEY`. The server is
+then started with `INSPEXIMUS_RECEIPT_PUBKEY` set to the owner's key. In every test, a precondition checks
+that `verify_writes` on that server rejects the chain ("signed by an unexpected key"), so the pin is live.
+
+### I1 (High): `compliance_check` passes a chain the configured pin rejects
+
+- **Description** (`mcp_server.py:1423-1425`): "violations include ... integrity_failed (Art.12/15)". The
+  library defines `integrity_failed` as "the chain fails verify_writes".
+- **What happens:** `verify_writes` rejects the chain. On the same server, `compliance_check` returns
+  `{ok: true, violations: []}`. The CI gate passes a chain that the configured key rejects.
+- **Cause:** the tool (`mcp_server.py:1420-1435`) has no key parameter and never calls `_pin()`.
+  `compliance.py:389` calls `store.governance_report()` with no key. Neither the environment pin nor a
+  caller can bind this verdict. See X2.
+- **Test:** `test_compliance_check_reports_integrity_failed_for_a_chain_the_configured_pin_rejects`
+
+### I2 (High): `compliance_report` reports `integrity_verified: true` over the same chain
+
+- **Description** (`mcp_server.py:1410-1412`): "compliance EVIDENCE ... with LIVE counts from this store and
+  an honest per-control status".
+- **What happens:** `summary.integrity_verified` is true, and nothing in the report says the verdict is
+  unpinned.
+- **Cause:** `mcp_server.py:1416` passes `expected_pubkey or None` instead of `_pin(expected_pubkey)`.
+- **Test:** `test_compliance_report_integrity_verdict_is_bound_to_the_configured_pin`
+
+### I3 (High): `verify_attribution` is a tamper-evidence check that cannot be pinned
+
+- **Description** (`mcp_server.py:2461-2462`): "TAMPER-EVIDENCE for the attribution / poison-defense layer:
+  are k, the influence budget, the influence gate, and the slash ledger internally consistent and
+  unedited?"
+- **What happens:** the store's attribution (a `treasury/cfo` source on an inflated wire-transfer limit) is
+  committed under a foreign key. The pin is set. The tool returns `{ok: true, chain_ok: true, relabeled:
+  []}`.
+- **Cause:** `mcp_server.py:2463` passes nothing. The library method (`core.py:6705`) takes no key and checks
+  each signature against the key the receipt itself carries (`core.py:6746-6751`).
+- **Test:** `test_verify_attribution_is_bound_to_the_configured_pin`
+
+### I4 (High): on a running server, `verify_consistency` misses a rollback made on disk
+
+- **Description** (`mcp_server.py:1265-1267`): "confirm the store is a consistent forward-extension of the
+  witnessed anchor (nothing was rewritten, rolled back, or re-signed away)".
+- **What happens:**
+  - Setup: three receipted writes, then `anchor()` records `n_writes=3`.
+  - The store file and its receipt sidecar are restored to the one-write state while the server runs.
+  - The running server's `verify_consistency(prior)` returns `consistent: true`, and `anchor()` still says
+    `n_writes=3`.
+  - A freshly started server correctly reports "write log shrank: 1 < anchored 3".
+- **Cause:**
+  - The per-call `refresh()` (`mcp_server.py:342`) merges with disk, re-adding this handle's records that
+    are no longer on disk (`core.py:9088`).
+  - It keeps the longer in-memory receipt chain when the disk chain is a prefix of it (`core.py:3729`).
+  - `verify_consistency` then walks the chain in memory (`core.py:10911`).
+- **Mitigation:** `verify_writes` on the same server does flag the rollback, so
+  `compliance_check(prior_anchor)` still fails, but on `integrity_failed`, not `not_append_only`. The
+  server's next write puts the rows back on disk. A read-only auditor's server never writes, so the rollback
+  stays.
+- **Test:** `test_verify_consistency_on_a_running_server_catches_a_rollback_on_disk`
+
+### I5 (High): `audit_the_audits` leaves copies of the store, erased text included, in the temp directory
+
+- **Description** (`mcp_server.py:1108`): "Corrupts a temporary COPY (never your store) in ways each surface
+  claims to detect".
+- **What happens:**
+  - One call on a two-record store leaves 52 to 110 `mkdtemp` directories behind. They contain 24 full
+    copies of the store and 4 `.pre-rows.bak` files.
+  - It also leaves 25 head files in `INSPEXIMUS_KEY_HOME`, which defaults to `~/.config/inspeximus/heads`.
+  - After `forget_subject` erases a subject from the live store, 28 files in the temp directory still hold
+    the erased text. The live store itself is untouched, as described.
+- **Cause:** `core.py:4390` onwards calls `tempfile.mkdtemp()` six times (`core.py:4696, 4741, 4894, 5029,
+  5157, 5404`) and never removes the directories. There is no `rmtree` anywhere in 4390-5494.
+- **Test:** `test_audit_the_audits_leaves_no_copy_of_the_store_behind`. It points `tempfile.tempdir` into
+  `tmp_path`, runs the tool, erases the subject, then searches what is left.
+
+### I6 (Medium): `audit_bundle` exports `verified: true` under the configured pin
+
+- **Description** (`mcp_server.py:1451-1452`): "Export a portable, CONTENT-FREE audit bundle of this store's
+  whole write + erasure history (EU AI Act Art. 12/19)". The bundle carries `governance.proof.verified`.
+- **What happens:** with the pin set, the exported bundle says `verified: true, expected_pubkey: null`. This
+  is Medium because an auditor running `verify_audit_bundle(expected_pubkey=...)` still rejects the chain.
+  The false statement sits inside the artifact.
+- **Cause:** `mcp_server.py:1459` passes `expected_pubkey or None`.
+- **Test:** `test_audit_bundle_governance_verdict_is_bound_to_the_configured_pin`
+
+### I7 (Medium): `admissibility_preconditions` does not check the receipt invariant it describes
+
+- **Description** (`mcp_server.py:1089`): "receipt_chain_covers_records: if receipts are enabled and records
+  exist, the chain is not empty". It also cites "the same shape found in our own 450-record store, which
+  had receipts enabled, an empty chain". The description also says an invariant that cannot apply "does
+  NOT count as holding".
+- **What happens:**
+  - Setup: a store with two records, written without receipts, opened with `INSPEXIMUS_RECEIPTS=1`.
+    Receipts are now enabled, the records exist, and the chain is empty.
+  - `verify_writes` reports "receipts are enabled but the chain is EMPTY".
+  - This tool reports the invariant as `applicable: false, holds: true`, with a top-level `ok: true`.
+- **Cause:** `core.py:4364-4367` narrowed the invariant on purpose, to "this store was WRITTEN with
+  receipts". The tool description still states the old rule. The fix is probably the description, plus
+  `holds` when the invariant cannot apply.
+- **Test:** `test_admissibility_receipt_invariant_fires_when_receipts_are_enabled_and_the_chain_is_empty`
+
+### I8 (Low): `anchor`'s "SIGNED HEAD COMMITMENT" carries no signature
+
+- **Description** (`mcp_server.py:1252`): "emit a SIGNED HEAD COMMITMENT".
+- **What happens:** no field of the result is a signature, and the tool has no way to ask for one. The head
+  is a hash commitment meant for witnesses to co-sign.
+- **Cause:** `mcp_server.py:1260` calls `anchor()` without `sign=`. The library signs only with an external
+  callable (`core.py:10777`).
+- **Test:** `test_anchor_returns_a_signed_head_commitment`
+
+### Holds
+
+| Tool | Checked |
+|---|---|
+| `verify_writes` | `{ok, problems, expected_pubkey, signed[, limits]}`. The environment pin rejects a foreign-signed chain. A rollback is caught through the head kept outside the store. Read-only. |
+| `governance_report` | The pin applies through the environment and through the argument. `limits` is present when a signed chain is left unpinned. Read-only. |
+| `verify_consistency` | On a fresh server it catches a rollback and a rewrite. Append-only growth stays consistent. A malformed anchor comes back as an error or `consistent: false`, never as a pass. (I4 aside.) |
+| `verify_cosigned_anchor` | `threshold` below 1 is rejected. A substituted head is re-derived and rejected. An empty chain gives `covers_history: false` with `limits`. |
+| `detect_split_view` | All six promised keys. A real double-signed fork is detected, and an honest pair is not. A malformed side is named. |
+| `witness` / `verify_witness` | `digest_match` flips after a write. A moved source gives `stale_at_use`. A URL source lands in `sources_orphaned` with `valid: false`. |
+| `state_digest` | Changes on a write, a supersession, a revert, and an erasure of an active or a superseded record. |
+| `verify_audit_bundle` | A missing `store_path` is refused and not created. Substituted text is caught through `store_path`. `require_signed` and `expected_pubkey` both work. |
+| `compliance_check` | All four violation codes fire under their documented names. `prior_anchor` adds `append_only` to `checked`. (I1 aside.) |
+| `compliance_report`, `audit_bundle`, `coverage`, `admissibility_preconditions`, `audit_the_audits` | Shapes as described. Store bytes and sidecars unchanged. (I2, I5, I6 and I7 aside.) |
+
+Read-only sweep: the store file, every sidecar, the key home and the temp directory were snapshotted around
+every tool in this family. This was done three times: with receipts, with receipts plus the action ledger,
+and with neither. Nothing changed except the documented one ledger entry per call, and I5.
