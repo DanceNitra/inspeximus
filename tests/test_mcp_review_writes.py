@@ -49,8 +49,6 @@ def test_remember_description_recall_nudges_value_up(monkeypatch, tmp_path):
 
 
 # ── route ───────────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="route: 'Returns {intent, action, key, ...} describing what was done'; a keyed "
-                          "write the objectless guard retired on arrival is reported as action=remembered", **XFAIL)
 def test_route_reports_a_write_the_objectless_guard_retired(monkeypatch, tmp_path):
     """route: "hand it any utterance and it decides the right ledger operation ... Returns {intent, action,
     key, ...} describing what was done."
@@ -113,9 +111,6 @@ def test_observe_value_obscuring_revert_needs_corroboration(monkeypatch, tmp_pat
 
 
 # ── project scope on the write tools that are not `remember` ──────────────────────────────────────
-@pytest.mark.xfail(reason="revert: server config says INSPEXIMUS_PROJECT 'Writes are stamped with it'; the "
-                          "record revert writes carries no project, so the restored value leaks into every project",
-                   **XFAIL)
 def test_revert_keeps_the_restored_value_inside_the_project(monkeypatch, tmp_path):
     """INSPEXIMUS_PROJECT (module docstring): "Writes are stamped with it and recalls are filtered to it";
     `--project`: "tag writes with this project/workspace and filter recalls to it".
@@ -143,8 +138,6 @@ def test_revert_keeps_the_restored_value_inside_the_project(monkeypatch, tmp_pat
         f"project beta recalls alpha's reverted value: {texts}"
 
 
-@pytest.mark.xfail(reason="route: a fact route remembers on a project-scoped server carries no project stamp",
-                   **XFAIL)
 def test_route_stamps_the_server_project(monkeypatch, tmp_path):
     """INSPEXIMUS_PROJECT: "Writes are stamped with it"; route: "a new fact is remembered"."""
     mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_PROJECT="alpha")
@@ -156,8 +149,6 @@ def test_route_stamps_the_server_project(monkeypatch, tmp_path):
         f"the routed fact is unscoped, so every project recalls it: meta={rec.get('meta')}"
 
 
-@pytest.mark.xfail(reason="resolve_reopened: the reaffirm_prior write carries no project stamp on a "
-                          "project-scoped server", **XFAIL)
 def test_resolve_reopened_reaffirm_stamps_the_server_project(monkeypatch, tmp_path):
     """INSPEXIMUS_PROJECT: "Writes are stamped with it"; resolve_reopened: "reaffirm_prior restores the
     surfaced prior value through the authorized revert path"."""

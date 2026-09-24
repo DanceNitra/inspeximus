@@ -54,9 +54,6 @@ def _tagged(mod, partition: str) -> list[dict]:
 
 
 # ── remember_in_partition ───────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="remember_in_partition: a keyed write the objectless/echo guard retired on "
-                          "arrival comes back as {id, partition}, indistinguishable from a landed write",
-                   **XFAIL)
 def test_remember_in_partition_reports_a_write_the_guard_retired(server):
     """remember_in_partition: "Remember into a partition: the record is tagged partition:<name>, counted
     against its cap ... and erased by its expiry or at close."
@@ -78,9 +75,6 @@ def test_remember_in_partition_reports_a_write_the_guard_retired(server):
         f"and the tool result says nothing about it: {r.data}")
 
 
-@pytest.mark.xfail(reason="remember_in_partition: module docstring 'INSPEXIMUS_PROJECT ... Writes are stamped "
-                          "with it and recalls are filtered to it'; a partition write is unstamped and "
-                          "surfaces in every other project", **XFAIL)
 def test_remember_in_partition_stamps_the_server_project(monkeypatch, tmp_path):
     """Module docstring, INSPEXIMUS_PROJECT: "Writes are stamped with it and recalls are filtered to it".
 

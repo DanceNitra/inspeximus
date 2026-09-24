@@ -183,8 +183,6 @@ def test_sleep_keep_budget_reaches_the_store_file(monkeypatch, tmp_path):
 
 
 # ── check_sources ───────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="check_sources: 'Scoped to the bound tenant/project when there is one'; with "
-                          "INSPEXIMUS_PROJECT=a it reports project b's records and fails ok on them", **XFAIL)
 def test_check_sources_is_scoped_to_the_servers_project(monkeypatch, tmp_path):
     """check_sources: "Scoped to the bound tenant/project when there is one."
 

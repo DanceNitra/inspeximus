@@ -201,6 +201,10 @@ def rectify(store, key: str, text: str, actor: str, reason: str, ledger=None, su
     write applies here (echo guard, receipts, supersession). With a ledger, one `rights:rectify` entry
     binds the new record id, the retired record id and the memory receipt tail to the actor and reason.
 
+    A correction a guard retired on arrival (`store.last_write` says `blocked`) did not change the
+    value. Its ledger entry is written with status `blocked` and the guard's `policy`, not `ok`, so the
+    ledger records the request without recording it as fulfilled.
+
     Returns {previous_id, new_id, key, receipt} and the ledger entry when one was written."""
     if not actor or not reason:
         raise ValueError("a rectification needs an actor (who asked or approved) and a reason")
@@ -212,6 +216,8 @@ def rectify(store, key: str, text: str, actor: str, reason: str, ledger=None, su
     if subject is not None and "source" not in remember_kwargs:
         remember_kwargs["source"] = {"doc": subject}       # the shape erasure and attribution resolve on
     new_id = store.remember(text, key=key, **remember_kwargs)
+    lw = getattr(store, "last_write", None) or {}
+    blocked = bool(lw.get("blocked")) and lw.get("id") == new_id
     receipts = list(getattr(store, "_receipts", None) or [])
     out = {"key": key, "previous_id": prev["id"] if prev else None, "new_id": new_id,
            "memory_receipt": receipts[-1].get("hash") if receipts else None,
@@ -220,10 +226,13 @@ def rectify(store, key: str, text: str, actor: str, reason: str, ledger=None, su
         if prev and r.get("id") == prev["id"]:
             out["previous_status"] = r.get("status")
     if ledger is not None:
+        extra = {"event": "rectify", "subject": subject, "request_id": request_id,
+                 "key": key, "reason": reason, "previous_id": out["previous_id"],
+                 "new_id": new_id, "memory_receipt": out["memory_receipt"]}
+        if blocked:
+            extra.update(blocked=True, policy=lw.get("policy"), current_id=lw.get("current_id"))
         entry = ledger.record("rights:rectify", inputs={"key": key, "reason": reason, "request_id": request_id},
-                              status="ok", actor=actor, kind="rights",
-                              extra={"event": "rectify", "subject": subject, "request_id": request_id,
-                                     "key": key, "reason": reason, "previous_id": out["previous_id"],
-                                     "new_id": new_id, "memory_receipt": out["memory_receipt"]})
+                              status="blocked" if blocked else "ok", actor=actor, kind="rights",
+                              extra=extra)
         out["ledger_entry"] = {"seq": entry["seq"], "hash": entry["hash"]}
     return out
