@@ -1,4 +1,4 @@
-## 3.9.3 - the 3.9.2 release, published. 3.9.2 was tagged but never reached PyPI. AFFECTS: exactly what 3.9.2 below lists (the demo signs its stores and needs `inspeximus[crypto]`); the library is otherwise identical to 3.9.2.
+## 3.9.3 - the 3.9.2 release, published; 3.9.2 was tagged but never reached PyPI. UPGRADE IF YOU RUN THE DEMO OR POINT SOMEONE AT IT. AFFECTS: exactly what 3.9.2 below lists (the demo signs its stores and needs `inspeximus[crypto]`); the library is otherwise identical to 3.9.2.
 
 The `v3.9.2` tag exists and points at a commit whose release workflow installed the optional
 extras without the `openai-agents` upgrade the main CI installs. The release's own test shards then
