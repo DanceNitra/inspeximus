@@ -192,7 +192,9 @@ def pytest_collection_modifyitems(config, items):
         else:
             bucket = 0
         (keep if bucket == i else drop).append(it)
-    report = os.environ.get("SHARD_REPORT")
+    # Popped, not read: a test that runs pytest in a subprocess would otherwise inherit the path and
+    # overwrite this shard's report with its own small collection (seen in CI on 7aca0f6).
+    report = os.environ.pop("SHARD_REPORT", None)
     if report:
         # What tools/shard_total.py compares across shards: every shard must have collected the same
         # suite, and together they must have kept all of it, each test exactly once.
