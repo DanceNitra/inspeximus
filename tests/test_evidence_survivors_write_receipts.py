@@ -9,6 +9,7 @@ original source, red on the mutant.
 """
 from __future__ import annotations
 
+import json
 import os
 
 import pytest
@@ -125,3 +126,126 @@ def test_a_rechained_amendment_keeps_what_it_amends_why_and_when(tmp_path, monke
     b.remember("b two", key="b2", object="2")            # the next emit persists the merged chain
     ok, problems = Inspeximus(path=p, receipts=True).verify_writes()
     assert ok, problems
+
+
+def test_a_receipt_records_when_its_record_was_written(tmp_path):
+    """SURVIVORS core.py:3777 `"ts": rec.get("ts")` -> `rec.get(None)` / key renamed
+    (core:3777:19:1caf6dd6, core:3777:27:e0789e69, core:3777:27:fc38149b).
+
+    `ts` is inside the receipt's hash, so a receipt with `ts: None` is a perfectly consistent link --
+    and a chain whose links say nothing about WHEN each write happened. No test compared a receipt's
+    time with its record's."""
+    m = _store(tmp_path)
+    ids = [m.remember(f"fact {i}", key=f"k{i}", object=str(i)) for i in range(3)]
+    by_id = {r["id"]: r for r in m.items}
+    for rid in ids:
+        rc = [r for r in m._receipts if r["memory_id"] == rid][0]
+        assert isinstance(rc["ts"], float) and rc["ts"] == by_id[rid]["ts"]
+
+
+# -- enable_receipts: covering what was written before the chain -------------------------------------
+def _unreceipted(tmp_path, n=8):
+    p = str(tmp_path / "s.json")
+    ix = Inspeximus(path=p)
+    for i in range(n):
+        ix.remember(f"fact {i}: the deadline is day {i}", key=f"k{i}", object=str(i))
+    return p, ix
+
+
+def test_the_backfill_genesis_root_commits_to_the_records_it_covers(tmp_path):
+    """SURVIVORS core.py:4111 `_canon(c)` -> `_canon(None)` (core:4111:29:466f261b) and the
+    backfill marker's fields (core.py:4112-4114: `now` -> None, the keys `n` / `at` / `reason`
+    renamed, the "unstated" default and the 200-character cut).
+
+    `genesis_root` is what the backfill offers an auditor: an RFC 6962 root over the commitments
+    it vouches for. The tests check that it exists and is 64 hex characters, which a root over
+    eight nulls also is. It is re-derived here from the backfill receipts' own commits."""
+    from inspeximus.merkle import root as merkle_root
+    _p, ix = _unreceipted(tmp_path)
+    before = __import__("time").time()
+    out = ix.enable_receipts(reason="  the store predates its chain  ")
+    backfill = [rc for rc in ix._receipts if rc.get("backfill")]
+    assert len(backfill) == out["anchored_records"] == 8
+    assert out["genesis_root"] == merkle_root([_canon(rc["commit"]) for rc in backfill]).hex()
+    marker = backfill[0]["backfill"]
+    assert all(rc["backfill"] == marker for rc in backfill)
+    assert marker["genesis_root"] == out["genesis_root"] and marker["n"] == 8
+    assert before <= marker["at"] <= __import__("time").time()
+    assert marker["reason"] == "the store predates its chain"
+    _p2, ix2 = _unreceipted(tmp_path / "second")
+    ix2.enable_receipts(reason="   ")
+    assert ix2._receipts[0]["backfill"]["reason"] == "unstated"
+    _p3, ix3 = _unreceipted(tmp_path / "third")
+    ix3.enable_receipts(reason="x" * 300)
+    assert ix3._receipts[0]["backfill"]["reason"] == "x" * 200
+
+
+def test_the_backfill_follows_write_order_and_keeps_each_records_time(tmp_path):
+    """SURVIVORS core.py:4108 (the sort key: `r.get("ts") or 0` -> `and 0` / `or 1` / key renamed)
+    and core.py:4116 (`"ts": rec.get("ts")` -> None / key renamed). A backfill receipt vouches for a
+    record AS IT STANDS, but the chain still reads in the order the records were written, and each
+    receipt says when its record was. Ids are random, so eight records sort differently by id than
+    by time with probability 1 - 1/8!."""
+    _p, ix = _unreceipted(tmp_path, n=8)
+    ix.enable_receipts()
+    by_id = {r["id"]: r for r in ix.items}
+    ts = [by_id[rc["memory_id"]]["ts"] for rc in ix._receipts]
+    assert ts == sorted(ts), "backfill receipts are not in write order"
+    assert [rc["ts"] for rc in ix._receipts] == ts
+
+
+def test_enable_receipts_says_whether_it_signed(tmp_path):
+    """SURVIVORS core.py:4103 (`self._receipt_signer is not None` -> `is None`, `and _HAVE_ED` ->
+    `or _HAVE_ED`). Only the signed case was asserted, so a result that reported `signed: True`
+    for a chain nobody signed passed."""
+    _p, ix = _unreceipted(tmp_path)
+    assert ix.enable_receipts()["signed"] is False
+    assert not any(rc.get("sig") for rc in ix._receipts)
+    sk, _pk = new_receipt_keypair()
+    _p2, ix2 = _unreceipted(tmp_path / "signed")
+    assert ix2.enable_receipts(receipt_key=sk)["signed"] is True
+
+
+def test_a_second_call_reports_nothing_declared(tmp_path):
+    """SURVIVORS core.py:4099 (`"retirements_declared": 0` -> `1`, the key renamed): the idempotent
+    second call's result was only read for `anchored_records`."""
+    _p, ix = _unreceipted(tmp_path, n=3)
+    ix.enable_receipts()
+    again = ix.enable_receipts()
+    assert again["anchored_records"] == 0 and again["retirements_declared"] == 0
+
+
+def test_enabling_receipts_on_an_empty_store_creates_the_sidecar(tmp_path):
+    """SURVIVORS core.py:4105 (`self._receipts_path and not ... .exists()` -> `or`, `not` dropped).
+    With nothing to cover, `enable_receipts()` still has to leave the sidecar on disk, or a reopened
+    handle cannot tell a store whose chain is empty from one that never had receipts on."""
+    p = str(tmp_path / "empty.json")
+    ix = Inspeximus(path=p)
+    out = ix.enable_receipts()
+    assert out["anchored_records"] == 0
+    assert os.path.exists(p + ".receipts.json")
+    assert json.load(open(p + ".receipts.json", encoding="utf-8")) == []
+
+
+def test_a_retirement_declared_at_backfill_is_a_committed_amendment(tmp_path):
+    """SURVIVORS core.py:4129-4132 -- the declaration receipt's keys (`"ts"`, `"commit"`, `"amends"`,
+    `"amend_reason"`) and values. The existing test only asks that the store verifies afterwards,
+    and a declaration with no `commit` is checked against nothing, so it verified too. The
+    declaration must commit to the record as it stands, amend exactly `status_sha256`, and say why."""
+    p = str(tmp_path / "s.json")
+    ix = Inspeximus(path=p, receipts=True)
+    ix.remember("the deadline is Friday", key="deadline", object="friday")
+    born = ix.items[0]["id"]
+    Inspeximus(path=p).remember("the deadline is Monday", key="deadline", object="monday")   # receipts off
+    ix = Inspeximus(path=p, receipts=True)
+    out = ix.enable_receipts()
+    assert out["retirements_declared"] == 1
+    decl = [rc for rc in ix._receipts if rc["memory_id"] == born and rc.get("amends")]
+    assert len(decl) == 1
+    d = decl[0]
+    rec = next(r for r in ix.items if r["id"] == born)
+    assert d["amends"] == ["status_sha256"]
+    assert d["amend_reason"] == "retired while receipts were off; declared at backfill"
+    assert d["commit"] == ix._write_commit(rec)
+    assert d["ts"] == rec["ts"]
+    assert Inspeximus(path=p, receipts=True).verify_writes() == (True, [])
