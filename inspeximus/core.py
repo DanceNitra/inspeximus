@@ -272,6 +272,9 @@ def _serving_class(rec: dict) -> str:
 # widening it further is a deliberate change to what the chain guarantees, not a parameter.
 # Enforced rather than described: verify_writes intersects with it, _emit_write_receipt raises on it.
 _AMENDABLE = frozenset({"mtype", "status_sha256"})
+# verify_writes() answers its per-receipt chain questions from a one-pass index. False makes it scan the
+# chain once per receipt, the original O(R^2) way; kept so tests can hold the two to the same verdicts.
+_CHAIN_INDEX = True
 #: Shortest retired value that value-level suppression will act on. A two-character value matches
 #: everywhere, so suppressing on it would withhold half the store -- but the rule was a bare `4`
 #: inside _retired_values() and a second, independent `4` inside erasure_residue, with only the
@@ -6668,6 +6671,46 @@ class Inspeximus:
         for _rid in sorted(k for k in _id_count if k in _tombed):
             problems.append(f"memory {_rid}: a deletion tombstone says it was erased, and it is in the "
                             f"store again (restored from a copy, or written back out of band)")
+        # ONE PASS OVER THE CHAIN, NOT ONE PER RECEIPT. The per-receipt questions below -- which fields a
+        # LATER receipt for this memory declared it amends, the highest seq for this memory, whether a
+        # tombstone accounts for it -- were each answered by scanning every receipt (or tombstone) again:
+        # O(R^2), measured 0.12 s / 8.9 s / 175 s at 1k / 10k / 50k receipts (audits/2026-09-24/scale.md),
+        # 8.03 of 9.85 s at 10k on the `amends` comprehension alone. The index answers the same questions
+        # from one pass. It covers only well-formed groups (str memory_id, int seq, hashable `amends`);
+        # anything else falls back to the original scan, so a malformed chain is judged -- and raises --
+        # exactly as before. `amends` is narrowed to `_AMENDABLE` as it is collected: the result is
+        # intersected with it anyway, and (A | B) & M == (A & M) | (B & M).
+        _later_amends: dict = {}      # memory_id -> {seq: amends of that memory's receipts with a GREATER seq}
+        _max_seq: dict = {}           # memory_id -> highest seq among that memory's receipts
+        try:
+            _groups: dict = {}
+            for x in (self._receipts if _CHAIN_INDEX else ()):
+                if type(x["memory_id"]) is str:
+                    _groups.setdefault(x["memory_id"], []).append(x)
+            for _mid, _xs in _groups.items():
+                try:
+                    _seqs = [x.get("seq", 0) for x in _xs]
+                    if not all(type(s) in (int, bool) for s in _seqs):
+                        continue                       # not comparable as the scan compares -> scan
+                    _pairs = sorted(((s, frozenset(x.get("amends") or ()) & _AMENDABLE)
+                                     for s, x in zip(_seqs, _xs)), key=lambda p: p[0], reverse=True)
+                except Exception:                      # noqa: BLE001 -- unhashable/uniterable amends -> scan
+                    continue
+                _by_seq, _acc, _k = {}, frozenset(), 0
+                while _k < len(_pairs):
+                    _s = _pairs[_k][0]
+                    _by_seq[_s] = _acc                 # strictly greater: this seq's own receipts excluded
+                    while _k < len(_pairs) and _pairs[_k][0] == _s:
+                        _acc = _acc | _pairs[_k][1]
+                        _k += 1
+                _later_amends[_mid] = _by_seq
+                _max_seq[_mid] = _pairs[0][0]
+        except Exception:                              # noqa: BLE001 -- e.g. a receipt with no memory_id
+            _later_amends, _max_seq = {}, {}
+        _tomb_mids = None             # str memory_ids that have a deletion tombstone; None -> scan
+        if _CHAIN_INDEX and all(isinstance(t, dict) for t in self._tombstones):
+            _tomb_mids = {t.get("memory_id") for t in self._tombstones
+                          if type(t.get("memory_id")) is str}
         for i, r in enumerate(self._receipts):
             # ONE definition, shared with anchor() and the offline bundle verifier -- see _chain_core.
             # `amends` must be inside the hash: it decides which fields a later receipt forgives, so an
@@ -6699,7 +6742,11 @@ class Inspeximus:
                 # a missing record is only a PROBLEM if it was NOT deliberately erased. A deletion tombstone
                 # (forget_subject) makes the erasure accounted-for: the write-chain stays intact and the record
                 # is provably erased, not silently tampered away. No tombstone -> still flag as out-of-band.
-                if not any(t.get("memory_id") == r["memory_id"] for t in self._tombstones):
+                if _tomb_mids is not None and type(r["memory_id"]) is str:
+                    _erased = r["memory_id"] in _tomb_mids
+                else:
+                    _erased = any(t.get("memory_id") == r["memory_id"] for t in self._tombstones)
+                if not _erased:
                     problems.append(f"memory {r['memory_id']}: written but missing from the store (deleted out-of-band)")
             else:
                 # compare only the fields THIS receipt committed to (a receipt written before attribution was
@@ -6728,9 +6775,12 @@ class Inspeximus:
                     # preimage, so the chain link is genuine -- and verify_writes returns to True over text
                     # that was never written. That is the 1.67.0 laundering path, re-entered through the
                     # amends vocabulary instead of through slash().
-                    forgiven = {f for x in self._receipts
-                                if x["memory_id"] == r["memory_id"] and x.get("seq", 0) > r.get("seq", 0)
-                                for f in (x.get("amends") or ())} & _AMENDABLE
+                    if r["memory_id"] in _later_amends:
+                        forgiven = _later_amends[r["memory_id"]][r.get("seq", 0)]
+                    else:
+                        forgiven = {f for x in self._receipts
+                                    if x["memory_id"] == r["memory_id"] and x.get("seq", 0) > r.get("seq", 0)
+                                    for f in (x.get("amends") or ())} & _AMENDABLE
                     # `k in rc` so a pre-1.82 receipt, which has no `value_sha256`, is checked on what it
                     # does carry instead of failing on a field that did not exist when it was written. It
                     # cannot be used to strip a field either: the receipt hash covers the whole commit, so
@@ -6759,8 +6809,9 @@ class Inspeximus:
                     bad = any(cc.get(k) != v for k, v in rc.items())
                     if bad:
                         legacy_flagged.add(r["memory_id"])
-                elif max((x.get("seq", 0) for x in self._receipts
-                          if x["memory_id"] == r["memory_id"]), default=r.get("seq", 0)) == r.get("seq", 0):
+                elif (_max_seq[r["memory_id"]] if r["memory_id"] in _max_seq
+                      else max((x.get("seq", 0) for x in self._receipts
+                                if x["memory_id"] == r["memory_id"]), default=r.get("seq", 0))) == r.get("seq", 0):
                     bad = any(cc.get(k) != v for k, v in rc.items())
                 else:
                     bad = False
