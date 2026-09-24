@@ -584,7 +584,10 @@ class Selector:
         rel = m["file"]
         self._prep(rel)
         a, b = self.heads[rel][m["function"]]
-        if not t1 or a <= m["line"] <= b:
+        header = a <= m["line"] <= b
+        if not t1 and not header and not self.sampled(m):
+            return set()
+        if not t1 or header:
             key = (rel, m["function"])
             with self._lock:
                 if key not in self.fn_cache:
@@ -592,6 +595,16 @@ class Selector:
                     self.fn_cache[key] = self._lines(rel, range(fa, fb + 1))
                 return self.fn_cache[key] - t1
         return {t.split("::")[0] for t in t1 if t.split("::")[0] in self.wide_files}
+
+    @staticmethod
+    def sampled(m):
+        """1 in 10 of the mutants on a statement no test executes still runs stage 2 (a).
+
+        Measured on the first 909 mutants of this run: 44 sat on an unexecuted statement, stage 2
+        ran every test of the enclosing function against each (3-4 minutes apiece in core.py), and
+        not one was killed there -- the coverage map had not missed a test. The sample keeps checking
+        that for the rest of the run at a tenth of the cost; a kill in it is reported."""
+        return int(hashlib.sha256(m["id"].encode()).hexdigest(), 16) % 10 == 0
 
     def args(self, tests):
         """Order cheapest first (so -x stops early on a kill) and fold node ids into their file
@@ -651,7 +664,10 @@ def run(args):
         if os.path.exists(w.tree):
             subprocess.run(["git", "worktree", "remove", "--force", w.tree], cwd=ROOT, capture_output=True)
             shutil.rmtree(w.tree, ignore_errors=True)
-        r = subprocess.run(["git", "worktree", "add", "--detach", "-f", w.tree, "HEAD"], cwd=ROOT,
+        # The worktree is the commit the mutants were generated from, so the suite being measured is
+        # the one that existed then -- tests written from this run's survivors are not in it.
+        rev = spec.get("source_head") or "HEAD"
+        r = subprocess.run(["git", "worktree", "add", "--detach", "-f", w.tree, rev], cwd=ROOT,
                            capture_output=True, text=True)
         if r.returncode:
             raise SystemExit(r.stderr)
@@ -701,7 +717,9 @@ def run(args):
                 if status != "passed":
                     res.update(verdict="error", detail=tail)
                     return res
-            res["verdict"] = "survived" if (t1 or t2) else "no_coverage"
+            if not t1 and not t2 and "function" in m:
+                res["stage2"] = "unexecuted_not_sampled"
+            res["verdict"] = "survived"
             return res
         finally:
             _write(path, orig)
@@ -825,17 +843,77 @@ def report(args):
         survivors.append({"id": m["id"], "area": m["area"], "file": m["file"], "line": m["line"],
                           "function": m["function"], "operator": m["operator"],
                           "old": m["old_lines"], "new": m["new_lines"],
+                          "node_old": m["old"], "node_new": m["new"],
                           "category": cat, "why": why, "verdict": r["verdict"],
                           "n_stage1": r.get("n_stage1", 0), "n_stage2": r.get("n_stage2", 0)})
+    kills = {}
+    for path in (args.kills or []):
+        with open(path, encoding="utf-8") as fh:
+            for i, v in json.load(fh).items():
+                if v.get("verdict") == "KILLED":
+                    kills[i] = v.get("killer")
+    for sv in survivors:
+        sv["killed_now_by"] = kills.get(sv["id"])
     for t in totals.values():
         det = t["killed"] + t["timeout"]
         denom = det + t["survived"] + t["no_coverage"]
         t["score"] = round(det / denom, 4) if denom else None
+    for a, t in totals.items():
+        left = sum(1 for sv in survivors if sv["area"] == a and not sv["killed_now_by"])
+        denom = t["killed"] + t["timeout"] + t["survived"] + t["no_coverage"]
+        t["survived_now"] = left
+        t["score_now"] = round((denom - left) / denom, 4) if denom else None
     out = {"source_head": spec.get("source_head"), "totals": totals, "survivors": survivors}
     with open(args.out, "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=1)
+    if args.md_out:
+        with open(args.md_out, "w", encoding="utf-8") as fh:
+            fh.write(_survivor_tables(out))
     print(json.dumps(totals, indent=1))
     print(f"{len(survivors)} survivors -> {args.out}")
+
+
+AREA_TITLES = {
+    "erasure_certificate": "Erasure certificate",
+    "write_receipts": "Write receipts",
+    "audit_bundle": "Audit bundle",
+    "action_ledger": "Action ledger",
+    "transparency_log": "Transparency log",
+}
+
+
+def _cell(text, limit=90):
+    text = " ".join(str(text).split())
+    if len(text) > limit:
+        text = text[:limit - 1] + "\u2026"
+    fence = "``" if "`" in text else "`"
+    pad = " " if fence == "``" else ""
+    return f"{fence}{pad}{text}{pad}{fence}".replace("|", "\\|")
+
+
+def _survivor_tables(out):
+    """Every survivor, one row each, grouped by area, then file and function, in line order."""
+    lines = []
+    for area, title in AREA_TITLES.items():
+        rows = [sv for sv in out["survivors"] if sv["area"] == area]
+        lines.append(f"### {title}: {len(rows)} survivors\n")
+        by_fn = {}
+        for sv in sorted(rows, key=lambda r: (r["file"], r["line"], r["id"])):
+            by_fn.setdefault((sv["file"], sv["function"]), []).append(sv)
+        for (rel, fn), svs in by_fn.items():
+            lines.append(f"**`{rel}` `{fn}`** ({len(svs)})\n")
+            lines.append("| line | mutation | why no test caught it | now |")
+            lines.append("|---:|---|---|---|")
+            for sv in svs:
+                old = " ".join(sv["old"]) if isinstance(sv["old"], list) else sv["old"]
+                m_old, m_new = sv.get("node_old", ""), sv.get("node_new", "")
+                mut = f"{_cell(m_old, 60)} \u2192 {_cell(m_new, 60)}" if (m_old or m_new) else _cell(old)
+                why = sv["why"].replace("|", "\\|")
+                now = ("killed by `" + sv["killed_now_by"].split("::")[-1] + "`") if sv["killed_now_by"] else ""
+                lines.append(f"| {sv['line']} | {mut} | [{sv['category']}] {why} | {now} |")
+            lines.append("")
+        lines.append("")
+    return "\n".join(lines)
 
 
 # --------------------------------------------------------------------------------------------- kill
@@ -846,14 +924,17 @@ def kill(args):
     so the check sees the new tests without the checkout's library code ever being edited."""
     with open(args.mutants, encoding="utf-8") as fh:
         by_id = {m["id"]: m for m in json.load(fh)["mutants"]}
+    if args.ids_file:
+        args.ids = [ln.strip() for ln in open(args.ids_file, encoding="utf-8") if ln.strip()]
     work = args.workdir
-    w = Worker(99, work)
+    w = Worker(f"k{os.getpid()}", work)        # one worktree per invocation: two checks may run at once
     if os.path.exists(w.tree):
         subprocess.run(["git", "worktree", "remove", "--force", w.tree], cwd=ROOT, capture_output=True)
         shutil.rmtree(w.tree, ignore_errors=True)
     subprocess.run(["git", "worktree", "add", "--detach", "-f", w.tree, "HEAD"], cwd=ROOT,
                    capture_output=True, check=True)
     ok = True
+    verdicts = {}
     try:
         for t in args.tests:
             f = t.split("::")[0]
@@ -878,10 +959,14 @@ def kill(args):
                 _write(path, orig)
                 w.drop_pyc(m["file"])
             verdict = "KILLED" if status in ("failed", "timeout") else "SURVIVES"
-            print(f"{i:40s}: {verdict} ({status}, {killer})")
+            print(f"{i:40s}: {verdict} ({status}, {killer})", flush=True)
+            verdicts[i] = {"verdict": verdict, "status": status, "killer": killer}
             ok = ok and verdict == "KILLED"
     finally:
         subprocess.run(["git", "worktree", "remove", "--force", w.tree], cwd=ROOT, capture_output=True)
+        if args.json_out:
+            with open(args.json_out, "w", encoding="utf-8") as fh:
+                json.dump(verdicts, fh, indent=1)
     print("ALL KILLED, original green" if ok else "NOT ALL KILLED")
     sys.exit(0 if ok else 1)
 
@@ -913,11 +998,15 @@ def main(argv=None):
     p.add_argument("--results", default=os.path.join(WORKDIR_DEFAULT, "results.jsonl"))
     p.add_argument("--notes", default=os.path.join(HERE, "notes.json"))
     p.add_argument("--out", default=os.path.join(HERE, "survivors.json"))
+    p.add_argument("--kills", nargs="*", help="JSON verdicts from `kill --json-out` runs of the new tests")
+    p.add_argument("--md-out", help="write the per-module survivor tables here (markdown)")
     k = sub.add_parser("kill")
     k.add_argument("--mutants", default=os.path.join(WORKDIR_DEFAULT, "mutants.json"))
     k.add_argument("--workdir", default=WORKDIR_DEFAULT)
-    k.add_argument("--ids", nargs="+", required=True)
+    k.add_argument("--ids", nargs="+", default=[])
     k.add_argument("--tests", nargs="+", required=True)
+    k.add_argument("--ids-file", help="read mutant ids from this file (one per line) instead of --ids")
+    k.add_argument("--json-out", help="write {id: verdict} here")
     a = ap.parse_args(argv)
     {"generate": generate, "covmap": covmap, "run": run, "report": report, "kill": kill}[a.cmd](a)
 

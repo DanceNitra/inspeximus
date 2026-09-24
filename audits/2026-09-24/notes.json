@@ -1,0 +1,1542 @@
+{
+ "core:1037:12:cdcaab4d": {
+  "category": "message",
+  "why": "problems.append(None) still leaves a problem; the verdict comes from chain_ok and every test that reached here checks the verdict"
+ },
+ "core:1038:12:b30fbb82": {
+  "category": "condition",
+  "why": "chain_ok = None is falsy like False, so `valid` is still falsy; only `valid is False` / `chain_intact is False` distinguish it, and the tests that reached here asserted `not valid`"
+ },
+ "core:1038:23:543714b3": {
+  "category": "soundness",
+  "why": "every test that broke a prev link also broke a signature, the anchor or the summary, so a flag left True here changed no verdict; an unsigned chain with a middle tombstone removed and the anchor recomputed verified valid:true"
+ },
+ "core:1041:23:e24cd658": {
+  "category": "soundness",
+  "why": "every test that broke a tombstone hash also broke something else; a tombstone whose memory_id is rewritten in place keeps its hash, so its SIGNATURE still verifies, and with the anchor recomputed the hash mismatch is the only thing left -- flipped, the forged certificate verified valid:true"
+ },
+ "core:1044:16:4e1fb4c1": {
+  "category": "unexecuted",
+  "why": "the verifier-without-cryptography branch never ran (the suite always has it installed); with `sigs_ok` flipped, a signed certificate verified without any Ed25519 backend reported signatures_valid: True"
+ },
+ "core:1044:32:7cd7f00e": {
+  "category": "unexecuted",
+  "why": "the verifier-without-cryptography branch never ran (the suite always has it installed); with `sigs_ok` flipped, a signed certificate verified without any Ed25519 backend reported signatures_valid: True"
+ },
+ "core:1044:32:f3bce301": {
+  "category": "unexecuted",
+  "why": "the verifier-without-cryptography branch never ran (the suite always has it installed); with `sigs_ok` flipped, a signed certificate verified without any Ed25519 backend reported signatures_valid: True"
+ },
+ "core:1045:16:83770c00": {
+  "category": "unexecuted",
+  "why": "the verifier-without-cryptography branch never ran (the suite always has it installed); with `sigs_ok` flipped, a signed certificate verified without any Ed25519 backend reported signatures_valid: True"
+ },
+ "core:1045:26:d20c71e0": {
+  "category": "unexecuted",
+  "why": "the verifier-without-cryptography branch never ran (the suite always has it installed); with `sigs_ok` flipped, a signed certificate verified without any Ed25519 backend reported signatures_valid: True"
+ },
+ "core:10470:18:6b35fb41": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10471:16:67fa01ed": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10471:16:c82aed44": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10472:16:0f85b433": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10472:16:579413c4": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10473:16:badd9faa": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10473:16:e6e6caf3": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10474:16:319a3a54": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10474:16:8bdd60e8": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10475:16:2057c29d": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10475:16:63495950": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10475:16:91cf61cc": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
+ "core:10479:23:b2fe9891": {
+  "category": "condition",
+  "why": "every test that pinned expected_pubkey pinned the right key, so a self_check that dropped the pin read verified: True either way"
+ },
+ "core:1048:63:30057560": {
+  "category": "condition",
+  "why": "the key comes from `pub` only when a tombstone carries no pubkey of its own, i.e. one signed through receipt_signer with no receipt_pubkey; no test verified such a certificate"
+ },
+ "core:1048:89:47ea1e3a": {
+  "category": "equivalent",
+  "why": "equivalent: reached only when both keys are absent, and bytes.fromhex('') and bytes.fromhex('XXXX') both end in an exception that is reported as an invalid signature"
+ },
+ "core:1054:20:4d3d8fc6": {
+  "category": "unexecuted",
+  "why": "no test presents a tombstone signature that fails to verify, so this branch never ran"
+ },
+ "core:1055:20:191ee789": {
+  "category": "soundness",
+  "why": "no test presents a tombstone signature that fails to verify; `valid` reads sigs_ok, so with the flag left True a certificate carrying another tombstone's signature verified valid:true with 'invalid signature' in its own problem list"
+ },
+ "core:1055:30:7371b739": {
+  "category": "soundness",
+  "why": "no test presents a tombstone signature that fails to verify; `valid` reads sigs_ok, so with the flag left True a certificate carrying another tombstone's signature verified valid:true with 'invalid signature' in its own problem list"
+ },
+ "core:1077:22:6c0c2883": {
+  "category": "message",
+  "why": "wording of the UNSIGNED limit: tests assert that `limits` mentions UNSIGNED or that signed is False, not the sentence"
+ },
+ "core:1078:22:2bdde064": {
+  "category": "message",
+  "why": "wording of the UNSIGNED limit: tests assert that `limits` mentions UNSIGNED or that signed is False, not the sentence"
+ },
+ "core:1078:22:604fdc6c": {
+  "category": "message",
+  "why": "wording of the UNSIGNED limit: tests assert that `limits` mentions UNSIGNED or that signed is False, not the sentence"
+ },
+ "core:1078:22:8a3b0284": {
+  "category": "message",
+  "why": "wording of the UNSIGNED limit: tests assert that `limits` mentions UNSIGNED or that signed is False, not the sentence"
+ },
+ "core:1088:68:2f822914": {
+  "category": "message",
+  "why": "details inside the PARTIALLY SIGNED problem (which ids are listed, the count arithmetic, how many ids are shown); the verdict comes from sigs_ok and the test asserts the phrase"
+ },
+ "core:1088:74:0620d803": {
+  "category": "message",
+  "why": "details inside the PARTIALLY SIGNED problem (which ids are listed, the count arithmetic, how many ids are shown); the verdict comes from sigs_ok and the test asserts the phrase"
+ },
+ "core:1088:74:ac514e27": {
+  "category": "message",
+  "why": "details inside the PARTIALLY SIGNED problem (which ids are listed, the count arithmetic, how many ids are shown); the verdict comes from sigs_ok and the test asserts the phrase"
+ },
+ "core:1089:49:c619f150": {
+  "category": "message",
+  "why": "details inside the PARTIALLY SIGNED problem (which ids are listed, the count arithmetic, how many ids are shown); the verdict comes from sigs_ok and the test asserts the phrase"
+ },
+ "core:1090:56:a10a4749": {
+  "category": "message",
+  "why": "details inside the PARTIALLY SIGNED problem (which ids are listed, the count arithmetic, how many ids are shown); the verdict comes from sigs_ok and the test asserts the phrase"
+ },
+ "core:1099:24:4a009821": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1099:24:5215c288": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1104:52:3e6a3ef0": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1104:60:c6e3108e": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1104:60:deea51bb": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1106:20:299fd9d5": {
+  "category": "soundness",
+  "why": "the tests that reached this line trimmed the chain, which also breaks the Merkle root, so the count check never decided a verdict alone; an anchor whose n_tombstones alone lies (sth_hash recomputed, no key needed) verified"
+ },
+ "core:1106:8:8901a5ef": {
+  "category": "soundness",
+  "why": "the tests that reached this line trimmed the chain, which also breaks the Merkle root, so the count check never decided a verdict alone; an anchor whose n_tombstones alone lies (sth_hash recomputed, no key needed) verified"
+ },
+ "core:1110:29:910f96e1": {
+  "category": "equivalent",
+  "why": "equivalent: _chain_core returns the tombstone core for every kind that is not 'write'"
+ },
+ "core:1110:55:2f0aeff9": {
+  "category": "equivalent",
+  "why": "equivalent: _chain_core returns the tombstone core for every kind that is not 'write'"
+ },
+ "core:1110:55:30cf9051": {
+  "category": "equivalent",
+  "why": "equivalent: _chain_core returns the tombstone core for every kind that is not 'write'"
+ },
+ "core:1112:32:adf66d45": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1113:16:0d03a29b": {
+  "category": "soundness",
+  "why": "same shape: every test with a wrong tombstones_root also had a wrong count; sth_hash does not cover the root, so a root committing to another history changes nothing else and verified"
+ },
+ "core:1113:28:5ab64a19": {
+  "category": "soundness",
+  "why": "same shape: every test with a wrong tombstones_root also had a wrong count; sth_hash does not cover the root, so a root committing to another history changes nothing else and verified"
+ },
+ "core:1115:12:7c55ce4f": {
+  "category": "defensive",
+  "why": "unreachable from a JSON certificate: a tombstone that got past the chain loop is a dict of JSON values, which _canon always serialises, so re-deriving the root cannot raise"
+ },
+ "core:1115:79:d303a913": {
+  "category": "defensive",
+  "why": "unreachable from a JSON certificate: a tombstone that got past the chain loop is a dict of JSON values, which _canon always serialises, so re-deriving the root cannot raise"
+ },
+ "core:1115:88:0452e87d": {
+  "category": "defensive",
+  "why": "unreachable from a JSON certificate: a tombstone that got past the chain loop is a dict of JSON values, which _canon always serialises, so re-deriving the root cannot raise"
+ },
+ "core:1116:12:4b8a95c2": {
+  "category": "defensive",
+  "why": "unreachable from a JSON certificate: a tombstone that got past the chain loop is a dict of JSON values, which _canon always serialises, so re-deriving the root cannot raise"
+ },
+ "core:1116:24:a2f01434": {
+  "category": "defensive",
+  "why": "unreachable from a JSON certificate: a tombstone that got past the chain loop is a dict of JSON values, which _canon always serialises, so re-deriving the root cannot raise"
+ },
+ "core:1117:15:81070c22": {
+  "category": "soundness",
+  "why": "each of these skips the sth_hash comparison; every test that broke sth_hash broke another check too, so skipping it changed no verdict. sth_hash is the value a witness co-signs"
+ },
+ "core:1117:15:d5faa112": {
+  "category": "soundness",
+  "why": "each of these skips the sth_hash comparison; every test that broke sth_hash broke another check too, so skipping it changed no verdict. sth_hash is the value a witness co-signs"
+ },
+ "core:1117:27:8ada8ae2": {
+  "category": "soundness",
+  "why": "each of these skips the sth_hash comparison; every test that broke sth_hash broke another check too, so skipping it changed no verdict. sth_hash is the value a witness co-signs"
+ },
+ "core:1117:49:a8548904": {
+  "category": "soundness",
+  "why": "each of these skips the sth_hash comparison; every test that broke sth_hash broke another check too, so skipping it changed no verdict. sth_hash is the value a witness co-signs"
+ },
+ "core:1117:7:11297f6e": {
+  "category": "soundness",
+  "why": "each of these skips the sth_hash comparison; every test that broke sth_hash broke another check too, so skipping it changed no verdict. sth_hash is the value a witness co-signs"
+ },
+ "core:1117:7:2db7b046": {
+  "category": "condition",
+  "why": "stricter mutant: it differs only for an anchor WITHOUT sth_hash (then it refuses it); no test hands one over, so whether that is allowed is not pinned"
+ },
+ "core:1119:28:4109fe33": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1119:28:56c2b247": {
+  "category": "message",
+  "why": "wording or interpolated value of a problem line; the verdict comes from the anchor flags"
+ },
+ "core:1124:4:ee2cb191": {
+  "category": "unread-output",
+  "why": "'not performed' is None throughout this verifier and `valid` reads it with `is not False`, so an empty string passes every verdict; no test asserted the None when the input was not given"
+ },
+ "core:1129:11:16402282": {
+  "category": "unexecuted",
+  "why": "expected_anchor was only ever passed well-formed; `and` lets a non-integer count through to a TypeError and a missing tip through to the next branch"
+ },
+ "core:1130:12:a12d3d19": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1130:28:41e76197": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1130:28:9cbcbe07": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1131:12:ed8947bc": {
+  "category": "soundness",
+  "why": "no test passed an expected_anchor that pins nothing / is rewritten at the witnessed position / claims an empty chain with a non-genesis tip; with ok_w left True the certificate read as witnessed"
+ },
+ "core:1131:19:5dcdcab0": {
+  "category": "soundness",
+  "why": "no test passed an expected_anchor that pins nothing / is rewritten at the witnessed position / claims an empty chain with a non-genesis tip; with ok_w left True the certificate read as witnessed"
+ },
+ "core:1136:16:a9ab9714": {
+  "category": "boundary",
+  "why": "the only witnessed-anchor test covered a TRUNCATED chain; none covered a chain of the right length rewritten at the witnessed position, and position 1 is exactly what `w_n > 1` skips"
+ },
+ "core:1136:19:8ee78e9f": {
+  "category": "boundary",
+  "why": "the only witnessed-anchor test covered a TRUNCATED chain; none covered a chain of the right length rewritten at the witnessed position, and position 1 is exactly what `w_n > 1` skips"
+ },
+ "core:1137:12:45c48d14": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1137:41:0fe8c2a3": {
+  "category": "boundary",
+  "why": "the only witnessed-anchor test covered a TRUNCATED chain; none covered a chain of the right length rewritten at the witnessed position, and position 1 is exactly what `w_n > 1` skips"
+ },
+ "core:1137:47:796cdb13": {
+  "category": "boundary",
+  "why": "the only witnessed-anchor test covered a TRUNCATED chain; none covered a chain of the right length rewritten at the witnessed position, and position 1 is exactly what `w_n > 1` skips"
+ },
+ "core:1139:12:09156a92": {
+  "category": "soundness",
+  "why": "no test passed an expected_anchor that pins nothing / is rewritten at the witnessed position / claims an empty chain with a non-genesis tip; with ok_w left True the certificate read as witnessed"
+ },
+ "core:1139:19:3e5c9754": {
+  "category": "soundness",
+  "why": "no test passed an expected_anchor that pins nothing / is rewritten at the witnessed position / claims an empty chain with a non-genesis tip; with ok_w left True the certificate read as witnessed"
+ },
+ "core:1140:20:aa5b0476": {
+  "category": "condition",
+  "why": "no test passed a witness of an EMPTY chain, honest or not"
+ },
+ "core:1140:31:8eef0152": {
+  "category": "condition",
+  "why": "no test passed a witness of an EMPTY chain, honest or not"
+ },
+ "core:1141:12:2673f23d": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1141:28:58fe208c": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1141:28:a2fc6bd8": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1142:12:d93469f2": {
+  "category": "soundness",
+  "why": "no test passed an expected_anchor that pins nothing / is rewritten at the witnessed position / claims an empty chain with a non-genesis tip; with ok_w left True the certificate read as witnessed"
+ },
+ "core:1142:19:44f5ff16": {
+  "category": "soundness",
+  "why": "no test passed an expected_anchor that pins nothing / is rewritten at the witnessed position / claims an empty chain with a non-genesis tip; with ok_w left True the certificate read as witnessed"
+ },
+ "core:1163:22:6629f5b5": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1163:22:76a63fdc": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1163:31:e1147f1c": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1163:31:e3ddf036": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1163:8:a2ff3976": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1164:21:0f95d0ce": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1164:21:a464f1c5": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1165:59:f421cd40": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1165:65:47ae3c54": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1165:65:8968eafe": {
+  "category": "coverage-depth",
+  "why": "the only pre-scoped_to (legacy) certificate test used a store with one request, where 'scoped to the claimed requests' and 'the whole chain' are the same set"
+ },
+ "core:1176:38:de80348d": {
+  "category": "message",
+  "why": "the value interpolated into the count problem; summary_derivable parses only the prefix 'count', which is unchanged"
+ },
+ "core:1176:47:8c9d49a7": {
+  "category": "message",
+  "why": "the value interpolated into the count problem; summary_derivable parses only the prefix 'count', which is unchanged"
+ },
+ "core:1176:47:8da72279": {
+  "category": "message",
+  "why": "the value interpolated into the count problem; summary_derivable parses only the prefix 'count', which is unchanged"
+ },
+ "core:1196:16:2151d3a0": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1196:16:50329ce1": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1196:16:6c44231f": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1196:16:ae607705": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1196:50:ba9bce71": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1196:8:e9b44623": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1197:16:a93cb48a": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1197:16:d011011d": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:20:29b3800a": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:20:5992f571": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:20:8c5d6f4a": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:20:c4e201d2": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:36:55db525d": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:41:69727336": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:50:37fc0e7d": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:50:ab099d80": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:67:214f51e0": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:67:a2b76f32": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:79:123a8897": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:92:3204d230": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1198:92:fe5c8320": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1201:8:5bebe376": {
+  "category": "message",
+  "why": "wording of the ZERO-erasures explanation (`_why`); the verdict comes from attests_an_erasure, and the tests assert 'ZERO erasures' or the flag"
+ },
+ "core:1213:7:dab809e3": {
+  "category": "condition",
+  "why": "differs only when NO store is named: the mutant then tries to read path None and appends 'cannot read store at None' without changing the verdict; no test checked that a bare verification reports no problems"
+ },
+ "core:1226:24:aebedd9f": {
+  "category": "message",
+  "why": "the encrypted magic is 5 bytes, so raw[:6] never matches and the store falls through to 'cannot read store': still refused, only the explanation changes, and the test checks the verdict"
+ },
+ "core:1227:36:c56e7a6e": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1227:36:d2211974": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1228:36:22f8054f": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1228:36:eca4700e": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1230:56:176d61b6": {
+  "category": "equivalent",
+  "why": "equivalent: codec names are case-insensitive"
+ },
+ "core:1232:66:08957368": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1232:75:fd4d25ad": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1238:94:1cdf13d6": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1242:4:2eaa5cff": {
+  "category": "unread-output",
+  "why": "'not performed' is None throughout this verifier and `valid` reads it with `is not False`, so an empty string passes every verdict; no test asserted the None when the input was not given"
+ },
+ "core:1247:12:ff94271a": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1247:28:09fb49d0": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1247:28:a857090a": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1248:12:03eab19a": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1248:19:2cb183b2": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1248:19:b777aee0": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1248:36:a4284261": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1250:12:98e8b581": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1250:28:3cf2b36d": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1250:28:3e1b4579": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1251:28:5b83fdac": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1251:28:8e59c869": {
+  "category": "unexecuted",
+  "why": "a witnessed-anchor / store-binding refusal no test triggered, so only its wording or its None-append was mutated here; the verdict flags beside it are covered by the new tests"
+ },
+ "core:1252:12:3e194f7c": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1252:19:006e350a": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1252:19:d5e75e34": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1252:36:2e3d70d3": {
+  "category": "soundness",
+  "why": "no test hands store_receipts with an anchor that lacks writes_tip, or with a genesis writes_tip against a store that has receipts; with store_bound left True / renamed the absence proof counted as bound to a store it was not issued from"
+ },
+ "core:1254:12:a4958f66": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1254:28:227075a3": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1254:28:af8ffb3f": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1255:28:bdd2a7c8": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1255:28:de6a9333": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1256:28:0e9d470a": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1256:28:94f5c944": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1265:24:1d4e74fc": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1266:24:33a1a800": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1266:24:86b39d59": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1266:24:e18984f4": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1277:24:21bd8b39": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1277:24:6def6c58": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1277:24:b9f03a60": {
+  "category": "message",
+  "why": "wording or interpolated detail of a problem line; the verdict comes from the flags beside it"
+ },
+ "core:1280:65:196d46d1": {
+  "category": "soundness",
+  "why": "the scope tests alter `scope` and `scope_excludes`; none altered `scope_covers`, so a loop that looked it up under the wrong key -- never comparing it -- passed a certificate that claims more coverage than it verified"
+ },
+ "core:1280:65:9dcfe18b": {
+  "category": "soundness",
+  "why": "the scope tests alter `scope` and `scope_excludes`; none altered `scope_covers`, so a loop that looked it up under the wrong key -- never comparing it -- passed a certificate that claims more coverage than it verified"
+ },
+ "core:7916:67:47da4962": {
+  "category": "unread-output",
+  "why": "no test reads a tombstone's ts; stored under another key, the hash commits to ts=None consistently, so every chain still verifies while the time of the erasure act leaves the commitment"
+ },
+ "core:7916:67:71d8a3ad": {
+  "category": "unread-output",
+  "why": "no test reads a tombstone's ts; stored under another key, the hash commits to ts=None consistently, so every chain still verifies while the time of the erasure act leaves the commitment"
+ },
+ "core:7918:11:5a8c0b9e": {
+  "category": "equivalent",
+  "why": "equivalent through the library: both callers (forget, declare_out_of_band_deletion) always pass a non-None basis, so the first operand decides and the others are never evaluated"
+ },
+ "core:7918:46:177fd3f3": {
+  "category": "equivalent",
+  "why": "equivalent through the library: both callers (forget, declare_out_of_band_deletion) always pass a non-None basis, so the first operand decides and the others are never evaluated"
+ },
+ "core:7918:75:e3513d91": {
+  "category": "equivalent",
+  "why": "equivalent through the library: both callers (forget, declare_out_of_band_deletion) always pass a non-None basis, so the first operand decides and the others are never evaluated"
+ },
+ "core:7933:23:cae020c0": {
+  "category": "condition",
+  "why": "the tenant tests assert the NEGATIVE (globex does not see acme's tombstone), which an unstamped tombstone also satisfies because the view filter fails closed; that acme sees its OWN erasure was never asserted"
+ },
+ "core:7934:12:67f8835c": {
+  "category": "condition",
+  "why": "the tenant tests assert the NEGATIVE (globex does not see acme's tombstone), which an unstamped tombstone also satisfies because the view filter fails closed; that acme sees its OWN erasure was never asserted"
+ },
+ "core:7934:14:1b506706": {
+  "category": "condition",
+  "why": "the tenant tests assert the NEGATIVE (globex does not see acme's tombstone), which an unstamped tombstone also satisfies because the view filter fails closed; that acme sees its OWN erasure was never asserted"
+ },
+ "core:7934:14:55496afb": {
+  "category": "condition",
+  "why": "the tenant tests assert the NEGATIVE (globex does not see acme's tombstone), which an unstamped tombstone also satisfies because the view filter fails closed; that acme sees its OWN erasure was never asserted"
+ },
+ "core:7951:61:a456f709": {
+  "category": "message",
+  "why": "type name inside an error message"
+ },
+ "core:7954:22:885cc9fe": {
+  "category": "unexecuted",
+  "why": "no test's signer returns an empty signature, so this refusal never ran"
+ },
+ "core:7954:35:0f1f3177": {
+  "category": "unexecuted",
+  "why": "no test's signer returns an empty signature, so this refusal never ran"
+ },
+ "core:7954:35:9f3db1ab": {
+  "category": "unexecuted",
+  "why": "no test's signer returns an empty signature, so this refusal never ran"
+ },
+ "core:7955:35:8a4e84ff": {
+  "category": "unexecuted",
+  "why": "no test's signer returns an empty signature, so this refusal never ran"
+ },
+ "core:7955:35:f11c4f04": {
+  "category": "unexecuted",
+  "why": "no test's signer returns an empty signature, so this refusal never ran"
+ },
+ "core:7956:12:fc86c661": {
+  "category": "unread-output",
+  "why": "the one receipt_signer test checks that the signer was called, not what the tombstone carries; nothing verified a signer-signed tombstone or its embedded key"
+ },
+ "core:7958:16:fbaaf176": {
+  "category": "unread-output",
+  "why": "the one receipt_signer test checks that the signer was called, not what the tombstone carries; nothing verified a signer-signed tombstone or its embedded key"
+ },
+ "core:7958:18:dfaa1a0c": {
+  "category": "unread-output",
+  "why": "the one receipt_signer test checks that the signer was called, not what the tombstone carries; nothing verified a signer-signed tombstone or its embedded key"
+ },
+ "core:7958:18:f7f02acd": {
+  "category": "unread-output",
+  "why": "the one receipt_signer test checks that the signer was called, not what the tombstone carries; nothing verified a signer-signed tombstone or its embedded key"
+ },
+ "core:7985:37:51db24bc": {
+  "category": "format",
+  "why": "layout of the tombstone sidecar on disk (indent, escaping); every reader parses it, so no test can see it"
+ },
+ "core:7985:37:6efed391": {
+  "category": "format",
+  "why": "layout of the tombstone sidecar on disk (indent, escaping); every reader parses it, so no test can see it"
+ },
+ "core:7985:37:74588b32": {
+  "category": "format",
+  "why": "layout of the tombstone sidecar on disk (indent, escaping); every reader parses it, so no test can see it"
+ },
+ "core:7985:37:7764d2ea": {
+  "category": "format",
+  "why": "layout of the tombstone sidecar on disk (indent, escaping); every reader parses it, so no test can see it"
+ },
+ "core:7985:73:92d63fc1": {
+  "category": "format",
+  "why": "layout of the tombstone sidecar on disk (indent, escaping); every reader parses it, so no test can see it"
+ },
+ "core:7985:89:32753501": {
+  "category": "format",
+  "why": "layout of the tombstone sidecar on disk (indent, escaping); every reader parses it, so no test can see it"
+ },
+ "core:7990:77:8989538f": {
+  "category": "message",
+  "why": "type name inside an error message"
+ },
+ "core:948:11:58a07c3c": {
+  "category": "format",
+  "why": "the signed message format is only compared with itself (signer and checker call the same function); renaming a field orphans every authorization already issued, and nothing pinned the format"
+ },
+ "core:948:11:68e86fb0": {
+  "category": "format",
+  "why": "the signed message format is only compared with itself (signer and checker call the same function); renaming a field orphans every authorization already issued, and nothing pinned the format"
+ },
+ "core:948:34:f91c5908": {
+  "category": "soundness",
+  "why": "the only sign_erasure test verifies the signature against erasure_challenge() computed by the same function, so a challenge that no longer names the subject or request -- one message for every erasure -- verified just as well"
+ },
+ "core:948:42:1fee13ff": {
+  "category": "format",
+  "why": "the signed message format is only compared with itself (signer and checker call the same function); renaming a field orphans every authorization already issued, and nothing pinned the format"
+ },
+ "core:948:42:5acd9f33": {
+  "category": "format",
+  "why": "the signed message format is only compared with itself (signer and checker call the same function); renaming a field orphans every authorization already issued, and nothing pinned the format"
+ },
+ "core:948:62:631f57b1": {
+  "category": "format",
+  "why": "the signed message format is only compared with itself (signer and checker call the same function); renaming a field orphans every authorization already issued, and nothing pinned the format"
+ },
+ "core:948:62:af41c5e3": {
+  "category": "format",
+  "why": "the signed message format is only compared with itself (signer and checker call the same function); renaming a field orphans every authorization already issued, and nothing pinned the format"
+ },
+ "core:956:14:c481fb8d": {
+  "category": "unexecuted",
+  "why": "the no-cryptography branch of sign_erasure: the suite always has `cryptography` installed"
+ },
+ "core:956:27:0072888f": {
+  "category": "unexecuted",
+  "why": "the no-cryptography branch of sign_erasure: the suite always has `cryptography` installed"
+ },
+ "core:956:27:414b1f05": {
+  "category": "unexecuted",
+  "why": "the no-cryptography branch of sign_erasure: the suite always has `cryptography` installed"
+ },
+ "merkle:106:17:f7317f2a": {
+  "category": "soundness",
+  "why": "no test gave the VERIFIER an out-of-range index: bounds were only tested through inclusion_proof(), which raises first. Widened, leaf 0 of a 2-leaf tree verifies at index 2 with its honest path"
+ },
+ "merkle:115:40:83c2eb9c": {
+  "category": "equivalent",
+  "why": "equivalent: the loop is entered only when `fn & 1 or fn == sn`, and `fn == sn == 0` returned None above, so fn is never 0 inside it; for an even fn != 0, `fn != 0` and `fn != 1` are both true"
+ },
+ "merkle:122:11:aabe62bb": {
+  "category": "soundness",
+  "why": "no test gave a path shorter than the claimed tree size; with the final check forced, a 2-leaf path verifies leaf 0 as a member of a 3-, 4- or 6-leaf tree whose 'root' is the 2-leaf root"
+ },
+ "merkle:143:14:0b9130c0": {
+  "category": "message",
+  "why": "exception text only: the bounds tests assert `pytest.raises(IndexError)`, never the message"
+ },
+ "merkle:143:25:701eae60": {
+  "category": "message",
+  "why": "exception text only: the bounds tests assert `pytest.raises(IndexError)`, never the message"
+ },
+ "merkle:156:11:470ae3db": {
+  "category": "equivalent",
+  "why": "equivalent: `b` is only read as `if b`, and None is falsy exactly like False"
+ },
+ "merkle:162:7:3b54fd68": {
+  "category": "soundness",
+  "why": "the only rollback test (n < m) used an EMPTY proof, which a later guard refuses anyway; the size check itself never decided a test. With `and`, a crafted non-empty proof passes n < m, and m = -1 loops forever"
+ },
+ "merkle:165:15:ab4a184d": {
+  "category": "soundness",
+  "why": "every m == n test passed the same root twice; with `or`, two DIFFERENT roots at one size and an empty proof verify as consistent -- an equal-size fork"
+ },
+ "merkle:174:15:5451bad7": {
+  "category": "soundness",
+  "why": "no test passed an empty proof for 0 < m < n, so the refusal never ran; flipped, any two roots verify for any sizes"
+ },
+ "merkle:181:19:1c53a5a2": {
+  "category": "soundness",
+  "why": "every negative test used a proof of the exact length; flipped, one junk hash appended to any proof returns True before either root is compared"
+ },
+ "merkle:185:44:ea77e323": {
+  "category": "equivalent",
+  "why": "equivalent: same shape as merkle.py:115 -- node is never 0 inside this loop (node == last == 0 returned False on the line above); checked by brute force over every (m, n) up to 40"
+ },
+ "merkle:187:16:e361a38d": {
+  "category": "coverage-depth",
+  "why": "the right-edge climb only runs when the old tree's edge is several levels deep; the round-trip tests stop at 12 leaves and the first honest proof these mutants reject is 13 -> 14"
+ },
+ "merkle:187:25:0810fdcd": {
+  "category": "coverage-depth",
+  "why": "the right-edge climb only runs when the old tree's edge is several levels deep; the round-trip tests stop at 12 leaves and the first honest proof these mutants reject is 13 -> 14"
+ },
+ "merkle:80:14:43b6b0f1": {
+  "category": "message",
+  "why": "exception text only: the bounds tests assert `pytest.raises(IndexError)`, never the message"
+ },
+ "merkle:80:25:121bff68": {
+  "category": "message",
+  "why": "exception text only: the bounds tests assert `pytest.raises(IndexError)`, never the message"
+ },
+ "transparency:102:12:09e96113": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:102:23:4cb81b6c": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:102:23:d079be30": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:105:12:1598d385": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:105:23:423adcd2": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:105:23:938818af": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:105:23:c429f299": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:107:23:813db7c3": {
+  "category": "message",
+  "why": "wording: the tests look for a phrase inside the message ('trust anchor', 'does not start with', 'over the 8'), which the XX-wrapped text still contains"
+ },
+ "transparency:110:12:cfd76072": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:110:23:2a2b1498": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:110:23:65bdc124": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:110:23:ade75ede": {
+  "category": "unexecuted",
+  "why": "no test sends a statement with a failed signature, no issuer or no subject, so these three refusals never ran; `why.append(None)` also turns the RegistrationRefused message into a TypeError"
+ },
+ "transparency:111:49:2623c212": {
+  "category": "condition",
+  "why": "the prefix rule was only tested with a subject that FAILS it; 'None' fails every prefix too, so a rule that refuses everything passed"
+ },
+ "transparency:112:23:ea221d63": {
+  "category": "message",
+  "why": "wording: the tests look for a phrase inside the message ('trust anchor', 'does not start with', 'over the 8'), which the XX-wrapped text still contains"
+ },
+ "transparency:113:22:b296b601": {
+  "category": "boundary",
+  "why": "no payload exactly at the ceiling: `>` and `>=` differ only there"
+ },
+ "transparency:114:23:56fdc9c6": {
+  "category": "message",
+  "why": "wording: the tests look for a phrase inside the message ('trust anchor', 'does not start with', 'over the 8'), which the XX-wrapped text still contains"
+ },
+ "transparency:129:11:c86e6b9e": {
+  "category": "condition",
+  "why": "no test constructs a service missing only ONE of signer / issuer verifier"
+ },
+ "transparency:130:18:549f298a": {
+  "category": "unexecuted",
+  "why": "no test constructs a service without a signer or verifier, so the TypeError never ran"
+ },
+ "transparency:130:28:0f8e3219": {
+  "category": "unexecuted",
+  "why": "no test constructs a service without a signer or verifier, so the TypeError never ran"
+ },
+ "transparency:130:28:626f8b53": {
+  "category": "unexecuted",
+  "why": "no test constructs a service without a signer or verifier, so the TypeError never ran"
+ },
+ "transparency:130:28:f729d125": {
+  "category": "unexecuted",
+  "why": "no test constructs a service without a signer or verifier, so the TypeError never ran"
+ },
+ "transparency:135:107:0c16465e": {
+  "category": "identity",
+  "why": "store_id is only compared with itself (head vs describe vs the witness that read it from head), so any deterministic value passes -- including str(None), which gives every log in the world the same identity"
+ },
+ "transparency:135:24:2bb2e7fd": {
+  "category": "identity",
+  "why": "store_id is only compared with itself (head vs describe vs the witness that read it from head), so any deterministic value passes -- including str(None), which gives every log in the world the same identity"
+ },
+ "transparency:135:24:cf1604ab": {
+  "category": "identity",
+  "why": "store_id is only compared with itself (head vs describe vs the witness that read it from head), so any deterministic value passes -- including str(None), which gives every log in the world the same identity"
+ },
+ "transparency:135:66:dcd484e1": {
+  "category": "identity",
+  "why": "store_id is only compared with itself (head vs describe vs the witness that read it from head), so any deterministic value passes -- including str(None), which gives every log in the world the same identity"
+ },
+ "transparency:135:84:1de2745d": {
+  "category": "equivalent",
+  "why": "equivalent: codec names are case-insensitive, 'UTF-8' is 'utf-8'"
+ },
+ "transparency:142:17:9502ec9a": {
+  "category": "platform",
+  "why": "equivalent on this platform: the locale encoding here is UTF-8, and every line is ASCII anyway (ensure_ascii=True); would matter only for a non-ASCII log on a non-UTF-8 locale"
+ },
+ "transparency:142:17:9e81f721": {
+  "category": "platform",
+  "why": "equivalent on this platform: the locale encoding here is UTF-8, and every line is ASCII anyway (ensure_ascii=True); would matter only for a non-ASCII log on a non-UTF-8 locale"
+ },
+ "transparency:142:42:c6924dc1": {
+  "category": "equivalent",
+  "why": "equivalent: codec names are case-insensitive, 'UTF-8' is 'utf-8'"
+ },
+ "transparency:145:57:49a1e2ad": {
+  "category": "unread-output",
+  "why": "the entry's `ts` key is committed into the leaf but no test reads it back"
+ },
+ "transparency:145:57:ebf3fb0e": {
+  "category": "unread-output",
+  "why": "the entry's `ts` key is committed into the leaf but no test reads it back"
+ },
+ "transparency:152:15:1f0308da": {
+  "category": "equivalent",
+  "why": "equivalent: drops `ensure_ascii=True`, which is json.dumps's default"
+ },
+ "transparency:152:15:3baa921c": {
+  "category": "format",
+  "why": "layout of the line on disk only: every reader parses the line and `_leaves()` re-encodes it canonically, so key order, spacing and escaping on disk never reach a leaf (the new published-log test stores the lines re-ordered and spaced to pin exactly that)"
+ },
+ "transparency:152:15:5f8d577f": {
+  "category": "format",
+  "why": "layout of the line on disk only: every reader parses the line and `_leaves()` re-encodes it canonically, so key order, spacing and escaping on disk never reach a leaf (the new published-log test stores the lines re-ordered and spaced to pin exactly that)"
+ },
+ "transparency:152:15:658c0c0b": {
+  "category": "format",
+  "why": "layout of the line on disk only: every reader parses the line and `_leaves()` re-encodes it canonically, so key order, spacing and escaping on disk never reach a leaf (the new published-log test stores the lines re-ordered and spaced to pin exactly that)"
+ },
+ "transparency:152:15:833debc7": {
+  "category": "format",
+  "why": "layout of the line on disk only: every reader parses the line and `_leaves()` re-encodes it canonically, so key order, spacing and escaping on disk never reach a leaf (the new published-log test stores the lines re-ordered and spaced to pin exactly that)"
+ },
+ "transparency:152:15:c570166d": {
+  "category": "format",
+  "why": "layout of the line on disk only: every reader parses the line and `_leaves()` re-encodes it canonically, so key order, spacing and escaping on disk never reach a leaf (the new published-log test stores the lines re-ordered and spaced to pin exactly that)"
+ },
+ "transparency:152:43:a9e17cd6": {
+  "category": "format",
+  "why": "layout of the line on disk only: every reader parses the line and `_leaves()` re-encodes it canonically, so key order, spacing and escaping on disk never reach a leaf (the new published-log test stores the lines re-ordered and spaced to pin exactly that)"
+ },
+ "transparency:152:85:e42c575f": {
+  "category": "format",
+  "why": "layout of the line on disk only: every reader parses the line and `_leaves()` re-encodes it canonically, so key order, spacing and escaping on disk never reach a leaf (the new published-log test stores the lines re-ordered and spaced to pin exactly that)"
+ },
+ "transparency:153:13:54a711ab": {
+  "category": "platform",
+  "why": "equivalent on POSIX: newline=None writes '\\n' here; on Windows it would write '\\r\\n', which the line reader strips, so the parsed entries (and the leaves, re-encoded from them) are the same"
+ },
+ "transparency:153:13:6359d8ba": {
+  "category": "platform",
+  "why": "equivalent on POSIX: newline=None writes '\\n' here; on Windows it would write '\\r\\n', which the line reader strips, so the parsed entries (and the leaves, re-encoded from them) are the same"
+ },
+ "transparency:153:13:82036f58": {
+  "category": "platform",
+  "why": "equivalent on this platform: the locale encoding here is UTF-8, and every line is ASCII anyway (ensure_ascii=True); would matter only for a non-ASCII log on a non-UTF-8 locale"
+ },
+ "transparency:153:13:eb1770c6": {
+  "category": "platform",
+  "why": "equivalent on this platform: the locale encoding here is UTF-8, and every line is ASCII anyway (ensure_ascii=True); would matter only for a non-ASCII log on a non-UTF-8 locale"
+ },
+ "transparency:153:43:a1313183": {
+  "category": "equivalent",
+  "why": "equivalent: codec names are case-insensitive, 'UTF-8' is 'utf-8'"
+ },
+ "transparency:161:16:0e222b23": {
+  "category": "equivalent",
+  "why": "equivalent: drops `ensure_ascii=True`, which is json.dumps's default"
+ },
+ "transparency:161:16:1b117eb8": {
+  "category": "format",
+  "why": "leaf encoding: producer and verifier both call _leaves(), so the tree is rebuilt consistently and every Receipt already issued silently stops matching; no test compared a leaf with bytes written by an earlier run"
+ },
+ "transparency:161:16:84b17fea": {
+  "category": "format",
+  "why": "leaf encoding: producer and verifier both call _leaves(), so the tree is rebuilt consistently and every Receipt already issued silently stops matching; no test compared a leaf with bytes written by an earlier run"
+ },
+ "transparency:161:16:f00aa397": {
+  "category": "format",
+  "why": "leaf encoding: producer and verifier both call _leaves(), so the tree is rebuilt consistently and every Receipt already issued silently stops matching; no test compared a leaf with bytes written by an earlier run"
+ },
+ "transparency:161:40:d623e734": {
+  "category": "format",
+  "why": "leaf encoding: producer and verifier both call _leaves(), so the tree is rebuilt consistently and every Receipt already issued silently stops matching; no test compared a leaf with bytes written by an earlier run"
+ },
+ "transparency:161:82:5ffdaf49": {
+  "category": "format",
+  "why": "leaf encoding: producer and verifier both call _leaves(), so the tree is rebuilt consistently and every Receipt already issued silently stops matching; no test compared a leaf with bytes written by an earlier run"
+ },
+ "transparency:161:95:2747011a": {
+  "category": "equivalent",
+  "why": "equivalent: codec names are case-insensitive, 'UTF-8' is 'utf-8'"
+ },
+ "transparency:179:14:074cf47e": {
+  "category": "unexecuted",
+  "why": "unreachable through the public API: the constructor always writes entry 0 as a policy, so policy_in_force() never finds none"
+ },
+ "transparency:179:27:624650d2": {
+  "category": "unexecuted",
+  "why": "unreachable through the public API: the constructor always writes entry 0 as a policy, so policy_in_force() never finds none"
+ },
+ "transparency:179:27:b0414af1": {
+  "category": "unexecuted",
+  "why": "unreachable through the public API: the constructor always writes entry 0 as a policy, so policy_in_force() never finds none"
+ },
+ "transparency:179:27:c957ecc2": {
+  "category": "unexecuted",
+  "why": "unreachable through the public API: the constructor always writes entry 0 as a policy, so policy_in_force() never finds none"
+ },
+ "transparency:184:8:f9ea7bb5": {
+  "category": "unread-output",
+  "why": "`self.policy` is not read after construction -- registration reads the policy from the log -- and no test asserted it"
+ },
+ "transparency:185:60:3f2ff1f8": {
+  "category": "condition",
+  "why": "the only test that changed the policy then had a registration REFUSED, which stops before the new entry's policy_sha256 is read; a successful registration under a changed policy was never tried"
+ },
+ "transparency:185:60:b7f1cd72": {
+  "category": "condition",
+  "why": "the only test that changed the policy then had a registration REFUSED, which stops before the new entry's policy_sha256 is read; a successful registration under a changed policy was never tried"
+ },
+ "transparency:186:57:4c9c791b": {
+  "category": "condition",
+  "why": "the only test that changed the policy then had a registration REFUSED, which stops before the new entry's policy_sha256 is read; a successful registration under a changed policy was never tried"
+ },
+ "transparency:186:57:583c4e57": {
+  "category": "condition",
+  "why": "the only test that changed the policy then had a registration REFUSED, which stops before the new entry's policy_sha256 is read; a successful registration under a changed policy was never tried"
+ },
+ "transparency:209:38:122d51fc": {
+  "category": "message",
+  "why": "wording: the tests look for a phrase inside the message ('trust anchor', 'does not start with', 'over the 8'), which the XX-wrapped text still contains"
+ },
+ "transparency:212:20:37a5a2a0": {
+  "category": "unread-output",
+  "why": "the registration entry's `kind` label is never read: the verifier recognises a registration by `statement_sha256`, not by `kind`"
+ },
+ "transparency:212:20:c0757d30": {
+  "category": "unread-output",
+  "why": "the registration entry's `kind` label is never read: the verifier recognises a registration by `statement_sha256`, not by `kind`"
+ },
+ "transparency:212:40:19f8ae68": {
+  "category": "unread-output",
+  "why": "the entry's `ts` key is committed into the leaf but no test reads it back"
+ },
+ "transparency:212:40:681d8b55": {
+  "category": "unread-output",
+  "why": "the entry's `ts` key is committed into the leaf but no test reads it back"
+ },
+ "transparency:233:25:5470fae6": {
+  "category": "boundary",
+  "why": "no test asked for the receipt of index == size (the next one, the one a poller asks for)"
+ },
+ "transparency:258:32:3e4a6453": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:258:35:6c54e8b5": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:258:35:b2b14cc1": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:258:53:37d653e4": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:259:16:89951aca": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:259:16:8ec54ef9": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:259:43:d4be9bb9": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:259:43:ee5aabf5": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:259:51:377a9730": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:259:51:535b5694": {
+  "category": "unread-output",
+  "why": "the head's fixed fields are only ever hashed and compared with the same head; nothing asserts what they say"
+ },
+ "transparency:263:57:9ee88280": {
+  "category": "boundary",
+  "why": "the default threshold is never exercised: every witnessed_head test passes `threshold=` explicitly or uses enough witnesses for 2"
+ },
+ "transparency:284:16:93dda8d6": {
+  "category": "unread-output",
+  "why": "`threshold` in the witnessed_head result is never read back"
+ },
+ "transparency:284:16:b5073a5e": {
+  "category": "unread-output",
+  "why": "`threshold` in the witnessed_head result is never read back"
+ },
+ "transparency:293:16:3c81f474": {
+  "category": "unread-output",
+  "why": "describe() keys no test reads (the test checks the scope sentence, the policy digest and that the public key appears somewhere in the JSON)"
+ },
+ "transparency:293:16:4a7e0f66": {
+  "category": "unread-output",
+  "why": "describe() keys no test reads (the test checks the scope sentence, the policy digest and that the public key appears somewhere in the JSON)"
+ },
+ "transparency:293:46:f27b0f3c": {
+  "category": "unread-output",
+  "why": "describe() keys no test reads (the test checks the scope sentence, the policy digest and that the public key appears somewhere in the JSON)"
+ },
+ "transparency:294:43:496d12ea": {
+  "category": "unread-output",
+  "why": "describe() keys no test reads (the test checks the scope sentence, the policy digest and that the public key appears somewhere in the JSON)"
+ },
+ "transparency:294:43:59a39689": {
+  "category": "unread-output",
+  "why": "describe() keys no test reads (the test checks the scope sentence, the policy digest and that the public key appears somewhere in the JSON)"
+ },
+ "transparency:295:16:5ec316a2": {
+  "category": "unread-output",
+  "why": "describe()['store_id'] was never read (the new identity test reads it)"
+ },
+ "transparency:295:16:b70a071f": {
+  "category": "unread-output",
+  "why": "describe()['store_id'] was never read (the new identity test reads it)"
+ },
+ "transparency:297:16:35e706f0": {
+  "category": "unread-output",
+  "why": "describe() keys no test reads (the test checks the scope sentence, the policy digest and that the public key appears somewhere in the JSON)"
+ },
+ "transparency:297:16:b14c1ea8": {
+  "category": "unread-output",
+  "why": "describe() keys no test reads (the test checks the scope sentence, the policy digest and that the public key appears somewhere in the JSON)"
+ },
+ "transparency:298:26:1777817a": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:298:26:819b324c": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:298:26:9eb47659": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:299:26:bf9ea0e5": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:300:26:168e62fd": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:300:26:26812290": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:300:26:a5481117": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:301:26:0c9bb9a4": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:301:26:873e6f65": {
+  "category": "message",
+  "why": "wording of describe()'s scope: the test asserts the phrase 'NON-EQUIVOCATION is not', which survives these edits"
+ },
+ "transparency:325:24:499e97fd": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:325:24:d55f3ec5": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:325:43:339798cf": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:325:43:a27711ae": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:325:60:00a16709": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:325:60:d476ad39": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:325:75:1805b474": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:325:75:b137a72a": {
+  "category": "unread-output",
+  "why": "the initial placeholder keys are overwritten on the full path; on the two early returns (no Receipt, unreadable leaf) a caller reading `bound` / `entry` / `receipt` would get KeyError under the mutant, and no test reads those keys there"
+ },
+ "transparency:327:9:05710222": {
+  "category": "soundness",
+  "why": "the one test that passed expected_issuer passed the issuer the statement really has; a verifier that dropped the pin answered the same"
+ },
+ "transparency:327:9:d9c8ea72": {
+  "category": "soundness",
+  "why": "the one test that passed expected_issuer passed the issuer the statement really has; a verifier that dropped the pin answered the same"
+ },
+ "transparency:328:4:e3a9416d": {
+  "category": "unread-output",
+  "why": "out['statement'] is read by no test on a path where it matters (the new verdict test reads it)"
+ },
+ "transparency:328:8:b8c8ff0c": {
+  "category": "unread-output",
+  "why": "out['statement'] is read by no test on a path where it matters (the new verdict test reads it)"
+ },
+ "transparency:328:8:e3b945b5": {
+  "category": "unread-output",
+  "why": "out['statement'] is read by no test on a path where it matters (the new verdict test reads it)"
+ },
+ "transparency:329:24:041ba886": {
+  "category": "message",
+  "why": "prefix of each problem line ('statement: ', 'receipt: '); no test reads it. The `+` -> `-` variant raises TypeError only when there IS a statement problem, which no test produced"
+ },
+ "transparency:329:24:7db7bfae": {
+  "category": "message",
+  "why": "prefix of each problem line ('statement: ', 'receipt: '); no test reads it. The `+` -> `-` variant raises TypeError only when there IS a statement problem, which no test produced"
+ },
+ "transparency:329:24:de38c3ad": {
+  "category": "message",
+  "why": "prefix of each problem line ('statement: ', 'receipt: '); no test reads it. The `+` -> `-` variant raises TypeError only when there IS a statement problem, which no test produced"
+ },
+ "transparency:329:4:6ee1cab1": {
+  "category": "message",
+  "why": "problems from one stage overwrite the other's; the verdict comes from the flags, and no test counts or inspects the combined problem list"
+ },
+ "transparency:333:31:700a55a2": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:333:31:f9a3f497": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:333:31:f9f2b2e9": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:334:31:2b95d185": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:334:31:4c637b01": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:336:9:08b4e395": {
+  "category": "soundness",
+  "why": "every call passed the log's own current root as expected_root, which is also the root inside the receipt, so a verifier that ignored the argument answered the same way"
+ },
+ "transparency:336:9:560fa570": {
+  "category": "soundness",
+  "why": "every call passed the log's own current root as expected_root, which is also the root inside the receipt, so a verifier that ignored the argument answered the same way"
+ },
+ "transparency:339:24:a2876a1a": {
+  "category": "message",
+  "why": "prefix of each problem line ('statement: ', 'receipt: '); no test reads it. The `+` -> `-` variant raises TypeError only when there IS a statement problem, which no test produced"
+ },
+ "transparency:339:24:e28157e4": {
+  "category": "message",
+  "why": "prefix of each problem line ('statement: ', 'receipt: '); no test reads it. The `+` -> `-` variant raises TypeError only when there IS a statement problem, which no test produced"
+ },
+ "transparency:339:4:0f3fd672": {
+  "category": "message",
+  "why": "problems from one stage overwrite the other's; the verdict comes from the flags, and no test counts or inspects the combined problem list"
+ },
+ "transparency:342:52:0913e7d0": {
+  "category": "equivalent",
+  "why": "equivalent: codec names are case-insensitive, 'UTF-8' is 'utf-8'"
+ },
+ "transparency:344:12:034c9540": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:344:12:f14ffcfa": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:344:31:0765b5a0": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:344:31:5c3dc12f": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:344:31:9e75cb15": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:344:31:c2f58805": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:344:71:078a4b0d": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:344:8:de996a49": {
+  "category": "unexecuted",
+  "why": "no test hands the verifier a leaf that is not JSON, so this branch never ran"
+ },
+ "transparency:354:12:40cb5c28": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:354:16:016e3fd5": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:354:16:1a5cf978": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:355:16:1f3f4f91": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:355:16:61b9394d": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:355:16:e5ae07e2": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:356:16:272b0a2f": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:356:16:5f05ca19": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:356:16:baa59494": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:357:16:19f77007": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:357:16:4b6ad3ee": {
+  "category": "unexecuted",
+  "why": "no test verifies a statement against a leaf that is not a registration entry (for instance the policy entry), so this message never ran"
+ },
+ "transparency:360:16:90a92f33": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:360:16:cba10a3b": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:360:16:fb3dfe56": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:361:16:fff0a80f": {
+  "category": "message",
+  "why": "wording: the tests check for 'never registered' / 'stripped' / 'different registration', which the mutated text still contains or which the other alternative satisfies"
+ },
+ "transparency:363:21:567e2a2d": {
+  "category": "soundness",
+  "why": "every negative test also broke the binding, so `bound` was False whenever the verdict had to be; a bound statement with a failing receipt or signature was never tried"
+ },
+ "transparency:68:82:804b6be9": {
+  "category": "boundary",
+  "why": "the default ceiling (4096) is never asserted; every test passes max_payload_bytes or a payload far from it"
+ },
+ "transparency:69:73:f3ba8de7": {
+  "category": "unread-output",
+  "why": "the default `notes` value is never read back"
+ },
+ "transparency:71:18:10f2480a": {
+  "category": "message",
+  "why": "exception text only: the empty-name test asserts ValueError, not its message"
+ },
+ "transparency:71:29:27a4b877": {
+  "category": "message",
+  "why": "exception text only: the empty-name test asserts ValueError, not its message"
+ },
+ "transparency:71:29:a5eedd71": {
+  "category": "message",
+  "why": "exception text only: the empty-name test asserts ValueError, not its message"
+ },
+ "transparency:71:29:d184b5d9": {
+  "category": "message",
+  "why": "exception text only: the empty-name test asserts ValueError, not its message"
+ },
+ "transparency:80:12:3631e09f": {
+  "category": "format",
+  "why": "the policy's format label (`scitt_registration_policy: 1.0`) is hashed into policy_sha256 but only ever compared with a digest computed by the same code; the published-log pin (new test) re-derives the digest and kills the digest-changing ones, but no test reads the label itself"
+ },
+ "transparency:80:12:6a5cdd7c": {
+  "category": "format",
+  "why": "the policy's format label (`scitt_registration_policy: 1.0`) is hashed into policy_sha256 but only ever compared with a digest computed by the same code; the published-log pin (new test) re-derives the digest and kills the digest-changing ones, but no test reads the label itself"
+ },
+ "transparency:80:41:41c18d09": {
+  "category": "format",
+  "why": "the policy's format label (`scitt_registration_policy: 1.0`) is hashed into policy_sha256 but only ever compared with a digest computed by the same code; the published-log pin (new test) re-derives the digest and kills the digest-changing ones, but no test reads the label itself"
+ },
+ "transparency:84:28:0dd8a5d5": {
+  "category": "message",
+  "why": "wording of the open-policy sentence: the test asserts only the phrase 'ANY issuer is admitted', which the mutated tail keeps"
+ },
+ "transparency:85:28:0d478e8a": {
+  "category": "message",
+  "why": "wording of the open-policy sentence: the test asserts only the phrase 'ANY issuer is admitted', which the mutated tail keeps"
+ },
+ "transparency:85:28:cc700dea": {
+  "category": "message",
+  "why": "wording of the open-policy sentence: the test asserts only the phrase 'ANY issuer is admitted', which the mutated tail keeps"
+ },
+ "transparency:85:28:f2470afa": {
+  "category": "message",
+  "why": "wording of the open-policy sentence: the test asserts only the phrase 'ANY issuer is admitted', which the mutated tail keeps"
+ },
+ "transparency:86:28:b40c6401": {
+  "category": "message",
+  "why": "wording of the open-policy sentence: the test asserts only the phrase 'ANY issuer is admitted', which the mutated tail keeps"
+ },
+ "transparency:86:28:dd2478e5": {
+  "category": "message",
+  "why": "wording of the open-policy sentence: the test asserts only the phrase 'ANY issuer is admitted', which the mutated tail keeps"
+ },
+ "transparency:93:15:0a47a028": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:15:3028428f": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:15:78d5c8cd": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:15:985239c3": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:15:99e01204": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:52:867eb2db": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:70:7c8b3691": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:75:d47e072c": {
+  "category": "format",
+  "why": "canonical encoding of the policy digest: every test compares policy_sha256 with a digest the same function computes, so a changed encoding is consistent everywhere and invisible -- until a digest already published stops matching"
+ },
+ "transparency:93:88:45fbddbb": {
+  "category": "equivalent",
+  "why": "equivalent: codec names are case-insensitive, 'UTF-8' is 'utf-8'"
+ }
+}
