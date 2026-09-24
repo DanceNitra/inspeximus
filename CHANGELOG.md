@@ -1,3 +1,25 @@
+## 3.9.2 - `inspeximus demo` signs every store it makes and checks each claim it prints. UPGRADE IF YOU RUN THE DEMO OR POINT SOMEONE AT IT. AFFECTS: the demo needs `pip install "inspeximus[crypto]"` and exits 2 without `cryptography`; `inspeximus.demo` gains `cannot_run()`, and `run_demo()` raises RuntimeError when it gives a reason. The library, the stores and every other command are unchanged.
+
+As shipped in 3.9.0 and 3.9.1, the demo opened every store without a receipt key, so the erasure
+certificate it called signed carried no signature and was checked against no key. Its byte scan searched
+for the email only, it read the blocked echo from `route()`'s return value instead of the store file, it
+never checked the unrelated record, and it did not check which record the tamper refusal named. The
+adversarial review of 2026-09-24 (`audits/2026-09-24/demo-review.md` on the `review-demo` branch) found
+these as F1 to F8.
+
+Each store is now signed with an Ed25519 receipt key made for the run and never written to disk. The
+certificate is verified against that public key, pinned, and against the store's own receipt chain; both
+tamper copies are verified against it too. Step 1 reads the restatement from the store file. Step 2
+requires exactly one erased record, the unrelated record active with its text unchanged, and a byte scan
+that reads the store file and finds none of the subject's email, name or subject id. Step 3 requires the
+refusal to name the edited record. Without `cryptography` the demo says so and exits 2 instead of running
+unsigned, because an unsigned run cannot make these checks. The time-to-first-success job installs the
+`crypto` extra, and the README's first command does too.
+
+`tests/test_the_demo_review_2026_09_24.py` keeps each finding fixed, and
+`tests/test_the_demo_can_fail_at_every_step.py` gives each check in step 2 a control only that check
+catches.
+
 ## 3.9.1 - an erasure certificate signed in places no longer verifies, and the CLI no longer crashes printing a lone surrogate. UPGRADE IF YOU VERIFY ERASURE CERTIFICATES FROM A PARTY YOU DO NOT CONTROL. AFFECTS: `verify_erasure_certificate()` returns `valid: false` when some tombstones are signed and some are not; the CLI writes with `errors="backslashreplace"` on UTF-8 consoles too. A fully signed or a fully unsigned certificate verifies as before.
 
 `verify_erasure_certificate()` reported a partly signed tombstone chain as a PARTIALLY SIGNED note and

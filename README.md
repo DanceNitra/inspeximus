@@ -26,7 +26,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21708778.svg)](https://doi.org/10.5281/zenodo.21708778)
 
 ```bash
-pip install inspeximus
+pip install "inspeximus[crypto]"
 inspeximus demo          # a first result: offline, touches nothing of yours
 ```
 
