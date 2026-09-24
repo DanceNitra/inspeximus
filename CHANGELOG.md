@@ -24,18 +24,32 @@ fixes are registered mutations, and the test kills both.
 ## 3.9.0 - `inspeximus demo` checks three of the library's claims on a throwaway store in about a second. IT AFFECTS NOBODY'S CODE: it adds a command. AFFECTS: the CLI gains a `demo` subcommand and the package gains `inspeximus.demo` (`run_demo()`, `render()`). Nothing else changes, and the default store is byte-identical.
 
 `inspeximus demo` states a fact, corrects it, and restates the old value: `recall` still answers with
-the correction, and the restatement is recorded as a blocked echo. It forgets a subject, verifies the
-signed erasure certificate without the operator's key, and scans the store directory for the
-subject's bytes: none remain. It copies a store with receipts twice and edits one copy behind the
-library's back: the untouched copy verifies and the edited one is refused, with the record named.
-Each step ends in PASS or FAIL; `--json` prints the result as JSON and `--keep DIR` keeps the stores,
-the certificate and the edited copy. It runs in a temporary directory with a temporary receipt key,
-opens no store of yours and makes no network request.
+the correction, and the store file holds the restatement marked as a blocked echo. It forgets a
+subject and passes only if the erasure certificate is signed with the store's temporary receipt key
+and verifies against that public key, pinned, and against the store's receipt chain; the forget
+reports exactly one record erased; the unrelated record is still active with its text unchanged; and
+a byte scan of the store directory reads the store file and finds none of the subject's email, name
+or subject id. It copies a signed store twice and edits one copy behind the library's back; both
+copies are verified against the pinned public key: the untouched copy verifies, and the edited one is
+refused by a problem that names the edited record. Each step ends in PASS or FAIL; `--json` prints the
+result as JSON and `--keep DIR` keeps the stores, the certificate and the edited copy. It runs in a
+temporary directory, signs each store with a receipt key made for the run and never written to disk,
+opens no store of yours and makes no network request. Signing needs `pip install "inspeximus[crypto]"`;
+without `cryptography` the demo says so and exits 2 instead of running unsigned.
+
+Corrected after 3.9.1. As shipped in 3.9.0 and 3.9.1, the demo opened every store without a receipt
+key, so the certificate this entry called signed carried no signature and was checked against no key.
+Its byte scan searched for the email only. It took the blocked echo from `route()`'s return value,
+never checked the unrelated record, and did not check which record the refusal named. The adversarial
+review of 2026-09-24 (`audits/2026-09-24/demo-review.md` on the `review-demo` branch) found these as
+F1 to F8, and `tests/test_the_demo_review_2026_09_24.py` keeps each one fixed.
 
 Each step can fail. `tests/test_the_demo_can_fail_at_every_step.py` turns off the one mechanism a
 step shows and requires that step to fail for the right reason: with `route(..., policy="trusting")`
 recall answers the old value, without the forget the byte scan finds the subject and the
-certificate does not verify, and without the edit both copies verify.
+certificate does not verify, and without the edit both copies verify. Each check in step 2 also has a
+control that only that check catches, and a forget that reports one erasure and erases nothing must fail
+on the byte scan and the certificate, not on its own count.
 
 ## 3.8.1 - the assessor pack reads one state of the store, and computes each repeated report once on a store written before 3.5.0. UPGRADE IF YOU BUILD ASSESSOR PACKS FROM A STORE THAT PREDATES THE READ GUARDS. AFFECTS: `assessor_pack()` calls `read_guard_report()` once before the first document when the store has read guards on. Nothing else changes, and the default store is byte-identical.
 

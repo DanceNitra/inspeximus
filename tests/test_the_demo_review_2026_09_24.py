@@ -10,11 +10,12 @@ Two kinds of test (N1 is a strict xfail too, about the library rather than the d
 
   CONFIRMED_*  the mutation must turn the step into FAIL, and it does. These pass today; they are the
                evidence that a check is load-bearing, and they fail if the check stops being so.
-  F<n>_*       `xfail(strict=True, raises=AssertionError)`. The final assert states what the demo SHOULD
-               report and today it does not: the step prints PASS (or "valid") for something that is not
-               so. When a fix lands the test XPASSes, strict turns the run red, and the marker comes off
-               with the fix. The set-up inside a finding is checked with `pytest.fail`, not `assert`, so a
-               finding whose premise broke is a FAILURE and cannot hide as an expected xfail.
+  F<n>_*       the final assert states what the demo SHOULD report. They were written as strict xfails at
+               6edea3e, when the step printed PASS (or "valid") for something that was not so. F1 to F7
+               are fixed in demo.py and F8 by a control in tests/test_the_demo_can_fail_at_every_step.py,
+               so they now run as plain tests. `_finding()` stays for the next one: mark it, fix it,
+               remove the mark. The set-up inside a finding is checked with `pytest.fail`, not `assert`,
+               so a finding whose premise broke is a FAILURE and cannot hide as an expected xfail.
 """
 from __future__ import annotations
 
@@ -81,9 +82,6 @@ def test_CONFIRMED_recall_serving_superseded_records_fails_step_1(monkeypatch):
     assert not step["ok"] and OLD in step["recall_answers"]
 
 
-@_finding("F5: step 1 never looks for the restatement in the store. A route() that records nothing and "
-          "returns {'intent': 'echo', 'action': 'blocked'} prints 'the restatement was: echo, blocked' and "
-          "PASS, though the claim is that the restatement 'is recorded as a blocked echo'.")
 def test_F5_a_restatement_that_is_never_recorded_fails_step_1(monkeypatch, tmp_path):
     def records_nothing(self, text, key=None, object=None, **kw):
         return {"intent": "echo", "action": "blocked", "key": key, "id": None,
@@ -147,10 +145,6 @@ def test_CONFIRMED_secure_delete_off_fails_step_2(monkeypatch):
     assert step["residue_findings"] > 0, "the byte scan is the check that must catch it"
 
 
-@_finding("F1: the certificate the demo prints as 'valid (checked without the operator's key)' carries no "
-          "signature: pubkey is null, checks.signed is False and limits says UNSIGNED. The CHANGELOG and "
-          "demo.py call it 'the signed erasure certificate' and say the demo runs 'with a temporary receipt "
-          "key'; no receipt key is ever created.")
 def test_F1_the_demo_certificate_is_signed():
     cert = run_demo()["steps"][1]["certificate"]
     verdict = verify_erasure_certificate(cert)
@@ -167,10 +161,6 @@ def _forged_certificate(self, request_id=None, **kw):
             "anchor": {"tombstones_tip": t["hash"]}}
 
 
-@_finding("F1: the certificate check the demo runs cannot tell a real certificate from one forged without "
-          "a key. With the forget skipped and the certificate replaced by a hand-made one for an id that "
-          "never existed, the demo prints 'certificate: valid'. It is unsigned, and the demo passes no "
-          "expected_pubkey and no store_receipts, so nothing binds it to a key or to this store.")
 def test_F1_a_certificate_forged_without_a_key_does_not_read_valid(monkeypatch):
     monkeypatch.setattr(Inspeximus, "erasure_certificate", _forged_certificate)
     step = run_demo(forget=False)["steps"][1]
@@ -179,8 +169,6 @@ def test_F1_a_certificate_forged_without_a_key_does_not_read_valid(monkeypatch):
     assert not step["certificate_valid"], "'certificate: valid' for an erasure that never ran"
 
 
-@_finding("F3: step 2 never checks that the erasure left the unrelated record alone. A forget that also "
-          "erases 'the deploy window is Tuesday' prints '2 record(s) erased' and PASS.")
 def test_F3_an_erasure_that_takes_an_unrelated_record_with_it_fails_step_2(monkeypatch, tmp_path):
     real = Inspeximus.forget_subject
 
@@ -202,9 +190,6 @@ def test_F3_an_erasure_that_takes_an_unrelated_record_with_it_fails_step_2(monke
     assert not step["ok"], "PASS for an erasure that also destroyed another record"
 
 
-@_finding("F4: the byte scan searches for one of the subject's identifiers, her email. A forget that erases "
-          "the record but leaves 'Jana Novak prefers contact at [erased]' on disk prints '0 trace(s) of the "
-          "subject' and PASS.")
 def test_F4_a_subject_left_on_disk_under_her_name_fails_step_2(monkeypatch, tmp_path):
     real = Inspeximus.forget_subject
 
@@ -223,9 +208,6 @@ def test_F4_a_subject_left_on_disk_under_her_name_fails_step_2(monkeypatch, tmp_
     assert not step["ok"], "PASS with the subject's name still in the store"
 
 
-@_finding("F7: step 2 accepts a byte scan that read no file. scan_residue() reports an empty directory as "
-          "ok=True ('a clean result about nothing') and the step's verdict does not require "
-          "files_scanned >= 1, so the demo prints '0 trace(s) of the subject in 0 file(s)' and PASS.")
 def test_F7_a_byte_scan_that_read_no_file_fails_step_2(monkeypatch, tmp_path):
     real = erasure_residue.scan_residue
     empty = tmp_path / "nothing-here"
@@ -253,11 +235,6 @@ demo._step_erasure = _self_report_only
 """
 
 
-@_finding("F8: the shipped negative control for step 2 (forget=False) fails on `erased >= 1`, the forget's own "
-          "return value, before the certificate or the byte scan is needed. Cut the step's verdict down to "
-          "`erased >= 1` and tests/test_the_demo_can_fail_at_every_step.py stays green: it asserts the "
-          "certificate and scan FIELDS, never that the verdict depends on them. The CONFIRMED tests above "
-          "(a delete without a tombstone, secure_delete off) are the controls that do.")
 def test_F8_the_shipped_tests_notice_a_step_2_verdict_that_trusts_the_forget_alone(monkeypatch, tmp_path):
     import subprocess
     import sys
@@ -265,9 +242,11 @@ def test_F8_the_shipped_tests_notice_a_step_2_verdict_that_trusts_the_forget_alo
     here = os.path.dirname(os.path.abspath(__file__))
     root = os.path.dirname(here)
     # Premise, in this process: the weakened verdict prints PASS for a forget that erased nothing.
-    ns = {}
-    exec(compile(_SELF_REPORT_ONLY, "self_report_only", "exec"), ns)
-    monkeypatch.setattr(demo, "_step_erasure", ns["_self_report_only"])
+    # Record the REAL step with monkeypatch before the exec: the snippet assigns the weakened step onto the
+    # module itself, so recording it afterwards made undo() restore the weakened one, and every later test
+    # on this xdist worker ran a step 2 that trusts the forget's own count.
+    monkeypatch.setattr(demo, "_step_erasure", demo._step_erasure)
+    exec(compile(_SELF_REPORT_ONLY, "self_report_only", "exec"), {})
     monkeypatch.setattr(Inspeximus, "forget_subject", lambda self, *a, **k: {"erased": 1, "ids": []})
     _control(run_demo()["steps"][1]["ok"], "the weakened verdict passes a forget that erased nothing")
     monkeypatch.undo()
@@ -328,10 +307,6 @@ def test_CONFIRMED_the_edit_is_refused_as_a_receipt_mismatch_on_the_edited_recor
         f"memory {edited[0]['id']}: its TEXT or KEY no longer matches its write receipt (edited after write)"]
 
 
-@_finding("F6: step 3's verdict is 'untouched verifies and edited does not'; it never checks that the "
-          "refusal names the record that was edited, though the CHANGELOG says 'with the record named'. A "
-          "verify_writes() that blames the wrong record passes the demo and the shipped test, which looks "
-          "only for the substring 'memory '.")
 def test_F6_a_refusal_that_names_the_wrong_record_fails_step_3(monkeypatch):
     real = Inspeximus.verify_writes
 
@@ -374,10 +349,6 @@ def _rewrite_receipts_without_a_key(store_path):
         json.dump(chain, fh, indent=2)
 
 
-@_finding("F2: every demo store is unsigned (receipts=True, no receipt_key), so step 3 shows only that an "
-          "editor who leaves the .receipts sidecar alone is caught. Let the same editor recompute two public "
-          "sha256 hashes per receipt and re-link the chain before the demo verifies, and the edited copy "
-          "'verifies' with 'deploy region is oslo' in it: the step FAILs, because the edit went unseen.")
 def test_F2_an_edit_that_also_rewrites_the_receipts_is_refused_by_step_3(monkeypatch):
     real = Inspeximus.verify_writes
     rewritten = []
@@ -397,9 +368,6 @@ def test_F2_an_edit_that_also_rewrites_the_receipts_is_refused_by_step_3(monkeyp
     assert not step["edited copy"]["verifies"], "an edit behind the library's back verifies"
 
 
-@_finding("F2: the library's own check calls the demo's stores UNSIGNED. The demo points "
-          "INSPEXIMUS_KEY_HOME at a temporary directory and the CHANGELOG says it runs 'with a temporary "
-          "receipt key', but no store is opened with receipt_key=, so only chain heads land there.")
 def test_F2_the_demo_stores_are_signed(tmp_path):
     run_demo(keep=str(tmp_path / "kept"))
     ok, problems = Inspeximus(path=str(tmp_path / "kept" / "untouched_copy" / "store.json"),

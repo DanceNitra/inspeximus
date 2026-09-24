@@ -798,7 +798,7 @@ def main(argv=None):
     ab.add_argument("--out", default="inspeximus_audit_bundle.json", help="output json path")
     ab.add_argument("--expected-pubkey", default=None, help="pin the signature-authenticity check to this key")
 
-    dm = sub.add_parser("demo", help="check three claims on a throwaway store in about a second: a correction holds, an erasure can be checked, a tamper is caught (offline, touches nothing of yours)")
+    dm = sub.add_parser("demo", help="check three claims on a throwaway store in about a second: a correction holds, an erasure can be checked, a tamper is caught (offline, touches nothing of yours; needs inspeximus[crypto] to sign)")
     dm.add_argument("--keep", metavar="DIR", default=None,
                     help="copy the stores, the erasure certificate and the edited copy to DIR")
     av = sub.add_parser("audit-verify", help="verify an audit bundle OFFLINE (needs only the file, no store)")
@@ -1352,7 +1352,16 @@ def main(argv=None):
 
     # demo works in its own temporary directory — never open the user's store.
     if a.cmd == "demo":
-        from inspeximus.demo import render, run_demo
+        from inspeximus.demo import cannot_run, render, run_demo
+        # Exit 2, not 1: nothing was checked, so no claim failed. Running unsigned instead would print
+        # PASS for a certificate anyone can write without a key.
+        why = cannot_run()
+        if why:
+            if a.json:
+                print(json.dumps({"ok": False, "error": why}, indent=2))
+            else:
+                print(why, file=sys.stderr)
+            return 2
         result = run_demo(keep=a.keep)
         if a.json:
             print(json.dumps(result, indent=2, default=str))
