@@ -819,7 +819,7 @@ def _tree_fingerprint(root):
     return (head, tuple(dirty))
 
 
-def check_ci_on_head(rep, root=ROOT):
+def check_ci_on_head(rep, root=ROOT, required=()):
     """Is the LAST PUSHED commit green in CI? This gate cannot answer that by running tests.
 
     MEASURED 2026-08-17, and it is the reason this exists. This checklist reported READY 9/9 and
@@ -852,22 +852,40 @@ def check_ci_on_head(rep, root=ROOT):
                 % type(ex).__name__)
         return
 
+    status, detail = ci_verdict(runs, head, required)
+    rep.add("ci on HEAD", status, detail)
+
+
+#: The workflow that runs the whole suite on every push to main: four shards balanced on measured time,
+#: the mutation set, and `integrations total`, which proves the shards ran every collected test once.
+#: Since 2026-09-24 it replaces the local full suite, so it must have FINISHED green, not merely have
+#: no red run yet.
+SUITE_WORKFLOW = "tests"
+
+
+def ci_verdict(runs, head, required=()):
+    """(status, detail) for the runs gh lists on `head`. A required workflow that has no run, or has
+    not finished, is SKIP: unknown is never reported as green."""
     done = [r for r in runs if r.get("status") == "completed"]
-    if not done:
-        rep.add("ci on HEAD", SKIP,
-                "no completed run for %s yet -- push and wait, or accept that this is UNVERIFIED"
-                % head[:7])
-        return
     bad = [r for r in done if r.get("conclusion") not in ("success", "skipped", "neutral")]
     if bad:
-        rep.add("ci on HEAD", FAIL, "; ".join(
-            "%s=%s %s" % (r["name"], r["conclusion"], r["url"]) for r in bad[:3]))
-        return
-    rep.add("ci on HEAD", PASS, "%d completed run(s) on %s, all green (%s)"
-            % (len(done), head[:7], ", ".join(sorted({r["name"] for r in done}))))
+        return FAIL, "; ".join("%s=%s %s" % (r["name"], r["conclusion"], r["url"]) for r in bad[:3])
+    for name in required:
+        mine = [r for r in runs if r.get("name") == name]
+        if not mine:
+            return SKIP, ("no %r run on %s: push to main and wait for it; the full suite is UNVERIFIED"
+                          % (name, head[:7]))
+        if any(r.get("status") != "completed" for r in mine):
+            return SKIP, ("the %r workflow on %s has not finished; the full suite is UNVERIFIED until "
+                          "it does" % (name, head[:7]))
+    if not done:
+        return SKIP, ("no completed run for %s yet -- push and wait, or accept that this is UNVERIFIED"
+                      % head[:7])
+    return PASS, ("%d completed run(s) on %s, all green (%s)"
+                  % (len(done), head[:7], ", ".join(sorted({r["name"] for r in done}))))
 
 
-def run(root=ROOT, skip_tests=False):
+def run(root=ROOT, skip_tests=False, full_local=False):
     print("pre-release checklist for inspeximus %s" % pyproject_version(root))
     print("  tree: %s\n" % root)
     rep = Report()
@@ -891,11 +909,14 @@ def run(root=ROOT, skip_tests=False):
             check_tests(rep, root, skip=True)
         elif rep.exit_code() == 1:
             rep.add("test suite", SKIP, "not run: a check above failed, fix it first")
-        elif check_fast_tests(rep, root):
-            check_tests(rep, root)
-        else:
+        elif not check_fast_tests(rep, root):
             rep.add("test suite", SKIP, "not run: the fast phase failed, fix it first")
-        check_ci_on_head(rep, root)
+        elif full_local:
+            check_tests(rep, root)
+        # The whole suite is CI's job since 2026-09-24 (owner): the local run took 28 to 41 minutes and
+        # CI already runs every test on the push to main. So by default the `tests` workflow must have
+        # finished green on HEAD, and a tag waits for it. --full-local restores the local suite.
+        check_ci_on_head(rep, root, required=() if (skip_tests or full_local) else (SUITE_WORKFLOW,))
     finally:
         # Reported, never silent: a guard that quietly repairs something teaches nobody it fired.
         restored = restore_probe_snapshot(snapshot)
@@ -935,9 +956,13 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--skip-tests", action="store_true",
                     help="skip the pytest leg (fast iteration). The run then exits 2, never 0.")
+    ap.add_argument("--full-local", action="store_true",
+                    help="also run the whole suite on this machine (28 to 41 min). By default the suite "
+                         "is CI's: the 'tests' workflow must have finished green on HEAD")
     ap.add_argument("--root", default=str(ROOT), help="tree to check (default: this repository)")
     args = ap.parse_args(argv)
-    return run(pathlib.Path(args.root).resolve(), skip_tests=args.skip_tests)
+    return run(pathlib.Path(args.root).resolve(), skip_tests=args.skip_tests,
+               full_local=args.full_local)
 
 
 if __name__ == "__main__":
