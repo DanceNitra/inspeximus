@@ -54,6 +54,9 @@ Config (environment):
                            that did not sign the store, that the pin rejects, or (configured) on an unsigned
                            chain stops the server at startup: signing on would break the chain. Without a key
                            on a signed store every write appends an unsigned receipt; where_am_i says which.
+    INSPEXIMUS_TRUST_SEEDS the TRUST ROOT, comma-separated: canonical source strings and/or
+                           "key:<attested pubkey hex>". recall(trusted_only=True) and selection_integrity
+                           need one; with none set, trusted_only is refused rather than answered with [].
   With no embedder configured, inspeximus uses its lexical-overlap fallback — it runs anywhere, today.
 """
 from __future__ import annotations
@@ -400,6 +403,12 @@ def _receipt_signing(path, receipts_on: bool, pin: str | None) -> dict:
 
 _SIGNING = _receipt_signing(_PATH, _RECEIPTS or os.path.exists(str(_PATH) + ".receipts.json"),
                             _RECEIPT_PUBKEY)
+
+# THE TRUST ROOT. `recall(trusted_only=True)` and `selection_integrity` need one and this server had no
+# way to set it, so the first always answered [] and the second always said "no trust root configured"
+# (mcp-tools-review R3). INSPEXIMUS_TRUST_SEEDS is a comma-separated list of canonical source strings
+# and/or "key:<attested pubkey hex>" entries, the same form as the library's `trust_seeds`.
+_TRUST_SEEDS = {s.strip() for s in (os.environ.get("INSPEXIMUS_TRUST_SEEDS") or "").split(",") if s.strip()}
 _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
                   receipt_key=_SIGNING["key"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
                   persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)
@@ -445,6 +454,8 @@ def _recover_from_concurrent_writes(store, methods=(
 
 
 _recover_from_concurrent_writes(_MEM)
+if _TRUST_SEEDS:
+    _MEM.trust_seeds = set(_TRUST_SEEDS)
 
 from inspeximus.core import StoreChangedOnDisk  # noqa: E402  (used by the wrap above)
 from inspeximus.core import __version__ as _INSPEXIMUS_VERSION
@@ -483,8 +494,57 @@ class _FreshFastMCP(FastMCP):
                 with led.action(f"mcp:{fn.__name__}", inputs={"args": list(fa), "kwargs": fk},
                                 actor=_ACTOR) as ctx:
                     return ctx.output(fn(*fa, **fk))
-            return register(fresh)
+            out = register(fresh)
+            _keep_text_arguments(self, k.get("name") or fn.__name__)
+            return out
         return deco
+
+
+def _admits_str(annotation) -> bool:
+    import typing
+    return annotation is str or str in typing.get_args(annotation)
+
+
+def _keep_text_arguments(server, name: str) -> None:
+    """A string sent for a parameter that accepts a string stays that string (mcp-tools-review L5).
+
+    FastMCP json-decodes every string argument whose annotation is not exactly `str`, to rescue
+    clients that send lists and objects as JSON text. For `str | None` that turned the documented
+    "JSON object string" `operator_json='{"system_name": ...}'` into a dict that then failed
+    validation, so no MCP client could supply operator fields at all; `record_oversight(decision=
+    '{"amount": 100}')` was refused and `record_lifecycle(note="null")` stored no note. The rescue
+    is kept for every parameter that cannot take a string; a parameter that can takes the text as
+    sent."""
+    tool = server._tool_manager.get_tool(name)
+    meta = getattr(tool, "fn_metadata", None)
+    if tool is None or meta is None or isinstance(meta, _TextKeepingFuncMetadata):
+        return
+    text_fields = {n for n, f in meta.arg_model.model_fields.items() if _admits_str(f.annotation)}
+    text_fields |= {f.alias for n, f in meta.arg_model.model_fields.items() if f.alias and n in text_fields}
+    if not text_fields:
+        return
+    tool.fn_metadata = _TextKeepingFuncMetadata.from_meta(meta, text_fields)
+
+
+try:
+    from mcp.server.fastmcp.utilities.func_metadata import FuncMetadata as _FuncMetadata
+except ImportError:  # pragma: no cover - the import at the top of this module already requires mcp 1.x
+    _FuncMetadata = object
+
+
+class _TextKeepingFuncMetadata(_FuncMetadata):
+    """FuncMetadata whose JSON pre-parse leaves alone the parameters that accept a string."""
+
+    @classmethod
+    def from_meta(cls, meta, text_fields: set):
+        new = cls.model_construct(**{f: getattr(meta, f) for f in type(meta).model_fields})
+        object.__setattr__(new, "_text_fields", frozenset(text_fields))
+        return new
+
+    def pre_parse_json(self, data):
+        keep = getattr(self, "_text_fields", frozenset())
+        parsed = super().pre_parse_json({k: v for k, v in data.items() if k not in keep})
+        return {k: (data[k] if k in keep else parsed[k]) for k in data}
 
 
 _ACTOR = os.environ.get("INSPEXIMUS_ACTOR") or None
@@ -576,6 +636,30 @@ def _snip(text: str, n: int) -> tuple[str, bool]:
     return text, False
 
 
+def _require_trust_root(trusted_only: bool) -> None:
+    """Refuse `trusted_only` on a server with no trust root (mcp-tools-review R3): the library fails
+    closed with [], which reads exactly like "nothing trusted matched"."""
+    if trusted_only and not getattr(_MEM, "trust_seeds", None):
+        raise ValueError("trusted_only needs a trust root and this server has none configured: set "
+                         "INSPEXIMUS_TRUST_SEEDS (canonical sources and/or key:<pubkey> entries). Without "
+                         "one nothing can be anchored to it, so the answer would be an empty list that "
+                         "looks like 'nothing trusted matched'.")
+
+
+def _full_hits(hits: list) -> list:
+    """`full=True`: every field of the STORED record, plus the hit's own ranking fields on top.
+
+    A recall hit is the library's projection (id, text, score, relevance, ...) and carries no key,
+    object, status, meta, mtype or ts, so "complete records (all fields)" returned a projection
+    (mcp-tools-review R2). The embedding vector stays out, as it does everywhere recall answers."""
+    by_id = {r.get("id"): r for r in _MEM.items}
+    out = []
+    for h in hits:
+        rec = by_id.get(h.get("id")) or {}
+        out.append({**{k: v for k, v in rec.items() if k != "vec"}, **h})
+    return out
+
+
 def _compact(rec: dict, snippet_chars: int) -> dict:
     """Small, model-facing projection of a recall hit: only the fields an agent reasons over. Drops internal
     bookkeeping (links, source, iso, stale_derived, relevance/reliability breakdown) — fetch the full record with
@@ -601,7 +685,9 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
              user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None) -> dict:
     """Store a memory (append-only; raw text is never edited afterward). `tags` group memories into
     cohorts; `value` (>=1) is its importance — higher-value memories outrank merely-similar ones at
-    recall, and recall itself nudges value up. `mtype` ∈ {episodic, semantic, procedural} sets the
+    recall. Recall does NOT change it: a read leaves value, last_access and the state digest as they were,
+    so an anchor or witness pinned to the store stays valid across reads. `credit` is what moves a
+    memory's standing after an outcome. `mtype` ∈ {episodic, semantic, procedural} sets the
     decay prior — episodic (events) fades fast, semantic (durable facts) slow, procedural (rules /
     preferences) barely; pass it when you know the kind, else it's inferred.
 
@@ -645,13 +731,20 @@ def remember(text: str, tags: list[str] | None = None, value: float = 1.0,
                         user_id=user_id, agent_id=agent_id, session_id=session_id,
                         project=_PROJECT)
     rec = next((r for r in _MEM.items if r["id"] == mid), {})
+    # THE LINEAGE THAT WAS STORED, not the argument. The library drops a parent id it cannot find and
+    # marks the record an orphan; echoing `derived_from` told the caller the record was attributable
+    # through an edge that does not exist, at the one moment they could still fix it
+    # (mcp-tools-review W8). `lineage_unresolved` names the ids that were dropped.
+    stored_lineage = list(rec.get("derived_from") or [])
+    unresolved = [i for i in (derived_from or []) if i not in stored_lineage]
     return {"id": mid, "stored": text[:120], "tags": tags or [], "value": value,
             "mtype": rec.get("mtype"), "source": source or None,
-            "derived_from": list(derived_from or []), "project": _PROJECT,
+            "derived_from": stored_lineage, "project": _PROJECT,
+            **({"lineage_unresolved": unresolved} if unresolved else {}),
             # Say it in the RESULT, not only in the docs. A record with no source cannot be reached by
             # forget_subject/erasure_audit/slash, and the caller is the only one who can still fix that
             # -- at the moment of the write, while they still know where the text came from.
-            "attributable": bool(source) or bool(derived_from),
+            "attributable": bool(source) or bool(stored_lineage),
             # Say it at the write, too (3.5.0): a record the read guards quarantined is stored and will
             # not come back from recall until a human releases it. The caller learns that here, not
             # from a recall that quietly misses it later.
@@ -757,7 +850,7 @@ def route(text: str, key: str = "", object: str = "", context: str = "", policy:
     be byte-identical, and no classifier separates them. `policy` picks the failure mode: "safe"
     (default) never restores on an unmarked restatement; "context" restores when the preceding turn
     (pass it as `context`) shows change-awareness — forgeable, use only if that channel is trusted;
-    "trusting" always restores. Every record it writes is stamped with this server's PROJECT scope.
+    "trusting" always restores; any other `policy` is refused. Every record it writes is stamped with this server's PROJECT scope.
     Returns {intent, action, key, ...} describing what was done and, when it wrote a record, the verdict
     on that write as `remember` gives it: a write a guard retired on arrival comes back `blocked: true`
     with `action: "blocked"`, never as `remembered`."""
@@ -785,10 +878,13 @@ def observe(text: str, key: str, object: str = "", support: list[str] | None = N
     """READ-PATH review trigger — the mirror of a write-time hold-for-review. Feed it an OBSERVATION (evidence,
     NOT an authoritative write) that CONTRADICTS a settled memory: a different value for `key`, or object=""
     for a value-obscuring revert ("go back to what we had", names no value). Instead of silently trusting or
-    ignoring it, this REOPENS that settled record for review — but only once the contradiction is CORROBORATED,
-    so a lone stray restatement stays an echo and does not reopen. `support` (a list of the distinct grounds the
-    observation rests on) is what corroboration counts: a restatement whose grounds were already seen is an
-    echo; it takes >= reopen_corroboration distinct novel grounds to reopen. observe() NEVER supersedes or
+    ignoring it, this REOPENS that settled record for review. A NAMED contradiction (a different value) reopens
+    only once it is CORROBORATED, so a lone stray restatement stays an echo and does not reopen: `support` (a
+    list of the distinct grounds the observation rests on) is what corroboration counts, a restatement whose
+    grounds were already seen is an echo, and it takes >= reopen_corroboration distinct novel grounds. A
+    VALUE-OBSCURING revert (object="") reopens on FIRST sight: it names no value, so there is nothing a
+    second observation could corroborate or echo, and the only safe outcome is a steward's decision. The
+    record stays current meanwhile; nothing is restored until resolve_reopened says so. observe() NEVER supersedes or
     writes — it only flags; a steward closes the review with resolve_reopened(). Use it for contradicting
     evidence you don't want to act on blindly. Returns {reopened, key, pending, need, surfaced_prior, review_id}."""
     return _MEM.observe(text, key=key, object=object or None, support=support)
@@ -831,8 +927,10 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
 
     `mmr` (0..1, off by default) reranks for DIVERSITY so you don't get k near-duplicate memories — 1.0 = pure
     relevance, lower = more diverse (deterministic Maximal Marginal Relevance, zero-LLM). `trusted_only=True` (needs
-    a configured trust root) returns only memories anchored to a trusted signing key — a deterministic defense
-    against injected/poisoned memories from untrusted writers. `resolve_conflicts=True` (or server-wide
+    a configured trust root: INSPEXIMUS_TRUST_SEEDS on this server) returns only memories anchored to a trusted
+    signing key or source — a deterministic defense against injected/poisoned memories from untrusted writers.
+    With no trust root configured the call is an error, not an empty list that reads as "nothing trusted
+    matched". `resolve_conflicts=True` (or server-wide
     INSPEXIMUS_READ_RESOLVER=1) resolves near-duplicate same-subject candidates at read time by value BIRTH — an
     un-keyed restatement of a superseded value is demoted below the correction instead of out-ranking it; the
     surviving hit carries `resolved_over` ids. Deterministic, zero-LLM.
@@ -854,6 +952,7 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     the `project` it belongs to, so a cross-project answer says where it came from. Call `where_am_i()` to see
     which store and scope you are on, and `projects()` to list the scopes present."""
     k = max(1, min(int(k), _MAX_K))
+    _require_trust_root(trusted_only)
     if resolve_conflicts is None:                     # env default: INSPEXIMUS_READ_RESOLVER=1 turns it on server-wide
         resolve_conflicts = os.environ.get("INSPEXIMUS_READ_RESOLVER", "0").strip() == "1"
     hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
@@ -861,6 +960,8 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
                        resolve_conflicts=resolve_conflicts, with_warrant=with_warrant,
                        project=None if all_projects else _PROJECT,
                        include_quarantined=include_quarantined) or []
+    if full:
+        hits = _full_hits(hits)
     if all_projects:
         # Say WHERE each cross-project hit came from. A search that deliberately crosses scopes and then
         # hands back scope-less results makes the caller guess the one thing they crossed scopes to learn.
@@ -903,6 +1004,7 @@ def recall_iterative(query: str, k: int = 6, max_followups: int = 3, full: bool 
     Honours the active project scope, like `recall`; `all_projects=True` searches every project. A multi-hop
     walk must not be a side door out of the scope its first hop respected."""
     k = max(1, min(int(k), _MAX_K))
+    _require_trust_root(trusted_only)
     res = _MEM.recall_iterative_start(query, k=k, max_followups=max_followups,
                                       trusted_only=trusted_only, user_id=user_id,
                                       agent_id=agent_id, session_id=session_id,
@@ -939,6 +1041,7 @@ def recall_followup(query: str, followups: list[str] | None = None, prior_ids: l
     Nothing here scales with store size. Honours the active project scope; `all_projects=True` crosses it,
     and must match what you passed to `recall_iterative` or round 2 searches a different pool than round 1."""
     k = max(1, min(int(k), _MAX_K))
+    _require_trust_root(trusted_only)
     res = _MEM.recall_iterative_followup(query, followups=followups, prior_ids=prior_ids, k=k,
                                          max_followups=max_followups, trusted_only=trusted_only,
                                          user_id=user_id, agent_id=agent_id, session_id=session_id,
@@ -972,7 +1075,9 @@ def where_am_i() -> dict:
                                "unscoped — this server sees every project in the store"),
             "cwd": os.getcwd(),
             "memories": len(getattr(_MEM, "items", [])),
-            "receipts": bool(_RECEIPTS),
+            # What the STORE keeps, not what the environment asked for: open_store() keeps receipts on
+            # for a store that already has a .receipts.json sidecar (mcp-tools-review R4).
+            "receipts": bool(getattr(_MEM, "receipts_enabled", _RECEIPTS)),
             # who signs what this server appends: the receipt key's public half and where it came from,
             # or null with the reason, when the server writes unsigned
             "receipt_signing": {"signed": bool(_SIGNING["key"]), "pubkey": _SIGNING["pubkey"],
@@ -1136,7 +1241,8 @@ def selection_integrity(query: str, k: int = 6) -> dict:
     writes that REROUTE which trusted facts reach the top-k. This diffs the top-k the agent ACTUALLY gets
     against the top-k of only trust-anchored memories, and surfaces any qualified fact that untrusted writes
     displaced, plus the untrusted records occupying top-k slots. Returns {stable, displaced, untrusted_in_topk,
-    k}. Needs a trust root (trust_seeds / attested writes); without one it says so. Flags, never rewrites."""
+    k}. Needs a trust root (INSPEXIMUS_TRUST_SEEDS on this server); without one it says so. Flags, never
+    rewrites."""
     return _MEM.selection_integrity(query, k=k)
 
 
@@ -1148,12 +1254,14 @@ def value_by_cohort() -> dict:
 
 
 @mcp.tool()
-def credit(ids: list[str], outcome: str, weight: float = 1.0, warrant: str = "") -> dict:
+def credit(ids: list[str], outcome: str | int | float | bool, weight: float = 1.0, warrant: str = "") -> dict:
     """Close the accuracy loop: when the work some recalled memories fed gets a real verdict — a forecast
     resolves, a claim is ruled correct/wrong, a plan succeeds/fails — call credit(those ids, outcome) so
     each memory's track record updates. Future `recall` then ranks by WAS-IT-RIGHT (a Beta good/bad
     posterior), not merely by being-recalled. `outcome`: 'good'/'right'/'correct' vs 'bad'/'wrong'/'failed'
-    (or pass a bool / a signed number). Counts only grow; raw text is never edited. Returns what updated.
+    (or pass a bool / a signed number, as JSON or as text such as "+1"); any other word is refused, never
+    guessed. Counts only grow: a negative `weight` is refused. Raw text is never edited. Returns what
+    updated, once it is in the store file.
 
     `warrant` NAMES THE EXOGENOUS ARTIFACT that produced the verdict — a resolved ticket, a graded
     forecast, an external run: ground truth the credited memory did NOT author itself. Only a warranted
@@ -1205,7 +1313,8 @@ def forget_subject(subject: str, basis: str = "", dry_run: bool = False,
                    authorized_by: str = "", authorization: str = "") -> dict:
     """Right-to-erasure by SUBJECT (GDPR Art.17 / DSR): delete every memory about `subject` AND scrub its id from
     survivors' links/supersession pointers, so it can't resurface via recall or consolidation. `basis` records the
-    legal/operational reason. Returns a receipt (forgotten count, ids, scrubbed_links) you can keep as evidence.
+    legal/operational reason. Returns a receipt (`erased` count, ids, scrubbed_links, tombstones, request_id,
+    coverage, residue_in_store) you can keep as evidence.
 
     RUN IT WITH dry_run=True FIRST. This cascades through inherited lineage, so it commonly erases more than the
     records that name the subject: the preview returns {would_erase, direct, inherited, sample, also_carrying}
@@ -1281,7 +1390,8 @@ def admissibility_preconditions() -> dict:
 
       key_agreement                  every key the store holds resolves through the read path
       observation_channel_alive      if records carry locators, some carry a read-time observation
-      receipt_chain_covers_records   if receipts are enabled and records exist, the chain is not empty
+      receipt_chain_covers_records   if this store was WRITTEN with receipts (its .receipts.json sidecar
+                                     exists) and records exist, the chain is not empty
 
     "Enabled" is this server's INSPEXIMUS_RECEIPTS or a receipt sidecar beside the store; either one
     makes an empty chain over existing records a failure, as it is for verify_writes on this server.
@@ -1334,7 +1444,8 @@ def memory_index(budget_tokens: int = 0) -> dict:
 
     `budget_tokens` shortens lines to fit and NEVER drops a record -- a record with no line cannot be
     found at all -- so a budget too small to hold one line each is reported as exceeded rather than
-    silently met."""
+    silently met. The one exception is not the budget's: a record a standing Art. 21 objection withholds
+    (record_objection) gets no line, and `withheld_by_objection` counts them."""
     return _MEM.memory_index(budget_tokens=budget_tokens or None)
 
 
@@ -1396,12 +1507,17 @@ def check_sources() -> dict:
     DRIFTED (resolves, content changed — re-read it, don't serve it blind), ORPHANED (an addressable
     source that is gone), UNRESOLVED_HERE (a relative or non-file locator the default resolver could not
     address from this working directory — read it with `resolution_base`, it is not evidence of absence),
-    UNCHECKABLE (no fingerprint: no source, or a source naming the WRITER rather than a document).
+    UNCHECKABLE (a source is named but carries no fingerprint, or names the WRITER rather than a document),
+    NOT_BINDABLE (no source at all, e.g. a decision: nothing to fingerprint in any window, so it is left out
+    of the denominator rather than counted as a gap).
 
     READ `UNCHECKABLE` FIRST. Fingerprints are only taken when `remember(source={"doc": <path>})` points at a
     file that existed at write time, so on most stores this is the large number and the honest denominator.
-    `ok` is false whenever NOTHING was checkable, and the report says so — zero drifted over zero checked is
-    the same sentence as a clean store. Measured on our own deployment before shipping this: 210,544 records,
+    `ok` is false when records name sources and NONE of them could be checked -- zero drifted over zero
+    checked is not a clean store -- and a `problem` says so. A store whose records carry no source at all
+    (every record NOT_BINDABLE) had nothing to check: `ok` is true there, `checked` is 0, the coverage ratios
+    are null rather than 0, and a `problem` still says that nothing was verified. Measured on our own
+    deployment before shipping this: 210,544 records,
     98.3% carrying a `source`, 0.01% carrying one that resolves to anything you could fetch again.
 
     Scoped to the bound tenant/project when there is one."""
@@ -1445,9 +1561,12 @@ def verify_writes(expected_pubkey: str = "") -> dict:
 
 @mcp.tool()
 def anchor() -> dict:
-    """TAMPER-EVIDENT MEMORY / transparency log: emit a SIGNED HEAD COMMITMENT — a compact,
-    externally-publishable snapshot {n_writes, writes_tip, n_tombstones, tombstones_tip, ts} that hash-commits to
-    the ENTIRE write + erasure history at this instant. Publish it somewhere the store operator cannot retroactively
+    """TAMPER-EVIDENT MEMORY / transparency log: emit a HEAD COMMITMENT — a compact, externally-publishable
+    snapshot {n_writes, writes_tip, n_tombstones, tombstones_tip, ts, sth_hash} that hash-commits to the ENTIRE
+    write + erasure history at this instant. It is a hash commitment and carries NO signature from this server:
+    a key the store operator holds is the very thing it must not depend on, so the signature comes from outside
+    (a witness co-signs `sth_hash`; see verify_cosigned_anchor and `inspeximus anchor`). Publish it somewhere
+    the store operator cannot retroactively
     alter (a public log, a third-party witness, the auditor's own records). This closes the one hole verify_writes()
     cannot: an operator who HOLDS the receipt key can rewrite AND re-sign the whole history so it still verifies
     internally — but they cannot make the rewritten tip equal an anchor an outsider already witnessed. Record this
@@ -1551,7 +1670,8 @@ def index_coherence() -> dict:
 @mcp.tool()
 def pii_report() -> dict:
     """What PII the store currently holds, by type (emails, phones, cards, …) — a data-minimization / audit view.
-    Read-only; pair with forget_pii to act on it."""
+    Every record the store holds is counted, superseded ones included (`superseded_with_pii` says how many),
+    because forget_pii erases those too. Read-only; pair with forget_pii to act on it."""
     return _MEM.pii_report()
 
 
@@ -1586,8 +1706,19 @@ def why_recalled(query: str, id: str = "") -> dict:
 @mcp.tool()
 def supersession_report() -> dict:
     """The correction ledger: which facts have been superseded/reverted, by key — the auditable 'what changed and
-    what's current' view that an append-only-plus-supersession store can produce and a plain vector store cannot."""
-    return _MEM.supersession_report()
+    what's current' view that an append-only-plus-supersession store can produce and a plain vector store cannot.
+    Counts per policy, and `by_key`: per corrected key, how many values were retired and by which policy, and
+    `current` (the standing value: its `object`, else the first 120 characters of its text; null when the key
+    has none). `history(key)` gives every value in order."""
+    rep = _MEM.supersession_report()
+    # THE CURRENT VALUE, added here and not in the library report, which audit_bundle embeds and which
+    # stays content-free (mcp-tools-review R5).
+    by_id = {r.get("id"): r for r in _MEM.items}
+    for row in (rep.get("by_key") or {}).values():
+        c = by_id.get(row.get("current_id"))
+        row["current"] = None if c is None else (
+            c.get("object") if c.get("object") is not None else (c.get("text") or "")[:120])
+    return rep
 
 
 @mcp.tool()
@@ -1848,9 +1979,12 @@ def export_subject(subject: str, request_id: str | None = None, include_text: bo
 def record_objection(subject: str, actor: str, ground: str, scope: str = "all",
                      request_id: str | None = None, allow_ambiguous: bool = False) -> dict:
     """GDPR Art. 21: record the subject's objection and stop serving their records. From this call on,
-    recall withholds every record whose source resolves to `subject`, including later writes, until the
-    objection is resolved. `ground` is own_situation (21(1)) or direct_marketing (21(2), never overridable);
-    `scope` is all or profiling. The records stay exportable under Art. 15; erasure is forget_subject."""
+    every read that searches or lists the store withholds every record whose source resolves to `subject`,
+    including later writes, until the objection is resolved: recall and its variants, memory_index,
+    verify_claim and check_conflict, and why_recalled explains such a record without quoting it. Every
+    server on this store honours it from its next call. `get(id)` still returns a record by its exact id,
+    and the records stay exportable under Art. 15 (export_subject); erasure is forget_subject. `ground` is
+    own_situation (21(1)) or direct_marketing (21(2), never overridable); `scope` is all or profiling."""
     from inspeximus.subject_rights import record_objection as _obj
     try:
         return _obj(_MEM, subject, actor, ground, scope=scope, ledger=_ledger(),
@@ -2331,8 +2465,9 @@ def incident_report(seq: int) -> dict:
     overdue, the evidence entries with their memory state and any oversight on them, later entries that
     refer to the incident, and the fields the provider must add. Read-only."""
     led = _ledger()
-    if seq < 0 or seq >= len(led):
-        return {"error": f"no entry #{seq}; the ledger has {len(led)} entries"}
+    missing = _seq_not_live(led, seq, "entry")
+    if missing:
+        return missing
     try:
         return led.incident_report(seq)
     except ValueError as ex:
@@ -2423,13 +2558,33 @@ def open_partition(name: str, kind: str = "process", max_age_days: float | None 
     """Open a memory partition: a named scope per agent or per process with a size cap and an expiry (the CNIL's
     2026 note on agentic AI). Writes made with `remember_in_partition` are tagged into it; `sweep_partitions`
     applies the expiry and cap with tombstones; `close_partition` ends the process (a context partition erases
-    its records at close). `kind` is context, process or agent."""
+    its records at close). `kind` is context, process or agent. Opening a name that is already open
+    returns that partition when the rules match, and is refused when they differ: a partition's rules are
+    fixed when it opens. The result states the rules IN FORCE, read back from the registry."""
     from inspeximus.partitions import Partitions
+    parts = Partitions(_MEM)
+    existing = parts._reg["partitions"].get(name)
+    if existing is not None and not existing.get("closed_at"):
+        # A RE-OPEN IS NOT A RECONFIGURATION. The library hands back the existing partition and ignores
+        # new rules, and this tool echoed the requested ones, so a caller was told it had a context
+        # partition capped at 1 while it held an uncapped process partition that keeps its records at
+        # close (mcp-tools-review E8).
+        asked = {"kind": kind, "max_age_days": float(max_age_days) if max_age_days is not None else None,
+                 "max_records": int(max_records) if max_records is not None else None, "agent": agent}
+        differ = {k: {"requested": v, "in_force": existing.get(k)} for k, v in asked.items()
+                  if v != existing.get(k)}
+        if differ:
+            return {"error": f"partition {name!r} is already open with other rules; a partition's rules are "
+                             f"fixed when it opens. Open a new name, or close this one first.",
+                    "differs": differ}
     try:
-        Partitions(_MEM).open(name, kind=kind, max_age_days=max_age_days, max_records=max_records, agent=agent)
+        parts.open(name, kind=kind, max_age_days=max_age_days, max_records=max_records, agent=agent)
     except (ValueError, KeyError) as ex:
         return {"error": str(ex)}
-    return {"partition": name, "kind": kind, "max_age_days": max_age_days, "max_records": max_records}
+    p = parts._get(name)
+    return {"partition": name, "kind": p.get("kind"), "max_age_days": p.get("max_age_days"),
+            "max_records": p.get("max_records"), "agent": p.get("agent"),
+            "delete_at_close": p.get("delete_at_close"), **({"reopened": True} if existing else {})}
 
 
 @mcp.tool()
@@ -2575,8 +2730,9 @@ def actions_match(seq: int, inputs=None, output=None) -> dict:
     does not keep. Each side is true, false, or null when not passed or not digested. Needs the ledger's
     salt file beside the ledger. Read-only."""
     led = _ledger()
-    if seq < 0 or seq >= len(led):
-        return {"error": f"no action #{seq}; the ledger has {len(led)} entries"}
+    missing = _seq_not_live(led, seq, "action")
+    if missing:
+        return missing
     return led.matches(seq, inputs=inputs, output=output)
 
 
@@ -2586,9 +2742,23 @@ def what_it_knew(seq: int) -> dict:
     digest at that moment, the ids recall had returned, and the current provenance of each of those ids.
     Answers "which facts were current when it did this" from the chain, not from memory. Read-only."""
     led = _ledger()
-    if seq < 0 or seq >= len(led):
-        return {"error": f"no action #{seq}; the ledger has {len(led)} entries"}
+    missing = _seq_not_live(led, seq, "action")
+    if missing:
+        return missing
     return led.what_it_knew(seq)
+
+
+def _seq_not_live(led, seq: int, what: str) -> dict | None:
+    """{"error": ...} unless `seq` is an entry of the LIVE ledger file, else None.
+
+    Asked of the ledger itself. `seq >= len(led)` counted live entries, and after archive_actions the
+    live file starts at archived_through+1, so every live entry past that count was answered "no
+    entry" (mcp-tools-review L6). The ledger's own lookup also says when a seq is in the archive."""
+    try:
+        led._at(int(seq))
+    except ValueError as ex:
+        return {"error": f"no {what} #{seq} in the live ledger: {ex}"}
+    return None
 
 
 @mcp.tool()
@@ -2775,6 +2945,17 @@ def get_as(agent: str, id: str) -> dict:
     return rec or {}
 
 
+def _require_event_table() -> None:
+    """Refuse the event tools on a store with no `memory_events` table (mcp-tools-review S8).
+
+    The library answers [] and tip 0 there, which through this surface read as "nothing changed" after
+    every write: an empty feed and a feed that cannot exist looked the same."""
+    if not _MEM._rows_available():
+        raise ValueError("this store is JSON-format (INSPEXIMUS_STORE_FORMAT=json, an encrypted store, or a "
+                         "JSON store that was not converted to rows) and has no memory_events table, so "
+                         "there is no event feed to poll; an empty result would read as 'no changes'")
+
+
 @mcp.tool()
 def poll_memory_events(since_seq: int = 0, limit: int = 100, event_type: str | None = None,
                        agent_id: str | None = None) -> dict:
@@ -2783,7 +2964,10 @@ def poll_memory_events(since_seq: int = 0, limit: int = 100, event_type: str | N
     {seq, ts, type, memory_id, agent, tenant, payload}; the automatic ones (record.added,
     record.changed, record.removed) carry only id, key, status and mtype, never text, so tail
     them and fetch the record with `get`/`recall` where the grants apply. Another process's write
-    is visible on the next call, no reload. Keep `tip` and pass it back as `since_seq`."""
+    is visible on the next call, no reload. Keep `tip` and pass it back as `since_seq`. `event_type`
+    "*" (or empty) means every type. A JSON-format store (INSPEXIMUS_STORE_FORMAT=json, an encrypted
+    store) has no event table, and the call is an error there rather than an empty feed."""
+    _require_event_table()
     evs = _MEM.poll_events(since_seq=int(since_seq), limit=max(1, min(int(limit), 1000)),
                            event_type=event_type or None, agent_id=agent_id)
     return {"events": evs, "tip": _MEM.events_tip(), "since_seq": int(since_seq)}
@@ -2806,7 +2990,9 @@ def subscribe_memory_event(event_type: str = "*") -> dict:
     """Start a tail: returns the cursor to poll from ({event_type, since_seq}). An MCP call cannot
     be called back, so a subscription here is a cursor, not a callback: call `poll_memory_events`
     with this `since_seq` (and `event_type`) to receive everything published after this moment.
-    In-process subscribers with a real callback use `Inspeximus.subscribe()` from Python."""
+    In-process subscribers with a real callback use `Inspeximus.subscribe()` from Python. The default
+    "*" means every event type, on both calls. Refused on a store with no event table, as the poll is."""
+    _require_event_table()
     return {"event_type": event_type or "*", "since_seq": _MEM.events_tip(),
             "poll_with": "poll_memory_events(since_seq, event_type)"}
 

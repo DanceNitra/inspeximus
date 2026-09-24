@@ -40,6 +40,7 @@ MIT-licensed. Part of Agora (https://github.com/DanceNitra/agora).
 from __future__ import annotations
 
 import calendar
+import contextlib
 import collections as _collections
 import hashlib
 import hmac
@@ -3002,6 +3003,7 @@ class Inspeximus:
                 self._objections = json.loads(self._objections_path.read_text(encoding="utf-8"))
             except Exception:
                 self._objections = []
+        self._objections_sig = Inspeximus._sidecar_sig(self._objections_path)
         # PERSIST A REALIGNMENT EXACTLY ONCE. The realigned vectors and the recipe sidecar must land together:
         # the sidecar is written only inside _save(), so a caller that never saves (a READ-ONLY path — recall(),
         # a session-digest, any short-lived hook process) would redo the whole realignment on EVERY open, turning
@@ -3822,6 +3824,37 @@ class Inspeximus:
             self._append_receipt(old, rechained=True)
         return len(disk) - n
 
+    def _adopt_shorter_disk_chain(self, before: list, keep_ids: set) -> int:
+        """On the read path, follow a receipt sidecar that is now a strict PREFIX of the chain in memory.
+
+        `_reconcile_receipts_with_disk` keeps the longer in-memory chain when the disk is a prefix of
+        it, which is right before an emit (this handle is about to write its chain out) and wrong on
+        a read: every receipt is written to the sidecar when it is emitted, so an in-memory tail the
+        sidecar no longer holds is one the disk lost, and `verify_consistency` / `anchor` on a
+        running server answered from it (mcp-tools-review I4). The tail entries for records this
+        handle has not saved yet (`keep_ids`) are re-chained onto the disk tail, as the merge does.
+        Nothing is done while a sidecar write is failing: then the tail is ours and not yet on disk.
+        Returns how many in-memory receipts were dropped."""
+        if not (self.receipts_enabled and self._receipts_path) or "receipts" in (self._sidecar_errors or {}):
+            return 0
+        try:
+            disk = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+        except Exception:
+            return 0
+        if not isinstance(disk, list) or len(disk) >= len(before) \
+                or any(before[i].get("hash") != disk[i].get("hash") for i in range(len(disk))):
+            return 0
+        tail = before[len(disk):]
+        self._receipts = list(disk)
+        self._receipts_sig = self._receipts_disk_sig()
+        dropped = 0
+        for old in tail:
+            if old.get("memory_id") in keep_ids:
+                self._append_receipt(old, rechained=True)
+            else:
+                dropped += 1
+        return dropped
+
     def _append_receipt(self, r: dict, rechained: bool = False) -> dict:
         """Chain, hash and sign one receipt onto the current tail, then append it. `rechained` marks
         a receipt moved from an earlier position after a peer's entries were adopted."""
@@ -4053,6 +4086,11 @@ class Inspeximus:
         """
         if not self.path or not self._rows_available():
             return []
+        # "*" is the wildcard `subscribe()` takes; on the table it matched no event at all, so a tail
+        # started from subscribe_memory_event's default cursor read "no changes" for ever
+        # (mcp-tools-review S3). One wildcard, one meaning, on both halves of the event API.
+        if event_type in ("", "*"):
+            event_type = None
         want = max(1, int(limit))
         out = []
         cursor = int(since_seq)
@@ -8239,6 +8277,7 @@ class Inspeximus:
         try:
             Inspeximus._atomic_write(self._objections_path,
                                      json.dumps(self._objections, indent=2, ensure_ascii=False))
+            self._objections_sig = Inspeximus._sidecar_sig(self._objections_path)
         except Exception as e:
             self._sidecar_errors["objections"] = f"{self._objections_path}: {type(e).__name__}: {e}"
 
@@ -8385,7 +8424,10 @@ class Inspeximus:
                     raise ValueError(f"{id} is not quarantined")
                 q["released"] = {"actor": actor, "ts": time.time(), "reason": (str(reason)[:500] if reason else None)}
                 self._touch(r)
-                self._save()
+                # FORCED. A human decision is not access metadata: an unforced save within _save_min_s of
+                # the last one only marks the handle dirty, and nothing flushes at exit, so the release
+                # was reported and then lost (mcp-tools-review W4).
+                self._save(force=True)
                 return {"id": id, "released": q["released"], "shapes": q["shapes"]}
         raise ValueError(f"{id} is not in this store")
 
@@ -8499,7 +8541,7 @@ class Inspeximus:
         if not subj_ids:
             # coverage belongs here too: "nothing matched" is itself an answer a DSAR reply is built on,
             # and a field the caller can only rely on when it is ALWAYS present.
-            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
+            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0, "scrubbed_links": 0,
                     "coverage": self._erasure_coverage(None, len(getattr(self, "_erasure_targets", []))),
                     "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # capture the sensitive values BEFORE deletion so the cross-store residue check has something to
@@ -8521,6 +8563,9 @@ class Inspeximus:
                           authorized_by=authorized_by, authorization=authorization)
         out = {"erased": res["forgotten"], "ids": res["ids"],
                "request_id": request_id, "tombstones": len(res["ids"]),
+               # The link scrub is half of what this call promises ("AND scrub its id from survivors'
+               # links"), and its count was dropped on the way up (mcp-tools-review E10).
+               "scrubbed_links": res.get("scrubbed_links", 0),
                # PROPAGATED, not recomputed -- and this is the third time a field added to forget() had
                # to be carried up by hand. `coverage` was the same shape this morning, and the fix at one
                # caller while a sibling keeps the gap is what _resolve_subject's docstring records 1.53.0
@@ -9163,7 +9208,16 @@ class Inspeximus:
                 # path where a fresh reading is the correct one: the writer that changed the file is
                 # this handle, and the records above came from the file as it is now.
                 sig_before_read = self._stat_sig()
+        if self._row_snapshot is None:
+            self._json_persisted = {r.get("id") for r in self._items if isinstance(r, dict)}
         self._file_sig = sig_before_read
+
+    def _persisted_ids(self):
+        """The ids this handle last read from, or wrote to, the store file; None when unknown."""
+        if self._row_snapshot is not None:
+            return set(self._row_snapshot)
+        got = getattr(self, "_json_persisted", None)
+        return set(got) if got is not None else None
 
     @staticmethod
     def _atomic_write(path, text: str) -> None:
@@ -9289,16 +9343,60 @@ class Inspeximus:
         will land on its next save. Returns {"changed": False} or the merge summary with
         "changed": True. Safe to call before every read; the MCP server does.
         """
-        if not self.path or self._file_sig is None:
+        if not self.path:
             return {"changed": False}
+        sidecars = self._refresh_sidecars()
+        if self._file_sig is None:
+            return {"changed": False, **({"sidecars": sidecars} if sidecars else {})}
         sig = self._stat_sig()
         if sig == self._file_sig or sig is Inspeximus._ABSENT:
-            return {"changed": False}
-        out = self._merge_with_disk()
+            return {"changed": False, **({"sidecars": sidecars} if sidecars else {})}
+        out = self._merge_with_disk(adopt_disk_loss=True)
         out["changed"] = True
+        if sidecars:
+            out["sidecars"] = sidecars
         return out
 
-    def _merge_with_disk(self, receipts_for_readded: bool = False) -> dict:
+    @staticmethod
+    def _sidecar_sig(path):
+        """(mtime_ns, size, inode) of a sidecar file, or None when it is absent or there is no path."""
+        if path is None:
+            return None
+        try:
+            st = path.stat()
+            return (st.st_mtime_ns, st.st_size, st.st_ino)
+        except OSError:
+            return None
+
+    def _refresh_sidecars(self) -> list:
+        """Re-read the state a peer can change WITHOUT touching the store file (mcp-tools-review X7).
+
+        `refresh()` looked at the store file only. An Art. 21 objection is written to
+        `<store>.objections.json` alone, and an irreversible-influence spend to `<store>.irrev.json`
+        alone, so the store's signature did not move and a second server on the same file went on
+        serving an objecting subject's records, and reporting an unspent budget, until it restarted.
+        One stat per sidecar when nothing moved. Returns the names of the sidecars re-read."""
+        out = []
+        op = getattr(self, "_objections_path", None)
+        if op is not None:
+            sig = Inspeximus._sidecar_sig(op)
+            if sig != getattr(self, "_objections_sig", None):
+                try:
+                    rows = json.loads(op.read_text(encoding="utf-8")) if sig is not None else []
+                    if isinstance(rows, list):
+                        self._objections = rows
+                        self._objections_sig = sig
+                        out.append("objections")
+                except Exception:
+                    pass                      # a torn read: keep what we hold and look again next call
+        if getattr(self, "_irrev", None) is not None:
+            bp = self.path.with_name(self.path.name + ".irrev.json")
+            if Inspeximus._sidecar_sig(bp) != getattr(self, "_irrev_sig", None):
+                self._irrev = None            # re-read lazily, with the fail-closed load in _budget_state
+                out.append("irrev")
+        return out
+
+    def _merge_with_disk(self, receipts_for_readded: bool = False, adopt_disk_loss: bool = False) -> dict:
         """The union `reload()` performs, without the save. Both callers use THIS, and only this.
 
         `receipts_for_readded` is True only from `reload()`: there a re-added record is one whose
@@ -9312,7 +9410,16 @@ class Inspeximus:
         forget: a record this handle tombstoned came back from disk, and two active records under one
         key were left contradicting each other while `verify_writes()` still reported True. Both were
         already solved here. One merge, two callers.
+
+        `adopt_disk_loss` is True only from `refresh()`, the read path (mcp-tools-review I4). There a
+        record this handle had already PERSISTED and no longer finds on disk was taken off the disk
+        (a restored copy, a rollback, a peer's erasure), and re-adding it from memory made a running
+        server answer from a history the file no longer holds: `verify_consistency` passed a store
+        rolled back from three writes to one. Only records this handle never saved are re-added, and
+        the receipt chain follows the disk the same way. The write-recovery path (`reload()`) is
+        unchanged: there the records missing from disk are the ones whose save was refused.
         """
+        persisted = self._persisted_ids() if adopt_disk_loss else None
         mine = {r["id"]: r for r in self._items}
         # THE ROWS THIS HANDLE EDITED, captured before the load below clears the set (3.5.1).
         _edited = set(self._touched or ())
@@ -9321,6 +9428,7 @@ class Inspeximus:
         self._load_from_disk()
         # The sidecar is part of what a peer wrote. Adopt it here so reload() and refresh() see the
         # peer's receipts as well as its records; see `_reconcile_receipts_with_disk`.
+        _receipts_before = list(self._receipts) if persisted is not None else None
         self._reconcile_receipts_with_disk()
         self._reconcile_tombstones_with_disk()
         buried = {t.get("memory_id") for t in (self._tombstones or [])}
@@ -9330,8 +9438,11 @@ class Inspeximus:
         resurrected = [r["id"] for r in self._items if r["id"] in buried]
         self._items = [r for r in self._items if r["id"] not in buried]
         on_disk = {r["id"] for r in self._items}
-        readded = [r for rid, r in mine.items() if rid not in on_disk and rid not in buried]
+        readded = [r for rid, r in mine.items() if rid not in on_disk and rid not in buried
+                   and (persisted is None or rid not in persisted or rid in _edited)]
         self._items.extend(readded)
+        if _receipts_before is not None:
+            self._adopt_shorter_disk_chain(_receipts_before, {r["id"] for r in readded})
         for _r in readded:
             self._touch(_r)
         # AN EDIT THIS HANDLE MADE TO A RECORD THAT IS ALSO ON DISK IS KEPT (3.5.1). The union
@@ -9560,8 +9671,11 @@ class Inspeximus:
         return [r for r in self._tenant_rows() if not _is_acl_record(r)]
 
     def pii_report(self) -> dict:
-        """Audit view of PII exposure across this store (tenant-scoped when bound): how many ACTIVE records
-        carry each detected PII type, and their ids. Reads the `pii` tags stamped at write time (pii_detect /
+        """Audit view of PII exposure across this store (tenant-scoped when bound): how many records the
+        store HOLDS carry each detected PII type, and their ids. Superseded records count: a corrected
+        contact keeps its old email in the retired record, `forget_pii()` erases that record, and a report
+        of ACTIVE records only said 0 over it (mcp-tools-review E9). `superseded_with_pii` says how many
+        of the counted records are retired values. Reads the `pii` tags stamped at write time (pii_detect /
         remember(pii=...)); it does NOT re-scan text here, so it reflects exactly what was tagged. Use it to
         drive a data-minimization review or a forget_pii() sweep. Read-only; returns no raw PII values.
 
@@ -9580,11 +9694,10 @@ class Inspeximus:
         by_type: dict = {}
         ids: dict = {}
         n = 0
+        n_superseded = 0
         scanned = 0
         untagged_matches: list = []
         for r in self._tenant_rows():
-            if r.get("status") != "active":
-                continue
             scanned += 1
             types = r.get("pii")
             if not types:
@@ -9596,6 +9709,8 @@ class Inspeximus:
                     untagged_matches.append(r["id"])
                 continue
             n += 1
+            if r.get("status") != "active":
+                n_superseded += 1
             for t in types:
                 by_type[t] = by_type.get(t, 0) + 1
                 ids.setdefault(t, []).append(r["id"])
@@ -9605,7 +9720,7 @@ class Inspeximus:
                     "untagged_ids": untagged_matches[:20]}
         if untagged_matches:
             coverage["problem"] = (
-                "%d active record(s) match the PII detector but carry no tag, so they are invisible "
+                "%d record(s) match the PII detector but carry no tag, so they are invisible "
                 "to records_with_pii AND to a forget_pii() sweep. Records written while pii_detect "
                 "was off are never backfilled by turning it on."
                 % len(untagged_matches))
@@ -9614,7 +9729,8 @@ class Inspeximus:
                 "pii_detect is OFF on this store, so no write stamped a tag and this count is 0 by "
                 "construction rather than by inspection. The detector found nothing in the current "
                 "text either, which is evidence and not proof -- detect_pii is a heuristic.")
-        return {"records_with_pii": n, "by_type": by_type, "ids": ids, "coverage": coverage}
+        return {"records_with_pii": n, "superseded_with_pii": n_superseded, "by_type": by_type, "ids": ids,
+                "coverage": coverage}
 
     def forget_pii(self, types=None, subject: str | None = None, request_id: str | None = None,
                    basis: str | None = None, allow_ambiguous: bool = False) -> dict:
@@ -11974,6 +12090,11 @@ class Inspeximus:
         `project` stamps every record route writes, on every branch, as `remember(project=...)` does.
 
         Returns {"intent", "action", "key", ...} describing what was done."""
+        # AN UNKNOWN POLICY IS REFUSED, NOT RUN AS "safe". "trusted" for "trusting" was echoed back as if
+        # it were a policy, and a caller who asked for a restore got the echo branch with nothing saying
+        # the name was wrong (mcp-tools-review W6).
+        if policy not in ("safe", "context", "trusting"):
+            raise ValueError(f"unknown route policy {policy!r}: use 'safe', 'context' or 'trusting'")
         low = text.lower()
         # ONE rule for every write site in this function, not four copies of it. `route` has five places
         # that call remember(), and provenance was added to exactly one of them -- the correction -- while
@@ -12497,12 +12618,31 @@ class Inspeximus:
         conflict is inspectable per record — the write-time judge log TOKI (arXiv:2606.06240) points
         out most memory systems omit. Read-only; the raw rows stay untouched."""
         counts: dict = {}
+        by_key: dict = {}
+        current: dict = {}
         for r in self._tenant_rows():
+            if r.get("key") and r.get("status") == "active":
+                prev = current.get(r["key"])
+                if prev is None or r.get("ts", 0) >= prev.get("ts", 0):
+                    current[r["key"]] = r
             if r.get("status") != "superseded":
                 continue
             p = (r.get("meta") or {}).get("superseded_by_policy") or "unstamped"
             counts[p] = counts.get(p, 0) + 1
+            if r.get("key"):
+                row = by_key.setdefault(r["key"], {"superseded": 0, "by_policy": {}})
+                row["superseded"] += 1
+                row["by_policy"][p] = row["by_policy"].get(p, 0) + 1
+        # BY KEY, as the MCP tool describes it: "which facts have been superseded/reverted, by key -- the
+        # what changed and what's current view". Counts per policy alone named no key that changed and
+        # no value that stands (mcp-tools-review R5). CONTENT-FREE like the rest of this report, because
+        # audit_bundle embeds it: keys, counts and the id of the active record under the key (None when
+        # the key has none), never a value. `history(key)` has every value; the MCP tool adds the current one.
+        for k, row in by_key.items():
+            c = current.get(k)
+            row["current_id"] = c.get("id") if c else None
         return {"superseded_total": sum(counts.values()), "by_policy": counts,
+                "by_key": dict(sorted(by_key.items())),
                 "values_too_short_to_suppress": self._short_values_suppression_cannot_see()}
 
     def _short_values_suppression_cannot_see(self) -> dict:
@@ -13670,6 +13810,32 @@ class Inspeximus:
             self._dirty = True   # mark for the next throttled/forced save; do NOT serialize on the read path
         return out
 
+    _RECALL_STATE = ("_last_recall", "_last_recall_text", "_last_recall_window", "_last_recall_at",
+                     "_last_recall_q", "_last_recall_writes")
+
+    @contextlib.contextmanager
+    def _recall_state_kept(self):
+        """Run internal recalls without moving what the CALLER last recalled.
+
+        `memory_report` and `selection_integrity` are documented read-only, and their internal
+        recalls replaced the recall window, so with observe_recall on the next write recorded the ids
+        a report had sampled, not the ones the client was served (mcp-tools-review M8). `observe=False`
+        would only invalidate the window; a report is not a read by anyone, so the state it found is
+        put back exactly, the lineage inputs (`_last_recall`, `_last_recall_text`) included."""
+        _missing = object()
+        saved = {a: getattr(self, a, _missing) for a in Inspeximus._RECALL_STATE}
+        try:
+            yield
+        finally:
+            for a, v in saved.items():
+                if v is _missing:
+                    try:
+                        delattr(self, a)
+                    except AttributeError:
+                        pass
+                else:
+                    setattr(self, a, v)
+
     def _note_recall_window(self, ids, query) -> None:
         """Record what the store served for ONE LOGICAL recall operation, and when, and what asked.
 
@@ -14131,14 +14297,37 @@ class Inspeximus:
         b = float(r.get("bad", 0) or 0)
         return (g + 1.0) / (g + b + 2.0)
 
+    _OUTCOME_GOOD_WORDS = ("good", "right", "correct", "reproduced", "hit", "true", "win", "+")
+    _OUTCOME_BAD_WORDS = ("bad", "wrong", "incorrect", "failed", "fail", "failure", "miss", "false", "lose",
+                          "loss", "refuted", "-")
+
     @staticmethod
     def _outcome_good(outcome) -> bool:
-        """Parse a credit/monitor outcome: bool, a sign (>0 good), or a verdict string."""
+        """Parse a credit/monitor outcome: bool, a sign (>0 good), or a verdict string.
+
+        A SIGNED NUMBER SENT AS TEXT IS A NUMBER. A caller whose transport carries only strings (an
+        MCP client, a CLI) sends "+1" or "2", and the word list below used to file every string it
+        did not name as a FAILURE: "+1", "success" and "ok" all raised the record's `bad` count
+        (mcp-tools-review M2). A number in a string is read as its sign, and a word in neither list
+        is refused rather than guessed, because a guessed verdict is a recorded outcome nobody gave."""
         if isinstance(outcome, bool):
             return outcome
         if isinstance(outcome, (int, float)):
             return outcome > 0
-        return str(outcome).strip().lower() in ("good", "right", "correct", "reproduced", "hit", "true", "win", "+")
+        word = str(outcome).strip().lower()
+        if word in Inspeximus._OUTCOME_GOOD_WORDS:
+            return True
+        if word in Inspeximus._OUTCOME_BAD_WORDS:
+            return False
+        try:
+            num = float(word)
+        except ValueError:
+            num = None
+        if num is not None:
+            return Inspeximus._outcome_good(num)
+        raise ValueError(f"unrecognised outcome {outcome!r}: pass a bool, a signed number, or one of "
+                         f"{', '.join(Inspeximus._OUTCOME_GOOD_WORDS)} (good) / "
+                         f"{', '.join(Inspeximus._OUTCOME_BAD_WORDS)} (bad)")
 
     def credit(self, ids, outcome, weight: float = 1.0, warrant=None) -> dict:
         """Close the accuracy loop onto the substrate. When the work a set of memories was recalled into
@@ -14173,6 +14362,14 @@ class Inspeximus:
         attacker influences, gate them at the source — there is no after-the-fact check here.
         """
         good = Inspeximus._outcome_good(outcome)
+        # COUNTS ONLY GROW. A negative weight was added as-is, so credit(bad, weight=-5) took back a
+        # record's recorded failures, which the influence gate reads (mcp-tools-review M3).
+        try:
+            _w = float(weight)
+        except (TypeError, ValueError):
+            raise ValueError(f"weight must be a number, got {weight!r}") from None
+        if not (_w >= 0.0) or _w == float("inf"):
+            raise ValueError(f"weight must be a finite number >= 0 (counts only grow), got {weight!r}")
         by_id = {x["id"]: x for x in self._tenant_rows()}
         key, updated = ("good" if good else "bad"), []
         win, now, collapsed = self.credit_burst_window, time.time(), []
@@ -14193,7 +14390,10 @@ class Inspeximus:
             self._touch(rec)                     # a row store writes only what is declared
             updated.append(i)
         if updated:
-            self._save()
+            # FORCED: "Returns what updated" has to mean updated in the file. Throttled, the credit sat in
+            # this handle's memory and a server that exited before its next forced save lost it
+            # (mcp-tools-review M1).
+            self._save(force=True)
         return {"updated": updated, "outcome": key, "weight": weight,
                 **({"collapsed": collapsed} if collapsed else {})}
 
@@ -14693,6 +14893,7 @@ class Inspeximus:
             self._irrev = {}
             if self.path:
                 _bp = self.path.with_name(self.path.name + ".irrev.json")
+                self._irrev_sig = Inspeximus._sidecar_sig(_bp)
                 try:
                     self._irrev = json.loads(_bp.read_text(encoding="utf-8"))
                 except FileNotFoundError:
@@ -14720,8 +14921,9 @@ class Inspeximus:
     def _save_budget(self):
         if self.path:
             try:
-                (self.path.with_name(self.path.name + ".irrev.json")).write_text(
-                    json.dumps(self._irrev, ensure_ascii=False), encoding="utf-8")
+                _bp = self.path.with_name(self.path.name + ".irrev.json")
+                _bp.write_text(json.dumps(self._irrev, ensure_ascii=False), encoding="utf-8")
+                self._irrev_sig = Inspeximus._sidecar_sig(_bp)
             except Exception as e:
                 self._sidecar_errors['irrev'] = f"{type(e).__name__}: {e}"
 
@@ -15134,6 +15336,21 @@ class Inspeximus:
             if rec is None:
                 return {"id": id, "found": False}
             b = _brk(rec); b["surfaced"] = rec["id"] in rank_of
+            # NAME THE READ-PATH WITHHOLDING. A quarantined record came back with a `gate_reason` from
+            # the influence gate, which default recall does not apply, and nothing about the read guard
+            # that actually kept it out (mcp-tools-review R7). These are the filters recall applies
+            # before ranking, so a record they hold back could not have surfaced whatever it scored.
+            withheld = []
+            if self.read_guards:
+                self._assess_read_guards(rec)
+            if self.read_guards and Inspeximus._is_quarantined(rec):
+                withheld.append("quarantined: the read guard holds instruction-shaped text out of recall until "
+                                "release_quarantine (recall(include_quarantined=True) shows it)")
+            if self._objections and rec["id"] in self._withheld_ids():
+                withheld.append("objection: a standing Art. 21 objection withholds the subject's records")
+                b["text"] = None                  # explained, not served (mcp-tools-review S6)
+            if withheld:
+                b["withheld"] = withheld
             return b
         return [_brk(r) for r in ranked]
 
@@ -15201,6 +15418,12 @@ class Inspeximus:
         """
         rows = [r for r in self._tenant_rows()
                 if r.get("status") == "active" and not _is_guard_record(r)]
+        # A STANDING ART. 21 OBJECTION WITHHOLDS HERE TOO. The index is the always-loaded surface, and
+        # it carried the objecting subject's line after recall had stopped serving the record
+        # (mcp-tools-review S6). The count is reported; the records are not erased.
+        _withheld = self._withheld_ids() if self._objections else set()
+        if _withheld:
+            rows = [r for r in rows if r["id"] not in _withheld]
         est = 1.35                      # words -> tokens; an estimate, and named as one in `limits`
 
         def _first_sentence(t: str, cap: int) -> str:
@@ -15277,6 +15500,7 @@ class Inspeximus:
             "records": len(entries), "words": words, "tokens_estimate": int(words * est),
             "generated": generated, "reused": reused, "fallback": fallback, "shortened": cut,
             "budget_tokens": budget_tokens, "over_budget": max(0, over), "limits": limits,
+            "withheld_by_objection": len(_withheld & {r["id"] for r in self._tenant_rows()}),
             # WHAT AN AGENT NEEDS TO FIX IT. Over MCP the caller IS a model, so it cannot pass a
             # `summarise` callable -- but it can read these and write the lines itself with
             # set_index_line(). Capped, because this is a tool result and not a dump of the store.
@@ -15361,7 +15585,8 @@ class Inspeximus:
         # must not move between runs. Same cost as the slice; order-dependence drops to 0.008.
         sample = act if len(act) <= 400 else _random.Random(0).sample(act, 400)
         for r in sample:
-            other = [h for h in self.recall(r["text"], k=2) if h["id"] != r["id"]]
+            with self._recall_state_kept():
+                other = [h for h in self.recall(r["text"], k=2) if h["id"] != r["id"]]
             if other:
                 s = self._similarity(r["text"], other[0], self._qvec(r["text"]) if self.embed else None,
                                      self._rec_tokens(r))
@@ -15592,7 +15817,11 @@ class Inspeximus:
                 self._touch(r); r["superseded_ts"] = time.time(); staled += 1
                 r.setdefault("meta", {})["superseded_by_policy"] = "keep_budget"
                 self._declare_retired(r, "keep-budget: outside the retained set")
-        self._save()
+        # FORCED, like every maintenance pass that reports what it changed. Throttled, the supersessions
+        # stayed in memory while their retirement receipts were already in the sidecar, and sleep() never
+        # saved its budget pass at all: consolidate_clusters' save had just reset the throttle clock
+        # (mcp-tools-review M4).
+        self._save(force=True)
         # `kept` used to be `keep` — the REQUEST echoed back, never measured. It sat in the same dict as
         # `active`, so a run that left 0 active still reported `kept: 10` and the two contradicted each
         # other in one line. It is the surviving population now, and the request is reported separately
@@ -15700,7 +15929,7 @@ class Inspeximus:
                     self._touch(r); r["superseded_ts"] = time.time(); staled += 1
                     r.setdefault("meta", {})["superseded_by_policy"] = "keep_budget"
                     self._declare_retired(r, "keep-budget: outside the cluster's retained set")
-        self._save()
+        self._save(force=True)                   # forced: see consolidate() (mcp-tools-review M4)
         return {"clusters_total": len(clusters), "clusters_fired": fired, "threshold": threshold,
                 "linked_pairs": linked, "toggled": toggled, "staled": staled}
 
@@ -16250,6 +16479,9 @@ class Inspeximus:
         inc = incompatible or (lambda a, b: _value_clash(a, b) or _negation_clash(a, b))
         active = [r for r in self.items if r.get("status") == "active"
                   and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant-scoped conflict check
+        if self._objections:                                   # Art. 21: not served here either (S6)
+            _withheld = self._withheld_ids()
+            active = [r for r in active if r["id"] not in _withheld]
         hits, seen = [], set()
         if key is not None:                                    # (1) value change on a managed key
             for r in active:
@@ -16359,9 +16591,14 @@ class Inspeximus:
             return {"verdict": verdict,
                     "current": (cur.get("object") if isinstance(cur, dict) else cur),
                     "matched": matched}
+        # A STANDING ART. 21 OBJECTION: the subject's records neither support nor quote here, as in recall
+        # (mcp-tools-review S6). The claim is judged against what the store may still serve.
+        _withheld = self._withheld_ids() if self._objections else set()
         # (1) keyed path — precise and supersession-aware
         if key is not None:
             cur = self._current_active(key)
+            if cur is not None and cur["id"] in _withheld:
+                cur = None
             m = _matches(cur.get("object"), cur["text"]) if cur is not None else False
             if m is True:
                 return _out("supported", cur, {"id": cur["id"], "object": cur.get("object"),
@@ -16372,7 +16609,7 @@ class Inspeximus:
                 return _out("unverifiable", cur, {"id": cur["id"], "object": cur.get("object"),
                                                   "text": cur["text"][:200]})
             stale = next((h for h in self.history(key)
-                          if h["status"] != "active"
+                          if h["status"] != "active" and h.get("id") not in _withheld
                           and _matches(h.get("object"), h.get("text")) is True), None)
             if stale is not None:
                 return _out("stale_superseded", (cur.get("object") if cur else None),
@@ -16385,7 +16622,8 @@ class Inspeximus:
             return _out("unsupported", None, None)
         # (2) keyless path — similarity search: active (support / contradict), then retired (stale)
         tvec = self._qvec(text)
-        rows = [r for r in self.items if self.tenant is None or r.get("tenant") == self.tenant]
+        rows = [r for r in self.items if (self.tenant is None or r.get("tenant") == self.tenant)
+                and r["id"] not in _withheld]
         contra = undecidable = None
         for r in rows:
             if r.get("status") != "active":
@@ -16404,7 +16642,12 @@ class Inspeximus:
                 continue
             if (self._similarity(text, r, tvec) >= sim_threshold
                     and _matches(r.get("object"), r["text"]) is True):
-                return _out("stale_superseded", None,
+                # 'current' IS THE TRUTH NOW, on this path as on the keyed one. It was always None here
+                # although the retired record's key has a current value (mcp-tools-review M7).
+                cur = self._current_active(r["key"]) if r.get("key") else None
+                if cur is not None and cur["id"] in _withheld:
+                    cur = None
+                return _out("stale_superseded", cur,
                             {"id": r["id"], "object": r.get("object"), "text": r["text"][:200]})
         if contra is not None:
             return _out("contradicted", contra.get("object"),
@@ -16434,30 +16677,31 @@ class Inspeximus:
         caller to gate on — it does NOT prevent the untrusted write (a flag, by design), and 'qualified' is
         exactly your attestation / trust-seed policy. With no trust root configured it cannot distinguish
         trusted from untrusted and says so (note)."""
-        actual = self.recall(query, k=k, reinforce=False)
-        actual_ids = {r["id"] for r in actual}
-        if not self.trust_seeds:
-            return {"stable": None, "displaced": [], "untrusted_in_topk": [],
-                    "k": k, "note": "no trust root configured (set trust_seeds / attest writes) — selection "
-                                    "integrity cannot distinguish trusted from untrusted here (unknown, not safe)"}
-        qualified = self.recall(query, k=k, trusted_only=True, reinforce=False)
-        trusted_pool = self.recall(query, k=max(k, pool), trusted_only=True, reinforce=False)
-        trusted_ids = {r["id"] for r in trusted_pool}
-        displaced = [{"id": r["id"], "text": (r.get("text") or "")[:160]}
-                     for r in qualified if r["id"] not in actual_ids]
-        untrusted = [{"id": r["id"], "text": (r.get("text") or "")[:160]}
-                     for r in actual if r["id"] not in trusted_ids]
-        if not trusted_ids:
-            # `stable = not displaced` is structurally True when the trusted recall returns NOTHING, so a
-            # trust_seeds entry that matches no record (e.g. the literal source string where the store keys
-            # on its canonical form) reported stable=True with the whole top-k untrusted. Empty seeds already
-            # failed CLOSED; wrong seeds failed OPEN, which is the more dangerous of the two.
-            return {"stable": None, "displaced": [], "untrusted_in_topk": untrusted, "k": k,
-                    "note": f"trust_seeds are configured but match no record in this store "
-                            f"(canonical forms: {sorted(Inspeximus._canon_source(x) for x in self.trust_seeds)}) "
-                            f"— selection integrity is unknown here, not stable"}
-        return {"stable": not displaced, "displaced": displaced,
-                "untrusted_in_topk": untrusted, "k": k}
+        with self._recall_state_kept():
+            actual = self.recall(query, k=k, reinforce=False)
+            actual_ids = {r["id"] for r in actual}
+            if not self.trust_seeds:
+                return {"stable": None, "displaced": [], "untrusted_in_topk": [],
+                        "k": k, "note": "no trust root configured (set trust_seeds / attest writes) — selection "
+                                        "integrity cannot distinguish trusted from untrusted here (unknown, not safe)"}
+            qualified = self.recall(query, k=k, trusted_only=True, reinforce=False)
+            trusted_pool = self.recall(query, k=max(k, pool), trusted_only=True, reinforce=False)
+            trusted_ids = {r["id"] for r in trusted_pool}
+            displaced = [{"id": r["id"], "text": (r.get("text") or "")[:160]}
+                         for r in qualified if r["id"] not in actual_ids]
+            untrusted = [{"id": r["id"], "text": (r.get("text") or "")[:160]}
+                         for r in actual if r["id"] not in trusted_ids]
+            if not trusted_ids:
+                # `stable = not displaced` is structurally True when the trusted recall returns NOTHING, so a
+                # trust_seeds entry that matches no record (e.g. the literal source string where the store keys
+                # on its canonical form) reported stable=True with the whole top-k untrusted. Empty seeds already
+                # failed CLOSED; wrong seeds failed OPEN, which is the more dangerous of the two.
+                return {"stable": None, "displaced": [], "untrusted_in_topk": untrusted, "k": k,
+                        "note": f"trust_seeds are configured but match no record in this store "
+                                f"(canonical forms: {sorted(Inspeximus._canon_source(x) for x in self.trust_seeds)}) "
+                                f"— selection integrity is unknown here, not stable"}
+            return {"stable": not displaced, "displaced": displaced,
+                    "untrusted_in_topk": untrusted, "k": k}
 
     @staticmethod
     def check_self_narration(text: str) -> dict:
@@ -16771,6 +17015,7 @@ class Inspeximus:
                     else:
                         payload = data
                     _durable_replace(self.path, payload)
+                    self._json_persisted = {r.get("id") for r in slim if isinstance(r, dict)}
                     # INSIDE the lock, and that is the whole point. The check and the write already shared
                     # one critical section, but this line sat outside it, so the window simply moved: A
                     # writes, releases, and before it stamps its own signature B takes the lock, compares

@@ -75,6 +75,10 @@ _STORE_WIDE_PRIVATE = {
     # `_flush_tombstones` persists the WHOLE chain to its sidecar, the way _save_cusum does; the file
     # is one file and writing it is not a tenant act.
     "_flush_tombstones",
+    # `_refresh_sidecars` re-reads the objections and budget SIDECARS when a peer changed them (the
+    # per-call refresh, mcp-tools-review X7). It drops the whole store-global budget cache so the
+    # per-tenant reader (`_budget_state`, rebound) reloads it, and reads no record.
+    "_refresh_sidecars",
     # The receipt chain is one file too. `_reconcile_receipts_with_disk` adopts a peer's entries,
     # `_append_receipt` chains onto its tail, `_receipts_disk_sig` stats it (2.28.1).
     "_reconcile_receipts_with_disk", "_append_receipt", "_receipts_disk_sig",
