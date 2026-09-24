@@ -1,3 +1,13 @@
+## 3.9.3 - the 3.9.2 release, published. 3.9.2 was tagged but never reached PyPI. AFFECTS: exactly what 3.9.2 below lists (the demo signs its stores and needs `inspeximus[crypto]`); the library is otherwise identical to 3.9.2.
+
+The `v3.9.2` tag exists and points at a commit whose release workflow installed the optional
+extras without the `openai-agents` upgrade the main CI installs. The release's own test shards then
+resolved an `openai-agents` with no `agents.testing` module and failed on tests main CI had passed,
+so the build, the PyPI upload and the GitHub Release were skipped: 3.9.2 was never published. Tags
+here cannot be moved or deleted, so the same content ships as 3.9.3. `release.yml` now installs the
+test environment line for line as `ci.yml`'s integrations job does. Nothing in the library changed
+between 3.9.2 and 3.9.3; the browser verifier's Try-it examples are regenerated for the new version.
+
 ## 3.9.2 - `inspeximus demo` signs every store it makes and checks each claim it prints. UPGRADE IF YOU RUN THE DEMO OR POINT SOMEONE AT IT. AFFECTS: the demo needs `pip install "inspeximus[crypto]"` and exits 2 without `cryptography`; `inspeximus.demo` gains `cannot_run()`, and `run_demo()` raises RuntimeError when it gives a reason. The library, the stores and every other command are unchanged.
 
 As shipped in 3.9.0 and 3.9.1, the demo opened every store without a receipt key, so the erasure
