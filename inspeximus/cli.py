@@ -493,9 +493,13 @@ def _survive_a_narrow_console() -> None:
     the operator needs to see, silently. `backslashreplace` prints `sedaÌ\\u0301cia` -- ugly, lossless,
     and never a crash. The bytes on disk are UTF-8 either way; only the terminal echo changes.
     """
+    # UTF-8 streams too: UTF-8 encodes every character except a lone surrogate, and a verifier that
+    # QUOTES a tampered field prints exactly that. On Linux, erasure-verify on a certificate whose
+    # "count" was a lone surrogate printed a traceback and no verdict (verifier-page review I1,
+    # 2026-09-24).
     for stream in (sys.stdout, sys.stderr):
         try:
-            if (getattr(stream, "encoding", "") or "").lower() not in ("utf-8", "utf8"):
+            if getattr(stream, "errors", None) != "backslashreplace":
                 stream.reconfigure(errors="backslashreplace")
         except Exception:
             pass          # a redirected or exotic stream is not worth failing a command over
@@ -794,6 +798,9 @@ def main(argv=None):
     ab.add_argument("--out", default="inspeximus_audit_bundle.json", help="output json path")
     ab.add_argument("--expected-pubkey", default=None, help="pin the signature-authenticity check to this key")
 
+    dm = sub.add_parser("demo", help="check three claims on a throwaway store in about a second: a correction holds, an erasure can be checked, a tamper is caught (offline, touches nothing of yours)")
+    dm.add_argument("--keep", metavar="DIR", default=None,
+                    help="copy the stores, the erasure certificate and the edited copy to DIR")
     av = sub.add_parser("audit-verify", help="verify an audit bundle OFFLINE (needs only the file, no store)")
     av.add_argument("bundle", help="the bundle json to verify")
     av.add_argument("--witnesses", default=None, help="comma-separated allowlisted witness pubkeys (hex)")
@@ -1342,6 +1349,16 @@ def main(argv=None):
             print("  FAIL " + pr)
         print(("OK " if ok else "FAIL ") + f"action ledger {a.file}")
         return 0 if ok else 1
+
+    # demo works in its own temporary directory — never open the user's store.
+    if a.cmd == "demo":
+        from inspeximus.demo import render, run_demo
+        result = run_demo(keep=a.keep)
+        if a.json:
+            print(json.dumps(result, indent=2, default=str))
+        else:
+            print(render(result))
+        return 0 if result["ok"] else 1
 
     # audit-verify needs only the bundle file — never open a store (that would create one as a side effect).
     if a.cmd == "audit-verify":

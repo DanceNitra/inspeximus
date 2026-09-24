@@ -1079,9 +1079,18 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     else:
         checks["signatures_valid"] = sigs_ok
         checks["signed"] = bool(signed)
+        # A PARTLY SIGNED CHAIN IS A FAILURE, as it is in verify_bundle(). As a note it let a party WITHOUT
+        # the key append an unsigned tombstone for an id that was never erased, recompute the unsigned
+        # anchor, and get VALID "N erasure(s) attested" (verifier-page review F7, 2026-09-24). The cost
+        # is the one the bundle already pays: a store that erased before it had a receipt key cannot
+        # issue a valid certificate over those early tombstones.
         if signed and len(signed) != len(toms):
-            limits.append(f"PARTIALLY SIGNED: {len(toms) - len(signed)} of {len(toms)} tombstones carry "
-                          f"no signature; the authorship evidence covers only part of the chain")
+            unsigned_ids = [t.get("memory_id") for t in toms if not t.get("sig")]
+            problems.append(f"PARTIALLY SIGNED: {len(toms) - len(signed)} of {len(toms)} tombstones carry no "
+                            f"signature ({unsigned_ids[:5]}); a chain that is signed in places is not signed, "
+                            f"and an unsigned tombstone can be appended without the key")
+            sigs_ok = False
+            checks["signatures_valid"] = False
 
     anc = cert.get("anchor") or {}
     tip = toms[-1]["hash"] if toms else _GENESIS
@@ -1287,7 +1296,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.8.1"
+__version__ = "3.9.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.

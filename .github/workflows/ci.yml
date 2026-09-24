@@ -71,6 +71,29 @@ jobs:
   # local run collected 1137. Excluding them was never a decision anyone made; it was the default, and the
   # default was invisible. This job installs the optional dependencies so they actually run: 1144 pass here.
   # (The count was first reported as 155/16 -- tools/skip_census.py was over-counting; see its tests.)
+  # A new user's first minute, measured on a runner that has never seen the package: a fresh venv,
+  # `pip install` of this commit, then `inspeximus demo`. Fails when the demo does not pass all three
+  # checks or when install plus demo take more than 60 s (tools/time_to_demo.py). Measured locally on
+  # 2026-09-24: 9.95 s, of which 9.37 s is pip.
+  time-to-first-success:
+    name: time to first success (pip install + inspeximus demo, 60 s budget)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: clean venv, pip install, inspeximus demo
+        run: python tools/time_to_demo.py --budget 60 --out time-to-first-success.json
+      - name: seconds, in the job summary
+        if: always()
+        run: python tools/time_to_demo.py --summary time-to-first-success.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: time-to-first-success
+          path: time-to-first-success.json
+
   perf:
     # A REGRESSION GATE, not a benchmark -- our benchmark is RAMR. It compares WORK COUNTERS (atomic
     # writes, whole-store serializations) against perf/baseline.json, because wall-clock on a shared

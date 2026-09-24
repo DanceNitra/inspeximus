@@ -1,3 +1,39 @@
+## 3.9.1 - an erasure certificate signed in places no longer verifies, and the CLI no longer crashes printing a lone surrogate. UPGRADE IF YOU VERIFY ERASURE CERTIFICATES FROM A PARTY YOU DO NOT CONTROL. AFFECTS: `verify_erasure_certificate()` returns `valid: false` when some tombstones are signed and some are not; the CLI writes with `errors="backslashreplace"` on UTF-8 consoles too. A fully signed or a fully unsigned certificate verifies as before.
+
+`verify_erasure_certificate()` reported a partly signed tombstone chain as a PARTIALLY SIGNED note and
+still returned VALID. That let anyone without the key append an unsigned tombstone for an id that was
+never erased to a fully signed certificate, recompute the unsigned anchor, and get VALID "N erasure(s)
+attested". `verify_bundle()` already failed a partly signed chain; the certificate verifier now does
+too, and names the unsigned ids. The cost is the bundle's: a store that erased records before it had a
+receipt key cannot issue a valid certificate over those early tombstones. A certificate with no
+signatures at all is still valid with its UNSIGNED limit. Found by the adversarial review of the browser
+verifier (F7).
+
+The CLI's console guard set `errors="backslashreplace"` only on non-UTF-8 consoles. UTF-8 encodes every
+character except a lone surrogate, and `erasure-verify` quotes a tampered field in its problems, so on a
+UTF-8 console a certificate with a lone surrogate in a field printed a traceback and no verdict (review
+I1). The guard now applies to every console.
+
+`tests/test_a_partly_signed_certificate_does_not_verify.py` builds the forged certificate from the review,
+keeps a fully signed and a fully unsigned control, and runs `erasure-verify` on a lone surrogate. Both
+fixes are registered mutations, and the test kills both.
+
+## 3.9.0 - `inspeximus demo` checks three of the library's claims on a throwaway store in about a second. IT AFFECTS NOBODY'S CODE: it adds a command. AFFECTS: the CLI gains a `demo` subcommand and the package gains `inspeximus.demo` (`run_demo()`, `render()`). Nothing else changes, and the default store is byte-identical.
+
+`inspeximus demo` states a fact, corrects it, and restates the old value: `recall` still answers with
+the correction, and the restatement is recorded as a blocked echo. It forgets a subject, verifies the
+signed erasure certificate without the operator's key, and scans the store directory for the
+subject's bytes: none remain. It copies a store with receipts twice and edits one copy behind the
+library's back: the untouched copy verifies and the edited one is refused, with the record named.
+Each step ends in PASS or FAIL; `--json` prints the result as JSON and `--keep DIR` keeps the stores,
+the certificate and the edited copy. It runs in a temporary directory with a temporary receipt key,
+opens no store of yours and makes no network request.
+
+Each step can fail. `tests/test_the_demo_can_fail_at_every_step.py` turns off the one mechanism a
+step shows and requires that step to fail for the right reason: with `route(..., policy="trusting")`
+recall answers the old value, without the forget the byte scan finds the subject and the
+certificate does not verify, and without the edit both copies verify.
+
 ## 3.8.1 - the assessor pack reads one state of the store, and computes each repeated report once on a store written before 3.5.0. UPGRADE IF YOU BUILD ASSESSOR PACKS FROM A STORE THAT PREDATES THE READ GUARDS. AFFECTS: `assessor_pack()` calls `read_guard_report()` once before the first document when the store has read guards on. Nothing else changes, and the default store is byte-identical.
 
 The read guards stamp `meta.quarantined` on a record the first time a read sees it. On a store written

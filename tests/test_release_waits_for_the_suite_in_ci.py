@@ -54,3 +54,14 @@ def test_the_default_run_requires_the_suite_workflow():
     src = inspect.getsource(rc.run)
     assert "required=() if (skip_tests or full_local) else (SUITE_WORKFLOW,)" in src
     assert rc.SUITE_WORKFLOW == "tests"
+
+
+def test_an_uncommitted_tree_does_not_clear_even_when_head_is_green():
+    runs = [run("tests"), run("audit")]
+    status, detail = rc.ci_verdict(runs, HEAD, required=("tests",), dirty=[" M inspeximus/cli.py"])
+    assert status == rc.SKIP and "uncommitted" in detail
+
+
+def test_CONTROL_a_clean_tree_with_the_same_runs_clears():
+    status, _ = rc.ci_verdict([run("tests"), run("audit")], HEAD, required=("tests",), dirty=[])
+    assert status == rc.PASS

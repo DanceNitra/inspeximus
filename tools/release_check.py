@@ -852,7 +852,9 @@ def check_ci_on_head(rep, root=ROOT, required=()):
                 % type(ex).__name__)
         return
 
-    status, detail = ci_verdict(runs, head, required)
+    dirty = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True,
+                           cwd=str(root), encoding="utf-8", errors="replace").stdout.splitlines()
+    status, detail = ci_verdict(runs, head, required, dirty=dirty)
     rep.add("ci on HEAD", status, detail)
 
 
@@ -863,9 +865,17 @@ def check_ci_on_head(rep, root=ROOT, required=()):
 SUITE_WORKFLOW = "tests"
 
 
-def ci_verdict(runs, head, required=()):
+def ci_verdict(runs, head, required=(), dirty=()):
     """(status, detail) for the runs gh lists on `head`. A required workflow that has no run, or has
-    not finished, is SKIP: unknown is never reported as green."""
+    not finished, is SKIP: unknown is never reported as green. So is a tree with changes that are
+    not in HEAD: CI ran on the commit, and the commit is not what this checklist just checked.
+
+    Measured 2026-09-24: 3.9.0 was checked with the release uncommitted. Every leg passed, CI on HEAD
+    was green because HEAD was the previous commit, the report said READY and the ready notice went
+    to the owner for a release that CI had never seen."""
+    if required and dirty:
+        return SKIP, ("%d uncommitted change(s), first: %s -- CI has not run on this tree; commit, push "
+                      "and wait for the %r workflow" % (len(dirty), dirty[0].strip(), required[0]))
     done = [r for r in runs if r.get("status") == "completed"]
     bad = [r for r in done if r.get("conclusion") not in ("success", "skipped", "neutral")]
     if bad:
