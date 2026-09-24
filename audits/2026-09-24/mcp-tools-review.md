@@ -23,7 +23,7 @@ and is not counted as the expected failure.
 **No library code was changed.** The branch adds this report, the harness and the tests.
 **Environment:** Python 3.11.15, mcp 1.30.0, pytest 9.1.1 with xdist.
 
-Status: families 1 and 2 are written up; the remaining families follow as they are finished.
+Status: families 1-3 are written up; the remaining families follow as they are finished.
 
 Severity: **High**: a guard is bypassed, data is wrongly written, erased or exposed, or a failure reads as
 success or as a clean result. **Medium**: a promised field or behaviour is wrong or missing. **Low**:
@@ -118,6 +118,31 @@ Tools: `remember`, `remember_decision`, `revert`, `route`, `observe`, `reopened`
 - **Cause:** `core.py:11816` checks for `trusting` and `context`, and anything else falls through to the echo
   branch. Neither layer validates the value.
 - **Test:** `test_route_refuses_an_unknown_policy`
+
+### W7 (High): on a signed store, one ordinary write through the server breaks the receipt chain
+
+- **Description:** the module docstring (`mcp_server.py:41-44`): "INSPEXIMUS_RECEIPT_PUBKEY ... Set it
+  whenever the store is signed". Guard parity: the same `remember` through the library, holding the store's
+  key, keeps `verify_writes` ok.
+- **What happens:** on a store the library signed, one `remember` through the server appends an
+  **unsigned** receipt. `verify_writes` (pinned) goes from ok to `["receipt 1: unsigned, but a signature
+  was required", "1 of 2 chain entries carry NO signature while 1 do. A chain signed in places is not
+  signed: something without the key appended to it."]`, and it stays failed.
+- **Cause:** `mcp_server.py:272` calls `open_store(...)` without `receipt_key` or `receipt_signer`, and no
+  environment variable supplies either. `INSPEXIMUS_WRITER_KEY` only attests records. Every write and
+  erasure tool is affected: see X1.
+- **Test:** `test_remember_on_a_signed_store_keeps_the_chain_verifiable`
+
+### W8 (Low): `remember` reports lineage that was never stored
+
+- **Description** (`mcp_server.py:453-455`, `:463`): "`derived_from` — the ids this memory was BUILT
+  FROM. Provenance rides along the edge ..." and "Returns the new id, and the VERDICT on the write".
+- **What happens:** `remember(derived_from=["deadbeef00"])` names a parent that does not exist. The library
+  drops the edge and stores `derived_from: None, orphan: True`. The tool returns `derived_from:
+  ["deadbeef00"]` and `attributable: true`, both built from its arguments
+  (`mcp_server.py:478-482`). It tells the caller the record is attributable through lineage that is
+  not there, at the only moment the caller could still fix it.
+- **Test:** `test_remember_reports_the_lineage_that_was_stored`
 
 ### Holds
 
@@ -237,3 +262,161 @@ Tools: `recall`, `recall_iterative`, `recall_followup`, `get`, `neighbors`, `tok
 | `history` | Every value in event-time order, each with the policy that retired it. |
 | `as_of` | Returns the value current at `when`. |
 | `provenance` | Shape as described, with `limits`. Passing neither `key` nor `id` comes back as `isError`. |
+
+---
+
+## Family 3: erasure, retention and partitions
+
+Tools: `forget`, `forget_subject`, `forget_pii`, `pii_report`, `retention`, `erasure_report`,
+`erasure_certificate`, `erasure_audit`, `erasure_residue`, `declare_out_of_band_deletion`, `open_partition`,
+`remember_in_partition`, `sweep_partitions`, `close_partition`, `partitions_report`. Tests:
+`tests/test_mcp_review_erasure.py`.
+
+### E1 (High): `close_partition` leaves a context partition's superseded records in the store
+
+- **Description:** `close_partition` (`mcp_server.py:2269`): "A context partition erases its records
+  (disposition erased)". `open_partition`: "a context partition erases its records at close".
+- **What happens:** a context partition gets two keyed writes ("customer card ends 4471", then "... 9920").
+  The close returns `{disposition: erased, erased: 1}`. The first record is still in the store, tagged
+  `partition:c1` and `superseded`, and it survives a restart. `history("ctx::card")` returns its text.
+- **Cause:** `partitions.py:140-141`. `_records()` keeps only active records, and the close erases what
+  it returns (`partitions.py:230-233`). The same filter keeps superseded records out of the cap count
+  (`:78`) and out of `partitions_report` (`:257`).
+- **Test:** `test_close_partition_erases_every_record_of_a_context_partition`
+
+### E2 (High): `sweep_partitions` leaves expired superseded records in place
+
+- **Description** (`mcp_server.py:2259-2260`): "records past max_age_days and beyond max_records are
+  hard-deleted with a tombstone".
+- **What happens:** an agent partition has `max_age_days=0` and two keyed writes. The sweep reports
+  `expired: 1`. The superseded record, still tagged with the partition, stays in the store, and
+  `partitions_report` then says `records: 0, sweep_due: False`.
+- **Cause:** as in E1: `partitions.py:186-190` sweeps `_records()`.
+- **Test:** `test_sweep_partitions_erases_every_expired_partition_record`
+
+### E3 (High): `remember_in_partition` reports a write the guard retired as landed
+
+- **Description** (`mcp_server.py:2247-2248`): "Remember into a partition: the record is tagged
+  partition:<name>, counted against its cap ...". The yardstick is guard parity: `remember` reports a
+  blocked write as `blocked`.
+- **What happens:** the tool has no `object` parameter. On a key whose values carry objects, every
+  partition write is retired on arrival by the objectless guard (`last_write.blocked: true`). A restated
+  retired value is retired by the echo guard. Either way the result is `{id, partition}`, which looks
+  the same as a landed write.
+- **Cause:** `mcp_server.py:2251-2254` never adds `_write_verdict()`.
+- **Test:** `test_remember_in_partition_reports_a_write_the_guard_retired`
+
+### E4 (High): `erasure_residue` returns a clean verdict over a directory it could not list
+
+- **Description** (`mcp_server.py:1516-1517`): "A file it could not read makes the verdict False:
+  "clean" must never mean "we did not look at that part"."
+- **What happens:** the value sits in `root/locked/export.json`. If that directory cannot be listed
+  (permission denied), the answer is `{ok: True, checked_files: 1, skipped: [], problems: []}`. An
+  unreadable file is handled; an unreadable directory disappears from the scan. The test simulates the
+  permission error by failing `os.scandir` for that directory, because the suite may run as root.
+- **Cause:** `erasure_residue.py:221`. `os.walk(...)` has no `onerror`, so listing errors are swallowed.
+- **Test:** `test_erasure_residue_an_unreadable_directory_is_not_clean`
+
+### E5 (High): `erasure_certificate` ignores `INSPEXIMUS_RECEIPT_PUBKEY`
+
+- **Description:** the module docstring (`mcp_server.py:41-44`): "Set it whenever the store is signed:
+  without it the tamper-evidence tools verify that receipts are signed by SOMEBODY". The tool: "the
+  auditor-grade receipt proving records were erased".
+- **What happens:** the store is signed by key K2 and the server is pinned to K1. `verify_writes` and
+  `governance_report` report "signed by an unexpected key". The certificate's `self_check` says
+  `verified: True, problems: []`.
+- **Cause:** `mcp_server.py:2415` passes `expected_pubkey or None` instead of `_pin(expected_pubkey)`
+  (`mcp_server.py:1041`). See X2.
+- **Test:** `test_erasure_certificate_self_check_honours_the_configured_pubkey`
+
+### E6 (High): on a signed store, MCP erasures break the chain, and `retention`'s tombstones are never signed
+
+- **Description:** `retention` (`mcp_server.py:1441-1443`): "with apply=True, hard-delete them — each
+  erasure leaving a signed tombstone, so the enforcement is itself auditable." Guard parity for `forget`:
+  through the library, with the key, `verify_writes` stays ok.
+- **What happens:**
+  - The server cannot sign (see X1), so every tombstone it writes is unsigned, in every configuration.
+  - On a store the library signed, one `retention(apply=True)` or `forget` turns the pinned
+    `verify_writes` false: "tombstone 1: unsigned, but a signature was required".
+  - After an MCP `forget_subject`, a third party's `verify_erasure_certificate(cert, expected_pubkey=...)`
+    for that request returns `valid: False` ("PARTIALLY SIGNED").
+  - Also measured: `declare_out_of_band_deletion` swaps "deleted out-of-band" for "unsigned, but a
+    signature was required".
+  - Not measured, but the code runs through the same `forget()` path: `forget_pii`, and the partition
+    sweep, close and cap eviction.
+- **Cause:** `mcp_server.py:272`. `core.py:7947-7962` signs a tombstone only with
+  `_receipt_signer`/`_receipt_sk`.
+- **Tests:** `test_retention_apply_leaves_a_signed_tombstone`, `test_forget_on_a_signed_store_keeps_the_chain_verifiable`
+
+### E7 (Medium): `remember_in_partition` ignores the server's project scope
+
+- **Description:** `INSPEXIMUS_PROJECT`: "Writes are stamped with it and recalls are filtered to it".
+- **What happens:** a record written through `remember_in_partition` on `--project alpha` carries no
+  stamp, and a `--project beta` server recalls it. A plain `remember` from alpha stays hidden, as it
+  should. See X4.
+- **Cause:** `mcp_server.py:2251` passes no project. `partitions.py:86` forwards only what it is given.
+- **Test:** `test_remember_in_partition_stamps_the_server_project`
+
+### E8 (Medium): re-opening a partition echoes rules that are not in force
+
+- **Description** (`mcp_server.py:2233-2236`): "Open a memory partition: a named scope ... with a size cap
+  and an expiry ... `kind` is context, process or agent".
+- **What happens:** `open_partition("w1", kind="process")`, then `open_partition("w1", kind="context",
+  max_records=1, max_age_days=1)`. The second call returns the requested `{kind: context, max_records: 1,
+  max_age_days: 1}`. `partitions_report` shows `w1` still as an uncapped `process` partition with no
+  expiry, and at close its records are kept. The caller was told they would be erased.
+- **Cause:** `partitions.py:156-160` returns a handle to the existing partition and ignores the new
+  arguments. `mcp_server.py:2242` echoes the arguments rather than the registered rules.
+- **Test:** `test_open_partition_reports_the_rules_actually_in_force`. Refusing the conflicting re-open
+  would also pass it.
+
+### E9 (Medium): `pii_report` does not count PII held in superseded records
+
+- **Description** (`mcp_server.py:1357`): "What PII the store currently holds, by type ... Read-only; pair
+  with forget_pii to act on it."
+- **What happens:** with `INSPEXIMUS_PII_DETECT=1`, a contact whose email was corrected keeps
+  `alice@example.com` in a superseded record tagged `pii=['email']`. `pii_report` says
+  `records_with_pii: 0`, and its pair `forget_pii()` then erases that record (`erased: 1`).
+- **Cause:** `core.py:9340` skips every record that is not active. The library docstring says "ACTIVE
+  records". The tool description does not.
+- **Test:** `test_pii_report_counts_pii_held_in_superseded_records`
+
+### E10 (Medium): `forget_subject` returns no `scrubbed_links`
+
+- **Description** (`mcp_server.py:1011-1013`): "delete every memory about `subject` AND scrub its id from
+  survivors' links/supersession pointers ... Returns a receipt (forgotten count, ids, scrubbed_links) you
+  can keep as evidence."
+- **What happens:** the link is scrubbed. The receipt has `erased, ids, request_id, tombstones, coverage,
+  residue_in_store`. It has no `scrubbed_links`, and the count is named `erased`, not `forgotten`.
+- **Cause:** `core.py:8278-8285` builds its own result from `forget()`'s and drops `scrubbed_links`.
+- **Test:** `test_forget_subject_returns_scrubbed_links`
+
+### E11 (Medium): `erasure_residue` returns a clean verdict without entering a symlinked directory
+
+- **Description:** as in E4.
+- **What happens:** `root/data -> ../volume` holds the value. The result is `ok: True` with nothing in
+  `skipped`. A broken symlink, and a directory pruned by `skip_dirs`, are both reported as not looked at.
+  A symlinked directory is not. Not following links is a reasonable default. Leaving the unsearched
+  subtree out of the verdict is the gap.
+- **Cause:** `erasure_residue.py:221-231`.
+- **Test:** `test_erasure_residue_a_symlinked_directory_is_not_clean`
+
+### Holds
+
+| Tool | Checked |
+|---|---|
+| `forget` | `dry_run` returns `{would_forget, ids, sample, dry_run: true}` with matched texts and changes no bytes. The real call returns `{forgotten, ids, scrubbed_links, ...}` and scrubs survivors' links. `basis`, `request_id`, `authorized_by` and `authorization` reach the tombstone inside the committed hash. On an unsigned store `verify_writes` stays ok. (E6 aside.) |
+| `forget_subject` | `AmbiguousSubject` comes back as `isError` with the message. `dry_run` returns `{would_erase, direct, inherited, sample, also_carrying}` and changes neither the store nor the receipts. `exact=True` leaves the colliding subject alone, and `allow_ambiguous=True` erases both. (E10 aside.) |
+| `forget_pii` | `subject` and `types` scoping. `basis` and `request_id` reach the tombstone. With detection off, the result says the sweep is PARTIAL rather than clean. |
+| `retention` | Dry-run by default, returning `{eligible, ids, applied: false, erased: 0}` with no bytes changed. `pii_only` defaults to true. `basis` and `request_id` are recorded. (E6 aside.) |
+| `erasure_report` | `{tombstoned_total, erasures: [{memory_id, ts, request_id, ...}]}`, content-free and read-only. |
+| `erasure_certificate` | Scoped by `request_id`. An explicit `expected_pubkey` pins `self_check`. Read-only. (E5 aside.) |
+| `erasure_audit` | `unaudited` with no declared lineage, `partially_audited` with an orphaned edge, `residue_found` after a parent is erased. `values` adds advisories and never moves the verdict. Read-only. |
+| `declare_out_of_band_deletion` | Refused while the record is present, when no receipt names it, and for an empty id. After a raw delete it appends a tombstone with `actor` and `reason` in the committed hash, and `verify_writes` goes from "deleted out-of-band" to ok on an unsigned store. |
+| `open_partition` | A bad kind or a bad name comes back as `{"error"}`. Re-opening a closed name is refused. (E8 aside.) |
+| `remember_in_partition` | Tags `partition:<name>`. Extends the receipt chain. The cap evicts the oldest record with a tombstone. An unknown or closed partition comes back as `{"error"}`. (E3 and E7 aside.) |
+| `sweep_partitions` | Active expired records are erased with basis `partition_expiry:<name>`, and unpartitioned records are untouched. With the action ledger on, it records a `partitions:sweep` entry. (E2 aside.) |
+| `close_partition` | Context closes as `erased`, process as `retained`. A double close, an unknown name, or a write after close comes back as `{"error"}`. (E1 aside.) |
+| `partitions_report` | Shape as described. Read-only. |
+| `pii_report` | Shape `{records_with_pii, by_type, ids, coverage}`. With detection off, it says so. (E9 aside.) |
+| `erasure_residue` | A missing root, a root that is a file, empty `values` and an oversized file all give `ok: false`. Findings carry a 12-character fingerprint, never the value. (E4 and E11 aside.) |

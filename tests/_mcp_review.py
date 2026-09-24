@@ -38,6 +38,7 @@ SERVER_ENV = (
     "INSPEXIMUS_WRITER_KEY_FILE", "INSPEXIMUS_ECHO_GUARD", "INSPEXIMUS_EMBED_URL", "INSPEXIMUS_EMBED_MODEL",
     "INSPEXIMUS_EMBED_KEY", "INSPEXIMUS_OBSERVE_RECALL", "INSPEXIMUS_PII_DETECT", "INSPEXIMUS_PERSIST_VECTORS",
     "INSPEXIMUS_READ_RESOLVER", "INSPEXIMUS_MAX_K", "INSPEXIMUS_SNIPPET_CHARS", "INSPEXIMUS_NO_UPDATE_CHECK",
+    "INSPEXIMUS_STORE_FORMAT", "INSPEXIMUS_KEY_HOME",
 )
 
 
@@ -46,6 +47,10 @@ def load_server(monkeypatch, tmp_path, **env: str):
     for k in SERVER_ENV:
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "store.json"))
+    # A receipted store records its chain head under the key home (~/.config/inspeximus/heads by default)
+    # so a tail cut can be caught later. Keep that inside tmp_path too: nothing a test writes may land in
+    # the developer's config directory.
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "key_home"))
     for k, v in env.items():
         monkeypatch.setenv(k, v)
     return importlib.reload(importlib.import_module("inspeximus.mcp_server"))
@@ -58,13 +63,16 @@ class ToolResult:
     text: str          # the text content block(s), which is what an error carries
 
 
-def call(mod, name: str, **arguments) -> ToolResult:
-    """Call tool `name` through an in-memory MCP client session, exactly as a client would."""
+def call(mod, tool: str, /, **arguments) -> ToolResult:
+    """Call `tool` through an in-memory MCP client session, exactly as a client would.
+
+    `mod` and `tool` are positional-only, so a tool argument called `name` (open_partition,
+    symbol_status) passes straight through as a keyword."""
     from mcp.shared.memory import create_connected_server_and_client_session
 
     async def _run():
         async with create_connected_server_and_client_session(mod.mcp._mcp_server) as client:
-            return await client.call_tool(name, arguments)
+            return await client.call_tool(tool, arguments)
 
     res = anyio.run(_run)
     text = "\n".join(getattr(c, "text", "") for c in (res.content or []))
@@ -77,14 +85,3 @@ def call(mod, name: str, **arguments) -> ToolResult:
         except ValueError:
             data = text
     return ToolResult(is_error=bool(res.isError), data=data, text=text)
-
-
-def tool_description(mod, name: str) -> str:
-    return mod.mcp._tool_manager.get_tool(name).description or ""
-
-
-def items_on_disk(path) -> list[dict]:
-    """The records as persisted, read from the file rather than from the server's handle."""
-    with open(path, encoding="utf-8") as f:
-        raw = json.load(f)
-    return raw.get("items", raw) if isinstance(raw, dict) else raw

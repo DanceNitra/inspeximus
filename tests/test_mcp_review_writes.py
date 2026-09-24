@@ -9,7 +9,6 @@ fixed, the test XPASSes and the marker has to come off. Preconditions go through
 setup that did not do what the test needs fails loudly instead of passing as an expected failure.
 Every test runs on a throwaway store in tmp_path (see tests/_mcp_review.py).
 """
-import json
 import time
 
 import pytest
@@ -204,3 +203,53 @@ def test_release_quarantine_reaches_disk(monkeypatch, tmp_path):
     released = ((on_disk.get("meta") or {}).get("quarantined") or {}).get("released")
     assert released and released.get("actor") == "alice", \
         f"the release is only in this process's memory; on disk the record is still quarantined: {released}"
+
+
+# ── remember: what the result says about lineage, and receipts on a signed store ───────────────────
+@pytest.mark.xfail(reason="remember: returns the VERDICT on the write; for a derived_from id that does not exist "
+                          "it echoes the argument and says attributable=true while the record stored no lineage",
+                   **XFAIL)
+def test_remember_reports_the_lineage_that_was_stored(monkeypatch, tmp_path):
+    """remember: "`derived_from` -- the ids this memory was BUILT FROM. Provenance rides along the edge:
+    erasing the source erases what was derived from it" and "Returns the new id, and the VERDICT on the
+    write".
+
+    The library drops a parent id it cannot find and marks the record an orphan. The tool builds
+    `derived_from` and `attributable` from its ARGUMENTS, so the caller is told the record is attributable
+    through a lineage edge that was never stored -- the one moment the caller could still fix it.
+    """
+    mod = load_server(monkeypatch, tmp_path)
+    res = call(mod, "remember", text="summary of the call with the supplier", derived_from=["deadbeef00"]).data
+    rec = _record(mod, res["id"])
+    if rec is None or rec.get("derived_from") or not rec.get("orphan"):
+        pytest.fail(f"precondition: the store must have dropped the unknown parent, record={rec}")
+    assert res["derived_from"] == [] and res["attributable"] is False, \
+        f"the result says derived_from={res['derived_from']}, attributable={res['attributable']}; " \
+        f"the stored record has derived_from={rec.get('derived_from')!r}, orphan={rec.get('orphan')!r}"
+
+
+@pytest.mark.xfail(reason="remember: every write extends the receipt chain; on a signed store the server appends "
+                          "an UNSIGNED receipt (it cannot be given a key) and verify_writes turns false", **XFAIL)
+def test_remember_on_a_signed_store_keeps_the_chain_verifiable(monkeypatch, tmp_path):
+    """Module docstring, INSPEXIMUS_RECEIPT_PUBKEY: "Set it whenever the store is signed"; remember: "Store a
+    memory". Guard parity: the same write through the library, with the store's key, keeps verify_writes ok.
+
+    open_store() is called without receipt_key/receipt_signer and no environment variable supplies one,
+    so the server's receipt is unsigned; a chain "signed in places" fails verification from then on.
+    """
+    pytest.importorskip("cryptography")
+    from inspeximus.core import new_receipt_keypair
+
+    sk, pk = new_receipt_keypair()
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "key_home"))
+    lib = Inspeximus(path=str(tmp_path / "store.json"), receipts=True, receipt_key=sk)
+    lib.remember("the office is on elm street")
+    del lib
+    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_PUBKEY=pk)
+    if not call(mod, "verify_writes").data.get("ok"):
+        pytest.fail("precondition: the signed store verifies against its pinned key")
+    wrote = call(mod, "remember", text="the region is frankfurt").data
+    if wrote.get("blocked") or not wrote.get("persisted"):
+        pytest.fail(f"precondition: the write must land, got {wrote}")
+    after = call(mod, "verify_writes").data
+    assert after.get("ok"), f"one ordinary write through the server broke the chain: {after.get('problems')}"
