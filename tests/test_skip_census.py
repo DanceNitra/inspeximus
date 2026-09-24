@@ -94,7 +94,15 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: disappearing. Exactly +3, no slack: 166 + 3 = 169.
 #: 2.31.0: +1, the LangChain action-callback test (model and principal attribution), which needs
 #: langchain_core and runs in the integrations job. 169 + 1 = 170.
-MAX_HIDDEN_IN_BASE_ENV = 170
+#: +70 on 2026-09-24 for the MCP tool review's reproducers (audits/2026-09-24/mcp-tools-review.md),
+#: brought in unchanged. Every call goes through a real in-memory MCP client session, so each file
+#: needs the SDK and guards the whole module:
+#:     test_mcp_review_erasure.py (12)       test_mcp_review_integrity.py (8)
+#:     test_mcp_review_ledger.py (11)        test_mcp_review_maintenance.py (12)
+#:     test_mcp_review_reads.py (7)          test_mcp_review_rights_access.py (10)
+#:     test_mcp_review_writes.py (10)
+#: They run in the integrations job with the rest. Exactly +70, no slack: 170 + 70 = 240.
+MAX_HIDDEN_IN_BASE_ENV = 240
 
 
 def _base_env_census():
