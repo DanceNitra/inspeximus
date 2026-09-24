@@ -70,8 +70,6 @@ def test_route_reports_a_write_the_objectless_guard_retired(monkeypatch, tmp_pat
         f"route says {said} while the record it wrote was retired on arrival by the objectless guard"
 
 
-@pytest.mark.xfail(reason="route: `policy` picks one of safe/context/trusting; an unknown policy is "
-                          "accepted silently, echoed back and treated as safe", **XFAIL)
 def test_route_refuses_an_unknown_policy(monkeypatch, tmp_path):
     """route: "`policy` picks the failure mode: "safe" (default) ...; "context" ...; "trusting" always
     restores."
@@ -167,9 +165,6 @@ def test_resolve_reopened_reaffirm_stamps_the_server_project(monkeypatch, tmp_pa
 
 
 # ── release_quarantine ─────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="release_quarantine: 'it returns to recall and keeps who released it and why'; the "
-                          "release uses the throttled save, so within 5 s of the last save it never reaches disk",
-                   **XFAIL)
 def test_release_quarantine_reaches_disk(monkeypatch, tmp_path):
     """release_quarantine: "A human decision that a quarantined record is a memory after all: it returns to
     recall and keeps who released it and why."
@@ -197,9 +192,6 @@ def test_release_quarantine_reaches_disk(monkeypatch, tmp_path):
 
 
 # ── remember: what the result says about lineage, and receipts on a signed store ───────────────────
-@pytest.mark.xfail(reason="remember: returns the VERDICT on the write; for a derived_from id that does not exist "
-                          "it echoes the argument and says attributable=true while the record stored no lineage",
-                   **XFAIL)
 def test_remember_reports_the_lineage_that_was_stored(monkeypatch, tmp_path):
     """remember: "`derived_from` -- the ids this memory was BUILT FROM. Provenance rides along the edge:
     erasing the source erases what was derived from it" and "Returns the new id, and the VERDICT on the

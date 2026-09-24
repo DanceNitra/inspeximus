@@ -45,8 +45,6 @@ def _just_saved(mod):
 
 
 # ── credit ──────────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="credit: 'each memory's track record updates ... Counts only grow'; the update is "
-                          "only in memory (unforced, throttled _save) and is lost when the server exits", **XFAIL)
 def test_credit_reaches_the_store_file(monkeypatch, tmp_path):
     """credit: "call credit(those ids, outcome) so each memory's track record updates. Future `recall` then
     ranks by WAS-IT-RIGHT ... Counts only grow; raw text is never edited. Returns what updated."
@@ -64,8 +62,6 @@ def test_credit_reaches_the_store_file(monkeypatch, tmp_path):
         "credit reported the record as updated, and a fresh open of the store file has no credit on it"
 
 
-@pytest.mark.xfail(reason="credit: '(or pass a bool / a signed number)'; `outcome: str` rejects a JSON number "
-                          "and the string form of a positive number is recorded as outcome 'bad'", **XFAIL)
 def test_credit_accepts_a_positive_signed_number_as_a_good_outcome(monkeypatch, tmp_path):
     """credit: "`outcome`: 'good'/'right'/'correct' vs 'bad'/'wrong'/'failed' (or pass a bool / a signed
     number)."
@@ -89,8 +85,6 @@ def test_credit_accepts_a_positive_signed_number_as_a_good_outcome(monkeypatch, 
         f"record counts {{good: {_record(mod, b).get('good')}, bad: {_record(mod, b).get('bad')}}}")
 
 
-@pytest.mark.xfail(reason="credit: 'Counts only grow'; a negative `weight` is added as-is and shrinks "
-                          "the good/bad counts", **XFAIL)
 def test_credit_counts_only_grow(monkeypatch, tmp_path):
     """credit: "Counts only grow; raw text is never edited."
 
@@ -111,8 +105,6 @@ def test_credit_counts_only_grow(monkeypatch, tmp_path):
 
 
 # ── consolidate / consolidate_clusters / sleep ──────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="consolidate: 'if keep is given, supersede the lowest-value surplus'; the "
-                          "supersessions stay in memory (unforced, throttled _save) and never reach the file", **XFAIL)
 def test_consolidate_keep_budget_reaches_the_store_file(monkeypatch, tmp_path):
     """consolidate: "Run the consolidation 'dream' pass over ALL memories: ... and (if `keep` is given)
     supersede the lowest-value surplus. ... Returns a report (active / hubs_flagged / linked_pairs /
@@ -136,8 +128,6 @@ def test_consolidate_keep_budget_reaches_the_store_file(monkeypatch, tmp_path):
         f"consolidate reported active=2; the store file still holds {len(still_active)} active records"
 
 
-@pytest.mark.xfail(reason="consolidate_clusters: consolidates a ripe cluster (state-toggle); the "
-                          "supersession stays in memory (unforced, throttled _save) and never reaches the file", **XFAIL)
 def test_consolidate_clusters_reaches_the_store_file(monkeypatch, tmp_path):
     """consolidate_clusters: "Cluster-TRIGGERED consolidation: consolidate a semantic cluster only once it
     has grown past `threshold` members ... Returns clusters_total / clusters_fired / linked_pairs / ..."
@@ -156,9 +146,6 @@ def test_consolidate_clusters_reaches_the_store_file(monkeypatch, tmp_path):
         "consolidate_clusters reported toggled=1; the store file still has the flipped preference active"
 
 
-@pytest.mark.xfail(reason="sleep: 'if keep is given ... prunes/re-affirms the memory budget'; the keep-budget "
-                          "pass is never saved in the same call (consolidate_clusters' save consumes the "
-                          "throttle window)", **XFAIL)
 def test_sleep_keep_budget_reaches_the_store_file(monkeypatch, tmp_path):
     """sleep: "It consolidates any ripe near-duplicate clusters (dedup + preference-flip handling), and, if
     `keep` is given (or a capacity was configured), prunes/re-affirms the memory budget."
@@ -231,8 +218,6 @@ def test_check_sources_ok_is_false_when_nothing_was_checked(monkeypatch, tmp_pat
 
 
 # ── verify_claim ────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="verify_claim: \"'stale_superseded' ... 'current' is the truth now\"; a claim "
-                          "passed without `key` comes back stale_superseded with current=None", **XFAIL)
 def test_verify_claim_stale_superseded_names_the_current_value(monkeypatch, tmp_path):
     """verify_claim: "'stale_superseded' (matches a value that has since been CORRECTED/reverted -- the reply
     is citing an outdated fact; 'current' is the truth now)."
@@ -276,8 +261,6 @@ def _served_then(mod, tool, **args):
     return served, (_record(mod, wid) or {}).get("recall_window")
 
 
-@pytest.mark.xfail(reason="memory_report: 'Read-only'; with INSPEXIMUS_OBSERVE_RECALL=1 its internal recalls "
-                          "replace the window, so the next write records ids the client was never served", **XFAIL)
 def test_memory_report_leaves_the_recall_window_alone(monkeypatch, tmp_path):
     """memory_report: "The at-a-glance store-health view. Read-only." Server config: "INSPEXIMUS_OBSERVE_RECALL
     record which memories were served immediately before each write, as an observation (`recall_window`)".
@@ -293,8 +276,6 @@ def test_memory_report_leaves_the_recall_window_alone(monkeypatch, tmp_path):
         f"the client was served {served}; after memory_report the next write records {window.get('ids')}"
 
 
-@pytest.mark.xfail(reason="selection_integrity: 'read-only'; with INSPEXIMUS_OBSERVE_RECALL=1 its internal "
-                          "recall replaces the window, so the next write records ids the client never saw", **XFAIL)
 def test_selection_integrity_leaves_the_recall_window_alone(monkeypatch, tmp_path):
     """selection_integrity: "Make SELECTION-LEVEL manipulation auditable (read-only, no LLM)." Server config:
     "INSPEXIMUS_OBSERVE_RECALL record which memories were served immediately before each write".
@@ -309,8 +290,6 @@ def test_selection_integrity_leaves_the_recall_window_alone(monkeypatch, tmp_pat
 
 
 # ── irreversible_budget_report ──────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="irreversible_budget_report: 'how much durable pull each source has spent'; the "
-                          "server caches the .irrev.json sidecar on its first call and never re-reads it", **XFAIL)
 def test_irreversible_budget_report_shows_a_spend_made_after_its_first_call(monkeypatch, tmp_path):
     """irreversible_budget_report: "Audit view of the per-source lifetime IRREVERSIBLE-influence budget: how
     much durable pull each source has spent against its cap -- the 'no single source can quietly entrench

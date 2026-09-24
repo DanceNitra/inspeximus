@@ -29,8 +29,6 @@ def _two_projects(monkeypatch, tmp_path):
 
 
 # ── recall ──────────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="recall: 'Set full=True to return complete records (all fields)'; a full hit is a "
-                          "projection without meta, status, mtype, ts, key or object", **XFAIL)
 def test_recall_full_returns_complete_records(monkeypatch, tmp_path):
     """recall: "Set `full=True` to return complete records (all fields)."
 
@@ -50,8 +48,6 @@ def test_recall_full_returns_complete_records(monkeypatch, tmp_path):
     assert not missing, f"full=True dropped these fields of the stored record: {missing}"
 
 
-@pytest.mark.xfail(reason="recall: trusted_only 'needs a configured trust root'; this server cannot configure "
-                          "one, and the call returns a bare [] that reads as 'nothing trusted matched'", **XFAIL)
 def test_recall_trusted_only_says_when_there_is_no_trust_root(monkeypatch, tmp_path):
     """recall: "`trusted_only=True` (needs a configured trust root) returns only memories anchored to a
     trusted signing key".
@@ -71,8 +67,6 @@ def test_recall_trusted_only_says_when_there_is_no_trust_root(monkeypatch, tmp_p
 
 
 # ── where_am_i ──────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="where_am_i: reports 'the embedder/receipt posture' from INSPEXIMUS_RECEIPTS alone; a "
-                          "store whose sidecar keeps receipts on reads receipts=false", **XFAIL)
 def test_where_am_i_reports_the_receipts_the_store_actually_keeps(monkeypatch, tmp_path):
     """where_am_i: "Returns the ABSOLUTE store path, ... the active project scope, and the embedder/receipt
     posture."
@@ -124,8 +118,6 @@ def test_why_recalled_explains_only_what_recall_can_surface(monkeypatch, tmp_pat
     assert not foreign, f"why_recalled explains records recall cannot surface in this project: {foreign}"
 
 
-@pytest.mark.xfail(reason="why_recalled: for a quarantined record the explanation never names the quarantine, "
-                          "which is the reason it did not surface", **XFAIL)
 def test_why_recalled_names_the_quarantine(monkeypatch, tmp_path):
     """why_recalled: "why did (or didn't) a memory surface for `query`? ... or for a specific `id`."
 
@@ -147,8 +139,6 @@ def test_why_recalled_names_the_quarantine(monkeypatch, tmp_path):
 
 
 # ── supersession_report ─────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="supersession_report: 'which facts have been superseded/reverted, by key -- the "
-                          "what changed and what's current view'; it returns counts per policy only", **XFAIL)
 def test_supersession_report_names_the_keys_and_what_is_current(monkeypatch, tmp_path):
     """supersession_report: "The correction ledger: which facts have been superseded/reverted, by key -- the
     auditable 'what changed and what's current' view"."""

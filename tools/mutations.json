@@ -1048,8 +1048,8 @@
  {
   "name": "the write result drops the declared lineage it reports back",
   "file": "inspeximus/mcp_server.py",
-  "old": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": list(derived_from or []),",
-  "new": "            \"mtype\": rec.get(\"mtype\"), \"source\": source or None,\n            \"derived_from\": [],",
+  "old": "            \"derived_from\": stored_lineage, \"project\": _PROJECT,",
+  "new": "            \"derived_from\": [], \"project\": _PROJECT,",
   "tests": [
    "tests/test_mcp_provenance_reach.py"
   ]

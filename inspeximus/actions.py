@@ -307,6 +307,27 @@ class LedgerUnreadable(RuntimeError):
     or move it aside deliberately to start a new one."""
 
 
+def _entry_refs(e: dict) -> list:
+    """Every reference entry `e` makes to another ledger entry, as {seq, hash, ...} dicts.
+
+    `refers_to` is one reference (oversight) or a LIST of them (a risk, a corrective action), and
+    `evidence` holds references on an incident but FREE TEXT on a risk ("a probe path, a receipt hash,
+    a test name"). The scans read `refers_to` only when it was a single dict and otherwise took
+    `evidence` for the list of references, so a risk that referred to an entry was never found, and a
+    risk's free-text evidence made every report that scanned past it raise "'str' object has no
+    attribute 'get'" (mcp-tools-review L8, L9). One reading, for every scan."""
+    out = []
+    rt = e.get("refers_to")
+    if isinstance(rt, dict):
+        out.append(rt)
+    elif isinstance(rt, (list, tuple)):
+        out.extend(r for r in rt if isinstance(r, dict))
+    ev = e.get("evidence")
+    if isinstance(ev, (list, tuple)):
+        out.extend(r for r in ev if isinstance(r, dict))
+    return out
+
+
 class ActionLedger:
     """A hash-chained, optionally signed ledger of agent actions bound to the memory state."""
 
@@ -858,7 +879,12 @@ class ActionLedger:
             return [e for e in inside if e.get("kind", "action") == k]
         actions = kind("action")
         overs = kind("oversight")
-        incidents = kind("incident")
+        # AN INCIDENT IS THE ENTRY THAT OPENS IT. `incident_reported` appends a follow-up of the same
+        # kind (event "reported"), which was counted as a second incident, and the overdue list read
+        # `reported_ts` off the incident entry itself, which the follow-up never touches, so a
+        # reported incident stayed overdue for ever. incident_report and oversight_report already
+        # followed the later entry through `_reported_ts` (mcp-tools-review L7).
+        incidents = [e for e in kind("incident") if not e.get("event")]
         risks = kind("risk")
         rights = kind("rights")
         report = {
@@ -871,7 +897,7 @@ class ActionLedger:
                                                              / len(actions), 4) if actions else None)},
             "incidents": {"opened": len(incidents), "by_severity": _count_by(incidents, "severity"),
                           "overdue": [e["seq"] for e in incidents
-                                      if e.get("report_deadline_ts") and not e.get("reported_ts")
+                                      if e.get("report_deadline_ts") and not self._reported_ts(e)
                                       and float(e["report_deadline_ts"]) < until]},
             "rights_requests": _count_by(rights, "action"),
             "risks": {"recorded": len(risks), "from_post_market": sum(1 for e in risks if e.get("source") == "post_market"),
@@ -967,7 +993,7 @@ class ActionLedger:
         later = [{"seq": u["seq"], "kind": u.get("kind", "action"), "action": u.get("action"), "ts": u.get("ts")}
                  for u in self._entries if u.get("seq", -1) > seq
                  and any((r or {}).get("seq") == seq for r in
-                         ([u.get("refers_to")] if isinstance(u.get("refers_to"), dict) else list(u.get("evidence") or [])))]
+                         _entry_refs(u))]
         return {"kind": "inspeximus.corrective_action_report/1", "seq": seq, "ts": e.get("ts"),
                 "actor": e.get("actor"), "action": e.get("corrective_kind"),
                 "non_conformity": e.get("non_conformity"), "causes": e.get("causes"),
@@ -1031,8 +1057,7 @@ class ActionLedger:
         knew = self.what_it_knew(seq)
 
         def refers(u):
-            refs = [u.get("refers_to")] if isinstance(u.get("refers_to"), dict) else list(u.get("evidence") or [])
-            return any((r or {}).get("seq") == seq for r in refs)
+            return any(r.get("seq") == seq for r in _entry_refs(u))
         oversight = [{"seq": u["seq"], "event": u.get("event"), "actor": u.get("actor"), "ts": u.get("ts"),
                       "reason": u.get("reason")} for u in self._entries if u.get("kind") == "oversight" and refers(u)]
         referring = [{"seq": u["seq"], "kind": u.get("kind"), "action": u.get("action"), "ts": u.get("ts")}
@@ -1628,8 +1653,7 @@ class ActionLedger:
         for u in self._entries:
             if u.get("seq", -1) <= e.get("seq", -1) or not u.get("reported_ts"):
                 continue
-            refs = [u.get("refers_to")] if isinstance(u.get("refers_to"), dict) else list(u.get("evidence") or [])
-            if any((r or {}).get("seq") == e.get("seq") for r in refs):
+            if any(r.get("seq") == e.get("seq") for r in _entry_refs(u)):
                 return u["reported_ts"]
         return None
 
@@ -1656,8 +1680,7 @@ class ActionLedger:
         updates = [{"seq": u["seq"], "kind": u.get("kind"), "action": u.get("action"), "ts": u.get("ts"),
                     "actor": u.get("actor"), "event": u.get("event")}
                    for u in self._entries if u["seq"] > seq
-                   if any((r or {}).get("seq") == seq for r in ([u.get("refers_to")] if isinstance(u.get("refers_to"), dict)
-                                                                 else (u.get("evidence") or [])))]
+                   if any(r.get("seq") == seq for r in _entry_refs(u))]
         return {
             "kind": "inspeximus.incident_report/1",
             "incident": {k: e.get(k) for k in ("seq", "hash", "ts", "actor", "title", "severity", "description",
@@ -1952,9 +1975,8 @@ class ActionLedger:
         while changed and n > 0:
             changed = False
             for e in self._entries[n:]:
-                refs = [e.get("refers_to")] if isinstance(e.get("refers_to"), dict) else list(e.get("evidence") or [])
-                for r in refs:
-                    j = (r or {}).get("seq")
+                for r in _entry_refs(e):
+                    j = r.get("seq")
                     if isinstance(j, int) and base <= j < base + n:
                         n = j - base
                         changed = True
