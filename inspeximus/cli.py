@@ -493,9 +493,13 @@ def _survive_a_narrow_console() -> None:
     the operator needs to see, silently. `backslashreplace` prints `sedaÌ\\u0301cia` -- ugly, lossless,
     and never a crash. The bytes on disk are UTF-8 either way; only the terminal echo changes.
     """
+    # UTF-8 streams too: UTF-8 encodes every character except a lone surrogate, and a verifier that
+    # QUOTES a tampered field prints exactly that. On Linux, erasure-verify on a certificate whose
+    # "count" was a lone surrogate printed a traceback and no verdict (verifier-page review I1,
+    # 2026-09-24).
     for stream in (sys.stdout, sys.stderr):
         try:
-            if (getattr(stream, "encoding", "") or "").lower() not in ("utf-8", "utf8"):
+            if getattr(stream, "errors", None) != "backslashreplace":
                 stream.reconfigure(errors="backslashreplace")
         except Exception:
             pass          # a redirected or exotic stream is not worth failing a command over
