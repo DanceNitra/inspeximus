@@ -1057,6 +1057,19 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             problems.append(f"tombstone {j}: unsigned, but a signature was required")
             sigs_ok = False
         tprev = t.get("hash")
+    # ONE CERTIFICATE, ONE KEY. Each signature was checked against the certificate's `pubkey`, or,
+    # with that field removed, against the key the tombstone names. So deleting `pubkey` let a
+    # tombstone signed with any other key sit in a chain signed with the issuer's, and the certificate
+    # verified. Measured 2026-09-24 (session E review, item 5). The issuer signs with one key.
+    # Keyed by JSON text, so a hostile certificate with a list or a number for `pubkey` is counted as
+    # one more key rather than raising, and the browser page can compute the same set.
+    _tkeys = sorted({t.get("pubkey") if isinstance(t.get("pubkey"), str)
+                     else _canon(t.get("pubkey")).decode("utf-8") for t in toms if t.get("sig")})
+    if len(_tkeys) > 1:
+        problems.append(f"the tombstones are signed by {len(_tkeys)} different keys "
+                        f"({', '.join(k[:12] for k in _tkeys)}); an erasure "
+                        f"certificate is signed by one")
+        sigs_ok = False
     checks["chain_intact"] = chain_ok
     # A CHECK THAT DID NOT RUN IS NOT A CHECK THAT PASSED. `sigs_ok` starts True and is only ever set
     # False by a failing signature — so a certificate whose tombstones carry NO `sig` at all reported
@@ -1275,16 +1288,39 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
         checks["scope_intact"] = False
         problems.append("the `scope` statement does not match the one this library issues — the "
                         "certificate's own declaration of what it does NOT certify has been altered")
+    elif _scope_txt is None:
+        # REMOVED IS ALTERED. This read a missing statement as "not checked", so deleting `scope`,
+        # `scope_covers` and `scope_excludes` left a certificate that claimed nothing about its limits
+        # and still verified (session E review, item 5, 2026-09-24). Every certificate this library
+        # issues carries all three.
+        checks["scope_intact"] = False
+        problems.append("the `scope` statement is missing; every certificate this library issues says "
+                        "what it does NOT certify, and one without it claims more than it verified")
     else:
-        checks["scope_intact"] = _scope_txt is not None or None
+        checks["scope_intact"] = True
     for key, want in (("scope_excludes", _CERT_SCOPE_EXCLUDES), ("scope_covers", _CERT_SCOPE_COVERS)):
         got = cert.get(key)
-        if got is not None and list(got) != list(want):
+        if got is None:
+            checks["scope_intact"] = False
+            problems.append(f"the `{key}` list is missing; every certificate this library issues carries it")
+        elif list(got) != list(want):
             checks["scope_intact"] = False
             problems.append(f"the `{key}` list does not match the one this library issues; an exclusion "
                             f"removed from a certificate is the certificate claiming more than it verified")
 
+    # THE ISSUER'S OWN CHECK SAID NO. `self_check` is verify_writes() on the issuing store at the
+    # moment of issue. A certificate whose issuer reported its store as failing that check verified
+    # anyway (session E review, item 5, 2026-09-24). The field is not signed, so a forger can set it to
+    # true: this catches the honest issuer with a broken store, not a forger, and says so by name.
+    _sc = cert.get("self_check")
+    if isinstance(_sc, dict) and _sc.get("verified") is False:
+        checks["issuer_self_check"] = False
+        problems.append("the issuing store failed its own write check when this certificate was issued "
+                        "(`self_check.verified` is false); its `self_check.problems` say why")
+    else:
+        checks["issuer_self_check"] = True if isinstance(_sc, dict) and _sc.get("verified") is True else None
     valid = (chain_ok and sigs_ok and checks["anchor_matches_tip"] and checks["anchor_consistent"]
+             and checks["issuer_self_check"] is not False
              and checks["anchor_witnessed"] is not False and checks["store_bound"] is not False
              and checks["summary_derivable"] and checks["scope_intact"] is not False
              and checks["attests_an_erasure"]

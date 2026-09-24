@@ -1274,6 +1274,20 @@ async function verifyCertificate(cert) {
     }
     tprev = get(t, "hash");
   }
+  // One certificate, one key (core.py, the `_tkeys` block): a string pubkey as itself, anything else
+  // as its canonical JSON text, counted over the tombstones that carry a truthy `sig`.
+  const tkeys = new Set();
+  for (const t of toms) {
+    if (!truthy(get(t, "sig"))) continue;
+    const k = get(t, "pubkey");
+    tkeys.add(typeof k === "string" ? k : canonText(k));
+  }
+  if (tkeys.size > 1) {
+    const shown = [...tkeys].sort(cmpCodePoints).map(k => [...k].slice(0, 12).join("")).join(", ");
+    problems.push(`the tombstones are signed by ${tkeys.size} different keys (${shown}); an erasure ` +
+                  "certificate is signed by one");
+    sigsOk = false;
+  }
   checks.chain_intact = chainOk;
   const signed = toms.filter(t => truthy(get(t, "sig")));
   if (!signed.length) {
@@ -1382,12 +1396,20 @@ async function verifyCertificate(cert) {
     checks.scope_intact = false;
     problems.push("the `scope` statement does not match the one this library issues — the certificate's own " +
                   "declaration of what it does NOT certify has been altered");
+  } else if (scopeTxt === null) {
+    checks.scope_intact = false;
+    problems.push("the `scope` statement is missing; every certificate this library issues says what it does " +
+                  "NOT certify, and one without it claims more than it verified");
   } else {
-    checks.scope_intact = scopeTxt !== null ? true : null;
+    checks.scope_intact = true;
   }
   for (const [key, want] of [["scope_excludes", CONST.cert_scope_excludes], ["scope_covers", CONST.cert_scope_covers]]) {
     const got = get(cert, key);
-    if (got === null) continue;
+    if (got === null) {
+      checks.scope_intact = false;
+      problems.push(`the \`${key}\` list is missing; every certificate this library issues carries it`);
+      continue;
+    }
     const asList = pyIter(got, key);        // list(got): items, characters, or an object's keys
     if (!pyEq(asList, want)) {
       checks.scope_intact = false;
@@ -1396,7 +1418,17 @@ async function verifyCertificate(cert) {
     }
   }
 
+  // The issuer's own verify_writes() at issue time (core.py, the `self_check` block).
+  const sc = get(cert, "self_check");
+  if (sc instanceof PyDict && get(sc, "verified") === false) {
+    checks.issuer_self_check = false;
+    problems.push("the issuing store failed its own write check when this certificate was issued " +
+                  "(`self_check.verified` is false); its `self_check.problems` say why");
+  } else {
+    checks.issuer_self_check = sc instanceof PyDict && get(sc, "verified") === true ? true : null;
+  }
   const valid = chainOk && sigsOk && checks.anchor_matches_tip && anchorOk && summaryOk &&
+                checks.issuer_self_check !== false &&
                 checks.scope_intact !== false && checks.attests_an_erasure;
   limits.push("NOT WITNESSED: no expected anchor, so the anchor was checked against itself only; a chain " +
               "trimmed at its tail and re-anchored passes, and that needs no key. " +
