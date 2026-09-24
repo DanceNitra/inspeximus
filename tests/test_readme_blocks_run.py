@@ -133,6 +133,22 @@ def test_control_an_extra_is_declared_by_naming_it_before_the_block(tmp_path):
     assert [(b.line, b.extras) for b in rb.blocks(str(md))] == [(1, ()), (9, ("crypto",)), (13, ())]
 
 
+def test_control_an_install_a_shell_block_uses_itself_does_not_declare_for_the_next_block(tmp_path):
+    md = tmp_path / "R.md"
+    md.write_text('```bash\npip install "inspeximus[crypto]"\ninspeximus demo\n```\n\n'
+                  "```python\na = 1\n```\n\n"
+                  '```bash\ninspeximus demo\npip install "inspeximus[crypto]"\n```\n\n'
+                  "```python\nb = 2\n```\n\n"
+                  '```bash\npip install "inspeximus[crypto]"\n```\n\n'
+                  "```python\nc = 3\n```\n", encoding="utf-8")
+    # The install the demo uses stays with the demo. An install AFTER the command, and an install on
+    # its own, still declare for the next Python block, so a stale declaration there is still caught.
+    found = rb.blocks(str(md))
+    assert [(b.line, b.extras) for b in found] == [(6, ()), (15, ("crypto",)), (23, ("crypto",))]
+    stale = rb.Result(found[2], 0, "", "")
+    assert "drop the declaration" in rb.verdict(stale, ["crypto"])
+
+
 def test_control_a_declared_extra_must_be_needed_and_named():
     b = _block("pass\n", ["crypto"])
     passed = rb.Result(b, 0, "", "")

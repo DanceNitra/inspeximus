@@ -2953,5 +2953,14 @@
   "tests": [
    "tests/test_a_partly_signed_certificate_does_not_verify.py"
   ]
+ },
+ {
+  "name": "readme_blocks: an install a shell block uses itself declares for the next Python block again",
+  "file": "tools/readme_blocks.py",
+  "old": "    return first is not None and any(",
+  "new": "    return False and first is not None and any(",
+  "tests": [
+   "tests/test_readme_blocks_run.py"
+  ]
  }
 ]

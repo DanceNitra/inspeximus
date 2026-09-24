@@ -104,9 +104,23 @@ def blocks(path: str = README) -> list:
         if lang == "python":
             out.append(Block(start + 1, "\n".join(body) + "\n", extras_declared("\n".join(since))))
             since = []
-        else:
+        elif not consumed_in_place(body):
             since.extend(body)                     # a ```bash `pip install "inspeximus[crypto]"` declares too
     return out
+
+
+_CLI_LINE = re.compile(r"^\s*inspeximus\s+[a-z]")
+
+
+def consumed_in_place(body: list) -> bool:
+    """True when a shell block installs an extra and then runs an `inspeximus` command itself.
+
+    `pip install "inspeximus[crypto]"` followed in the same block by `inspeximus demo` installs the
+    extra for that command, not for the Python block that comes next. Counting it against the next
+    block failed the plain leg on a quickstart that needs no extra (main, 2026-09-24). A block that
+    only installs still declares for the next Python block, as before."""
+    first = next((n for n, line in enumerate(body) if _EXTRA.search(line)), None)
+    return first is not None and any(_CLI_LINE.match(line) for line in body[first + 1:])
 
 
 # ── stated results ──────────────────────────────────────────────────────────────────────────────────
