@@ -69,10 +69,14 @@ def _reason_from(rec: dict) -> str:
     return t.split(": ", 1)[1] if ": " in t else ""
 
 
-def deprecate_symbol(store, old: str, new: str, reason: str = "") -> dict:
+def deprecate_symbol(store, old: str, new: str, reason: str = "", project: str | None = None) -> dict:
     """Record that code symbol `old` was replaced by `new` (a keyed supersession -- deterministic, no LLM).
     `old`/`new` are identifiers as they appear in code (`old_fn`, `Client.connect`, `LEGACY_FLAG`). A later
-    deprecation of the same `old` supersedes the replacement. Returns the recorded deprecation."""
+    deprecation of the same `old` supersedes the replacement. `project` stamps the record, as
+    `remember(project=...)` does. Returns the recorded deprecation.
+
+    It is an ordinary keyed write, so the store's guards apply: a return to a replacement that was already
+    retired is retired on arrival by the echo guard. `store.last_write` carries that verdict."""
     old = str(old).strip()
     new = str(new).strip()
     if not old or not new:
@@ -85,7 +89,7 @@ def deprecate_symbol(store, old: str, new: str, reason: str = "") -> dict:
     # is the legitimate writer saying so, the same way grant()/revoke() do for the ACL prefix.
     store._guard_writing = getattr(store, "_guard_writing", 0) + 1
     try:
-        store.remember(text, key=_key(old), object=new, mtype="semantic")
+        store.remember(text, key=_key(old), object=new, mtype="semantic", project=project)
     finally:
         store._guard_writing -= 1
     return {"symbol": old, "replacement": new, "reason": reason}
