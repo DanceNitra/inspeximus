@@ -5907,7 +5907,7 @@ class Inspeximus:
                         else "this commitment would verify clean and still tell you nothing about "
                              "%s: it does not cover %s" % (predicate, ", ".join(missing)))}
 
-    def check_sources(self, resolver=None) -> dict:
+    def check_sources(self, resolver=None, project: str | None = None) -> dict:
         """Has the SOURCE each memory came from changed, or gone? Returns a report, never a boolean.
 
         WHY THIS EXISTS, and it is a gap we measured on ourselves rather than imagined. Decay in this
@@ -5944,6 +5944,9 @@ class Inspeximus:
         gone), so a caller can point this at a git object store, an S3 bucket or an HTTP fetch. The
         default reads local files only -- deliberately, because guessing how to fetch an arbitrary
         identifier is how a checker starts inventing ORPHANED verdicts.
+
+        `project` scopes the report the way `recall(project=...)` scopes the pool: that project's records
+        plus every unstamped one. Without it the report covers every project in the store.
         """
         counts = {"FRESH": 0, "DRIFTED": 0, "ORPHANED": 0, "UNCHECKABLE": 0, "UNBOUND_CAPTURE": 0,
                   "NOT_BINDABLE": 0, "UNRESOLVED_HERE": 0}
@@ -5957,8 +5960,10 @@ class Inspeximus:
         # SCOPED, unlike verify_attestations. That one is store-level because relocation between
         # tenants is only visible whole-store; drift is per-record and per-source, so a tenant's
         # report is complete inside its own slice -- and the report carries record ids, which is
-        # exactly what must not cross a tenant boundary.
-        for r in self.items:
+        # exactly what must not cross a tenant boundary. A project is the same kind of slice.
+        rows = self.items if project is None else [
+            r for r in self.items if (r.get("meta") or {}).get("project") in (None, str(project))]
+        for r in rows:
             fp = (r.get("meta") or {}).get("source_sha256")
             doc = Inspeximus._raw_source(r)
             # BEFORE THE RESOLVE, because it is a fact about the RECORD and not about the source.
@@ -6053,7 +6058,7 @@ class Inspeximus:
         # that "stale-check coverage", because a locator you cannot RE-FETCH answers a different
         # question. Collapsing them is how a schema gets reported as a guarantee: our own deployment has
         # 98.3% locator coverage and 0.01% that re-fetches. Four numbers, four different remedies.
-        _n = len(self.items) or 0
+        _n = len(rows) or 0
         # THE DENOMINATOR IS BINDABLE SOURCES, and `not_bindable` is reported BESIDE it, never
         # inside. Same move as splitting `declared` out of `observed` rather than averaging them,
         # applied one level up: @Stratogain's framing, conceded on claude-code#34556.
@@ -6062,7 +6067,7 @@ class Inspeximus:
         _with_locator = 0
         _bound_env = 0
         _seen_sources: set = set()
-        for _r in self.items:
+        for _r in rows:
             _rs = Inspeximus._raw_source(_r)
             if _rs:
                 _with_locator += 1
@@ -7773,7 +7778,8 @@ class Inspeximus:
         return out
 
     def resolve_reopened(self, rid: str, decision: str, capability: str | None = None,
-                         reason: str | None = None, agent_id: str | None = None) -> dict:
+                         reason: str | None = None, agent_id: str | None = None,
+                         project: str | None = None) -> dict:
         """STEWARD DECISION on a reopened interval. decision='keep_current' clears the flag (false alarm ->
         status back to active). decision='reaffirm_prior' restores the surfaced prior value via the authorized
         revert path (remember(reaffirm=True)) — so it takes the revert capability when one is configured, exactly
@@ -7786,7 +7792,9 @@ class Inspeximus:
         superseded a reopened record and the queue simply emptied. Both exits now write `meta.reopened_resolved`
         on the record they close: the decision, when, by whom (`agent_id`), why (`reason`), and the markers
         the detection carried. The queue still reads the live flag, so it empties as before; the history of
-        why it was ever non-empty stays."""
+        why it was ever non-empty stays.
+
+        `project` stamps the record `reaffirm_prior` writes, as `remember(project=...)` does."""
         rec = next((r for r in self.items if r["id"] == rid and r.get("reopened")
                     and r.get("status") == "active"), None)
         if rec is None:
@@ -7818,7 +7826,7 @@ class Inspeximus:
             # revert: a call site the store owns, where the parent is known rather than inferred.
             new_id = self.remember(f"the {key} is {prior}", key=key, object=prior, reaffirm=True,
                                    capability=capability, derived_from=[rid], meta=_meta,
-                                   agent_id=agent_id)
+                                   agent_id=agent_id, project=project)
             return {"resolved": rid, "decision": "reaffirm_prior", "key": key, "reaffirmed_object": prior,
                     "new_id": new_id}
         raise ValueError("decision must be 'keep_current' or 'reaffirm_prior'")
@@ -11459,7 +11467,7 @@ class Inspeximus:
         return hmac.compare_digest(self.revert_capability(key), capability)
 
     def revert(self, key: str, capability: str | None = None, reason: str | None = None,
-               agent_id: str | None = None) -> dict:
+               agent_id: str | None = None, project: str | None = None) -> dict:
         """CONTROL-PLANE revert: restore the value that the current active record for `key` superseded.
         The ledger knows what "the old one" is — no value token needed.
 
@@ -11486,7 +11494,11 @@ class Inspeximus:
         the current value). Append-only: history is not edited — the revert writes a NEW record with
         reaffirm=True (the one sanctioned path past the echo guard), so the flip is itself a ledgered,
         attributable event. Returns {"ok": True, "restored": id, "superseded": id, ...} or
-        {"ok": False, "reason": ...}."""
+        {"ok": False, "reason": ...}.
+
+        `project` stamps the restored record like `remember(project=...)` does. The revert writes a NEW
+        record, and an unstamped record is global, so a caller working inside a project scope passes its
+        scope here or the restored value becomes visible from every project."""
         if not self._revert_authorized(key, capability):
             return {"ok": False, "reason": "authorization_required",
                     "challenge": self.revert_challenge(key)}
@@ -11523,7 +11535,7 @@ class Inspeximus:
         rid = self.remember(tgt["text"], tags=tgt.get("tags"), value=tgt.get("value", 1.0),
                             mtype=tgt.get("mtype"), key=key, object=tgt.get("object"),
                             reaffirm=True, capability=capability, derived_from=[tgt["id"]],
-                            meta=_meta, agent_id=agent_id)
+                            meta=_meta, agent_id=agent_id, project=project)
         return {"ok": True, "restored": rid, "superseded": cur["id"],
                 "reverted_to_object": tgt.get("object"), "reverted_to_text": tgt["text"]}
 
@@ -11825,7 +11837,7 @@ class Inspeximus:
 
     def route(self, text: str, key: str | None = None, object: str | None = None,
               context: str | None = None, policy: str = "safe", capability: str | None = None,
-              source=None) -> dict:
+              source=None, project: str | None = None) -> dict:
         """WRITE-PATH INTENT ROUTER: tag an utterance (assert / correct / revert / echo), resolve a fuzzy
         version reference against the key's timeline, and execute the right ledger operation — so a
         value-obscuring revert ("go back to what we had") works without the caller naming a value, and a
@@ -11858,6 +11870,8 @@ class Inspeximus:
           - "trusting": treat as a reaffirm — always restores (0.00 echo-blocked / 1.00 honored).
         The unforgeable separator is provenance — an authorized revert() call or an explicit marker —
         never smarter classification; that is the channel-separation thesis, now with the receipt.
+
+        `project` stamps every record route writes, on every branch, as `remember(project=...)` does.
 
         Returns {"intent", "action", "key", ...} describing what was done."""
         low = text.lower()
@@ -11904,7 +11918,7 @@ class Inspeximus:
             if k is None:
                 # No key resolved, so there is nothing this is a restatement OF -- but the caller's
                 # source is still a source, and dropping it made the record unattributable for no reason.
-                rid = self.remember(text, source=_src)
+                rid = self.remember(text, source=_src, project=project)
                 return {"intent": "delete", "action": "noted", "event": "NOOP", "key": None, "id": rid,
                         "reason": "no ledger key resolved to delete"}
             # A routed delete is IRREVERSIBLE (forget() is a hard delete of every active record for the key),
@@ -11934,7 +11948,7 @@ class Inspeximus:
         if self._ROUTE_REVERT.search(low):
             k = key or self._route_key(low)
             if k is None:
-                rid = self.remember(text, source=_src)      # same as the delete branch: no key, but a
+                rid = self.remember(text, source=_src, project=project)      # same as the delete branch: no key, but a
                 return {"intent": "revert", "action": "noted", "key": None, "id": rid,   # source is one
                         "reason": "no ledger key resolved from the utterance"}
             chain = self._route_chain(k)
@@ -11955,20 +11969,20 @@ class Inspeximus:
                 # `_parent(k)` is passed the RESOLVED key, not the parameter, which may be None here.
                 rid = self.remember(f"restore {k} to {named}", key=k, object=named, reaffirm=True,
                                     capability=capability, meta={"routed": "revert_named"},
-                                    source=_src, derived_from=_parent(k))
+                                    source=_src, derived_from=_parent(k), project=project)
                 return {"intent": "revert", "action": "restored", "key": k, "target": named, "id": rid}
             if self._ROUTE_ORIGINAL.search(low) and len(chain) > 1 and chain[0] != cur:
                 rid = self.remember(f"restore {k} to {chain[0]}", key=k, object=chain[0], reaffirm=True,
                                     capability=capability, meta={"routed": "revert_original"},
-                                    source=_src, derived_from=_parent(k))
+                                    source=_src, derived_from=_parent(k), project=project)
                 return {"intent": "revert", "action": "restored", "key": k, "target": chain[0], "id": rid}
-            res = self.revert(k, capability=capability)
+            res = self.revert(k, capability=capability, project=project)
             return {"intent": "revert", "action": "reverted" if res.get("ok") else "failed",
                     "key": k, **{kk: vv for kk, vv in res.items() if kk != "ok"}}
         if object is None or key is None:
             # No key means nothing to derive from, so `source` is the only lever here -- and it is the
             # caller's to pull. Inferring a subject from the text would be inventing one.
-            rid = self.remember(text, key=key, object=object, source=_src, derived_from=_parent())
+            rid = self.remember(text, key=key, object=object, source=_src, derived_from=_parent(), project=project)
             return {"intent": "assert", "action": "remembered", "event": "ADD", "key": key, "id": rid}
         chain = self._route_chain(key)
         cur = chain[-1] if chain else None
@@ -11988,7 +12002,7 @@ class Inspeximus:
             #
             # The caller can still name a source; when they do not, the lineage edge alone is enough for
             # forget_subject to reach the correction, because it cascades along derived_from.
-            rid = self.remember(text, key=key, object=object, source=_src, derived_from=_parent())
+            rid = self.remember(text, key=key, object=object, source=_src, derived_from=_parent(), project=project)
             intent = "correct" if (cur is not None and self._ROUTE_CORRECT.search(low)) else "assert"
             event = "UPDATE" if cur is not None else "ADD"   # supersedes a prior value vs first value for the key
             return {"intent": intent, "action": "remembered", "event": event, "key": key, "id": rid}
@@ -12001,7 +12015,7 @@ class Inspeximus:
                         "target": object, "challenge": self.revert_challenge(key)}
             rid = self.remember(text, key=key, object=object, reaffirm=True, capability=capability,
                                 meta={"routed": f"reaffirm_{policy}"},
-                                source=_src, derived_from=_parent())
+                                source=_src, derived_from=_parent(), project=project)
             return {"intent": "reaffirm", "action": "restored", "key": key, "target": object, "id": rid}
         # THE SAME ARGUMENT AS THE CORRECTION BRANCH, and it was missed here. A reaffirm or an echo is a
         # RESTATEMENT of a value on a key, so it is about whatever that key already holds -- and route
@@ -12012,12 +12026,12 @@ class Inspeximus:
         # repository keeps recording, applied inside a single function this time.
         if self.echo_guard:
             rid = self.remember(text, key=key, object=object,      # guard retires it, judge-logged
-                                source=_src, derived_from=_parent())
+                                source=_src, derived_from=_parent(), project=project)
         else:
             # Deliberately KEYLESS so it cannot LWW-clobber the current value. Keyless is not the same as
             # unattributable: the lineage edge still connects it to the record it restates.
             rid = self.remember(text, meta={"routed": "echo_unkeyed"},
-                                source=_src, derived_from=_parent())
+                                source=_src, derived_from=_parent(), project=project)
         return {"intent": "echo", "action": "blocked", "key": key, "id": rid,
                 "policy": policy, "note": "unmarked restatement of a superseded value; not restored"}
 
@@ -14963,12 +14977,16 @@ class Inspeximus:
         mid = self.remember(t, tags=tags, value=value, meta=meta, mtype=mtype, **kw)
         return {"admitted": True, "id": mid, "reason": "admitted", "duplicate_of": None, "similarity": None}
 
-    def why_recalled(self, query: str, id: str | None = None, k: int = 12):
+    def why_recalled(self, query: str, id: str | None = None, k: int = 12, project: str | None = None):
         """INSPECTOR — explain WHY memories rank for a query, so 'why did this surface / why not' stops being an
         archaeology dig. Returns the per-candidate score breakdown recall() actually ranks by: semantic (cosine),
         lexical (token overlap), effective_value (decayed rank weight), corroboration (good/bad), the stale-derived
         flag, and the memory's RANK in the live recall(). With `id`, returns just that record's breakdown plus
-        whether it surfaced in the top-k. Read-only."""
+        whether it surfaced in the top-k. Read-only.
+
+        `project` explains the recall `recall(project=...)` runs: the ranking is scoped the same way, and an
+        `id` stamped for another project is answered as not found. Without it, a caller inside a project
+        scope would be shown, and quoted, records its own recall never returns."""
         now = time.time()
         qvec = self._qvec(query) if self.embed else None
         qtok = _tokens(query)
@@ -14979,7 +14997,7 @@ class Inspeximus:
         # documented "Read-only", and an instrument must not rely on a default staying what it is
         # today to avoid changing the state it measures. What changes is the justification, which
         # asserted the opposite of the signature it was describing.
-        ranked = self.recall(query, k=k, reinforce=False)
+        ranked = self.recall(query, k=k, reinforce=False, project=project)
         rank_of = {r["id"]: i + 1 for i, r in enumerate(ranked)}
         _full = {x["id"]: x for x in self._tenant_rows()}          # recall() may return vec-less projections
 
@@ -15010,6 +15028,9 @@ class Inspeximus:
                     "gated_out": not _passes(r), "gate_reason": _why(r)}
         if id is not None:
             rec = next((r for r in self._tenant_rows() if r["id"] == id), None)
+            if rec is not None and project is not None \
+                    and (rec.get("meta") or {}).get("project") not in (None, str(project)):
+                rec = None                                # recall's project rule: another project's record
             if rec is None:
                 return {"id": id, "found": False}
             b = _brk(rec); b["surfaced"] = rec["id"] in rank_of

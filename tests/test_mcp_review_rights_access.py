@@ -52,9 +52,6 @@ def _ids(result: ToolResult) -> list:
 
 
 # ── rectify_subject ─────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="rectify_subject: 'supersede the value under key ... (every write guard applies)'; "
-                          "a correction the objectless guard retired on arrival is returned as a rectification, "
-                          "with no blocked/policy verdict, and logged as rights:rectify status ok", **XFAIL)
 def test_rectify_subject_reports_a_rectification_the_objectless_guard_retired(server):
     """rectify_subject: "GDPR Art. 16 rectification: supersede the value under `key` with `text` through the
     ordinary keyed write (every write guard applies), and record who asked and why as a rights:rectify
@@ -81,9 +78,6 @@ def test_rectify_subject_reports_a_rectification_the_objectless_guard_retired(se
         f"recall still serves the old value"
 
 
-@pytest.mark.xfail(reason="rectify_subject: 'through the ordinary keyed write'; under INSPEXIMUS_PROJECT the "
-                          "correction is written with no project stamp, so every other project's recall serves it",
-                   **XFAIL)
 def test_rectify_subject_stamps_the_servers_project_scope(server):
     """rectify_subject: "supersede the value under `key` with `text` through the ordinary keyed write".
     Server config: "INSPEXIMUS_PROJECT ... Writes are stamped with it and recalls are filtered to it".
@@ -188,8 +182,6 @@ def test_export_subject_rights_entry_keeps_the_signed_action_ledger_verifiable(s
 
 
 # ── recall_as ───────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="recall_as: 'the same ranking as recall, hard-filtered...'; it ignores the server's "
-                          "INSPEXIMUS_PROJECT scope and returns another project's records", **XFAIL)
 def test_recall_as_honours_the_servers_project_scope(server):
     """recall_as: "Recall AS a named agent: the same ranking as `recall`, hard-filtered to what that agent
     owns or has an active grant for." Server config: "INSPEXIMUS_PROJECT ... recalls are filtered to it".
@@ -259,9 +251,6 @@ def test_poll_memory_events_on_a_json_store_does_not_read_as_no_changes(server):
 
 
 # ── deprecate_symbol ────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="deprecate_symbol: 'A later deprecate_symbol of the same old supersedes the replacement "
-                          "... Returns the recorded deprecation'; a return to an earlier replacement is retired by "
-                          "the echo guard and still returned as recorded", **XFAIL)
 def test_deprecate_symbol_reports_a_deprecation_the_echo_guard_retired(server):
     """deprecate_symbol: "A later deprecate_symbol of the same `old` supersedes the replacement. Then call
     check_code(generated) before emitting code. Returns the recorded deprecation."
@@ -285,8 +274,6 @@ def test_deprecate_symbol_reports_a_deprecation_the_echo_guard_retired(server):
         f"deprecate_symbol returned {said} as the recorded deprecation; symbol_status says {status}"
 
 
-@pytest.mark.xfail(reason="deprecate_symbol: a write; server config 'INSPEXIMUS_PROJECT ... Writes are stamped with "
-                          "it'; the deprecation record carries no project stamp", **XFAIL)
 def test_deprecate_symbol_stamps_the_servers_project_scope(server):
     """deprecate_symbol: "CODING-AGENT REFACTOR RECORD (write, deterministic, no LLM)". Server config:
     "INSPEXIMUS_PROJECT project/workspace scope for ONE store shared across several repos. Writes are

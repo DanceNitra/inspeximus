@@ -1219,8 +1219,8 @@
  {
   "name": "the echo branch writes without provenance again",
   "file": "inspeximus/core.py",
-  "old": "            rid = self.remember(text, key=key, object=object,      # guard retires it, judge-logged\n                                source=_src, derived_from=_parent())",
-  "new": "            rid = self.remember(text, key=key, object=object)",
+  "old": "            rid = self.remember(text, key=key, object=object,      # guard retires it, judge-logged\n                                source=_src, derived_from=_parent(), project=project)",
+  "new": "            rid = self.remember(text, key=key, object=object, project=project)",
   "tests": [
    "tests/test_route_correction_lineage.py"
   ]
@@ -1228,8 +1228,8 @@
  {
   "name": "the keyless echo branch writes without provenance again",
   "file": "inspeximus/core.py",
-  "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
-  "new": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"})",
+  "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent(), project=project)",
+  "new": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"}, project=project)",
   "tests": [
    "tests/test_route_correction_lineage.py"
   ]
@@ -1237,8 +1237,8 @@
  {
   "name": "the keyless echo branch gains a key and can clobber",
   "file": "inspeximus/core.py",
-  "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
-  "new": "            rid = self.remember(text, key=key, object=object, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent())",
+  "old": "            rid = self.remember(text, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent(), project=project)",
+  "new": "            rid = self.remember(text, key=key, object=object, meta={\"routed\": \"echo_unkeyed\"},\n                                source=_src, derived_from=_parent(), project=project)",
   "tests": [
    "tests/test_route_correction_lineage.py"
   ]
@@ -1255,8 +1255,8 @@
  {
   "name": "the revert-restore branch stops declaring a parent",
   "file": "inspeximus/core.py",
-  "old": "                                    capability=capability, meta={\"routed\": \"revert_named\"},\n                                    source=_src, derived_from=_parent(k))",
-  "new": "                                    capability=capability, meta={\"routed\": \"revert_named\"})",
+  "old": "                                    capability=capability, meta={\"routed\": \"revert_named\"},\n                                    source=_src, derived_from=_parent(k), project=project)",
+  "new": "                                    capability=capability, meta={\"routed\": \"revert_named\"}, project=project)",
   "tests": [
    "tests/test_route_correction_lineage.py"
   ]
@@ -1264,8 +1264,8 @@
  {
   "name": "the revert-to-original branch stops declaring a parent",
   "file": "inspeximus/core.py",
-  "old": "                                    capability=capability, meta={\"routed\": \"revert_original\"},\n                                    source=_src, derived_from=_parent(k))",
-  "new": "                                    capability=capability, meta={\"routed\": \"revert_original\"})",
+  "old": "                                    capability=capability, meta={\"routed\": \"revert_original\"},\n                                    source=_src, derived_from=_parent(k), project=project)",
+  "new": "                                    capability=capability, meta={\"routed\": \"revert_original\"}, project=project)",
   "tests": [
    "tests/test_route_correction_lineage.py"
   ]
@@ -1273,8 +1273,8 @@
  {
   "name": "the keyless delete branch drops the caller's source",
   "file": "inspeximus/core.py",
-  "old": "                rid = self.remember(text, source=_src)\n                return {\"intent\": \"delete\"",
-  "new": "                rid = self.remember(text)\n                return {\"intent\": \"delete\"",
+  "old": "                rid = self.remember(text, source=_src, project=project)\n                return {\"intent\": \"delete\"",
+  "new": "                rid = self.remember(text, project=project)\n                return {\"intent\": \"delete\"",
   "tests": [
    "tests/test_route_correction_lineage.py"
   ]
@@ -1282,8 +1282,8 @@
  {
   "name": "the keyless revert branch drops the caller's source",
   "file": "inspeximus/core.py",
-  "old": "                rid = self.remember(text, source=_src)      # same as the delete branch",
-  "new": "                rid = self.remember(text)      # same as the delete branch",
+  "old": "                rid = self.remember(text, source=_src, project=project)      # same as the delete branch",
+  "new": "                rid = self.remember(text, project=project)      # same as the delete branch",
   "tests": [
    "tests/test_route_correction_lineage.py"
   ]
@@ -1571,8 +1571,8 @@
  {
   "name": "check_sources reads the raw list, leaking other tenants into a tenant's report",
   "file": "inspeximus/core.py",
-  "old": "        for r in self.items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
-  "new": "        for r in self._items:\n            fp = (r.get(\"meta\") or {}).get(\"source_sha256\")",
+  "old": "        rows = self.items if project is None else [\n            r for r in self.items if (r.get(\"meta\") or {}).get(\"project\") in (None, str(project))]",
+  "new": "        rows = self._items if project is None else [\n            r for r in self._items if (r.get(\"meta\") or {}).get(\"project\") in (None, str(project))]",
   "tests": [
    "tests/test_isolation_and_persistence.py"
   ]

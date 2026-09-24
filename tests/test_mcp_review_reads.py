@@ -93,8 +93,6 @@ def test_where_am_i_reports_the_receipts_the_store_actually_keeps(monkeypatch, t
 
 
 # ── token_report ────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="token_report: sizes 'the SAME top-k recall'; it calls recall without the server's "
-                          "project scope, so it measures hits recall never returns", **XFAIL)
 def test_token_report_sizes_the_hits_recall_returns(monkeypatch, tmp_path):
     """token_report: "DETERMINISTIC payload-size estimate ... for the SAME top-k recall: how much smaller the
     compact projection is than the full records for those same k hits."
@@ -109,8 +107,6 @@ def test_token_report_sizes_the_hits_recall_returns(monkeypatch, tmp_path):
 
 
 # ── why_recalled ────────────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(reason="why_recalled: explains 'why did (or didn't) a memory surface'; on a project-scoped "
-                          "server it explains, and quotes, other projects' records recall never surfaces", **XFAIL)
 def test_why_recalled_explains_only_what_recall_can_surface(monkeypatch, tmp_path):
     """why_recalled: "EXPLAINABILITY: why did (or didn't) a memory surface for `query`? Returns the
     per-channel breakdown (relevance/value/provenance) for the top hits".
