@@ -1875,9 +1875,57 @@
   "category": "message",
   "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
  },
+ "core:6549:51:57081ac5": {
+  "category": "soundness",
+  "why": "unpinned, the partial-signing rule is the only thing that sees an unsigned tombstone appended to a signed store; every partial-signing test appended a write receipt, never a tombstone"
+ },
  "core:6554:23:d53ceca1": {
   "category": "message",
   "why": "wording, count or joining of a problem line; `verify_writes` returns `len(problems) == 0`, so any text -- or None -- still fails the verdict"
+ },
+ "core:6589:53:cb8f7fb2": {
+  "category": "message",
+  "why": "formatting of the uncovered-records problem (how many ids are shown, the ellipsis); the verdict is `len(problems) == 0`"
+ },
+ "core:6589:57:01185504": {
+  "category": "message",
+  "why": "formatting of the uncovered-records problem (how many ids are shown, the ellipsis); the verdict is `len(problems) == 0`"
+ },
+ "core:6589:57:836ed20f": {
+  "category": "message",
+  "why": "formatting of the uncovered-records problem (how many ids are shown, the ellipsis); the verdict is `len(problems) == 0`"
+ },
+ "core:6589:57:9b5a4d74": {
+  "category": "message",
+  "why": "formatting of the uncovered-records problem (how many ids are shown, the ellipsis); the verdict is `len(problems) == 0`"
+ },
+ "core:6589:82:979cd83d": {
+  "category": "message",
+  "why": "formatting of the uncovered-records problem (how many ids are shown, the ellipsis); the verdict is `len(problems) == 0`"
+ },
+ "core:6589:85:671a65e7": {
+  "category": "message",
+  "why": "formatting of the uncovered-records problem (how many ids are shown, the ellipsis); the verdict is `len(problems) == 0`"
+ },
+ "core:6589:92:ab47852e": {
+  "category": "message",
+  "why": "formatting of the uncovered-records problem (how many ids are shown, the ellipsis); the verdict is `len(problems) == 0`"
+ },
+ "core:6604:11:fc9be795": {
+  "category": "equivalent",
+  "why": "equivalent: with receipts disabled the in-memory chain is empty, so both retirement sweeps find nothing either way"
+ },
+ "core:6647:8:19fb4c85": {
+  "category": "unreachable",
+  "why": "the in-memory fallback only matters when the sidecar is missing, and then the head check it feeds is skipped (a store with no sidecar has no head to compare)"
+ },
+ "core:6650:43:7d591994": {
+  "category": "platform",
+  "why": "encoding=None reads the sidecar in the locale encoding, UTF-8 here; 'UTF-8' is the same codec"
+ },
+ "core:6650:82:70b77a6c": {
+  "category": "platform",
+  "why": "encoding=None reads the sidecar in the locale encoding, UTF-8 here; 'UTF-8' is the same codec"
  },
  "core:7916:67:47da4962": {
   "category": "unread-output",

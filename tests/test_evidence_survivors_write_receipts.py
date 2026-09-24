@@ -251,3 +251,29 @@ def test_a_retirement_declared_at_backfill_is_a_committed_amendment(tmp_path):
     assert d["commit"] == ix._write_commit(rec)
     assert d["ts"] == rec["ts"]
     assert Inspeximus(path=p, receipts=True).verify_writes() == (True, [])
+
+
+def test_an_unsigned_tombstone_appended_to_a_signed_store_fails_verify_writes(tmp_path):
+    """SURVIVOR core.py:6549 `list(self._tombstones or ())` -> `list(self._tombstones and ())`
+    (core:6549:51:57081ac5).
+
+    Unpinned, `verify_writes()` checks tombstone signatures only where a tombstone has one, so the
+    rule "a chain signed in places is not signed" is the ONLY thing that sees an unsigned tombstone
+    appended by someone without the key. The mutant dropped tombstones from that rule, and no test
+    appended one: the partial-signing tests all appended write receipts. Here a forged, correctly
+    chained, unsigned tombstone claims a live record was erased."""
+    import time
+    from inspeximus.core import _canon, _sha256_hex
+    m = _store(tmp_path)
+    for i in range(3):
+        m.remember(f"fact {i}", key=f"k{i}", object=str(i))
+    m.forget(where=lambda r: r.get("key") == "k0", request_id="R1")
+    assert m.verify_writes() == (True, [])                                              # the control
+    victim = next(r["id"] for r in m.items if r.get("key") == "k1")
+    t = {"seq": len(m._tombstones), "memory_id": victim, "ts": time.time(), "request_id": "FORGED",
+         "prev": m._tombstones[-1]["hash"]}
+    t["hash"] = _sha256_hex(_canon(Inspeximus._tombstone_core(t)))
+    m._tombstones.append(t)
+    ok, problems = m.verify_writes()
+    assert ok is False
+    assert any("carry NO signature" in p for p in problems), problems

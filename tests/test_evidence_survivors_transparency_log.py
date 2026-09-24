@@ -369,3 +369,16 @@ def test_a_leaf_is_ascii_whatever_the_statement_says(service):
     leaf.decode("ascii")                                                  # raises if not ASCII
     assert b"\\u00e9" in leaf
     assert verify_registered_statement(tr, iverify, sverify, leaf, ts.root())["ok"] is True
+
+
+def test_one_witness_meets_the_default_threshold(service, tmp_path):
+    """SURVIVOR transparency.py:263 `threshold: int = 1` -> `2` (transparency:263:57:9ee88280).
+    Every call passed `threshold=` explicitly, so the documented default -- one independent
+    co-signature is enough unless the caller asks for more -- was never exercised."""
+    from inspeximus.witness_pool import Witness
+    ts, isign, _iv, _sv = service
+    ts.register(_statement(isign))
+    w = Witness(new_receipt_keypair()[0], state_path=str(tmp_path / "w.json"))
+    out = ts.witnessed_head([w])
+    assert out["threshold"] == 1
+    assert len(out["cosignatures"]) == 1 and out["met"] is True
