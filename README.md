@@ -27,6 +27,7 @@
 
 ```bash
 pip install inspeximus
+inspeximus demo          # a first result: offline, touches nothing of yours
 ```
 
 ```python
@@ -175,7 +176,7 @@ fact turns out to be **wrong**.
 ```python
 from inspeximus import Inspeximus
 
-m = Inspeximus("memory.json")
+m = Inspeximus("correction.json")
 
 m.remember("The staging database is db-3.internal", key="staging-db")
 m.remember("The staging database is db-7.internal", key="staging-db")   # a correction
@@ -230,7 +231,7 @@ somebody edited the file behind the library's back. The chain can.
 ```python
 from inspeximus import Inspeximus
 
-m = Inspeximus("memory.json", receipts=True)
+m = Inspeximus("receipts.json", receipts=True)
 m.remember("The staging database is db-3.internal", key="staging-db")
 m.remember("The staging database is db-7.internal", key="staging-db")
 
@@ -239,13 +240,13 @@ m.verify_writes()[0]        # nothing has been touched yet
 
 # now somebody edits the store directly, turning db-7 into db-9
 from inspeximus import sqlite_store
-items = sqlite_store.load("memory.json")
+items = sqlite_store.load("receipts.json")
 before = sqlite_store.snapshot(items)
 edited = next(r for r in items if "db-7" in r["text"])
 edited["text"] = edited["text"].replace("db-7", "db-9")
-sqlite_store.save("memory.json", items, before)
+sqlite_store.save("receipts.json", items, before)
 
-Inspeximus("memory.json", receipts=True).verify_writes()[1][0].split(": ", 1)[1]
+Inspeximus("receipts.json", receipts=True).verify_writes()[1][0].split(": ", 1)[1]
 # 'its TEXT or KEY no longer matches its write receipt (edited after write)'
 ```
 
@@ -324,7 +325,7 @@ not from anyone's account of it.
 from inspeximus import Inspeximus
 from inspeximus.actions import ActionLedger
 
-m = Inspeximus("memory.json", receipts=True)
+m = Inspeximus("deploys.json", receipts=True)
 m.remember("The staging database is db-3.internal", key="staging-db")
 led = ActionLedger(m, actor="deploy-agent")
 
@@ -725,6 +726,10 @@ inspeximus emits all four with no dependencies:
 | I said it, and it is about this | a Signed Statement | RFC 9943 (SCITT) |
 | under these published rules | a Registration Policy, as entry 0 of the log itself | RFC 9943 s5.1.1 |
 | at this time, per a third party | an RFC 3161 timestamp | RFC 3161 |
+
+```bash
+pip install "inspeximus[crypto]"
+```
 
 ```python
 from inspeximus import Inspeximus, new_receipt_keypair, verify_transparent_statement

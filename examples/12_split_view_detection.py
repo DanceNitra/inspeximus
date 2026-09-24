@@ -1,5 +1,8 @@
 """Split-view detection, end to end -- with the controls that decide whether it means anything.
 
+    pip install "inspeximus[crypto]"          (Ed25519 signing)
+    python 12_split_view_detection.py
+
 A store's anchor() is a Certificate-Transparency-style signed tree head (RFC 6962; the design is CT's, and
 Sigstore/Rekor run it at far larger scale). On one timeline it catches a rewrite. What it does NOT catch on
 its own is a SPLIT VIEW: an operator showing one history to one reader and a different history to another,
@@ -15,7 +18,6 @@ alarms is worthless and one that never alarms is worse:
   5. two readers of the SAME honest head -> the detector stays SILENT
   6. a quorum of zero and an anchor over an empty history do not pass as evidence
 
-Run: python examples/12_split_view_detection.py        (needs `pip install cryptography` for Ed25519)
 Docs: docs/TRANSPARENCY.md
 """
 import os

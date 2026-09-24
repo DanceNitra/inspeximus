@@ -1,6 +1,9 @@
 """inspeximus as a LangGraph long-term memory store — same BaseStore API, plus the part LangGraph's
 built-in store throws away: what the value USED to be.
 
+    pip install "inspeximus[langgraph]"
+    python 07_langgraph_memory.py
+
 LangGraph agents persist long-term memory through a BaseStore (put/get/search over (namespace, key)).
 The built-in InMemoryStore is last-write-wins with no history: a second put on the same key silently
 destroys the first. InspeximusStore is a drop-in BaseStore with identical semantics for put/get/search/delete —
@@ -16,8 +19,6 @@ Swap ONE line in an existing LangGraph app:
     - store = InMemoryStore()
     + from inspeximus.integrations.langgraph import InspeximusStore
     + store = InspeximusStore(path="agent_memory.json")        # persists across restarts, too
-
-Run:  pip install "inspeximus" langgraph  &&  python examples/07_langgraph_memory.py
 """
 from inspeximus.integrations.langgraph import InspeximusStore
 

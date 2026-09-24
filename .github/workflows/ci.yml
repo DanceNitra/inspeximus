@@ -95,6 +95,48 @@ jobs:
           name: time-to-first-success
           path: time-to-first-success.json
 
+  # EVERY README PYTHON BLOCK AND EVERY EXAMPLE, AGAINST WHAT A READER INSTALLS. The `test` job runs them
+  # too, but under an interpreter that imports this checkout and has `cryptography` because it is a test
+  # dependency, which is the one environment where a missing extra cannot show. So each leg builds a
+  # clean venv from this commit -- once `pip install inspeximus`, once `pip install "inspeximus[crypto]"`
+  # -- and points the two test files at it with INSPEXIMUS_PYTHON; pytest itself runs outside that venv.
+  # README blocks run alone in an empty directory AND top to bottom in one shared directory, with every
+  # result a comment states asserted (tools/readme_blocks.py). Something that needs the crypto extra must
+  # say so (a README block: `inspeximus[crypto]` since the previous block; an example: in its first ten
+  # lines); in the plain leg it must then fail and name `cryptography`, and anything undeclared must pass.
+  readme-and-examples:
+    name: README blocks and examples (${{ matrix.leg }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - leg: pip install inspeximus
+            spec: "."
+          - leg: pip install inspeximus[crypto]
+            spec: ".[crypto]"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: the test runner, outside the venv under test
+        run: python -m pip install --upgrade pip && pip install pytest pytest-xdist
+      - name: a clean venv holding only what the reader installs
+        run: |
+          python -m venv "$RUNNER_TEMP/reader"
+          "$RUNNER_TEMP/reader/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/reader/bin/python" -m pip install "${{ matrix.spec }}"
+          "$RUNNER_TEMP/reader/bin/python" -m pip list
+      - name: README blocks (fresh and shared directory) and examples, in that venv
+        env:
+          INSPEXIMUS_PYTHON: ${{ runner.temp }}/reader/bin/python
+        run: python -m pytest tests/test_readme_blocks_run.py tests/test_examples_run.py -q -rs
+      - name: every README block, in the job summary
+        if: always()
+        run: |
+          { echo '```'; python tools/readme_blocks.py --python "$RUNNER_TEMP/reader/bin/python" || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
   # CrewAI: the runnable example in examples/integrations/crewai, against the version it pins
   # (crewai==1.15.22). It installs that requirements file and this checkout, then runs the example's own tests.
   # The example's test fails when a different version is installed, so a green job means that version.

@@ -1,7 +1,7 @@
 """
 inspeximus example 06 — the signed erasure receipt (GDPR Art. 17 / EU AI Act Art. 12).
 
-    pip install inspeximus
+    pip install "inspeximus[crypto]"
     python 06_gdpr_erasure_receipt.py
 
 A data-subject-access/erasure request ("DSAR") arrives: erase everything you hold about a person.

@@ -8,9 +8,19 @@ executes, and a broken one is a worse first impression than no example at all.
 Each runs in its own subprocess, as a reader would run it: `python examples/NN_thing.py` from the repo
 root, with a clean exit required. Where a script needs an optional dependency it is skipped by NAME with a
 reason rather than dropped silently — a sweep that quietly skips is a sweep that stops covering.
+
+A script that needs an extra SAYS SO IN ITS FIRST LINES, where a reader decides whether they can run it:
+`pip install "inspeximus[crypto]"` within the first HEADER_LINES lines. NEEDS is read from there, so the
+declaration a reader sees and the one this sweep enforces are the same line.
+
+With INSPEXIMUS_PYTHON set to an interpreter that has inspeximus INSTALLED (a clean venv), every example
+runs against that installation instead of this checkout: a copy of the script in an empty folder, no
+PYTHONPATH, a HOME of its own. The `readme-and-examples` CI job does this twice, once after a plain
+`pip install inspeximus` and once after `pip install "inspeximus[crypto]"`.
 """
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 import sys
@@ -19,27 +29,75 @@ import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXAMPLES = os.path.join(ROOT, "examples")
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+from readme_blocks import EXTRA_MODULE, extras_declared, has_module, isolated_env  # noqa: E402
 
-#: Scripts that cannot run in a bare environment, each with the reason and what it needs. Named
-#: deliberately: a skip nobody can see is indistinguishable from coverage.
-NEEDS = {
-    "07_langgraph_memory.py": "langgraph",
-    # The five that sign something. They were absent from this map until 2.0.2, and the reason is the
-    # shape this repository keeps rediscovering: the sweep runs under `sys.executable`, the developer's
-    # interpreter, where `cryptography` is always installed because it is a TEST dependency. So these
-    # five passed here while failing for any reader who ran `pip install inspeximus` and followed the
-    # README. The check ran in the one environment where the defect could not occur.
-    "04_encryption.py": "cryptography",
-    "06_gdpr_erasure_receipt.py": "cryptography",
-    "07_witness_pool.py": "cryptography",
-    "12_split_view_detection.py": "cryptography",
-    "trust_is_not_truth.py": "cryptography",
-}
+#: The interpreter under test: None is this one, importing this checkout.
+PYTHON = os.environ.get("INSPEXIMUS_PYTHON") or None
 
-#: What a reader must actually type. Every value in NEEDS has to be installable by one of these, or the
+#: How far down a script its install line may sit and still count as "in its first lines".
+HEADER_LINES = 10
+
+
+def _scripts():
+    if not os.path.isdir(EXAMPLES):
+        return []
+    return sorted(f for f in os.listdir(EXAMPLES) if f.endswith(".py") and not f.startswith("_"))
+
+
+def _declared_extras(script):
+    """The extras a script names as `inspeximus[extra]` in its first HEADER_LINES lines."""
+    with open(os.path.join(EXAMPLES, script), encoding="utf-8") as fh:
+        head = "".join(fh.readline() for _ in range(HEADER_LINES))
+    extras = extras_declared(head)
+    unknown = [e for e in extras if e not in EXTRA_MODULE]
+    assert not unknown, (f"{script} declares inspeximus{unknown}; add the module each extra brings to "
+                         f"EXTRA_MODULE in tools/readme_blocks.py")
+    return extras
+
+
+#: Scripts that cannot run in a bare environment, with the modules they need, READ FROM EACH SCRIPT'S
+#: FIRST LINES. Named deliberately: a skip nobody can see is indistinguishable from coverage.
+#:
+#: The five that sign something were absent from the hand-kept map this replaced until 2.0.2, and the
+#: reason is the shape this repository keeps rediscovering: the sweep runs under `sys.executable`, the
+#: developer's interpreter, where `cryptography` is always installed because it is a TEST dependency.
+#: So those five passed here while failing for any reader who ran `pip install inspeximus` and followed
+#: the README. The check ran in the one environment where the defect could not occur. And the map lived
+#: here, where no reader looks: two of the five still told the reader `pip install inspeximus`, one named
+#: no install at all, and one named it on line 18.
+NEEDS = {s: [EXTRA_MODULE[e] for e in _declared_extras(s)] for s in _scripts() if _declared_extras(s)}
+
+#: What a reader must actually type. Every module in NEEDS has to be installable by one of these, or the
 #: skip reason names something nobody can act on.
-INSTALL_HINT = {"cryptography": 'pip install "inspeximus[crypto]"',
-                "langgraph": 'pip install "inspeximus[langgraph]"'}
+INSTALL_HINT = {module: 'pip install "inspeximus[%s]"' % extra for extra, module in EXTRA_MODULE.items()}
+
+
+def _require(script):
+    """Skip, by name and with the install line, when the interpreter under test lacks what the script
+    declares. The base-install sweep below still runs it, and requires it to fail naming the module."""
+    for dep in NEEDS.get(script, []):
+        if PYTHON is None:
+            pytest.importorskip(dep, reason=f"{script} needs {dep}: {INSTALL_HINT[dep]}")
+        elif not has_module(dep, PYTHON):
+            pytest.skip(f"{script} needs {dep}: {INSTALL_HINT[dep]}")
+
+
+def _run_installed(path, bootstrap=None):
+    """Run a script the way a reader who ran `pip install` would: a copy in an empty folder, run with
+    the interpreter under test, no PYTHONPATH, and a HOME of its own.
+
+    A COPY, not the file in place. Run from examples/, 12_split_view_detection.py puts the checkout next
+    to it first on sys.path and 11_verifiable_erasure.py hands that checkout to its subprocesses, so both
+    would pass against this repository instead of the installation being tested."""
+    base = tempfile.mkdtemp(prefix="inspeximus_installed_")
+    work, home = os.path.join(base, "work"), os.path.join(base, "home")
+    os.makedirs(work)
+    os.makedirs(home)
+    shutil.copy(path, work)
+    argv = [PYTHON] + (["-c", bootstrap] if bootstrap else []) + [os.path.basename(path)]
+    return subprocess.run(argv, cwd=work, env=isolated_env(home, PYTHON), capture_output=True, text=True,
+                          encoding="utf-8", errors="replace", timeout=180)
 
 
 def _run(script):
@@ -50,6 +108,8 @@ def _run(script):
     CI, where nothing is installed, every example failed with ModuleNotFoundError. CI caught a test that
     was not testing the code in front of it, which is the worse of the two problems.
     """
+    if PYTHON:
+        return _run_installed(os.path.join(EXAMPLES, script))
     # cwd is a TEMP DIRECTORY, not the repo. The examples persist to relative paths, so running them here
     # appended to the tracked `memory.json` on every single suite run: 85 runs, 340 records, 337 superseded,
     # committed. Imports still resolve because PYTHONPATH points at the repo -- only the demo's OUTPUT moves.
@@ -60,12 +120,6 @@ def _run(script):
              "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", "")})
 
 
-def _scripts():
-    if not os.path.isdir(EXAMPLES):
-        return []
-    return sorted(f for f in os.listdir(EXAMPLES) if f.endswith(".py") and not f.startswith("_"))
-
-
 def test_the_examples_directory_is_not_empty():
     """If the directory is renamed or emptied, the parametrised test below would silently pass with zero
     cases -- a green sweep over nothing."""
@@ -74,9 +128,7 @@ def test_the_examples_directory_is_not_empty():
 
 @pytest.mark.parametrize("script", _scripts())
 def test_example_runs_clean(script):
-    dep = NEEDS.get(script)
-    if dep:
-        pytest.importorskip(dep, reason=f"{script} needs {dep}")
+    _require(script)
 
     r = _run(script)
     assert r.returncode == 0, (
@@ -88,8 +140,7 @@ def test_example_runs_clean(script):
 def test_example_prints_something(script):
     """A script that runs clean and says nothing teaches nothing. Every example here exists to show a
     result, so silence is a defect even though the exit code is zero."""
-    if NEEDS.get(script):
-        pytest.importorskip(NEEDS[script], reason=f"{script} needs {NEEDS[script]}")
+    _require(script)
 
     r = _run(script)
     assert r.stdout.strip(), f"{script} produced no output"
@@ -223,6 +274,8 @@ runpy.run_path(sys.argv[1], run_name='__main__')
 
 def _run_base_only(path):
     """Run a script as if only `pip install inspeximus` had been done."""
+    if PYTHON:
+        return _run_installed(path, bootstrap=_BOOTSTRAP.format(blocked=BASE_BLOCKED))
     return subprocess.run(
         [sys.executable, "-c", _BOOTSTRAP.format(blocked=BASE_BLOCKED), path],
         cwd=tempfile.mkdtemp(prefix="inspeximus_base_"), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,
@@ -234,22 +287,25 @@ def _run_base_only(path):
 def test_an_example_either_runs_on_a_base_install_or_says_what_it_needs(script):
     """The property a reader actually depends on.
 
-    Either the example runs after `pip install inspeximus`, or NEEDS names the dependency, the name is
-    installable through a real extra, and the failure mentions it so the reader is not left guessing."""
+    Either the example runs after `pip install inspeximus`, or its first lines name the extra, the extra
+    is real, and the failure mentions the module so the reader is not left guessing."""
     r = _run_base_only(os.path.join(EXAMPLES, script))
     if r.returncode == 0:
         assert script not in NEEDS, (
-            f"{script} runs on a base install but NEEDS claims it requires {NEEDS[script]!r}; a stale "
-            f"entry here turns into a skip, and a skip nobody can see is indistinguishable from coverage")
+            f"{script} runs on a base install but its first lines declare it needs {NEEDS[script]!r}; a "
+            f"stale declaration turns into a skip, and a skip nobody can see is indistinguishable from "
+            f"coverage")
         return
-    dep = NEEDS.get(script)
-    assert dep, (
-        f"{script} fails on a plain `pip install inspeximus` and declares nothing. Add it to NEEDS with "
-        f"the dependency, or make the example base-safe.\nstderr tail: {r.stderr[-400:]}")
-    assert dep in (r.stderr + r.stdout), (
-        f"{script} is declared to need {dep!r} but its failure never mentions it, so the reader cannot "
-        f"act on it.\nstderr tail: {r.stderr[-400:]}")
-    assert dep in INSTALL_HINT, f"nothing tells a reader how to install {dep!r}"
+    deps = NEEDS.get(script)
+    assert deps, (
+        f"{script} fails on a plain `pip install inspeximus` and declares nothing. Put the install line, "
+        f'e.g. `pip install "inspeximus[crypto]"`, in its first {HEADER_LINES} lines, or make the example '
+        f"base-safe.\nstderr tail: {r.stderr[-400:]}")
+    for dep in deps:
+        assert dep in (r.stderr + r.stdout), (
+            f"{script} is declared to need {dep!r} but its failure never mentions it, so the reader cannot "
+            f"act on it.\nstderr tail: {r.stderr[-400:]}")
+        assert dep in INSTALL_HINT, f"nothing tells a reader how to install {dep!r}"
 
 
 def _optional_dependencies():
