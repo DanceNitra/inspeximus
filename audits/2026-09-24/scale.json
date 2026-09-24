@@ -1,0 +1,145 @@
+{
+ "schema": "inspeximus-bench-scale/1",
+ "started": "2026-09-24T15:33:25Z",
+ "machine": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "logical_cpus": 4,
+  "virtualised": "yes",
+  "ram_gb": 15.7,
+  "workdir_filesystem": "ext4 on /dev/vda (/)",
+  "kernel": "6.18.44-fc-v37",
+  "os": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+  "python": "3.11.15",
+  "python_impl": "CPython",
+  "sqlite": "3.45.1",
+  "cryptography": "50.0.1",
+  "numpy": null,
+  "inspeximus_version": "3.9.1",
+  "git_commit": "c5dc121074807c43c1bb1ed507750ece75375301"
+ },
+ "config": {
+  "sizes": [
+   1000,
+   10000,
+   50000,
+   100000
+  ],
+  "stores": [
+   "json",
+   "sqlite"
+  ],
+  "receipts": [
+   "off",
+   "on"
+  ],
+  "runs": 3,
+  "recalls": 100,
+  "remembers": 50,
+  "interleaved": 20,
+  "seed": 20260924,
+  "subject": "crm/customer-3",
+  "command": "tools/bench_scale.py --workdir /tmp/claude-0/-home-user-inspeximus/9228c911-e8fe-5897-af25-9f60cb7f3155/scratchpad/wd-full --out audits/2026-09-24/scale.json"
+ },
+ "fixtures": {
+  "json/receipts=off/n=1000": {
+   "records": 1000,
+   "receipts": 0,
+   "statuses": {
+    "active": 953,
+    "superseded": 47
+   },
+   "build_seconds": 0.114,
+   "final_persist_seconds": 0.014,
+   "organic": false
+  },
+  "json/receipts=on/n=1000": {
+   "records": 1000,
+   "receipts": 1000,
+   "statuses": {
+    "active": 953,
+    "superseded": 47
+   },
+   "build_seconds": 0.173,
+   "final_persist_seconds": 0.028,
+   "organic": false
+  },
+  "sqlite/receipts=off/n=1000": {
+   "records": 1000,
+   "receipts": 0,
+   "statuses": {
+    "active": 953,
+    "superseded": 47
+   },
+   "build_seconds": 0.164,
+   "final_persist_seconds": 0.03,
+   "organic": false
+  },
+  "sqlite/receipts=on/n=1000": {
+   "records": 1000,
+   "receipts": 1000,
+   "statuses": {
+    "active": 953,
+    "superseded": 47
+   },
+   "build_seconds": 0.235,
+   "final_persist_seconds": 0.046,
+   "organic": false
+  },
+  "json/receipts=off/n=10000": {
+   "records": 10000,
+   "receipts": 0,
+   "statuses": {
+    "active": 9576,
+    "superseded": 424
+   },
+   "build_seconds": 3.197,
+   "final_persist_seconds": 0.134,
+   "organic": false
+  },
+  "json/receipts=on/n=10000": {
+   "records": 10000,
+   "receipts": 10000,
+   "statuses": {
+    "active": 9576,
+    "superseded": 424
+   },
+   "build_seconds": 4.137,
+   "final_persist_seconds": 0.332,
+   "organic": false
+  },
+  "sqlite/receipts=off/n=10000": {
+   "records": 10000,
+   "receipts": 0,
+   "statuses": {
+    "active": 9576,
+    "superseded": 424
+   },
+   "build_seconds": 5.798,
+   "final_persist_seconds": 0.243,
+   "organic": false
+  },
+  "sqlite/receipts=on/n=10000": {
+   "records": 10000,
+   "receipts": 10000,
+   "statuses": {
+    "active": 9576,
+    "superseded": 424
+   },
+   "build_seconds": 6.507,
+   "final_persist_seconds": 0.469,
+   "organic": false
+  },
+  "json/receipts=off/n=50000": {
+   "records": 50000,
+   "receipts": 0,
+   "statuses": {
+    "active": 47966,
+    "superseded": 2034
+   },
+   "build_seconds": 64.823,
+   "final_persist_seconds": 1.236,
+   "organic": false
+  }
+ },
+ "runs": []
+}
