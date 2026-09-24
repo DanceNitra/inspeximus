@@ -540,8 +540,12 @@ def _bundle_with_certificate_fields(documents, tamper_bundle: bool):
 def _cli(tmp_path, cmd, doc):
     f = tmp_path / "doc.json"
     f.write_text(json.dumps(doc), encoding="utf-8")          # escaped: a lone surrogate must survive
+    # PYTHONPATH names this checkout: the CI job installs no inspeximus, and a run from tmp_path would not
+    # find the package, which read as a CRASH on every call. The decoding is pinned, as the repository's
+    # test_subprocess_decoding_is_pinned requires.
+    env = {**os.environ, "PYTHONPATH": os.pathsep.join([base.ROOT, os.environ.get("PYTHONPATH", "")])}
     r = subprocess.run([sys.executable, "-m", "inspeximus.cli", cmd, str(f)], capture_output=True, text=True,
-                       cwd=str(tmp_path), timeout=120)
+                       encoding="utf-8", errors="replace", cwd=str(tmp_path), env=env, timeout=120)
     return "PASS" if "VERDICT: PASS" in r.stdout else "FAIL" if "VERDICT: FAIL" in r.stdout else "CRASH"
 
 
