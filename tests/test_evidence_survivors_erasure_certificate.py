@@ -488,3 +488,79 @@ def test_the_time_of_an_erasure_is_committed_in_its_tombstone(signed):
     moved["tombstones"][0]["ts"] = t["ts"] - 86400 * 30          # "it was erased a month earlier"
     res = verify_erasure_certificate(moved, store_items=items)
     assert res["checks"]["chain_intact"] is False and res["valid"] is False
+
+
+# -- the producer: what erasure_certificate() writes into the document ---------------------------------
+def test_a_tombstone_signed_by_another_key_is_refused_by_the_key_the_certificate_names(signed):
+    """SURVIVORS core.py:10492 `"pubkey": self.receipt_pubkey` -> key renamed (core:10492:12:f27e8d8f,
+    core:10492:12:d99c9f93).
+
+    Unpinned, the verifier compares each tombstone's embedded key with the certificate's `pubkey`.
+    No test put a tombstone signed by ANOTHER key into a chain, so a producer that stopped writing
+    the field passed. Without it the comparison has nothing to compare against: see
+    audits/2026-09-24/mutation-evidence.md, finding F1 -- a party without the operator's key can
+    append a tombstone signed with its own key, delete `pubkey`, and the unpinned verifier returns
+    `valid: true`. This test pins the half the producer owns."""
+    import time
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    cert, items, _receipts, pk = signed
+    assert cert["pubkey"] == pk
+    forged = copy.deepcopy(cert)
+    ask, apk = new_receipt_keypair()
+    live = next(r["id"] for r in items)
+    t = {"seq": len(forged["tombstones"]), "memory_id": live, "ts": time.time(),
+         "request_id": "DSAR-1", "prev": forged["tombstones"][-1]["hash"]}
+    t["hash"] = _sha256_hex(_canon(Inspeximus._tombstone_core(t)))
+    t["pubkey"] = apk
+    t["sig"] = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(ask)).sign(bytes.fromhex(t["hash"])).hex()
+    forged["tombstones"].append(t)
+    _reanchor(forged)
+    res = verify_erasure_certificate(forged, store_items=[r for r in items if r["id"] != live])
+    assert res["checks"]["signatures_valid"] is False
+    assert res["valid"] is False
+    assert any("signed by an unexpected key" in p for p in res["problems"]), res["problems"]
+
+
+def test_the_certificate_carries_the_scope_it_is_checked_against(signed):
+    """SURVIVORS core.py:10502 `"scope_covers": ...` -> key renamed (core:10502:12:9a8ad1d7,
+    core:10502:12:39646dcd). The verifier compares `scope_covers` only when the certificate carries
+    it, so a producer that dropped the list issued certificates whose coverage statement nothing
+    could check. Its siblings are pinned the same way."""
+    from inspeximus.core import _CERT_SCOPE, _CERT_SCOPE_COVERS, _CERT_SCOPE_EXCLUDES
+    cert, _items, _receipts, _pk = signed
+    assert cert["scope"] == _CERT_SCOPE
+    assert cert["scope_covers"] == list(_CERT_SCOPE_COVERS)
+    assert cert["scope_excludes"] == list(_CERT_SCOPE_EXCLUDES)
+
+
+def test_the_certificate_says_when_it_was_issued_in_utc(signed):
+    """SURVIVORS core.py:10482-10483 (`issued_ts` / `issued_iso` keys renamed, the strftime format
+    mangled or its time argument dropped). No test read either field; an auditor reading "issued"
+    off a DSAR response reads exactly these."""
+    import calendar
+    import time
+    cert, _items, _receipts, _pk = signed
+    parsed = calendar.timegm(time.strptime(cert["issued_iso"], "%Y-%m-%dT%H:%M:%SZ"))
+    assert abs(parsed - cert["issued_ts"]) < 2
+    assert abs(time.time() - cert["issued_ts"]) < 60
+    assert cert["inspeximus_erasure_certificate"] == "1.0"
+
+
+@pytest.mark.skipif(not hasattr(__import__("time"), "tzset"), reason="time.tzset is POSIX-only")
+def test_the_issue_time_is_utc_on_a_server_that_is_not(monkeypatch):
+    """SURVIVOR core.py:10483 `time.strftime(fmt, time.gmtime())` -> `time.strftime(fmt, )`
+    (core:10483:26:a28a1dd5). Without the argument strftime formats LOCAL time, and the format
+    still ends in `Z`. The suite runs where local time is UTC, so it could not see the difference;
+    a server in any other zone would stamp its certificates hours off."""
+    import calendar
+    import time
+    monkeypatch.setenv("TZ", "America/New_York")
+    time.tzset()
+    try:
+        st = _store(signed=True)
+        cert = st.erasure_certificate()
+        parsed = calendar.timegm(time.strptime(cert["issued_iso"], "%Y-%m-%dT%H:%M:%SZ"))
+        assert abs(parsed - cert["issued_ts"]) < 2, (cert["issued_iso"], cert["issued_ts"])
+    finally:
+        monkeypatch.undo()
+        time.tzset()

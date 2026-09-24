@@ -51,6 +51,10 @@
   "category": "unexecuted",
   "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
  },
+ "core:10472:16:5206e0f3": {
+  "category": "unexecuted",
+  "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
+ },
  "core:10472:16:579413c4": {
   "category": "unexecuted",
   "why": "no test asks a tenant-bound handle for a certificate, so the refusal never ran (only its message is mutable here)"
@@ -87,6 +91,42 @@
   "category": "condition",
   "why": "every test that pinned expected_pubkey pinned the right key, so a self_check that dropped the pin read verified: True either way"
  },
+ "core:10481:46:dbb3d6df": {
+  "category": "unread-output",
+  "why": "the certificate's format version is never read by a test (nor by the verifier)"
+ },
+ "core:10482:12:870c5ecd": {
+  "category": "unread-output",
+  "why": "no test reads issued_ts / issued_iso, the time an auditor reads off the certificate"
+ },
+ "core:10482:12:8e9689c3": {
+  "category": "unread-output",
+  "why": "no test reads issued_ts / issued_iso, the time an auditor reads off the certificate"
+ },
+ "core:10483:12:2fa17119": {
+  "category": "unread-output",
+  "why": "no test reads issued_ts / issued_iso, the time an auditor reads off the certificate"
+ },
+ "core:10483:12:5d4c0948": {
+  "category": "unread-output",
+  "why": "no test reads issued_ts / issued_iso, the time an auditor reads off the certificate"
+ },
+ "core:10483:26:a28a1dd5": {
+  "category": "platform",
+  "why": "equivalent only where local time is UTC, which is where the suite runs: without its argument strftime formats local time and still appends 'Z'"
+ },
+ "core:10483:40:0683de28": {
+  "category": "unread-output",
+  "why": "no test reads issued_ts / issued_iso, the time an auditor reads off the certificate"
+ },
+ "core:10483:40:08550f85": {
+  "category": "unread-output",
+  "why": "no test reads issued_ts / issued_iso, the time an auditor reads off the certificate"
+ },
+ "core:10483:40:9ddd6648": {
+  "category": "unread-output",
+  "why": "no test reads issued_ts / issued_iso, the time an auditor reads off the certificate"
+ },
  "core:1048:63:30057560": {
   "category": "condition",
   "why": "the key comes from `pub` only when a tombstone carries no pubkey of its own, i.e. one signed through receipt_signer with no receipt_pubkey; no test verified such a certificate"
@@ -94,6 +134,46 @@
  "core:1048:89:47ea1e3a": {
   "category": "equivalent",
   "why": "equivalent: reached only when both keys are absent, and bytes.fromhex('') and bytes.fromhex('XXXX') both end in an exception that is reported as an invalid signature"
+ },
+ "core:10492:12:d99c9f93": {
+  "category": "soundness",
+  "why": "no test puts a tombstone signed by another key into a chain, and unpinned that comparison is made against this field; without it the verifier compares nothing (finding F1)"
+ },
+ "core:10492:12:f27e8d8f": {
+  "category": "soundness",
+  "why": "no test puts a tombstone signed by another key into a chain, and unpinned that comparison is made against this field; without it the verifier compares nothing (finding F1)"
+ },
+ "core:10494:43:cc249222": {
+  "category": "unread-output",
+  "why": "self_check's problem list is never read by a test"
+ },
+ "core:10494:43:dad5bc83": {
+  "category": "unread-output",
+  "why": "self_check's problem list is never read by a test"
+ },
+ "core:10502:12:39646dcd": {
+  "category": "soundness",
+  "why": "the verifier compares scope_covers only when present, and no test checks that the producer writes it; dropped, the coverage statement is unchecked"
+ },
+ "core:10502:12:9a8ad1d7": {
+  "category": "soundness",
+  "why": "the verifier compares scope_covers only when present, and no test checks that the producer writes it; dropped, the coverage statement is unchecked"
+ },
+ "core:10504:12:65b6234a": {
+  "category": "unread-output",
+  "why": "the `verify_with` hint is never read"
+ },
+ "core:10504:12:bf12f31b": {
+  "category": "unread-output",
+  "why": "the `verify_with` hint is never read"
+ },
+ "core:10504:27:0b41831a": {
+  "category": "unread-output",
+  "why": "the `verify_with` hint is never read"
+ },
+ "core:10504:27:57e3dd44": {
+  "category": "unread-output",
+  "why": "the `verify_with` hint is never read"
  },
  "core:1054:20:4d3d8fc6": {
   "category": "unexecuted",
@@ -107,9 +187,25 @@
   "category": "soundness",
   "why": "no test presents a tombstone signature that fails to verify; `valid` reads sigs_ok, so with the flag left True a certificate carrying another tombstone's signature verified valid:true with 'invalid signature' in its own problem list"
  },
+ "core:10768:33:3f863a2b": {
+  "category": "equivalent",
+  "why": "equivalent: merkle_root/_merkle_leaves read the tombstone log for every kind that is not 'write'"
+ },
+ "core:10768:50:20dcf4c0": {
+  "category": "equivalent",
+  "why": "equivalent: merkle_root/_merkle_leaves read the tombstone log for every kind that is not 'write'"
+ },
+ "core:10768:50:5ad1bd97": {
+  "category": "equivalent",
+  "why": "equivalent: merkle_root/_merkle_leaves read the tombstone log for every kind that is not 'write'"
+ },
  "core:1077:22:6c0c2883": {
   "category": "message",
   "why": "wording of the UNSIGNED limit: tests assert that `limits` mentions UNSIGNED or that signed is False, not the sentence"
+ },
+ "core:10785:50:e4257e00": {
+  "category": "message",
+  "why": "type name inside the witness-signer error message"
  },
  "core:1078:22:2bdde064": {
   "category": "message",

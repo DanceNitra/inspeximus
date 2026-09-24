@@ -1,0 +1,186 @@
+[
+  {
+    "ts": 1790263020.6984112,
+    "memory_id": "3b94127bbe",
+    "commit": {
+      "id": "3b94127bbe",
+      "content_sha256": "2936634be8d683139799695a5824ea92da29a2b26e2696cbb97155b40dfdfe99",
+      "immutable_sha256": "961f1a7d7a66e44f6c556faeb7865d517619e6242e3badada18468e01847051f",
+      "mtype": "episodic",
+      "value_sha256": "9c6dd47252d0ee5587b1bfb5c4f88968c5ec02095e63b65d268a59bc29e817ec",
+      "status_sha256": "2510824b5f1c938f2ea3397c548c8380345a31379f3af93a366689813303df32",
+      "retires": [],
+      "born_status": "active",
+      "time_sha256": "a4b1fac22813d41036c1b2a19625a5af64e98b4348b52bfbc142d6e3342ebf03",
+      "attrib_sha256": "2386c21b0058060d4d0c9b8fd69b749471b8348c1f9d462a8802043d028189dd"
+    },
+    "backfill": {
+      "genesis_root": "230ebb9fd86c5fe1e6436728da214648cf38c95ec7fa6699069a11c0bdd3f8b4",
+      "n": 1,
+      "at": 1790263020.7035067,
+      "reason": "golden fixture: records written before receipts"
+    },
+    "seq": 0,
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "hash": "129dcdbb2c4aef7689835e7cd8ca4d07d0e0d4dd93e9c6f89261d3f87f5d369e",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "fdc4ec14c2675aab76146970b93c2093d8ef22262209a74dd62021bdc976fa210adaefe024b6befe071d056492a45abe7242f39c525094afbe2e63f698401103"
+  },
+  {
+    "ts": 1790263020.71059,
+    "memory_id": "a3704d3dec",
+    "commit": {
+      "id": "a3704d3dec",
+      "content_sha256": "50c479b18915146b1d0e94034e8181ea69b6d093b2e269f7041c425d8dcd107e",
+      "immutable_sha256": "e73b10eb6023e26b4702e6647639079307e9eb6bd0f712af01608c23e5a23689",
+      "mtype": "episodic",
+      "value_sha256": "24238b6c134cf9d08249e7c33b1a65a8395c99216a5c66976a2a5ee61942d51e",
+      "status_sha256": "2510824b5f1c938f2ea3397c548c8380345a31379f3af93a366689813303df32",
+      "retires": [
+        "3b94127bbe"
+      ],
+      "born_status": "active",
+      "time_sha256": "0d53f19e5611c62e075ec0fbdf3cda40d15c0e2f2b0c648e76b8ce65a8ad27ab",
+      "attrib_sha256": "654fdb8586a2bdfa41d95c864c2028fbab0764dee69dd78f4dbed87d3f8625f1"
+    },
+    "seq": 1,
+    "prev": "129dcdbb2c4aef7689835e7cd8ca4d07d0e0d4dd93e9c6f89261d3f87f5d369e",
+    "hash": "c0bbf69c5d96614a72deaf68f5ee51bad9052b3113f19c0e2e8b51ee4618ad8d",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "d3a215c50cd56fc1c0bdf4dba0a3c4b5a98bcb48db0e45870dc3d8c9e0e28e103a60c044dc98dad1b8ea5cc408b9f9d11f6bb1f02ebf021a76483f1c0f5e2105"
+  },
+  {
+    "ts": 1790263020.7266922,
+    "memory_id": "f892dababc",
+    "commit": {
+      "id": "f892dababc",
+      "content_sha256": "e3f42d9a8ecbd9210ec6d59ce0ee08b0911181e7edd1eb44f6fb8abac7d997c6",
+      "immutable_sha256": "09bb3e28f167167cf580bf312577d393b6a8b83c20e2ad0317e33382e5033a2f",
+      "mtype": "episodic",
+      "value_sha256": "21741c29b49ccd5764d69043a63e39c7971de283af8bfd7f9c330c4b645a932a",
+      "status_sha256": "2510824b5f1c938f2ea3397c548c8380345a31379f3af93a366689813303df32",
+      "retires": [],
+      "born_status": "active",
+      "time_sha256": "eae3de682f84372edc7bf487d3f9905943f624539c3a85e140b253099bc42fe3",
+      "attrib_sha256": "0a2d927b984db5059a82155b7d774276ab92c4b944b3e35e9230bc9c68020549"
+    },
+    "seq": 2,
+    "prev": "c0bbf69c5d96614a72deaf68f5ee51bad9052b3113f19c0e2e8b51ee4618ad8d",
+    "hash": "8c750443f9353678918a48fc6fdd8707ec26067730f381fcc884c9344e0d49d1",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "7667f851651d203b9903f50861722888d9454b29f0d6ba50a197dd1a8795a8a1f4aebdccf8aa3d46410e9f5a379a710a05cc9da0554d965e4b9fc7f64f1c2f01"
+  },
+  {
+    "ts": 1790263020.7386856,
+    "memory_id": "cf213f121c",
+    "commit": {
+      "id": "cf213f121c",
+      "content_sha256": "55d1b8b499348ac196048e2481cadf89f783082aae7addbf7981503413c629e2",
+      "immutable_sha256": "2ac798948b9e17b22db6b7606dd4800f7cd63f14d25eca466511fa9f2106e785",
+      "mtype": "episodic",
+      "value_sha256": "027c33c06632c8ec2f7df64c7657d0d3120e26380dedbfc22d0af0a361f5b8a3",
+      "status_sha256": "204836728e78523657330a1f72a3fd3a3e517dae4d61169e9bc3de493f47407f",
+      "retires": [],
+      "born_status": "provisional",
+      "time_sha256": "3a06039b889d8707aea16d9f17713e4ab1258df906bf4701c1a26c1ba1cfe701",
+      "attrib_sha256": "c687c7d00577fbdc0b85028d3fa25243ea3db1aa00bd0e6d02d3f1f43dbaa8fe"
+    },
+    "seq": 3,
+    "prev": "8c750443f9353678918a48fc6fdd8707ec26067730f381fcc884c9344e0d49d1",
+    "hash": "1370fc68eed8d0f9a34346d78371fe04bb67d34e0000a1855b6e21d634ebefed",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "51a97a3ec3ba11986ec06bbef0b0db75dd00f276d42ae3bafecff84cf54e2c51738726b18c325fce0796ff8c1acac819c943b899d272ce56b0d3d2a4af0a2606"
+  },
+  {
+    "ts": 1790263020.7386856,
+    "memory_id": "cf213f121c",
+    "commit": {
+      "id": "cf213f121c",
+      "content_sha256": "55d1b8b499348ac196048e2481cadf89f783082aae7addbf7981503413c629e2",
+      "immutable_sha256": "2ac798948b9e17b22db6b7606dd4800f7cd63f14d25eca466511fa9f2106e785",
+      "mtype": "episodic",
+      "value_sha256": "027c33c06632c8ec2f7df64c7657d0d3120e26380dedbfc22d0af0a361f5b8a3",
+      "status_sha256": "76c76a09010c81158af7ca2b1259e224991392859aa985a576d9d8d39f60f252",
+      "retires": [],
+      "born_status": "active",
+      "time_sha256": "3a06039b889d8707aea16d9f17713e4ab1258df906bf4701c1a26c1ba1cfe701",
+      "attrib_sha256": "c687c7d00577fbdc0b85028d3fa25243ea3db1aa00bd0e6d02d3f1f43dbaa8fe"
+    },
+    "amends": [
+      "status_sha256"
+    ],
+    "amend_reason": "confirmed by ops-lead",
+    "seq": 4,
+    "prev": "1370fc68eed8d0f9a34346d78371fe04bb67d34e0000a1855b6e21d634ebefed",
+    "hash": "013e64c937103470f7c93f52bfefe3185e8875a2a35e65b5b1e7844d54ad8d9f",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "1662d7dcbf5ac1db35a4a6ec3dda9a2a010b9c7208833bf1e4825f6772dfbe42279e6f76475abef3a4e1d5f2f8c7b0d9f024769db63051d1fd36449597dc1105"
+  },
+  {
+    "ts": 1790263020.7543488,
+    "memory_id": "e8131bbe12",
+    "commit": {
+      "id": "e8131bbe12",
+      "content_sha256": "4e407747eaec925a16246fef3807b021320ca200de9aa3fc5940f7979e053b39",
+      "immutable_sha256": "428652eba4931bfc25e5d27f3a358a3b1cbdbbe5dcf5b8192ed8b88ec0c5853c",
+      "mtype": "semantic",
+      "value_sha256": "2cfdd4ebb6a0bc02fff97d93a6cb574b89e729b71eab2c320b913266d3f9f758",
+      "status_sha256": "2510824b5f1c938f2ea3397c548c8380345a31379f3af93a366689813303df32",
+      "retires": [],
+      "born_status": "active",
+      "time_sha256": "30dd706301036dd3d63f03bd8e4dee4b49a7c6b85004b1c4cc1ed92ff212b4c4",
+      "attrib_sha256": "f314a2b318768c4ab33d9854644b4d418f80021bcf0d002ac0d3082e19e900b3"
+    },
+    "seq": 5,
+    "prev": "013e64c937103470f7c93f52bfefe3185e8875a2a35e65b5b1e7844d54ad8d9f",
+    "hash": "b611b11b58cf9342369aafc456480c1dc193656ca6a25bd105898ff0be2c9a3d",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "02e6cd8faa12bf14a348c0a3cde8fb7772da23c82890387031360b62dbf9e0fd841522a81009fd8c24ea9001713b46272288612dc1d14d92dfda1b9a9f673c02"
+  },
+  {
+    "ts": 1790263020.7543488,
+    "memory_id": "e8131bbe12",
+    "commit": {
+      "id": "e8131bbe12",
+      "content_sha256": "8fd0db6d28214ebbb5c99a2381ad30065040fa55f7d4239d659354e4e3506a7b",
+      "immutable_sha256": "428652eba4931bfc25e5d27f3a358a3b1cbdbbe5dcf5b8192ed8b88ec0c5853c",
+      "mtype": "episodic",
+      "value_sha256": "2cfdd4ebb6a0bc02fff97d93a6cb574b89e729b71eab2c320b913266d3f9f758",
+      "status_sha256": "2510824b5f1c938f2ea3397c548c8380345a31379f3af93a366689813303df32",
+      "retires": [],
+      "born_status": "active",
+      "time_sha256": "30dd706301036dd3d63f03bd8e4dee4b49a7c6b85004b1c4cc1ed92ff212b4c4",
+      "attrib_sha256": "f314a2b318768c4ab33d9854644b4d418f80021bcf0d002ac0d3082e19e900b3"
+    },
+    "amends": [
+      "mtype"
+    ],
+    "amend_reason": "caught: contradicts the key-management policy",
+    "seq": 6,
+    "prev": "b611b11b58cf9342369aafc456480c1dc193656ca6a25bd105898ff0be2c9a3d",
+    "hash": "36a1d85c3856ee3664be0006a94fbb355ac9e6d2522256cac91b62c53d1e0e1a",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "2ec6c3d53a05d2f293dc89d7a9f5de09bae3db8e85ef5dd84035e44e91427d8ac7d3c382a1df327c66dd2d3e111306f96e749e6322a74d391895a94dd24eed06"
+  },
+  {
+    "ts": 1790263020.7703464,
+    "memory_id": "e7e3d65f83",
+    "commit": {
+      "id": "e7e3d65f83",
+      "content_sha256": "5461b2080875ac637bb6fb7bbf48db1877128258bf0fc3c71748e083d9ad19e3",
+      "immutable_sha256": "54fd150c2bbc501caeb7cab2e23f4606d3978f4d9a4c67d5a8294e8f67cb503b",
+      "mtype": "episodic",
+      "value_sha256": "8ddd6868de39e467f763fb1e1b603fb45ad05ad449b61fe2fe25bee27b658476",
+      "status_sha256": "2510824b5f1c938f2ea3397c548c8380345a31379f3af93a366689813303df32",
+      "retires": [],
+      "born_status": "active",
+      "time_sha256": "f56cd90b4c207fd386a6bc0e03fa5245e385d1ade83519c4e3fd106defe8e0c6",
+      "attrib_sha256": "f1b0a44ae0e4f8a2f7fb4ba2077b8bbf33d22c9343541f535cace55f1d4ca916"
+    },
+    "seq": 7,
+    "prev": "36a1d85c3856ee3664be0006a94fbb355ac9e6d2522256cac91b62c53d1e0e1a",
+    "hash": "033b5a0b7072a4c1fd317a55a4e3c7ac683e0823ef9cdf2c7e61dbff4761b714",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "5e86cc38d2717ed669b62cf265a2b971ff92c4f33611053ded81e9da7358530532fca0688f3e4d47ed0cf89ba3aad727fd548b96c7d4b75338da625774739500"
+  }
+]

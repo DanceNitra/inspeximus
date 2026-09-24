@@ -27,3 +27,7 @@ tests/fixtures/ots/head.json -text
 tests/fixtures/ots/block968177.header.hex -text
 tests/fixtures/ots/head.json.ots binary
 tests/fixtures/ots/upgrade.alice.bin binary
+
+# The golden store re-verified by tests/test_evidence_survivors_write_receipts.py. Its receipts commit to
+# record fields, not bytes, but keep the files exactly as the release wrote them anyway.
+tests/fixtures/golden_store_3.9.1/* -text

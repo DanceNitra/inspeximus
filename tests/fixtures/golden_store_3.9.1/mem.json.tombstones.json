@@ -1,0 +1,17 @@
+[
+  {
+    "seq": 0,
+    "memory_id": "e7e3d65f83",
+    "ts": 1790263020.778655,
+    "request_id": "DSAR-GOLDEN-1",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "auth": {
+      "basis": "gdpr_art17",
+      "authorized_by": null,
+      "authorization": null
+    },
+    "hash": "d42c920dea056ebd0647819990c0fc10706563024a021e73030c5ca95c8c5e68",
+    "pubkey": "ad62ecf4b5255dd3933fdb13087b013565e50cefaa30d6527e37aa0ee110c25a",
+    "sig": "598ddea89921ab7e8bf4d5fca447435c9e360ff613299e74f3b739fc9f7851aef391750a588876bdd0904e185a07180da6887be57da37059b4c0df9a29847f00"
+  }
+]
