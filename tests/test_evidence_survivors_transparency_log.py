@@ -5,7 +5,8 @@ Each test here exists because a named mutant of `inspeximus/merkle.py` or
 The mutation is named in each docstring, so the test cannot be "simplified" back into one that
 passes either way. Every one was checked in both directions with
 `python audits/2026-09-24/mutate_evidence.py kill --ids <id> --tests <this test>`: green on the
-original source, red on the mutant.
+original source, red on the mutant -- except `test_one_witness_meets_the_default_threshold`, written
+after the final kill run and green on the original; the report lists the command that checks it.
 """
 from __future__ import annotations
 

@@ -631,7 +631,8 @@ def run(args):
     mutants = spec["mutants"]
     if args.only:
         rx = re.compile(args.only)
-        mutants = [m for m in mutants if rx.search(m["id"]) or rx.search(m["area"])]
+        mutants = [m for m in mutants if rx.search(m["id"]) or rx.search(m["area"])
+                   or rx.search(f'{m["area"]}/{m["function"]}')]
     if args.sample:
         import random
         rng = random.Random(20260924)
@@ -987,7 +988,7 @@ def main(argv=None):
     r.add_argument("--mutants", default=os.path.join(WORKDIR_DEFAULT, "mutants.json"))
     r.add_argument("--covmap", default=os.path.join(WORKDIR_DEFAULT, "covmap.json"))
     r.add_argument("--out", default=os.path.join(WORKDIR_DEFAULT, "results.jsonl"))
-    r.add_argument("--only", help="regex over mutant id or area")
+    r.add_argument("--only", help="regex over mutant id, area, or area/function")
     r.add_argument("--fresh", action="store_true", help="ignore results already in --out")
     r.add_argument("--keep", action="store_true", help="leave the worktrees in place")
     r.add_argument("--control", action="store_true",

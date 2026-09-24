@@ -1,4 +1,140 @@
 {
+ "audit_bundle:190:13:28ffca01": {
+  "category": "unread-output",
+  "why": "No test verifies the anchor's signature when build_bundle(sign=True) is called; the bundle verifier reads the anchor's root and size, not whether it was signed."
+ },
+ "audit_bundle:216:11:bbbdafec": {
+  "category": "unread-output",
+  "why": "The explicit store_id argument is never passed by a test and no test reads the bundle's store_id back against it."
+ },
+ "audit_bundle:216:4:efd74148": {
+  "category": "unread-output",
+  "why": "The explicit store_id argument is never passed by a test and no test reads the bundle's store_id back against it."
+ },
+ "audit_bundle:257:35:25307e01": {
+  "category": "soundness",
+  "why": "cross_tenant_chain switches off the verifier's record-count coverage check; no test built a bundle with the flag on an unbound handle. Test written: tests/test_evidence_survivors_audit_bundle.py::test_an_unbound_handle_does_not_claim_a_cross_tenant_chain"
+ },
+ "audit_bundle:260:22:f8f08a55": {
+  "category": "soundness",
+  "why": "No test built a bundle with the wrong key pinned, so governance computed against no key read the same. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_governance_section_is_computed_against_the_pinned_key"
+ },
+ "audit_bundle:268:46:04878971": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:268:46:4a40905a": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:269:37:bf632a34": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:269:43:3758d0e7": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:269:43:be98e1dd": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:269:49:85691568": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:269:57:7a4265ed": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:269:64:11a5f425": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:269:64:6e659263": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:270:68:3bc97368": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:270:68:56966c71": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:270:68:fea69954": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:270:83:1fbbbf16": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:270:83:30733d62": {
+  "category": "unread-output",
+  "why": "No test read baseline_complete, the field the verifier uses to tell a planted record from a baseline that was never clean. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_bundle_says_whether_its_baseline_was_complete"
+ },
+ "audit_bundle:363:7:589b7b8b": {
+  "category": "message",
+  "why": "With or, every successful comparison also reported 'NOT ONE of the records was found'; ok is computed separately and no test read the problem list of a clean check. Test written: tests/test_evidence_survivors_audit_bundle.py::test_bind_content_on_an_honest_store_reports_nothing"
+ },
+ "audit_bundle:376:80:2ee038fb": {
+  "category": "legacy-default",
+  "why": "Every test passes threshold= explicitly, so the default was never exercised. Test written: tests/test_evidence_survivors_audit_bundle.py::test_one_witness_meets_the_default_threshold"
+ },
+ "audit_bundle:435:19:65e57170": {
+  "category": "equivalent",
+  "why": "Core._chain_core only branches on kind == 'write'; any other value takes the tombstone preimage, so renaming the tombstone kind changes nothing."
+ },
+ "audit_bundle:435:31:91c0baba": {
+  "category": "equivalent",
+  "why": "Core._chain_core only branches on kind == 'write'; any other value takes the tombstone preimage, so renaming the tombstone kind changes nothing."
+ },
+ "audit_bundle:435:31:c444260d": {
+  "category": "equivalent",
+  "why": "Core._chain_core only branches on kind == 'write'; any other value takes the tombstone preimage, so renaming the tombstone kind changes nothing."
+ },
+ "audit_bundle:467:38:300a7117": {
+  "category": "equivalent",
+  "why": "The same kind label goes to _chain_core (any non-'write' value takes the tombstone preimage) and into the message text; the verdict cannot change."
+ },
+ "audit_bundle:467:38:e045109c": {
+  "category": "equivalent",
+  "why": "The same kind label goes to _chain_core (any non-'write' value takes the tombstone preimage) and into the message text; the verdict cannot change."
+ },
+ "audit_bundle:519:14:0a76916c": {
+  "category": "soundness",
+  "why": "Unpinned, each signature is checked against the key it names; the only bad-signature test pins the key, so skipping every unpinned check stayed green. Test written: tests/test_evidence_survivors_audit_bundle.py::test_an_unpinned_bundle_still_catches_a_signature_that_does_not_verify"
+ },
+ "audit_bundle:519:33:2c537337": {
+  "category": "soundness",
+  "why": "Unpinned, each signature is checked against the key it names; the only bad-signature test pins the key, so skipping every unpinned check stayed green. Test written: tests/test_evidence_survivors_audit_bundle.py::test_an_unpinned_bundle_still_catches_a_signature_that_does_not_verify"
+ },
+ "audit_bundle:519:40:30ce8f36": {
+  "category": "soundness",
+  "why": "Unpinned, each signature is checked against the key it names; the only bad-signature test pins the key, so skipping every unpinned check stayed green. Test written: tests/test_evidence_survivors_audit_bundle.py::test_an_unpinned_bundle_still_catches_a_signature_that_does_not_verify"
+ },
+ "audit_bundle:519:40:363bc0fc": {
+  "category": "soundness",
+  "why": "Unpinned, each signature is checked against the key it names; the only bad-signature test pins the key, so skipping every unpinned check stayed green. Test written: tests/test_evidence_survivors_audit_bundle.py::test_an_unpinned_bundle_still_catches_a_signature_that_does_not_verify"
+ },
+ "audit_bundle:531:13:be36401b": {
+  "category": "boundary",
+  "why": "With minus, a bundle with as many tombstones as writes has _total == 0 and skips the whole signature assessment; every bundle in the suite has more writes than erasures. Test written: tests/test_evidence_survivors_audit_bundle.py::test_a_partly_signed_bundle_with_as_many_tombstones_as_writes_is_refused"
+ },
+ "audit_bundle:568:13:5c4cc7d8": {
+  "category": "soundness",
+  "why": "No test combined require_signed=True with an unpinned signed bundle, so the flag could accept signatures nobody verified. Test written: tests/test_evidence_survivors_audit_bundle.py::test_require_signed_refuses_signatures_nobody_verified"
+ },
+ "audit_bundle:576:56:bd7dd576": {
+  "category": "equivalent",
+  "why": "A missing store_id_derived becomes '' or 'XXXX', and neither starts with 'unkeyed:', so the branch is decided the same way."
+ },
+ "audit_bundle:586:16:124321ce": {
+  "category": "soundness",
+  "why": "The caller's k-of-n witness threshold was never passed on; the only co-signature test used 1 witness and threshold 1, the callee's default. Test written: tests/test_evidence_survivors_audit_bundle.py::test_the_witness_threshold_is_the_one_the_caller_asked_for"
+ },
  "core:1037:12:cdcaab4d": {
   "category": "message",
   "why": "problems.append(None) still leaves a problem; the verdict comes from chain_ok and every test that reached here checks the verdict"
@@ -1144,8 +1280,8 @@
   "why": "only the signed case of the `signed` flag is asserted; an unsigned backfill reporting signed: True passed"
  },
  "core:4105:15:bd7b4ac3": {
-  "category": "condition",
-  "why": "no test enables receipts on a store with nothing to cover and then looks for the sidecar"
+  "category": "equivalent",
+  "why": "equivalent: with `or`, a sidecar that already exists is rewritten with the chain it already holds"
  },
  "core:4105:39:c52f9341": {
   "category": "condition",
@@ -1168,8 +1304,8 @@
   "why": "the backfill tests never compare the order of the backfill receipts with the order the records were written"
  },
  "core:4108:53:d7cd2ec8": {
-  "category": "coverage-depth",
-  "why": "the backfill tests never compare the order of the backfill receipts with the order the records were written"
+  "category": "equivalent",
+  "why": "equivalent: every record carries a `ts`, so the sort-key default is never used"
  },
  "core:4111:29:466f261b": {
   "category": "soundness",

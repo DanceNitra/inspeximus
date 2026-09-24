@@ -1,0 +1,1487 @@
+{
+ "core:435:27:172f4d4a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3586:17:fdd964ca": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_nonce_is_what_makes_an_erased_records_receipt_unguessable"
+ },
+ "core:3586:12:3d0c1533": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_nonce_is_what_makes_an_erased_records_receipt_unguessable"
+ },
+ "core:3586:33:757d5d92": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_nonce_is_what_makes_an_erased_records_receipt_unguessable"
+ },
+ "core:3586:17:0ac304b6": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_nonce_is_what_makes_an_erased_records_receipt_unguessable"
+ },
+ "core:3586:49:4a2137a9": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3586:49:296301e9": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3586:33:d9b279d7": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_nonce_is_what_makes_an_erased_records_receipt_unguessable"
+ },
+ "core:3628:53:fd4fd405": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3629:53:37b17132": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3628:53:e65398f1": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3629:53:c5a91fc6": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3641:52:c8831073": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3641:52:2b4ef825": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3658:51:9a103653": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3658:51:180c74ac": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3713:19:f0bd72ca": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3659:51:f8334781": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3659:51:8d95354e": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_store_written_by_3_9_1_still_verifies"
+ },
+ "core:3718:30:c6b19df6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3718:69:bd68567a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3720:19:61943802": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3722:19:4f17b586": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3724:12:707674a7": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3725:33:000839d1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3712:16:878957c9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3727:8:68677834": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3729:19:a0764c5d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3734:15:71e80371": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3715:33:baf332e7": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3742:37:c5c0a48b": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_rechained_amendment_keeps_what_it_amends_why_and_when"
+ },
+ "core:3742:37:318bc11c": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_rechained_amendment_keeps_what_it_amends_why_and_when"
+ },
+ "core:3743:22:4c60aea8": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_rechained_amendment_keeps_what_it_amends_why_and_when"
+ },
+ "core:3743:22:b91b92d8": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_rechained_amendment_keeps_what_it_amends_why_and_when"
+ },
+ "core:3743:32:5f2d3908": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_rechained_amendment_keeps_what_it_amends_why_and_when"
+ },
+ "core:3743:32:ebb3592d": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_rechained_amendment_keeps_what_it_amends_why_and_when"
+ },
+ "core:3745:20:68f765a1": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_rechained_amendment_keeps_what_it_amends_why_and_when"
+ },
+ "core:3754:22:94c79e2b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3754:61:44f65350": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3757:22:321182f4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3757:35:e583e5bb": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3757:35:b4d3077b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3758:35:0ed370af": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3758:35:dbd72d00": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3716:19:f2adba42": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3777:27:e0789e69": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_receipt_records_when_its_record_was_written"
+ },
+ "core:3777:19:1caf6dd6": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_receipt_records_when_its_record_was_written"
+ },
+ "core:3777:27:fc38149b": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_receipt_records_when_its_record_was_written"
+ },
+ "core:3769:79:09d31bd0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3809:41:c13b6ec4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3809:41:96931bdb": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3809:41:b95e90d9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3815:16:ae566aae": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3815:77:2dc7d4c0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3809:41:95e7a358": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3809:75:3310e7e1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4070:22:63927337": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4070:33:1c78bc80": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4070:33:6bc966fc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:3809:91:939cbbfe": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4072:35:f4899871": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4072:35:47eee7a0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4073:35:27279f45": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4078:22:5f82469f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4078:33:b992f935": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4078:33:c29e94f8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4078:33:810a663b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4079:33:7d01fcb9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4079:33:3c522af0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4081:22:ca89a339": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4081:33:85add911": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4081:33:d794f6e3": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4082:33:d57e6484": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4082:33:7d3e5057": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4046:38:ad54062a": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4085:8:44e4ca90": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4087:11:413a65bf": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4088:12:259cb596": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4088:34:0259d3a9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4088:54:61b6098c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4088:71:55667206": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4088:71:62df7546": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4072:22:d2af5f47": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4087:31:51931b75": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4073:35:4e164d4f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4089:11:54b2faa7": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4089:11:f55e4acc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4092:16:1b3bb5db": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4092:33:da770cf4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4092:44:119ca4b0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4092:83:9a4c73b8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4092:83:4eb93d14": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4094:16:370b90ad": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4095:12:71d7c200": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4089:11:3b127083": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4089:11:4a76c428": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4089:88:7e59104a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4099:59:5b05e382": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_second_call_reports_nothing_declared"
+ },
+ "core:4099:59:658d3beb": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_second_call_reports_nothing_declared"
+ },
+ "core:4099:83:38a9a8b8": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_second_call_reports_nothing_declared"
+ },
+ "core:4105:15:bd7b4ac3": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4105:39:c52f9341": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_enabling_receipts_on_an_empty_store_creates_the_sidecar"
+ },
+ "core:4103:51:92b50ccf": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_enable_receipts_says_whether_it_signed"
+ },
+ "core:4103:67:25e4c26f": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_enable_receipts_says_whether_it_signed"
+ },
+ "core:4108:38:db6c1711": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4108:38:14f1cf76": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4108:44:8ee6c4b7": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4108:44:3c465d2a": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4108:53:d7cd2ec8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4112:8:0d3760fd": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4111:29:466f261b": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4113:40:65dcae79": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4113:40:ab6919d0": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4113:61:989c3ac9": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4113:61:686131b5": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4114:18:4bec6235": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4114:18:b8e31706": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4114:29:8ba4a222": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4114:29:67e98f97": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4114:52:169bec32": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4114:52:ddc0c942": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4114:65:d63980aa": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_genesis_root_commits_to_the_records_it_covers"
+ },
+ "core:4116:34:839c1e21": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4116:34:5a9a6fd6": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4116:40:ea08bb6f": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4129:34:10f91c76": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4129:34:b92bc949": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4129:40:edff809e": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4129:48:578ecf4e": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4129:48:c96de037": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4130:34:ae2228e8": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4130:34:33865400": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4116:48:50a2976f": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4131:45:7d506f28": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4131:45:0d2f6829": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4132:34:77f1415c": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4132:34:512641fc": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4132:50:e83d3117": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4132:50:38ed28e3": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_a_retirement_declared_at_backfill_is_a_committed_amendment"
+ },
+ "core:4116:48:16627fe0": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_write_receipts.py::test_the_backfill_follows_write_order_and_keeps_each_records_time"
+ },
+ "core:4146:37:a163c3c2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4146:37:ad491e99": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4146:37:0e9d3c35": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4146:37:13a2aecd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4146:71:77097393": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4146:87:680b4d69": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4147:12:c004ff18": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4150:12:789dc219": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4150:33:af5e79cd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4150:33:cb741f1c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4150:73:ca36c612": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4148:12:195f8dae": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4148:37:dd1d2f11": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4148:37:b1344cc5": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4160:11:93004117": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4160:13:8287593b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4160:17:cb144993": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4162:24:2d2f5cc1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4162:35:9e0141d4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4162:49:d7712527": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4161:19:2ea2e41b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4164:19:2d286acc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4164:25:90500da8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4164:25:bb466108": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4162:56:d885e07b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:4162:56:04360ea8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6290:59:70ad7b24": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6311:24:8cb837e9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6311:41:e398c97b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6311:41:330ef837": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6312:24:5f4f857a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6314:24:d7257fd9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6314:41:2162d973": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6314:41:c9165453": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6314:41:a14b6a0f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6323:54:79cfbeec": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6323:75:d82ed169": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6323:88:18df85d1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6325:28:5877e618": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6297:23:6605cd75": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6326:41:ab39ef98": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6326:71:aa650a5b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6326:91:a0791a86": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6326:91:14163d2d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6329:24:917b7093": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6330:24:1d5c5002": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6330:24:29022f60": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6331:43:aff7f7aa": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6331:64:e3f860ff": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6335:12:1dc92ace": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6305:63:edb7e999": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6340:26:ad3158d4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6343:26:a058bf1d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6364:16:56f937f8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6346:11:e14b16f1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6374:20:2f081473": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6376:16:e6be422d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6311:41:87ac0155": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6350:11:e28d6a22": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6412:72:746a062c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6412:72:84d1246c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6412:85:b78f85d2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6412:90:c7b0998a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6442:24:4c8e2f27": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6443:21:62152691": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6443:21:1c8a2a2c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6443:26:c8a4923c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6443:26:fa1f90d8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6443:39:b86cc493": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:72:dcdb80d1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:72:2eac2506": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:72:8fda0524": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:72:849adbbc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:78:5a103dd9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:78:b63034fa": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:85:7bd3cc9f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:92:c77987f9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:92:80bfc157": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:92:308b0fa6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:92:057eadf1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:98:a5acfdb3": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:98:0e3ca80a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6444:105:4e60d63d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6445:20:1748af6f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6447:20:4728af46": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6412:103:c92f2a5a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6412:90:69642cb5": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6456:68:fdbf6a75": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6456:68:ad836d98": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6456:77:6e50c82d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6456:77:dc5b5895": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6456:77:06b0b095": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6457:29:e190c08d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6457:29:c1b84b5b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6457:45:d2ffabcc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6457:45:a740febc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6457:45:fe3c250c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6458:46:e7d9e2eb": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6459:44:b2dc25b6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6459:44:c741ada4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6460:44:63b53893": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6461:29:ba1ac455": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6461:29:53fa173c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6461:47:afb00ab2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6461:47:ded30efa": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6467:33:44bcb3ea": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6469:28:7fe53ed4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6469:28:ec887877": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6470:33:5ad210ef": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6480:16:8b4a9edc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6482:16:dc990817": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6470:33:945828bd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6488:24:773fad69": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6490:20:1cf87825": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6492:16:bbbe6d50": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6498:59:07247d45": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6498:63:79fe0dbd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6499:28:2478c5ba": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6500:28:eb51c260": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6500:28:febc5d66": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6498:63:526809bd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6498:69:f49e618e": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:19:901d0227": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:19:c45beea6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:19:36cde2dc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:25:1218529a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:32:d75ba646": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:25:9ae8fa7e": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:34:39a43055": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:38:61d8d4d6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:38:e4d54e1c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:73:974ac088": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:73:57b63d8d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6517:81:d266695b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6532:40:31120caa": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6532:61:8ad95db3": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:23:5081d4d2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:23:860ee4dd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:29:5912faac": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:46:ebda7e51": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:72:a3b78d67": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:75:4788272c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:82:8f3eeef8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6533:88:e720faef": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6554:23:d53ceca1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6589:53:cb8f7fb2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6589:57:9b5a4d74": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6589:57:01185504": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6589:82:979cd83d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6589:57:836ed20f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6589:85:671a65e7": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6589:92:ab47852e": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6549:51:57081ac5": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6604:11:fc9be795": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6647:8:19fb4c85": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6650:43:7d591994": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "core:6650:82:70b77a6c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ }
+}

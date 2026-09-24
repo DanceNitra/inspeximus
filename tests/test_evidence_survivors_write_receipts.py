@@ -5,7 +5,8 @@ Each test exists because a named mutant of the write-receipt code in `inspeximus
 survived the whole suite (audits/2026-09-24/mutation-evidence.md). The mutation is named in each
 docstring so the test cannot be "simplified" back into one that passes either way. Every test was
 checked in both directions with `python audits/2026-09-24/mutate_evidence.py kill`: green on the
-original source, red on the mutant.
+original source, red on the mutant -- except the last two (core.py:6549 and 4148), which are green on
+the original and were written after the final kill run; the report lists the command that checks them.
 """
 from __future__ import annotations
 
@@ -277,3 +278,25 @@ def test_an_unsigned_tombstone_appended_to_a_signed_store_fails_verify_writes(tm
     ok, problems = m.verify_writes()
     assert ok is False
     assert any("carry NO signature" in p for p in problems), problems
+
+
+def test_a_sidecar_write_that_recovers_stops_being_reported(tmp_path):
+    """SURVIVORS core.py:4148 `self._sidecar_errors.pop("receipts", None)` -> `pop(None, None)` /
+    key renamed (core:4148:12:195f8dae, core:4148:37:dd1d2f11, core:4148:37:b1344cc5).
+
+    A failed sidecar write is recorded so verify_writes can say the chain is in memory only; the
+    next successful write has to clear it, or one transient disk error taints the store's integrity
+    report for the life of the handle. No test made a sidecar write fail and then succeed."""
+    p = str(tmp_path / "s.json")
+    ix = Inspeximus(path=p)
+    for i in range(3):
+        ix.remember(f"fact {i}", key=f"k{i}", object=str(i))
+    good = ix._receipts_path
+    ix._receipts_path = tmp_path / "a-directory"                 # the atomic replace cannot land here
+    ix._receipts_path.mkdir()
+    ix.enable_receipts()
+    ok, problems = ix.verify_writes()
+    assert ok is False and any("NOT persisted" in x for x in problems), problems        # the control
+    ix._receipts_path = good
+    ix._persist_receipts()
+    assert ix.verify_writes() == (True, [])

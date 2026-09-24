@@ -1,0 +1,942 @@
+{
+ "merkle:80:14:43b6b0f1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "merkle:80:25:121bff68": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "merkle:106:17:f7317f2a": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_an_inclusion_proof_for_index_n_is_refused"
+ },
+ "merkle:115:40:83c2eb9c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "merkle:143:14:0b9130c0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "merkle:143:25:701eae60": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "merkle:122:11:aabe62bb": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_path_too_short_for_the_claimed_tree_size_is_refused[3]"
+ },
+ "merkle:156:11:470ae3db": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "merkle:162:7:3b54fd68": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_rollback_is_refused_whatever_the_proof_says[5-4]"
+ },
+ "merkle:165:15:ab4a184d": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_different_roots_at_the_same_size_are_a_fork_not_a_consistency[1]"
+ },
+ "merkle:174:15:5451bad7": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_an_empty_consistency_proof_proves_nothing[2]"
+ },
+ "merkle:185:44:ea77e323": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "merkle:187:16:e361a38d": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_consistency_round_trips_past_the_sizes_the_suite_stopped_at"
+ },
+ "merkle:187:25:0810fdcd": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_consistency_round_trips_past_the_sizes_the_suite_stopped_at"
+ },
+ "merkle:181:19:1c53a5a2": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_consistency_proof_with_a_hash_to_spare_is_refused[2]"
+ },
+ "transparency:71:18:10f2480a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:71:29:27a4b877": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:71:29:a5eedd71": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:71:29:d184b5d9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:68:82:804b6be9": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_payload_ceiling_admits_exactly_its_own_size"
+ },
+ "transparency:69:73:f3ba8de7": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:80:12:3631e09f": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:80:12:6a5cdd7c": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:80:41:41c18d09": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:84:28:0dd8a5d5": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:85:28:f2470afa": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:85:28:cc700dea": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:85:28:0d478e8a": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:86:28:dd2478e5": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:86:28:b40c6401": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:15:78d5c8cd": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_registration_after_a_policy_change_records_the_new_policy"
+ },
+ "transparency:93:15:3028428f": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:15:0a47a028": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:15:99e01204": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:15:985239c3": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:52:867eb2db": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:70:7c8b3691": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:75:d47e072c": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:93:88:45fbddbb": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:102:12:09e96113": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:102:23:4cb81b6c": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:102:23:d079be30": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:105:12:1598d385": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:107:23:813db7c3": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:105:23:938818af": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:105:23:423adcd2": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:105:23:c429f299": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:110:12:cfd76072": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:110:23:ade75ede": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:110:23:2a2b1498": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:112:23:ea221d63": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:114:23:56fdc9c6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:110:23:65bdc124": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_each_missing_claim_is_its_own_refusal"
+ },
+ "transparency:111:49:2623c212": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_registration_after_a_policy_change_records_the_new_policy"
+ },
+ "transparency:113:22:b296b601": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_payload_ceiling_admits_exactly_its_own_size"
+ },
+ "transparency:129:11:c86e6b9e": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_service_without_a_signer_or_without_a_verifier_is_refused"
+ },
+ "transparency:130:18:549f298a": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_service_without_a_signer_or_without_a_verifier_is_refused"
+ },
+ "transparency:130:28:626f8b53": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:130:28:0f8e3219": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:130:28:f729d125": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_service_without_a_signer_or_without_a_verifier_is_refused"
+ },
+ "transparency:135:24:cf1604ab": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:135:24:2bb2e7fd": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:142:17:9e81f721": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:142:17:9502ec9a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:142:42:c6924dc1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:135:66:dcd484e1": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:135:84:1de2745d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:135:107:0c16465e": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:145:57:ebf3fb0e": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:145:57:49a1e2ad": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:15:c570166d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:15:5f8d577f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:15:658c0c0b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:15:833debc7": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:15:3baa921c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:15:1f0308da": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:43:a9e17cd6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:152:85:e42c575f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:153:13:eb1770c6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:153:13:6359d8ba": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:153:13:82036f58": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:153:13:54a711ab": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:153:43:a1313183": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:161:16:f00aa397": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:161:16:84b17fea": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_leaf_is_ascii_whatever_the_statement_says"
+ },
+ "transparency:161:16:1b117eb8": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:161:16:0e222b23": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:161:40:d623e734": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_library_re_derives_the_log_it_published"
+ },
+ "transparency:161:82:5ffdaf49": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_leaf_is_ascii_whatever_the_statement_says"
+ },
+ "transparency:161:95:2747011a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:179:14:074cf47e": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:179:27:b0414af1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:184:8:f9ea7bb5": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_registration_after_a_policy_change_records_the_new_policy"
+ },
+ "transparency:185:60:3f2ff1f8": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_registration_after_a_policy_change_records_the_new_policy"
+ },
+ "transparency:185:60:b7f1cd72": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_registration_after_a_policy_change_records_the_new_policy"
+ },
+ "transparency:186:57:583c4e57": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_registration_after_a_policy_change_records_the_new_policy"
+ },
+ "transparency:186:57:4c9c791b": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_registration_after_a_policy_change_records_the_new_policy"
+ },
+ "transparency:179:27:624650d2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:179:27:c957ecc2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:209:38:122d51fc": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:212:40:681d8b55": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:212:20:37a5a2a0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:212:20:c0757d30": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:212:40:19f8ae68": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:233:25:5470fae6": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_receipt_for_the_next_index_is_none_not_an_error"
+ },
+ "transparency:258:32:3e4a6453": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:258:35:b2b14cc1": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:258:35:6c54e8b5": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:258:53:37d653e4": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:259:16:89951aca": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:259:16:8ec54ef9": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:259:43:d4be9bb9": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:259:43:ee5aabf5": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:259:51:535b5694": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:259:51:377a9730": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_head_says_a_transparency_log_has_no_tombstones"
+ },
+ "transparency:284:16:b5073a5e": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:284:16:93dda8d6": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:293:16:3c81f474": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:293:16:4a7e0f66": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:263:57:9ee88280": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:293:46:f27b0f3c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:294:43:59a39689": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:294:43:496d12ea": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:295:16:5ec316a2": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:295:16:b70a071f": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_two_logs_at_two_paths_have_two_identities"
+ },
+ "transparency:297:16:b14c1ea8": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:297:16:35e706f0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:298:26:1777817a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:298:26:9eb47659": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:298:26:819b324c": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:299:26:bf9ea0e5": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:300:26:26812290": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:300:26:a5481117": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:24:499e97fd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:301:26:0c9bb9a4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:300:26:168e62fd": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:24:d55f3ec5": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:43:339798cf": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:43:a27711ae": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:60:d476ad39": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:60:00a16709": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:75:1805b474": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:325:75:b137a72a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:301:26:873e6f65": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:327:9:d9c8ea72": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_pinned_issuer_is_enforced"
+ },
+ "transparency:327:9:05710222": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_pinned_issuer_is_enforced"
+ },
+ "transparency:328:4:e3a9416d": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_verdict_needs_the_receipt_and_the_statement_not_only_the_binding"
+ },
+ "transparency:328:8:b8c8ff0c": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_verdict_needs_the_receipt_and_the_statement_not_only_the_binding"
+ },
+ "transparency:329:4:6ee1cab1": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:328:8:e3b945b5": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_verdict_needs_the_receipt_and_the_statement_not_only_the_binding"
+ },
+ "transparency:329:24:041ba886": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:329:24:de38c3ad": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_the_verdict_needs_the_receipt_and_the_statement_not_only_the_binding"
+ },
+ "transparency:329:24:7db7bfae": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:333:31:f9f2b2e9": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:333:31:700a55a2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:333:31:f9a3f497": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:334:31:2b95d185": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:334:31:4c637b01": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:336:9:08b4e395": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_receipt_is_checked_against_the_root_the_caller_trusts"
+ },
+ "transparency:336:9:560fa570": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_receipt_is_checked_against_the_root_the_caller_trusts"
+ },
+ "transparency:339:4:0f3fd672": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:339:24:a2876a1a": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:339:24:e28157e4": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:342:52:0913e7d0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:8:de996a49": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:31:9e75cb15": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:12:f14ffcfa": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:12:034c9540": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:31:5c3dc12f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:31:c2f58805": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:31:0765b5a0": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:344:71:078a4b0d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:354:12:40cb5c28": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:355:16:1f3f4f91": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:354:16:016e3fd5": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:354:16:1a5cf978": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:355:16:e5ae07e2": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:355:16:61b9394d": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:356:16:5f05ca19": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:356:16:baa59494": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:360:16:90a92f33": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:360:16:cba10a3b": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:360:16:fb3dfe56": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:361:16:fff0a80f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:363:21:567e2a2d": {
+  "verdict": "KILLED",
+  "status": "failed",
+  "killer": "tests/test_evidence_survivors_transparency_log.py::test_a_receipt_is_checked_against_the_root_the_caller_trusts"
+ },
+ "transparency:357:16:19f77007": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:357:16:4b6ad3ee": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ },
+ "transparency:356:16:272b0a2f": {
+  "verdict": "SURVIVES",
+  "status": "passed",
+  "killer": null
+ }
+}
