@@ -1,3 +1,44 @@
+## 3.10.0 - UPGRADE IF you run the MCP server (`inspeximus-mcp`, the Claude Code plugin, `inspeximus install`): it signs with the store's key, stays inside its project, and its verdicts honour your key pin. BEHAVIOUR CHANGES: the server can refuse to START on a key that would break the chain, and a ledger it cannot read is refused rather than started over.
+
+A review of all 133 MCP tools (audits/2026-09-24/mcp-tools-review.md) found seven root causes (X1 to X7)
+and a list of local findings. Its reproducers ship as tests/test_mcp_review_*.py: each finding fixed here
+has a reproducer that failed before this release, and those that remain open stay strict xfails.
+
+- **The server signs with the store's receipt key (X1).** On a signed store, one write or erasure through
+  the server appended an unsigned receipt or tombstone, and `verify_writes` failed from then on. The key
+  comes from `INSPEXIMUS_RECEIPT_KEY_FILE`, `INSPEXIMUS_RECEIPT_KEY` or the key home, and is never minted.
+  A key that did not sign the store, that `INSPEXIMUS_RECEIPT_PUBKEY` rejects, or that is configured on an
+  unsigned chain STOPS THE SERVER AT STARTUP with `ReceiptKeyError`. `where_am_i` gains `receipt_signing`.
+- **One signing ledger (X3).** Twenty-two tools built a second, keyless action ledger per call. All of
+  them now write through one handle, signed with the receipt key or the writer key.
+- **An unreadable action ledger is refused (L3, L4).** A file that is not a ledger was read as an empty
+  chain, so `verify()` passed it and the next write replaced it. `verify()` reports it, and every write
+  raises `LedgerUnreadable` (a `RuntimeError`) before it changes anything, including the rights tools.
+- **The project scope holds for every tool (X4).** `revert`, `route`, `resolve_reopened`,
+  `remember_in_partition`, `rectify_subject` and `deprecate_symbol` stamp the server's project, and
+  `recall_as`, `token_report`, `why_recalled` and `check_sources` read inside it. The library calls gain
+  an opt-in `project=`; `project=None` changes nothing.
+- **A retired write says blocked (X6).** `route`, `remember_in_partition`, `rectify_subject` and
+  `deprecate_symbol` return the write verdict `remember` returns, and a rectification a guard retired is
+  logged as `blocked`, not `ok`.
+- **One key pin for every tamper-evidence verdict (X2).** `erasure_certificate`, `compliance_check`,
+  `compliance_report`, `verify_attribution`, `audit_bundle`, `technical_documentation`, `deployer_report`
+  and `registration_export` honour `INSPEXIMUS_RECEIPT_PUBKEY`. `compliance_check` and
+  `verify_attribution` gain `expected_pubkey`; the documentation tools gain a keyword-only
+  `ledger_pubkey`. `verify_consistency` checks the chains on disk as well as in memory (I4).
+  `audit_the_audits` removes its scratch copies (I5). `admissibility_preconditions(receipts_configured=)`
+  applies the receipt invariant when receipts are the deployment's configuration (I7). `scan_residue`
+  reports what it could not enter (E4, E11).
+- **Changes reach disk before a tool returns, and refresh re-reads sidecars (X5, X7).**
+  `release_quarantine`, `credit`, `consolidate`, `consolidate_clusters` and `sleep` save. `refresh()`
+  re-reads the objections and budget sidecars a peer changed, and on the read path does not re-add a
+  record a peer removed.
+- **Local findings.** `INSPEXIMUS_TRUST_SEEDS` sets the trust root for `recall(trusted_only=True)` and
+  `selection_integrity` (R3). `where_am_i` reports the receipts the store keeps (R4). A signed number sent
+  as text is a number, unknown outcome words and negative weights are refused (M2, M3), `"*"` means every
+  event type (S3), and the rest are listed in the review: W6, W8, R2, R5, R7, E1, E2, E8, E9, E10, L5 to
+  L9, S6, S8, M7, M8.
+
 ## 3.9.7 - UPGRADE IF more than one process opens your store (an MCP server beside the Claude Code hooks, a CLI, a worker pool): an erasure by one process is no longer undone by another
 
 Measured on 3.9.6 and on 3.9.5. Each defect below has a test that fails on 3.9.6
