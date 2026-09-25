@@ -105,24 +105,34 @@ def _mcp_importable():
 
 
 def resolve_runtime():
-    """How the host must launch inspeximus: `("uvx", path)`, `("python", sys.executable)` or `(None, why)`.
+    """How the host must launch inspeximus: `("uvx", path)` or `("python", sys.executable)`.
 
     A BARE "uvx" IS NOT A FALLBACK. Measured on 3.9.5 with no uv on PATH: the installer wrote
     `"command": "uvx"`, reported success, and the server never started, with nothing in the terminal
-    to say why. So uvx is used when it resolves; otherwise the interpreter running this installer is
-    used, which works when it can import the `mcp` extra; otherwise the install refuses and names both
-    ways out. The hooks follow the same runtime, so the server and the hooks never run two different
-    inspeximus versions against one store.
+    to say why. So uvx is used when it resolves, and otherwise the interpreter running this installer.
+    The hooks follow the same runtime, so the server and the hooks never run two different inspeximus
+    versions against one store. When that interpreter cannot import the `mcp` extra, `plan()` still
+    writes the config and says, first, which command makes it start: see `missing_mcp_warning`.
     """
     uvx = shutil.which("uvx")
     if uvx:
         return "uvx", uvx
-    if _mcp_importable():
-        return "python", sys.executable
-    return None, ('uvx is not on PATH, and this Python cannot import the MCP extra, so the server '
-                  'would not start. Either install uv (https://docs.astral.sh/uv/getting-started/'
-                  'installation/) and re-run, or run: %s -m pip install "inspeximus[mcp]" and re-run '
-                  'this command with that same Python.' % sys.executable)
+    return "python", sys.executable
+
+
+def missing_mcp_warning(kind):
+    """The warning for a python runtime that cannot import the `mcp` extra, or "" when there is none.
+
+    A WARNING, NOT A REFUSAL. An earlier 3.9.6 build refused here and wrote nothing. The hooks need
+    only the core, so they worked, and the refusal withheld them too; and `pip install inspeximus`
+    followed by `inspeximus install --ide claude`, the documented sequence, exited 2. The config
+    names an interpreter that exists, and the one missing piece is a pip command, printed first."""
+    if kind != "python" or _mcp_importable():
+        return ""
+    return ('WARNING: uvx is not on PATH and this Python cannot import the MCP extra, so the MCP '
+            'server will not start until you run: %s -m pip install "inspeximus[mcp]" (or install '
+            'uv: https://docs.astral.sh/uv/getting-started/installation/, and re-run this command). '
+            'The hooks need only the core and work now.' % sys.executable)
 
 
 def _server_launch(kind, exe):
@@ -334,14 +344,13 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
     path = paths[scope]
 
     kind, exe = resolve_runtime()
-    if kind is None:
-        return {"host": host, "label": spec["label"], "error": exe}
     block = spec["fields"](default_server_block(store_path))
     block["command"], block["args"] = _server_launch(kind, exe)
 
     res = {"host": host, "label": spec["label"], "scope": scope, "path": path,
            "format": spec["format"], "verified": spec["verified"], "note": spec.get("note", ""),
-           "docs": spec.get("docs", ""), "name": name, "block": block, "error": None}
+           "docs": spec.get("docs", ""), "name": name, "block": block, "error": None,
+           "warning": missing_mcp_warning(kind)}
 
     if host == "claude":
         res["hooks"] = plan_claude_hooks(_claude_settings_path(path), hook_command(kind, exe))
@@ -446,6 +455,8 @@ def render(p, dry_run=False):
         return f"[{p.get('label', p['host'])}] ERROR: {p['error']}"
     head = f"[{p['label']}] {p['scope']} scope -> {p['path']}"
     out.append(head)
+    if p.get("warning"):
+        out.append(f"  {p['warning']}")
     if not p["verified"]:
         out.append("  UNVERIFIED: this config shape comes from the host's documentation but has not "
                    "been exercised on this machine.")

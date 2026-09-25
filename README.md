@@ -771,7 +771,7 @@ needs nothing. The MCP server, encryption and the framework adapters are separat
 
 For Hermes Agent, install inspeximus into the venv Hermes runs from, not into your shell's Python
 ([how](docs/INTEGRATIONS.md#memory-provider-for-hermes-agent-inspeximusmemoryprovider-2272)). Install
-Hermes with its own installer: `pip install hermes-agent` gets 0.19.0 from PyPI, which never loads the
+Hermes with its own installer: the PyPI package `hermes-agent` is 0.19.0, which never loads the
 provider.
 
 **14 of 14 verified against current upstream, 0 recorded broken.** Three were broken a day ago and

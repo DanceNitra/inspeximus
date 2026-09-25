@@ -32,8 +32,10 @@ defects stood between the two, and each is fixed here with a test that fails on 
   routes wire "the same hooks". An event that already runs inspeximus is left as it is. With no
   `--store`, the server entry gets `INSPEXIMUS_SCOPE=claude-code`.
 - **No longer writes a bare `uvx`.** Without uv on PATH it wrote `"command": "uvx"`, reported success,
-  and the server never started. It now uses this Python (`-m inspeximus.mcp_server`) when that Python can
-  import the `mcp` extra, and otherwise refuses and names both fixes. The hooks use the same runtime.
+  and the server never started. It now uses this Python (`-m inspeximus.mcp_server`). When that Python
+  cannot import the `mcp` extra, the first line of output is a WARNING with the `pip install
+  "inspeximus[mcp]"` command that makes the server start. The hooks use the same runtime and need only
+  the core.
 
 Also: SessionStart names a 3.9.5-plugin store (`.inspeximus/memory.json`) while it holds records the
 project store lacks, with the command that folds it in:

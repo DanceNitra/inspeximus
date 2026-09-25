@@ -304,7 +304,7 @@ memory:
   provider: inspeximus
 ```
 
-**Not from PyPI.** `pip install hermes-agent` installs 0.19.0 (measured 2026-09-25), which finds
+**Not from PyPI.** The PyPI package `hermes-agent` is 0.19.0 (measured 2026-09-25), which finds
 memory providers in directories only and never reads the entry point: `hermes memory status` reports
 the provider as not installed and the agent runs without it. Hermes is distributed through its
 installer (`iex (irm https://hermes-agent.nousresearch.com/install.ps1)` on Windows); the build of tag

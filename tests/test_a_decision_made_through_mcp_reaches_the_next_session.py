@@ -247,11 +247,25 @@ def test_install_without_uvx_uses_this_python(home, monkeypatch):
     assert cmd.endswith(" -m inspeximus.claude_code") and "uvx" not in cmd
 
 
-def test_install_without_uvx_or_the_mcp_extra_refuses_and_writes_nothing(home, monkeypatch):
+def test_install_without_uvx_or_the_mcp_extra_writes_this_python_and_names_the_pip_command(home, monkeypatch):
+    """Never a bare uvx. Without the extra the config still names this interpreter, the hooks are
+    written (they need only the core), and the first line of output is the pip command."""
     monkeypatch.setattr(I.shutil, "which", lambda name: None)
     monkeypatch.setattr(I, "_mcp_importable", lambda: False)
     p = I.plan("claude")
-    assert p["error"] and "uv" in p["error"] and 'pip install "inspeximus[mcp]"' in p["error"]
+    assert not p["error"]
+    assert p["block"]["command"] == sys.executable
+    assert 'pip install "inspeximus[mcp]"' in p["warning"] and "uv" in p["warning"]
+    assert I.render(p).splitlines()[1].strip().startswith("WARNING:")
     ok, _ = I.apply(p)
-    assert not ok
-    assert not (home / ".claude.json").exists() and not (home / ".claude").exists()
+    assert ok
+    cfg = json.loads((home / ".claude.json").read_text(encoding="utf-8"))
+    assert cfg["mcpServers"]["inspeximus"]["command"] == sys.executable
+    assert (home / ".claude" / "settings.json").exists()
+
+
+def test_install_with_uvx_carries_no_warning(home, monkeypatch):
+    monkeypatch.setattr(I.shutil, "which", lambda name: "/usr/bin/uvx" if name == "uvx" else None)
+    monkeypatch.setattr(I, "_mcp_importable", lambda: False)
+    p = I.plan("claude")
+    assert p["warning"] == "" and p["block"]["command"] == "/usr/bin/uvx"
