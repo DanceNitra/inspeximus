@@ -96,6 +96,114 @@ def resolve_launcher():
     return shutil.which("uvx") or "uvx"
 
 
+def _mcp_importable():
+    import importlib.util
+    try:
+        return importlib.util.find_spec("mcp") is not None
+    except (ImportError, ValueError):
+        return False
+
+
+def resolve_runtime():
+    """How the host must launch inspeximus: `("uvx", path)`, `("python", sys.executable)` or `(None, why)`.
+
+    A BARE "uvx" IS NOT A FALLBACK. Measured on 3.9.5 with no uv on PATH: the installer wrote
+    `"command": "uvx"`, reported success, and the server never started, with nothing in the terminal
+    to say why. So uvx is used when it resolves; otherwise the interpreter running this installer is
+    used, which works when it can import the `mcp` extra; otherwise the install refuses and names both
+    ways out. The hooks follow the same runtime, so the server and the hooks never run two different
+    inspeximus versions against one store.
+    """
+    uvx = shutil.which("uvx")
+    if uvx:
+        return "uvx", uvx
+    if _mcp_importable():
+        return "python", sys.executable
+    return None, ('uvx is not on PATH, and this Python cannot import the MCP extra, so the server '
+                  'would not start. Either install uv (https://docs.astral.sh/uv/getting-started/'
+                  'installation/) and re-run, or run: %s -m pip install "inspeximus[mcp]" and re-run '
+                  'this command with that same Python.' % sys.executable)
+
+
+def _server_launch(kind, exe):
+    """(command, args) for the MCP server under a runtime from `resolve_runtime`."""
+    if kind == "python":
+        return exe, ["-m", "inspeximus.mcp_server"]
+    return exe, ["--from", "inspeximus[mcp]", "inspeximus-mcp"]
+
+
+def _shell_path(p):
+    """A path a hook command line can carry: forward slashes, quoted when it holds a space.
+
+    Claude Code runs a hook command through a shell, and on Windows that can be Git Bash, which
+    reads a backslash as an escape. `C:/...` works in bash and in cmd alike."""
+    p = str(p).replace("\\", "/") if os.name == "nt" else str(p)
+    return '"%s"' % p if " " in p else p
+
+
+def hook_command(kind, exe):
+    """The hook command under a runtime from `resolve_runtime`."""
+    if kind == "python":
+        return _shell_path(exe) + " -m inspeximus.claude_code"
+    return _shell_path(exe) + " --from inspeximus python -m inspeximus.claude_code"
+
+
+def _claude_settings_path(mcp_config_path):
+    """Where Claude Code reads hooks, next to the MCP config the installer writes.
+
+    `~/.claude.json` -> `~/.claude/settings.json`, and `<project>/.mcp.json` ->
+    `<project>/.claude/settings.json`. Derived from the MCP path rather than from `_home()`, so a
+    caller that redirects the config (the tests do) cannot have its hooks land in a real home."""
+    return pathlib.Path(mcp_config_path).parent / ".claude" / "settings.json"
+
+
+def plan_claude_hooks(settings_path, command):
+    """The hooks half of `install --ide claude`: the same five events the plugin ships.
+
+    README promises that the plugin and `inspeximus install --ide claude` both wire "the same hooks".
+    On 3.9.5 the installer wrote only `mcpServers`, so an installer user got the tools and no
+    SessionStart digest. An event that already has an inspeximus hook is left as it is: the user's
+    own command line wins, and a second copy would run every hook twice."""
+    import copy
+    import difflib
+    from inspeximus import claude_code as cc
+
+    res = {"path": settings_path, "error": None}
+    data, err = _read_json(settings_path)
+    if err:
+        res["error"] = err
+        return res
+    if not isinstance(data, dict):
+        res["error"] = f"{settings_path}: top level is {type(data).__name__}, not an object; refusing to touch it"
+        return res
+    before = json.dumps(data, indent=2) + "\n" if settings_path.exists() else ""
+    hooks = data.setdefault("hooks", {})
+    if not isinstance(hooks, dict):
+        res["error"] = f"{settings_path}: 'hooks' is not an object; refusing to touch it"
+        return res
+    added = []
+    for evt in ("PreToolUse", "PostToolUse", "UserPromptSubmit", "SessionStart", "SessionEnd"):
+        present = hooks.get(evt, [])
+        if not isinstance(present, list):
+            res["error"] = f"{settings_path}: hooks.{evt} is not a list; refusing to touch it"
+            return res
+        if any(m in json.dumps(present) for m in cc._HOOK_MARKERS):
+            continue
+        entry = copy.deepcopy(cc._EVENT_HOOK.get(evt, cc._HOOK))
+        for h in entry["hooks"]:
+            h["command"] = command
+        hooks.setdefault(evt, []).append(entry)
+        added.append(evt)
+    after = json.dumps(data, indent=2) + "\n"
+    res.update(data=data, added=added,
+               action=("unchanged" if not added else "create" if not settings_path.exists() else "add"),
+               diff="".join(difflib.unified_diff(
+                   before.splitlines(True), after.splitlines(True),
+                   fromfile=str(settings_path) + (" (missing)" if not settings_path.exists() else ""),
+                   tofile=str(settings_path))))
+    return res
+
+
 # ── hosts ────────────────────────────────────────────────────────────────────────────────────────
 # `verified` means BOTH: the config shape was taken from that host's own documentation, AND it was
 # exercised on a real machine. Documentation alone is not verification -- see the module docstring.
@@ -150,7 +258,9 @@ HOSTS = {
         "verified": True,
         "docs": "https://code.claude.com/docs/en/mcp.md",
         "note": "Claude Code reads the config at session start: restart the session to pick it up. "
-                "A project-scoped .mcp.json additionally needs interactive approval on first use.",
+                "A project-scoped .mcp.json additionally needs interactive approval on first use. "
+                "The hooks are written too; do not also install the marketplace plugin, or every "
+                "hook runs twice.",
     },
     "cursor": {
         "label": "Cursor",
@@ -223,12 +333,26 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
                 "error": f"{spec['label']} has no {scope!r} scope (available: {', '.join(sorted(paths))})"}
     path = paths[scope]
 
+    kind, exe = resolve_runtime()
+    if kind is None:
+        return {"host": host, "label": spec["label"], "error": exe}
     block = spec["fields"](default_server_block(store_path))
-    block["command"] = resolve_launcher()
+    block["command"], block["args"] = _server_launch(kind, exe)
 
     res = {"host": host, "label": spec["label"], "scope": scope, "path": path,
            "format": spec["format"], "verified": spec["verified"], "note": spec.get("note", ""),
            "docs": spec.get("docs", ""), "name": name, "block": block, "error": None}
+
+    if host == "claude":
+        res["hooks"] = plan_claude_hooks(_claude_settings_path(path), hook_command(kind, exe))
+        if res["hooks"]["error"]:
+            res["error"] = res["hooks"]["error"]
+            return res
+        if store_path:
+            res["note"] += (" --store points the MCP server at %s, while the hooks read "
+                            "<git root>/.inspeximus/coding_memory.json, so a decision written "
+                            "through MCP will not appear at SessionStart. Omit --store to share "
+                            "one store." % store_path)
 
     if spec["format"] == "json":
         data, err = _read_json(path)
@@ -257,6 +381,11 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
         # would otherwise replace the whole entry and silently drop the env the first run wrote, along
         # with any key the user added by hand (timeout, alwaysLoad, autoApprove...). Anything we do not
         # explicitly emit is carried across.
+        # ONE STORE FOR THE SERVER AND THE HOOKS. With no --store, the Claude Code entry names the
+        # hook's store through INSPEXIMUS_SCOPE=claude-code. An env the user or an earlier run already
+        # wrote is kept as it is (NEVER CLOBBER, above).
+        if host == "claude" and not store_path and not (isinstance(existing, dict) and existing.get("env")):
+            block["env"] = {"INSPEXIMUS_SCOPE": "claude-code"}
         if isinstance(existing, dict):
             block = {**existing, **block}
         res["action"] = ("unchanged" if existing == block
@@ -290,16 +419,24 @@ def apply(p):
     """Write the planned change. Returns (ok, message)."""
     if p.get("error"):
         return False, p["error"]
-    if p["action"] in ("unchanged", "present"):
+    hooks = p.get("hooks") or {}
+    hooks_change = hooks.get("action") not in (None, "unchanged")
+    if p["action"] in ("unchanged", "present") and not hooks_change:
         return True, "already present, unchanged"
-    if p["format"] == "json":
-        _write_json(p["path"], p["data"])
-    else:
-        p["path"].parent.mkdir(parents=True, exist_ok=True)
-        if p["path"].exists():
-            shutil.copy2(p["path"], str(p["path"]) + ".bak")
-        p["path"].write_text(p["data"], encoding="utf-8")
-    return True, f"{p['action']} -> {p['path']}"
+    msgs = []
+    if p["action"] not in ("unchanged", "present"):
+        if p["format"] == "json":
+            _write_json(p["path"], p["data"])
+        else:
+            p["path"].parent.mkdir(parents=True, exist_ok=True)
+            if p["path"].exists():
+                shutil.copy2(p["path"], str(p["path"]) + ".bak")
+            p["path"].write_text(p["data"], encoding="utf-8")
+        msgs.append(f"{p['action']} -> {p['path']}")
+    if hooks_change:
+        _write_json(hooks["path"], hooks["data"])
+        msgs.append(f"hooks {hooks['action']} ({', '.join(hooks['added'])}) -> {hooks['path']}")
+    return True, "; ".join(msgs)
 
 
 def render(p, dry_run=False):
@@ -317,6 +454,11 @@ def render(p, dry_run=False):
         out.append("".join("  " + ln for ln in p["diff"].splitlines(True)).rstrip())
     else:
         out.append("  (no change)")
+    hooks = p.get("hooks")
+    if hooks:
+        out.append(f"[{p['label']}] hooks -> {hooks['path']}")
+        out.append("".join("  " + ln for ln in hooks["diff"].splitlines(True)).rstrip()
+                   if hooks.get("diff") else "  (no change: every event already runs inspeximus)")
     if p.get("note"):
         out.append(f"  note: {p['note']}")
     if dry_run:

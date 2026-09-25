@@ -21,7 +21,7 @@ one creep back — deterministically, with no LLM on the write path, from a sing
 a real state model and not a log. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault (our own deployment — you cannot re-run that one; every number you CAN re-run
 is listed in [docs/CLAIMS.md](CLAIMS.md) with its command).*
 
-`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v3.9.5
+`pip install inspeximus` → `import inspeximus` · [PyPI](https://pypi.org/project/inspeximus/) · [Hugging Face](https://huggingface.co/Danchi17/inspeximus) · [DOI](https://doi.org/10.5281/zenodo.21708778) · [Homepage](https://dancenitra.github.io/inspeximus/) · MIT · v3.9.6
 
 [![audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Star on GitHub](https://img.shields.io/github/stars/DanceNitra/inspeximus?style=social)](https://github.com/DanceNitra/inspeximus)
@@ -44,8 +44,10 @@ Built by **[Rastislav Drahoš](https://github.com/DanceNitra)** — extracted fr
 ```
 
 That registers this repository as a plugin marketplace and installs the MCP server, which then starts
-with `uvx --from "inspeximus[mcp]" inspeximus-mcp` and keeps its store in `.inspeximus/memory.json` inside the
-project. Nothing to configure by hand, and nothing to install globally.
+with `uvx --from "inspeximus[mcp]" inspeximus-mcp` and shares one store with the plugin's hooks,
+`.inspeximus/coding_memory.json` at the git root (`INSPEXIMUS_SCOPE=claude-code`). Up to 3.9.5 the server wrote
+`.inspeximus/memory.json` instead, which no hook read; the SessionStart hook names such a file until
+`python -m inspeximus.claude_code --merge-store <file> --apply` folds it in. Nothing to configure by hand, and nothing to install globally.
 
 Prefer the manual route? `pip install "inspeximus[mcp]"` and point your client at `inspeximus-mcp` — the
 extra matters, because the core library is deliberately zero-dependency and the MCP server is the one
@@ -687,7 +689,7 @@ inspeximus check-code src/**/*.py                                            # e
 ```yaml
 # .pre-commit-config.yaml  (point INSPEXIMUS_PATH at a store committed to the repo, e.g. .inspeximus/memory.json)
 - repo: https://github.com/<owner>/inspeximus
-  rev: v3.9.5
+  rev: v3.9.6
   hooks: [{ id: inspeximus-check-code }]
 ```
 
@@ -1079,7 +1081,7 @@ checkout until the files land.
 
 ## Status
 
-`v3.9.5` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 133 tools) and a
+`v3.9.6` — the core, honest and runnable, with an MCP server (`inspeximus-mcp`, 133 tools) and a
 deterministic supersession key (`remember(..., key=...)`) that closes the embedding *supersession blind
 spot*. Roadmap: pluggable vector stores, a hosted tier. Open-core; the core stays free.
 

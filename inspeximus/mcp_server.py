@@ -10,7 +10,7 @@ Claude Code / Claude Desktop / Cursor / custom agent can use inspeximus as its l
 inspeximus.py stays dependency-free; only THIS file needs the MCP SDK:  pip install "mcp[cli]"
 
 Run (stdio):
-    INSPEXIMUS_PATH=./agent_memory.json python -m inspeximus.mcp
+    INSPEXIMUS_PATH=./agent_memory.json python -m inspeximus.mcp_server
 or register it in an MCP client (see inspeximus/README.md for a .mcp.json / claude_desktop_config.json
 snippet).
 
@@ -123,14 +123,15 @@ def _path_source(env: dict | None = None) -> str:
     not work, so the precedence is made visible rather than left to be guessed.
     """
     env = os.environ if env is None else env
-    if env.get("INSPEXIMUS_PATH"):
-        scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
-        if scope == "project":
-            return "INSPEXIMUS_PATH (explicit path OUTRANKS INSPEXIMUS_SCOPE=project)"
-        return "INSPEXIMUS_PATH"
     scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
+    if env.get("INSPEXIMUS_PATH"):
+        if scope in ("project", "claude-code"):
+            return f"INSPEXIMUS_PATH (explicit path OUTRANKS INSPEXIMUS_SCOPE={scope})"
+        return "INSPEXIMUS_PATH"
     if scope == "project":
         return "INSPEXIMUS_SCOPE=project (git root)"
+    if scope == "claude-code":
+        return "INSPEXIMUS_SCOPE=claude-code (the Claude Code hook's store)"
     return "default filename, relative to this server's working directory"
 
 

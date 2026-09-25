@@ -350,7 +350,10 @@ _RESERVED_META = frozenset({
 #: this: it was reserved on the "the library reads it" rule, and 25 grant tests went red because
 #: `recall(scope=...)` filters on a scope the CALLER sets. Declared here rather than special-cased in
 #: the guard, so the next one is a visible decision instead of a silent exception.
-_CALLER_META = frozenset({"scope"})
+#: `context` since 3.9.6: `remember_decision` stores the caller's situation text there and the lexical
+#: index reads it (`_index_text`). It is caller text by design, like `text` itself, so it is declared
+#: here rather than reserved.
+_CALLER_META = frozenset({"scope", "context"})
 
 #: The same problem with a different remedy. These four ALSO have named parameters on `remember()`
 #: (`user_id`, `agent_id`, `session_id`, `project`), and passing them through `meta` reached the same
@@ -1332,7 +1335,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.9.5"
+__version__ = "3.9.6"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -1358,6 +1361,27 @@ def _stem(w: str) -> str:
 
 def _tokens(text: str) -> set:
     return {_stem(w) for w in _WORD.findall((text or "").lower()) if w not in _STOP}
+
+
+def _index_text(rec: dict) -> str:
+    """The text the LEXICAL index reads for a record: its `text`, plus a decision's topic and context.
+
+    `remember_decision` promises that the topic and the context are "kept for retrieval". They were
+    kept, in `key` and `meta`, and the index read `text` alone, so neither could be found. Measured
+    on 3.9.5: a decision stored with topic="indentation" came back for recall("tabs") and NOT for
+    recall("what did we decide about indentation?"), which is the first question a user asks. The
+    stored text is unchanged; only what the index sees grows. A topic slug is split on its
+    separators, so "code-style" and "release::v2" answer "code style" and "release".
+    """
+    text = rec.get("text") or ""
+    key = rec.get("key")
+    if not (isinstance(key, str) and key.startswith("decision::")):
+        return text
+    extra = [re.sub(r"[:_\-/.]+", " ", key[len("decision::"):])]
+    ctx = (rec.get("meta") or {}).get("context")
+    if isinstance(ctx, str) and ctx:
+        extra.append(ctx)
+    return text + "\n" + "\n".join(extra)
 
 
 def _token_counts(text: str) -> dict:
@@ -12385,7 +12409,7 @@ class Inspeximus:
         rid = rec.get("id") or id(rec)
         t = self._tok_cache.get(rid)
         if t is None:
-            t = _tokens(rec["text"]); self._tok_cache[rid] = t
+            t = _tokens(_index_text(rec)); self._tok_cache[rid] = t
         return t
 
     def _retired_values(self) -> list:
@@ -12530,7 +12554,7 @@ class Inspeximus:
         rid = rec.get("id") or id(rec)
         c = self._tc_cache.get(rid)
         if c is None:
-            c = _token_counts(rec["text"]); self._tc_cache[rid] = c
+            c = _token_counts(_index_text(rec)); self._tc_cache[rid] = c
         return c
 
     def _bm25_scores(self, qtok: set, pool: list, k1: float = 1.5, b: float = 0.75) -> list:
@@ -15650,7 +15674,29 @@ class Inspeximus:
 
         `session_id` is the host's id for the session (Claude Code passes one on every hook event). Left
         out, it is derived from the sequence number, which keeps the whole mechanism reproducible from
-        the event log alone. Returns {session_id, session_seq, opened_ts, digest_at_open, marker_id}."""
+        the event log alone. Returns {session_id, session_seq, opened_ts, digest_at_open, marker_id}.
+
+        A PREVIOUS SESSION THAT WAS NEVER CLOSED IS CLOSED HERE FIRST. A host does not always deliver
+        its end-of-session event: a closed terminal or a crash skips Claude Code's SessionEnd hook.
+        Measured on 3.9.5: a decision recorded in such a session never reached the next session's
+        digest, because nothing wrote one, and this open then retired the only marker that knew
+        where that session began. So when the open marker still belongs to another session and no
+        digest follows it, that session is closed now, from its own marker. A session with nothing
+        salient in it writes nothing, so an empty digest cannot take a slot from a real one."""
+        prev = next((r for r in self._tenant_rows()
+                     if r.get("key") == self.SESSION_OPEN_KEY and r.get("status") == "active"), None)
+        if prev is not None:
+            prev_sid = str((prev.get("meta") or {}).get("sid") or "")
+            digs = self._session_digests()
+            closed = bool(digs) and (digs[-1].get("ts") or 0.0) >= (prev.get("ts") or 0.0)
+            if prev_sid and prev_sid != str(session_id or "") and not closed:
+                if self.close_session(prev_sid, write=False).get("items"):
+                    self.close_session(prev_sid)
+        elif self.close_session(write=False).get("items"):
+            # No session was ever opened on this store, but something salient was written since the
+            # last digest: an MCP-only client, or a CLI. Those writes are closed as one session, so
+            # the first session that does open is told about them.
+            self.close_session()
         seq = len(self._session_digests()) + 1
         sid = str(session_id) if session_id else f"s{seq}"
         at_open = self.state_digest()
@@ -15674,8 +15720,32 @@ class Inspeximus:
                 if not (set(r.get("tags") or []) & set(self.SESSION_TAGS))]
         sid = str(session_id) if session_id else None
         if since is None and sid:
-            stamped = [r for r in rows if str((r.get("meta") or {}).get("sid") or "") == sid]
-            if stamped:
+            # Stamped with this session, PLUS unstamped records written after this session's own open
+            # marker. A writer that does not know the host's session id -- the MCP server is one, since
+            # Claude Code never passes it the id -- writes unstamped records. Measured on 3.9.5: a
+            # single stamped hook capture switched the window to stamped rows only, and the session's
+            # MCP decision was left out of its own digest. A record stamped with ANOTHER session stays
+            # out, as before.
+            # "After" is WRITE ORDER, not `ts`: two writes can share a timestamp, and a record written
+            # before the marker must not join the session because the clock did not move between them.
+            order = {id(r): i for i, r in enumerate(self._tenant_rows())}
+            marker = next((r for r in self._tenant_rows()
+                           if r.get("key") == self.SESSION_OPEN_KEY and r.get("status") == "active"
+                           and str((r.get("meta") or {}).get("sid") or "") == sid), None)
+            # No marker for this session (it began before the hooks were installed, which is the
+            # plugin-install session itself): the window starts where the last digest ended.
+            if marker is None:
+                digs = self._session_digests()
+                marker = max(digs, key=lambda d: order.get(id(d), -1)) if digs else None
+            start = order.get(id(marker), -1) if marker is not None else -1
+
+            def _mine(r):
+                rs = str((r.get("meta") or {}).get("sid") or "")
+                if rs:
+                    return rs == sid
+                return order.get(id(r), -1) > start
+            stamped = [r for r in rows if _mine(r)]
+            if any(str((r.get("meta") or {}).get("sid") or "") == sid for r in stamped):
                 return stamped, "sid"
         t0 = since
         if t0 is None:

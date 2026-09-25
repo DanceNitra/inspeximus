@@ -95,6 +95,8 @@ memories were one directory away.
 INSPEXIMUS_SCOPE=project    # store at <git-root>/.inspeximus/memory.json — an ABSOLUTE path,
                             # identical from every directory inside the repo, different between repos
 INSPEXIMUS_SCOPE=user       # today's behaviour, stated explicitly (the cwd-relative default filename)
+INSPEXIMUS_SCOPE=claude-code  # the Claude Code hook's store, <git-root or cwd>/.inspeximus/coding_memory.json;
+                            # the plugin and `inspeximus install --ide claude` set it (since 3.9.6)
 ```
 
 Unset means `user`, so nothing changes for anyone who does not ask. A `project` scope with **no enclosing git
@@ -148,8 +150,8 @@ python -m inspeximus.claude_code --install     # writes the hooks into ./.claude
 
 That is it. `PostToolUse` captures your edits and commands into a deterministic, keyed store; `UserPromptSubmit`
 injects the current-state memory before Claude answers; `SessionEnd` writes a digest of what the session
-established; `SessionStart` injects it, so the next session starts already knowing. The store is a local JSON
-file at `.inspeximus/coding_memory.json` you can read, grep, or delete.
+established; `SessionStart` injects it, so the next session starts already knowing. The store is a local file
+at `.inspeximus/coding_memory.json` that you can read or delete, and the MCP server writes to the same file.
 
 ### The cross-session loop (`SessionEnd` -> `SessionStart`), with no LLM
 

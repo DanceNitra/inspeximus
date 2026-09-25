@@ -64,6 +64,34 @@ def find_project_root(cwd=None):
         p = parent
 
 
+#: The Claude Code hook's store filename. The MCP server reaches the same file through
+#: `INSPEXIMUS_SCOPE=claude-code`, so there is one project store and not two.
+CODING_STORE_FILENAME = "coding_memory.json"
+
+
+def coding_store_dir(cwd=None, env=None) -> str:
+    """The directory holding a project's Claude Code store: `<git root or cwd>/.inspeximus`.
+
+    `$INSPEXIMUS_CODING_STORE` (a directory) overrides it. This is the ONE resolver for that store.
+    The hook and the MCP server each used to decide it themselves, and measured on 3.9.5 they
+    disagreed twice: the plugin pointed the server at `.inspeximus/memory.json` while the hook read
+    `.inspeximus/coding_memory.json`, and the server's `${CLAUDE_PROJECT_DIR}` is the LAUNCH
+    directory (Claude Code 2.1.282 sets it to wherever `claude` started) while the hook walks up to
+    the git root. A decision written through MCP never reached the next session's SessionStart.
+    """
+    env = os.environ if env is None else env
+    override = (env.get("INSPEXIMUS_CODING_STORE") or "").strip()
+    if override:
+        return override
+    base = cwd or os.getcwd()
+    return os.path.join(find_project_root(base) or base, ".inspeximus")
+
+
+def coding_store_path(cwd=None, env=None) -> str:
+    """The Claude Code store file. See `coding_store_dir`."""
+    return os.path.join(coding_store_dir(cwd, env), CODING_STORE_FILENAME)
+
+
 def resolve_path(path=None, *, env=None, cwd=None) -> str:
     """`--path`, else `$INSPEXIMUS_PATH`, else `$INSPEXIMUS_SCOPE`, else the documented default filename.
 
@@ -77,6 +105,9 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
         user     — today's behaviour, stated explicitly (the cwd-relative default filename).
         project  — `<git-root>/.inspeximus/memory.json`, an ABSOLUTE path. Identical from every directory
                    inside the repo; different between repos.
+        claude-code — the Claude Code hook's store, `<git-root or cwd>/.inspeximus/coding_memory.json`.
+                   The plugin and `inspeximus install --ide claude` set it, so a decision written through
+                   MCP is the one the next session's SessionStart hook reads.
     UNSET is `user`, so nothing changes for anyone who does not ask.
 
     A `project` scope with no enclosing git repository RAISES rather than falling back to the cwd-relative
@@ -106,7 +137,12 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
                 f"default, because that is the cwd-dependent behaviour this scope exists to remove. "
                 f"Either run inside a repository, or set INSPEXIMUS_PATH to an absolute file.")
         return os.path.join(root, ".inspeximus", "memory.json")
-    raise StoreScopeError(f"INSPEXIMUS_SCOPE={scope!r} is not a known scope; use 'user' or 'project'")
+    if scope == "claude-code":
+        # The Claude Code hook's store, resolved by the hook's own rule. No repository is not an error
+        # here, because the hook falls back to the working directory and this must land beside it.
+        return coding_store_path(cwd, env)
+    raise StoreScopeError(f"INSPEXIMUS_SCOPE={scope!r} is not a known scope; "
+                          f"use 'user', 'project' or 'claude-code'")
 
 
 def open_store(path=None, *, receipts: bool = False, persist_vectors: bool = False, embed=None,

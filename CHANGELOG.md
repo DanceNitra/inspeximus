@@ -1,3 +1,49 @@
+## 3.9.6 - UPGRADE IF you use inspeximus in Claude Code (the plugin or `inspeximus install --ide claude`): a decision made through MCP now reaches the next session
+
+Measured on a clean install of 3.9.5 (fresh venv, sandboxed HOME): a `remember_decision` made through
+the MCP server never reached the next session's SessionStart hook, which printed nothing. README
+promises "from the next session on, your agent starts knowing what the last one decided". Four
+defects stood between the two, and each is fixed here with a test that fails on 3.9.5
+(tests/test_a_decision_made_through_mcp_reaches_the_next_session.py, 14 of its 16 tests fail on 3.9.5).
+
+- **One store for the MCP server and the hooks.** The plugin pointed the server at
+  `${CLAUDE_PROJECT_DIR}/.inspeximus/memory.json`; the hooks read `<git root>/.inspeximus/coding_memory.json`.
+  Two filenames, and `${CLAUDE_PROJECT_DIR}` is the directory Claude Code started in, not the git root
+  (measured on Claude Code 2.1.282). The plugin now sets `INSPEXIMUS_SCOPE=claude-code`, a new scope that
+  resolves through the hook's own resolver (`_surface.coding_store_path`).
+- **A session's digest includes what the MCP server wrote in it.** The MCP server never knows the host's
+  session id, so its records are unstamped. One stamped hook capture switched `close_session`'s window to
+  stamped records only, and the session's MCP decision was left out. The window now also takes unstamped
+  records written after that session's open marker (or after the last digest, when the session has no
+  marker). A record stamped with another session stays out.
+- **A session that never got SessionEnd is closed when the next one opens.** A closed terminal skips
+  Claude Code's SessionEnd hook, so no digest was written and the decision was lost. `open_session()`
+  now closes such a session first, and writes nothing when it holds nothing salient. With no session
+  ever opened, salient writes since the last digest are closed as one session.
+- **`recall()` finds a decision by its topic and its context.** `recall("what did we decide about
+  indentation?")` returned `[]` for a decision with `topic="indentation"`; the lexical index read the
+  text only. The stored text is unchanged; the index also reads the topic (split on `:`, `_`, `-`, `/`
+  and `.`) and `context`. Pure semantic mode still embeds the text only.
+
+`inspeximus install --ide claude`:
+
+- **Writes the five hooks too**, into `~/.claude/settings.json` (or `<project>/.claude/settings.json` with
+  `--scope project`), matching `hooks/hooks.json`. It wrote only `mcpServers`, while README says both
+  routes wire "the same hooks". An event that already runs inspeximus is left as it is. With no
+  `--store`, the server entry gets `INSPEXIMUS_SCOPE=claude-code`.
+- **No longer writes a bare `uvx`.** Without uv on PATH it wrote `"command": "uvx"`, reported success,
+  and the server never started. It now uses this Python (`-m inspeximus.mcp_server`) when that Python can
+  import the `mcp` extra, and otherwise refuses and names both fixes. The hooks use the same runtime.
+
+Also: SessionStart names a 3.9.5-plugin store (`.inspeximus/memory.json`) while it holds records the
+project store lacks, with the command that folds it in:
+`python -m inspeximus.claude_code --merge-store <file> --apply` (dry by default; uses
+`import_changeset`, so erasure wins and the source is never modified). An `INSPEXIMUS_PATH` set in the
+environment still outranks the plugin's scope and splits the store again; the MCP `where_am_i` tool
+reports which rule chose the path.
+The MCP server's docstring named a module that does not exist (`python -m inspeximus.mcp`); it is
+`python -m inspeximus.mcp_server`.
+
 ## 3.9.5 - BREAKING FOR VERIFICATION: an erasure certificate verifies only as the library issues it, `verify_inclusion()` needs the root you witnessed, and a lost ledger or witness state is refused. UPGRADE IF YOU VERIFY ERASURE CERTIFICATES, CHECK INCLUSION PROOFS, OR RUN AN ACTION LEDGER OR A CHECKPOINT WITNESS. AFFECTS: `verify_erasure_certificate()`, `Inspeximus.verify_inclusion()`, `ActionLedger`, `CheckpointWitness` and the browser verifier at docs/verify; a document or call that passed before can fail now, in the cases below.
 
 Behaviour changes, each a verdict that used to be VALID or a write that used to go through:

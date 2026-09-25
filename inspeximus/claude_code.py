@@ -165,17 +165,12 @@ def _store_dir(cwd):
     `find_project_root` walks up for `.git` (directory OR file, so worktrees and submodules work) and
     already shipped in `_surface`; the hook simply never called it. Falls back to `cwd` when there is
     no repository, which is the old behaviour, and `INSPEXIMUS_CODING_STORE` overrides both.
+
+    DELEGATED since 3.9.6 to `_surface.coding_store_dir`, the resolver the MCP server's
+    `INSPEXIMUS_SCOPE=claude-code` also uses, so the two cannot pick different files again.
     """
-    override = (os.environ.get("INSPEXIMUS_CODING_STORE") or "").strip()
-    if override:
-        return override
-    base = cwd or os.getcwd()
-    try:
-        from ._surface import find_project_root
-        root = find_project_root(base)
-    except Exception:
-        root = None
-    return os.path.join(root or base, ".inspeximus")
+    from ._surface import coding_store_dir
+    return coding_store_dir(cwd)
 
 
 def _legacy_fragments(cwd):
@@ -278,6 +273,63 @@ def merge_fragments(cwd=None, apply=False):
             _json.dump(merged, f, ensure_ascii=False)
         os.replace(tmp, dest)
         report["applied"] = True
+    return report
+
+
+def _missing_from(src, m):
+    """(changeset, ids in `src` that store `m` lacks). Read through the store API: stores are SQLite."""
+    from ._surface import open_store
+    bundle = open_store(src).export_changeset()
+    have = {r.get("id") for r in getattr(m, "items", [])}
+    return bundle, [r.get("id") for r in bundle.get("records") or [] if r.get("id") not in have]
+
+
+def _orphaned_mcp_store(cwd, m):
+    """A 3.9.5-plugin MCP store holding records this project's store does not have, or None.
+
+    Up to 3.9.5 the plugin pointed its MCP server at `${CLAUDE_PROJECT_DIR}/.inspeximus/memory.json`
+    while this hook read `coding_memory.json`, so every decision made through MCP went to a file no
+    session start ever read. 3.9.6 points both at one store. Moving the server alone would leave
+    those decisions where nobody looks, which is the same silence one level down, so the file is
+    NAMED here until its records are folded in. It is never moved or merged without a command.
+    Returns (path, missing_count). Silenced by .inspeximus/config.json {"orphan_notice": false}.
+    """
+    if _cfg(cwd).get("orphan_notice") is False:
+        return None
+    mine = os.path.normcase(os.path.abspath(str(getattr(m, "path", "") or "")))
+    for d in (_store_dir(cwd), os.path.join(cwd or os.getcwd(), ".inspeximus")):
+        p = os.path.abspath(os.path.join(d, "memory.json"))
+        if not os.path.isfile(p) or os.path.normcase(p) == mine:
+            continue
+        try:
+            missing = _missing_from(p, m)[1]
+        except Exception:
+            continue
+        if missing:
+            return p, len(missing)
+    return None
+
+
+def merge_store(src, cwd=None, apply=False):
+    """Fold another store's records into this project's store. DRY BY DEFAULT; the source is never touched.
+
+    Uses the store's own reconcile path, `import_changeset`: union by id, the newer value wins per
+    key, and a record either side erased is never brought back. The destination is backed up first.
+    `merge_fragments` cannot do this job: it reads JSON, and a store written since 3.x is SQLite.
+    """
+    import shutil as _shutil
+    import time as _time
+    m = _store(cwd)
+    bundle, missing = _missing_from(src, m)
+    report = {"source": os.path.abspath(src), "destination": str(m.path), "new": len(missing),
+              "applied": False, "backup": None}
+    if apply and missing:
+        dest = str(m.path)
+        if os.path.exists(dest):
+            bak = dest + ".bak-merge-" + _time.strftime("%Y%m%d-%H%M%S")
+            _shutil.copy2(dest, bak)
+            report["backup"] = bak
+        report.update(m.import_changeset(bundle), applied=True)
     return report
 
 
@@ -810,6 +862,15 @@ def session_start(ev):
         lines = "\n".join(f"- {_injected(it['text'])}" for it in files)
         block = f"[inspeximus] this project's current known files (mechanics, latest state only):\n{lines}"
         emit.append(block[:int(cfg["files_max_chars"])])
+    try:
+        orphan = _orphaned_mcp_store(cwd, m)
+        if orphan:
+            emit.append("[inspeximus] %s holds %d memories this session does not read: inspeximus 3.9.5 "
+                        "and older stored MCP decisions there. To fold them into this project's store: "
+                        "python -m inspeximus.claude_code --merge-store \"%s\" --apply"
+                        % (orphan[0], orphan[1], orphan[0]))
+    except Exception:
+        pass
     # Which MEMORY.md pointers Claude Code's own loader dropped, by name. The loader warns only that
     # the file was over the cap; this names what went. Empty when nothing was cut, so it costs the
     # window nothing on a healthy index. Never raises (receipt_for swallows), so it cannot cost a
@@ -1266,6 +1327,18 @@ def main():
         install(); return
     if "--uninstall" in sys.argv:
         uninstall(); return
+    if "--merge-store" in sys.argv:
+        i = sys.argv.index("--merge-store")
+        src = sys.argv[i + 1] if i + 1 < len(sys.argv) else ""
+        if not src or not os.path.isfile(src):
+            print("inspeximus: --merge-store needs the path of an existing store file.")
+            sys.exit(2)
+        r = merge_store(src, apply="--apply" in sys.argv)
+        print(json.dumps(r, indent=2, default=str))
+        if not r["applied"] and r["new"]:
+            print("Dry run. Add --apply to write %d new record(s) into %s (backed up first)."
+                  % (r["new"], r["destination"]))
+        return
     try:
         ev = json.load(sys.stdin)
     except Exception:
