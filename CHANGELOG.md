@@ -1,7 +1,7 @@
 ## 3.9.7 - UPGRADE IF more than one process opens your store (an MCP server beside the Claude Code hooks, a CLI, a worker pool): an erasure by one process is no longer undone by another
 
 Measured on 3.9.6 and on 3.9.5. Each defect below has a test that fails on 3.9.6
-(tests/test_an_erasure_holds_in_every_handle_on_the_store.py, 7 of 7;
+(tests/test_an_erasure_holds_in_every_handle_on_the_store.py, 8 of 8;
 tests/test_project_files_live_at_the_project_root.py, 3 of 4, the fourth pins compatibility).
 
 - **A peer's erasure is no longer resurrected.** The tombstone sidecar was read once, when the store

@@ -152,3 +152,19 @@ def test_a_handle_opened_before_a_peers_erasure_chains_its_own_after_it(tmp_path
     assert side[1]["prev"] == side[0]["hash"]
     assert side[0]["hash"] == old
     assert "rechained_from" not in side[0]
+
+
+def test_tenant_stamps_survive_the_merge_of_two_handles(tmp_path):
+    """The sidecar is one chain per file, so the merge runs store-wide; each tombstone still carries
+    the tenant whose erasure it records, and a tenant view reads only its own."""
+    p = str(tmp_path / "s.json")
+    a = Inspeximus(p)
+    x = a.for_tenant("acme").remember("acme record")
+    y = a.for_tenant("globex").remember("globex record")
+    Inspeximus(p).for_tenant("acme").forget(ids=[x])
+    a.for_tenant("globex").forget(ids=[y])            # a never refreshed: its flush merges with disk
+    side = json.loads(open(p + ".tombstones.json", encoding="utf-8").read())
+    assert {t["memory_id"]: t.get("tenant") for t in side} == {x: "acme", y: "globex"}
+    fresh = Inspeximus(p)
+    assert [e["memory_id"] for e in fresh.for_tenant("acme").erasure_report()["erasures"]] == [x]
+    assert [e["memory_id"] for e in fresh.for_tenant("globex").erasure_report()["erasures"]] == [y]

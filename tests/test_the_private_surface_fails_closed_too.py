@@ -55,6 +55,13 @@ _STORE_WIDE_PRIVATE = {
     # `_open_store_bytes` is the loader's file read, retried across a peer's replace (2.27.8); it
     # returns the bytes of the one file and is store-wide for the reason `_load_from_disk` is.
     "_open_store_bytes",
+    # THE TOMBSTONE SIDECAR IS ONE CHAIN PER FILE (3.9.7). `_reconcile_tombstones_with_disk` adopts
+    # what another PROCESS appended, and `_seal_tombstone` chains onto the file's tip: scoped to one
+    # tenant, either would fork the chain the way `_merge_with_disk` would drop rows. The tenant stamp
+    # is still written by `_emit_tombstone`, which stays rebound, and a re-chained tombstone keeps it.
+    # `_prune_derived_caches` prunes caches the views share by reference against the shared rows;
+    # scoped, it would evict every other tenant's entries and keep an erased one of none.
+    "_reconcile_tombstones_with_disk", "_seal_tombstone", "_prune_derived_caches",
     # `_evict_to_capacity` WAS here, declared store-wide on the reasoning that capacity is a property
     # of the file. That reasoning was wrong and the test did its job by forcing the decision into
     # writing where it could be read and refuted: on a shared store at capacity=10, one tenant writing
