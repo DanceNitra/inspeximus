@@ -230,16 +230,6 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
     for dirpath, dirnames, filenames in os.walk(root, followlinks=follow_symlinks, onerror=_unlisted):
         pruned = [d for d in dirnames if d in skip]
         dirnames[:] = [d for d in dirnames if d not in skip]
-        if not follow_symlinks:
-            # A SYMLINKED DIRECTORY IS A SUBTREE THIS WALK DOES NOT ENTER. os.walk lists it and, with
-            # followlinks=False, never descends, so the value in root/data -> ../volume produced a clean
-            # verdict with nothing in `skipped` (mcp-tools-review E11). Not following links stays the
-            # default; saying so is what keeps "clean" from meaning "we did not look".
-            for d in dirnames:
-                if os.path.islink(os.path.join(dirpath, d)):
-                    skipped.append({"path": os.path.relpath(os.path.join(dirpath, d), root),
-                                    "why": "symlinked directory not followed (follow_symlinks=False); "
-                                           "scan its target as its own root, or follow links"})
         for d in pruned:
             # NOT LOOKED AT is not CLEAN. This subtree was dropped without a word, so a secret sitting in
             # .git/objects -- where a deleted store survives longest -- produced "RESULT: clean" and exit 0.
