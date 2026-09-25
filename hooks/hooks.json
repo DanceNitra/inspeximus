@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --from inspeximus==3.10.0 python -m inspeximus.claude_code"
+            "command": "uvx --from inspeximus==3.11.0 python -m inspeximus.claude_code"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --from inspeximus==3.10.0 python -m inspeximus.claude_code"
+            "command": "uvx --from inspeximus==3.11.0 python -m inspeximus.claude_code"
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --from inspeximus==3.10.0 python -m inspeximus.claude_code"
+            "command": "uvx --from inspeximus==3.11.0 python -m inspeximus.claude_code"
           }
         ]
       }
@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --from inspeximus==3.10.0 python -m inspeximus.claude_code"
+            "command": "uvx --from inspeximus==3.11.0 python -m inspeximus.claude_code"
           }
         ]
       }
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --from inspeximus==3.10.0 python -m inspeximus.claude_code",
+            "command": "uvx --from inspeximus==3.11.0 python -m inspeximus.claude_code",
             "timeout": 15
           }
         ]

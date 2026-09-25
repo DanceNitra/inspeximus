@@ -299,8 +299,8 @@
  {
   "name": "verify_writes stops comparing the value",
   "file": "inspeximus/core.py",
-  "old": "                              for k in (\"immutable_sha256\", \"mtype\", \"value_sha256\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
-  "new": "                              for k in (\"immutable_sha256\", \"mtype\",\n                                        \"status_sha256\", \"time_sha256\", \"attrib_sha256\")",
+  "old": "_COMMIT_BINDING_FIELDS = (\"immutable_sha256\", \"mtype\", \"value_sha256\", \"status_sha256\",",
+  "new": "_COMMIT_BINDING_FIELDS = (\"immutable_sha256\", \"mtype\", \"status_sha256\",",
   "tests": [
    "tests/test_value_is_committed.py"
   ]
@@ -308,8 +308,8 @@
  {
   "name": "the audit bundle stops binding the value",
   "file": "inspeximus/audit_bundle.py",
-  "old": "        for field in (\"immutable_sha256\", \"content_sha256\", \"value_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
-  "new": "        for field in (\"immutable_sha256\", \"content_sha256\",\n                      \"status_sha256\", \"attrib_sha256\"):",
+  "old": "        for field in (\"immutable_sha256\", \"content_sha256\", \"value_sha256\", \"status_sha256\",",
+  "new": "        for field in (\"immutable_sha256\", \"content_sha256\", \"status_sha256\",",
   "tests": [
    "tests/test_value_is_committed.py"
   ]

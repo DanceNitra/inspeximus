@@ -46,15 +46,15 @@
   "pubkey": "43035d7eff54707c1f064e318e2ca4449de12633ef8f53bdf5059da2b87027c1",
   "anchor": {
     "n_writes": 3,
-    "writes_tip": "eaec60d50402c792dfc05b48f3ded503c545e3249cd1e76ed8c9da764770dcb2",
+    "writes_tip": "34d559652761bbc38271469344aa720c381c155bb51fc0cc5aa31fac9538195e",
     "n_tombstones": 2,
     "tombstones_tip": "785d45fe19d40cfcb4013f19f5da4d7e8960d7dcdb3b3e506bebede8f9f6da1c",
     "ts": 1788253227.0,
-    "writes_root": "90f50ea557a7201aab7650c70a18acf3304ed14d07e8760bd14b97095166e3d4",
+    "writes_root": "95c2ca8ba3b07721039dd097a59c4d93a064c59d1422b20b0f6415e371b7af54",
     "tombstones_root": "44370e4d6a92708dd6850b887ceda899d95ff8a0834e9df71ff2b310c8a8553f",
     "merkle": "rfc6962-sha256",
-    "sth_hash": "6effd8d79e525d0a65c029844116f0f7fdac79e1be7bcccc04ed087793abf60a",
-    "root_hash": "630b74643839650999f78579e29178f0c9c4f78d065a6854b8751f7e4df719c5"
+    "sth_hash": "dbcdd2da83365fcce7a405087f4a95a6a322fb7b2bcd09d5917e3ce9472e1d29",
+    "root_hash": "beaa41b6801c91cec5c3e6db761b92f48b192577e076dadad9cbf29e17598915"
   },
   "self_check": {
     "verified": true,

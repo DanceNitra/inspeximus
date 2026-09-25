@@ -1,3 +1,26 @@
+## 3.11.0 - UPGRADE IF your store holds records for more than one tenant, agent, user, session or project: a genuine signed record moved into another context no longer verifies. VERIFICATION BEHAVIOUR CHANGES: receipts commit a new field, and `verify_writes()` gains `context_strict`.
+
+agmi 0.6.0 test T6 (cross-context replay). A write receipt committed to what a record says (text, key,
+type, value, status, validity time, sources) and not to whose it is. A record written for alice, signed,
+and relabelled on disk as bob's (by tenant, owning agent, or the user, agent or project it was written
+for) was served in bob's context while `verify_writes()` reported the chain intact. Measured on 3.10.0:
+all five relabels verified. tests/test_a_record_lifted_into_another_context_fails_verification.py.
+
+- **Receipts commit the context.** `_write_commit` adds `context_sha256` over the tenant, the owning
+  agent and the record's `uid`, `aid`, `sid` and `project`. All six are set once, in `remember()`, and
+  rewritten by no call site. A record whose receipt binds a context and was moved fails `verify_writes()`
+  in every mode, and `provenance()` names the field.
+- **Receipts written before 3.11.0 are counted, not failed.** They cannot be checked on their context.
+  The new `context_unbound()` returns `{unbound, ids, warning}`; `governance_report()["proof"]` and the
+  MCP `verify_writes` tool report the count and a one-line warning naming `recommit(ids=[...])`, which
+  binds each record's current context. `verify_writes(context_strict=True)` fails on them instead. A
+  store with no context reports 0.
+- **The audit-bundle rewalk compares the validity time and the context.** It had never compared
+  `time_sha256`.
+
+To bind an upgraded store: check the records `context_unbound()` names against a copy you trust, then
+call `recommit(ids=[...])`. It binds the context as it is now, not as it was at write time.
+
 ## 3.10.0 - UPGRADE IF you run the MCP server (`inspeximus-mcp`, the Claude Code plugin, `inspeximus install`): it signs with the store's key, stays inside its project, and its verdicts honour your key pin. BEHAVIOUR CHANGES: the server can refuse to START on a key that would break the chain, and a ledger it cannot read is refused rather than started over.
 
 A review of all 133 MCP tools (audits/2026-09-24/mcp-tools-review.md) found seven root causes (X1 to X7)
