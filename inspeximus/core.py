@@ -1335,7 +1335,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.9.6"
+__version__ = "3.9.7"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -8053,9 +8053,12 @@ class Inspeximus:
         """Chain one tombstone onto the current tip, hash it, sign it and append it. `t` carries the
         content (memory_id, ts, request_id, auth, tenant); seq and prev come from the tip. A tombstone
         moved after a peer's by `_reconcile_tombstones_with_disk` keeps its old hash as `rechained_from`."""
-        t = {k: v for k, v in t.items() if k not in ("seq", "prev", "hash", "sig", "pubkey", "rechained_from")}
-        t["seq"] = len(self._tombstones)
-        t["prev"] = self._tombstones[-1]["hash"] if self._tombstones else _GENESIS
+        # Key order as before 3.9.7 (seq, memory_id, ts, request_id, prev, then the rest), so a sidecar
+        # or a certificate written by this build reads line for line like one written by the last.
+        content = {k: v for k, v in t.items() if k not in ("seq", "prev", "hash", "sig", "pubkey", "rechained_from")}
+        t = {"seq": len(self._tombstones), "memory_id": content.pop("memory_id", None),
+             "ts": content.pop("ts", None), "request_id": content.pop("request_id", None),
+             "prev": self._tombstones[-1]["hash"] if self._tombstones else _GENESIS, **content}
         if rechained_from is not None:
             t["rechained_from"] = rechained_from
         t["hash"] = _sha256_hex(_canon(Inspeximus._tombstone_core(t)))

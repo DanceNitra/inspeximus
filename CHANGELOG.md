@@ -1,3 +1,29 @@
+## 3.9.7 - UPGRADE IF more than one process opens your store (an MCP server beside the Claude Code hooks, a CLI, a worker pool): an erasure by one process is no longer undone by another
+
+Measured on 3.9.6 and on 3.9.5. Each defect below has a test that fails on 3.9.6
+(tests/test_an_erasure_holds_in_every_handle_on_the_store.py, 7 of 7;
+tests/test_project_files_live_at_the_project_root.py, 3 of 4, the fourth pins compatibility).
+
+- **A peer's erasure is no longer resurrected.** The tombstone sidecar was read once, when the store
+  opened, and every flush wrote the handle's own list over the file. Two handles on one store: B forgets
+  record x; A refreshes, does not see B's tombstone, re-adds x as its own unsaved write and saves it back
+  to disk; A then forgets y and the sidecar reads only y. The record was back and the proof that it had
+  been erased was gone. Since 3.9.6 the MCP server and the Claude Code hooks share one store, so two
+  ordinary processes do this. The sidecar now merges like the receipt chain has since 2.28.1: the disk
+  chain wins, and this handle's tombstones that are not on disk are chained after it, keeping their old
+  hash as `rechained_from`. Nothing is dropped.
+- **`forget` leaves no term of the erased record in the handle.** It dropped the record's token set and
+  signature from the in-memory caches and kept its BM25 term map: after `forget`, the handle still held
+  `{'courier': 1, 'password': 1, 'zyxwvq': 1}` for the erased record. `shred` reset one of the three
+  caches. Every id-keyed cache is now pruned against the live rows after `forget`, `shred` and a merge
+  with disk. The ranking was not affected: BM25 scores only live records, so the erased term already
+  scored 0.
+- **The Claude Code hooks keep their files at the project root.** Launched from a subdirectory,
+  SessionStart created a second `.inspeximus` there for `.update_check.json`, the star-nudge counter
+  wrote to a directory that did not exist and never counted, and a `config.json` at the root was
+  ignored. The first two now sit beside the store. The config is read from the root first, then from
+  the launch directory.
+
 ## 3.9.6 - UPGRADE IF you use inspeximus in Claude Code (the plugin or `inspeximus install --ide claude`): a decision made through MCP now reaches the next session
 
 Measured on a clean install of 3.9.5 (fresh venv, sandboxed HOME): a `remember_decision` made through
