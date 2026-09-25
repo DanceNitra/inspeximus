@@ -4,7 +4,9 @@ Hermes Agent (NousResearch) lets an install choose ONE external memory provider,
 `memory.provider`. It ships eight of them, mem0 and supermemory among them, and the bundled directory
 is closed to new entries. The route that stays open needs nobody's permission: a pip-installed
 package publishes an entry point in the `hermes_agent.memory_providers` group, and Hermes discovers
-it. That is what this module is, and it is why `pip install inspeximus` is the whole install.
+it. That is what this module is, and it is why installing inspeximus INTO HERMES' OWN VENV is the
+whole install. Not `pip install hermes-agent` from PyPI: that is 0.19.0, which reads providers from
+directories only and never loads this one (measured 2026-09-25). See docs/INTEGRATIONS.md.
 
     # ~/.hermes config
     memory:

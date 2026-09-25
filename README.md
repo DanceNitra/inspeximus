@@ -669,6 +669,9 @@ knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 - **PostToolUse** captures what actually happened, keyed by file
 - **PreToolUse** surfaces the decision that bears on the action *before* it runs
 
+Verified with the Claude Code CLI on a clean profile, both routes, across two sessions. The Code tab
+of the Claude desktop app is not verified.
+
 ---
 
 ## What you get
@@ -765,6 +768,11 @@ needs nothing. The MCP server, encryption and the framework adapters are separat
 
 `langchain` · `langgraph-store` · `llamaindex` · `haystack` · `autogen` · `pydantic-ai` ·
 `google-adk` · `memoryagentbench` · `hermes-agent`
+
+For Hermes Agent, install inspeximus into the venv Hermes runs from, not into your shell's Python
+([how](docs/INTEGRATIONS.md#memory-provider-for-hermes-agent-inspeximusmemoryprovider-2272)). Install
+Hermes with its own installer: `pip install hermes-agent` gets 0.19.0 from PyPI, which never loads the
+provider.
 
 **14 of 14 verified against current upstream, 0 recorded broken.** Three were broken a day ago and
 the list said so, which is the only reason you can believe this line: `openai-agents` was missing an

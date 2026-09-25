@@ -304,6 +304,13 @@ memory:
   provider: inspeximus
 ```
 
+**Not from PyPI.** `pip install hermes-agent` installs 0.19.0 (measured 2026-09-25), which finds
+memory providers in directories only and never reads the entry point: `hermes memory status` reports
+the provider as not installed and the agent runs without it. Hermes is distributed through its
+installer (`iex (irm https://hermes-agent.nousresearch.com/install.ps1)` on Windows); the build of tag
+`v2026.9.24` (0.21.5) loads inspeximus, measured the same day with two sessions and Hermes' built-in
+memory off.
+
 Then `hermes memory` lists `inspeximus` beside the bundled providers. The store lives at
 `<hermes_home>/inspeximus/memory.json`, so two profiles are two memories; a different path is a
 dashboard field.
