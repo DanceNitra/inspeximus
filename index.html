@@ -68,7 +68,35 @@
     <link rel="modulepreload" crossorigin href="./assets/three-Bkb2dqNl.js">
     <link rel="modulepreload" crossorigin href="./assets/motion-B8OfwHgZ.js">
     <link rel="stylesheet" crossorigin href="./assets/index-CqT4d_L3.css">
-  </head>
+  <style>
+/* header: six page links, "More" for the in-page sections, a menu under 860 px */
+.nav__links{display:flex;align-items:center;gap:26px;white-space:nowrap}
+.nav__more{position:relative}
+.nav__more summary{list-style:none;cursor:pointer;color:var(--muted);transition:color .25s ease}
+.nav__more summary::-webkit-details-marker{display:none}
+.nav__more summary::after{content:"";display:inline-block;width:6px;height:6px;margin-left:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-3px) rotate(45deg)}
+.nav__more summary:hover,.nav__more[open] summary{color:var(--fg)}
+.nav__drop{position:absolute;right:0;top:calc(100% + 14px);min-width:190px;display:flex;flex-direction:column;padding:8px;background:var(--panel);border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 12px 32px #0008}
+.nav__drop a{padding:8px 10px;border-radius:6px;color:var(--muted)}
+.nav__drop a:hover{color:var(--fg);background:#ffffff0a}
+.nav__drop a::after{display:none}
+.nav__menu{display:none;position:relative}
+.nav__menu summary{list-style:none;cursor:pointer;width:42px;height:42px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;border:1px solid var(--line-strong);border-radius:8px}
+.nav__menu summary::-webkit-details-marker{display:none}
+.nav__menu summary span{display:block;width:18px;height:1.5px;background:var(--fg)}
+.nav__sheet{position:absolute;right:0;top:calc(100% + 10px);width:min(78vw,300px);max-height:75vh;overflow:auto;display:flex;flex-direction:column;padding:10px;background:var(--panel);border:1px solid var(--line-strong);border-radius:12px;box-shadow:0 16px 40px #000a}
+.nav__sheet a{padding:10px 12px;border-radius:6px;color:var(--fg);font-size:15px}
+.nav__sheet hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
+@media (max-width:1180px){.nav__links{gap:20px;font-size:13.5px}}
+@media (max-width:1040px){.nav__links,.nav>.btn{display:none}.nav__menu{display:block}}
+/* compact header: no blur, solid band only as tall as the header, shorter once the page scrolls */
+.nav{padding:14px clamp(18px,4vw,48px);transition:padding .25s ease,background .25s ease,border-color .25s ease}
+.nav.is-stuck{padding-top:8px;padding-bottom:8px;background:#0a0a0bf2;-webkit-backdrop-filter:none;backdrop-filter:none}
+.nav .seal-mark{width:32px;height:32px}
+.nav.is-stuck .seal-mark{width:28px;height:28px}
+.nav .btn--ghost{padding:8px 16px}
+</style>
+</head>
   <body>
     <!-- Texture overlays -->
     <div class="grain" aria-hidden="true"></div>
@@ -82,23 +110,49 @@
       </a>
       <nav class="nav__links" aria-label="Primary">
         <a href="quickstart.html">Quickstart</a>
-        <a href="#story">Story</a>
-        <a href="#measured">Measured</a>
-        <a href="#features">Features</a>
-        <a href="#mcp">MCP</a>
-        <a href="#provenance">Provenance</a>
-        <a href="#langgraph">LangGraph</a>
-        <a href="#governance">Governance</a>
         <a href="compare.html">Compared</a>
         <a href="claude-code.html">Claude Code</a>
         <a href="ai-act.html">EU AI Act</a>
         <a href="erasure.html">Erasure</a>
         <a href="audit-trail.html">Audit trail</a>
-        <a href="migrate-from-mem0.html">From mem0</a>
+        <details class="nav__more">
+          <summary>More</summary>
+          <div class="nav__drop">
+            <a href="#story">Story</a>
+            <a href="#measured">Measured</a>
+            <a href="#features">Features</a>
+            <a href="#mcp">MCP</a>
+            <a href="#provenance">Provenance</a>
+            <a href="#langgraph">LangGraph</a>
+            <a href="#governance">Governance</a>
+            <a href="migrate-from-mem0.html">From mem0</a>
+          </div>
+        </details>
       </nav>
       <a class="btn btn--ghost magnetic" href="https://github.com/DanceNitra/inspeximus" target="_blank" rel="noopener">
         <span>Star on GitHub</span>
       </a>
+    <details class="nav__menu">
+        <summary aria-label="Menu"><span></span><span></span><span></span></summary>
+        <div class="nav__sheet">
+          <a href="quickstart.html">Quickstart</a>
+          <a href="compare.html">Compared</a>
+          <a href="claude-code.html">Claude Code</a>
+          <a href="ai-act.html">EU AI Act</a>
+          <a href="erasure.html">Erasure</a>
+          <a href="audit-trail.html">Audit trail</a>
+          <a href="migrate-from-mem0.html">From mem0</a>
+          <hr>
+          <a href="#story">Story</a>
+          <a href="#measured">Measured</a>
+          <a href="#features">Features</a>
+          <a href="#mcp">MCP</a>
+          <a href="#provenance">Provenance</a>
+          <a href="#langgraph">LangGraph</a>
+          <a href="#governance">Governance</a>
+          <a href="https://github.com/DanceNitra/inspeximus" target="_blank" rel="noopener">Star on GitHub</a>
+        </div>
+      </details>
     </header>
 
     <!-- The pinned WebGL scene lives behind the narrative -->
