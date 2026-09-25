@@ -58,6 +58,11 @@ REQUIRED_CARRIERS = (
     # the eyebrow line a human reads.
     "index.html",
     "glama.json",
+    # THE PLUGIN'S LAUNCH LINES, ADDED IN 3.9.7. Both pin the exact release (`--from
+    # inspeximus[mcp]==X`), because an unpinned launch resolved the previous release while the index
+    # lagged and died on a scope it does not know. A pin that lags the release is the same defect.
+    ".mcp.json",
+    "hooks/hooks.json",
 )
 
 
@@ -146,6 +151,11 @@ def _read_carrier(root, rel):
             found += [("eyebrow[%d]" % i, v) for i, v in
                       enumerate(re.findall(r'(?<![\w.])v(\d+\.\d+\.\d+)(?![\w.])', text))]
             return found, None
+        if rel in (".mcp.json", "hooks/hooks.json"):
+            pins = re.findall(r'inspeximus(?:\[[^\]]*\])?==([0-9][^"\s]*)', path.read_text(encoding="utf-8"))
+            if not pins:
+                return [], "launches inspeximus without a pinned version"
+            return [("pin[%d]" % i, v) for i, v in enumerate(pins)], None
         if rel == "glama.json":
             # It declares no version today. That is fine and it is REPORTED rather than passed over in
             # silence: a check that reads an absent field and says nothing has measured nothing. The

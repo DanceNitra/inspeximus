@@ -13,6 +13,7 @@ These tests pin both, and pin them to the installer, so the two paths cannot dri
 """
 from __future__ import annotations
 
+import inspeximus
 import json
 from pathlib import Path
 
@@ -44,7 +45,9 @@ def test_every_hook_runs_the_module_through_uvx_so_pip_is_not_assumed():
         for e in entries:
             for h in e["hooks"]:
                 assert h["type"] == "command", ev
-                assert h["command"].startswith("uvx --from inspeximus "), (
+                # Pinned to the release since 3.9.7: an unpinned spec resolved the previous release
+                # while the index lagged. Still uvx, still no pip assumed.
+                assert h["command"].startswith("uvx --from inspeximus==%s " % inspeximus.__version__), (
                     "%s runs %r. A plugin cannot assume `pip install inspeximus` happened; uvx "
                     "resolves the package itself, the way the MCP entry already does." % (ev, h["command"]))
                 assert h["command"].endswith("python -m inspeximus.claude_code"), ev

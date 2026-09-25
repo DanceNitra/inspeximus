@@ -26,9 +26,21 @@ import sys
 SERVER_NAME = "inspeximus"
 
 
+def _pinned(extra=""):
+    """`inspeximus[<extra>]==<this version>`: the spec every uvx launch this installer writes names.
+
+    PINNED TO THE VERSION THAT WROTE IT (3.9.7). An unpinned `--from inspeximus[mcp]` resolves whatever
+    the index serves at that moment. Right after 3.9.6 was published the index still served 3.9.5, which
+    refuses the INSPEXIMUS_SCOPE=claude-code this installer writes, and the server died with
+    StoreScopeError (found by the tester-kit lane). A pin also keeps the server and the hooks on one
+    version against one store. To move to a newer release, upgrade inspeximus and re-run the install."""
+    from inspeximus import __version__
+    return "inspeximus%s==%s" % ("[%s]" % extra if extra else "", __version__)
+
+
 def default_server_block(store_path=None):
     """The stdio MCP entry, in the shape every JSON-configured host uses."""
-    block = {"command": "uvx", "args": ["--from", "inspeximus[mcp]", "inspeximus-mcp"]}
+    block = {"command": "uvx", "args": ["--from", _pinned("mcp"), "inspeximus-mcp"]}
     if store_path:
         block["env"] = {"INSPEXIMUS_PATH": str(store_path)}
     return block
@@ -139,7 +151,7 @@ def _server_launch(kind, exe):
     """(command, args) for the MCP server under a runtime from `resolve_runtime`."""
     if kind == "python":
         return exe, ["-m", "inspeximus.mcp_server"]
-    return exe, ["--from", "inspeximus[mcp]", "inspeximus-mcp"]
+    return exe, ["--from", _pinned("mcp"), "inspeximus-mcp"]
 
 
 def _shell_path(p):
@@ -155,7 +167,7 @@ def hook_command(kind, exe):
     """The hook command under a runtime from `resolve_runtime`."""
     if kind == "python":
         return _shell_path(exe) + " -m inspeximus.claude_code"
-    return _shell_path(exe) + " --from inspeximus python -m inspeximus.claude_code"
+    return _shell_path(exe) + " --from %s python -m inspeximus.claude_code" % _pinned()
 
 
 def _claude_settings_path(mcp_config_path):

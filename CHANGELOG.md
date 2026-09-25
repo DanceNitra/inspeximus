@@ -18,6 +18,13 @@ tests/test_project_files_live_at_the_project_root.py, 3 of 4, the fourth pins co
   caches. Every id-keyed cache is now pruned against the live rows after `forget`, `shred` and a merge
   with disk. The ranking was not affected: BM25 scores only live records, so the erased term already
   scored 0.
+- **Every uvx launch names the release that wrote it.** `uvx --from inspeximus[mcp]` resolved whatever
+  the index served: right after 3.9.6 was published it served 3.9.5, which refuses the
+  `INSPEXIMUS_SCOPE=claude-code` 3.9.6 writes, and the server died with StoreScopeError (found by a
+  clean-install test on PyPI 3.9.6). The installer now writes `inspeximus[mcp]==<its version>` for the
+  server and `inspeximus==<its version>` for the hooks, and the plugin's `.mcp.json` and
+  `hooks/hooks.json` carry the release pin; the release check reads both as version files. To move to a
+  newer release, upgrade inspeximus and re-run `inspeximus install`.
 - **The Claude Code hooks keep their files at the project root.** Launched from a subdirectory,
   SessionStart created a second `.inspeximus` there for `.update_check.json`, the star-nudge counter
   wrote to a directory that did not exist and never counted, and a `config.json` at the root was

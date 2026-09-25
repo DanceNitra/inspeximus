@@ -16,6 +16,7 @@ The two-process tests read the SHIPPED `.mcp.json`, so they fail again if the pl
 """
 from __future__ import annotations
 
+import inspeximus
 import asyncio
 import json
 import os
@@ -215,7 +216,8 @@ def test_install_claude_writes_the_hooks_the_plugin_ships(home, monkeypatch):
     assert list(hooks) == list(plugin)
     for evt, entries in hooks.items():
         (h,) = entries[0]["hooks"]
-        assert h["command"].endswith("--from inspeximus python -m inspeximus.claude_code"), h
+        assert h["command"].endswith("--from inspeximus==%s python -m inspeximus.claude_code"
+                                     % inspeximus.__version__), h
         assert "\\" not in h["command"]
         assert entries[0].get("matcher") == plugin[evt][0].get("matcher")
         assert h.get("timeout") == plugin[evt][0]["hooks"][0].get("timeout")
