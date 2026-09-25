@@ -2963,6 +2963,7 @@ class Inspeximus:
                 self._tombstones = json.loads(self._tombstones_path.read_text(encoding="utf-8"))
             except Exception:
                 self._tombstones = []
+        self._tombstones_sig = self._tombstones_disk_sig()
         # GDPR Art. 21 objections: a sidecar like the tombstones, one row per objection with its status.
         # A standing objection withholds the subject's records from recall (see recall's pool filter);
         # the file exists only once an objection has been recorded, so a store without one is unchanged.
@@ -7957,9 +7958,7 @@ class Inspeximus:
                     # resolved_over) are deliberately KEPT — erasure_audit reports them as dangling_lineage,
                     # and scrubbing them would delete the evidence and make the audit read clean.
                     meta.pop("rederived_to", None)
-        for tid in target:
-            self._tok_cache.pop(tid, None)
-            self._sig_cache.pop(tid, None)
+        self._prune_derived_caches()
         now = time.time()
         for tid in sorted(target):                           # deterministic order -> reproducible chain
             self._emit_tombstone(tid, now, request_id, basis=basis or "forget",
@@ -8015,9 +8014,8 @@ class Inspeximus:
         sign_erasure()). Still content-free (a hash of PII is still PII). When present, these are inside the
         committed hash, so an auditor can reconstruct WHO authorized the erasure and ON WHAT BASIS — not just a
         free-text id — and detect any later tampering with them."""
-        prev = self._tombstones[-1]["hash"] if self._tombstones else _GENESIS
-        t = {"seq": len(self._tombstones), "memory_id": memory_id, "ts": ts,
-             "request_id": request_id, "prev": prev}
+        self._reconcile_tombstones_with_disk()
+        t = {"memory_id": memory_id, "ts": ts, "request_id": request_id}
         if basis is not None or authorized_by is not None or authorization is not None:
             t["auth"] = {"basis": basis, "authorized_by": authorized_by, "authorization": authorization}
         # WHOSE ERASURE THIS WAS -- deliberately OUTSIDE the committed core, and the tradeoff is
@@ -8035,6 +8033,31 @@ class Inspeximus:
         # re-hashing live tombstones with the key added: identical, chain_intact preserved.
         if self.tenant is not None:
             t["tenant"] = self.tenant
+        t = self._seal_tombstone(t)
+        # ERASURE HAS TO REACH THE COPY WE MADE OURSELVES. Converting a JSON store to rows leaves the
+        # original beside it so the upgrade can be undone, and that backup is a full copy of the records
+        # -- including the ones a subject later asks us to erase. Measured before this call existed: after
+        # `forget_subject`, the erased text was gone from the store and from the tombstone chain, and
+        # still sat in `memory.json.pre-rows.bak`, where nothing in the erasure path could see it. A file
+        # this library created without being asked is not somewhere personal data gets to survive a
+        # deletion request. The rollback window ends at the first erasure, which is the right trade.
+        self._drop_pre_rows_backup()
+        # `defer` is for a BATCH erasure, which is the only caller that emits more than one: it writes the
+        # chain once at the end instead of once per tombstone. The default stays False so a single emit is
+        # durable the moment it returns, exactly as before.
+        if not defer:
+            self._flush_tombstones()
+        return t
+
+    def _seal_tombstone(self, t: dict, rechained_from: str | None = None) -> dict:
+        """Chain one tombstone onto the current tip, hash it, sign it and append it. `t` carries the
+        content (memory_id, ts, request_id, auth, tenant); seq and prev come from the tip. A tombstone
+        moved after a peer's by `_reconcile_tombstones_with_disk` keeps its old hash as `rechained_from`."""
+        t = {k: v for k, v in t.items() if k not in ("seq", "prev", "hash", "sig", "pubkey", "rechained_from")}
+        t["seq"] = len(self._tombstones)
+        t["prev"] = self._tombstones[-1]["hash"] if self._tombstones else _GENESIS
+        if rechained_from is not None:
+            t["rechained_from"] = rechained_from
         t["hash"] = _sha256_hex(_canon(Inspeximus._tombstone_core(t)))
         # BOTH SIGNING PATHS, in the same order the write receipt uses them. This honoured
         # `receipt_key` (the in-process key) and ignored `receipt_signer` (the external KMS/HSM)
@@ -8064,28 +8087,63 @@ class Inspeximus:
             t["pubkey"] = self.receipt_pubkey
             t["sig"] = sk.sign(bytes.fromhex(t["hash"])).hex()
         self._tombstones.append(t)
-        # ERASURE HAS TO REACH THE COPY WE MADE OURSELVES. Converting a JSON store to rows leaves the
-        # original beside it so the upgrade can be undone, and that backup is a full copy of the records
-        # -- including the ones a subject later asks us to erase. Measured before this call existed: after
-        # `forget_subject`, the erased text was gone from the store and from the tombstone chain, and
-        # still sat in `memory.json.pre-rows.bak`, where nothing in the erasure path could see it. A file
-        # this library created without being asked is not somewhere personal data gets to survive a
-        # deletion request. The rollback window ends at the first erasure, which is the right trade.
-        self._drop_pre_rows_backup()
-        # `defer` is for a BATCH erasure, which is the only caller that emits more than one: it writes the
-        # chain once at the end instead of once per tombstone. The default stays False so a single emit is
-        # durable the moment it returns, exactly as before.
-        if not defer:
-            self._flush_tombstones()
         return t
+
+    def _tombstones_disk_sig(self):
+        try:
+            st = self._tombstones_path.stat()
+            return (st.st_mtime_ns, st.st_size)
+        except (AttributeError, OSError):
+            return None
+
+    def _reconcile_tombstones_with_disk(self) -> int:
+        """Adopt tombstones a peer process wrote to the sidecar, and re-chain ours on top of them.
+
+        THE TOMBSTONE CHAIN HAD NO MERGE (3.9.7), the defect the receipt chain had until 2.28.1.
+        Tombstones were read once, at open, and every flush wrote this handle's list over the file.
+        With two handles on one store, measured on 3.9.6: B forgets x; A refreshes, does not see the
+        tombstone, re-adds x as its own unsaved write and saves it back to disk; A then forgets y and
+        the sidecar reads ['y']. The record is back and the proof that it was erased is gone. Since
+        3.9.6 the MCP server and the Claude Code hooks share one store, so two ordinary processes do it.
+
+        The disk chain wins for the part it has. This handle's entries that are not on disk are
+        appended after the disk tip with a fresh seq, prev, hash and signature, and keep the old hash
+        as `rechained_from`, the way `_reconcile_receipts_with_disk` moves a receipt. Nothing is
+        dropped. Returns how many disk entries were adopted; one stat when the sidecar has not moved.
+        """
+        if not self._tombstones_path:
+            return 0
+        sig = self._tombstones_disk_sig()
+        if sig is None or sig == getattr(self, "_tombstones_sig", None):
+            return 0
+        try:
+            disk = json.loads(self._tombstones_path.read_text(encoding="utf-8"))
+        except Exception:
+            return 0
+        if not isinstance(disk, list):
+            return 0
+        mine = self._tombstones
+        n = 0
+        while n < len(mine) and n < len(disk) and mine[n].get("hash") == disk[n].get("hash"):
+            n += 1
+        self._tombstones_sig = sig
+        if n == len(disk):
+            return 0                                  # disk is a prefix of ours: nothing to adopt
+        tail = mine[n:]
+        self._tombstones = list(disk)
+        for old in tail:
+            self._seal_tombstone(old, rechained_from=old.get("hash"))
+        return len(disk) - n
 
     def _flush_tombstones(self) -> None:
         """Persist the whole tombstone chain. Split out of _emit_tombstone so a batch erasure can write once."""
         if not self._tombstones_path:
             return
+        self._reconcile_tombstones_with_disk()
         try:
             Inspeximus._atomic_write(self._tombstones_path,
                                      json.dumps(self._tombstones, indent=2, ensure_ascii=False))
+            self._tombstones_sig = self._tombstones_disk_sig()
         except Exception as e:
             # A tombstone is the PROOF an erasure happened. Silently losing it meant forget_subject
             # returned tombstones:1 and erasure_certificate said verified, while a reload showed
@@ -9181,6 +9239,7 @@ class Inspeximus:
         # The sidecar is part of what a peer wrote. Adopt it here so reload() and refresh() see the
         # peer's receipts as well as its records; see `_reconcile_receipts_with_disk`.
         self._reconcile_receipts_with_disk()
+        self._reconcile_tombstones_with_disk()
         buried = {t.get("memory_id") for t in (self._tombstones or [])}
         # Drop what THIS handle deliberately erased, whichever side it came from. Filtering only the
         # re-added set was not enough: the record came back from DISK, so a tombstoned erasure was undone by
@@ -9248,6 +9307,7 @@ class Inspeximus:
         # records this handle re-added live in memory only, which is correct: if the file changed
         # since the read, the next save refuses and the caller reloads again with them still held.
         self._items_view_rev = None
+        self._prune_derived_caches()                  # a peer's erasure leaves nothing here either
         return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
                 "kept_buried": len(resurrected)}
 
@@ -12556,6 +12616,19 @@ class Inspeximus:
         if c is None:
             c = _token_counts(_index_text(rec)); self._tc_cache[rid] = c
         return c
+
+    def _prune_derived_caches(self) -> None:
+        """Drop every id-keyed cache entry whose record is no longer in the store.
+
+        ONE PLACE, NOT A LIST AT EACH ERASURE. `forget` popped the token set and the signature and
+        missed the BM25 term map added after them, so an erased record's terms stayed in the handle
+        (measured on 3.9.6: {'courier': 1, 'password': 1, 'zyxwvq': 1} after forget). `shred` reset
+        only the token set, and a peer's erasure adopted by a reload popped nothing. Pruning against
+        the live rows covers all three paths."""
+        live = {r.get("id") for r in self._items}
+        for cache in (self._tok_cache, self._sig_cache, self._tc_cache):
+            for rid in [k for k in cache if k not in live]:
+                del cache[rid]
 
     def _bm25_scores(self, qtok: set, pool: list, k1: float = 1.5, b: float = 0.75) -> list:
         """Okapi BM25 score of `query` (token set) against every record in `pool` — the strong lexical
@@ -16374,7 +16447,7 @@ class Inspeximus:
         n = len(self._items)
         self._items = []
         self._mat = None
-        self._tok_cache = {}
+        self._prune_derived_caches()
         return {"shredded": True, "records_dropped": n, "ts": time.time(),
                 "note": "encryption key destroyed; the store at rest (and its backups) is now unrecoverable"}
 
