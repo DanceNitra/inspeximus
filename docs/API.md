@@ -955,7 +955,7 @@ fairness check), and an adversarial **echo of the stale value re-stated after th
 promoted** — don't use on hostile ingestion without provenance gating (combine with `influence_only`).
 Opt-in; default `None` = byte-identical legacy recall.
 
-### Echo-attack guard for corrected facts: `m.echo_guard = True` + `remember(object=...)` (0.6.9)
+### Echo-attack guard for corrected facts: `echo_guard` (on by default since 1.87.0) + `remember(object=...)` (0.6.9)
 A fact is corrected (old value → superseded); later the OLD value is **re-stated** — a benign restatement or
 an attacker re-injection. On a plain recency / bi-temporal / last-writer-wins store the restatement carries a
 newer timestamp and **resurrects the stale value**. Measured on a MemBench echo fixture
@@ -1128,6 +1128,15 @@ status, and — since 0.6.18 — the policy that retired it). Closes the one rea
 bi-temporal graph store had, on the existing intervals. Honest limit: an out-of-order back-fill resolves by
 event-time (`valid_from`), not ingest order.
 
+**What the store knew at a recording time: `as_of(key, when, as_recorded=t)` and `believed_at(key, t)`
+(1.5.0).** `as_recorded` is a transaction time. `as_of(key, when, as_recorded=t)` answers "what did the store
+record, by time `t`, as true at `when`": it uses only records written by `t` (`ts <= t`) and recomputes
+supersession inside that set, so a correction written after `t` does not change the answer, and the result
+carries `invalidated_at` as known at `t`. `believed_at(key, t)` returns the latest-asserted value recorded by
+`t`, as `{object, text, valid_from, id, as_recorded}`, or `None`. Both select on each record's `ts`. Since
+3.12.0 `verify_writes()` compares `ts` with the recording time in the record's write receipt, so a record
+backdated or postdated on disk fails it; a store written with receipts off has nothing to compare against.
+
 ### Run bounded in production: `Inspeximus(capacity=N)` two-tier eviction (0.6.15)
 Append-only is unbounded; production memory isn't. `Inspeximus(capacity=N)` hard-evicts the lowest-value **active**
 records past `N` via the verified value-protected + recency-aged rule (`protect_frac` of the cap is
@@ -1160,8 +1169,9 @@ judge log most memory systems omit (cf. TOKI, arXiv:2606.06240). Additive metada
 decision changes (`probes/supersession_policy_stamp_probe.py`, 10/10).
 
 ### Right-to-erasure that keeps the audit trail honest: `forget_subject()` + deletion tombstones (0.6.19+)
-`forget()` genuinely removes content — but a hard delete makes `verify_writes()` report the now-missing
-record as "deleted out-of-band", so a legitimate erasure is indistinguishable from tampering.
+`forget()` removes content and, since 1.24.0, appends a deletion tombstone, so `verify_writes()` reads the
+erasure as accounted for. A record removed from the file by any other means is reported as "deleted
+out-of-band".
 `forget_subject(subject, request_id=…)` erases every memory attributable to a data subject **across
 provenance lineage** (its own canonical source *and* any record that inherited it through `derived_from`
 taint — so a summary built from the subject's data is erased too, which a naive text-match delete misses),

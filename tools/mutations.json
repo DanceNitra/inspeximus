@@ -3201,5 +3201,68 @@
   "tests": [
    "tests/test_a_record_lifted_into_another_context_fails_verification.py"
   ]
+ },
+ {
+  "name": "the attribution commitment drops the nonce",
+  "file": "inspeximus/core.py",
+  "old": "            return {\"attrib_nonced_sha256\": _sha256_hex(_canon({\"sources\": src, \"nonce\": rec[\"nonce\"]}))}",
+  "new": "            return {\"attrib_nonced_sha256\": _sha256_hex(_canon(src))}",
+  "tests": [
+   "tests/test_an_erased_subject_cannot_be_confirmed_from_the_receipts.py"
+  ]
+ },
+ {
+  "name": "verify_attribution ignores the nonced field",
+  "file": "inspeximus/core.py",
+  "old": "            _f = \"attrib_nonced_sha256\" if \"attrib_nonced_sha256\" in _c else \"attrib_sha256\"",
+  "new": "            _f = \"attrib_sha256\"",
+  "tests": [
+   "tests/test_an_erased_subject_cannot_be_confirmed_from_the_receipts.py"
+  ]
+ },
+ {
+  "name": "verify_writes ignores the recording time",
+  "file": "inspeximus/core.py",
+  "old": "                _ts_moved = r.get(\"ts\") is not None and cur.get(\"ts\") != r.get(\"ts\")",
+  "new": "                _ts_moved = False",
+  "tests": [
+   "tests/test_a_backdated_record_fails_verification.py"
+  ]
+ },
+ {
+  "name": "the bundle rewalk ignores the recording time",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "            if first_ts.get(mid) is not None and rec.get(\"ts\") != first_ts[mid]:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_a_backdated_record_fails_verification.py"
+  ]
+ },
+ {
+  "name": "provenance ignores the recording time",
+  "file": "inspeximus/core.py",
+  "old": "            if first.get(\"ts\") is not None and rec.get(\"ts\") != first.get(\"ts\"):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_a_backdated_record_fails_verification.py"
+  ]
+ },
+ {
+  "name": "a backfilled write keeps the landed verdict",
+  "file": "inspeximus/core.py",
+  "old": "                    \"blocked\": False, \"policy\": \"keyed_lww_backfill\", \"current_id\": r[\"id\"],",
+  "new": "                    \"blocked\": False, \"policy\": \"keyed_lww_backfill\", \"current_id\": r[\"id\"], \"status\": \"active\",",
+  "tests": [
+   "tests/test_last_write_reports_what_the_write_became.py"
+  ]
+ },
+ {
+  "name": "a forked candidate keeps the landed verdict",
+  "file": "inspeximus/core.py",
+  "old": "        if _is_candidate:\n            # A FORKED CANDIDATE IS NOT A LANDED WRITE",
+  "new": "        if False:\n            # A FORKED CANDIDATE IS NOT A LANDED WRITE",
+  "tests": [
+   "tests/test_last_write_reports_what_the_write_became.py"
+  ]
  }
 ]

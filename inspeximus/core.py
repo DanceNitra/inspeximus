@@ -377,7 +377,7 @@ _META_ALIASED_PARAM = {"uid": "user_id", "aid": "agent_id", "sid": "session_id",
 #: write commit checks these (`verify_writes`, the audit-bundle rewalk); a field added to
 #: `_write_commit` and not here is committed and never compared.
 _COMMIT_BINDING_FIELDS = ("immutable_sha256", "mtype", "value_sha256", "status_sha256",
-                          "time_sha256", "attrib_sha256", "context_sha256")
+                          "time_sha256", "attrib_sha256", "attrib_nonced_sha256", "context_sha256")
 
 
 def _canon(obj) -> bytes:
@@ -3558,6 +3558,14 @@ class Inspeximus:
         # over from an earlier call would be read as this call's, and a stale signal is worse than none --
         # the caller would test a field that answers about a different write.
         self.last_write = {"id": mid, "key": key, "status": "active", "blocked": False, "policy": None}
+        if _is_candidate:
+            # A FORKED CANDIDATE IS NOT A LANDED WRITE (3.12.0, session T item 4). The fork above set
+            # status='candidate' before this line, and the verdict said "active".
+            self.last_write.update(
+                status="candidate",
+                note=("identity_confidence is below fork_below, so this was stored as a candidate and "
+                      "the key's current value is unchanged. promote_candidate() or "
+                      "discard_candidate() resolves it."))
         _retired: list = []            # a keyless write retires nothing; bound here so the receipt
         if key is not None and not _is_candidate:   # below always has a value to commit
             _retired = self._supersede_by_key(rec, reaffirm=reaffirm)   # deterministic SRO supersession (no embedding, no threshold)
@@ -3568,7 +3576,7 @@ class Inspeximus:
             # `derived_from` follows a value that had N anchors with a value that has none. Measured on
             # the Crew OS store 2026-09-21: a retire() + remember() on one key took a layer from 10
             # anchors to 0, and nothing at the call said so. `lineage_dropped` says so, at the write.
-            if not self.last_write.get("blocked"):
+            if not self.last_write.get("blocked") and self.last_write.get("status") == "active":
                 # A record the guards retired on arrival never stood, so it is not a value this write
                 # followed: the same exclusion `_route_chain` applies, plus the authority rejection,
                 # which marks `rejected_authority` and no blocked flag.
@@ -3755,7 +3763,14 @@ class Inspeximus:
                 # shaped `status_sha256`. It is handled by RECOMPUTING it in as_of() instead.
                 "time_sha256": _sha256_hex(_canon({"valid_from": rec.get("valid_from"),
                                                    "valid_from_source": rec.get("valid_from_source")})),
-                "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec)))),
+                # THE SOURCES, nonced since 3.12.0 (session T, item 1). `attrib_sha256` hashed the
+                # sorted sources with no salt, so after forget_subject("user:alice") a holder of the
+                # receipts file hashed the guess "user:alice" and matched every receipt of hers: the
+                # evidence of an erasure confirmed who was erased. A record that carries a nonce now
+                # commits `attrib_nonced_sha256` INSTEAD, over the sources and the nonce, and the
+                # nonce leaves with the record. A record without one hashes as before. Receipts
+                # written before 3.12.0 keep the unsalted field; verifiers recompute both.
+                **Inspeximus._attrib_commit(rec),
                 # THE CONTEXT, since 3.11.0 (agmi 0.6.0 test T6, cross-context replay). Every field
                 # above describes WHAT a record says; none said WHOSE it is. A record written for
                 # alice and relabelled on disk as bob's -- by tenant, owning agent, or the user, agent,
@@ -3765,6 +3780,21 @@ class Inspeximus:
                 # bind for life. A SEPARATE field for the reason `value_sha256` is one: old receipts
                 # lack it; context_unbound() counts them, and only context_strict=True fails them.
                 "context_sha256": _sha256_hex(_canon(Inspeximus._rec_context(rec)))}
+
+    @staticmethod
+    def _attrib_commit(rec: dict) -> dict:
+        """The attribution field a NEW receipt commits: nonced when the record carries a nonce."""
+        src = sorted(Inspeximus._rec_sources(rec))
+        if rec.get("nonce"):
+            return {"attrib_nonced_sha256": _sha256_hex(_canon({"sources": src, "nonce": rec["nonce"]}))}
+        return {"attrib_sha256": _sha256_hex(_canon(src))}
+
+    @staticmethod
+    def _recompute_commit(rec: dict) -> dict:
+        """`_write_commit` for a VERIFIER: also the unsalted attribution hash, so a receipt written
+        before 3.12.0 is checked on the field it carries. Never written into a receipt."""
+        return {**Inspeximus._write_commit(rec),
+                "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
 
     @staticmethod
     def _rec_context(rec: dict) -> dict:
@@ -6615,7 +6645,7 @@ class Inspeximus:
                 # the amendment is itself the evidence of when standing changed.
                 # NOTE: no `continue` here — an early version used one and skipped the `prev = r["hash"]`
                 # at the end of the loop body, so every later receipt reported "broken chain link".
-                cc = self._write_commit(cur)
+                cc = self._recompute_commit(cur)
                 rc = r.get("commit") or {}
                 if "immutable_sha256" in rc:
                     # A receipt is forgiven for exactly the fields a LATER receipt DECLARED it was amending,
@@ -6667,6 +6697,15 @@ class Inspeximus:
                     bad = any(cc.get(k) != v for k, v in rc.items())
                 else:
                     bad = False
+                # THE RECORDING TIME, since 3.12.0 (session T, item 2). as_of(as_recorded=) and
+                # believed_at() answer "what did the store know at time T" by selecting on `ts`, and
+                # `ts` sat outside `commit`. Every receipt has carried it since the first one, inside
+                # the hashed receipt, and nothing compared it: a correction backdated on disk made the
+                # store say it had known it before it was written, and the chain verified. `ts` is set
+                # once, in remember(), and rewritten by no call site. A receipt without one is not
+                # failed for it.
+                _ts_moved = r.get("ts") is not None and cur.get("ts") != r.get("ts")
+                bad = bad or _ts_moved
                 if bad:
                     # SAY WHICH FIELD. Until 2.10.2 every mismatch printed "stored content no longer
                     # matches", which was true of text and object and actively misleading of the two
@@ -6682,8 +6721,14 @@ class Inspeximus:
                                             "time came from",
                              "context_sha256": "WHOSE it is (tenant, owning agent, or the user, agent, "
                                                "session or project it was written for)",
-                             "content_sha256": "its text/key/type"}
+                             "attrib_sha256": "WHERE it came from (its source or inherited taint)",
+                             "attrib_nonced_sha256": "WHERE it came from (its source or inherited taint)",
+                             "content_sha256": "its text/key/type",
+                             "ts": "WHEN it was recorded (`ts`), which as_of(as_recorded=) and "
+                                   "believed_at() select on"}
                     _diff = [k for k, v in rc.items() if k in _WHAT and cc.get(k) != v]
+                    if _ts_moved:
+                        _diff.append("ts")
                     # `content_sha256` is the pre-1.68 COMPOSITE of text+key+mtype, so it co-fires
                     # with whichever specific hash actually moved. Naming both reads as two findings
                     # where there is one. Keep it only when it is the only signal -- on a legacy
@@ -7040,11 +7085,13 @@ class Inspeximus:
                 key_problems.append(f"receipt {i}: unsigned, but a signature was required")
             prev = r.get("hash")
         by_id = {it["id"]: it for it in self.items}
-        committed = {}                         # latest committed attribution hash per memory id (None if pre-attrib)
+        committed = {}                         # latest (field, hash) per memory id; hash None if pre-attrib
         for r in self._receipts:
-            committed[r["memory_id"]] = (r.get("commit") or {}).get("attrib_sha256")
+            _c = r.get("commit") or {}
+            _f = "attrib_nonced_sha256" if "attrib_nonced_sha256" in _c else "attrib_sha256"
+            committed[r["memory_id"]] = (_f, _c.get(_f))
         relabeled, uncommitted, missing = [], [], []
-        for mid, a in committed.items():
+        for mid, (_f, a) in committed.items():
             cur = by_id.get(mid)
             if cur is None:
                 missing.append(mid)
@@ -7052,7 +7099,7 @@ class Inspeximus:
                 continue
             elif a is None:
                 uncommitted.append(mid)
-            elif _sha256_hex(_canon(sorted(Inspeximus._rec_sources(cur)))) != a:
+            elif Inspeximus._recompute_commit(cur).get(_f) != a:
                 relabeled.append(mid)
         # Records with NO receipt at all never entered `committed`, so they could not land in `relabeled`
         # OR in `uncommitted` -- they were not unchecked, they were UNCOUNTED. On a store written with
@@ -7430,6 +7477,15 @@ class Inspeximus:
                 rm = rec.setdefault("meta", {})
                 rm["superseded_by_toggle"] = r["id"]
                 rm["superseded_by_policy"] = "keyed_lww_backfill"
+                # SAY SO (3.12.0, session T item 4). Every other path that retires the incoming record
+                # overwrites the verdict; this one left remember()'s "active" standing over a record
+                # stored as history. Not `blocked`: an older `valid_from` is history by design.
+                self.last_write = {
+                    "id": rec["id"], "key": rec.get("key"), "status": "superseded",
+                    "blocked": False, "policy": "keyed_lww_backfill", "current_id": r["id"],
+                    "note": ("valid_from is older than the current value's, so this was stored as "
+                             "history and the current value is unchanged."),
+                }
         return _retired
 
     # ── candidate reconciliation queue (identity-confidence gate; Fellegi-Sunter clerical review / MDM steward
@@ -12602,7 +12658,7 @@ class Inspeximus:
             first = min(mine, key=lambda r: r.get("seq", 0))
             committed = first.get("commit") or {}
             latest = max(mine, key=lambda r: r.get("seq", 0))
-            current = self._write_commit(rec)
+            current = self._recompute_commit(rec)
             forgiven = {f for r in mine if r.get("seq", 0) > first.get("seq", 0)
                         for f in (r.get("amends") or ())} & _AMENDABLE
             integ["receipted"] = True
@@ -12611,12 +12667,15 @@ class Inspeximus:
                                    "time_sha256", "content_sha256", "context_sha256")
                        if k in committed and k not in forgiven]
             _bad = [k for k in _fields if committed.get(k) != current.get(k)]
+            if first.get("ts") is not None and rec.get("ts") != first.get("ts"):
+                _bad.append("ts")                    # the recording time, beside the commit (3.12.0)
             integ["content_matches_receipt"] = not _bad
             if _bad:
                 integ["content_mismatch_fields"] = _bad
+            _af = "attrib_nonced_sha256" if "attrib_nonced_sha256" in committed else "attrib_sha256"
             integ["attribution_matches_receipt"] = (
-                None if committed.get("attrib_sha256") is None       # written before attribution was committed
-                else committed.get("attrib_sha256") == current["attrib_sha256"])
+                None if committed.get(_af) is None                   # written before attribution was committed
+                else committed.get(_af) == current.get(_af))
         if receipts:
             integ["chain_ok"] = self.verify_attribution().get("chain_ok")
         if receipts or getattr(self, "_tombstones", None):

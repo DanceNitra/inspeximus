@@ -323,8 +323,10 @@ def bind_content(bundle: dict, store_items: list) -> dict:
                 "problems": ["the bundle carries no write chain, so there is nothing to bind content to"]}
 
     first: dict = {}                      # memory_id -> the EARLIEST commitment for it
+    first_ts: dict = {}                   # memory_id -> the recording time that receipt carries
     for r in sorted(chain, key=lambda x: x.get("seq", 0)):
         first.setdefault(r.get("memory_id"), (r.get("commit") or {}))
+        first_ts.setdefault(r.get("memory_id"), r.get("ts"))
 
     by_id = {r.get("id"): r for r in (store_items or [])}
     mismatched, unreceipted, orphaned = [], [], []
@@ -337,17 +339,21 @@ def bind_content(bundle: dict, store_items: list) -> dict:
             orphaned.append(mid)
             continue
         compared += 1
-        now = Inspeximus._write_commit(rec)
+        now = Inspeximus._recompute_commit(rec)
         # Compare only the fields the bundle actually carries, so a bundle written by an older version
         # (no immutable_sha256) is checked on what it does commit to rather than reported as broken.
         # This list had no `time_sha256`, so a bundle did not re-check the validity time its receipts
         # commit to; it is added with the context field (3.11.0).
         # `mtype` stays out: slash() amends it legitimately, and this walk reads no amendments.
         for field in ("immutable_sha256", "content_sha256", "value_sha256", "status_sha256",
-                      "time_sha256", "attrib_sha256", "context_sha256"):
+                      "time_sha256", "attrib_sha256", "attrib_nonced_sha256", "context_sha256"):
             if field in commit and commit[field] != now.get(field):
                 mismatched.append({"memory_id": mid, "field": field})
                 break
+        else:
+            # the recording time as_of(as_recorded=) selects on, carried beside the commit (3.12.0)
+            if first_ts.get(mid) is not None and rec.get("ts") != first_ts[mid]:
+                mismatched.append({"memory_id": mid, "field": "ts"})
 
     for mid in by_id:
         if mid not in first:

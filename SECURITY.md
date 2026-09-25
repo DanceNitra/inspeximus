@@ -12,9 +12,10 @@ it). The realistic adversary is therefore **the content you store** — a memory
 conversation, a poisoned document, a compromised tool result — not a remote attacker hitting an endpoint.
 
 That content threat is the thing inspeximus is actually built to address: keyed supersession, `echo_guard`,
-`retract_lineage`, the corroboration-gated influence path (`recall(influence_only=True)`), the authorized-revert
-channel, and the tamper-evident write receipts. See the README and `probes/` for the measured behaviour and its
-honest limits.
+`retract_lineage`, the corroboration-gated influence path (`recall(influence_only=True)`), and the
+authorized-revert channel. The tamper-evident write receipts address a different threat, an edit to the store
+after the write: a poisoned memory written through `remember()` gets a valid receipt. See the README and
+`probes/` for the measured behaviour and its honest limits.
 
 ## What is clean (verified in the first pass)
 

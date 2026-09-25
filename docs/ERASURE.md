@@ -215,8 +215,9 @@ What each check actually proves:
 - **summary_derivable** — the human-readable summary (`count`, `erased_memory_ids`, `request_ids`) is
   recomputed from the tombstones instead of being believed.
 - **attests_an_erasure** — the certificate covers at least one erasure. See the defect below.
-- **store_absent** — the strongest check: given the store, every erased id is genuinely **absent from
-  the raw file**. This is the one a soft-delete system cannot pass. Without `--store` it is reported
+- **store_absent** — given the store, every erased id is **absent from the raw file**. A soft-delete
+  system fails this check. It reads only the file it is given: a copy made before the erasure (a backup, a
+  replica, a shadow file) passes it, so it says nothing about copies it is not shown. Without `--store` it is reported
   `n/a`, never `OK` — and a `--store` path that does not exist is refused rather than silently
   downgraded, because an empty store the typo just created would show every id absent.
 

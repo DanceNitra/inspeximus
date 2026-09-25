@@ -3,14 +3,15 @@
 When the EU AI Act's high-risk obligations start to apply — **2 Dec 2027** for standalone Annex III systems and
 **2 Aug 2028** for Annex I product-embedded ones, deferred from 2 Aug 2026 by Regulation (EU) 2026/1744 (the
 [Digital Omnibus on AI](https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng), published 24 Jul 2026, in force
-27 Jul 2026) — a provider has to *produce* three things about what its AI agent **remembers**: a tamper-evident record of what was logged
-(Art. 12 / 19), evidence that the memory is kept accurate and resists tampering (Art. 15), and provable erasure
+27 Jul 2026) — a provider has to *produce* three things about what its AI agent **remembers**: automatic logs of
+events, kept for the retention period (Art. 12 / 19; neither article requires the logs to be tamper-evident, see
+"What this means for this document" later on this page), evidence that the memory is kept accurate and resists tampering (Art. 15), and provable erasure
 on request (GDPR Art. 17). Of the nine agent-memory libraries we scanned (table below, 2026-07), none shipped any
 of it — a statement about what we read on those dates, not a proof that nothing else does.
 
 **inspeximus is, on that scan, the only agent-memory library that ships verifiable erasure (with a receipt) and
-tamper-evident record-keeping with zero required dependencies**, as reusable evidence for the agent-memory slice
-of the EU AI Act. Every qualifier there is load-bearing: *on that scan* (nine libraries, not the field), *with a
+tamper-evident record-keeping with zero required dependencies**, as reusable evidence for the EU AI Act
+duties that concern what an agent remembers. Every qualifier there is load-bearing: *on that scan* (nine libraries, not the field), *with a
 receipt* (a `delete()` that returns success is not the same claim), and *zero required dependencies* (the
 property we can hold, rather than a bet that nobody else will implement erasure). The compliance surface is a
 drop-in overlay, not a rebuild.
@@ -30,7 +31,7 @@ nine libraries, not an exhaustive proof of a universal negative, and not a state
 do or has shipped since. Zep does have a genuine SOC2/HIPAA compliance surface, just not verifiable erasure or
 cryptographically tamper-evident logs or AI-Act alignment. Send us a correction and we will make it.)*
 
-## What it gives the memory slice
+## What it gives an agent's memory
 
 - **Art. 12 & 19 — record-keeping / logs kept ≥ 6 months.** Every write is a hash-linked, timestamped receipt;
   `anchor()` signs a tree head over the whole history; `inspeximus audit-build` exports a **content-free** bundle
@@ -125,9 +126,11 @@ the storage-limitation enforcement is itself part of the audit trail.
 
 ## The honest boundary (this is why you can trust it)
 
-This is the **agent-memory slice only** — the records, corrections and erasures in *this* store. It produces
-**evidence, not a certification.** The EU AI Act imposes far more than any memory library can satisfy (risk
-management, data governance, human oversight, conformity assessment); those are the deployer's job. The
+It covers the records, corrections and erasures in *this* store, and the registers `inspeximus coverage`
+lists: on a fresh store at 3.12.0, 36 of 36 in-scope provider and deployer duties, 0 NOT COVERED. It produces
+**evidence, not a certification.** A register records the work; it does not do it. Risk management, data
+governance, human oversight and conformity assessment are carried out by the accountable party, and inspeximus
+holds the evidence that they were. The
 obligations bind the **controller / provider / deployer**, not the library. inspeximus gives the accountable
 party the receipts, provenance, and provable erasure they use to *demonstrate* the memory-record duties — and
 says so, in every report it prints. The Art. 17 erasure guarantee is only as complete as the encryption and
