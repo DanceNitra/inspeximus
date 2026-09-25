@@ -3264,5 +3264,14 @@
   "tests": [
    "tests/test_last_write_reports_what_the_write_became.py"
   ]
+ },
+ {
+  "name": "the fast phase ignores changed non-Python files",
+  "file": "tools/release_check.py",
+  "old": "             if not n.endswith(\".py\") and not n.startswith((\"tests/\", \"probes/\"))}",
+  "new": "             if False}",
+  "tests": [
+   "tests/test_the_fast_phase_selects_tests_for_a_docs_change.py"
+  ]
  }
 ]

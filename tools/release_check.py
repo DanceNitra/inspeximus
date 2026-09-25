@@ -708,7 +708,8 @@ def _last_release_tag(root):
 def fast_selection(root):
     """The tests most likely to fail first: every test file changed since the last release tag or in
     the working tree, every test file that names a changed module other than core.py (core is
-    imported by nearly every test, so naming it would select the whole suite), and FAST_ALWAYS."""
+    imported by nearly every test, so naming it would select the whole suite), every test file that
+    names a changed non-Python file, and FAST_ALWAYS."""
     tag = _last_release_tag(root)
     names = set()
     for args in ((["diff", "--name-only", tag + "..HEAD"] if tag else None),
@@ -721,10 +722,17 @@ def fast_selection(root):
     stems = {pathlib.Path(n).stem for n in names
              if n.startswith(("inspeximus/", "tools/")) and n.endswith(".py")
              and pathlib.Path(n).stem not in ("core", "__init__")}
-    if stems:
+    # A CHANGED FILE THAT IS NOT PYTHON (CHANGELOG.md, a doc, a version carrier such as .mcp.json)
+    # selects the tests that name it. By module stem only, a CHANGELOG-only release selected no test
+    # and the fast phase passed on nothing (handoff 2026-09-25, item 5).
+    files = {pathlib.Path(n).name for n in names
+             if not n.endswith(".py") and not n.startswith(("tests/", "probes/"))}
+    pats = ([r"\b%s\b" % re.escape(st) for st in stems]
+            + [r"(?<![\w.])%s(?!\w)" % re.escape(f) for f in files])
+    if pats:
         for t in (root / "tests").glob("test_*.py"):
             src = t.read_text(encoding="utf-8", errors="replace")
-            if any(re.search(r"\b%s\b" % re.escape(st), src) for st in stems):
+            if any(re.search(pt, src) for pt in pats):
                 tests.add("tests/" + t.name)
     tests.difference_update(FAST_ALWAYS)
     probes = sorted(pathlib.Path(n).stem for n in names
