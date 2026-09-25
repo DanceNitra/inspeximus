@@ -341,7 +341,7 @@ def bind_content(bundle: dict, store_items: list) -> dict:
         # Compare only the fields the bundle actually carries, so a bundle written by an older version
         # (no immutable_sha256) is checked on what it does commit to rather than reported as broken.
         # This list had no `time_sha256`, so a bundle did not re-check the validity time its receipts
-        # commit to; it is added with the context field (3.10.1).
+        # commit to; it is added with the context field (3.11.0).
         # `mtype` stays out: slash() amends it legitimately, and this walk reads no amendments.
         for field in ("immutable_sha256", "content_sha256", "value_sha256", "status_sha256",
                       "time_sha256", "attrib_sha256", "context_sha256"):

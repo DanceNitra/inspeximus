@@ -3756,14 +3756,14 @@ class Inspeximus:
                 "time_sha256": _sha256_hex(_canon({"valid_from": rec.get("valid_from"),
                                                    "valid_from_source": rec.get("valid_from_source")})),
                 "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec)))),
-                # THE CONTEXT, since 3.10.1 (agmi 0.6.0 test T6, cross-context replay). Every field
+                # THE CONTEXT, since 3.11.0 (agmi 0.6.0 test T6, cross-context replay). Every field
                 # above describes WHAT a record says; none said WHOSE it is. A record written for
                 # alice and relabelled on disk as bob's -- by tenant, owning agent, or the user, agent,
                 # session or project it was written for -- was served in bob's context while
                 # verify_writes() reported the chain intact: the record was genuine, its context
                 # forged. All six are set once, in remember(), and rewritten by no call site, so they
                 # bind for life. A SEPARATE field for the reason `value_sha256` is one: old receipts
-                # lack it and are named by `context_strict`, never failed on a field they predate.
+                # lack it; context_unbound() counts them, and only context_strict=True fails them.
                 "context_sha256": _sha256_hex(_canon(Inspeximus._rec_context(rec)))}
 
     @staticmethod
@@ -6449,7 +6449,7 @@ class Inspeximus:
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
                       legacy_strict: bool = True, value_strict: bool = True,
-                      coverage_strict: bool = True, context_strict: bool = True,
+                      coverage_strict: bool = True, context_strict: bool = False,
                       require_signed: bool = False) -> tuple[bool, list[str]]:
         """Verify the write-receipt chain AND that each stored memory still matches its write receipt.
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
@@ -6758,28 +6758,16 @@ class Inspeximus:
                     f"into the chain -- or pass value_strict=False to accept the gap without a record of "
                     f"having done so. ({', '.join(uncovered[:5])}"
                     + (f", +{len(uncovered) - 5} more" if len(uncovered) > 5 else "") + ")")
-        # RECEIPTS THAT PREDATE THE CONTEXT COMMITMENT (3.10.1), named on the terms pre-1.82 receipts
-        # are: a record whose context cannot be checked is not reported as one that passed. Only
-        # records that CARRY a context are named, so a single-user store without tenants, agents,
-        # users, sessions or projects upgrades clean.
+        # RECEIPTS THAT PREDATE THE CONTEXT COMMITMENT (3.11.0). A record whose receipt BINDS a context
+        # and was moved fails above in every mode. One whose receipt predates the binding cannot be
+        # checked on its context; it is counted by context_unbound(), which governance_report and the
+        # MCP tool report with a one-line remedy, and it FAILS only under context_strict=True. An
+        # upgrade does not turn every honest multi-tenant store red; an operator who wants the gap to
+        # fail asks for it.
         if context_strict:
-            _latest: dict = {}
-            for r in self._receipts:
-                if r.get("seq", 0) >= _latest.get(r["memory_id"], {}).get("seq", -1):
-                    _latest[r["memory_id"]] = r
-            unbound = sorted(
-                rec["id"] for rec in self.items
-                if rec.get("status") == "active" and rec["id"] in _latest
-                and Inspeximus._has_context(rec)
-                and "context_sha256" not in ((_latest[rec["id"]].get("commit")) or {}))
-            if unbound:
-                problems.append(
-                    f"{len(unbound)} record(s) carry receipts written before 3.10.1 that do not commit "
-                    f"their CONTEXT (tenant, owning agent, user, agent, session, project), so a record "
-                    f"moved into another context verifies as that context's. Check them against a copy "
-                    f"you trust, then call recommit(ids=[...]) to bind their CURRENT context -- or pass "
-                    f"context_strict=False to accept the gap. ({', '.join(unbound[:5])}"
-                    + (f", +{len(unbound) - 5} more" if len(unbound) > 5 else "") + ")")
+            unbound = self.context_unbound()
+            if unbound["unbound"]:
+                problems.append(unbound["warning"] + " (context_strict=True)")
         # SIGNATURE COVERAGE, on the PRIMARY surface. Signatures were verified here when present and
         # demanded only when `expected_pubkey` was passed, so an UNSIGNED entry appended to a SIGNED
         # chain fell through the `elif expected_pubkey:` branch and nothing was said. Measured
@@ -6922,6 +6910,32 @@ class Inspeximus:
                 problems.append(f"write log diverges from the head kept outside the store at receipt {n0}: "
                                 f"the chain was rewritten past that point")
         return (len(problems) == 0, problems)
+
+    def context_unbound(self) -> dict:
+        """Active records that carry a context under receipts that do not commit it.
+
+        Receipts written before 3.11.0 hash what a record says, not whose it is (tenant, owning agent,
+        user, agent, session, project), so such a record moved into another context cannot be caught
+        on its context. Returns {unbound, ids, warning}: `warning` is None when nothing is unbound, else
+        one line naming the remedy, recommit(ids=[...]), which binds each record's CURRENT context. A
+        record with no context is never counted, so a single-user store reports 0.
+        `verify_writes(context_strict=True)` fails on the same set."""
+        latest: dict = {}
+        for r in self._receipts:
+            if r.get("seq", 0) >= latest.get(r["memory_id"], {}).get("seq", -1):
+                latest[r["memory_id"]] = r
+        ids = sorted(
+            rec["id"] for rec in self.items
+            if rec.get("status") == "active" and rec["id"] in latest
+            and Inspeximus._has_context(rec)
+            and "context_sha256" not in ((latest[rec["id"]].get("commit")) or {}))
+        warning = None
+        if ids:
+            warning = (f"{len(ids)} record(s) carry receipts written before 3.11.0 that do not bind their "
+                       f"context (tenant, owning agent, user, agent, session, project); check them against "
+                       f"a copy you trust, then recommit(ids=[...]) binds their current context. "
+                       f"({', '.join(ids[:5])}" + (f", +{len(ids) - 5} more" if len(ids) > 5 else "") + ")")
+        return {"unbound": len(ids), "ids": ids, "warning": warning}
 
     def recommit(self, ids=None) -> dict:
         """Append a fresh write receipt for records whose receipts predate a commitment field.
@@ -10994,6 +11008,7 @@ class Inspeximus:
         Prior art: crypto-shredding; Cassandra / event-sourcing tombstones; GDPR Art.17/30 erasure logs;
         Crosby-Wallach / Certificate Transparency tamper-evident logs."""
         ok, problems = self.verify_writes(expected_pubkey)
+        _cu = self.context_unbound()
         toms, _withheld = self._visible_tombstones()
         by_req: dict = {}
         for t in toms:
@@ -11011,6 +11026,9 @@ class Inspeximus:
             "proof": {
                 "verified": ok,
                 "problems": problems,
+                # receipts that predate the context binding: counted and named, not failed (3.11.0)
+                "context_unbound": _cu["unbound"],
+                **({"warnings": [_cu["warning"]]} if _cu["warning"] else {}),
                 "all_signed": bool(toms) and all("sig" in t for t in toms),
                 "expected_pubkey": expected_pubkey,
                 # honest trust level of the signatures (the footgun made visible to the auditor):
@@ -17635,6 +17653,7 @@ class _TenantView:
     def verify_claim(self, *a, **k):    return Inspeximus.verify_claim(self, *a, **k)
     def recommit(self, *a, **k):        return Inspeximus.recommit(self, *a, **k)
     def selection_integrity(self, *a, **k): return Inspeximus.selection_integrity(self, *a, **k)
+    def context_unbound(self, *a, **k):     return Inspeximus.context_unbound(self, *a, **k)
     def _cluster_active(self, *a, **k): return Inspeximus._cluster_active(self, *a, **k)
     def _supersede_by_key(self, *a, **k): return Inspeximus._supersede_by_key(self, *a, **k)
     # REBOUND, like _tenant_rows beside it. Private names fall through __getattr__ to the parent, whose

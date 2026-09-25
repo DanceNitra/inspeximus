@@ -70,7 +70,7 @@ def test_a_signed_record_relabelled_into_another_context_fails_verify_writes(tmp
 
 
 def _old_receipts(monkeypatch):
-    """Write as a pre-3.10.1 store would: receipts without `context_sha256`."""
+    """Write as a pre-3.11.0 store would: receipts without `context_sha256`."""
     real = Inspeximus._write_commit
 
     def old(rec, retires=()):
@@ -88,23 +88,60 @@ def _store(tmp_path, monkeypatch):
     return tmp_path / "store" / "memory.json"
 
 
-def test_receipts_written_before_the_context_commitment_are_named_until_recommitted(tmp_path, monkeypatch):
+def _upgraded_store(tmp_path, monkeypatch, n=2):
+    """A store written with pre-3.11.0 receipts (no context binding), reopened on this version."""
     path = _store(tmp_path, monkeypatch)
     real = _old_receipts(monkeypatch)
     s = _signed_store(path)
-    rid = s.remember("pay the invoice to IBAN SK00 1111 2222", key="payout_iban", user_id="alice")
-    rid = rid if isinstance(rid, str) else rid["id"]
+    ids = []
+    for i in range(n):
+        rid = s.remember(f"invoice {i} goes to IBAN SK00 {i}", key=f"payout_{i}", user_id="alice")
+        ids.append(rid if isinstance(rid, str) else rid["id"])
     monkeypatch.setattr(Inspeximus, "_write_commit", staticmethod(real))     # upgrade
+    return path, ids
+
+
+def test_a_an_upgraded_store_passes_by_default_and_reports_its_unbound_records(tmp_path, monkeypatch):
+    path, ids = _upgraded_store(tmp_path, monkeypatch)
     s = _signed_store(path)
     ok, problems = s.verify_writes()
-    assert not ok and any("before 3.10.1" in p and rid in p for p in problems), problems
-    assert s.verify_writes(context_strict=False)[0]
-    assert rid in s.recommit(ids=[rid])["recommitted"]
-    ok, problems = s.verify_writes()
     assert ok, problems
-    # and the recommitted receipt now catches the relabel
+    cu = s.context_unbound()
+    assert cu["unbound"] == 2 and cu["ids"] == sorted(ids)
+    assert "recommit(ids=[...])" in cu["warning"] and len(cu["warning"].splitlines()) == 1
+    proof = s.governance_report()["proof"]
+    assert proof["verified"] and proof["context_unbound"] == 2 and proof["warnings"] == [cu["warning"]]
+    s.recommit(ids=ids)
+    assert s.context_unbound() == {"unbound": 0, "ids": [], "warning": None}
+
+
+def test_b_the_same_store_fails_under_context_strict(tmp_path, monkeypatch):
+    path, ids = _upgraded_store(tmp_path, monkeypatch)
+    s = _signed_store(path)
+    ok, problems = s.verify_writes(context_strict=True)
+    assert not ok and any("recommit(ids=[...])" in p and ids[0] in p for p in problems), problems
+    s.recommit(ids=ids)
+    assert s.verify_writes(context_strict=True)[0]
+
+
+@pytest.mark.parametrize("strict", [False, True], ids=["default", "context_strict"])
+def test_c_a_moved_record_with_a_bound_receipt_fails_in_both_modes(tmp_path, monkeypatch, strict):
+    path = _store(tmp_path, monkeypatch)
+    rid = _signed_store(path).remember("pay the invoice", key="payout", user_id="alice")
+    rid = rid if isinstance(rid, str) else rid["id"]
+    assert _signed_store(path).verify_writes(context_strict=strict)[0], "control: untouched"
     data = json.loads(path.read_text(encoding="utf-8"))
     [r for r in _rows(data) if r["id"] == rid][0]["meta"]["uid"] = "bob"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    ok, problems = _signed_store(path).verify_writes(context_strict=strict)
+    assert not ok and any("WHOSE it is" in p for p in problems), problems
+
+
+def test_a_recommitted_receipt_catches_a_later_move(tmp_path, monkeypatch):
+    path, ids = _upgraded_store(tmp_path, monkeypatch, n=1)
+    _signed_store(path).recommit(ids=ids)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    [r for r in _rows(data) if r["id"] == ids[0]][0]["meta"]["uid"] = "bob"
     path.write_text(json.dumps(data), encoding="utf-8")
     assert not _signed_store(path).verify_writes()[0]
 

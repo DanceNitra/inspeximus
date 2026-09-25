@@ -3183,5 +3183,23 @@
   "tests": [
    "tests/test_the_mcp_server_signs_with_the_stores_key.py"
   ]
+ },
+ {
+  "name": "verify_writes no longer compares the record's context",
+  "file": "inspeximus/core.py",
+  "old": "                          \"time_sha256\", \"attrib_sha256\", \"context_sha256\")",
+  "new": "                          \"time_sha256\", \"attrib_sha256\")",
+  "tests": [
+   "tests/test_a_record_lifted_into_another_context_fails_verification.py"
+  ]
+ },
+ {
+  "name": "context_unbound counts nothing",
+  "file": "inspeximus/core.py",
+  "old": "            and Inspeximus._has_context(rec)\n            and \"context_sha256\" not in ((latest[rec[\"id\"]].get(\"commit\")) or {}))",
+  "new": "            and Inspeximus._has_context(rec) and False\n            and \"context_sha256\" not in ((latest[rec[\"id\"]].get(\"commit\")) or {}))",
+  "tests": [
+   "tests/test_a_record_lifted_into_another_context_fails_verification.py"
+  ]
  }
 ]

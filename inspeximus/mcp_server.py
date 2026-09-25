@@ -1545,6 +1545,11 @@ def verify_writes(expected_pubkey: str = "") -> dict:
     _chain = list(getattr(_MEM, "_receipts", None) or ()) + list(getattr(_MEM, "_tombstones", None) or ())
     _signed = sum(1 for r in _chain if r.get("sig"))
     out["signed"] = f"{_signed}/{len(_chain)}" if _chain else "no chain"
+    # Receipts that predate the context binding (3.11.0): a count and one line, not a failure.
+    _cu = _MEM.context_unbound()
+    out["context_unbound"] = _cu["unbound"]
+    if _cu["warning"]:
+        out["warnings"] = [_cu["warning"]]
     # A FACT, NOT A NAG, and the distinction is a decision this repo already made: a store that never
     # claimed a key must not be lectured on every call, because advice that fires unconditionally is
     # advice that gets trained away (test_an_unsigned_store_is_not_nagged_about_a_key_it_never_had).
