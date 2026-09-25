@@ -271,6 +271,13 @@ def test_wrong_key_types(page, documents):
             t["pubkey"] = v
         return dumps(d)
 
+    # THE FIRST DIGIT, not every "0". The key is random per run, and one with no "0" (about 1.6% of
+    # runs) left this case unmutated: it verified VALID and the test failed at random (CI run
+    # 36185558297, 2026-09-25). Replacing the first digit changes every key that has one.
+    _i = next(i for i, ch in enumerate(pk) if ch.isdigit())
+    fullwidth = pk[:_i] + chr(ord(pk[_i]) - ord("0") + ord("０")) + pk[_i + 1:]
+    assert fullwidth != pk, "control: the fullwidth-digits case must change the key"
+
     raw = serialization.Encoding.Raw, serialization.PublicFormat.Raw
     cases = {
         "int": key(5), "list": key([pk]), "object": key({"hex": pk}), "null": key(None), "empty": key(""),
@@ -280,7 +287,7 @@ def test_wrong_key_types(page, documents):
         "X25519 (32 bytes, other curve form)": key(X25519PrivateKey.generate().public_key().public_bytes(*raw).hex()),
         "secp256k1 compressed": key(ec.generate_private_key(ec.SECP256K1()).public_key().public_bytes(
             serialization.Encoding.X962, serialization.PublicFormat.CompressedPoint).hex()),
-        "fullwidth digits": key(pk.replace("0", "０")),
+        "fullwidth digits": key(fullwidth),
         "\\x1c between pairs (not fromhex whitespace)": key("\x1c".join(pk[i:i + 2] for i in range(0, 64, 2))),
         "tombstone key int, certificate key right": key(7, only_tombstone=True),
         # Spellings bytes.fromhex accepts: the same key, so the same verdict.
