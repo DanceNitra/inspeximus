@@ -67,3 +67,64 @@ def test_a_signed_record_relabelled_into_another_context_fails_verify_writes(tmp
 
     ok, problems = _signed_store(path).verify_writes()
     assert not ok, f"a record moved from alice's {field} into bob's still verifies"
+
+
+def _old_receipts(monkeypatch):
+    """Write as a pre-3.10.1 store would: receipts without `context_sha256`."""
+    real = Inspeximus._write_commit
+
+    def old(rec, retires=()):
+        c = real(rec, retires)
+        c.pop("context_sha256", None)
+        return c
+    monkeypatch.setattr(Inspeximus, "_write_commit", staticmethod(old))
+    return real
+
+
+def _store(tmp_path, monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keys"))
+    (tmp_path / "store").mkdir()
+    return tmp_path / "store" / "memory.json"
+
+
+def test_receipts_written_before_the_context_commitment_are_named_until_recommitted(tmp_path, monkeypatch):
+    path = _store(tmp_path, monkeypatch)
+    real = _old_receipts(monkeypatch)
+    s = _signed_store(path)
+    rid = s.remember("pay the invoice to IBAN SK00 1111 2222", key="payout_iban", user_id="alice")
+    rid = rid if isinstance(rid, str) else rid["id"]
+    monkeypatch.setattr(Inspeximus, "_write_commit", staticmethod(real))     # upgrade
+    s = _signed_store(path)
+    ok, problems = s.verify_writes()
+    assert not ok and any("before 3.10.1" in p and rid in p for p in problems), problems
+    assert s.verify_writes(context_strict=False)[0]
+    assert rid in s.recommit(ids=[rid])["recommitted"]
+    ok, problems = s.verify_writes()
+    assert ok, problems
+    # and the recommitted receipt now catches the relabel
+    data = json.loads(path.read_text(encoding="utf-8"))
+    [r for r in _rows(data) if r["id"] == rid][0]["meta"]["uid"] = "bob"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    assert not _signed_store(path).verify_writes()[0]
+
+
+def test_a_store_without_any_context_upgrades_clean(tmp_path, monkeypatch):
+    path = _store(tmp_path, monkeypatch)
+    real = _old_receipts(monkeypatch)
+    _signed_store(path).remember("the staging database is db-7", key="staging_db")
+    monkeypatch.setattr(Inspeximus, "_write_commit", staticmethod(real))
+    ok, problems = _signed_store(path).verify_writes()
+    assert ok, problems
+
+
+def test_provenance_names_a_context_change(tmp_path, monkeypatch):
+    path = _store(tmp_path, monkeypatch)
+    rid = _signed_store(path).remember("pay the invoice", key="payout", project="alice")
+    rid = rid if isinstance(rid, str) else rid["id"]
+    data = json.loads(path.read_text(encoding="utf-8"))
+    [r for r in _rows(data) if r["id"] == rid][0]["meta"]["project"] = "bob"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    integ = _signed_store(path).provenance(id=rid)["integrity"]
+    assert integ["content_matches_receipt"] is False
+    assert "context_sha256" in integ.get("content_mismatch_fields", [])

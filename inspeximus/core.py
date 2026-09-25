@@ -373,6 +373,13 @@ _CALLER_META = frozenset({"scope", "context"})
 _META_ALIASED_PARAM = {"uid": "user_id", "aid": "agent_id", "sid": "session_id", "project": "project"}
 
 
+#: The receipt commit fields `verify_writes` holds a stored record to, in one place. Every reader of a
+#: write commit checks these (`verify_writes`, the audit-bundle rewalk); a field added to
+#: `_write_commit` and not here is committed and never compared.
+_COMMIT_BINDING_FIELDS = ("immutable_sha256", "mtype", "value_sha256", "status_sha256",
+                          "time_sha256", "attrib_sha256", "context_sha256")
+
+
 def _canon(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
@@ -3748,7 +3755,31 @@ class Inspeximus:
                 # shaped `status_sha256`. It is handled by RECOMPUTING it in as_of() instead.
                 "time_sha256": _sha256_hex(_canon({"valid_from": rec.get("valid_from"),
                                                    "valid_from_source": rec.get("valid_from_source")})),
-                "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec))))}
+                "attrib_sha256": _sha256_hex(_canon(sorted(Inspeximus._rec_sources(rec)))),
+                # THE CONTEXT, since 3.10.1 (agmi 0.6.0 test T6, cross-context replay). Every field
+                # above describes WHAT a record says; none said WHOSE it is. A record written for
+                # alice and relabelled on disk as bob's -- by tenant, owning agent, or the user, agent,
+                # session or project it was written for -- was served in bob's context while
+                # verify_writes() reported the chain intact: the record was genuine, its context
+                # forged. All six are set once, in remember(), and rewritten by no call site, so they
+                # bind for life. A SEPARATE field for the reason `value_sha256` is one: old receipts
+                # lack it and are named by `context_strict`, never failed on a field they predate.
+                "context_sha256": _sha256_hex(_canon(Inspeximus._rec_context(rec)))}
+
+    @staticmethod
+    def _rec_context(rec: dict) -> dict:
+        """The context a record belongs to, as its receipt commits it (see `context_sha256`)."""
+        m = rec.get("meta") or {}
+        ctx = {"tenant": rec.get("tenant"), "owner_agent": rec.get("owner_agent"),
+               "uid": m.get("uid"), "aid": m.get("aid"), "sid": m.get("sid"), "project": m.get("project")}
+        if rec.get("nonce"):
+            ctx["nonce"] = rec["nonce"]
+        return ctx
+
+    @staticmethod
+    def _has_context(rec: dict) -> bool:
+        ctx = Inspeximus._rec_context(rec)
+        return any(v is not None for k, v in ctx.items() if k != "nonce")
 
     def _declare_retired(self, rec: dict, reason: str) -> None:
         """Record in the chain that THIS record has been retired, and why.
@@ -6418,7 +6449,7 @@ class Inspeximus:
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
                       legacy_strict: bool = True, value_strict: bool = True,
-                      coverage_strict: bool = True,
+                      coverage_strict: bool = True, context_strict: bool = True,
                       require_signed: bool = False) -> tuple[bool, list[str]]:
         """Verify the write-receipt chain AND that each stored memory still matches its write receipt.
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
@@ -6608,8 +6639,7 @@ class Inspeximus:
                     # cannot be used to strip a field either: the receipt hash covers the whole commit, so
                     # deleting one breaks the chain link.
                     bad = any(rc.get(k) != cc.get(k)
-                              for k in ("immutable_sha256", "mtype", "value_sha256",
-                                        "status_sha256", "time_sha256", "attrib_sha256")
+                              for k in _COMMIT_BINDING_FIELDS
                               if k not in forgiven and k in rc)
                 elif legacy_strict:
                     # PRE-1.68 receipt, checked STRICTLY: text/key/mtype are one hash here, so the only
@@ -6650,6 +6680,8 @@ class Inspeximus:
                              "status_sha256": "whether the store SERVES it, or who confirmed it",
                              "time_sha256": "WHEN the fact became true (`valid_from`), or where that "
                                             "time came from",
+                             "context_sha256": "WHOSE it is (tenant, owning agent, or the user, agent, "
+                                               "session or project it was written for)",
                              "content_sha256": "its text/key/type"}
                     _diff = [k for k, v in rc.items() if k in _WHAT and cc.get(k) != v]
                     # `content_sha256` is the pre-1.68 COMPOSITE of text+key+mtype, so it co-fires
@@ -6726,6 +6758,28 @@ class Inspeximus:
                     f"into the chain -- or pass value_strict=False to accept the gap without a record of "
                     f"having done so. ({', '.join(uncovered[:5])}"
                     + (f", +{len(uncovered) - 5} more" if len(uncovered) > 5 else "") + ")")
+        # RECEIPTS THAT PREDATE THE CONTEXT COMMITMENT (3.10.1), named on the terms pre-1.82 receipts
+        # are: a record whose context cannot be checked is not reported as one that passed. Only
+        # records that CARRY a context are named, so a single-user store without tenants, agents,
+        # users, sessions or projects upgrades clean.
+        if context_strict:
+            _latest: dict = {}
+            for r in self._receipts:
+                if r.get("seq", 0) >= _latest.get(r["memory_id"], {}).get("seq", -1):
+                    _latest[r["memory_id"]] = r
+            unbound = sorted(
+                rec["id"] for rec in self.items
+                if rec.get("status") == "active" and rec["id"] in _latest
+                and Inspeximus._has_context(rec)
+                and "context_sha256" not in ((_latest[rec["id"]].get("commit")) or {}))
+            if unbound:
+                problems.append(
+                    f"{len(unbound)} record(s) carry receipts written before 3.10.1 that do not commit "
+                    f"their CONTEXT (tenant, owning agent, user, agent, session, project), so a record "
+                    f"moved into another context verifies as that context's. Check them against a copy "
+                    f"you trust, then call recommit(ids=[...]) to bind their CURRENT context -- or pass "
+                    f"context_strict=False to accept the gap. ({', '.join(unbound[:5])}"
+                    + (f", +{len(unbound) - 5} more" if len(unbound) > 5 else "") + ")")
         # SIGNATURE COVERAGE, on the PRIMARY surface. Signatures were verified here when present and
         # demanded only when `expected_pubkey` was passed, so an UNSIGNED entry appended to a SIGNED
         # chain fell through the `elif expected_pubkey:` branch and nothing was said. Measured
@@ -6901,7 +6955,9 @@ class Inspeximus:
                 continue
             latest = max((r for r in self._receipts if r["memory_id"] == rec["id"]),
                          key=lambda r: r.get("seq", 0), default=None)
-            if latest is not None and "value_sha256" in ((latest.get("commit")) or {}):
+            _c = (latest.get("commit") or {}) if latest is not None else {}
+            if latest is not None and "value_sha256" in _c and (
+                    "context_sha256" in _c or not Inspeximus._has_context(rec)):
                 skipped.append(rec["id"])            # already covered; a no-op receipt is chain noise
                 continue
             self._emit_write_receipt(rec)
@@ -12534,7 +12590,7 @@ class Inspeximus:
             integ["receipted"] = True
             integ["signed"] = "sig" in latest
             _fields = [k for k in ("immutable_sha256", "value_sha256", "status_sha256",
-                                   "time_sha256", "content_sha256")
+                                   "time_sha256", "content_sha256", "context_sha256")
                        if k in committed and k not in forgiven]
             _bad = [k for k in _fields if committed.get(k) != current.get(k)]
             integ["content_matches_receipt"] = not _bad
