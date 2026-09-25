@@ -46,14 +46,21 @@ import sys, os, re, json, hashlib, io, datetime
 
 
 def _cfg(cwd):
-    """Per-project plugin config at <project>/.inspeximus/config.json (optional)."""
-    try:
-        p = os.path.join(cwd or os.getcwd(), ".inspeximus", "config.json")
-        if os.path.exists(p):
-            c = json.load(open(p, encoding="utf-8"))
-            return c if isinstance(c, dict) else {}
-    except Exception:
-        pass
+    """Per-project plugin config at <project root>/.inspeximus/config.json (optional).
+
+    THE ROOT FIRST (3.9.7). This read <launch dir>/.inspeximus/config.json, so launching Claude Code
+    from a subdirectory ignored a config at the root, beside the store it configures. A config in the
+    launch directory is still read when the root has none, so a project that put it there keeps it."""
+    from ._surface import find_project_root
+    base = cwd or os.getcwd()
+    for d in dict.fromkeys((find_project_root(base) or base, base)):
+        try:
+            p = os.path.join(d, ".inspeximus", "config.json")
+            if os.path.exists(p):
+                c = json.load(open(p, encoding="utf-8"))
+                return c if isinstance(c, dict) else {}
+        except Exception:
+            pass
     return {}
 
 
@@ -466,7 +473,9 @@ _NUDGE_AFTER = 25   # writes before the (single) star ask fires — a milestone 
 
 
 def _nudge_path(cwd):
-    return os.path.join(cwd or os.getcwd(), ".inspeximus", "nudge.json")
+    # Beside the store, not in the launch directory: from a subdirectory the old path did not exist,
+    # so the counter failed silently and never counted (3.9.7).
+    return os.path.join(_store_dir(cwd), "nudge.json")
 
 
 def _nudge_state(cwd):
@@ -886,7 +895,8 @@ def session_start(ev):
     try:
         from inspeximus import __version__
         from inspeximus._update import check_for_update
-        note = check_for_update(__version__, cache_dir=os.path.join(cwd, ".inspeximus"))
+        # _store_dir, not cwd: from a subdirectory this created a second .inspeximus there (3.9.7).
+        note = check_for_update(__version__, cache_dir=_store_dir(cwd))
         if note:
             emit.append(note)
     except Exception:
