@@ -436,8 +436,6 @@ def _two_incidents_then_truncate(mod, tmp_path):
     return damaged
 
 
-@pytest.mark.xfail(reason="actions_verify: 'Recomputes every hash, link and signature'; a ledger file that is "
-                          "not JSON is loaded as an empty chain and verified ok=True, entries=0", **XFAIL)
 def test_actions_verify_does_not_pass_a_ledger_it_cannot_read(monkeypatch, tmp_path):
     """actions_verify: "Verify the ACTION LEDGER beside this store ... Recomputes every hash, link and
     signature".
@@ -455,9 +453,6 @@ def test_actions_verify_does_not_pass_a_ledger_it_cannot_read(monkeypatch, tmp_p
     assert v["ok"] is False, f"actions_verify over a ledger file that is not JSON: {v}"
 
 
-@pytest.mark.xfail(reason="record_risk: 'Append one entry to the risk register'; on a ledger file it cannot "
-                          "parse it starts a new chain at seq 0 and overwrites the file, destroying the earlier "
-                          "entries", **XFAIL)
 def test_a_ledger_write_does_not_overwrite_a_ledger_it_cannot_read(monkeypatch, tmp_path):
     """record_risk: "Append one entry to the risk register (EU AI Act Art. 9)."
 
