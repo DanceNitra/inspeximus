@@ -22,13 +22,17 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import Inspeximus
 
 
+_DIRS = []
+
+
 def fresh(tmp):
-    for suf in ("", ".cusum.json", ".irrev.json"):
-        try:
-            os.remove(tmp + suf)
-        except OSError:
-            pass
-    return Inspeximus(path=tmp)
+    """A new store in its own directory. It used to delete and reopen ONE path, while the handle from the
+    previous run was still alive; when that handle was finalised mid-run it wrote to the path the new
+    store owned, and the next save raised StoreChangedOnDisk (seen once on Linux CI, 2026-09-26)."""
+    import tempfile
+    d = tempfile.mkdtemp(prefix="lifetime_budget_")
+    _DIRS.append(d)
+    return Inspeximus(path=os.path.join(d, os.path.basename(tmp)))
 
 
 def run_attacker(tmp, windows, k, h, budget=None, blast_per_window=None):
@@ -95,8 +99,6 @@ if __name__ == "__main__":
     print(f"  taint composes (exhausted source blocks its derived summary): {tainted_ok is False}")
     print("  " + ("CONFIRMED: the lifetime budget bounds the integral the rate-detector provably cannot. "
                   "price(k) + BOUND(budget) + reversible gate." if ok else "FALSIFIED — check the mechanism."))
-    for suf in ("", ".cusum.json", ".irrev.json"):
-        try:
-            os.remove(tmp + suf)
-        except OSError:
-            pass
+    import shutil
+    for d in _DIRS:
+        shutil.rmtree(d, ignore_errors=True)

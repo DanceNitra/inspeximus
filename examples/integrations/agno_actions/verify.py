@@ -116,11 +116,13 @@ def _verify_run(run: Path, pubkey: Optional[str]) -> List[str]:
         return [f"no ledger at {ledger.path}"]
 
     # 1. the bytes of the ledger (ActionLedger writes indent=1 through Path.write_text) and of the
-    #    store's receipt file (inspeximus writes indent=2 as bytes)
+    #    store's receipt file (inspeximus writes it compact since 3.13.0, and with indent=2 before).
+    #    Either form is an exact re-serialisation, so a one-byte edit still fails both.
     if not _canonical(ledger.path.read_bytes(), indent=1, crlf_ok=True):
         problems.append("ledger: the bytes differ from the form ActionLedger writes (edited after the run)")
     receipts = Path(str(store_path) + ".receipts.json")
-    if not receipts.exists() or not _canonical(receipts.read_bytes(), indent=2):
+    _rb = receipts.read_bytes() if receipts.exists() else None
+    if _rb is None or not (_canonical(_rb, indent=None) or _canonical(_rb, indent=2)):
         problems.append(f"store: {receipts.name} is missing, or its bytes differ from the form inspeximus "
                         f"writes (edited after the run)")
 

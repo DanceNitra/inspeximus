@@ -3307,7 +3307,7 @@
   "old": "frozenset(x.get(\"amends\") or ()) & _AMENDABLE)",
   "new": "frozenset(x.get(\"amends\") or ()))",
   "tests": [
-   "tests/test_verify_writes_is_linear_and_as_strict.py::test_an_appended_well_formed_amends_cannot_launder_a_text_edit"
+   "tests/test_verify_writes_is_linear_and_as_strict.py"
   ]
  },
  {
@@ -3316,7 +3316,7 @@
   "old": "key=lambda p: p[0], reverse=True)",
   "new": "key=lambda p: p[0], reverse=False)",
   "tests": [
-   "tests/test_verify_writes_is_linear_and_as_strict.py::test_an_amendment_with_an_earlier_seq_forgives_nothing_after_it"
+   "tests/test_verify_writes_is_linear_and_as_strict.py"
   ]
  },
  {
@@ -3325,7 +3325,7 @@
   "old": "                    _by_seq[_s] = _acc                 # strictly greater",
   "new": "                    _by_seq[_s] = _acc | _pairs[_k][1] # strictly greater",
   "tests": [
-   "tests/test_verify_writes_is_linear_and_as_strict.py::test_an_amendment_forgives_earlier_receipts_and_not_its_own"
+   "tests/test_verify_writes_is_linear_and_as_strict.py"
   ]
  },
  {
@@ -3334,7 +3334,7 @@
   "old": "_erased = r[\"memory_id\"] in _tomb_mids",
   "new": "_erased = True",
   "tests": [
-   "tests/test_verify_writes_is_linear_and_as_strict.py::test_an_out_of_band_delete_is_caught_next_to_a_genuine_erasure"
+   "tests/test_verify_writes_is_linear_and_as_strict.py"
   ]
  },
  {
@@ -3343,7 +3343,7 @@
   "old": "_max_seq[_mid] = _pairs[0][0]",
   "new": "_max_seq[_mid] = _pairs[-1][0]",
   "tests": [
-   "tests/test_verify_writes_is_linear_and_as_strict.py::test_the_legacy_quiet_mode_checks_the_latest_receipt_only"
+   "tests/test_verify_writes_is_linear_and_as_strict.py"
   ]
  },
  {
@@ -3352,7 +3352,7 @@
   "old": "_CHAIN_INDEX = True\n",
   "new": "_CHAIN_INDEX = False\n",
   "tests": [
-   "tests/test_verify_writes_is_linear_and_as_strict.py::test_a_large_chain_is_verified_in_one_pass"
+   "tests/test_verify_writes_is_linear_and_as_strict.py"
   ]
  },
  {
@@ -3361,7 +3361,7 @@
   "old": "    return json.dumps(entries, ensure_ascii=False)\n",
   "new": "    return json.dumps(entries, indent=2, ensure_ascii=False)\n",
   "tests": [
-   "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py::test_a_receipted_write_does_not_run_the_pure_python_encoder"
+   "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py"
   ]
  },
  {
