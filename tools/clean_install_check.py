@@ -65,7 +65,9 @@ checks["uv_on_path"] = bool(shutil.which("uvx", path=env["PATH"]))
 spec = "inspeximus[mcp]" + ("" if VER == "latest" else "==%s" % VER)
 pip = run([py, "-m", "pip", "install", "-q", "--index-url", "https://pypi.org/simple", spec])
 checks["pip_rc"] = pip.returncode
-got = run([py, "-c", "import inspeximus;print(inspeximus.__version__)"]).stdout.strip()
+# From the sandbox, never from the checkout: `python -c` puts the working directory first on sys.path,
+# and the repository root holds its own inspeximus/ package, which reported 3.13.0 for a 3.9.5 install.
+got = run([py, "-c", "import inspeximus;print(inspeximus.__version__)"], cwd=WORK).stdout.strip()
 checks["installed_version"] = got
 inst = run([os.path.join(bindir, "inspeximus.exe" if WIN else "inspeximus"), "install", "--ide", "claude"],
            cwd=proj)
