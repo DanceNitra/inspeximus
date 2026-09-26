@@ -1,0 +1,1 @@
+{"issuer":"urn:inspeximus:claims-audit","kind":"signed-statement","payload_sha256":"47d6ed1a6df6b586efadbbee03644e68571e5418147452080ac2d3ba0236b1fc","policy_sha256":"1f9ce36766629d3aa5f8786e1a0bb1038d8dc352d1436c35f1c780c05a75997d","seq":9,"statement_sha256":"ba3ea7be6eb44bd5b0f9a187b82378a2009d2461d92298dc1a166f729642b89b","subject":"claim:site-echo-n","ts":1788177212.9965563}

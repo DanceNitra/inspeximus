@@ -13,15 +13,15 @@
   td,th{border-color:#2a2a2a}.m{color:#999}a{color:#8ab4f8}}
 </style>
 <h1>Transparency log</h1>
-<p class="m">281 entries &middot; published 2026-09-22</p>
+<p class="m">282 entries &middot; published 2026-09-26</p>
 
 <p>This is an append-only log of signed statements. It is served as static files so you can check it
 without trusting whoever published it, and without asking anything of us.</p>
 
 <h2>Check it yourself</h2>
-<pre>curl -sO ./head.json
-curl -sO ./log.jsonl
-curl -sO ./verify.py
+<pre>curl -sO https://dancenitra.github.io/inspeximus/transparency/head.json
+curl -sO https://dancenitra.github.io/inspeximus/transparency/log.jsonl
+curl -sO https://dancenitra.github.io/inspeximus/transparency/verify.py
 python verify.py</pre>
 <p><code>verify.py</code> uses the standard library only. It rebuilds the Merkle root from the
 published leaves and compares it with the published root, then re-derives <code>sth_hash</code> from
@@ -31,11 +31,11 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 <pre>{
   &quot;kind&quot;: &quot;scitt-transparency-log&quot;,
   &quot;n_tombstones&quot;: 0,
-  &quot;n_writes&quot;: 281,
-  &quot;sth_hash&quot;: &quot;1e9de2b67ba94ade3424f5980763290209e10ad1592c3daeceb279698a86396f&quot;,
+  &quot;n_writes&quot;: 282,
+  &quot;sth_hash&quot;: &quot;21e3540dec3b81c5f72bac35f4b44a9698c2a0944aaa5ccf35bc001a371d74ad&quot;,
   &quot;store_id&quot;: &quot;scitt:4367a1480474b121&quot;,
   &quot;tombstones_tip&quot;: &quot;&quot;,
-  &quot;writes_tip&quot;: &quot;2c1855934ea7da72823e234e9ce930f507c199f9475d5705971ad2a57e6802b1&quot;
+  &quot;writes_tip&quot;: &quot;e4324aef4d3a7f8e0a1d78cd3905a7d20b2ba6d0aad655e9a54a22875ba3543c&quot;
 }</pre>
 
 <h2>Files</h2>
@@ -65,7 +65,7 @@ serve in two versions, and only an independent WITNESS that remembers a previous
 last accepted and refuses to sign if the history it already saw has changed:</p>
 <pre>curl -sSfO https://raw.githubusercontent.com/DanceNitra/inspeximus/main/tools/witness_static_log.py
 pip install inspeximus cryptography
-python witness_static_log.py --url . --state my_state.json --out cosignatures/</pre>
+python witness_static_log.py --url https://dancenitra.github.io/inspeximus/transparency --state my_state.json --out cosignatures/</pre>
 <p>To keep it running for nothing, copy <a
 href="https://github.com/DanceNitra/inspeximus/blob/main/deploy/witness-template.yml">this GitHub
 Actions workflow</a> into a repository of your own. Actions minutes are free on a public repository

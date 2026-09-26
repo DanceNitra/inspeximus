@@ -279,7 +279,8 @@
   "fba67308b9aedf0c199d58169c357d3ef6d4e1659417549edce58c62c22b1468": "{\"claim\":\"mem0 2.0.11 keeps the correction 53.3%; resurrection 46.7%, 95% CI [30.0, 63.3]\",\"command\":\"python ramr_echo_resistance_backends.py  # RAMR repo\",\"file\":\"compare.html\",\"id\":\"cmp-mem0\",\"pin\":\"<tr><td>mem0 2.0.11\",\"status\":\"REPRODUCIBLE-WITH-DEPS\",\"tokens\":[\"53.3\",\"46.7\",\"95\",\"30.0\",\"63.3\"]}",
   "fbdcc0e16cf8cd4c2c7271cb9e4f9fbb239d92eb86df39797b2fbc87259c2dc9": null,
   "fd290750bf56d81580625e83ea482bea0be619f08fdd310e2c38344cb95cf591": null,
-  "fdbfcace9e6a95779553fae55bf7b0d3d6c66bb3ca0225228f92bbc6fd852655": "{\"claim\":\"The memory state at the action held 1 record\",\"command\":\"python tools/page_runs.py ledger\",\"file\":\"audit-trail.html\",\"id\":\"ledger-knew-records\",\"pin\":\"&quot;records&quot;: 1,\",\"status\":\"REPRODUCIBLE\",\"tokens\":[\"1,\"]}"
+  "fdbfcace9e6a95779553fae55bf7b0d3d6c66bb3ca0225228f92bbc6fd852655": "{\"claim\":\"The memory state at the action held 1 record\",\"command\":\"python tools/page_runs.py ledger\",\"file\":\"audit-trail.html\",\"id\":\"ledger-knew-records\",\"pin\":\"&quot;records&quot;: 1,\",\"status\":\"REPRODUCIBLE\",\"tokens\":[\"1,\"]}",
+  "fff6f093677533990827daccc2377f4ada22eb53e0377470130afa7329fe1d78": "{\"claim\":\"The README's scope sentence: `inspeximus coverage` on a fresh store lists 36 of 36 in-scope duties covered, 0 not covered\",\"command\":\"python -m inspeximus.cli --path /tmp/fresh.json coverage\",\"file\":\"README.md\",\"id\":\"readme-coverage-scope\",\"pin\":\"lists 36 of 36 in-scope provider and deployer duties\",\"status\":\"REPRODUCIBLE\",\"tokens\":[\"36\"]}"
  },
  "current": {
   "claim:cc-tool-count": "a49a7d315b8ababaa63b95287ab921805f69776262bae4a5f10c280ce0393ef8",
@@ -330,6 +331,7 @@
   "claim:readme-concurrent-writers": "05a953719efd6369809218090c84f46d09a41ef8d8af6e14bdb789a4925356d1",
   "claim:readme-consolidation-eighth": "379749519c701decdee3ffe8ff4d24d7a40d5abeb958090d8218837b20bce261",
   "claim:readme-consolidation-half": "4e59ee38bea9bec69aef0b1508a26f72acaca5dddd2d07181cc302f38762805a",
+  "claim:readme-coverage-scope": "fff6f093677533990827daccc2377f4ada22eb53e0377470130afa7329fe1d78",
   "claim:readme-determinism": "8a32a63874195bf22bdbea2b0cc105d69ca7e71a1adfd5123b660b3ef86aa01f",
   "claim:readme-echo-control": "49c56244f6ec96d1fbda82da13fde7941cc55238a7ec5e16e01727ba6971587d",
   "claim:readme-echo-graphiti": "f7ea3638e56f03d2c8f3d5329d75d9b99f00d258f4b030932b6588997647c67d",

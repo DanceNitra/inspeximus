@@ -1,0 +1,1 @@
+{"issuer":"urn:inspeximus:claims-audit","kind":"signed-statement","payload_sha256":"87a359b0983698240abb7c94494d9d831d112e9a311583575277c299df5cce79","policy_sha256":"1f9ce36766629d3aa5f8786e1a0bb1038d8dc352d1436c35f1c780c05a75997d","seq":210,"statement_sha256":"8e223f9a5be0ab9e176be334113bcbe78558b8e8bcfacacaa65fd1287b1d1ecc","subject":"claim:cc-tool-count","ts":1789715385.9534}

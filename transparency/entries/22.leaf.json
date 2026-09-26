@@ -1,0 +1,1 @@
+{"issuer":"urn:inspeximus:claims-audit","kind":"signed-statement","payload_sha256":"00be1cc6f88c6e71a386ad3ed227a90d802bd064138041732906b4528ee10fe4","policy_sha256":"1f9ce36766629d3aa5f8786e1a0bb1038d8dc352d1436c35f1c780c05a75997d","seq":22,"statement_sha256":"a902da93337270d578bc6c094e6e0385f1e58e5f2202875f1d54628a2288c47c","subject":"claim:cmp-n","ts":1788177213.020662}
