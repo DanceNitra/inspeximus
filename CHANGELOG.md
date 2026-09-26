@@ -1,3 +1,18 @@
+## 3.13.0 - UPGRADE IF you verify or certify a store with thousands of receipts: `verify_writes()` and `erasure_certificate()` take one pass over the receipt chain instead of one per receipt. The receipt sidecar is written compactly.
+
+- **`verify_writes()` is linear in the number of receipts.** Each receipt rescanned the whole chain to
+  collect the `amends` of later receipts for the same record, and a missing record rescanned every
+  tombstone. A one-pass index answers both. Well-formed chains only; anything else falls back to the
+  original scan, kept verbatim, so a malformed chain gets the same verdict, or raises the same way.
+  tests/test_verify_writes_is_linear_and_as_strict.py holds the two paths to the same `(ok, problems)`
+  on 30 random histories with random tampering, and pins a read count that is linear. Measured on this
+  release's tree against 3.12.0, one signed JSON store of 10,000 records and 10,000 receipts, 4 runs
+  each on one Windows machine: `verify_writes()` 7.4 to 8.9 s before, 1.8 to 2.3 s after;
+  `erasure_certificate()` 8.6 to 14.8 s before, 2.2 to 2.5 s after. Verdicts identical.
+- **The receipt sidecar is written without `indent=2`.** It is the same JSON document, serialised by
+  the C encoder, so `remember()` with receipts on spends less time rewriting it. Versions before 3.13.0
+  read the new file, and 3.13.0 reads theirs.
+
 ## 3.12.1 - UPGRADE IF anything other than inspeximus writes records into your store: a record whose timestamp is a string no longer makes every `recall()` on the store fail.
 
 Found 2026-09-26 on our own shared MCP store. 53 records written into it directly, not through
