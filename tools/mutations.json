@@ -3444,5 +3444,41 @@
   "tests": [
    "tests/test_install_all_wires_every_agent_to_one_store.py"
   ]
+ },
+ {
+  "name": "without the flag the installer switches another Hermes provider",
+  "file": "inspeximus/cli.py",
+  "old": "    ins.add_argument(\"--hermes-provider\", choices=[\"yes\", \"no\"], default=\"no\",",
+  "new": "    ins.add_argument(\"--hermes-provider\", choices=[\"yes\", \"no\"], default=\"yes\",",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "the installer asks about Hermes on the terminal again",
+  "file": "inspeximus/install_all.py",
+  "old": "        if current in (None, \"inspeximus\") or hermes_provider_change == \"yes\":",
+  "new": "        if current in (None, \"inspeximus\") or _ask(\"Switch Hermes?\", \"ask\"):",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "Devin Desktop is written to the old Windsurf file only",
+  "file": "inspeximus/install.py",
+  "old": "    return {\"user\": devin_dir() / \"mcp_config.json\",",
+  "new": "    return {\"user\": _home() / \".codeium\" / \"windsurf\" / \"mcp_config.json\",",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "Devin gets no recall rule",
+  "file": "inspeximus/install_all.py",
+  "old": "        return _i.devin_dir() / \"AGENTS.md\", RULE_LINE + \"\\n\", \"append\"",
+  "new": "        return None, None, None",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
  }
 ]

@@ -1320,8 +1320,9 @@ def main(argv=None):
                      help="every agent found on this machine, all on ONE shared memory store")
     ins.add_argument("--rules", choices=["ask", "yes", "no"], default="ask",
                      help="with --all: add a one-line recall rule where a host ignores MCP instructions")
-    ins.add_argument("--hermes-provider", choices=["ask", "yes", "no"], default="ask",
-                     help="with --all: switch Hermes' memory.provider from another provider to inspeximus")
+    ins.add_argument("--hermes-provider", choices=["yes", "no"], default="no",
+                     help="with --all: switch Hermes' memory.provider from another provider to inspeximus "
+                          "(default no: another provider is kept; the installer never asks)")
     ins.add_argument("--scope", choices=["user", "project"], default=None,
                      help="user-level (default) or project-level config, where the host supports it")
     ins.add_argument("--project", default=None, help="project directory for project scope (default: cwd)")

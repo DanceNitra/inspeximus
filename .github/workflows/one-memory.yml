@@ -3,6 +3,7 @@ name: one memory
 # host's config directory. Then five criteria through each host's own written config
 # (tools/one_memory_check.py): recall without hooks, concurrency, cross-agent recall for every pair,
 # one pinned version with the update notice reaching every host, and a foreign row that breaks no host.
+# The user's answers are substituted as the page tells the agent to; both yes and no run.
 # The control runs the same page against 3.9.5, which has no `install --all`, and must fail.
 on:
   workflow_dispatch:
@@ -19,6 +20,7 @@ jobs:
         case:
           - {name: "page, this checkout (must pass)", flags: "--find-links dist", uv: false}
           - {name: "page, this checkout, with uv (must pass)", flags: "--find-links dist --keep-uv", uv: true}
+          - {name: "page, this checkout, user answers no (must pass, no rules file)", flags: "--find-links dist --answers no", uv: false}
           - {name: "control 3.9.5 (must fail)", flags: "--constraint inspeximus==3.9.5 --expect-fail", uv: false}
     steps:
       - uses: actions/checkout@v4

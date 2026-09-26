@@ -29,8 +29,12 @@ import time
 import uuid
 
 WIN = os.name == "nt"
-HOSTS = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity")
-RULE_HOSTS = ("cursor", "windsurf", "cline", "antigravity")
+HOSTS = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity", "devin")
+RULE_HOSTS = ("cursor", "windsurf", "cline", "antigravity", "devin")
+
+
+def devin_dir(home):
+    return os.path.join(home, "AppData", "Roaming", "devin") if WIN else os.path.join(home, ".config", "devin")
 
 
 def sandbox(work, keep_uv=False):
@@ -41,7 +45,7 @@ def sandbox(work, keep_uv=False):
               # every host's config directory, as each creates it on first run
               os.path.join(home, ".claude"), os.path.join(home, ".cursor"),
               os.path.join(home, ".codeium", "windsurf"), os.path.join(home, ".codex"),
-              os.path.join(home, ".cline"), os.path.join(home, ".gemini", "config")):
+              os.path.join(home, ".cline"), os.path.join(home, ".gemini", "config"), devin_dir(home)):
         os.makedirs(d, exist_ok=True)
     with open(os.path.join(home, ".gemini", "settings.json"), "w", encoding="utf-8") as fh:
         fh.write("{}\n")
@@ -77,6 +81,7 @@ def entry_for(host, home, env):
         "cline": os.path.join(home, ".cline", "data", "settings", "cline_mcp_settings.json"),
         "gemini": os.path.join(home, ".gemini", "settings.json"),
         "antigravity": os.path.join(home, ".gemini", "config", "mcp_config.json"),
+        "devin": os.path.join(devin_dir(home), "mcp_config.json"),
     }
     p = paths[host]
     if not os.path.exists(p):
@@ -214,7 +219,8 @@ def criteria(home, proj, env, launch_cwd):
         paths = {"antigravity": os.path.join(home, ".gemini", "config", "rules", "inspeximus.md"),
                  "windsurf": os.path.join(home, ".codeium", "windsurf", "memories", "global_rules.md"),
                  "cline": os.path.join(home, "Documents", "Cline", "Rules", "inspeximus.md"),
-                 "cursor": os.path.join(proj, ".cursor", "rules", "inspeximus.mdc")}
+                 "cursor": os.path.join(proj, ".cursor", "rules", "inspeximus.mdc"),
+                 "devin": os.path.join(devin_dir(home), "AGENTS.md")}
         rules_ok[h] = os.path.exists(paths[h]) and "inspeximus:recall" in open(paths[h], encoding="utf-8").read()
     told = {h: ("call `recall`" in instr.get(h, "")) for h in HOSTS}
     out["C1"] = {"PASS": all(told.values()) and all(rules_ok.values()),
@@ -340,7 +346,7 @@ def main():
                             "--hermes-provider", "yes"], cwd=proj, env=env, capture_output=True, text=True)
         print(r.stdout[-3000:] + r.stderr[-1500:])
     launch_cwd = {h: os.path.join(proj, "src") for h in HOSTS}
-    launch_cwd.update(cursor=home, windsurf=home, cline=home, antigravity=home)   # hosts that document no cwd
+    launch_cwd.update(cursor=home, windsurf=home, cline=home, antigravity=home, devin=home)   # no documented cwd
     try:
         res = criteria(home, proj, env, launch_cwd)
     except Exception as ex:                                  # noqa: BLE001 -- a crash is a failed route

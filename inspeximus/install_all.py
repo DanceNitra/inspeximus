@@ -52,6 +52,8 @@ RECALL_MECHANISM = {
     "windsurf": ("rules", "~/.codeium/windsurf/memories/global_rules.md, always on "
                           "(docs.devin.ai/desktop/cascade/memories)"),
     "cline": ("rules", "~/Documents/Cline/Rules/inspeximus.md (docs.cline.bot/features/cline-rules)"),
+    "devin": ("rules", "AGENTS.md in the Devin config directory, loaded at the start of every session "
+                       "(docs.devin.ai/cli/extensibility/rules)"),
 }
 
 
@@ -71,6 +73,7 @@ def _detect_markers(host):
         "cline": ([h / ".cline"], "cline"),
         "gemini": ([h / ".gemini" / "settings.json"], "gemini"),
         "antigravity": ([h / ".gemini" / "config", h / ".gemini" / "antigravity"], "antigravity"),
+        "devin": ([_i.devin_dir()], "devin"),
     }[host]
 
 
@@ -159,6 +162,8 @@ def rules_target(host, project=None):
                 "---\ntrigger: always_on\n---\n\n" + RULE_LINE + "\n", "create")
     if host == "windsurf":
         return h / ".codeium" / "windsurf" / "memories" / "global_rules.md", RULE_LINE + "\n", "append"
+    if host == "devin":
+        return _i.devin_dir() / "AGENTS.md", RULE_LINE + "\n", "append"
     if host == "cline":
         docs = h / "Documents"
         return docs / "Cline" / "Rules" / "inspeximus.md", RULE_LINE + "\n", "create"
@@ -308,7 +313,7 @@ def _ask(question, answer):
         return False
 
 
-def run(store=None, dry_run=False, rules="ask", hermes_provider_change="ask", project=None, out=print):
+def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", project=None, out=print):
     hosts = list(_i.HOSTS)
     found = {h: detect(h) for h in hosts}
     targets = [h for h in hosts if found[h][0]]
@@ -366,8 +371,10 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="ask", pr
         cfg = home / "config.yaml"
         text = cfg.read_text(encoding="utf-8") if cfg.exists() else ""
         current = hermes_provider(text)
-        if current in (None, "inspeximus") or _ask(
-                f"Hermes uses the memory provider {current!r}. Switch it to inspeximus?", hermes_provider_change):
+        # NEVER A PROMPT HERE. An agent runs this installer, and a question it cannot see hangs the
+        # install in a pseudo-terminal. The agent asks the user first and passes the answer; without it,
+        # another provider stays exactly as it is.
+        if current in (None, "inspeximus") or hermes_provider_change == "yes":
             if current != "inspeximus":
                 if cfg.exists():
                     shutil.copy2(cfg, str(cfg) + ".bak")
@@ -380,6 +387,8 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="ask", pr
             wired.append("hermes")
         else:
             rows.append((label, "yes", f"kept provider {current}", "-", "provider"))
+            notes.append(f"Hermes Agent: kept the memory provider {current!r}. To switch it to inspeximus, "
+                         f"run install --all again with --hermes-provider yes")
 
     migrated = source = None
     rid = None

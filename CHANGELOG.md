@@ -1,4 +1,4 @@
-## 3.14.0 - UPGRADE IF you use more than one AI agent: `inspeximus install --all` connects Claude Code, Codex CLI, Gemini CLI, Antigravity, Cursor, Windsurf, Cline and Hermes Agent to ONE memory. BEHAVIOUR CHANGES: after `--all`, the Claude Code hooks read the shared store too, and the update notice is shown on every start, not only the first of the day.
+## 3.14.0 - UPGRADE IF you use more than one AI agent: `inspeximus install --all` connects Claude Code, Codex CLI, Gemini CLI, Antigravity, Cursor, Windsurf (Devin Desktop), Devin CLI, Cline and Hermes Agent to ONE memory. BEHAVIOUR CHANGES: after `--all`, the Claude Code hooks read the shared store too, and the update notice is shown on every start, not only the first of the day.
 
 Measured on 3.13.0 in a clean sandbox, one `install --ide` per host: the Claude Code entry resolved to
 `<git root>/.inspeximus/coding_memory.json` and the Cursor, Windsurf, Codex and Cline entries to
@@ -17,24 +17,32 @@ supported at all.
   every agent can recall, and prints one table: host, found, wired, store path, recall mechanism.
 - **Gemini CLI and Antigravity** are supported hosts (`~/.gemini/settings.json`,
   `~/.gemini/config/mcp_config.json`), from their official docs read 2026-09-26.
+- **Devin Desktop and Devin CLI** are a supported host (`~/.config/devin/mcp_config.json`,
+  `%APPDATA%/devin/mcp_config.json` on Windows). Windsurf is now Devin Desktop, and its docs, read
+  2026-09-26, say both of its agents read that file; `~/.codeium/windsurf/mcp_config.json`, the only file
+  `--ide windsurf` writes, is read by older builds and by an opt-in discovery setting. `--all` writes both.
 - **Recall without hooks.** The MCP server's handshake `instructions` tell every client to recall at the
   start of each task and to record decisions. Gemini CLI appends them to its system instructions and
-  Codex shows them with the server's tools. For Cursor, Windsurf, Cline and Antigravity, whose docs say
-  nothing about server instructions, `--all` offers one line in the host's rules file; it asks, and
-  without a terminal the answer is no unless `--rules yes` is given.
+  Codex shows them with the server's tools. For Cursor, Windsurf, Devin, Cline and Antigravity, whose docs
+  say nothing about server instructions, `--all` offers one line in the host's rules file: `--rules yes`
+  or `--rules no`, and without the flag it asks only on a terminal, otherwise no.
 - **Hermes Agent.** When Hermes' own venv is found, `--all` installs this version into it, sets
-  `memory.provider: inspeximus` (asking before replacing another provider), and points the provider at
+  `memory.provider: inspeximus` when no other provider is set, and points the provider at
   the shared store. The provider now reads the path saved in `<hermes_home>/inspeximus/config.json`;
-  before 3.14.0 a configured path was ignored.
+  before 3.14.0 a configured path was ignored. Another provider is replaced only with
+  `--hermes-provider yes`; the default is no, and the installer never prompts, because an agent running it
+  cannot answer a prompt it does not see.
 - **The update notice reaches every agent.** Inside the 24-hour throttle the notice was silent, so the
   first process of the day saw it and every other agent did not; it is now answered from the cached check,
   and the MCP server puts it in its handshake instructions instead of stderr alone.
-- **docs/install/index.md**, a page an agent can follow, with per-host anchors. CI runs exactly its
-  commands on Linux, macOS and Windows in a sandbox holding every host's config directory, then checks
+- **docs/install/index.md**, a page an agent can follow, with per-host anchors and the documentation
+  source of every path. The agent asks the user two questions first and puts the answers in the
+  commands. CI runs exactly its commands, once with each answer, on Linux, macOS and Windows in a sandbox holding every host's config directory, then checks
   five criteria through each host's own config (tools/one_memory_check.py): recall instructions, two
   hosts writing 100 times each at once with no lost write and an erasure that stays erased, recall of
   every host's decision through every other host, one pinned version with the notice reaching all, and
-  a foreign row that breaks no host. The same page against 3.9.5 must fail.
+  a foreign row that breaks no host. With the answer no, no rules file may be written. The same page
+  against 3.9.5 must fail.
 
 ## 3.13.0 - UPGRADE IF you verify or certify a store with thousands of receipts: `verify_writes()` and `erasure_certificate()` take one pass over the receipt chain instead of one per receipt. The receipt sidecar is written compactly.
 

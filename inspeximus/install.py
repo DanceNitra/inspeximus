@@ -255,6 +255,26 @@ def _windsurf_paths(project):
     return {"user": _home() / ".codeium" / "windsurf" / "mcp_config.json"}
 
 
+def devin_dir():
+    """Devin's user config directory: %APPDATA%/devin on Windows, $XDG_CONFIG_HOME/devin or ~/.config/devin
+    elsewhere (docs.devin.ai/cli/extensibility/mcp/configuration, read 2026-09-26). On Windows it is taken
+    from the home directory, not from APPDATA, so a sandboxed home is never escaped through the environment."""
+    if os.name == "nt":
+        return _home() / "AppData" / "Roaming" / "devin"
+    xdg = os.environ.get("XDG_CONFIG_HOME")
+    return (pathlib.Path(xdg) if xdg else _home() / ".config") / "devin"
+
+
+def _devin_paths(project):
+    # WINDSURF IS NOW DEVIN DESKTOP (measured 2026-09-26 against its docs). Both of its agents, Cascade and
+    # Devin Local, and Devin CLI read ~/.config/devin/mcp_config.json (%APPDATA%/devin on Windows); the
+    # ~/.codeium/windsurf file is read by older Windsurf builds and, in the new editor, only by an opt-in
+    # MCP discovery setting. Versions before v3000.3 kept servers in config.json and migrate them on
+    # startup; this writes the dedicated file.
+    return {"user": devin_dir() / "mcp_config.json",
+            "project": pathlib.Path(project or os.getcwd()) / ".devin" / "mcp_config.json"}
+
+
 def _codex_paths(project):
     # CODEX_HOME defaults to ~/.codex on every platform (no OS branch in codex's own home-dir code).
     home = pathlib.Path(os.environ.get("CODEX_HOME") or (_home() / ".codex"))
@@ -327,7 +347,19 @@ HOSTS = {
         "verified": False,
         "docs": "https://docs.devin.ai/desktop/cascade/mcp",
         "note": "Global config only -- Windsurf documents no project-scoped MCP file. Restart Windsurf; "
-                "verify via the MCPs icon in the Cascade panel.",
+                "verify via the MCPs icon in the Cascade panel. Builds renamed Devin Desktop read the "
+                "devin host's file instead; install --all writes both.",
+    },
+    "devin": {
+        "label": "Devin Desktop / CLI",
+        "format": "json",
+        "root_key": "mcpServers",
+        "paths": _devin_paths,
+        "fields": lambda blk: {k: v for k, v in blk.items() if k in ("command", "args", "env")},
+        "verified": False,
+        "docs": "https://docs.devin.ai/cli/extensibility/mcp/configuration",
+        "note": "Devin Desktop (formerly Windsurf) and Devin CLI share this file. Restart Devin Desktop; "
+                "`devin mcp list` shows the server.",
     },
     "codex": {
         "label": "Codex CLI",

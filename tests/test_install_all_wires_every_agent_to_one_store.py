@@ -18,7 +18,7 @@ import pytest
 from inspeximus import install as I
 from inspeximus import install_all as A
 
-ALL = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity")
+ALL = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity", "devin")
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def home(tmp_path, monkeypatch):
     for k in ("HOME", "USERPROFILE"):
         monkeypatch.setenv(k, str(h))
     for k in ("CODEX_HOME", "CLINE_DIR", "CLINE_DATA_DIR", "CLINE_MCP_SETTINGS_PATH", "HERMES_HOME",
-              "INSPEXIMUS_CODING_STORE", "INSPEXIMUS_PATH", "INSPEXIMUS_SCOPE"):
+              "INSPEXIMUS_CODING_STORE", "INSPEXIMUS_PATH", "INSPEXIMUS_SCOPE", "XDG_CONFIG_HOME"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("LOCALAPPDATA", str(h / "AppData" / "Local"))
     monkeypatch.setenv("INSPEXIMUS_NO_UPDATE_CHECK", "1")
@@ -45,6 +45,7 @@ def _all_hosts(h):
     for d in (".claude", ".cursor", ".codeium/windsurf", ".codex", ".cline", ".gemini/config"):
         (h / d).mkdir(parents=True, exist_ok=True)
     (h / ".gemini" / "settings.json").write_text("{}\n", encoding="utf-8")
+    I.devin_dir().mkdir(parents=True, exist_ok=True)
 
 
 def _entry(host):
@@ -169,6 +170,20 @@ def test_rules_are_asked_for_and_written_once(home):
     assert ag.startswith("---\ntrigger: always_on\n---") and A.RULE_MARK in ag
     assert A.RULE_MARK in (pathlib.Path(os.getcwd()) / ".cursor" / "rules" / "inspeximus.mdc").read_text()
     assert A.RULE_MARK in (home / "Documents" / "Cline" / "Rules" / "inspeximus.md").read_text()
+    assert (I.devin_dir() / "AGENTS.md").read_text().count(A.RULE_MARK) == 1
+
+
+def test_windsurf_renamed_devin_desktop_is_wired_where_its_docs_say(home):
+    """Devin Desktop (formerly Windsurf) and Devin CLI read ~/.config/devin/mcp_config.json, %APPDATA%/devin
+    on Windows; the ~/.codeium/windsurf file is read only by older builds and an opt-in discovery setting."""
+    _all_hosts(home)
+    rc, table = _run(rules="no")
+    assert rc == 0, table
+    want = home / "AppData" / "Roaming" / "devin" if os.name == "nt" else home / ".config" / "devin"
+    assert I.devin_dir() == want
+    entry = json.loads((want / "mcp_config.json").read_text())["mcpServers"]["inspeximus"]
+    assert entry["env"]["INSPEXIMUS_PATH"] == str(home / ".inspeximus" / "coding_memory.json")
+    assert "Devin Desktop / CLI" in table
 
 
 def test_without_a_terminal_ask_means_no(home, monkeypatch):
@@ -238,6 +253,34 @@ def test_hermes_is_wired_and_another_provider_is_asked_about(home, monkeypatch, 
         assert json.loads(cfg.read_text())["path"].endswith("coding_memory.json")
     else:
         assert not cfg.exists()
+
+
+def test_without_the_flag_another_hermes_provider_is_kept_and_nothing_is_asked(home, monkeypatch, capsys):
+    """An agent runs the installer; a prompt it cannot see would hang it. No flag means no change."""
+    hh = home / ".hermes"
+    py = hh / "hermes-agent" / "venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    py.parent.mkdir(parents=True)
+    py.write_text("", encoding="utf-8")
+    before = "model: m\nmemory:\n  provider: mem0\n"
+    (hh / "config.yaml").write_text(before, encoding="utf-8")
+    monkeypatch.setattr(A, "install_into_hermes", lambda p: (True, "ok"))
+    (home / ".cursor").mkdir()
+
+    class _NoStdin:
+        def __getattr__(self, name):
+            raise AssertionError(f"the installer touched stdin ({name})")
+    monkeypatch.setattr(sys, "stdin", _NoStdin())
+    monkeypatch.setattr("builtins.input", lambda *a: (_ for _ in ()).throw(AssertionError("input() called")))
+    from inspeximus import cli
+    rc = cli.main(["install", "--all", "--rules", "no"])
+    out = capsys.readouterr().out
+    assert rc == 0, out
+    assert (hh / "config.yaml").read_text(encoding="utf-8") == before, "the provider is unchanged"
+    assert not (hh / "config.yaml.bak").exists() and not (hh / "inspeximus" / "config.json").exists()
+    assert "kept provider mem0" in out and "--hermes-provider yes" in out
+    # control: the same run with the flag does switch it, so the fixture reaches the Hermes branch
+    rc = cli.main(["install", "--all", "--rules", "no", "--hermes-provider", "yes"])
+    assert rc == 0 and A.hermes_provider((hh / "config.yaml").read_text(encoding="utf-8")) == "inspeximus"
 
 
 def test_the_hermes_provider_reads_the_configured_path(tmp_path):
