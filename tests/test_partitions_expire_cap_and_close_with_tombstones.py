@@ -45,13 +45,13 @@ def test_expiry_and_cap_erase_with_named_tombstones_and_touch_nothing_else(tmp_p
     parts = Partitions(m)
     p = parts.open("proc", kind="process", max_age_days=7, max_records=3)
     now = time.time()
-    ids = [p.remember(f"step {i}", key=f"s::{i}") for i in range(3)]
-    m.remember("outside, old", key="raw::old")
-    # backdate two partition records and the outside one past the expiry
-    for rec in m.items:
-        if rec.get("key") in ("s::0", "s::1", "raw::old"):
-            rec["ts"] = now - 30 * DAY
-    m._save(force=True)
+    # two partition records and the outside one are WRITTEN past the expiry. They used to be written now
+    # and have `ts` edited afterwards, which is the out-of-band edit verify_writes catches since 3.12.0.
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(time, "time", lambda: now - 30 * DAY)
+        ids = [p.remember(f"step {i}", key=f"s::{i}") for i in range(2)]
+        m.remember("outside, old", key="raw::old")
+    ids.append(p.remember("step 2", key="s::2"))
     rep = parts.report(now=now)
     row = rep["partitions"][0]
     assert row["past_expiry_now"] == 2 and row["sweep_due"] is True

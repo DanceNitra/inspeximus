@@ -113,7 +113,7 @@ def test_attribution_substitution_is_caught_too():
 
     res = bind_content(witnessed, list(m.items))
     assert res["ok"] is False
-    assert res["mismatched"][0]["field"] in ("attrib_sha256", "immutable_sha256"), res["mismatched"]
+    assert res["mismatched"][0]["field"] in ("attrib_sha256", "attrib_nonced_sha256", "immutable_sha256"), res["mismatched"]
 
 
 def test_the_auditors_own_bundle_verifies_while_the_content_no_longer_binds():

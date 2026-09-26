@@ -1200,6 +1200,12 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE", "python -m inspeximus.cli --path /tmp/fresh.json coverage",
        note="Added by the site commit d876b69 (2026-09-21) without a registry row; registered with the 3.5.0 release. "
             "The 36 of 36 result is what 3.4.0 shipped (tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py)."),
+    _c("readme-coverage-scope", "README.md", ["36"],
+       "lists 36 of 36 in-scope provider and deployer duties",
+       "The README's scope sentence: `inspeximus coverage` on a fresh store lists 36 of 36 in-scope duties covered, 0 not covered",
+       "REPRODUCIBLE", "python -m inspeximus.cli --path /tmp/fresh.json coverage",
+       note="Replaced the README's 'agent-memory slice' scope sentences in 3.12.0 (owner-approved, 2026-09-26). "
+            "Measured on the 3.12.0 tree: in_scope 36, covered 36."),
     _c("site-art15-evidence-rows", "index.html", ["3.6.0", "3"],
        "Since 3.6.0 the Art. 15 row carries the library's 3 robustness measurements",
        "compliance_report() carries 3 robustness evidence rows (echo, poison, split_view) since 3.6.0, each with the receipt sha256",

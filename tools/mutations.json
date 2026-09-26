@@ -3187,8 +3187,8 @@
  {
   "name": "verify_writes no longer compares the record's context",
   "file": "inspeximus/core.py",
-  "old": "                          \"time_sha256\", \"attrib_sha256\", \"context_sha256\")",
-  "new": "                          \"time_sha256\", \"attrib_sha256\")",
+  "old": "\"attrib_nonced_sha256\", \"context_sha256\")",
+  "new": "\"attrib_nonced_sha256\")",
   "tests": [
    "tests/test_a_record_lifted_into_another_context_fails_verification.py"
   ]
@@ -3272,6 +3272,15 @@
   "new": "             if False}",
   "tests": [
    "tests/test_the_fast_phase_selects_tests_for_a_docs_change.py"
+  ]
+ },
+ {
+  "name": "verify_writes no longer compares the nonced attribution",
+  "file": "inspeximus/core.py",
+  "old": "\"time_sha256\", \"attrib_sha256\", \"attrib_nonced_sha256\", \"context_sha256\")",
+  "new": "\"time_sha256\", \"attrib_sha256\", \"context_sha256\")",
+  "tests": [
+   "tests/test_an_erased_subject_cannot_be_confirmed_from_the_receipts.py"
   ]
  }
 ]

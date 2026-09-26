@@ -165,8 +165,8 @@ and GDPR Article 17 has applied since 25 May 2018.
 
 `inspeximus compliance` prints the evidence labelled by article. The full mapping, with the
 boundary of every row, is on the **[EU AI Act evidence page](https://dancenitra.github.io/inspeximus/ai-act.html)**
-and in [docs/AI_ACT.md](docs/AI_ACT.md). Scope in one sentence: this is the evidence for the
-agent-memory slice of a system, stated per article; a certification is a separate act by someone else.
+and in [docs/AI_ACT.md](docs/AI_ACT.md). Scope in one sentence: `inspeximus coverage` lists 36 of 36 in-scope provider and deployer duties
+covered on a fresh store (3.12.0), stated per article; a certification is a separate act by someone else.
 
 ## The 30 seconds that matter
 
@@ -193,7 +193,7 @@ No embedding drift, no "the LLM usually picks the newer one". The old value is *
 the retirement is a record you can audit, revert, and prove.
 
 **Say the old value again and it still does not come back.** That is the part a recency rule cannot
-do, and it is where most stores differ from this one: writing `db-3` a third time, under the same
+do: writing `db-3` a third time, under the same
 key, leaves `db-7` current. Going back is a decision you make on purpose, with
 `remember(..., reaffirm=True)` — the guard cannot un-supersede on its own.
 After a keyed write, read `m.last_write["blocked"]`, or pass `raise_on_block=True` to get a
@@ -458,7 +458,7 @@ content-free tombstone, so a later reader can tell a deliberate erasure from tam
 trust us.
 
 `inspeximus compliance` prints the same evidence labelled by article, with its own scope attached:
-the agent-memory slice only, not the whole system, and not a certification.
+the duties `inspeximus coverage` lists, and not a certification.
 
 ### Proving when, and whether the clock belonged to anyone
 
@@ -480,7 +480,7 @@ It reports membership and nothing else. It does not check the signature on the t
 nothing about whether the token is authentic (`verify_with_openssl` does that, and both must pass),
 and before a list's earliest record it answers UNKNOWN rather than "no".
 
-**Scope.** The rows above are the agent-memory slice, stated per article. The Act's high-risk
+**Scope.** The rows above are the duties `inspeximus coverage` lists, stated per article. The Act's high-risk
 obligations apply from 2 December 2027 for standalone Annex III systems and 2 August 2028 for those
 embedded in regulated products; the evidence they will ask for (Art. 12 event logging, Art. 19
 retention, Art. 15 accuracy and robustness) is what the store already keeps and exports.

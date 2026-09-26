@@ -1,3 +1,37 @@
+## 3.12.0 - UPGRADE IF you hand the receipts file to anyone after an erasure, or rely on `as_of(as_recorded=)`, `believed_at()` or `store.last_write`. VERIFICATION BEHAVIOUR CHANGES: new receipts commit a nonced attribution field, and `verify_writes()` compares each record's recording time with its receipt.
+
+Session T's library findings from the 2026-09-24 docs gate, items 1, 2 and 4, and its documentation items.
+
+- **An erased subject can no longer be confirmed from the receipts (item 1).** `attrib_sha256` hashed a
+  record's sorted sources with no salt, so after `forget_subject("user:alice")` hashing the guess
+  `user:alice` matched every receipt of hers. A record that carries a nonce (every record written since
+  2.40.0) now commits `attrib_nonced_sha256` over its sources and its nonce instead, and the nonce leaves
+  with the record. `verify_writes`, `verify_attribution`, `provenance` and the audit-bundle rewalk check
+  whichever field a receipt carries, so receipts written before 3.12.0 still verify. Those receipts keep
+  the unsalted hash: the chain is append-only, and 3.12.0 does not rewrite it.
+  tests/test_an_erased_subject_cannot_be_confirmed_from_the_receipts.py scans every file in the store
+  directory for the guessed subject's digest in five encodings.
+- **A backdated or postdated record fails verification (item 2).** `as_of(as_recorded=)` and
+  `believed_at()` select on `ts`. Every receipt has carried the record's `ts`, and nothing compared it:
+  a correction backdated on disk made the store say it had known the correction before it was written,
+  and `verify_writes()` passed. `verify_writes()`, `provenance()` and the audit-bundle rewalk now compare
+  it and name "WHEN it was recorded". A receipt without a `ts` is not failed for it.
+- **`last_write` reports what the write became (item 4).** A keyed write stored as history by
+  `keyed_lww_backfill`, and a write forked as a candidate below `fork_below`, were both reported as
+  `status: "active"`. They report `superseded` (policy `keyed_lww_backfill`, `current_id`) and
+  `candidate`. A write that did not land no longer carries `previous`. The MCP and CLI write surfaces
+  read the same field.
+- **Documentation.** docs/AI_ACT.md no longer says Articles 12 and 19 require tamper-evident logs, and
+  states its scope from `inspeximus coverage`. docs/API.md: `forget()` writes a tombstone since 1.24.0,
+  `echo_guard` is on by default since 1.87.0, and `as_of(as_recorded=)` and `believed_at()` are
+  documented. SECURITY.md: write receipts detect an edit after the write, not a poisoned write.
+  docs/ERASURE.md: `store_absent` reads only the file it is given. README.md states its scope from
+  `inspeximus coverage`, and no longer says that restating an old value is where most stores differ
+  (probes/INTEGRITY_BENCHMARK.md measures that case as a tie).
+- **Tests.** The verifier page's fullwidth-digits case changes the key on every run (it left about 1.6%
+  of random keys unchanged and failed at random). `tools/release_check.py`: the fast phase selects the
+  tests that name a changed non-Python file, so a CHANGELOG-only change no longer selects nothing.
+
 ## 3.11.0 - UPGRADE IF your store holds records for more than one tenant, agent, user, session or project: a genuine signed record moved into another context no longer verifies. VERIFICATION BEHAVIOUR CHANGES: receipts commit a new field, and `verify_writes()` gains `context_strict`.
 
 agmi 0.6.0 test T6 (cross-context replay). A write receipt committed to what a record says (text, key,
