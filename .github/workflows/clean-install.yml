@@ -1,0 +1,36 @@
+name: clean install
+# A new user's route, from PyPI, on the platforms our own machine cannot test: pip install
+# "inspeximus[mcp]", `inspeximus install --ide claude`, then a decision written through the MCP server in
+# one process must reach the SessionStart hook and a fresh MCP recall in the next.
+# The control pins 3.9.5, which lost that decision between processes; it must FAIL, or the check
+# measured nothing. tools/clean_install_check.py holds the logic.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci-clean-install]
+    paths: [".github/workflows/clean-install.yml", "tools/clean_install_check.py"]
+jobs:
+  route:
+    name: ${{ matrix.os }} / ${{ matrix.case.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        case:
+          - {name: "latest from PyPI (must pass)", version: latest, flag: ""}
+          - {name: "control 3.9.5 (must fail)", version: "3.9.5", flag: "--expect-fail"}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: clean-install check
+        run: python tools/clean_install_check.py ${{ matrix.case.version }} "$RUNNER_TEMP/route" ${{ matrix.case.flag }}
+      - name: keep the verdict
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clean-install-${{ matrix.os }}-${{ matrix.case.version }}
+          path: ${{ runner.temp }}/route/result.json
+          if-no-files-found: warn
