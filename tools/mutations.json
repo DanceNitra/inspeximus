@@ -3282,5 +3282,23 @@
   "tests": [
    "tests/test_an_erased_subject_cannot_be_confirmed_from_the_receipts.py"
   ]
+ },
+ {
+  "name": "a wrongly typed time is trusted at load",
+  "file": "inspeximus/core.py",
+  "old": "            if _f in r and (isinstance(r[_f], bool) or not isinstance(r[_f], (int, float))):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_a_record_with_a_string_timestamp_is_normalised_at_load.py"
+  ]
+ },
+ {
+  "name": "a row store skips the load normalisation",
+  "file": "inspeximus/core.py",
+  "old": "            for r in self._items:\n                if isinstance(r, dict):\n                    Inspeximus._normalise_loaded(r)\n            self._track_all()",
+  "new": "            self._track_all()",
+  "tests": [
+   "tests/test_a_record_with_a_string_timestamp_is_normalised_at_load.py"
+  ]
  }
 ]

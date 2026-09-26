@@ -39,6 +39,10 @@ def _fresh():
     # default and the comparison saw no removal. That is the loader doing its job, not a lost write.
     # A caller-added key is the only kind whose removal is observable.
     m.items[0]["scratch"] = "removable"
+    # `popitem` removes the LAST key, and a row store reads keys back sorted. Without this it removed
+    # `value`, which the load normalisation restores since 3.12.1 (as the JSON path always has), so
+    # the route stopped being observable. A key that sorts last keeps it about the caller's edit.
+    m.items[0]["zz_popitem_target"] = "removable"
     m.flush()
     assert ss.looks_like_sqlite(p), "the fixture is not a row store, so it cannot test this at all"
     n = Inspeximus(path=p)

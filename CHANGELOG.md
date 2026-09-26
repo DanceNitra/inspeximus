@@ -1,3 +1,21 @@
+## 3.12.1 - UPGRADE IF anything other than inspeximus writes records into your store: a record whose timestamp is a string no longer makes every `recall()` on the store fail.
+
+Found 2026-09-26 on our own shared MCP store. 53 records written into it directly, not through
+`remember()`, carried `ts` as an ISO string ("2026-09-25T18:40:03Z") and no `last_access`, `valid_from`
+or `iso`. `recall()` computes each record's age, so one such record made every recall on the store
+raise `TypeError: unsupported operand type(s) for -: 'float' and 'str'`, the MCP `recall` tool included.
+
+- **A wrongly typed time is converted at load.** `ts`, `last_access` and `valid_from` that are ISO 8601
+  strings (with `Z`, an offset, or no zone, read as UTC) or numeric strings become epoch seconds, and
+  the missing fields are filled from `ts`. A value that does not parse is treated as absent and kept
+  under `meta["unparsed_time"]`. Opening the store does not rewrite it.
+- **A row store is normalised like a JSON store.** The SQLite load path (the default format since
+  3.0.0) returned before the load-time normalisation, so foreign rows stayed as written. A changeset
+  imported from a peer is normalised the same way.
+
+tests/test_a_record_with_a_string_timestamp_is_normalised_at_load.py uses the broken record's shape
+with synthetic data; it fails on 3.12.0 in both formats.
+
 ## 3.12.0 - UPGRADE IF you hand the receipts file to anyone after an erasure, or rely on `as_of(as_recorded=)`, `believed_at()` or `store.last_write`. VERIFICATION BEHAVIOUR CHANGES: new receipts commit a nonced attribution field, and `verify_writes()` compares each record's recording time with its receipt.
 
 Session T's library findings from the 2026-09-24 docs gate, items 1, 2 and 4, and its documentation items.

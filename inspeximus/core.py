@@ -380,6 +380,29 @@ _COMMIT_BINDING_FIELDS = ("immutable_sha256", "mtype", "value_sha256", "status_s
                           "time_sha256", "attrib_sha256", "attrib_nonced_sha256", "context_sha256")
 
 
+def _epoch_or_none(v):
+    """Epoch seconds from a number, a numeric string or an ISO 8601 string; None if it is none of them."""
+    if isinstance(v, bool) or v is None:
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    if not isinstance(v, str):
+        return None
+    s = v.strip()
+    try:
+        return float(s)
+    except ValueError:
+        pass
+    try:
+        from datetime import datetime, timezone
+        d = datetime.fromisoformat(s[:-1] + "+00:00" if s.endswith(("Z", "z")) else s)
+    except ValueError:
+        return None
+    if d.tzinfo is None:
+        d = d.replace(tzinfo=timezone.utc)
+    return d.timestamp()
+
+
 def _canon(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
@@ -1371,7 +1394,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased)}
 
 
-__version__ = "3.12.0"
+__version__ = "3.12.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -3780,6 +3803,45 @@ class Inspeximus:
                 # bind for life. A SEPARATE field for the reason `value_sha256` is one: old receipts
                 # lack it; context_unbound() counts them, and only context_strict=True fails them.
                 "context_sha256": _sha256_hex(_canon(Inspeximus._rec_context(rec)))}
+
+    @staticmethod
+    def _normalise_loaded(r: dict) -> None:
+        """Bring one record read from disk, or from a peer, to the shape the rest of the library assumes.
+
+        A record missing a field newer code assumes crashed six methods with a bare KeyError -- and made
+        index_coherence report `coherent: true` with an undercount, which is worse than crashing.
+        Foreign, hand-edited and pre-upgrade stores are ordinary; normalise once here instead of
+        guarding at every read.
+
+        A WRONGLY TYPED TIME, since 3.12.1. Absent fields were filled and present ones trusted, so a
+        record written around the library with `ts: "2026-09-25T18:40:03Z"` kept the string, and every
+        recall() on the store raised `TypeError: float - str` computing its age (53 such records on the
+        shared MCP store, 2026-09-26). `ts`, `last_access` and `valid_from` are converted to epoch
+        seconds: ISO 8601 (a `Z` or an offset; no zone is read as UTC) and numeric strings. One that
+        does not parse is treated as absent and kept verbatim under meta["unparsed_time"]."""
+        for _f in ("ts", "last_access", "valid_from"):
+            if _f in r and (isinstance(r[_f], bool) or not isinstance(r[_f], (int, float))):
+                _v = r.pop(_f)
+                _t = _epoch_or_none(_v)
+                if _t is not None:
+                    r[_f] = _t
+                elif _v is not None:
+                    _m = r.get("meta") if isinstance(r.get("meta"), dict) else r.setdefault("meta", {})
+                    _m.setdefault("unparsed_time", {})[_f] = _v
+        r.setdefault("status", "active")
+        r.setdefault("tags", [])
+        r.setdefault("links", [])
+        r.setdefault("meta", {})
+        r.setdefault("value", 1.0)
+        r.setdefault("text", "")
+        # A FIXED fallback, never time.time(): inventing a timestamp at load made state_digest
+        # differ across two opens of identical bytes, so a witness or anchor pinned to such a
+        # store could never re-verify. An undated legacy record is honestly undated.
+        r.setdefault("ts", r.get("valid_from", 0.0))
+        r.setdefault("last_access", r["ts"])
+        r.setdefault("valid_from", r["ts"])
+        r.setdefault("mtype", _infer_type(r.get("text") or ""))
+        r.setdefault("iso", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(r["ts"])))
 
     @staticmethod
     def _attrib_commit(rec: dict) -> dict:
@@ -6511,9 +6573,14 @@ class Inspeximus:
                 # never loads or writes; comparing them against a memory image that has none reported
                 # "differs in vec" on every record -- 117 of 7,880 stores on the fixture corpus
                 # (2026-09-20), each a false integrity alarm on an untouched, healthy store.
+                # THE DISK SIDE IS NORMALISED AS THE LOAD NORMALISED IT (3.12.1), or every foreign row
+                # the loader brought to shape reads as a record that never reached disk.
+                _disk_rows = [r for r in _rows.load(self.path) if isinstance(r, dict) and r.get("id")]
+                for r in _disk_rows:
+                    Inspeximus._normalise_loaded(r)
                 _disk = {r["id"]: _rows_mod_doc({_k: _v for _k, _v in r.items()
                                                  if _k != "vec" or self._persist_vectors})
-                         for r in _rows.load(self.path) if isinstance(r, dict) and r.get("id")}
+                         for r in _disk_rows}
                 # COMPARE WHAT THE WRITER WRITES. `_save` strips the `vec` embedding cache unless
                 # the store persists vectors, so comparing the raw in-memory record against the
                 # stored row reported every embedded record as unpersisted -- a false alarm on a
@@ -9190,6 +9257,12 @@ class Inspeximus:
                     f"cannot parse the store at {self.path} ({e}). Refusing to open it, because "
                     f"continuing would overwrite the file with an empty store. Restore a backup, or "
                     f"move the file aside if you meant to start fresh.") from None
+            # THE SAME NORMALISATION AS A JSON STORE (3.12.1). This branch returned before it, so a
+            # row store -- the default format -- held foreign rows exactly as they were written.
+            # Before the snapshot, so a normalised row is the baseline and opening writes nothing.
+            for r in self._items:
+                if isinstance(r, dict):
+                    Inspeximus._normalise_loaded(r)
             self._track_all()
             self._row_snapshot = _rows.snapshot(self._items, self._persist_vectors)
             if _behind:
@@ -9299,24 +9372,7 @@ class Inspeximus:
                 f"{len(self._items)} elements are not records (first: {_foreign[0]}). Refusing to open "
                 f"it, because continuing would overwrite the file.")
         for r in self._items:
-            # A record missing a field newer code assumes crashed six methods with a bare KeyError — and made
-            # index_coherence report `coherent: true` with an undercount, which is worse than crashing. Foreign,
-            # hand-edited and pre-upgrade stores are ordinary; normalise once here instead of guarding at every
-            # read. Only absent keys are filled; nothing existing is touched.
-            r.setdefault("status", "active")
-            r.setdefault("tags", [])
-            r.setdefault("links", [])
-            r.setdefault("meta", {})
-            r.setdefault("value", 1.0)
-            r.setdefault("text", "")
-            # A FIXED fallback, never time.time(): inventing a timestamp at load made state_digest
-            # differ across two opens of identical bytes, so a witness or anchor pinned to such a
-            # store could never re-verify. An undated legacy record is honestly undated.
-            r.setdefault("ts", r.get("valid_from", 0.0))
-            r.setdefault("last_access", r["ts"])
-            r.setdefault("valid_from", r["ts"])
-            r.setdefault("mtype", _infer_type(r.get("text") or ""))
-            r.setdefault("iso", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(r["ts"])))
+            Inspeximus._normalise_loaded(r)
         # AN EXISTING JSON STORE IS CONVERTED HERE, not left for the user to discover. Runs after the
         # records are normalised, so what lands in the row store is what this version reads back.
         # `raw` is set only when the open above found a plaintext file, so the format question is
@@ -9709,7 +9765,9 @@ class Inspeximus:
             rid = r.get("id")
             if not rid or rid in have or rid in buried:
                 continue
-            self._items.append(self._track({k: v for k, v in r.items() if k != "vec"}))
+            _r = {k: v for k, v in r.items() if k != "vec"}
+            Inspeximus._normalise_loaded(_r)       # a peer's payload is a foreign writer too (3.12.1)
+            self._items.append(self._track(_r))
             have.add(rid)
             added += 1
         before = len(self._items)
