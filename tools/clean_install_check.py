@@ -94,8 +94,13 @@ def mcp_session(calls):
     x = lambda v: re.sub(r"\$\{(\w+)\}", lambda m: base.get(m.group(1), m.group(0)), v)  # noqa: E731
     cmd = [x(srv["command"])] + [x(a) for a in srv.get("args") or []]
     e = dict(base, **{k: x(v) for k, v in (srv.get("env") or {}).items()})
-    p = subprocess.Popen(cmd, cwd=launch, env=e, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace")
+    try:
+        p = subprocess.Popen(cmd, cwd=launch, env=e, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace")
+    except OSError as ex:
+        # A server that cannot even start is the route failing, not the check: 3.9.5 wrote a bare `uvx`
+        # launch command, so on a machine without uv this is where it stops.
+        return {"error": "the MCP server could not start: %r (command %s)" % (ex, cmd[0])}, None
     out = {}
     try:
         def send(m):

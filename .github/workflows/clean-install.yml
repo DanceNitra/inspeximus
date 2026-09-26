@@ -17,20 +17,27 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
+        # `uv: true` puts uvx on PATH, so the installer writes its pinned uvx launch; without it the
+        # installer falls back to the venv's python. The control runs without uv: with uv, 3.9.5's
+        # unpinned `uvx --from inspeximus[mcp]` resolves the newest release and passes, which is the
+        # defect 3.9.7's pin closed, not a property of 3.9.5 this check could measure.
         case:
-          - {name: "latest from PyPI (must pass)", version: latest, flag: ""}
-          - {name: "control 3.9.5 (must fail)", version: "3.9.5", flag: "--expect-fail"}
+          - {name: "latest from PyPI, no uv (must pass)", version: latest, flag: "", uv: false}
+          - {name: "latest from PyPI, with uv (must pass)", version: latest, flag: "", uv: true}
+          - {name: "control 3.9.5, no uv (must fail)", version: "3.9.5", flag: "--expect-fail", uv: false}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - if: matrix.case.uv
+        uses: astral-sh/setup-uv@v6
       - name: clean-install check
         run: python tools/clean_install_check.py ${{ matrix.case.version }} "$RUNNER_TEMP/route" ${{ matrix.case.flag }}
       - name: keep the verdict
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: clean-install-${{ matrix.os }}-${{ matrix.case.version }}
+          name: clean-install-${{ matrix.os }}-${{ matrix.case.version }}-uv${{ matrix.case.uv }}
           path: ${{ runner.temp }}/route/result.json
           if-no-files-found: warn
