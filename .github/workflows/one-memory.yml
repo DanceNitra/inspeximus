@@ -1,0 +1,40 @@
+name: one memory
+# docs/install/index.md, executed exactly as written, on every OS, in a sandbox whose home holds every
+# host's config directory. Then five criteria through each host's own written config
+# (tools/one_memory_check.py): recall without hooks, concurrency, cross-agent recall for every pair,
+# one pinned version with the update notice reaching every host, and a foreign row that breaks no host.
+# The control runs the same page against 3.9.5, which has no `install --all`, and must fail.
+on:
+  workflow_dispatch:
+  push:
+    branches: [one-memory]
+jobs:
+  page:
+    name: ${{ matrix.os }} / ${{ matrix.case.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        case:
+          - {name: "page, this checkout (must pass)", flags: "--find-links dist", uv: false}
+          - {name: "page, this checkout, with uv (must pass)", flags: "--find-links dist --keep-uv", uv: true}
+          - {name: "control 3.9.5 (must fail)", flags: "--constraint inspeximus==3.9.5 --expect-fail", uv: false}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - if: matrix.case.uv
+        uses: astral-sh/setup-uv@v6
+      - name: build a wheel from this checkout
+        run: python -m pip wheel . --no-deps -w dist
+      - name: run the install page
+        run: python tools/run_install_page.py "${{ runner.temp }}/page" ${{ matrix.case.flags }}
+      - name: keep the verdict
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-memory-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/page/one_memory.json
+          if-no-files-found: warn

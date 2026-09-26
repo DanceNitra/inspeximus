@@ -7,7 +7,7 @@
     "url": "https://github.com/DanceNitra/inspeximus",
     "source": "github"
   },
-  "version": "3.13.0",
+  "version": "3.14.0",
   "websiteUrl": "https://pypi.org/project/inspeximus/",
   "icons": [
     {
@@ -43,7 +43,7 @@
           "value": "mcp"
         }
       ],
-      "version": "3.13.0",
+      "version": "3.14.0",
       "transport": {
         "type": "stdio"
       },

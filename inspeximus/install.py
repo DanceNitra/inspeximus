@@ -89,6 +89,16 @@ def _toml_block(name, block):
     lines = [f"[mcp_servers.{name}]", f'command = {json.dumps(block["command"])}']
     args = ", ".join(json.dumps(a) for a in block.get("args", []))
     lines.append(f"args = [{args}]")
+    # Keys the user added to our own table (startup_timeout_sec, enabled, ...) survive a rewrite.
+    for k, v in block.items():
+        if k in ("command", "args", "env"):
+            continue
+        if isinstance(v, bool):
+            lines.append(f"{k} = {'true' if v else 'false'}")
+        elif isinstance(v, (int, float, str)):
+            lines.append(f"{k} = {json.dumps(v)}")
+        elif isinstance(v, list) and all(isinstance(x, str) for x in v):
+            lines.append(f"{k} = [{', '.join(json.dumps(x) for x in v)}]")
     env = block.get("env") or {}
     if env:
         lines.append(f"[mcp_servers.{name}.env]")
@@ -265,6 +275,20 @@ def _cline_paths(project):
     return {"user": base / "settings" / "cline_mcp_settings.json"}
 
 
+def _gemini_paths(project):
+    # docs/cli/settings.md and docs/reference/configuration.md in google-gemini/gemini-cli (read 2026-09-26):
+    # "User settings: ~/.gemini/settings.json", "Workspace settings: your-project/.gemini/settings.json".
+    return {"user": _home() / ".gemini" / "settings.json",
+            "project": pathlib.Path(project or os.getcwd()) / ".gemini" / "settings.json"}
+
+
+def _antigravity_paths(project):
+    # https://antigravity.google/docs/mcp (read 2026-09-26): "Global: ~/.gemini/config/mcp_config.json",
+    # "Workspace: .agents/mcp_config.json".
+    return {"user": _home() / ".gemini" / "config" / "mcp_config.json",
+            "project": pathlib.Path(project or os.getcwd()) / ".agents" / "mcp_config.json"}
+
+
 HOSTS = {
     "claude": {
         "label": "Claude Code",
@@ -332,15 +356,42 @@ HOSTS = {
         "note": "Cline watches this file and reloads by itself -- no restart. Note the path is the "
                 "shared ~/.cline one, not the legacy VS Code globalStorage path most guides quote.",
     },
+    "gemini": {
+        "label": "Gemini CLI",
+        "format": "json",
+        "root_key": "mcpServers",
+        "paths": _gemini_paths,
+        # docs/tools/mcp-server.md: a stdio entry is command/args/env (+ cwd, timeout, trust). `trust`
+        # is left out: true would bypass every tool-call confirmation, which is the user's call.
+        "fields": lambda blk: {k: v for k, v in blk.items() if k in ("command", "args", "env")},
+        "verified": False,
+        "docs": "https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md",
+        "note": "Restart Gemini CLI. It appends this server's instructions to its system instructions, "
+                "so the agent is told to recall at the start of each task.",
+    },
+    "antigravity": {
+        "label": "Antigravity",
+        "format": "json",
+        "root_key": "mcpServers",
+        "paths": _antigravity_paths,
+        "fields": lambda blk: {k: v for k, v in blk.items() if k in ("command", "args", "env")},
+        "verified": False,
+        "docs": "https://antigravity.google/docs/mcp",
+        "note": "Restart Antigravity, or refresh in Manage MCP Servers. Its docs say nothing about server "
+                "instructions, so `install --all` offers a rules file that tells the agent to recall.",
+    },
 }
 
 
-def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
+def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME, env=None):
     """Work out exactly what would change, without touching anything.
 
     Returns a dict carrying the target path, the action, a unified diff and any error. `apply()`
     consumes this; `--dry-run` prints it. Keeping the decision and the write in separate functions is
     what makes the dry run trustworthy: it is the same code path, minus the write.
+
+    `env` (3.14.0, used by `install --all`) is MERGED into the entry's existing env: a key set to None is
+    removed, every other key the entry already had is kept. `store_path` replaces the env, as before.
     """
     import difflib
 
@@ -369,7 +420,7 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
         if res["hooks"]["error"]:
             res["error"] = res["hooks"]["error"]
             return res
-        if store_path:
+        if store_path and env is None:
             res["note"] += (" --store points the MCP server at %s, while the hooks read "
                             "<git root>/.inspeximus/coding_memory.json, so a decision written "
                             "through MCP will not appear at SessionStart. Omit --store to share "
@@ -405,7 +456,15 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
         # ONE STORE FOR THE SERVER AND THE HOOKS. With no --store, the Claude Code entry names the
         # hook's store through INSPEXIMUS_SCOPE=claude-code. An env the user or an earlier run already
         # wrote is kept as it is (NEVER CLOBBER, above).
-        if host == "claude" and not store_path and not (isinstance(existing, dict) and existing.get("env")):
+        if env is not None:
+            merged = dict((existing or {}).get("env") or {}) if isinstance(existing, dict) else {}
+            for k, v in env.items():
+                if v is None:
+                    merged.pop(k, None)
+                else:
+                    merged[k] = v
+            block["env"] = merged
+        elif host == "claude" and not store_path and not (isinstance(existing, dict) and existing.get("env")):
             block["env"] = {"INSPEXIMUS_SCOPE": "claude-code"}
         if isinstance(existing, dict):
             block = {**existing, **block}
@@ -422,6 +481,12 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
         before = path.read_text(encoding="utf-8") if path.exists() else ""
         table = f"[mcp_servers.{name}]"
         res["action"] = ("update" if table in before else "create" if not before else "add")
+        if env is not None and table in before:
+            # REWRITE OUR OWN TABLE ONLY (3.14.0), and only when the result re-parses to the same file
+            # with nothing but that table changed. Without a TOML reader (Python < 3.11) it stays a report.
+            return _toml_rewrite(res, path, before, name, block, env)
+        if env is not None:
+            block["env"] = {k: v for k, v in env.items() if v is not None}
         addition = _toml_block(name, block)
         after = before if table in before else (before.rstrip("\n") + "\n\n" + addition if before else addition)
         res["data"] = after
@@ -433,6 +498,61 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME):
             # reports rather than edits. Removing the block and re-running is the safe path.
             res["action"] = "present"
 
+    return res
+
+
+def _toml_rewrite(res, path, before, name, block, env):
+    """Replace `[mcp_servers.<name>]` (and its `.env` subtable) in `before`, merging the env."""
+    import difflib
+    try:
+        import tomllib
+    except ImportError:
+        res["action"] = "present"
+        res["diff"] = ""
+        res["note"] = (res.get("note", "") + " This Python has no TOML reader, so the existing table was "
+                       "left as it is; remove it and re-run, or run on Python 3.11 or later.").strip()
+        return res
+    try:
+        old = tomllib.loads(before)
+    except Exception as e:                                   # noqa: BLE001
+        res["error"] = f"{path} is not valid TOML ({e}); refusing to touch it"
+        return res
+    mine = ((old.get("mcp_servers") or {}).get(name)) or {}
+    merged_env = dict(mine.get("env") or {})
+    for k, v in env.items():
+        if v is None:
+            merged_env.pop(k, None)
+        else:
+            merged_env[k] = v
+    new_block = {**{k: v for k, v in mine.items() if k != "env"}, "command": block["command"],
+                 "args": block["args"], "env": merged_env}
+    lines = before.splitlines(True)
+    head = f"[mcp_servers.{name}]"
+    start = next(i for i, ln in enumerate(lines) if ln.strip() == head)
+    end = start + 1
+    while end < len(lines):
+        s = lines[end].strip()
+        if s.startswith("[") and not s.startswith(f"[mcp_servers.{name}."):
+            break
+        end += 1
+    after = "".join(lines[:start]) + _toml_block(name, new_block) + ("\n" if end < len(lines) else "") \
+        + "".join(lines[end:])
+    try:
+        new = tomllib.loads(after)
+    except Exception as e:                                   # noqa: BLE001
+        res["error"] = f"rewriting {path} would not parse ({e}); left unchanged"
+        return res
+    others_old = {k: v for k, v in old.items() if k != "mcp_servers"}
+    others_new = {k: v for k, v in new.items() if k != "mcp_servers"}
+    peers_old = {k: v for k, v in (old.get("mcp_servers") or {}).items() if k != name}
+    peers_new = {k: v for k, v in (new.get("mcp_servers") or {}).items() if k != name}
+    if others_old != others_new or peers_old != peers_new:
+        res["error"] = f"rewriting {path} would change more than [mcp_servers.{name}]; left unchanged"
+        return res
+    res["action"] = "unchanged" if new["mcp_servers"][name] == mine else "update"
+    res["data"] = after
+    res["diff"] = "".join(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
+                                               fromfile=str(path), tofile=str(path)))
     return res
 
 

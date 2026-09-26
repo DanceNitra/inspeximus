@@ -374,7 +374,8 @@ def _store(cwd):
     # off would silently erase every persisted vector. On a store that never had vecs it is a no-op. The
     # matching core guarantee: _save leaves the .embedid sidecar untouched when embed_id is None, so a
     # lexical open can never mislabel (or blank) the recipe the persisted vectors were made with.
-    return open_store(os.path.join(d, "coding_memory.json"), embed=emb_doc, embed_query=emb_query,
+    from ._surface import coding_store_path
+    return open_store(coding_store_path(cwd), embed=emb_doc, embed_query=emb_query,
                       embed_id=emb_id, persist_vectors=True)
 
 
@@ -894,9 +895,10 @@ def session_start(ev):
     # once-a-day, opt-out "newer version exists" courtesy (stdout is injected as context here)
     try:
         from inspeximus import __version__
-        from inspeximus._update import check_for_update
+        from inspeximus._update import check_for_update, cached_notice
         # _store_dir, not cwd: from a subdirectory this created a second .inspeximus there (3.9.7).
-        note = check_for_update(__version__, cache_dir=_store_dir(cwd))
+        note = (check_for_update(__version__, cache_dir=_store_dir(cwd))
+                or cached_notice(__version__, cache_dir=_store_dir(cwd)))
         if note:
             emit.append(note)
     except Exception:

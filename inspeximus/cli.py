@@ -1314,8 +1314,14 @@ def main(argv=None):
                     help="arguments passed through to the MCP server")
 
     ins = sub.add_parser("install", help="register the MCP server in an editor's own config file")
-    ins.add_argument("--ide", required=True,
+    ins.add_argument("--ide", default=None,
                      help="host to configure: " + ", ".join(sorted(_install.HOSTS)))
+    ins.add_argument("--all", dest="all_hosts", action="store_true",
+                     help="every agent found on this machine, all on ONE shared memory store")
+    ins.add_argument("--rules", choices=["ask", "yes", "no"], default="ask",
+                     help="with --all: add a one-line recall rule where a host ignores MCP instructions")
+    ins.add_argument("--hermes-provider", choices=["ask", "yes", "no"], default="ask",
+                     help="with --all: switch Hermes' memory.provider from another provider to inspeximus")
     ins.add_argument("--scope", choices=["user", "project"], default=None,
                      help="user-level (default) or project-level config, where the host supports it")
     ins.add_argument("--project", default=None, help="project directory for project scope (default: cwd)")
@@ -1331,6 +1337,12 @@ def main(argv=None):
         from . import mcp_server
         return mcp_server.main(a.mcp_args)
 
+    if a.cmd == "install" and a.all_hosts:
+        from . import install_all as _all
+        return _all.run(store=a.store, dry_run=a.dry_run, rules=a.rules,
+                        hermes_provider_change=a.hermes_provider, project=a.project)
+    if a.cmd == "install" and not a.ide:
+        ap.error("install needs --ide <host> or --all")
     if a.cmd == "install":
         p = _install.plan(a.ide, scope=a.scope, project=a.project, store_path=a.store, name=a.name)
         print(_install.render(p, dry_run=a.dry_run))

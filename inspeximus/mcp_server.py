@@ -607,7 +607,34 @@ def _action_ledger():
     return _ledger()
 
 
-mcp = _FreshFastMCP("inspeximus")
+#: What every client is told at the handshake (the MCP `instructions` field of the initialize result).
+#: RECALL WITHOUT HOOKS (3.14.0). Only Claude Code runs a SessionStart hook; in every other host the agent
+#: recalls only if something tells it to. Gemini CLI appends server instructions to its system
+#: instructions and Codex shows them as the server's tool-namespace description; for hosts whose docs
+#: say nothing about them, `inspeximus install --all` offers a one-line rule in that host's rules file.
+_RECALL_INSTRUCTIONS = (
+    "inspeximus is the user's shared memory across their AI agents (Claude Code, Codex, Gemini, Cursor "
+    "and others read and write the same store). At the start of each task, call `recall` with the "
+    "task's topic before acting, so you work from what the user and their other agents already decided. "
+    "When a decision is made or a fact is corrected, record it with `remember_decision` (give it a "
+    "`topic`), so a later session in any agent sees it and a correction retires the old value.")
+
+
+def _instructions(notice=None):
+    """The handshake instructions, plus the update notice when a newer release is known."""
+    if notice is None:
+        try:
+            from inspeximus._update import cached_notice
+            notice = cached_notice(_INSPEXIMUS_VERSION)
+        except Exception:
+            notice = None
+    if not notice:
+        return _RECALL_INSTRUCTIONS
+    return (_RECALL_INSTRUCTIONS + "\n\nTell the user once, in plain words: "
+            + " ".join(ln.strip() for ln in notice.splitlines()))
+
+
+mcp = _FreshFastMCP("inspeximus", instructions=_instructions())
 # FastMCP takes no version= argument, and without one it reports the MCP SDK's own version as
 # serverInfo.version — so a client asking which inspeximus it was talking to got "1.28.1", the SDK. Set it on
 # the inner Server, which is what the handshake actually reads.
@@ -3146,6 +3173,9 @@ def main(argv=None):
         note = check_for_update(__version__)
         if note:
             sys.stderr.write(note + "\n")
+            # THE NOTICE REACHES THE MODEL, not only stderr, which no client shows it (3.14.0).
+            if _inner is not None:
+                _inner.instructions = _instructions(note)
     except Exception:
         pass
     mcp.run()

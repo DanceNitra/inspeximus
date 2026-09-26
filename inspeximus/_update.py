@@ -3,6 +3,8 @@
 `check_for_update()` returns a one-line ASCII notice (or None) when the installed inspeximus is behind the
 latest on PyPI. It is:
   - throttled to at most once per 24h (cached in <cache_dir>/.update_check.json) so it never nags per-call;
+    `cached_notice()` answers from that cache with no network call, which is how every agent on a shared
+    store sees the notice, not only the process that ran the day's check (3.14.0);
   - fail-open: any network/parse error, or being offline, returns None silently and never blocks;
   - opt-out: INSPEXIMUS_NO_UPDATE_CHECK=1 disables it entirely;
   - ASCII-only, so it is safe to print on a non-UTF-8 console.
@@ -77,11 +79,36 @@ def check_for_update(current_version, cache_dir=None, timeout=1.5):
             pass
 
         if latest and _is_newer(latest, current_version):
-            return (
-                f"[inspeximus] A new version is available: {latest} (you have {current_version}).\n"
-                "        Update:  pip install -U inspeximus   |   "
-                "changelog: https://github.com/DanceNitra/inspeximus/blob/main/CHANGELOG.md\n"
-                "        (silence this with INSPEXIMUS_NO_UPDATE_CHECK=1)")
+            return _notice(latest, current_version)
     except Exception:
         return None
     return None
+
+
+def cached_notice(current_version, cache_dir=None):
+    """The notice from the last check's cached answer, with no network call; None when there is none.
+
+    ONE STORE, SEVERAL AGENTS, ONE THROTTLE (3.14.0). `check_for_update` is quiet inside its 24-hour
+    window, so the first process of the day saw the notice and every other agent did not: Claude Code's
+    hook checked first and Codex, Gemini and Cursor never heard of a new version. The MCP server's
+    handshake and the hook read this instead, so the throttle stays on the network, not on telling the
+    user."""
+    if os.environ.get("INSPEXIMUS_NO_UPDATE_CHECK", "").strip().lower() in ("1", "true", "yes"):
+        return None
+    try:
+        cache = os.path.join(cache_dir or os.path.join(os.path.expanduser("~"), ".inspeximus"),
+                             ".update_check.json")
+        latest = json.load(open(cache, encoding="utf-8")).get("latest")
+        return _notice(latest, current_version) if latest and _is_newer(latest, current_version) else None
+    except Exception:
+        return None
+
+
+def _notice(latest, current_version):
+    """The notice. Its second command re-pins every agent the installer wired, because each host's MCP
+    entry names the exact version that wrote it."""
+    return (
+        f"[inspeximus] A new version is available: {latest} (you have {current_version}).\n"
+        "        Update:  pip install -U \"inspeximus[mcp]\"  then  inspeximus install --all   |   "
+        "changelog: https://github.com/DanceNitra/inspeximus/blob/main/CHANGELOG.md\n"
+        "        (silence this with INSPEXIMUS_NO_UPDATE_CHECK=1)")

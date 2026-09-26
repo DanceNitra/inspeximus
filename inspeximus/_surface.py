@@ -68,11 +68,39 @@ def find_project_root(cwd=None):
 #: `INSPEXIMUS_SCOPE=claude-code`, so there is one project store and not two.
 CODING_STORE_FILENAME = "coding_memory.json"
 
+#: Written by `inspeximus install --all`: {"store": "<absolute store file>"}. Its presence is what makes
+#: every agent on this machine share one store; without it nothing changes for anyone.
+SHARED_CONFIG_FILENAME = "shared.json"
+
+
+def shared_config_path() -> str:
+    """`~/.inspeximus/shared.json`, the user-level record of the shared store."""
+    return os.path.join(os.path.expanduser("~"), ".inspeximus", SHARED_CONFIG_FILENAME)
+
+
+def shared_store_path():
+    """The shared store file `inspeximus install --all` recorded, or None.
+
+    ONE MEMORY FOR EVERY AGENT (3.14.0). Measured on 3.13.0 in a clean sandbox: the Claude Code entry
+    resolved to `<git root>/.inspeximus/coding_memory.json` and every other host's entry to
+    `inspeximus_memory.json` in whatever directory the host launched it from, so five agents kept five
+    or more stores. A user-level store is the one location every host can reach whatever its launch
+    directory, and this file is how the Claude Code hooks, which cannot carry an environment variable,
+    find it too."""
+    try:
+        import json
+        with open(shared_config_path(), encoding="utf-8") as fh:
+            f = json.load(fh).get("store")
+        return f if isinstance(f, str) and f.strip() and os.path.isabs(f) else None
+    except Exception:
+        return None
+
 
 def coding_store_dir(cwd=None, env=None) -> str:
     """The directory holding a project's Claude Code store: `<git root or cwd>/.inspeximus`.
 
-    `$INSPEXIMUS_CODING_STORE` (a directory) overrides it. This is the ONE resolver for that store.
+    `$INSPEXIMUS_CODING_STORE` (a directory) overrides it, and after that the shared store recorded by
+    `inspeximus install --all` (see `shared_store_path`). This is the ONE resolver for that store.
     The hook and the MCP server each used to decide it themselves, and measured on 3.9.5 they
     disagreed twice: the plugin pointed the server at `.inspeximus/memory.json` while the hook read
     `.inspeximus/coding_memory.json`, and the server's `${CLAUDE_PROJECT_DIR}` is the LAUNCH
@@ -83,12 +111,21 @@ def coding_store_dir(cwd=None, env=None) -> str:
     override = (env.get("INSPEXIMUS_CODING_STORE") or "").strip()
     if override:
         return override
+    shared = shared_store_path()                 # `inspeximus install --all` (3.14.0)
+    if shared:
+        return os.path.dirname(shared)
     base = cwd or os.getcwd()
     return os.path.join(find_project_root(base) or base, ".inspeximus")
 
 
 def coding_store_path(cwd=None, env=None) -> str:
-    """The Claude Code store file. See `coding_store_dir`."""
+    """The Claude Code store file. See `coding_store_dir`. The shared store keeps its own file name, so a
+    store a user had already named (for example `mcp_memory_chain.json`) can be the shared one."""
+    env_ = os.environ if env is None else env
+    if not (env_.get("INSPEXIMUS_CODING_STORE") or "").strip():
+        shared = shared_store_path()
+        if shared:
+            return shared
     return os.path.join(coding_store_dir(cwd, env), CODING_STORE_FILENAME)
 
 

@@ -633,8 +633,8 @@
  {
   "name": "the editor hook goes back to constructing the store itself",
   "file": "inspeximus/claude_code.py",
-  "old": "    return open_store(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
-  "new": "    return Inspeximus(os.path.join(d, \"coding_memory.json\"), embed=emb_doc, embed_query=emb_query,",
+  "old": "    return open_store(coding_store_path(cwd), embed=emb_doc, embed_query=emb_query,",
+  "new": "    return Inspeximus(coding_store_path(cwd), embed=emb_doc, embed_query=emb_query,",
   "tests": [
    "tests/test_surface_parity.py"
   ]
@@ -3371,6 +3371,78 @@
   "new": "    return json.dumps(entries[:-1], ensure_ascii=False)\n",
   "tests": [
    "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py"
+  ]
+ },
+ {
+  "name": "the hooks ignore the shared store",
+  "file": "inspeximus/_surface.py",
+  "old": "    shared = shared_store_path()                 # `inspeximus install --all` (3.14.0)",
+  "new": "    shared = None                                # `inspeximus install --all` (3.14.0)",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "the Claude Code store path ignores the shared store",
+  "file": "inspeximus/_surface.py",
+  "old": "        shared = shared_store_path()\n",
+  "new": "        shared = None\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "install --all replaces an entry's env instead of merging it",
+  "file": "inspeximus/install.py",
+  "old": "            merged = dict((existing or {}).get(\"env\") or {}) if isinstance(existing, dict) else {}",
+  "new": "            merged = {}",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "two different named stores are guessed between",
+  "file": "inspeximus/install_all.py",
+  "old": "    if len(distinct) > 1:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "a rules line is written again on every run",
+  "file": "inspeximus/install_all.py",
+  "old": "    if path.exists() and RULE_MARK in path.read_text(encoding=\"utf-8\", errors=\"replace\"):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "the cached update notice is never shown",
+  "file": "inspeximus/_update.py",
+  "old": "        return _notice(latest, current_version) if latest and _is_newer(latest, current_version) else None",
+  "new": "        return None",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "the Hermes provider ignores its configured path",
+  "file": "inspeximus/integrations/hermes_agent.py",
+  "old": "                path = self._explicit_path or self._configured_path(kwargs.get(\"hermes_home\"))",
+  "new": "                path = self._explicit_path",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "the handshake does not tell the client to recall",
+  "file": "inspeximus/mcp_server.py",
+  "old": "        return _RECALL_INSTRUCTIONS\n",
+  "new": "        return \"\"\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
   ]
  }
 ]

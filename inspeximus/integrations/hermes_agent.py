@@ -180,12 +180,24 @@ def _make_class(base):
             self._session_id = session_id or ""
             self._hermes_home = str(kwargs.get("hermes_home") or "")
             if self._store is None:
-                path = self._explicit_path
+                path = self._explicit_path or self._configured_path(kwargs.get("hermes_home"))
                 if not path:
                     home = kwargs.get("hermes_home") or os.path.expanduser("~/.hermes")
                     path = os.path.join(home, "inspeximus", "memory.json")
                     os.makedirs(os.path.dirname(path), exist_ok=True)
                 self._store = open_store(path)
+
+        @staticmethod
+        def _configured_path(hermes_home):
+            """The path `save_config` wrote (the dashboard's Store file field, or `inspeximus install
+            --all`). initialize() never read it before 3.14.0, so a configured path was ignored."""
+            try:
+                home = hermes_home or os.path.expanduser("~/.hermes")
+                with open(os.path.join(home, "inspeximus", "config.json"), encoding="utf-8") as fh:
+                    p = (json.load(fh) or {}).get("path")
+                return p if isinstance(p, str) and p.strip() else None
+            except Exception:                            # noqa: BLE001
+                return None
 
         # -- what the agent reads ------------------------------------------------------
 
