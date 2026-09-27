@@ -18,7 +18,7 @@ import pytest
 from inspeximus import install as I
 from inspeximus import install_all as A
 
-ALL = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity", "devin")
+ALL = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity", "devin", "muse")
 
 
 @pytest.fixture
@@ -465,3 +465,43 @@ def test_a_current_hermes_is_found_through_its_package_manager_record(home):
     assert A.hermes_candidates() == [(hh, py)]
     (hh / "hermes-agent" / "plugins" / "memory").mkdir(parents=True)
     assert A.hermes_root(py) == hh / "hermes-agent", "Hermes' own modules are imported from its checkout"
+
+def test_muse_code_settings_carry_the_schema_version_and_only_documented_fields(home):
+    """Muse Code rejects a settings file without "schema_version": 1 (dev.meta.ai/docs/muse-code/configuration),
+    and its mcp_servers entries take transport/command/args/env/mode/enabled."""
+    _install(home, "muse")
+    rc, table = _run(rules="no", only="muse")
+    assert rc == 0, table
+    path = home / ".config" / "muse" / "settings.json"
+    assert I.HOSTS["muse"]["paths"](None)["user"] == path
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["schema_version"] == 1
+    e = data["mcp_servers"]["inspeximus"]
+    assert set(e) == {"transport", "command", "args", "env", "mode", "enabled"}, e
+    assert (e["transport"], e["mode"], e["enabled"]) == ("stdio", "optional", True)
+    assert e["env"]["INSPEXIMUS_PATH"] == str(home / ".inspeximus" / "coding_memory.json")
+    # no user-level rules file is documented, so nothing is written into a project's AGENTS.md
+    assert not (pathlib.Path.cwd() / "AGENTS.md").exists()
+    assert "unverified" in table
+
+
+def test_muse_code_keeps_an_existing_settings_file(home):
+    """A settings file Muse Code already wrote keeps its schema_version, its other keys and other servers."""
+    _install(home, "muse")
+    path = home / ".config" / "muse" / "settings.json"
+    path.parent.mkdir(parents=True)
+    before = {"schema_version": 1, "model": "muse-spark-1.3", "hooks": {"x": 1},
+              "mcp_servers": {"other": {"transport": "streamable_http", "url": "https://example.test/mcp"}}}
+    path.write_text(json.dumps(before), encoding="utf-8")
+    rc, table = _run(rules="no", only="muse")
+    assert rc == 0, table
+    after = json.loads(path.read_text(encoding="utf-8"))
+    for k in ("schema_version", "model", "hooks"):
+        assert after[k] == before[k], k
+    assert after["mcp_servers"]["other"] == before["mcp_servers"]["other"]
+    assert "inspeximus" in after["mcp_servers"]
+    # control: a second run changes nothing
+    snapshot = path.read_bytes()
+    _run(rules="no", only="muse")
+    assert path.read_bytes() == snapshot
+

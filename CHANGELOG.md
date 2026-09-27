@@ -1,3 +1,14 @@
+## Unreleased
+
+- **`install --all` wires Muse Code**, Meta's coding agent. The entry goes into
+  `$XDG_CONFIG_HOME/muse/settings.json` (default `~/.config/muse/settings.json`) under `mcp_servers`,
+  with `transport: stdio` and `mode: optional`, so a server that fails to start does not stop a Muse
+  Code run. The file gets `"schema_version": 1` when it lacks one; an existing value and every other
+  key are kept. Muse Code documents no user-level rules file, so no rules line is written, and the
+  table shows the recall route as `unverified`. Detected by the `muse` command on PATH. Checked
+  against the docs at dev.meta.ai/docs/muse-code (read 2026-09-28), not yet against a running Muse
+  Code. `tools/one_memory_check.py` starts the written entry and passes all five criteria with it.
+
 ## 3.14.4 - UPGRADE IF you use Claude Desktop without the `claude` command, or install through an agent: `install --all` now wires Claude Desktop's Code tab, and it ends with a short ARMED block and a seal that an agent can copy to you.
 
 Found on 2026-09-27 on a second machine, where Hermes Agent on a 9B local model ran the install page.

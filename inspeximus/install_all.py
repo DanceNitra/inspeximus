@@ -55,6 +55,12 @@ RECALL_MECHANISM = {
     "cline": ("rules", "~/Documents/Cline/Rules/inspeximus.md (docs.cline.bot/features/cline-rules)"),
     "devin": ("rules", "AGENTS.md in the Devin config directory, loaded at the start of every session "
                        "(docs.devin.ai/cli/extensibility/rules)"),
+    # Muse Code documents neither a user-level rules file nor what it does with server instructions: it
+    # reads AGENTS.md/CLAUDE.md per project only (dev.meta.ai/docs/muse-code/configuration, read
+    # 2026-09-28). Writing into a project's own AGENTS.md is not the installer's call, so nothing is
+    # written and the table says so.
+    "muse": ("unverified", "no user-level rules file documented; server instructions may or may not reach "
+                           "the model (dev.meta.ai/docs/muse-code/configuration)"),
 }
 
 
@@ -97,6 +103,8 @@ def _install_markers(host):
         "antigravity": (["antigravity"], app("Antigravity")),
         "cursor": (["cursor"], app("cursor") + app("Cursor")),
         "devin": (["devin"], app("Devin")),
+        # The docs give only the installer script and the `muse` command; no install folder is named.
+        "muse": (["muse"], []),
         "windsurf": (["windsurf"], app("Windsurf")),
         "cline": (["cline"], ext),
     }[host]
@@ -547,7 +555,7 @@ def _ask(question, answer):
 
 
 #: Table order (3.14.1): the agents our first testers use first. Hermes Agent's rows come before these.
-HOST_ORDER = ("claude", "gemini", "codex", "antigravity", "cursor", "devin", "windsurf", "cline")
+HOST_ORDER = ("claude", "gemini", "codex", "antigravity", "cursor", "devin", "windsurf", "cline", "muse")
 
 
 def _hermes(path, change, dry_run, notes, wired):
