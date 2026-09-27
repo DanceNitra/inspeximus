@@ -3190,8 +3190,8 @@
  {
   "name": "verify_writes no longer compares the record's context",
   "file": "inspeximus/core.py",
-  "old": "\"attrib_nonced_sha256\", \"context_sha256\")",
-  "new": "\"attrib_nonced_sha256\")",
+  "old": "\"attrib_nonced_sha256\", \"context_sha256\",\n                          \"partition_sha256\")",
+  "new": "\"attrib_nonced_sha256\",\n                          \"partition_sha256\")",
   "tests": [
    "tests/test_a_record_lifted_into_another_context_fails_verification.py"
   ]
@@ -3199,10 +3199,11 @@
  {
   "name": "context_unbound counts nothing",
   "file": "inspeximus/core.py",
-  "old": "            and Inspeximus._has_context(rec)\n            and \"context_sha256\" not in ((latest[rec[\"id\"]].get(\"commit\")) or {}))",
-  "new": "            and Inspeximus._has_context(rec) and False\n            and \"context_sha256\" not in ((latest[rec[\"id\"]].get(\"commit\")) or {}))",
+  "old": "            and (rec[\"id\"] not in ctx_bound\n",
+  "new": "            and False and (rec[\"id\"] not in ctx_bound\n",
   "tests": [
-   "tests/test_a_record_lifted_into_another_context_fails_verification.py"
+   "tests/test_a_record_lifted_into_another_context_fails_verification.py",
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
   ]
  },
  {
@@ -3280,8 +3281,8 @@
  {
   "name": "verify_writes no longer compares the nonced attribution",
   "file": "inspeximus/core.py",
-  "old": "\"time_sha256\", \"attrib_sha256\", \"attrib_nonced_sha256\", \"context_sha256\")",
-  "new": "\"time_sha256\", \"attrib_sha256\", \"context_sha256\")",
+  "old": "\"time_sha256\", \"attrib_sha256\", \"attrib_nonced_sha256\", \"context_sha256\",\n                          \"partition_sha256\")",
+  "new": "\"time_sha256\", \"attrib_sha256\", \"context_sha256\",\n                          \"partition_sha256\")",
   "tests": [
    "tests/test_an_erased_subject_cannot_be_confirmed_from_the_receipts.py"
   ]
@@ -6792,6 +6793,80 @@
   "new": "        note = receipt_for(cwd)",
   "tests": [
    "tests/test_a27_the_session_start_receipt_is_bounded.py"
+  ]
+ },
+ {
+  "name": "verify_writes no longer compares the record's partition",
+  "file": "inspeximus/core.py",
+  "old": "\"context_sha256\",\n                          \"partition_sha256\")",
+  "new": "\"context_sha256\")",
+  "tests": [
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
+  ]
+ },
+ {
+  "name": "the partition commitment ignores the record's tags",
+  "file": "inspeximus/core.py",
+  "old": "        part = {\"partitions\": sorted({t for t in tags if isinstance(t, str) and t.startswith(_PARTITION_TAG)})}",
+  "new": "        part = {\"partitions\": []}",
+  "tests": [
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
+  ]
+ },
+ {
+  "name": "context_unbound counts only records that still carry a context",
+  "file": "inspeximus/core.py",
+  "old": "            and (rec[\"id\"] not in ctx_bound\n                 or (rec[\"id\"] not in part_bound",
+  "new": "            and ((rec[\"id\"] not in ctx_bound and Inspeximus._has_context(rec))\n                 or (rec[\"id\"] not in part_bound",
+  "tests": [
+   "tests/test_a_record_lifted_into_another_context_fails_verification.py",
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
+  ]
+ },
+ {
+  "name": "context_unbound ignores a partition its receipts do not bind",
+  "file": "inspeximus/core.py",
+  "old": "                 or (rec[\"id\"] not in part_bound and Inspeximus._rec_partition(rec)[\"partitions\"])))",
+  "new": "                 or False))",
+  "tests": [
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
+  ]
+ },
+ {
+  "name": "verify_writes passes unscoped records by default",
+  "file": "inspeximus/core.py",
+  "old": "coverage_strict: bool = True, context_strict: bool = True,",
+  "new": "coverage_strict: bool = True, context_strict: bool = False,",
+  "tests": [
+   "tests/test_a_record_lifted_into_another_context_fails_verification.py",
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
+  ]
+ },
+ {
+  "name": "recommit skips a record whose receipt lacks the partition",
+  "file": "inspeximus/core.py",
+  "old": "            if latest is not None and all(f in _c for f in (\"value_sha256\", \"context_sha256\",\n                                                               \"partition_sha256\")):",
+  "new": "            if latest is not None and all(f in _c for f in (\"value_sha256\", \"context_sha256\")):",
+  "tests": [
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
+  ]
+ },
+ {
+  "name": "provenance does not compare the partition",
+  "file": "inspeximus/core.py",
+  "old": "\"time_sha256\", \"content_sha256\", \"context_sha256\", \"partition_sha256\")",
+  "new": "\"time_sha256\", \"content_sha256\", \"context_sha256\")",
+  "tests": [
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
+  ]
+ },
+ {
+  "name": "the bundle rewalk does not compare the partition",
+  "file": "inspeximus/audit_bundle.py",
+  "old": "\"context_sha256\",\n                      \"partition_sha256\"):",
+  "new": "\"context_sha256\"):",
+  "tests": [
+   "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
   ]
  }
 ]

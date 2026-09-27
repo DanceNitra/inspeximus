@@ -129,12 +129,15 @@ def test_supersession_and_revert_still_verify():
 def test_a_pre_182_store_does_not_raise_a_false_alarm_about_text():
     s, rid = _legacy_store()
     assert "value_sha256" not in (s._receipts[0].get("commit") or {}), "fixture must be genuinely legacy"
-    assert s.verify_writes(value_strict=False)[0] is True, \
+    # The fixture predates 3.11.0 too, so its records are also UNSCOPED (3.15.0); that dimension has its
+    # own tests in test_a_record_lifted_into_another_context_fails_verification.py.
+    assert s.verify_writes(value_strict=False, context_strict=False)[0] is True, \
         "an untouched legacy store must verify; an upgrade that alarms on honest data gets ignored"
 
     next(x for x in s._items if x["id"] == rid)["text"] = "retention policy is 30 days"
     s._save(force=True)
-    assert s.verify_writes(value_strict=False)[0] is False, "text was always committed and still binds"
+    assert s.verify_writes(value_strict=False, context_strict=False)[0] is False, \
+        "text was always committed and still binds"
 
 
 def test_a_pre_182_store_is_TOLD_its_values_are_not_covered():
@@ -148,7 +151,9 @@ def test_a_pre_182_store_is_TOLD_its_values_are_not_covered():
     assert "do not commit `object`" in note
     assert "value_strict=False" in note, "a warning with no way to act on it just gets silenced wholesale"
 
-    assert s.verify_writes(value_strict=False)[0] is True, "and the opt-out must actually work"
+    ok, rest = s.verify_writes(value_strict=False)
+    assert not ok and rest and all("UNSCOPED" in p for p in rest), "what remains is the pre-3.11 context gap"
+    assert s.verify_writes(value_strict=False, context_strict=False)[0] is True, "and the opt-out must actually work"
 
 
 def test_only_records_that_HAVE_a_value_are_flagged():
@@ -170,7 +175,8 @@ def test_the_remedy_the_message_names_actually_works():
 
     res = s.recommit(ids=[rid])
     assert res["recommitted"] == [rid], res
-    assert s.verify_writes()[0] is True
+    # the fixture's other record predates 3.11.0 and stays UNSCOPED until it is recommitted as well
+    assert s.verify_writes(context_strict=False)[0] is True
 
     latest = max((r for r in s._receipts if r["memory_id"] == rid), key=lambda r: r.get("seq", 0))
     assert "value_sha256" in (latest.get("commit") or {})
@@ -194,7 +200,7 @@ def test_recommit_binds_the_current_state_and_says_so():
     next(x for x in s._items if x["id"] == rid)["object"] = "30d"
     s._save(force=True)
     s.recommit(ids=[rid])
-    assert s.verify_writes()[0] is True, "this is the documented consequence, not a bug"
+    assert s.verify_writes(context_strict=False)[0] is True, "this is the documented consequence, not a bug"
     # Whitespace-normalised: a docstring wraps, and asserting on raw text made this fail once already for
     # no reason but a line break.
     import re

@@ -423,7 +423,12 @@ _META_ALIASED_PARAM = {"uid": "user_id", "aid": "agent_id", "sid": "session_id",
 #: write commit checks these (`verify_writes`, the audit-bundle rewalk); a field added to
 #: `_write_commit` and not here is committed and never compared.
 _COMMIT_BINDING_FIELDS = ("immutable_sha256", "mtype", "value_sha256", "status_sha256",
-                          "time_sha256", "attrib_sha256", "attrib_nonced_sha256", "context_sha256")
+                          "time_sha256", "attrib_sha256", "attrib_nonced_sha256", "context_sha256",
+                          "partition_sha256")
+
+#: The tag prefix a partition stamps on its records (`inspeximus.partitions.TAG_PREFIX`). A receipt
+#: commits these tags as `partition_sha256`; every other tag stays free to change.
+_PARTITION_TAG = "partition:"
 
 
 def _epoch_or_none(v):
@@ -4338,8 +4343,19 @@ class Inspeximus:
                 # verify_writes() reported the chain intact: the record was genuine, its context
                 # forged. All six are set once, in remember(), and rewritten by no call site, so they
                 # bind for life. A SEPARATE field for the reason `value_sha256` is one: old receipts
-                # lack it; context_unbound() counts them, and only context_strict=True fails them.
-                "context_sha256": _sha256_hex(_canon(Inspeximus._rec_context(rec)))}
+                # lack it; context_unbound() counts them as UNSCOPED, and verify_writes() fails them
+                # unless the caller passes context_strict=False.
+                "context_sha256": _sha256_hex(_canon(Inspeximus._rec_context(rec))),
+                # THE PARTITION, since 3.15.0 (agmi issue #5, T6 again). A partition is a
+                # `partition:<name>` tag, and tags were in no commitment, so a record written into
+                # partition p1 and retagged on disk as p2's was served by p2's recall while
+                # verify_writes() returned (True, []). Measured on 3.14.3. The partition tag is set
+                # once, by PartitionHandle.remember(), and rewritten by no call site; other tags stay
+                # free to change. Committed for every record, an empty set included, so moving a
+                # record INTO a partition is caught too. Its own field, not folded into
+                # `context_sha256`, because that would make every receipt 3.11.0-3.14.3 wrote for a
+                # partitioned record mismatch on upgrade.
+                "partition_sha256": _sha256_hex(_canon(Inspeximus._rec_partition(rec)))}
 
     @staticmethod
     def _normalise_loaded(r: dict) -> None:
@@ -4410,6 +4426,15 @@ class Inspeximus:
         if rec.get("nonce"):
             ctx["nonce"] = rec["nonce"]
         return ctx
+
+    @staticmethod
+    def _rec_partition(rec: dict) -> dict:
+        """The partitions a record was written into, as its receipt commits them (see `partition_sha256`)."""
+        tags = rec.get("tags") or []
+        part = {"partitions": sorted({t for t in tags if isinstance(t, str) and t.startswith(_PARTITION_TAG)})}
+        if rec.get("nonce"):
+            part["nonce"] = rec["nonce"]
+        return part
 
     @staticmethod
     def _has_context(rec: dict) -> bool:
@@ -7107,7 +7132,7 @@ class Inspeximus:
 
     def verify_writes(self, expected_pubkey: str | None = None, warn_unpinned: bool = False,
                       legacy_strict: bool = True, value_strict: bool = True,
-                      coverage_strict: bool = True, context_strict: bool = False,
+                      coverage_strict: bool = True, context_strict: bool = True,
                       require_signed: bool = False) -> tuple[bool, list[str]]:
         """Verify the write-receipt chain AND that each stored memory still matches its write receipt.
         Returns (ok, problems). Catches out-of-band edits to the store the normal flow can't see.
@@ -7116,7 +7141,11 @@ class Inspeximus:
         `legacy_strict` (default True, a BEHAVIOUR CHANGE in 1.73.0) checks PRE-1.68 receipts against
         EVERY receipt rather than only the latest. It fails closed on the <=1.67 laundering path, at the
         cost of a false positive on a legitimate pre-1.68 slash()/restore(), which is indistinguishable
-        from the attack by construction. Pass False to restore the previous, quieter behaviour."""
+        from the attack by construction. Pass False to restore the previous, quieter behaviour.
+
+        `context_strict` (default True, a BEHAVIOUR CHANGE in 3.15.0) fails on UNSCOPED records, whose
+        receipts predate the binding of whose a record is or which partition it is in (see
+        `context_unbound()`). Pass False to accept that gap explicitly."""
         problems: list[str] = []
         legacy_flagged: set = set()
         # IN-MEMORY STATE THAT NEVER REACHED DISK IS AN INTEGRITY PROBLEM, and on a row store it is
@@ -7402,6 +7431,8 @@ class Inspeximus:
                                             "time came from",
                              "context_sha256": "WHOSE it is (tenant, owning agent, or the user, agent, "
                                                "session or project it was written for)",
+                             "partition_sha256": "WHICH PARTITION it was written into (its "
+                                                 "`partition:` tag)",
                              "attrib_sha256": "WHERE it came from (its source or inherited taint)",
                              "attrib_nonced_sha256": "WHERE it came from (its source or inherited taint)",
                              "content_sha256": "its text/key/type",
@@ -7484,16 +7515,17 @@ class Inspeximus:
                     f"into the chain -- or pass value_strict=False to accept the gap without a record of "
                     f"having done so. ({', '.join(uncovered[:5])}"
                     + (f", +{len(uncovered) - 5} more" if len(uncovered) > 5 else "") + ")")
-        # RECEIPTS THAT PREDATE THE CONTEXT COMMITMENT (3.11.0). A record whose receipt BINDS a context
-        # and was moved fails above in every mode. One whose receipt predates the binding cannot be
-        # checked on its context; it is counted by context_unbound(), which governance_report and the
-        # MCP tool report with a one-line remedy, and it FAILS only under context_strict=True. An
-        # upgrade does not turn every honest multi-tenant store red; an operator who wants the gap to
-        # fail asks for it.
+        # UNSCOPED RECEIPTS, failed by default since 3.15.0. A record whose receipt BINDS its context and
+        # partition and was moved fails above in every mode. One whose receipts predate a binding cannot
+        # be checked on it. Until 3.14.3 such records passed here unless the caller asked for
+        # context_strict, and context_unbound() counted only records that still carried a context, so a
+        # pre-3.11 record whose owner was stripped -- served to every user from then on -- passed with
+        # nothing said anywhere (agmi issue #5, measured 2026-09-27). Same terms as the pre-1.82 value
+        # case above: fail, name the records, name the remedy and the explicit opt-out.
         if context_strict:
             unbound = self.context_unbound()
             if unbound["unbound"]:
-                problems.append(unbound["warning"] + " (context_strict=True)")
+                problems.append(unbound["warning"])
         # SIGNATURE COVERAGE, on the PRIMARY surface. Signatures were verified here when present and
         # demanded only when `expected_pubkey` was passed, so an UNSIGNED entry appended to a SIGNED
         # chain fell through the `elif expected_pubkey:` branch and nothing was said. Measured
@@ -7638,29 +7670,44 @@ class Inspeximus:
         return (len(problems) == 0, problems)
 
     def context_unbound(self) -> dict:
-        """Active records that carry a context under receipts that do not commit it.
+        """Active records whose receipts do not bind whose they are: UNSCOPED records.
 
-        Receipts written before 3.11.0 hash what a record says, not whose it is (tenant, owning agent,
-        user, agent, session, project), so such a record moved into another context cannot be caught
-        on its context. Returns {unbound, ids, warning}: `warning` is None when nothing is unbound, else
-        one line naming the remedy, recommit(ids=[...]), which binds each record's CURRENT context. A
-        record with no context is never counted, so a single-user store reports 0.
-        `verify_writes(context_strict=True)` fails on the same set."""
-        latest: dict = {}
+        Two commitments answer "whose": `context_sha256` (3.11.0) binds the tenant, owning agent, user,
+        agent, session and project; `partition_sha256` (3.15.0) binds the partition. Against a receipt
+        written before either, a record copied in from another context verifies.
+
+        Counted: every record no receipt of which commits `context_sha256`, whether or not it carries a
+        context now. Until 3.14.3 only records that still carried one were counted, and stripping
+        alice's uid makes a record visible to every user while leaving nothing to count (agmi issue #5,
+        measured). Also counted: every record that carries a partition tag while no receipt of it
+        commits `partition_sha256`. The one move this cannot see is a partition tag REMOVED from a
+        record whose receipts predate 3.15.0: the record leaves its partition's reads and enters no
+        other partition's.
+
+        Returns {unbound, ids, warning}: `warning` is None when nothing is unscoped, else one line naming
+        the remedy, recommit(ids=[...]), which binds each record's CURRENT context and partition, and the
+        opt-out. `verify_writes()` fails on the same set unless called with context_strict=False."""
+        receipted, ctx_bound, part_bound = set(), set(), set()
         for r in self._receipts:
-            if r.get("seq", 0) >= latest.get(r["memory_id"], {}).get("seq", -1):
-                latest[r["memory_id"]] = r
+            c = r.get("commit") or {}
+            receipted.add(r["memory_id"])
+            if "context_sha256" in c:
+                ctx_bound.add(r["memory_id"])
+            if "partition_sha256" in c:
+                part_bound.add(r["memory_id"])
         ids = sorted(
             rec["id"] for rec in self.items
-            if rec.get("status") == "active" and rec["id"] in latest
-            and Inspeximus._has_context(rec)
-            and "context_sha256" not in ((latest[rec["id"]].get("commit")) or {}))
+            if rec.get("status") == "active" and rec["id"] in receipted
+            and (rec["id"] not in ctx_bound
+                 or (rec["id"] not in part_bound and Inspeximus._rec_partition(rec)["partitions"])))
         warning = None
         if ids:
-            warning = (f"{len(ids)} record(s) carry receipts written before 3.11.0 that do not bind their "
-                       f"context (tenant, owning agent, user, agent, session, project); check them against "
-                       f"a copy you trust, then recommit(ids=[...]) binds their current context. "
-                       f"({', '.join(ids[:5])}" + (f", +{len(ids) - 5} more" if len(ids) > 5 else "") + ")")
+            warning = (f"{len(ids)} record(s) are UNSCOPED: their receipts predate the binding of whose a record "
+                       f"is (3.11.0: tenant, owning agent, user, agent, session, project) or of its partition "
+                       f"(3.15.0), so a record copied in from another context verifies against them; check "
+                       f"them against a copy you trust, then recommit(ids=[...]) binds their current context, "
+                       f"or pass context_strict=False to accept the gap. ({', '.join(ids[:5])}"
+                       + (f", +{len(ids) - 5} more" if len(ids) > 5 else "") + ")")
         return {"unbound": len(ids), "ids": ids, "warning": warning}
 
     def recommit(self, ids=None) -> dict:
@@ -7696,8 +7743,8 @@ class Inspeximus:
             latest = max((r for r in self._receipts if r["memory_id"] == rec["id"]),
                          key=lambda r: r.get("seq", 0), default=None)
             _c = (latest.get("commit") or {}) if latest is not None else {}
-            if latest is not None and "value_sha256" in _c and (
-                    "context_sha256" in _c or not Inspeximus._has_context(rec)):
+            if latest is not None and all(f in _c for f in ("value_sha256", "context_sha256",
+                                                               "partition_sha256")):
                 skipped.append(rec["id"])            # already covered; a no-op receipt is chain noise
                 continue
             self._emit_write_receipt(rec)
@@ -12356,7 +12403,8 @@ class Inspeximus:
             "proof": {
                 "verified": ok,
                 "problems": problems,
-                # receipts that predate the context binding: counted and named, not failed (3.11.0)
+                # UNSCOPED records (receipts that predate the context or partition binding): counted,
+                # named, and failed in `verified` since 3.15.0
                 "context_unbound": _cu["unbound"],
                 **({"warnings": [_cu["warning"]]} if _cu["warning"] else {}),
                 "all_signed": bool(toms) and all("sig" in t for t in toms),
@@ -13941,7 +13989,7 @@ class Inspeximus:
             integ["receipted"] = True
             integ["signed"] = "sig" in latest
             _fields = [k for k in ("immutable_sha256", "value_sha256", "status_sha256",
-                                   "time_sha256", "content_sha256", "context_sha256")
+                                   "time_sha256", "content_sha256", "context_sha256", "partition_sha256")
                        if k in committed and k not in forgiven]
             _bad = [k for k in _fields if committed.get(k) != current.get(k)]
             if first.get("ts") is not None and rec.get("ts") != first.get("ts"):

@@ -1,3 +1,38 @@
+## Unreleased (planned 3.15.0) - UPGRADE IF you use partitions, or your store holds receipts written before 3.11.0: a record moved into another partition no longer verifies, and records whose receipts cannot say whose they are fail `verify_writes()` as UNSCOPED. VERIFICATION BEHAVIOUR CHANGES: receipts commit a new field, and `context_strict` defaults to True.
+
+Found on 2026-09-27 while reproducing agmi issue #5 (T6, cross-context replay). Measured on 3.14.3,
+with receipts on and signed:
+
+1. A record written into partition p1 and retagged on disk as p2's was served by p2's recall, and
+   `verify_writes()` returned `(True, [])`. A partition is a `partition:<name>` tag, and no receipt
+   committed tags.
+2. A record whose receipts predate 3.11.0 passed `verify_writes()` by default. `context_unbound()`
+   counted it only while it still carried a context. After alice's `uid` was removed on disk, bob's
+   recall served the record, and nothing reported it.
+
+- **Receipts commit the partition.** `_write_commit` adds `partition_sha256` over the record's
+  `partition:` tags and its nonce. Only the partition tag binds; other tags stay free to change. A
+  record moved into another partition, out of its partition, or into a partition from none fails
+  `verify_writes()`. `provenance()` and the audit-bundle rewalk (`bind_content`) name the field.
+- **Unscoped records fail by default.** `verify_writes(context_strict=True)` is the default. Every
+  record whose receipts do not commit `context_sha256` is counted, whether or not it carries a context
+  now. Every record that carries a partition tag is counted when its receipts do not commit
+  `partition_sha256`. The problem line starts with "N record(s) are UNSCOPED" and names the remedy and
+  the opt-out. `governance_report()["proof"]["verified"]` and the MCP `verify_writes` tool follow.
+- **`recommit()` binds the partition.** It skips a record only when the latest receipt commits the
+  value, the context and the partition.
+
+Known limit: a partition tag removed from a record whose receipts predate this release is not
+reported. The record leaves its partition's reads and enters no other partition's.
+
+To upgrade a store: check the records `context_unbound()` names against a copy you trust, then call
+`recommit(ids=[...])`. To accept the gap instead, pass `context_strict=False`. `recommit()` is
+available in Python only; the MCP server and the CLI do not expose it.
+
+`tests/test_a_record_replayed_into_another_scope_fails_verification.py` fails on 3.14.3 (7 of 9; the
+other 2 are controls). Each of the 8 new mutations in `tools/mutations.json` fails a test, and so do
+the 3 that were updated.
+
 ## 3.15.9 - UPGRADE IF you use the Claude Code hooks with a long memory index: the SessionStart receipt names at most 20 pointers instead of all of them
 
 ### The memory-index receipt is bounded

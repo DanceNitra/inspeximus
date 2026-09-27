@@ -34,12 +34,13 @@ import os
 import time
 from pathlib import Path
 
-from .core import __version__
+from .core import __version__, _PARTITION_TAG
 
 __all__ = ["Partitions", "PartitionHandle", "KINDS", "TAG_PREFIX"]
 
 KINDS = ("context", "process", "agent")
-TAG_PREFIX = "partition:"
+# One definition: the write receipt commits exactly the tags with this prefix (`partition_sha256`).
+TAG_PREFIX = _PARTITION_TAG
 DISPOSITIONS = ("erased", "retained", "archived")
 
 

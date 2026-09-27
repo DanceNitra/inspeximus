@@ -8,8 +8,10 @@ written for alice, signed, and then relabelled on disk as bob's is served in bob
 `verify_writes()` still reports the chain intact: every committed field is unchanged. The record is
 genuine; its context is forged.
 
-This file is the reproduction only. It fails on 3.9.6. The fix (bind the context into the signed
-commit, with a migration note for receipts written before it) waits for review.
+It failed on 3.9.6; 3.11.0 binds the context (`context_sha256`). Since 3.15.0 a store whose receipts
+predate that binding FAILS verify_writes() by default, as UNSCOPED, instead of passing with a count on
+the side (agmi issue #5). The partition binding is in
+test_a_record_replayed_into_another_scope_fails_verification.py.
 """
 import json
 
@@ -101,18 +103,20 @@ def _upgraded_store(tmp_path, monkeypatch, n=2):
     return path, ids
 
 
-def test_a_an_upgraded_store_passes_by_default_and_reports_its_unbound_records(tmp_path, monkeypatch):
+def test_a_an_upgraded_store_fails_by_default_and_names_its_unscoped_records(tmp_path, monkeypatch):
     path, ids = _upgraded_store(tmp_path, monkeypatch)
     s = _signed_store(path)
-    ok, problems = s.verify_writes()
-    assert ok, problems
     cu = s.context_unbound()
     assert cu["unbound"] == 2 and cu["ids"] == sorted(ids)
     assert "recommit(ids=[...])" in cu["warning"] and len(cu["warning"].splitlines()) == 1
+    ok, problems = s.verify_writes()
+    assert not ok and cu["warning"] in problems, problems
+    assert s.verify_writes(context_strict=False)[0], "the caller can accept the gap, explicitly"
     proof = s.governance_report()["proof"]
-    assert proof["verified"] and proof["context_unbound"] == 2 and proof["warnings"] == [cu["warning"]]
+    assert not proof["verified"] and proof["context_unbound"] == 2 and proof["warnings"] == [cu["warning"]]
     s.recommit(ids=ids)
     assert s.context_unbound() == {"unbound": 0, "ids": [], "warning": None}
+    assert s.verify_writes()[0]
 
 
 def test_b_the_same_store_fails_under_context_strict(tmp_path, monkeypatch):
@@ -146,13 +150,20 @@ def test_a_recommitted_receipt_catches_a_later_move(tmp_path, monkeypatch):
     assert not _signed_store(path).verify_writes()[0]
 
 
-def test_a_store_without_any_context_upgrades_clean(tmp_path, monkeypatch):
+def test_a_store_without_any_context_is_unscoped_until_recommitted(tmp_path, monkeypatch):
+    """No context today is not no context at write time: a pre-3.11 receipt cannot tell them apart,
+    and a record with no owner is served to every user. So it is counted, not waved through."""
     path = _store(tmp_path, monkeypatch)
     real = _old_receipts(monkeypatch)
-    _signed_store(path).remember("the staging database is db-7", key="staging_db")
+    rid = _signed_store(path).remember("the staging database is db-7", key="staging_db")
+    rid = rid if isinstance(rid, str) else rid["id"]
     monkeypatch.setattr(Inspeximus, "_write_commit", staticmethod(real))
-    ok, problems = _signed_store(path).verify_writes()
-    assert ok, problems
+    s = _signed_store(path)
+    ok, problems = s.verify_writes()
+    assert not ok and any("UNSCOPED" in p and rid in p for p in problems), problems
+    assert s.verify_writes(context_strict=False)[0]
+    s.recommit(ids=[rid])
+    assert _signed_store(path).verify_writes()[0]
 
 
 def test_provenance_names_a_context_change(tmp_path, monkeypatch):
