@@ -2499,6 +2499,28 @@ def _durable_replace(path, payload, encoding: str = "utf-8") -> None:
                 pass
 
 
+def _first_unencodable(value, path: str):
+    """The path of the first string in `value` that UTF-8 cannot encode (a lone surrogate), else None.
+    Walks dict keys and values, lists, tuples and sets; anything else is not text and passes."""
+    if isinstance(value, str):
+        try:
+            value.encode("utf-8")
+        except UnicodeEncodeError:
+            return path
+        return None
+    if isinstance(value, dict):
+        for k, v in value.items():
+            bad = _first_unencodable(k, path + ".<key>") or _first_unencodable(v, f"{path}.{k}")
+            if bad:
+                return bad
+    elif isinstance(value, (list, tuple, set, frozenset)):
+        for i, v in enumerate(value):
+            bad = _first_unencodable(v, f"{path}[{i}]")
+            if bad:
+                return bad
+    return None
+
+
 _DECISION_PREFIX = re.compile(r"^(?:\s*decision\s*:)+\s*", re.I)
 
 
@@ -3437,6 +3459,19 @@ class Inspeximus:
             except (TypeError, ValueError) as e:
                 raise ValueError(f"remember(meta=...) must be JSON-serialisable, else the whole store stops "
                                  f"persisting: {e}") from None
+        # TEXT THAT IS NOT UNICODE, THE SAME CLASS (A-22, 2026-09-27). A lone surrogate ("\ud800") is legal
+        # in a str and in JSON, so any MCP client can send one, and a cp1250 hook stdin produces them. It
+        # passed the check above, because json.dumps escapes it, and failed only at the save's UTF-8 encode:
+        # remember returned an id, and every later write in that handle was lost with it, on both formats.
+        # Through MCP the record also stayed in memory and broke every recall that matched it. Every string
+        # the caller hands in is checked here, before the record exists.
+        for _n, _v in (("text", text), ("object", object), ("key", key), ("tags", tags), ("meta", meta),
+                       ("source", source), ("derived_from", derived_from), ("user_id", user_id),
+                       ("agent_id", agent_id), ("session_id", session_id), ("project", project)):
+            _bad = _first_unencodable(_v, _n)
+            if _bad:
+                raise ValueError(f"remember({_bad}=...) holds text that is not valid Unicode (a lone "
+                                 f"surrogate), else the whole store stops persisting")
         # RESERVED KEYSPACE. Access-control acts are records, which is what makes them auditable -- and it
         # is also what would make the ACL decorative if any caller could write one. An agent that can call
         # remember(key="acl::grant::*::me::tag::secrets", object="granted") has granted itself access

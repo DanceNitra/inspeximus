@@ -4576,5 +4576,32 @@
   "tests": [
    "tests/test_a_decision_is_prefixed_once.py"
   ]
+ },
+ {
+  "name": "remember stores text that is not valid Unicode again",
+  "file": "inspeximus/core.py",
+  "old": "            _bad = _first_unencodable(_v, _n)\n",
+  "new": "            _bad = None\n",
+  "tests": [
+   "tests/test_a_write_that_is_not_unicode_poisons_nothing.py"
+  ]
+ },
+ {
+  "name": "the Unicode check skips what a dict holds",
+  "file": "inspeximus/core.py",
+  "old": "    if isinstance(value, dict):\n        for k, v in value.items():\n            bad = _first_unencodable(k",
+  "new": "    if False:\n        for k, v in value.items():\n            bad = _first_unencodable(k",
+  "tests": [
+   "tests/test_a_write_that_is_not_unicode_poisons_nothing.py"
+  ]
+ },
+ {
+  "name": "the Unicode check skips what a list holds",
+  "file": "inspeximus/core.py",
+  "old": "    elif isinstance(value, (list, tuple, set, frozenset)):\n",
+  "new": "    elif False:\n",
+  "tests": [
+   "tests/test_a_write_that_is_not_unicode_poisons_nothing.py"
+  ]
  }
 ]
