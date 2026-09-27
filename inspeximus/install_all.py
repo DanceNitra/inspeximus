@@ -230,12 +230,50 @@ def hermes_candidates():
         homes.append(pathlib.Path(os.environ["LOCALAPPDATA"]) / "hermes")
     out = []
     for home in dict.fromkeys(homes):
-        for venv in (home / "hermes-agent" / "venv", home / "venv"):
-            py = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-            if py.exists():
-                out.append((home, py))
-                break
+        py = _pm_python(home)
+        if py is None:
+            for venv in (home / "hermes-agent" / "venv", home / "venv"):
+                cand = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+                if cand.exists():
+                    py = cand
+                    break
+        if py is not None:
+            out.append((home, py))
     return out
+
+
+def _pm_python(home):
+    """The interpreter of a current Hermes install, which its package manager (`pm`) records in
+    <home>/installs/<key>/facts.json under packages.venv.environment.
+
+    MEASURED IN CI 2026-09-27: the official installer on Linux and macOS finished with exit 0 and no
+    <home>/hermes-agent/venv at all, so 3.14.1 as first written reported no Hermes. `pm` builds each
+    environment under <home>/installs/<key>/environments/ and deletes the in-tree venv once one is
+    committed (hermes-agent pm/environments.py). The in-tree venv is still read for older installs."""
+    import glob
+    for facts in sorted(glob.glob(str(home / "installs" / "*" / "facts.json"))):
+        try:
+            data = json.loads(pathlib.Path(facts).read_text(encoding="utf-8-sig"))
+            env = ((data.get("packages") or {}).get("venv") or {}).get("environment")
+        except (OSError, ValueError, AttributeError):
+            continue
+        if isinstance(env, str) and env:
+            py = pathlib.Path(env) / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+            if py.exists():
+                return py
+    return None
+
+
+def hermes_root(py):
+    """The Hermes checkout for an interpreter: <home>/hermes-agent above it, or None. Hermes' own modules
+    (`plugins.memory`) are imported from there, as Hermes itself does."""
+    for parent in pathlib.Path(py).parents:
+        cand = parent / "hermes-agent"
+        if (cand / "plugins" / "memory").is_dir():
+            return cand
+        if parent.name == "hermes-agent" and (parent / "plugins" / "memory").is_dir():
+            return parent
+    return None
 
 
 def hermes_provider(config_text):
@@ -298,9 +336,13 @@ def hermes_installs():
 
 
 def _hermes_python(py, code, runner=subprocess.run):
+    root = hermes_root(py)
+    env = dict(os.environ)
+    if root:
+        env["PYTHONPATH"] = os.pathsep.join(p for p in (str(root), env.get("PYTHONPATH")) if p)
     try:
         r = runner([str(py), "-c", code], capture_output=True, text=True, encoding="utf-8",
-                   errors="replace", timeout=180)
+                   errors="replace", timeout=180, cwd=str(root) if root else None, env=env)
     except (OSError, subprocess.SubprocessError) as e:
         return False, repr(e)[:200]
     return r.returncode == 0, ((r.stdout or "").strip() or (r.stderr or "")[-200:])
@@ -326,16 +368,15 @@ def _uv_for(py):
     found = shutil.which("uv")
     if found:
         return found
-    try:
-        home = pathlib.Path(py).resolve().parents[3]             # <home>/hermes-agent/venv/<bin>/python
-    except IndexError:
-        return None
     exe = "uv.exe" if os.name == "nt" else "uv"
-    for pattern in (home / "bin" / exe, home / "tools" / exe, home / "tools" / "*" / exe,
-                    home / "tools" / "*" / "*" / exe):
-        hit = sorted(glob.glob(str(pattern)))
-        if hit:
-            return hit[0]
+    # the Hermes home is some parent of the interpreter: <home>/hermes-agent/venv/<bin>/python on older
+    # installs, <home>/installs/<key>/environments/<generation>/<bin>/python with `pm`
+    for home in list(pathlib.Path(py).resolve().parents)[:7]:
+        for pattern in (home / "bin" / exe, home / "tools" / exe, home / "tools" / "*" / exe,
+                        home / "tools" / "*" / "*" / exe):
+            hit = sorted(glob.glob(str(pattern)))
+            if hit:
+                return hit[0]
     return None
 
 

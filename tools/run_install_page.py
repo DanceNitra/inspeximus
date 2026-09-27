@@ -55,13 +55,24 @@ def install_hermes(env, cwd):
     cmd = (["pwsh", "-NoProfile", "-NonInteractive", "-Command", HERMES_WINDOWS] if win
            else ["bash", "-c", HERMES_POSIX])
     om.log("installing Hermes Agent with its official installer")
+    # Hermes' repository has paths deep enough that a clone under a sandbox home passes Windows' 260-character
+    # limit (measured locally: "Filename too long", then "git clone failed"). Git reads this from the
+    # environment, so the user's own git configuration is not touched.
+    env = dict(env, GIT_CONFIG_COUNT="1", GIT_CONFIG_KEY_0="core.longpaths", GIT_CONFIG_VALUE_0="true")
     r = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
     print("hermes installer exit", r.returncode, (r.stdout or "")[-1500:], (r.stderr or "")[-1500:])
-    if r.returncode != 0:
-        raise SystemExit("the official Hermes installer failed")
+    # EXIT 0 IS NOT AN INSTALL. Measured locally 2026-09-27: the Windows installer's git clone failed on a
+    # path over 260 characters, it printed "[X] git clone failed" and still exited 0.
+    if r.returncode != 0 or not om.hermes_python(env.get("HOME", ""), env)[1]:
+        raise SystemExit("the official Hermes installer did not produce a Hermes install")
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):          # the installers print arrows a cp1252 console cannot encode
+        try:
+            stream.reconfigure(errors="replace")
+        except AttributeError:
+            pass
     work = os.path.abspath(sys.argv[1])
     args = sys.argv[2:]
     expect_fail = "--expect-fail" in args

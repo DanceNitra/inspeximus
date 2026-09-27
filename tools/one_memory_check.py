@@ -194,9 +194,19 @@ def hermes_python(home, env):
     homes = [os.path.join(home, ".hermes")]
     if env.get("LOCALAPPDATA"):
         homes.append(os.path.join(env["LOCALAPPDATA"], "hermes"))
+    import glob
+    sub = ("Scripts", "python.exe") if WIN else ("bin", "python")
     for hh in homes:
-        py = os.path.join(hh, "hermes-agent", "venv", "Scripts" if WIN else "bin",
-                          "python.exe" if WIN else "python")
+        # current Hermes: its package manager records the environment in installs/<key>/facts.json
+        for facts in sorted(glob.glob(os.path.join(hh, "installs", "*", "facts.json"))):
+            try:
+                envdir = json.load(open(facts, encoding="utf-8-sig"))["packages"]["venv"]["environment"]
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
+            py = os.path.join(envdir, *sub)
+            if os.path.exists(py):
+                return hh, py
+        py = os.path.join(hh, "hermes-agent", "venv", *sub)          # older installs
         if os.path.exists(py):
             return hh, py
     return None, None

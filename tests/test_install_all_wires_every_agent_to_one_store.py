@@ -450,3 +450,18 @@ def test_hermes_comes_first_in_the_table(home, monkeypatch):
     rc, table = _run(rules="no", hermes_provider_change="yes")
     labels = [ln.split("  ")[0] for ln in table.splitlines()[1:] if ln and not ln.startswith("note")]
     assert labels[0].startswith("Hermes Agent") and labels[1] == "Claude Code" and labels[2] == "Gemini CLI", labels
+
+
+def test_a_current_hermes_is_found_through_its_package_manager_record(home):
+    """Hermes' `pm` records its environment in <home>/installs/<key>/facts.json and deletes the in-tree
+    venv. Measured in CI 2026-09-27: a fresh official install on Linux and macOS had no hermes-agent/venv."""
+    hh = home / ".hermes"
+    envdir = hh / "installs" / "0123456789abcdef" / "environments" / "gen-1"
+    py = envdir / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    py.parent.mkdir(parents=True)
+    py.write_text("", encoding="utf-8")
+    (hh / "installs" / "0123456789abcdef" / "facts.json").write_text(
+        json.dumps({"packages": {"venv": {"environment": str(envdir)}}}), encoding="utf-8")
+    assert A.hermes_candidates() == [(hh, py)]
+    (hh / "hermes-agent" / "plugins" / "memory").mkdir(parents=True)
+    assert A.hermes_root(py) == hh / "hermes-agent", "Hermes' own modules are imported from its checkout"

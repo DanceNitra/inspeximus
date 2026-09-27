@@ -128,6 +128,9 @@ and points the provider at the shared store. If it does not, the installer remov
 changes nothing else, and the table says `cannot load provider` with the fix. With `--hermes-provider no`,
 nothing in Hermes is changed and the table says `skipped (no)`. Restart Hermes.
 
+`hermes update` can rebuild Hermes' environment from its own lock file, which does not list inspeximus.
+After updating Hermes, run `install --all` again; the table shows whether Hermes still loads the provider.
+
 &lt;a id="claude-code"&gt;&lt;/a&gt;
 ### Claude Code
 
