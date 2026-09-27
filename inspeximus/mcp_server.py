@@ -1532,10 +1532,11 @@ def check_sources() -> dict:
 
     READ `UNCHECKABLE` FIRST. Fingerprints are only taken when `remember(source={"doc": <path>})` points at a
     file that existed at write time, so on most stores this is the large number and the honest denominator.
-    `ok` is false when records name sources and NONE of them could be checked -- zero drifted over zero
-    checked is not a clean store -- and a `problem` says so. A store whose records carry no source at all
-    (every record NOT_BINDABLE) had nothing to check: `ok` is true there, `checked` is 0, the coverage ratios
-    are null rather than 0, and a `problem` still says that nothing was verified. Measured on our own
+    `ok` is false whenever NOTHING was checked -- zero drifted over zero checked is not a clean store --
+    including a store whose records carry no source at all (every record NOT_BINDABLE). `verdict` names the
+    state: CLEAN (something was checked and nothing moved), DRIFTED (a source changed, vanished, or had
+    already moved at capture) or NOT_CHECKED; `not_checked` counts the records that could not be checked by
+    reason, the coverage ratios are null rather than 0, and a `problem` says that nothing was verified. Measured on our own
     deployment before shipping this: 210,544 records,
     98.3% carrying a `source`, 0.01% carrying one that resolves to anything you could fetch again.
 

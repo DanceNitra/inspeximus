@@ -4603,5 +4603,49 @@
   "tests": [
    "tests/test_a_write_that_is_not_unicode_poisons_nothing.py"
   ]
+ },
+ {
+  "name": "check_sources calls a store that checked nothing ok again",
+  "file": "inspeximus/core.py",
+  "old": "\"ok\": (not drifted and not orphaned and not unbound_capture and bool(checked)),",
+  "new": "\"ok\": (not drifted and not orphaned and not unbound_capture and (bool(checked) or (_bindable == 0 and _n > 0))),",
+  "tests": [
+   "tests/test_not_bindable_is_not_a_backlog.py",
+   "tests/test_mcp_review_maintenance.py",
+   "tests/test_the_checks_can_actually_fail.py"
+  ]
+ },
+ {
+  "name": "check_sources names no NOT_CHECKED state",
+  "file": "inspeximus/core.py",
+  "old": "else \"CLEAN\" if checked else \"NOT_CHECKED\")",
+  "new": "else \"CLEAN\")",
+  "tests": [
+   "tests/test_not_bindable_is_not_a_backlog.py",
+   "tests/test_mcp_review_maintenance.py",
+   "tests/test_the_checks_can_actually_fail.py"
+  ]
+ },
+ {
+  "name": "check_sources does not name what it could not check",
+  "file": "inspeximus/core.py",
+  "old": "report[\"not_checked\"] = {k: counts[k] for k in (\"NOT_BINDABLE\", \"UNCHECKABLE\", \"UNRESOLVED_HERE\")",
+  "new": "report[\"not_checked\"] = {k: counts[k] for k in ()",
+  "tests": [
+   "tests/test_not_bindable_is_not_a_backlog.py",
+   "tests/test_mcp_review_maintenance.py",
+   "tests/test_the_checks_can_actually_fail.py"
+  ]
+ },
+ {
+  "name": "a surface demonstrated on the store is also listed as fixture-only",
+  "file": "inspeximus/core.py",
+  "old": "if r.get(\"on_a_fixture\") == \"NOTICED\"} - set(covered))",
+  "new": "if r.get(\"on_a_fixture\") == \"NOTICED\"})",
+  "tests": [
+   "tests/test_not_bindable_is_not_a_backlog.py",
+   "tests/test_mcp_review_maintenance.py",
+   "tests/test_the_checks_can_actually_fail.py"
+  ]
  }
 ]

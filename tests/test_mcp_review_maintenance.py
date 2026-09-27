@@ -197,8 +197,6 @@ def test_check_sources_is_scoped_to_the_servers_project(monkeypatch, tmp_path):
         f"checked={rep.get('checked')}, ok={rep.get('ok')}"
 
 
-@pytest.mark.xfail(reason="check_sources: '`ok` is false whenever NOTHING was checkable'; a store whose "
-                          "records carry no source reports checked=0 and ok=true", **XFAIL)
 def test_check_sources_ok_is_false_when_nothing_was_checked(monkeypatch, tmp_path):
     """check_sources: "UNCHECKABLE (no fingerprint: no source, or a source naming the WRITER rather than a
     document). ... `ok` is false whenever NOTHING was checkable, and the report says so -- zero drifted over

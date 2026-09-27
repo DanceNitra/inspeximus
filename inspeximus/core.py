@@ -6020,7 +6020,7 @@ class Inspeximus:
                                       if r["outcome"] == "NOTICED"
                                       and r.get("tier") == "fixture"} - set(covered))
         works_on_fixture = sorted({r["surface"] for r in unreach
-                                   if r.get("on_a_fixture") == "NOTICED"})
+                                   if r.get("on_a_fixture") == "NOTICED"} - set(covered))
         probed = sorted({r["surface"] for r in results})
         unprobed = [s for s in available if s not in set(probed)]
         # ONE place the coverage is stated, because the previous shape returned three numbers that
@@ -6656,19 +6656,19 @@ class Inspeximus:
             # to bytes that are not on disk and never will be again, so nothing here can re-verify
             # what produced it. Folding it into `ok` is the difference between reporting the state
             # and flattering it.
-            # `ok` still requires something to have been CHECKED -- an empty check is not a
-            # passing one -- but a store of pure decisions has nothing checkable by construction,
-            # and calling that False forever is the same "permanently broken" reading the
-            # denominator fix removes. So: nothing bindable at all is reported through `limits`
-            # and `not_bindable`, and does not by itself make the verdict False.
-            # AN EMPTY STORE IS NOT A DECISIONS-ONLY STORE, and my first version of this exemption
-            # collapsed them: `_bindable == 0` is true of both, so a store with NO RECORDS AT ALL
-            # started reporting ok. An existing test said so in one line -- "no records is not a
-            # division by zero, and it is not a clean bill either" -- and it was right. A store
-            # whose records are decisions has something to be right about; an empty one does not.
-            "ok": (not drifted and not orphaned and not unbound_capture
-                   and (bool(checked) or (_bindable == 0 and _n > 0))),
+            # `ok` requires something to have been CHECKED, with no exception (A-23, 2026-09-27).
+            # A store of pure decisions used to be exempt, so that it would not read as permanently
+            # broken, and the tool's own description said the opposite: "`ok` is false whenever
+            # NOTHING was checkable". A check that saw nothing reported the same bit as a clean
+            # store -- CLAUDE.md rule 12, a check that never sees its target reports SAFE. The
+            # "broken" reading is answered by `verdict`, which names the state: NOT_CHECKED is not
+            # DRIFTED, and `not_checked` says which records could not be checked and why.
+            "ok": (not drifted and not orphaned and not unbound_capture and bool(checked)),
         }
+        report["verdict"] = ("DRIFTED" if (drifted or orphaned or unbound_capture)
+                             else "CLEAN" if checked else "NOT_CHECKED")
+        report["not_checked"] = {k: counts[k] for k in ("NOT_BINDABLE", "UNCHECKABLE", "UNRESOLVED_HERE")
+                                 if counts[k]}
         if not checked:
             report["problem"] = (
                 "%d records carry no re-checkable source fingerprint, so this verified NOTHING. "

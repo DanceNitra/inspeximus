@@ -90,14 +90,14 @@ def test_a_surface_already_unhappy_is_NOT_scored():
 
 
 def test_a_clean_boolean_over_an_unhappy_report_is_its_own_verdict():
-    """SUMMARY_HIDES_DETAIL. `check_sources` on a store whose sources were all stripped returns
-    ok=True -- deliberately, since a decisions-only store has nothing bindable -- while the same
-    report carries "so this verified NOTHING". Monitoring reads booleans, so that gap gets a name
-    instead of being scored as a catch or a miss."""
+    """SUMMARY_HIDES_DETAIL used to name `check_sources` here: a store whose sources were all stripped
+    returned ok=True beside "so this verified NOTHING". Since 3.15.1 (audit A-23) `ok` needs something
+    checked, so stripping every source is NOTICED and the boolean no longer hides the detail."""
     out = _store().audit_the_audits()
     hides = {h["probe"]: h for h in out["summary_hides_detail"]}
-    assert "every_source_stripped" in hides, out["probes"]
-    assert "verified NOTHING" in hides["every_source_stripped"]["the_boolean_said_clean_but"]
+    assert "every_source_stripped" not in hides, hides.get("every_source_stripped")
+    got = [r for r in out["probes"] if r["probe"] == "every_source_stripped"]
+    assert got and got[0]["outcome"] == "NOTICED", got
 
 
 # ───────────────────────────────────────────────── it must not touch the caller's data
