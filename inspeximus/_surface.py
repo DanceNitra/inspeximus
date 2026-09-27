@@ -169,10 +169,7 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
         # not, so on 2026-09-27 `inspeximus stats` after install --all opened an empty file in the working
         # directory while the memory sat in the shared store. An explicit scope, including `user`, keeps
         # its old meaning.
-        shared = shared_store_path()
-        if shared:
-            return shared
-        return "inspeximus_memory.json"
+        return shared_store_path() or "inspeximus_memory.json"
     if scope == "user":
         return "inspeximus_memory.json"
     if scope == "project":

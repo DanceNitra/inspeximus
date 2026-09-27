@@ -3677,7 +3677,7 @@
  {
   "name": "the CLI ignores the shared store record again",
   "file": "inspeximus/_surface.py",
-  "old": "        shared = shared_store_path()\n        if shared:\n            return shared\n        return \"inspeximus_memory.json\"\n",
+  "old": "        return shared_store_path() or \"inspeximus_memory.json\"\n",
   "new": "        return \"inspeximus_memory.json\"\n",
   "tests": [
    "tests/test_the_cli_opens_the_shared_store.py"
