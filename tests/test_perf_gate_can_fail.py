@@ -164,3 +164,41 @@ def test_it_fails_when_the_hook_opens_the_store_for_a_tool_it_ignores():
     now = {"hook": {"counters": bad, "seconds_median": 0.1}}
     fail, _ = gate.compare(base, now)
     assert any("store_loads" in f for f in fail), f"store_loads moved 3 -> 13 and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_opening_a_store_infers_types_it_discards():
+    """AUDIT-B B-04. `setdefault("mtype", _infer_type(text))` ran two regex searches over every record at
+    every open and discarded the result for every record that had a type: 1.78 s of a 5.51 s open at
+    67,165 records.
+
+    Reintroduced by evaluating the inference before the real normaliser runs, which is what the eager
+    default did, and measured through the counter the gate reads (the hook workload opens its store 3
+    times, and every record in it carries a type).
+    """
+    run = gate.w_hook(200)
+    with gate.Counters() as c:
+        run()
+    good = c.as_dict()
+    assert good["store_loads"] == 3 and good["type_inferences"] == 0, (
+        "fixture error: the hook workload should open 3 times and infer nothing", good)
+
+    real = core.Inspeximus._normalise_loaded
+
+    def eager(r):
+        core._infer_type(r.get("text") or "")
+        return real(r)
+
+    core.Inspeximus._normalise_loaded = staticmethod(eager)
+    try:
+        run = gate.w_hook(200)
+        with gate.Counters() as c:
+            run()
+        bad = c.as_dict()
+    finally:
+        core.Inspeximus._normalise_loaded = staticmethod(real)
+    assert bad["type_inferences"] >= 3 * 200, f"the eager inference did not move the counter: {bad}"
+
+    base = {"hook": {"counters": good, "seconds_median": 0.1}}
+    now = {"hook": {"counters": bad, "seconds_median": 0.1}}
+    fail, _ = gate.compare(base, now)
+    assert any("type_inferences" in f for f in fail), f"type_inferences grew and the gate stayed green: {fail}"

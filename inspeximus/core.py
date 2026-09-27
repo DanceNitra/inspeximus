@@ -3862,8 +3862,14 @@ class Inspeximus:
         r.setdefault("ts", r.get("valid_from", 0.0))
         r.setdefault("last_access", r["ts"])
         r.setdefault("valid_from", r["ts"])
-        r.setdefault("mtype", _infer_type(r.get("text") or ""))
-        r.setdefault("iso", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(r["ts"])))
+        # COMPUTED ONLY WHEN MISSING. `setdefault(k, f(x))` evaluates f(x) before it looks at k, so
+        # these two ran for every record on every open and were thrown away for every record the
+        # library wrote itself. Measured 2026-09-27 on a 67,165-record store: 132,186 regex searches
+        # and 1.78 s of a 5.51 s open, discarded 67,165 times out of 67,165 (AUDIT-B B-04).
+        if "mtype" not in r:
+            r["mtype"] = _infer_type(r.get("text") or "")
+        if "iso" not in r:
+            r["iso"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(r["ts"]))
 
     @staticmethod
     def _attrib_commit(rec: dict) -> dict:

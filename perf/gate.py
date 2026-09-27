@@ -114,11 +114,25 @@ class Counters:
             return out
 
         core.os.replace, core._dump_store = replace, dump
+
+        self.calls = dict.fromkeys(COUNTED_CALLS, 0)
+        self._real_calls = {}
+        for name, (owner, attr) in COUNTED_CALLS.items():
+            real = getattr(owner, attr)
+            self._real_calls[name] = real
+
+            def counted(*a, _real=real, _name=name, **k):
+                self.calls[_name] += 1
+                return _real(*a, **k)
+
+            setattr(owner, attr, counted)
         return self
 
     def __exit__(self, *exc):
         core.os.replace, core._dump_store = self._real_replace, self._real_dump
         core.Inspeximus._load_from_disk = self._real_load
+        for name, (owner, attr) in COUNTED_CALLS.items():
+            setattr(owner, attr, self._real_calls[name])
         return False
 
     def as_dict(self):
@@ -127,7 +141,16 @@ class Counters:
                 "replace_receipts": self.replaces["receipts"],
                 "full_serializations": self.dumps,
                 "serialized_bytes": self.dump_bytes,
-                "store_loads": self.loads}
+                "store_loads": self.loads,
+                **self.calls}
+
+
+#: Calls counted by name: counter -> (owner, attribute). Each one is a unit of work that grew once.
+#:   type_inferences  two regex searches over a record's text. Opening a store ran it for every record
+#:                    and discarded the result for every record that had a type (AUDIT-B B-04).
+COUNTED_CALLS = {
+    "type_inferences": (core, "_infer_type"),
+}
 
 
 # ── locked workloads ───────────────────────────────────────────────────────────────────────────────

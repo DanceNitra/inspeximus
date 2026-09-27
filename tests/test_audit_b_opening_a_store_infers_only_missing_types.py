@@ -67,8 +67,6 @@ def _open_counting(p, monkeypatch):
     return m, calls
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-04: setdefault evaluates _infer_type and strftime for every record at open")
 def test_open_infers_and_formats_only_what_a_record_lacks(store, monkeypatch):
     # CONTROL: strip mtype and iso from one row on disk. Opening must fill exactly that row, with the
     # values the library would compute, or the counters below measure a path that never normalises.
