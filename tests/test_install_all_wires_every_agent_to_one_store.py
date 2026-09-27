@@ -33,7 +33,13 @@ def home(tmp_path, monkeypatch):
     monkeypatch.setenv("LOCALAPPDATA", str(h / "AppData" / "Local"))
     monkeypatch.setenv("INSPEXIMUS_NO_UPDATE_CHECK", "1")
     monkeypatch.setattr(I, "resolve_runtime", lambda: ("python", sys.executable))
-    monkeypatch.setattr(A.shutil, "which", lambda cmd: None)          # nothing found by PATH, only by folder
+    # PATH is the sandbox's own: a command is "installed" when _install() put a stub for it here
+    monkeypatch.setattr(A.shutil, "which",
+                        lambda cmd: str(h / "fakebin" / cmd) if (h / "fakebin" / cmd).exists() else None)
+    # A Hermes here is a stand-in with no real venv: its loader answers yes unless a test says otherwise
+    monkeypatch.setattr(A, "hermes_loads_provider", lambda py, runner=None: True)
+    monkeypatch.setattr(A, "_hermes_python", lambda py, code, runner=None: (False, ""))
+    monkeypatch.setattr(A, "hermes_version", lambda py, runner=None: "0.21.3")
     proj = tmp_path / "proj"
     (proj / "src").mkdir(parents=True)
     subprocess.run(["git", "init", "-q", str(proj)], check=True)
@@ -41,11 +47,19 @@ def home(tmp_path, monkeypatch):
     return h
 
 
+def _install(h, *hosts):
+    """The app itself, as the installer detects it: a command on PATH (see the fixture's `which`)."""
+    (h / "fakebin").mkdir(exist_ok=True)
+    for host in hosts:
+        (h / "fakebin" / host).write_text("", encoding="utf-8")
+
+
 def _all_hosts(h):
     for d in (".claude", ".cursor", ".codeium/windsurf", ".codex", ".cline", ".gemini/config"):
         (h / d).mkdir(parents=True, exist_ok=True)
     (h / ".gemini" / "settings.json").write_text("{}\n", encoding="utf-8")
     I.devin_dir().mkdir(parents=True, exist_ok=True)
+    _install(h, *ALL)
 
 
 def _entry(host):
@@ -82,6 +96,7 @@ def test_every_found_agent_points_at_one_store(home):
 
 def test_a_host_that_is_not_installed_is_left_alone(home):
     (home / ".cursor").mkdir()
+    _install(home, "cursor")
     rc, table = _run(rules="no")
     assert rc == 0
     assert (home / ".cursor" / "mcp.json").exists()
@@ -233,7 +248,7 @@ def test_hermes_provider_line_edits():
 
 
 @pytest.mark.parametrize("current, answer, expected", [
-    (None, "no", "inspeximus"), ("mem0", "no", "mem0"), ("mem0", "yes", "inspeximus")])
+    (None, "no", None), (None, "yes", "inspeximus"), ("mem0", "no", "mem0"), ("mem0", "yes", "inspeximus")])
 def test_hermes_is_wired_and_another_provider_is_asked_about(home, monkeypatch, current, answer, expected):
     hh = home / ".hermes"
     py = hh / "hermes-agent" / "venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
@@ -244,10 +259,13 @@ def test_hermes_is_wired_and_another_provider_is_asked_about(home, monkeypatch, 
     calls = []
     monkeypatch.setattr(A, "install_into_hermes", lambda p: (calls.append(p) or (True, "ok")))
     (home / ".cursor").mkdir()
+    _install(home, "cursor")
     rc, table = _run(rules="no", hermes_provider_change=answer)
     assert rc == 0, table
-    assert calls == [py], "installed into Hermes' own venv"
-    assert A.hermes_provider((hh / "config.yaml").read_text()) == expected
+    # 3.14.1: "no" changes NOTHING in Hermes, not even the package in its venv (session 1, 2026-09-27)
+    assert calls == ([py] if answer == "yes" else []), "installed into Hermes' own venv only on yes"
+    cfg_yaml = hh / "config.yaml"
+    assert (A.hermes_provider(cfg_yaml.read_text()) if cfg_yaml.exists() else None) == expected
     cfg = hh / "inspeximus" / "config.json"
     if expected == "inspeximus":
         assert json.loads(cfg.read_text())["path"].endswith("coding_memory.json")
@@ -265,6 +283,7 @@ def test_without_the_flag_another_hermes_provider_is_kept_and_nothing_is_asked(h
     (hh / "config.yaml").write_text(before, encoding="utf-8")
     monkeypatch.setattr(A, "install_into_hermes", lambda p: (True, "ok"))
     (home / ".cursor").mkdir()
+    _install(home, "cursor")
 
     class _NoStdin:
         def __getattr__(self, name):
@@ -333,3 +352,101 @@ def test_the_handshake_tells_every_client_to_recall_and_carries_the_notice():
     assert "call `recall`" in S._instructions(notice="") and "remember_decision" in S._instructions(notice="")
     with_notice = S._instructions(notice="[inspeximus] A new version is available: 99.0.0 (you have 3.14.0).")
     assert "99.0.0" in with_notice and with_notice.startswith(S._RECALL_INSTRUCTIONS)
+
+
+def test_a_config_folder_without_the_app_is_not_wired(home):
+    """3.14.1. `~/.gemini` is Gemini CLI's folder too, and `~/.codeium` outlives an uninstalled Windsurf:
+    a folder is not an install. Measured on the owner's machine: 3.14.0 would have wired both."""
+    for d in (".gemini/antigravity", ".gemini/config", ".codeium/windsurf", ".cursor", ".cline"):
+        (home / d).mkdir(parents=True, exist_ok=True)
+    _install(home, "claude")                                  # control: one real install is still wired
+    rc, table = _run(rules="no")
+    assert rc == 0, table
+    rows = {ln.split("  ")[0]: ln.split() for ln in table.splitlines()}
+    for label in ("Antigravity", "Windsurf", "Cursor", "Cline"):
+        assert rows[label][1] == "no", table
+    assert not (home / ".gemini" / "config" / "mcp_config.json").exists()
+    assert not (home / ".codeium" / "windsurf" / "mcp_config.json").exists()
+    assert not (home / ".cursor" / "mcp.json").exists()
+    assert rows["Claude Code"][2] == "yes", table
+
+
+def test_an_app_installed_off_path_is_found(home):
+    """The desktop installs this machine actually has: Antigravity and Windsurf under
+    %LOCALAPPDATA%/Programs, Codex as a Microsoft Store package, Cline as a VS Code extension."""
+    la = home / "AppData" / "Local"
+    (la / "Programs" / "Antigravity").mkdir(parents=True)
+    (la / "Programs" / "Windsurf").mkdir(parents=True)
+    (la / "Packages" / "OpenAI.Codex_2p2nqsd0c76g0").mkdir(parents=True)
+    (home / ".vscode" / "extensions" / "saoudrizwan.claude-dev-4.1.20").mkdir(parents=True)
+    for h in ("antigravity", "windsurf", "codex", "cline"):
+        assert A.detect(h)[0], h
+    for h in ("cursor", "gemini", "devin", "claude"):
+        assert not A.detect(h)[0], h
+
+
+def test_hermes_no_changes_nothing_when_hermes_has_no_provider(home, monkeypatch):
+    """3.14.1. With no provider set, 3.14.0 installed into Hermes and set memory.provider even on "no"."""
+    hh = home / ".hermes"
+    py = hh / "hermes-agent" / "venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    py.parent.mkdir(parents=True)
+    py.write_text("", encoding="utf-8")
+    calls = []
+    monkeypatch.setattr(A, "install_into_hermes", lambda p: (calls.append(p) or (True, "ok")))
+    _install(home, "cursor")
+    rc, table = _run(rules="no", hermes_provider_change="no")
+    assert rc == 0, table
+    assert calls == [] and not (hh / "config.yaml").exists() and not (hh / "inspeximus").exists()
+    row = next(ln for ln in table.splitlines() if ln.startswith("Hermes Agent"))
+    assert "skipped (no)" in row, table
+    rc, table = _run(rules="no", hermes_provider_change="yes")     # control: yes does change it
+    assert calls == [py] and A.hermes_provider((hh / "config.yaml").read_text()) == "inspeximus"
+
+
+def _hermes_venv(home, where=".hermes"):
+    hh = home / where
+    py = hh / "hermes-agent" / "venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    py.parent.mkdir(parents=True)
+    py.write_text("", encoding="utf-8")
+    return hh, py
+
+
+def test_a_hermes_that_cannot_load_the_provider_is_never_wired(home, monkeypatch):
+    """3.14.1. PyPI's hermes-agent 0.19.0 has no entry-point discovery in its provider loader, measured on
+    2026-09-27, so the provider never loads there. The table must say so and name the fix, and Hermes
+    must be left as it was: the package the run installed is removed again, the config is untouched."""
+    hh, py = _hermes_venv(home)
+    installed, removed = [], []
+    monkeypatch.setattr(A, "install_into_hermes", lambda p: (installed.append(p) or (True, "ok")))
+    monkeypatch.setattr(A, "uninstall_from_hermes", lambda p: removed.append(p) or True)
+    monkeypatch.setattr(A, "hermes_loads_provider", lambda p, runner=None: False)
+    monkeypatch.setattr(A, "hermes_version", lambda p, runner=None: "0.19.0")
+    _install(home, "cursor")
+    rc, table = _run(rules="no", hermes_provider_change="yes")
+    assert rc == 0, table
+    row = next(ln for ln in table.splitlines() if ln.startswith("Hermes Agent"))
+    assert "cannot load provider (hermes-agent 0.19.0" in row and "provider inspeximus" not in row, table
+    assert A.HERMES_INSTALL_DOCS in table and "official installer" in table
+    assert installed == [py] and removed == [py], "what this run installed, it removed"
+    assert not (hh / "config.yaml").exists() and not (hh / "inspeximus").exists()
+
+
+def test_a_pip_installed_hermes_on_path_is_found_and_named(home, monkeypatch, tmp_path):
+    """`pip install hermes-agent` puts `hermes` beside its interpreter, outside the official layout."""
+    env = tmp_path / "pipenv" / ("Scripts" if os.name == "nt" else "bin")
+    env.mkdir(parents=True)
+    (env / ("python.exe" if os.name == "nt" else "python")).write_text("", encoding="utf-8")
+    (env / "hermes").write_text("", encoding="utf-8")
+    monkeypatch.setattr(A.shutil, "which", lambda cmd: str(env / "hermes") if cmd == "hermes" else None)
+    found = A.hermes_installs()
+    assert [(k, p.name if p else None) for _, p, k in found] == \
+        [("pip install", "python.exe" if os.name == "nt" else "python")]
+
+
+def test_hermes_comes_first_in_the_table(home, monkeypatch):
+    _hermes_venv(home)
+    monkeypatch.setattr(A, "install_into_hermes", lambda p: (True, "ok"))
+    _all_hosts(home)
+    rc, table = _run(rules="no", hermes_provider_change="yes")
+    labels = [ln.split("  ")[0] for ln in table.splitlines()[1:] if ln and not ln.startswith("note")]
+    assert labels[0].startswith("Hermes Agent") and labels[1] == "Claude Code" and labels[2] == "Gemini CLI", labels

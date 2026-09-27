@@ -62,29 +62,46 @@ def _codex_home():
     return pathlib.Path(os.environ.get("CODEX_HOME") or (_i._home() / ".codex"))
 
 
-def _detect_markers(host):
-    """Paths whose existence means the host is installed for this user, and a command on PATH."""
+def _install_markers(host):
+    """(commands, globs) that mean the APP is installed: a command on PATH, or an install location.
+
+    A CONFIG FOLDER IS NOT AN INSTALL (3.14.1). 3.14.0 counted `~/.gemini/config` as Antigravity and
+    `~/.codeium/windsurf` as Windsurf, so a Gemini CLI user got an Antigravity entry and an uninstalled
+    Windsurf got a config written for it. Measured on the owner's machine before the dogfood run. Each
+    glob is an install location: the per-user Windows install folder, the macOS app bundle, the
+    Microsoft Store package folder, or the VS Code extension folder for Cline."""
     h = _i._home()
+    la = h / "AppData" / "Local"
+    apps = [pathlib.Path("/Applications"), h / "Applications"]
+
+    def app(name):
+        return [str(la / "Programs" / name)] + [str(a / (name + ".app")) for a in apps]
+    ext = [str(h / d / "extensions" / "saoudrizwan.claude-dev-*")
+           for d in (".vscode", ".vscode-insiders", ".cursor", ".windsurf")]
     return {
-        "claude": ([h / ".claude.json", h / ".claude"], "claude"),
-        "cursor": ([h / ".cursor"], "cursor"),
-        "windsurf": ([h / ".codeium" / "windsurf"], "windsurf"),
-        "codex": ([_codex_home()], "codex"),
-        "cline": ([h / ".cline"], "cline"),
-        "gemini": ([h / ".gemini" / "settings.json"], "gemini"),
-        "antigravity": ([h / ".gemini" / "config", h / ".gemini" / "antigravity"], "antigravity"),
-        "devin": ([_i.devin_dir()], "devin"),
+        "claude": (["claude"], [str(h / ".claude" / "local" / "claude*"), str(h / ".local" / "bin" / "claude*")]),
+        "gemini": (["gemini"], []),
+        "codex": (["codex"], [str(la / "Packages" / "OpenAI.Codex_*"), str(la / "Programs" / "OpenAI" / "Codex")]
+                  + [str(a / "Codex.app") for a in apps]),
+        "antigravity": (["antigravity"], app("Antigravity")),
+        "cursor": (["cursor"], app("cursor") + app("Cursor")),
+        "devin": (["devin"], app("Devin")),
+        "windsurf": (["windsurf"], app("Windsurf")),
+        "cline": (["cline"], ext),
     }[host]
 
 
 def detect(host):
-    """(found, why): a config location the host creates, or its command on PATH."""
-    paths, cmd = _detect_markers(host)
-    for p in paths:
-        if p.exists():
-            return True, str(p)
-    if cmd and shutil.which(cmd):
-        return True, f"`{cmd}` on PATH"
+    """(found, why): the host's command on PATH, or an install location that exists."""
+    import glob
+    cmds, globs = _install_markers(host)
+    for cmd in cmds:
+        if shutil.which(cmd):
+            return True, f"`{cmd}` on PATH"
+    for g in globs:
+        hit = glob.glob(g)
+        if hit:
+            return True, hit[0]
     return False, ""
 
 
@@ -256,11 +273,77 @@ def hermes_set_provider(config_text):
     return config_text + sep + "memory:\n  provider: inspeximus\n"
 
 
+#: Where a user gets the Hermes build whose loader discovers provider packages.
+HERMES_INSTALL_DOCS = "https://hermes-agent.nousresearch.com/docs/getting-started/installation"
+
+
+def hermes_installs():
+    """(home, python or None, kind) for every Hermes install found.
+
+    The official installer's layout comes first (see hermes_candidates). A `hermes` command on PATH
+    that lives outside those homes is a pip install, and its interpreter is the Python beside it.
+    Measured 2026-09-27: `pip install hermes-agent` gives 0.19.0 from PyPI, whose provider loader has
+    no entry-point discovery, so it never lists inspeximus; the official install (0.21.3 on the owner's
+    machine) does. The kind is reported, and hermes_loads_provider() decides, not the version number."""
+    out = [(home, py, "official installer") for home, py in hermes_candidates()]
+    exe = shutil.which("hermes")
+    if exe:
+        d = pathlib.Path(exe).resolve().parent
+        inside = any(os.path.normcase(str(d)).startswith(os.path.normcase(str(home))) for home, _, _ in out)
+        if not inside:
+            py = d / ("python.exe" if os.name == "nt" else "python")
+            home = pathlib.Path(os.environ.get("HERMES_HOME") or (_i._home() / ".hermes"))
+            out.append((home, py if py.exists() else None, "pip install"))
+    return out
+
+
+def _hermes_python(py, code, runner=subprocess.run):
+    try:
+        r = runner([str(py), "-c", code], capture_output=True, text=True, encoding="utf-8",
+                   errors="replace", timeout=180)
+    except (OSError, subprocess.SubprocessError) as e:
+        return False, repr(e)[:200]
+    return r.returncode == 0, ((r.stdout or "").strip() or (r.stderr or "")[-200:])
+
+
+def hermes_version(py, runner=subprocess.run):
+    ok, out = _hermes_python(py, "import importlib.metadata as m; print(m.version('hermes-agent'))", runner)
+    return out.splitlines()[-1] if ok and out else "unknown version"
+
+
+def hermes_loads_provider(py, runner=subprocess.run):
+    """Ask Hermes' OWN loader, in its own venv, whether it lists the inspeximus provider. A behaviour
+    check rather than a version check: a build either discovers the package or it does not."""
+    ok, out = _hermes_python(py, "from plugins.memory import list_memory_provider_names as f; "
+                                 "print('inspeximus' in f())", runner)
+    return ok and out.splitlines()[-1:] == ["True"]
+
+
+def _uv_for(py):
+    """uv on PATH, else the uv the official Hermes installer ships in <hermes home>/bin or /tools. A venv
+    that uv built has no pip, so without uv there is no way to install into it."""
+    import glob
+    found = shutil.which("uv")
+    if found:
+        return found
+    try:
+        home = pathlib.Path(py).resolve().parents[3]             # <home>/hermes-agent/venv/<bin>/python
+    except IndexError:
+        return None
+    exe = "uv.exe" if os.name == "nt" else "uv"
+    for pattern in (home / "bin" / exe, home / "tools" / exe, home / "tools" / "*" / exe,
+                    home / "tools" / "*" / "*" / exe):
+        hit = sorted(glob.glob(str(pattern)))
+        if hit:
+            return hit[0]
+    return None
+
+
 def install_into_hermes(py, runner=subprocess.run):
     """Install this version of inspeximus into Hermes' own venv. Hermes ships uv, and its interpreter can
     refuse `pip install` (PEP 668), so uv is tried first."""
     spec = f"inspeximus=={_version()}"
-    uv = shutil.which("uv")
+    uv = _uv_for(py)
     cmds = ([[uv, "pip", "install", "--python", str(py), spec]] if uv else []) + \
         [[str(py), "-m", "pip", "install", "-q", spec]]
     last = None
@@ -271,11 +354,22 @@ def install_into_hermes(py, runner=subprocess.run):
     return False, ((last.stderr or last.stdout or "")[-300:] if last else "no installer found")
 
 
+def uninstall_from_hermes(py, runner=subprocess.run):
+    """Undo install_into_hermes() when the build cannot load the provider, so "cannot load" leaves Hermes
+    as it was."""
+    uv = _uv_for(py)
+    for cmd in ([[uv, "pip", "uninstall", "--python", str(py), "inspeximus"]] if uv else []) + \
+            [[str(py), "-m", "pip", "uninstall", "-y", "-q", "inspeximus"]]:
+        if runner(cmd, capture_output=True, text=True).returncode == 0:
+            return True
+    return False
+
+
 # ── the first-run proof and the migration ────────────────────────────────────────────────────────────
 def record_first_run(store, wired):
     from ._surface import open_store
     m = open_store(str(store))
-    labels = ", ".join(_i.HOSTS[h]["label"] for h in wired) or "none"
+    labels = ", ".join("Hermes Agent" if h == "hermes" else _i.HOSTS[h]["label"] for h in wired) or "none"
     text = (f"DECISION: every AI agent on this machine shares one inspeximus memory: {labels}. "
             f"Installed with inspeximus {_version()} on {time.strftime('%Y-%m-%d')}; store {store}.")
     rid = m.remember_decision(text, because="inspeximus install --all wired these agents to one store",
@@ -313,15 +407,73 @@ def _ask(question, answer):
         return False
 
 
+#: Table order (3.14.1): the agents our first testers use first. Hermes Agent's rows come before these.
+HOST_ORDER = ("claude", "gemini", "codex", "antigravity", "cursor", "devin", "windsurf", "cline")
+
+
+def _hermes(path, change, dry_run, notes, wired):
+    """Hermes Agent's rows. ONLY "yes" touches Hermes (3.14.1): 3.14.0 installed into Hermes' venv and set
+    memory.provider on "no" whenever no provider was set, so "no" did not mean no."""
+    rows = []
+    for home, py, kind in hermes_installs():
+        label = f"Hermes Agent ({home})"
+        cfg = home / "config.yaml"
+        text = cfg.read_text(encoding="utf-8") if cfg.exists() else ""
+        current = hermes_provider(text)
+        if change != "yes":
+            rows.append((label, "yes", "skipped (no)", "-", "provider"))
+            notes.append("Hermes Agent: skipped (--hermes-provider no), nothing in Hermes was changed"
+                         + (f"; kept provider {current}" if current else "")
+                         + ". To use the shared memory in Hermes, run install --all again with --hermes-provider yes")
+            continue
+        if py is None:
+            rows.append((label, "yes", f"cannot load provider ({kind})", "-", "provider"))
+            notes.append(f"Hermes Agent ({kind}): its Python was not found, so nothing in it was changed. "
+                         f"Install Hermes with its official installer ({HERMES_INSTALL_DOCS}), then run "
+                         f"install --all again")
+            continue
+        if dry_run:
+            rows.append((label, "yes", "would install", str(path), "provider"))
+            continue
+        had_it = _hermes_python(py, "import inspeximus")[0]
+        ok, msg = install_into_hermes(py)
+        if not ok:
+            rows.append((label, "yes", "ERROR", "-", msg))
+            continue
+        if not hermes_loads_provider(py):
+            if not had_it:
+                uninstall_from_hermes(py)
+            ver = hermes_version(py)
+            rows.append((label, "yes", f"cannot load provider (hermes-agent {ver}, {kind})", "-", "provider"))
+            notes.append(f"Hermes Agent: hermes-agent {ver} ({kind}) does not load memory-provider packages, so "
+                         f"nothing in it was changed. Install Hermes with its official installer "
+                         f"({HERMES_INSTALL_DOCS}), then run install --all again")
+            continue
+        if current != "inspeximus":
+            if cfg.exists():
+                shutil.copy2(cfg, str(cfg) + ".bak")
+            cfg.parent.mkdir(parents=True, exist_ok=True)
+            cfg.write_text(hermes_set_provider(text), encoding="utf-8")
+        pc = home / "inspeximus" / "config.json"
+        pc.parent.mkdir(parents=True, exist_ok=True)
+        pc.write_text(json.dumps({"path": str(path)}, indent=2) + "\n", encoding="utf-8")
+        rows.append((label, "yes", "provider inspeximus", str(path), "provider"))
+        wired.append("hermes")
+    return rows
+
+
 def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", project=None, out=print):
-    hosts = list(_i.HOSTS)
+    hosts = [h for h in HOST_ORDER if h in _i.HOSTS] + [h for h in _i.HOSTS if h not in HOST_ORDER]
     found = {h: detect(h) for h in hosts}
     targets = [h for h in hosts if found[h][0]]
     path, err = choose_store(targets, store)
     if err:
         out("ERROR: " + err)
         return 2
-    rows, wired = [], []
+    rows, wired, notes = [], [], []
+    # NEVER A PROMPT HERE. An agent runs this installer, and a question it cannot see hangs the install in
+    # a pseudo-terminal. The agent asks the user first and passes the answer.
+    rows += _hermes(path, hermes_provider_change, dry_run, notes, wired)
     env = {"INSPEXIMUS_PATH": str(path), "INSPEXIMUS_SCOPE": None}
     for h in hosts:
         if not found[h][0]:
@@ -340,10 +492,9 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
             wired.append(h)
         rows.append((_i.HOSTS[h]["label"], "yes", state, str(path), RECALL_MECHANISM[h][0]))
 
-    notes = []
     # rules, only where the docs say nothing about server instructions; asked, never silent
     for h in wired:
-        if RECALL_MECHANISM[h][0] != "rules":
+        if RECALL_MECHANISM.get(h, ("provider",))[0] != "rules":         # Hermes recalls through its provider
             continue
         r = plan_rules(h, project)
         if r["action"] == "manual":
@@ -358,45 +509,13 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
                 notes.append(f"{_i.HOSTS[h]['label']}: no rule written. To add it, put this line in "
                              f"{r['path']}: {RULE_LINE}")
 
-    # Hermes Agent
-    for home, py in hermes_candidates():
-        label = f"Hermes Agent ({home})"
-        if dry_run:
-            rows.append((label, "yes", "would install", str(path), "provider"))
-            continue
-        ok, msg = install_into_hermes(py)
-        if not ok:
-            rows.append((label, "yes", "ERROR", "-", msg))
-            continue
-        cfg = home / "config.yaml"
-        text = cfg.read_text(encoding="utf-8") if cfg.exists() else ""
-        current = hermes_provider(text)
-        # NEVER A PROMPT HERE. An agent runs this installer, and a question it cannot see hangs the
-        # install in a pseudo-terminal. The agent asks the user first and passes the answer; without it,
-        # another provider stays exactly as it is.
-        if current in (None, "inspeximus") or hermes_provider_change == "yes":
-            if current != "inspeximus":
-                if cfg.exists():
-                    shutil.copy2(cfg, str(cfg) + ".bak")
-                cfg.parent.mkdir(parents=True, exist_ok=True)
-                cfg.write_text(hermes_set_provider(text), encoding="utf-8")
-            pc = home / "inspeximus" / "config.json"
-            pc.parent.mkdir(parents=True, exist_ok=True)
-            pc.write_text(json.dumps({"path": str(path)}, indent=2) + "\n", encoding="utf-8")
-            rows.append((label, "yes", "provider inspeximus", str(path), "provider"))
-            wired.append("hermes")
-        else:
-            rows.append((label, "yes", f"kept provider {current}", "-", "provider"))
-            notes.append(f"Hermes Agent: kept the memory provider {current!r}. To switch it to inspeximus, "
-                         f"run install --all again with --hermes-provider yes")
-
     migrated = source = None
     rid = None
     if not dry_run and wired:
         path.parent.mkdir(parents=True, exist_ok=True)
         write_shared_record(path)
         migrated, source = import_project_store(path, project)
-        rid = record_first_run(path, [h for h in wired if h in _i.HOSTS])
+        rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"])
 
     widths = [max(len(str(r[i])) for r in rows + [("host", "found", "wired", "store path", "recall")])
               for i in range(5)]

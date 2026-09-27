@@ -49,6 +49,16 @@ def sandbox(work, keep_uv=False):
         os.makedirs(d, exist_ok=True)
     with open(os.path.join(home, ".gemini", "settings.json"), "w", encoding="utf-8") as fh:
         fh.write("{}\n")
+    # EVERY HOST INSTALLED, AS THE INSTALLER DETECTS IT (3.14.1): a command on PATH. A config folder alone
+    # no longer counts, so without these stubs the page would wire nothing. They are never executed.
+    fakebin = os.path.join(work, "fakebin")
+    os.makedirs(fakebin, exist_ok=True)
+    for h in HOSTS:
+        stub = os.path.join(fakebin, h + (".cmd" if WIN else ""))
+        with open(stub, "w", encoding="utf-8") as fh:
+            fh.write("@exit /b 0\r\n" if WIN else "#!/bin/sh\nexit 0\n")
+        if not WIN:
+            os.chmod(stub, 0o755)
     subprocess.run(["git", "init", "-q", proj], check=True)
     env = {k: v for k, v in os.environ.items()
            if not k.upper().startswith(("INSPEXIMUS_", "CLAUDE", "PIP_", "UV_", "VIRTUAL_ENV", "PYTHON",
@@ -64,6 +74,7 @@ def sandbox(work, keep_uv=False):
     if not keep_uv:
         env["PATH"] = os.pathsep.join(d for d in env.get("PATH", "").split(os.pathsep)
                                       if d and not os.path.isfile(os.path.join(d, exe)))
+    env["PATH"] = fakebin + os.pathsep + env.get("PATH", "")
     return home, proj, env
 
 
@@ -175,6 +186,71 @@ class Server:
 def _texts(recall_result):
     hits = recall_result.get("result") if isinstance(recall_result, dict) else recall_result
     return " ".join(str(h.get("text", "")) for h in (hits or []) if isinstance(h, dict))
+
+
+def hermes_python(home, env):
+    """The official Hermes install inside the sandbox, or None: ~/.hermes on Linux and macOS,
+    %LOCALAPPDATA%\\hermes on Windows (the installers' defaults)."""
+    homes = [os.path.join(home, ".hermes")]
+    if env.get("LOCALAPPDATA"):
+        homes.append(os.path.join(env["LOCALAPPDATA"], "hermes"))
+    for hh in homes:
+        py = os.path.join(hh, "hermes-agent", "venv", "Scripts" if WIN else "bin",
+                          "python.exe" if WIN else "python")
+        if os.path.exists(py):
+            return hh, py
+    return None, None
+
+
+#: Runs INSIDE Hermes' venv, through Hermes' own provider loader: the path a Hermes session takes.
+HERMES_DRIVER = r'''
+import json, sys
+from plugins.memory import load_memory_provider
+home, action, arg = sys.argv[1], sys.argv[2], sys.argv[3]
+p = load_memory_provider("inspeximus", register_skills=False)
+p.initialize("one-memory-check", hermes_home=home)
+if action == "remember":
+    r = p.handle_tool_call("inspeximus_remember", {"text": arg})
+    print(json.dumps({"ok": True, "result": str(r)[:300]}))
+else:
+    print(json.dumps({"ok": True, "prefetch": p.prefetch(arg)}))
+'''
+
+
+def hermes(hh, py, env, action, arg):
+    root = os.path.join(hh, "hermes-agent")
+    e = dict(env, PYTHONPATH=root, PYTHONIOENCODING="utf-8")
+    r = subprocess.run([py, "-X", "utf8", "-c", HERMES_DRIVER, hh, action, arg], cwd=root, env=e,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300)
+    line = [ln for ln in (r.stdout or "").splitlines() if ln.startswith("{")]
+    if r.returncode != 0 or not line:
+        raise RuntimeError("hermes driver: " + (r.stderr or "")[-600:])
+    return json.loads(line[-1])
+
+
+def hermes_criterion(home, env, entries, launch_cwd):
+    """C6: a decision made in Hermes is recalled in Claude Code and Gemini CLI, and the reverse."""
+    hh, py = hermes_python(home, env)
+    if not py:
+        return {"PASS": False, "why": "no official Hermes install in the sandbox"}
+    out = {"hermes_home": hh}
+    tok_h = "tok-hermes-" + uuid.uuid4().hex[:8]
+    log("C6: a decision written in Hermes, through its provider loader")
+    out["hermes_write"] = hermes(hh, py, env, "remember", f"Decision made in Hermes: release freeze token {tok_h}")
+    seen = {}
+    for g in ("claude", "gemini"):
+        s = Server(g, entries[g], env, launch_cwd[g])
+        try:
+            seen[f"hermes->{g}"] = tok_h in _texts(s.tool("recall", query=tok_h, k=3))
+            tok = f"tok-{g}-to-hermes-" + uuid.uuid4().hex[:8]
+            s.tool("remember_decision", decision=f"Decision made in {g}: release freeze token {tok}",
+                   because="cross-agent check with Hermes", topic=f"hermes-x-{g}")
+        finally:
+            s.close()
+        seen[f"{g}->hermes"] = tok in hermes(hh, py, env, "prefetch", tok).get("prefetch", "")
+    out["recalled"] = seen
+    out["PASS"] = all(seen.values()) and len(seen) == 4
+    return out
 
 
 def criteria(home, proj, env, launch_cwd):

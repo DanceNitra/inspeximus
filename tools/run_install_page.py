@@ -43,6 +43,24 @@ def page_block(kind, answer):
     return block
 
 
+#: The official Hermes installers, run the way their documentation shows, non-interactively.
+HERMES_POSIX = ("curl -fsSL https://hermes-agent.nousresearch.com/install.sh | "
+                "bash -s -- --non-interactive --skip-browser")
+HERMES_WINDOWS = ("& ([scriptblock]::Create((Invoke-RestMethod https://hermes-agent.nousresearch.com/install.ps1)))"
+                  " -NonInteractive -SkipBrowser")
+
+
+def install_hermes(env, cwd):
+    win = os.name == "nt"
+    cmd = (["pwsh", "-NoProfile", "-NonInteractive", "-Command", HERMES_WINDOWS] if win
+           else ["bash", "-c", HERMES_POSIX])
+    om.log("installing Hermes Agent with its official installer")
+    r = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    print("hermes installer exit", r.returncode, (r.stdout or "")[-1500:], (r.stderr or "")[-1500:])
+    if r.returncode != 0:
+        raise SystemExit("the official Hermes installer failed")
+
+
 def main():
     work = os.path.abspath(sys.argv[1])
     args = sys.argv[2:]
@@ -51,8 +69,11 @@ def main():
     home, proj, env = om.sandbox(work, keep_uv=keep_uv)
     if "--find-links" in args:
         env["PIP_FIND_LINKS"] = os.path.abspath(args[args.index("--find-links") + 1])
-        if keep_uv:                                          # uvx resolves the pinned version there too
-            env["UV_FIND_LINKS"] = env["PIP_FIND_LINKS"]
+        # uvx resolves the pinned version there too, and so does the uv that installs into Hermes' venv
+        env["UV_FIND_LINKS"] = env["PIP_FIND_LINKS"]
+    with_hermes = "--with-hermes" in args
+    if with_hermes:
+        install_hermes(env, proj)
     if "--constraint" in args:
         c = os.path.join(work, "constraints.txt")
         open(c, "w").write(args[args.index("--constraint") + 1] + "\n")
@@ -76,10 +97,14 @@ def main():
     else:
         try:
             res = om.criteria(home, proj, env, launch_cwd)
+            if with_hermes:
+                entries = {h: om.entry_for(h, home, env) for h in om.HOSTS}
+                res["C6"] = om.hermes_criterion(home, env, entries, launch_cwd)
         except Exception as ex:                              # noqa: BLE001
             res = {"crash": repr(ex)[:500]}
     if answer == "yes":
-        verdict = r.returncode == 0 and all(res.get(c, {}).get("PASS") for c in ("C1", "C2", "C3", "C4", "C5"))
+        need = ("C1", "C2", "C3", "C4", "C5") + (("C6",) if with_hermes else ())
+        verdict = r.returncode == 0 and all(res.get(c, {}).get("PASS") for c in need)
     else:
         # CONSENT: "no" must write no rules file anywhere, and the hosts that read server instructions
         # must still be told to recall. C1 fails here by design, because it requires the rules files.

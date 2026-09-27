@@ -1,3 +1,37 @@
+## 3.14.1 - UPGRADE IF you use Hermes Agent, or ran `install --all` on 3.14.0: "no" now leaves Hermes untouched, a Hermes that cannot load the provider is reported instead of wired, and only agents that are installed get a configuration.
+
+Found while preparing our own machine for `install --all` on 3.14.0, before running it.
+
+- **`--hermes-provider no` changes nothing in Hermes.** On 3.14.0, when Hermes had no memory provider,
+  `--all` installed inspeximus into Hermes' venv and set `memory.provider: inspeximus` even with `no`.
+  Now only `yes` touches Hermes, and the table says `skipped (no)`.
+- **A Hermes that cannot load the provider is never reported as wired.** `pip install hermes-agent` gives
+  0.19.0 from PyPI, whose provider loader has no entry-point discovery, so it never lists inspeximus;
+  the official installer's build (0.21.3, measured 2026-09-27) does. After installing into Hermes' venv,
+  `--all` asks Hermes' own loader whether it lists inspeximus. If not, it removes what it installed,
+  changes nothing else, and the table says `cannot load provider (hermes-agent <version>, <install
+  type>)` with the fix: install Hermes with its official installer. A `hermes` command on the PATH
+  outside the official layout is found and named as a pip install. The uv that the official installer
+  ships is used when no uv is on the PATH, because a venv uv built has no pip.
+- **Only installed agents are wired.** 3.14.0 counted a configuration folder as an install, so
+  `~/.gemini/config` wired Antigravity for a Gemini CLI user and a leftover `~/.codeium/windsurf` wired
+  an uninstalled Windsurf. An agent now counts when its command is on the PATH or its app is in the
+  usual install location: the per-user Windows install folder, the macOS app bundle, the Microsoft
+  Store package (the Codex app), or the VS Code extension folder (Cline).
+- **Hermes Agent leads.** The install page and the table list Hermes first, then Claude Code, Gemini
+  CLI, Codex, Antigravity, Cursor, Devin and Windsurf, and Cline. Question 2 on the page covers both
+  cases: a Hermes with another provider and a Hermes with none. The setup decision names Hermes too.
+- **CI installs a real Hermes.** One case of the one-memory workflow runs Hermes' official installer in
+  the sandbox before the page, and adds C6: a decision made in Hermes, through Hermes' own provider
+  loader, is recalled in Claude Code and Gemini CLI, and a decision made in each of them is recalled in
+  Hermes.
+- **Tests do not rewrite tracked files.** A probe run by the test suite writes tracked files into a
+  shadow directory (tests/probe_shadow). It caused a CI failure when a probe on one worker rewrote a
+  result file while another test read `git status`.
+
+tests/test_install_all_wires_every_agent_to_one_store.py pins each change; the Hermes and detection tests
+fail on 3.14.0.
+
 ## 3.14.0 - UPGRADE IF you use more than one AI agent: `inspeximus install --all` connects Claude Code, Codex CLI, Gemini CLI, Antigravity, Cursor, Windsurf (Devin Desktop), Devin CLI, Cline and Hermes Agent to ONE memory. BEHAVIOUR CHANGES: after `--all`, the Claude Code hooks read the shared store too, and the update notice is shown on every start, not only the first of the day.
 
 Measured on 3.13.0 in a clean sandbox, one `install --ide` per host: the Claude Code entry resolved to
