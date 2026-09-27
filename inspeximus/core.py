@@ -59,10 +59,25 @@ import time
 import uuid
 from pathlib import Path
 
-try:                                  # OPTIONAL: numpy only ACCELERATES semantic recall at scale.
-    import numpy as _np               # inspeximus still runs (pure-Python cosine) with no numpy installed.
-except Exception:
-    _np = None
+# OPTIONAL: numpy only ACCELERATES semantic recall at scale; inspeximus still runs (pure-Python cosine)
+# with no numpy installed. LOADED ON FIRST USE through `_numpy()`, not at import: every Claude Code hook
+# event is a new process that imports this module, and an eager numpy was about 0.17 s of a 0.32 s
+# package import on a hook that never touches a vector (AUDIT-B B-10). Setting `_np = None` before the
+# first use still forces the pure-Python path.
+_NP_UNLOADED = object()
+_np = _NP_UNLOADED
+
+
+def _numpy():
+    """numpy, imported the first time a vector path asks for it; None when it is absent or broken."""
+    global _np
+    if _np is _NP_UNLOADED:
+        try:
+            import numpy
+            _np = numpy
+        except Exception:
+            _np = None
+    return _np
 
 try:                                  # OPTIONAL: only needed to SIGN write receipts (see receipts=...).
     from cryptography.hazmat.primitives.asymmetric.ed25519 import (
@@ -13039,7 +13054,7 @@ class Inspeximus:
         """Cached L2-normalized matrix (numpy) of every memory that carries a vec — so a semantic
         recall is ONE matmul, not an O(N·d) pure-Python cosine loop. Rebuilt only when the item count
         changes (remember / bulk load); status changes (consolidate) don't touch the vectors."""
-        if _np is None:
+        if _numpy() is None:
             return None
         if self._mat is None or self._mat_built_n != len(self.items):
             rows, ids = [], []
@@ -13599,7 +13614,7 @@ class Inspeximus:
         qtok = _tokens(query)                                 # tokenize the query once (lexical + fallback)
         # Vectorized semantic fast-path: one matmul gives the cosine to every vec-bearing memory.
         sims_vec = None
-        if qvec is not None and _np is not None:
+        if qvec is not None and _numpy() is not None:
             M = self._vec_matrix()
             if M is not None:
                 qv = _np.asarray(qvec, dtype=_np.float32)

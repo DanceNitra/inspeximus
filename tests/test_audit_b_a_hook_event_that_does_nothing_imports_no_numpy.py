@@ -32,8 +32,6 @@ def _env(tmp_path, marker):
     return env
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-10: core imports numpy at module load, so every hook process pays for it")
 def test_a_pre_tool_use_event_that_matches_nothing_does_not_import_numpy(tmp_path):
     marker = tmp_path / "numpy-was-imported"
     env = _env(tmp_path, marker)

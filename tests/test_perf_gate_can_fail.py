@@ -302,3 +302,30 @@ def test_it_fails_when_a_full_row_save_goes_quadratic(monkeypatch):
     now = {"rows": {"counters": bad, "seconds_median": 0.1}}
     fail, _ = gate.compare(base, now)
     assert any("row_id_comparisons" in f for f in fail), f"the comparisons grew and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_the_hook_imports_numpy_again(tmp_path):
+    """AUDIT-B B-10. core.py imported numpy at module load, so every hook event paid about 0.17 s for an
+    optional accelerator it never used. Reintroduced in a copy of the package whose core imports numpy
+    eagerly again, run as the real hook process, and measured through the counter the gate reads."""
+    import shutil
+    run = gate.w_hook_import()
+    run()
+    good = run.inner
+    assert good == {"hook_imports_numpy": 0}, ("fixture error: the hook already imports numpy", good)
+
+    pkg = tmp_path / "pkg"
+    shutil.copytree(os.path.join(ROOT, "inspeximus"), pkg / "inspeximus",
+                    ignore=shutil.ignore_patterns("__pycache__"))
+    core_py = pkg / "inspeximus" / "core.py"
+    src = core_py.read_text(encoding="utf-8")
+    assert src.count("_np = _NP_UNLOADED\n") == 1, "fixture error: the lazy numpy line moved"
+    core_py.write_text(src.replace("_np = _NP_UNLOADED\n", "import numpy as _np\n"), encoding="utf-8")
+    run = gate.w_hook_import(root=pkg)
+    run()
+    bad = run.inner
+    assert bad == {"hook_imports_numpy": 1}, f"the eager import did not move the counter: {bad}"
+
+    fail, _ = gate.compare({"h": {"counters": good, "seconds_median": 0.1}},
+                           {"h": {"counters": bad, "seconds_median": 0.1}})
+    assert any("hook_imports_numpy" in f for f in fail), f"numpy came back and the gate stayed green: {fail}"

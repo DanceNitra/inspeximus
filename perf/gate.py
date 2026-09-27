@@ -371,6 +371,40 @@ def w_row_rewrite(n):
     return run
 
 
+def w_hook_import(root=None):
+    """A PreToolUse event for `ls`, run as the real hook process. `hook_imports_numpy` is 1 when that
+    process imported numpy. numpy only accelerates semantic recall, and an eager import was about
+    0.17 s of every hook event (AUDIT-B B-10). A stand-in numpy first on PYTHONPATH records its own
+    import, so the counter reads the same with or without numpy installed; if the stand-in is not
+    importable the workload raises instead of reporting a zero it did not measure."""
+    import json as _json
+    import subprocess
+    d = tempfile.mkdtemp()
+    fake = os.path.join(d, "fake")
+    os.makedirs(os.path.join(fake, "numpy"))
+    with open(os.path.join(fake, "numpy", "__init__.py"), "w", encoding="utf-8") as fh:
+        fh.write("import os\nopen(os.environ['NUMPY_MARKER'], 'w').write('imported')\n")
+    marker = os.path.join(d, "numpy-was-imported")
+    proj = os.path.join(d, "proj")
+    os.makedirs(os.path.join(proj, ".git"))
+    env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
+    env.update(PYTHONPATH=os.pathsep.join([fake, str(root or ROOT)]), NUMPY_MARKER=marker,
+               HOME=d, USERPROFILE=d, INSPEXIMUS_NO_UPDATE_CHECK="1")
+    subprocess.run([sys.executable, "-c", "import numpy"], env=env, cwd=proj, check=True)
+    if not os.path.exists(marker):
+        raise RuntimeError("the stand-in numpy is not importable; hook_imports_numpy would measure nothing")
+    ev = {"hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": {"command": "ls"},
+          "cwd": proj.replace("\\", "/"), "session_id": "gate"}
+
+    def run():
+        if os.path.exists(marker):
+            os.remove(marker)
+        subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=_json.dumps(ev).encode(),
+                       env=env, cwd=proj, capture_output=True)
+        run.inner = {"hook_imports_numpy": int(os.path.exists(marker))}
+    return run
+
+
 WORKLOADS = {
     "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush"),
     "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records"),
@@ -380,6 +414,7 @@ WORKLOADS = {
     "reports_k300":       (lambda: w_reports(300),       "supersession_report + 5 suppressing recalls over 300 keys"),
     "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them"),
+    "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy"),
 }
 
 

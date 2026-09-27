@@ -12,9 +12,9 @@
    "type_inferences": 1000,
    "current_active_scans": 0
   },
-  "seconds_median": 8.4347,
-  "seconds_min": 7.9867,
-  "seconds_max": 8.561
+  "seconds_median": 8.4387,
+  "seconds_min": 7.6681,
+  "seconds_max": 10.6709
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -29,9 +29,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 1.2481,
-  "seconds_min": 1.1375,
-  "seconds_max": 1.8998
+  "seconds_median": 1.8818,
+  "seconds_min": 1.1347,
+  "seconds_max": 1.9924
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -46,9 +46,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 0.1935,
-  "seconds_min": 0.1626,
-  "seconds_max": 0.2237
+  "seconds_median": 0.1637,
+  "seconds_min": 0.154,
+  "seconds_max": 0.1922
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -63,9 +63,9 @@
    "type_inferences": 500,
    "current_active_scans": 0
   },
-  "seconds_median": 14.6982,
-  "seconds_min": 14.4099,
-  "seconds_max": 16.0957
+  "seconds_median": 13.1165,
+  "seconds_min": 12.4321,
+  "seconds_max": 13.2436
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
@@ -80,9 +80,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 0.1593,
-  "seconds_min": 0.1567,
-  "seconds_max": 0.2505
+  "seconds_median": 0.1728,
+  "seconds_min": 0.1601,
+  "seconds_max": 0.2478
  },
  "reports_k300": {
   "desc": "supersession_report + 5 suppressing recalls over 300 keys",
@@ -97,9 +97,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 0.1707,
-  "seconds_min": 0.148,
-  "seconds_max": 0.2372
+  "seconds_median": 0.2127,
+  "seconds_min": 0.1592,
+  "seconds_max": 0.2328
  },
  "prompt_n2000": {
   "desc": "fresh handle opens a 2,000-record store and recalls once",
@@ -114,9 +114,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 0.1249,
-  "seconds_min": 0.1132,
-  "seconds_max": 0.1273
+  "seconds_median": 0.094,
+  "seconds_min": 0.0919,
+  "seconds_max": 0.1158
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",
@@ -132,8 +132,17 @@
    "current_active_scans": 0,
    "row_id_comparisons": 0
   },
-  "seconds_median": 0.0868,
-  "seconds_min": 0.0851,
-  "seconds_max": 0.1441
+  "seconds_median": 0.087,
+  "seconds_min": 0.0867,
+  "seconds_max": 0.0876
+ },
+ "hook_import": {
+  "desc": "the hook process for a PreToolUse `ls`: does it import numpy",
+  "counters": {
+   "hook_imports_numpy": 0
+  },
+  "seconds_median": 0.3765,
+  "seconds_min": 0.3708,
+  "seconds_max": 0.4186
  }
 }
