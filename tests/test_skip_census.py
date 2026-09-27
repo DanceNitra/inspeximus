@@ -103,7 +103,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: 3.15.2: +3, test_an_unpersisted_mcp_write_is_an_error.py (audit A-22: an unpersisted MCP write is an
 #: error the client sees). It imports inspeximus.mcp_server, which needs the SDK, and runs in the
 #: `integrations` job. Exactly +3, no slack: 257 + 3 = 260.
-MAX_HIDDEN_IN_BASE_ENV = 260
+
+#: +3 on 2026-09-27 for test_the_mcp_server_exposes_recommit.py: the `recommit` tool through a real MCP
+#: client session, the server's project scope, and the server's reload-and-retry wrap. The same rule
+#: without the SDK is test_recommit_from_the_shell_needs_named_ids_or_all.py, which the base job runs.
+#: Exactly +3, no slack: 260 + 3 = 263.
+MAX_HIDDEN_IN_BASE_ENV = 263
 
 
 def _base_env_census():

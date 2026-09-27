@@ -629,7 +629,20 @@ def main(argv=None):
     rt.add_argument("--source", default=None, help="who or what ended it (recorded as {\"doc\": ...})")
     rt.add_argument("--json", action="store_true")
 
-    br = sub.add_parser("browse", help="render a self-contained offline HTML memory browser")
+    rcm = sub.add_parser(
+        "recommit", help="bind UNSCOPED records with a fresh receipt over their CURRENT value, context and "
+                         "partition; only for records checked against a copy you trust",
+        description="The remedy verify_writes() names for UNSCOPED records. It binds each record's state AS "
+                    "IT IS NOW and does not validate the past: a record edited out of band is committed as "
+                    "edited and verifies clean afterwards. Run it only on records you have checked against "
+                    "a copy you trust. Name the ids, or pass --all for every active record; with neither, "
+                    "nothing is written. On a signed store, pass its key with --receipt-key-file.")
+    rcm.add_argument("ids", nargs="*", help="the record ids the UNSCOPED line lists")
+    rcm.add_argument("--all", action="store_true",
+                     help="every active record instead of named ids (only for a store checked in full)")
+    rcm.add_argument("--json", action="store_true")
+
+    br = sub.add_parser("browse",help="render a self-contained offline HTML memory browser")
     br.add_argument("--out", default="inspeximus_browser.html", help="output HTML file")
     br.add_argument("--open", action="store_true", help="open it in the default browser after writing")
 
@@ -1604,6 +1617,26 @@ def main(argv=None):
         else:
             print(f"retired {res['retired']} value(s) of {res['key']!r}: {res['reason']}")
         return 0
+
+    if a.cmd == "recommit":
+        # NOT in the forced-receipts list above: a store with no chain has nothing UNSCOPED, and starting
+        # a chain here would be a backfill by another name (`receipts enable --backfill` is that command).
+        # The rule itself is the MCP tool's, from one place: named ids or --all, and nothing written
+        # when this handle cannot sign the way the chain is signed.
+        from ._surface import recommit_named
+        res = recommit_named(m, ids=a.ids, all_records=a.all)
+        if a.json:
+            print(json.dumps(res, ensure_ascii=False, indent=2))
+        else:
+            print(f"recommitted {len(res['recommitted'])} record(s), skipped {len(res['skipped'])} "
+                  f"already bound")
+            for rid in res["recommitted"][:10]:
+                print("  +", rid)
+            if len(res["recommitted"]) > 10:
+                print(f"  ... +{len(res['recommitted']) - 10} more (--json lists every id)")
+            for pr in res["problems"]:
+                print("  !", pr)
+        return 1 if res["problems"] else 0
 
     if a.cmd == "receipts":
         # The store above was opened with receipts on (forced list), so an existing chain is adopted

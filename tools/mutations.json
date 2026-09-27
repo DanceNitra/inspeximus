@@ -6868,5 +6868,141 @@
   "tests": [
    "tests/test_a_record_replayed_into_another_scope_fails_verification.py"
   ]
+ },
+ {
+  "name": "a surface recommit with no ids and no all sweeps the store",
+  "file": "inspeximus/_surface.py",
+  "old": "    if not named and not all_records:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "a surface recommit given ids and all at once goes ahead",
+  "file": "inspeximus/_surface.py",
+  "old": "    if named and all_records:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "a surface recommit on a store without receipts adds a line per named id",
+  "file": "inspeximus/_surface.py",
+  "old": "        return store.recommit(ids=[])          # the library's own",
+  "new": "        pass          # the library's own",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "a surface recommit appends unsigned receipts to a signed chain",
+  "file": "inspeximus/_surface.py",
+  "old": "    if n_signed and not signs:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "a surface recommit appends signed receipts to an unsigned chain",
+  "file": "inspeximus/_surface.py",
+  "old": "    if chain and not n_signed and signs:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "a surface recommit with all recommits nothing",
+  "file": "inspeximus/_surface.py",
+  "old": "    target = None if all_records else named\n",
+  "new": "    target = named\n",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "a surface recommit ignores the project scope",
+  "file": "inspeximus/_surface.py",
+  "old": "    if project:\n        seen =",
+  "new": "    if False:\n        seen =",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py",
+   "tests/test_the_mcp_server_exposes_recommit.py"
+  ]
+ },
+ {
+  "name": "a project-scoped recommit leaves out the unscoped records",
+  "file": "inspeximus/_surface.py",
+  "old": "if (r.get(\"meta\") or {}).get(\"project\") in (None, str(project))}",
+  "new": "if (r.get(\"meta\") or {}).get(\"project\") == str(project)}",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "a named id that matched no active record is dropped silently",
+  "file": "inspeximus/_surface.py",
+  "old": "    if missing:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "the MCP server registers no recommit tool",
+  "file": "inspeximus/mcp_server.py",
+  "old": "@mcp.tool()\ndef recommit(",
+  "new": "def recommit(",
+  "tests": [
+   "tests/test_the_mcp_server_exposes_recommit.py"
+  ]
+ },
+ {
+  "name": "the MCP recommit tool drops all",
+  "file": "inspeximus/mcp_server.py",
+  "old": "recommit_named(_MEM, ids=ids, all_records=all,",
+  "new": "recommit_named(_MEM, ids=ids, all_records=False,",
+  "tests": [
+   "tests/test_the_mcp_server_exposes_recommit.py"
+  ]
+ },
+ {
+  "name": "the MCP recommit tool drops the server's project",
+  "file": "inspeximus/mcp_server.py",
+  "old": "all_records=all, project=_PROJECT)",
+  "new": "all_records=all, project=None)",
+  "tests": [
+   "tests/test_the_mcp_server_exposes_recommit.py"
+  ]
+ },
+ {
+  "name": "the MCP server does not reload and retry a refused recommit",
+  "file": "inspeximus/mcp_server.py",
+  "old": "\"resolve_reopened\", \"sleep\", \"recommit\")):",
+  "new": "\"resolve_reopened\", \"sleep\")):",
+  "tests": [
+   "tests/test_the_mcp_server_exposes_recommit.py"
+  ]
+ },
+ {
+  "name": "the CLI recommit drops --all",
+  "file": "inspeximus/cli.py",
+  "old": "recommit_named(m, ids=a.ids, all_records=a.all)",
+  "new": "recommit_named(m, ids=a.ids, all_records=False)",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
+ },
+ {
+  "name": "the CLI recommit exits 0 when it wrote nothing",
+  "file": "inspeximus/cli.py",
+  "old": "        return 1 if res[\"problems\"] else 0\n",
+  "new": "        return 0\n",
+  "tests": [
+   "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
+  ]
  }
 ]

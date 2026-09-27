@@ -75,7 +75,7 @@ from pathlib import Path
 # died with "'mcp' is not a package". The module is also named mcp_server.py rather than mcp.py so
 # it cannot collide with the SDK even if something else puts this directory on the path.
 from inspeximus import Inspeximus  # noqa: E402
-from inspeximus._surface import StoreLocationError, open_store, resolve_path  # noqa: E402   one surface posture; see _surface.py
+from inspeximus._surface import StoreLocationError, open_store, recommit_named, resolve_path  # noqa: E402   one surface posture; see _surface.py
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -428,7 +428,7 @@ except StoreLocationError as _refused:
 def _recover_from_concurrent_writes(store, methods=(
         "remember", "remember_decision", "forget", "forget_subject", "forget_pii", "revert",
         "consolidate", "consolidate_clusters", "apply_retention", "observe", "credit", "grant",
-        "revoke", "deprecate_symbol", "set_index_line", "resolve_reopened", "sleep")):
+        "revoke", "deprecate_symbol", "set_index_line", "resolve_reopened", "sleep", "recommit")):
     """Let a write reload once and retry after another process wrote first.
 
     THE GUARD IS CORRECT AND THE CLIENT COULD NOT GET PAST IT. `StoreChangedOnDisk` says "Call
@@ -1615,6 +1615,29 @@ def verify_writes(expected_pubkey: str = "") -> dict:
     if limits:
         out["limits"] = limits
     return out
+
+
+@mcp.tool()
+def recommit(ids: list[str] | None = None, all: bool = False) -> dict:
+    """The remedy `verify_writes` names for UNSCOPED records: append a fresh write receipt that binds
+    each named record's CURRENT value, context and partition.
+
+    IT BINDS THE STATE AS IT IS NOW. It does not validate the past: a record edited out of band before
+    this call is committed as edited, and verifies clean afterwards. Run it ONLY on records you have
+    checked against a copy you trust (a backup, an export, the source they were written from).
+
+    `ids`: the records to recommit, as the UNSCOPED line lists them. `all=True` recommits every active
+    record this server reads instead, and is only for a store checked in full. Pass one of the two:
+    neither, or both, is refused and writes nothing. There is no whole-store default.
+
+    A record whose latest receipt already binds all three is `skipped`, and a named id that matched no
+    active record is named in `problems`. With a project scope, only that project's records and the
+    unscoped ones are recommitted. Also refused, writing nothing, when this server cannot sign the way
+    the chain is signed (a signed chain and no receipt key here, or the reverse): the new receipts
+    would leave a chain signed in places, and verify_writes reports that. Needs receipts on.
+
+    Returns {recommitted, skipped, problems}."""
+    return recommit_named(_MEM, ids=ids, all_records=all, project=_PROJECT)
 
 
 @mcp.tool()

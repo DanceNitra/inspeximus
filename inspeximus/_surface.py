@@ -386,3 +386,65 @@ def open_store(path=None, *, receipts: bool = False, persist_vectors: bool = Fal
     store = Inspeximus(path=p, embed=embed, persist_vectors=persist_vectors, receipts=receipts, **kwargs)
     store.echo_guard = echo_guard_default()
     return store
+
+
+def recommit_named(store, ids=None, all_records: bool = False, project=None) -> dict:
+    """`Inspeximus.recommit()` for a SURFACE: the records are named, or the caller says all of them.
+
+    The library method sweeps every active record when `ids` is None. A recommit binds each record's
+    state AS IT IS NOW, so a record edited out of band verifies clean afterwards. A sweep that happens
+    because an argument was left out would do that to the whole store. So the MCP tool and the CLI pass
+    `ids` or `all_records=True`, and neither or both is refused with nothing written.
+
+    `project` is the surface's own scope. With one, only the records that scope reads (its own and the
+    unscoped ones) are recommitted, and a named id outside it is reported rather than written.
+
+    Also refused, with nothing written, when this handle cannot sign the way the chain is signed. An
+    unsigned receipt on a signed chain, or a signed one on an unsigned chain, leaves the chain signed in
+    places, and verify_writes() reports that. The chain is append-only, so those receipts could not be
+    taken back.
+
+    Returns {recommitted, skipped, problems}. A named id that matched no active record is named in
+    `problems` rather than dropped."""
+    named = list(dict.fromkeys(str(i).strip() for i in (ids or ()) if str(i).strip()))
+    nothing = {"recommitted": [], "skipped": []}
+    if named and all_records:
+        return {**nothing, "problems": ["pass ids or all, not both; nothing was recommitted"]}
+    if not named and not all_records:
+        return {**nothing, "problems": [
+            "name the records to recommit: the ids the UNSCOPED line of verify_writes() or "
+            "context_unbound() lists, each checked against a copy you trust, or all for every active "
+            "record; nothing was recommitted"]}
+    if not getattr(store, "receipts_enabled", False):
+        return store.recommit(ids=[])          # the library's own "receipts are disabled" answer
+    from inspeximus.core import _HAVE_ED
+    chain = list(getattr(store, "_receipts", None) or ()) + list(getattr(store, "_tombstones", None) or ())
+    n_signed = sum(1 for r in chain if r.get("sig"))
+    signs = (getattr(store, "_receipt_signer", None) is not None
+             or bool(getattr(store, "_receipt_sk", None) and _HAVE_ED))
+    if n_signed and not signs:
+        return {**nothing, "problems": [
+            f"this store's chain is signed ({n_signed} of {len(chain)} entries) and this handle holds no "
+            f"receipt key, so every recommit receipt would be UNSIGNED and verify_writes() would report a "
+            f"chain signed in places; open the store with its key (INSPEXIMUS_RECEIPT_KEY_FILE, or "
+            f"--receipt-key-file in the CLI). Nothing was recommitted."]}
+    if chain and not n_signed and signs:
+        return {**nothing, "problems": [
+            f"this store's chain is unsigned ({len(chain)} entries) and this handle signs, so every "
+            f"recommit receipt would be SIGNED and verify_writes() would report a chain signed in places; "
+            f"open the store without a receipt key. Nothing was recommitted."]}
+    target = None if all_records else named
+    if project:
+        seen = {r["id"] for r in store.items
+                if (r.get("meta") or {}).get("project") in (None, str(project))}
+        target = sorted(seen) if all_records else [i for i in named if i in seen]
+    res = store.recommit(ids=target)
+    covered = set(res["recommitted"]) | set(res["skipped"])
+    missing = [i for i in named if i not in covered]
+    if missing:
+        where = f" in project {project!r}" if project else ""
+        res["problems"].append(
+            f"{len(missing)} named id(s) are not an active record{where} of this store, so nothing was "
+            f"written for them: {', '.join(missing[:5])}"
+            + (f", +{len(missing) - 5} more" if len(missing) > 5 else ""))
+    return res

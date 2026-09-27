@@ -21,17 +21,31 @@ with receipts on and signed:
   the opt-out. `governance_report()["proof"]["verified"]` and the MCP `verify_writes` tool follow.
 - **`recommit()` binds the partition.** It skips a record only when the latest receipt commits the
   value, the context and the partition.
+- **`recommit` on the MCP server and in the CLI.** The UNSCOPED line named a remedy that existed in
+  Python only. On a copy of our own MCP store, 4,035 records would be reported UNSCOPED, and neither
+  surface could act on one of them. The MCP tool `recommit(ids=[...])` and `inspeximus recommit ID
+  [ID ...]` take the ids the line lists. `all=True` or `--all` takes every active record instead.
+  Neither, or both, is refused and writes nothing: `Inspeximus.recommit()` sweeps the store when
+  `ids` is None, and the surfaces do not inherit that default. Both return `{recommitted, skipped,
+  problems}`, and a named id that matched no active record is named in `problems`. Both also refuse,
+  writing nothing, when the handle cannot sign the way the chain is signed, because the new receipts
+  would leave the chain signed in places. On a project-scoped MCP server, the tool recommits only
+  that project's records and the unscoped ones. The rule is in one place, `_surface.recommit_named`.
+  The MCP server has 134 tools.
 
 Known limit: a partition tag removed from a record whose receipts predate this release is not
 reported. The record leaves its partition's reads and enters no other partition's.
 
 To upgrade a store: check the records `context_unbound()` names against a copy you trust, then call
-`recommit(ids=[...])`. To accept the gap instead, pass `context_strict=False`. `recommit()` is
-available in Python only; the MCP server and the CLI do not expose it.
+`recommit(ids=[...])` from Python or over MCP, or run `inspeximus recommit ID [ID ...]`. On a signed
+store, the CLI needs the key: `--receipt-key-file`. To accept the gap instead, pass
+`context_strict=False`.
 
 `tests/test_a_record_replayed_into_another_scope_fails_verification.py` fails on 3.14.3 (7 of 9; the
 other 2 are controls). Each of the 8 new mutations in `tools/mutations.json` fails a test, and so do
-the 3 that were updated.
+the 3 that were updated. The surfaces are covered by
+`tests/test_recommit_from_the_shell_needs_named_ids_or_all.py` and
+`tests/test_the_mcp_server_exposes_recommit.py`, and each of their 15 mutations fails a test.
 
 ## 3.15.9 - UPGRADE IF you use the Claude Code hooks with a long memory index: the SessionStart receipt names at most 20 pointers instead of all of them
 
