@@ -60,8 +60,11 @@ Without both answers, run nothing that changes the computer: ask, and wait. If y
 Then run the commands for your operating system. Replace `RULES_ANSWER` with `yes` or `no` from the answer
 to question 1, and `HERMES_ANSWER` with `yes` or `no` from the answer to question 2. Change nothing else.
 If a placeholder is left in, the installer stops with an error and changes nothing. The installer never
-asks a question of its own. When you finish, show the user the table the installer printed and tell them
-to restart each app it lists as wired.
+asks a question of its own. When you finish, end your reply with the block the installer printed last,
+from the line that starts with `inspeximus` and contains `ARMED` through the `seal:` line. Copy it exactly,
+in a code block, without summarizing or reformatting it. If your chat shows Markdown images, put the seal
+above the block: `![inspeximus seal](https://dancenitra.github.io/inspeximus/docs/brand/inspeximus-seal-512.png)`.
+Then tell the user to restart each app on the block's `restart:` line.
 
 If you are Hermes Agent, the installer changes your own memory provider. This session keeps working as it
 is; the shared memory takes effect after the user restarts Hermes.
@@ -93,7 +96,9 @@ python -m venv "$HOME\.inspeximus\venv"
 If `python -m venv` fails on Windows with "The system cannot find the file specified", `python` is the
 Microsoft Store alias; run the first command as `py -3 -m venv "$HOME\.inspeximus\venv"` instead. If your
 terminal on Windows is bash (Git Bash, as in Hermes Agent), run the Linux commands with `Scripts` in place
-of `bin`, and `py -3 -m venv` in place of `python3 -m venv`.
+of `bin`, and `py -3 -m venv` in place of `python3 -m venv`. In bash, write the home folder as `~` or
+`$HOME`, never `%HOME%`: bash leaves `%HOME%` as it is, the virtual environment lands in a folder named
+`%HOME%`, and the installer refuses to run from there.
 
 The virtual environment lives in `~/.inspeximus/venv` on purpose. Every agent's configuration names the
 Python in it, so it must stay where it is. To update later, run the same commands again: every agent is pinned to the version that wrote its configuration.
@@ -115,9 +120,28 @@ Gemini CLI               yes    create               /home/you/.inspeximus/codin
 ...
 ```
 
+It ends with a short block, always the last thing it prints:
+
+```text
+inspeximus 3.14.4 ARMED: one memory for 3 agents
+store: /home/you/.inspeximus/coding_memory.json (1 record)
+wired: Hermes Agent, Claude Code, Gemini CLI
+restart: Hermes Agent, Claude Code, Gemini CLI
+seal: 4f2a9c81d0 7e1b03c95a44
+```
+
+The seal is the setup decision the installer stores in the shared memory: its id, and the start of the
+hash a write receipt commits to. `install --check` recomputes it from the store and says whether it still
+matches. After the restart, Claude Code and Hermes Agent each show one line in their first session:
+`inspeximus memory active: &lt;N&gt; records, shared with &lt;agents&gt;`. Claude Code shows it as a system message
+when the session starts. Hermes shows it in its memory line on the first turn that recalls something.
+The other agents do not show it: for them, inspeximus has no measured way to reach the user from a
+hook or a server.
+
 After each write it reads the file back and reports any entry that did not hold. To confirm later that
 every agent still points at the shared store and this version, run `inspeximus install --check`: it
-changes nothing, prints the same kind of table, and exits with 1 when an entry no longer matches. To wire
+changes nothing, prints the same kind of table and block, and exits with 1 when an entry or the seal no
+longer matches. To wire
 only some agents, name them: `install --all --only claude,codex` (the names are hermes, claude, gemini,
 codex, antigravity, cursor, devin, windsurf, and cline).
 
@@ -150,6 +174,12 @@ After updating Hermes, run `install --all` again; the table shows whether Hermes
 Configuration: `~/.claude.json`, plus hooks in `~/.claude/settings.json`. The SessionStart hook recalls the
 shared memory at the start of every session. Restart Claude Code. Do not also install the marketplace
 plugin, or every hook runs twice.
+
+Claude Desktop's Code tab counts as Claude Code: it reads the same two files. The installer finds it by
+the Claude Code that Claude Desktop keeps for itself, under `%APPDATA%\Claude\claude-code\` (or, for the
+Microsoft Store install, `%LOCALAPPDATA%\Packages\Claude_*\LocalCache\Roaming\Claude\claude-code\`) on
+Windows and `~/Library/Application Support/Claude/claude-code/` on macOS, so no `claude` command is needed
+on the PATH. Restart Claude Desktop.
 
 &lt;a id="gemini-cli"&gt;&lt;/a&gt;
 ### Gemini CLI

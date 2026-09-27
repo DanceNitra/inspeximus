@@ -923,7 +923,7 @@ def recall(ev):
     _maybe_nudge(cwd)   # visible slot: UserPromptSubmit stdout is shown to the user
 
 
-def _emit(event, *blocks):
+def _emit(event, *blocks, system_message=None):
     """One JSON envelope per hook run, never bare text, and never more than one object.
 
     BOTH HOSTS TAKE THIS SHAPE; ONLY ONE OF THEM TAKES ANYTHING ELSE. Claude Code injects a hook's
@@ -940,10 +940,13 @@ def _emit(event, *blocks):
     objects on one stdout is not JSON either, and session_start emitted up to three blocks.
     """
     text = chr(10).join(b for b in blocks if b)
-    if not text:
+    if not text and not system_message:
         return
-    print(json.dumps({"hookSpecificOutput": {
-        "hookEventName": event, "additionalContext": text}}))
+    out = {"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}} if text else {}
+    if system_message:
+        # `systemMessage` is the field Claude Code shows the USER; additionalContext reaches only the model.
+        out["systemMessage"] = system_message
+    print(json.dumps(out))
 
 
 def session_start(ev):
@@ -1032,9 +1035,23 @@ def session_start(ev):
             emit.append(notice)
     except Exception:
         pass
+    # THE ONE-TIME "MEMORY ACTIVE" LINE (3.14.4), shown to the user in the first session after
+    # `install --all`, once per install seal. Claude Code only: it documents `systemMessage` as shown to
+    # the user, while Codex parses this output strictly and its handling of the field is unmeasured.
+    shown = None
+    try:
+        if agent_id(ev) == "claude-code" and (ev.get("source") or "") != "compact":
+            from inspeximus._surface import announcement
+            shown = announcement("claude-code", "Claude Code", getattr(m, "path", None),
+                                 len(getattr(m, "items", []) or []))
+    except Exception:
+        shown = None
     # COLLECTED, THEN EMITTED ONCE. These were three separate print() calls, which is three lines of
     # bare text on one stdout -- fine for a host that injects stdout, refused by one that parses it.
-    _emit("SessionStart", *emit)
+    _emit("SessionStart", *emit, system_message=shown)
+    if shown:
+        from inspeximus._surface import mark_announced
+        mark_announced("claude-code")
 
 
 def session_end(ev):

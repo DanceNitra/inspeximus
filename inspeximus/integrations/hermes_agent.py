@@ -152,6 +152,7 @@ def _make_class(base):
             self._last_recalled = 0
             self._prefetch_query = ""
             self._author_id = ""
+            self._announced = False             # the one-time "memory active" line (3.14.4)
 
         @property
         def name(self) -> str:
@@ -280,7 +281,28 @@ def _make_class(base):
                 from agent.memory_provider import RecallStatus   # type: ignore
             except Exception:                                    # noqa: BLE001
                 return None
-            return RecallStatus(provider_label="inspeximus", count=self._last_recalled)
+            return RecallStatus(provider_label=self._label(), count=self._last_recalled)
+
+        def _label(self) -> str:
+            """"inspeximus", or ONCE PER INSTALL SEAL the "memory active" line (3.14.4).
+
+            Hermes shows the user `<glyph> <provider_label> - recalled N memories` after a prefetch
+            (`MemoryManager.describe_recall`), so the label is the one place a provider reaches the user.
+            It is shown on the first turn that recalls something, because Hermes prints nothing for a
+            turn that recalled nothing, and a count of 0 would render as "recalled relevant memory"."""
+            if self._announced:
+                return "inspeximus"
+            self._announced = True
+            try:
+                from inspeximus._surface import announcement, mark_announced
+                line = announcement("hermes", "Hermes Agent", getattr(self._store, "path", None),
+                                    len(getattr(self._store, "items", []) or []))
+                if line:
+                    mark_announced("hermes")
+                    return line
+            except Exception:                                    # noqa: BLE001 - never break a turn
+                pass
+            return "inspeximus"
 
         # -- what the agent writes -----------------------------------------------------
 
