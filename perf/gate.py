@@ -202,10 +202,14 @@ class Counters:
 #:   row_serializations  one record serialised to its row text. Opening a store serialised every row
 #:                    to build the save baseline, 1.27 s of a 5.51 s open at 67,165 records, including
 #:                    opens that never save (AUDIT-B B-08).
+#:   read_guard_assessments  one record checked by the read guards while a recall builds its pool.
+#:                    memory_report rebuilt the pool for each of its 400 sampled queries: 2,629,200
+#:                    assessments on a 10,934-record store, 400 per record (AUDIT-B B-07).
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
     "current_active_scans": (core.Inspeximus, "_current_active"),
     "row_serializations": (core._rows, "_doc"),
+    "read_guard_assessments": (core.Inspeximus, "_assess_read_guards"),
 }
 
 
@@ -522,6 +526,21 @@ def w_row_rewrite(n):
     return run
 
 
+def w_memreport(n):
+    """memory_report over n records, which samples 400 of them as queries. The sampled recalls share one
+    candidate pool, so `read_guard_assessments` is n, not 400 x n (AUDIT-B B-07)."""
+    p = _store_path()
+    m = Inspeximus(p)
+    for i in range(n):
+        m.remember(f"note {i} on the {('deploy', 'budget', 'release', 'office')[i % 4]} plan for team {i % 37}",
+                   source={"doc": f"d{i % 11}"})
+    m.flush()
+
+    def run():
+        m.memory_report()
+    return run
+
+
 def w_boundary(n):
     """A session boundary on a store of n records: open_session, one write, close_session, flush.
     close_session asks for a full reconcile, and the full-diff save issued an order UPDATE for every
@@ -613,6 +632,7 @@ WORKLOADS = {
     "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once", "rows"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
+    "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),
     "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store", "rows"),
     "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records", "none"),
 }

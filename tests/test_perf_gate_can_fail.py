@@ -521,3 +521,25 @@ def test_it_fails_when_a_session_boundary_reconciles_the_store_twice():
     fail, _ = gate.compare({"b": {"counters": good, "seconds_median": 0.1}},
                            {"b": {"counters": bad, "seconds_median": 0.1}})
     assert any("full_diff_saves" in f for f in fail), fail
+
+
+def test_it_fails_when_memory_report_rebuilds_the_pool_per_query(monkeypatch):
+    """AUDIT-B B-07. memory_report's sampled recalls rebuilt the candidate pool, assessing every record
+    once per query. Reintroduced by making the shared pool a no-op, which is what the pre-fix code did,
+    and measured through the counter the gate reads."""
+    import contextlib
+    run = gate.w_memreport(150)
+    with gate.Counters() as c:
+        run()
+    good = c.as_dict()
+    assert good["read_guard_assessments"] == 150, ("fixture error: the report did not assess each record once", good)
+
+    monkeypatch.setattr(core, "_shared_recall_pool", lambda store: contextlib.nullcontext())
+    run = gate.w_memreport(150)
+    with gate.Counters() as c:
+        run()
+    bad = c.as_dict()
+    assert bad["read_guard_assessments"] == 150 * 150, f"a pool per query did not move the counter: {bad}"
+    fail, _ = gate.compare({"r": {"counters": good, "seconds_median": 0.1}},
+                           {"r": {"counters": bad, "seconds_median": 0.1}})
+    assert any("read_guard_assessments" in f for f in fail), fail

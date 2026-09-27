@@ -187,6 +187,33 @@ _ACL_LOG = logging.getLogger("inspeximus.acl")
 # deliberately adds it here. See _eligible().
 _RECALLABLE = frozenset({"active", "superseded", "hub"})
 
+#: The recall work one report shares across its sampled queries (AUDIT-B B-07). Thread-local and bound
+#: to one handle, so a recall on another thread, or on another handle, never reads it.
+_RECALL_SHARED = threading.local()
+
+
+@contextlib.contextmanager
+def _shared_recall_pool(store):
+    """Let the recalls inside this block share the work that does not depend on the query.
+
+    `memory_report` runs up to 400 recalls on a store it does not change, and each one rebuilt the
+    candidate pool (status, ACL, tenant and read-guard filters over every record), the id and position
+    maps over every record, and the stale-derived check over the candidates' links. Profiled on a copy
+    of a 10,934-record store: 2,629,200 read-guard assessments, 400 per record, and about 35 s of an
+    86.7 s profiled report in work that repeated unchanged.
+
+    ONLY FOR BLOCKS THAT DO NOT WRITE BETWEEN RECALLS. `recall` reuses the pool while its arguments,
+    the record count, the list object and the ACL revision are the same, which catches a write that
+    adds or removes a record or a grant, and not a record edited in place. The one caller is the read
+    loop in `memory_report`; widening it to a caller that edits records between recalls would serve
+    a stale pool."""
+    prev = getattr(_RECALL_SHARED, "batch", None)
+    _RECALL_SHARED.batch = {"owner": store}
+    try:
+        yield
+    finally:
+        _RECALL_SHARED.batch = prev
+
 #: Statuses under which a record is WITHHELD from every read path, under any flag. The complement of
 #: this set is what the store will serve, and that distinction -- not the raw status string -- is what
 #: `status_sha256` commits to. See _serving_class().
@@ -13522,93 +13549,112 @@ class Inspeximus:
             if s == "hub":
                 return include_hubs
             return include_superseded            # superseded / other non-active
-        # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
-        # either. Without this, issuing a grant would put "ACL: ... granted agent 'bob' read access ..."
-        # into the answer set of every loosely-related query.
-        pool = [r for r in self.items if _eligible(r) and not _is_acl_record(r)]
-        # HARD TENANT ISOLATION (fail-closed, non-bypassable): a tenant-bound store sees ONLY its own tenant's
-        # records, always — this is enforced here on the STORE, not via a caller argument, so no forgotten
-        # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
-        if self.tenant is not None:
-            pool = [r for r in pool if r.get("tenant") == self.tenant]
-        # GDPR Art. 21: a standing objection withholds the subject's records from every recall, on the
-        # STORE, so no caller argument can serve them by omission. Records written after the objection
-        # are caught too, because the filter resolves sources, not ids. Export (Art. 15) still sees them.
-        if self._objections:
-            _withheld = self._withheld_ids()
-            if _withheld:
-                pool = [r for r in pool if r["id"] not in _withheld]
-        # READ-PATH GUARDS (3.5.0): instruction-shaped records are quarantined here, before ranking, so
-        # they never occupy a slot; keyword-stuffed records stay in and are demoted after the sort.
-        if self.read_guards:
-            for r in pool:
-                self._assess_read_guards(r)
-            if not include_quarantined:
-                pool = [r for r in pool if not Inspeximus._is_quarantined(r)]
-        # Scope/namespace isolation: when a scope is requested, recall ONLY sees memories tagged with that scope
-        # (meta['scope']) BEFORE ranking — a shared store (e.g. many agents / tenants in one Inspeximus) cannot bleed
-        # one scope's memories into another's recall. scope=None (default) sees everything (legacy behavior).
-        if scope is not None:
-            pool = [r for r in pool if (r.get("meta") or {}).get("scope") == scope]
-        # PROJECT / WORKSPACE isolation (opt-in): one store, several repos. A named project sees its OWN
-        # memories plus every UNSTAMPED (global) one — the same wildcard rule the uid/aid/sid hierarchy below
-        # uses, and the reason opting in is non-destructive: everything written before you passed a project is
-        # unstamped, so it stays reachable from every project instead of vanishing the day you adopt a scope.
-        # A record stamped for ANOTHER project is filtered out HERE, before ranking, so a peer project's
-        # memories cannot occupy top-k slots and then be dropped (which would silently shrink k).
-        # project=None (default) filters nothing at all — byte-identical legacy behaviour, and the way to
-        # search ACROSS projects deliberately.
-        if project is not None:
-            pool = [r for r in pool
-                    if (r.get("meta") or {}).get("project") in (None, str(project))]
-        # MEMORY HIERARCHY visibility (user > agent > session): when the query names any of user/agent/session,
-        # a memory is visible iff, for each NAMED level, the memory is EITHER unscoped at that level (wildcard)
-        # OR equal to the query's value; an UNNAMED query level is unconstrained. So (a) a session query sees that
-        # session's memories PLUS the user's/agent's shared (unscoped-session) memories, but NOT a peer session's;
-        # (b) users are isolated from each other and peer sessions from each other; (c) a broad user-only query
-        # sees all that user's own memories (incl. their sessions' — same user, not a leak). All None = legacy.
-        if user_id is not None or agent_id is not None or session_id is not None:
-            _want = {"uid": user_id, "aid": agent_id, "sid": session_id}
-
-            def _visible(r):
-                m = r.get("meta") or {}
-                for lvl, qv in _want.items():
-                    if qv is None:
-                        continue
-                    mv = m.get(lvl)
-                    if mv is not None and str(mv) != str(qv):
-                        return False
-                return True
-            pool = [r for r in pool if _visible(r)]
-        # TRUSTED-ONLY (OPT-IN, needs trust_seeds): keep only candidates whose ORIGIN is anchored to the trust root —
-        # the record is itself attested by a seed key, its (entity-resolved) source is seed-vouched, OR a trusted
-        # actor endorses it via a link (the trust closure). Filtered HERE, BEFORE ranking, so recall returns the top
-        # TRUSTED hit even at k=1 (not the top hit then dropped). The deterministic, zero-LLM defense against
-        # forged-provenance memory poisoning: an attacker can forge a warrant STRING and mint Sybil Ed25519 keys, but
-        # cannot sign as a TRUSTED key, so its poison never enters the pool. Trust is a root set ONCE (CA-style), not
-        # a per-query oracle. High-friction by design — anchor the facts that MATTER (bank, medication, instructions).
-        if trusted_only:
-            # FAIL CLOSED. With no trust_seeds there is no trust root, so NOTHING can be anchored to it and the
-            # honest answer is "no trusted memories" — not the whole untrusted pool. Skipping the filter here
-            # (the old `and self.trust_seeds`) silently returned exactly the poisoned records the caller asked
-            # to exclude, and looked identical to a successful trusted recall.
-            if not self.trust_seeds:
-                pool = []
-            else:
-                _trusted = self._trusted_sources({it["id"]: it for it in self.items})
+        # SHARED ACROSS ONE REPORT (AUDIT-B B-07). Inside `_shared_recall_pool` the pool below, the id and
+        # position maps and the stale-derived verdicts are built once and reused while nothing that
+        # decides them has changed: the pool arguments, the record count, the list object, the ACL
+        # revision and the objections. Calls whose pool depends on more (`where`, `trusted_only`,
+        # `influence_only`) or that write (`reinforce`) build their own, as they always did.
+        _shared = getattr(_RECALL_SHARED, "batch", None)
+        if _shared is not None and (_shared.get("owner") is not self or where or trusted_only
+                                    or influence_only or reinforce):
+            _shared = None
+        _pool_key = ((include_superseded, include_hubs, as_of, include_quarantined, scope, project,
+                      user_id, agent_id, session_id, self.read_guards, len(self._items), id(self._items),
+                      getattr(self, "_acl_rev", 0), len(self._objections or ()))
+                     if _shared is not None else None)
+        if _shared is not None and _shared.get("key") == _pool_key:
+            pool = list(_shared["pool"])
+        else:
+            # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
+            # either. Without this, issuing a grant would put "ACL: ... granted agent 'bob' read access ..."
+            # into the answer set of every loosely-related query.
+            pool = [r for r in self.items if _eligible(r) and not _is_acl_record(r)]
+            # HARD TENANT ISOLATION (fail-closed, non-bypassable): a tenant-bound store sees ONLY its own tenant's
+            # records, always — this is enforced here on the STORE, not via a caller argument, so no forgotten
+            # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
+            if self.tenant is not None:
+                pool = [r for r in pool if r.get("tenant") == self.tenant]
+            # GDPR Art. 21: a standing objection withholds the subject's records from every recall, on the
+            # STORE, so no caller argument can serve them by omission. Records written after the objection
+            # are caught too, because the filter resolves sources, not ids. Export (Art. 15) still sees them.
+            if self._objections:
+                _withheld = self._withheld_ids()
+                if _withheld:
+                    pool = [r for r in pool if r["id"] not in _withheld]
+            # READ-PATH GUARDS (3.5.0): instruction-shaped records are quarantined here, before ranking, so
+            # they never occupy a slot; keyword-stuffed records stay in and are demoted after the sort.
+            if self.read_guards:
+                for r in pool:
+                    self._assess_read_guards(r)
+                if not include_quarantined:
+                    pool = [r for r in pool if not Inspeximus._is_quarantined(r)]
+            # Scope/namespace isolation: when a scope is requested, recall ONLY sees memories tagged with that scope
+            # (meta['scope']) BEFORE ranking — a shared store (e.g. many agents / tenants in one Inspeximus) cannot bleed
+            # one scope's memories into another's recall. scope=None (default) sees everything (legacy behavior).
+            if scope is not None:
+                pool = [r for r in pool if (r.get("meta") or {}).get("scope") == scope]
+            # PROJECT / WORKSPACE isolation (opt-in): one store, several repos. A named project sees its OWN
+            # memories plus every UNSTAMPED (global) one — the same wildcard rule the uid/aid/sid hierarchy below
+            # uses, and the reason opting in is non-destructive: everything written before you passed a project is
+            # unstamped, so it stays reachable from every project instead of vanishing the day you adopt a scope.
+            # A record stamped for ANOTHER project is filtered out HERE, before ranking, so a peer project's
+            # memories cannot occupy top-k slots and then be dropped (which would silently shrink k).
+            # project=None (default) filters nothing at all — byte-identical legacy behaviour, and the way to
+            # search ACROSS projects deliberately.
+            if project is not None:
                 pool = [r for r in pool
-                        if ("key:" + str(r.get("attested_key"))) in self.trust_seeds
-                        or self._canon_of(r) in _trusted]
-        # Metadata pre-filter (the 'filter before you rank' lever): keep only records matching ALL `where`
-        # conditions, matched against top-level fields then meta. Deterministic, no embedder, O(pool).
-        if where:
-            pool = [r for r in pool if self._cond_match(r, where)]
-        # Influence gate (retrieve-then-influence split): keep only CORROBORATED memories in the set that is
-        # allowed to drive an action. Same bar as episodic->semantic graduation; embedder-independent, so it
-        # generalizes across retrievers where geometry-based poison defenses do not (see the docstring).
-        if influence_only:
-            _byid = {x["id"]: x for x in self.items}
-            pool = [r for r in pool if self._corroborated(r, _byid)]
+                        if (r.get("meta") or {}).get("project") in (None, str(project))]
+            # MEMORY HIERARCHY visibility (user > agent > session): when the query names any of user/agent/session,
+            # a memory is visible iff, for each NAMED level, the memory is EITHER unscoped at that level (wildcard)
+            # OR equal to the query's value; an UNNAMED query level is unconstrained. So (a) a session query sees that
+            # session's memories PLUS the user's/agent's shared (unscoped-session) memories, but NOT a peer session's;
+            # (b) users are isolated from each other and peer sessions from each other; (c) a broad user-only query
+            # sees all that user's own memories (incl. their sessions' — same user, not a leak). All None = legacy.
+            if user_id is not None or agent_id is not None or session_id is not None:
+                _want = {"uid": user_id, "aid": agent_id, "sid": session_id}
+
+                def _visible(r):
+                    m = r.get("meta") or {}
+                    for lvl, qv in _want.items():
+                        if qv is None:
+                            continue
+                        mv = m.get(lvl)
+                        if mv is not None and str(mv) != str(qv):
+                            return False
+                    return True
+                pool = [r for r in pool if _visible(r)]
+            # TRUSTED-ONLY (OPT-IN, needs trust_seeds): keep only candidates whose ORIGIN is anchored to the trust root —
+            # the record is itself attested by a seed key, its (entity-resolved) source is seed-vouched, OR a trusted
+            # actor endorses it via a link (the trust closure). Filtered HERE, BEFORE ranking, so recall returns the top
+            # TRUSTED hit even at k=1 (not the top hit then dropped). The deterministic, zero-LLM defense against
+            # forged-provenance memory poisoning: an attacker can forge a warrant STRING and mint Sybil Ed25519 keys, but
+            # cannot sign as a TRUSTED key, so its poison never enters the pool. Trust is a root set ONCE (CA-style), not
+            # a per-query oracle. High-friction by design — anchor the facts that MATTER (bank, medication, instructions).
+            if trusted_only:
+                # FAIL CLOSED. With no trust_seeds there is no trust root, so NOTHING can be anchored to it and the
+                # honest answer is "no trusted memories" — not the whole untrusted pool. Skipping the filter here
+                # (the old `and self.trust_seeds`) silently returned exactly the poisoned records the caller asked
+                # to exclude, and looked identical to a successful trusted recall.
+                if not self.trust_seeds:
+                    pool = []
+                else:
+                    _trusted = self._trusted_sources({it["id"]: it for it in self.items})
+                    pool = [r for r in pool
+                            if ("key:" + str(r.get("attested_key"))) in self.trust_seeds
+                            or self._canon_of(r) in _trusted]
+            # Metadata pre-filter (the 'filter before you rank' lever): keep only records matching ALL `where`
+            # conditions, matched against top-level fields then meta. Deterministic, no embedder, O(pool).
+            if where:
+                pool = [r for r in pool if self._cond_match(r, where)]
+            # Influence gate (retrieve-then-influence split): keep only CORROBORATED memories in the set that is
+            # allowed to drive an action. Same bar as episodic->semantic graduation; embedder-independent, so it
+            # generalizes across retrievers where geometry-based poison defenses do not (see the docstring).
+            if influence_only:
+                _byid = {x["id"]: x for x in self.items}
+                pool = [r for r in pool if self._corroborated(r, _byid)]
+            if _shared is not None:
+                _shared.clear()
+                _shared.update(owner=self, key=_pool_key, pool=tuple(pool), stale={})
         # Mode selection. 'hybrid' = lexical (token overlap) + semantic (embedding) fused with Reciprocal
         # Rank Fusion. We MEASURED hybrid robustly beating EITHER channel alone for agent memory on LoCoMo
         # (recall@20 0.61 hybrid vs 0.55 lexical vs 0.53 semantic; +0.057 over the best single channel,
@@ -13637,7 +13683,12 @@ class Inspeximus:
                     qv = qv - self._vec_mean              # center the query the SAME way as the matrix
                 sims_vec = M @ (qv / (float(_np.linalg.norm(qv)) or 1.0))
         _now = time.time()                                # for per-type decay of the ranking value
-        _by_id = {x["id"]: x for x in self.items}         # for provenance lookups (source-episode status)
+        _by_id = _shared.get("by_id") if _shared is not None else None
+        if _by_id is None:
+            _by_id = {x["id"]: x for x in self.items}     # for provenance lookups (source-episode status)
+            if _shared is not None:
+                _shared["by_id"] = _by_id
+        _stale_memo = _shared["stale"] if _shared is not None else None
         def _semsim(r) -> float:
             if sims_vec is not None and r.get("vec") and r["id"] in self._vec_rowof:
                 return max(0.0, float(sims_vec[self._vec_rowof[r["id"]]]))
@@ -13650,8 +13701,12 @@ class Inspeximus:
             # those sources was later CONTRADICTED (state-toggle supersession) — the merged summary
             # outlived a fact it summarized. Demote it (don't drop — flag for re-consolidation), so a
             # consolidated claim can't quietly outrank the fresh memory that overturned its source.
-            stale = bool(r.get("links")) and any(
-                (_by_id.get(lid, {}).get("meta") or {}).get("superseded_by_toggle") for lid in r["links"])
+            stale = _stale_memo.get(id(r)) if _stale_memo is not None else None
+            if stale is None:
+                stale = bool(r.get("links")) and any(
+                    (_by_id.get(lid, {}).get("meta") or {}).get("superseded_by_toggle") for lid in r["links"])
+                if _stale_memo is not None:
+                    _stale_memo[id(r)] = stale        # keyed by object: the shared pool holds every record
             r["_stale_derived"] = stale                   # surfaced in the returned record
             return (sim, 0.5 if stale else 1.0, self._effective_value(r, _now), r)
         cands = []                                        # (sim, prov, eff_value, r), sim in [0,1]
@@ -13814,7 +13869,11 @@ class Inspeximus:
         # sometimes do not, and sorting on it put the order back at the mercy of machine jitter (3 distinct
         # orders over 120 runs even with a total key). Position says "written later" exactly, and cannot
         # drift.
-        _pos = {rec.get("id"): i for i, rec in enumerate(self._items)}
+        _pos = _shared.get("pos") if _shared is not None else None
+        if _pos is None:
+            _pos = {rec.get("id"): i for i, rec in enumerate(self._items)}
+            if _shared is not None:
+                _shared["pos"] = _pos
         scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get("id"), -1)))
         # A keyword-stuffed record never outranks an unflagged one: a stable partition, so the order
         # inside each group is the score order above. A penalty on the score would leave the stuffed
@@ -15944,14 +16003,17 @@ class Inspeximus:
         # Seeded, because a number offered as evidence that a store did NOT accumulate copies of a fact
         # must not move between runs. Same cost as the slice; order-dependence drops to 0.008.
         sample = act if len(act) <= 400 else _random.Random(0).sample(act, 400)
-        for r in sample:
-            with self._recall_state_kept():
-                other = [h for h in self.recall(r["text"], k=2) if h["id"] != r["id"]]
-            if other:
-                s = self._similarity(r["text"], other[0], self._qvec(r["text"]) if self.embed else None,
-                                     self._rec_tokens(r))
-                if s >= dup_threshold and not _value_clash(r["text"], other[0]["text"]):
-                    redundant += 1
+        # The sampled recalls share one candidate pool: nothing in this loop writes, so the pool, the id
+        # and position maps and the stale verdicts are the same for every query (AUDIT-B B-07).
+        with _shared_recall_pool(self):
+            for r in sample:
+                with self._recall_state_kept():
+                    other = [h for h in self.recall(r["text"], k=2) if h["id"] != r["id"]]
+                if other:
+                    s = self._similarity(r["text"], other[0], self._qvec(r["text"]) if self.embed else None,
+                                         self._rec_tokens(r))
+                    if s >= dup_threshold and not _value_clash(r["text"], other[0]["text"]):
+                        redundant += 1
         # A write RETIRED ON ARRIVAL is a different event from one a later assertion replaced, and this
         # report was blind to the difference: a store that dropped six writes by policy and one that
         # accepted six corrections returned byte-identical summaries (measured, 165 chars both). Since

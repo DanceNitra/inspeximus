@@ -21,9 +21,6 @@ import inspeximus.core as core
 from inspeximus import subject_rights
 from inspeximus.core import Inspeximus
 
-pytestmark = pytest.mark.xfail(strict=True, raises=AssertionError,
-                               reason="B-07: memory_report rebuilds the recall pool for every sampled query")
-
 WORDS = ["deploy", "budget", "prague", "salary", "release", "office", "vienna", "friday", "docs", "build"]
 
 
