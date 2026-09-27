@@ -46,8 +46,6 @@ def reads(monkeypatch):
     return box
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-17: the whole-store id map is rebuilt once per matched record")
 def test_an_erasure_reads_the_store_once_to_resolve_its_records(tmp_path, monkeypatch, reads):
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)

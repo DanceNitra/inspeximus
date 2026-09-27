@@ -240,12 +240,34 @@ def w_erase(k, n):
         # Count AND time only the erasure. The first version timed the whole callable and reported 43.8s
         # for an erasure that takes a fraction of a second -- the fixture build dominated, so the arm was
         # measuring `remember` while claiming to measure `forget_subject`.
-        with Counters() as c:
+        with Counters() as c, _ItemsReads() as reads:
             t0 = time.perf_counter()
             m.forget_subject("hr/alice")
             run.elapsed = time.perf_counter() - t0
-        run.inner = c.as_dict()
+        run.inner = {**c.as_dict(), "erase_items_reads": reads.n}
     return run
+
+
+class _ItemsReads:
+    """Count reads of `Inspeximus.items` inside a block. An erasure that rebuilt a whole-store id map per
+    matched record read it once per record: 57.3 s for 1,666 records of a 50,000-record store
+    (AUDIT-B B-17). The count is fixed for a fixed fixture, whatever the machine."""
+
+    def __enter__(self):
+        self.n = 0
+        self._real = real = core.Inspeximus.items
+        counter = self
+
+        def fget(inner_self):
+            counter.n += 1
+            return real.fget(inner_self)
+
+        core.Inspeximus.items = property(fget, real.fset)
+        return self
+
+    def __exit__(self, *exc):
+        core.Inspeximus.items = self._real
+        return False
 
 
 def w_session(n):

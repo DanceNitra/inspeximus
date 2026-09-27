@@ -368,3 +368,33 @@ def test_it_fails_when_a_session_boundary_updates_every_unmoved_row():
     fail, _ = gate.compare({"b": {"counters": good, "seconds_median": 0.1}},
                            {"b": {"counters": bad, "seconds_median": 0.1}})
     assert any("order_updates" in f for f in fail), f"the updates grew and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_an_erasure_rebuilds_the_id_map_per_record():
+    """AUDIT-B B-17. `_erasure_collisions` built a dict of the whole store once per matched record:
+    57.3 s for 1,666 records of a 50,000-record store. Reintroduced by doing that per-record read again
+    in front of the real function, and measured through the counter the gate reads."""
+    run = gate.w_erase(60, 300)
+    run()
+    good = run.inner
+    assert good["erase_items_reads"] < 60, ("fixture error: the erasure already reads per record", good)
+
+    real = core.Inspeximus._erasure_collisions
+
+    def per_record(self, subject, cand, subj_ids):
+        for rid in subj_ids:
+            {r["id"]: r for r in self.items}.get(rid)          # the pre-fix read, once per matched id
+        return real(self, subject, cand, subj_ids)
+
+    core.Inspeximus._erasure_collisions = per_record
+    try:
+        run = gate.w_erase(60, 300)
+        run()
+        bad = run.inner
+    finally:
+        core.Inspeximus._erasure_collisions = real
+    assert bad["erase_items_reads"] >= good["erase_items_reads"] + 60, f"the counter did not move: {bad}"
+
+    fail, _ = gate.compare({"e": {"counters": good, "seconds_median": 0.1}},
+                           {"e": {"counters": bad, "seconds_median": 0.1}})
+    assert any("erase_items_reads" in f for f in fail), f"the reads grew and the gate stayed green: {fail}"

@@ -9088,8 +9088,12 @@ class Inspeximus:
         separated in the derived tier without re-writing taint, which no migration here attempts. This
         catches the direct case and refuses rather than guessing."""
         raws = {}
+        # ONE id map. It was built inside the loop, a dict of the whole store per matched record, so an
+        # erasure of k records cost O(k x n): 57.3 s for 1,666 records of a 50,000-record store,
+        # measured 2026-09-27 (AUDIT-B B-17).
+        by_id = {r["id"]: r for r in self.items}
         for rid in subj_ids:
-            raw = self._raw_source({r["id"]: r for r in self.items}[rid])
+            raw = self._raw_source(by_id[rid])
             if raw:
                 raws.setdefault(raw, []).append(rid)
         if subject not in raws:                   # no exact identifier written -> canonical resolution intended
