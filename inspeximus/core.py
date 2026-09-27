@@ -9398,7 +9398,7 @@ class Inspeximus:
             # A ROW STORE, detected by its 16-byte header rather than its name, because a store
             # migrated in place keeps whatever filename it had.
             try:
-                self._items = _rows.load(self.path)
+                self._items, _docs = _rows.load_with_docs(self.path)
                 # A store written by an older row writer holds bytes this version would not write.
                 # The rows only change when something rewrites them, so ask for one full reconcile
                 # rather than leaving a subset of the store in the old encoding indefinitely.
@@ -9416,11 +9416,22 @@ class Inspeximus:
             # THE SAME NORMALISATION AS A JSON STORE (3.12.1). This branch returned before it, so a
             # row store -- the default format -- held foreign rows exactly as they were written.
             # Before the snapshot, so a normalised row is the baseline and opening writes nothing.
+            # Which records normalisation left exactly as stored: their stored text is their save
+            # baseline, so it is not serialised again (AUDIT-B B-08). Normalisation only adds keys or
+            # converts a mistyped time field, so "no key added and no time field to convert" is exact.
+            _reuse = []
             for r in self._items:
                 if isinstance(r, dict):
+                    _n0 = len(r)
+                    _conv = any(_f in r and (isinstance(r[_f], bool) or not isinstance(r[_f], (int, float)))
+                                for _f in ("ts", "last_access", "valid_from"))
                     Inspeximus._normalise_loaded(r)
+                    _reuse.append(not _conv and len(r) == _n0)
+                else:
+                    _reuse.append(False)
             self._track_all()
-            self._row_snapshot = _rows.snapshot(self._items, self._persist_vectors)
+            self._row_snapshot = (_rows.snapshot(self._items, self._persist_vectors) if _behind else
+                                  _rows.snapshot_from_docs(self._items, _docs, _reuse, self._persist_vectors))
             if _behind:
                 # ASK FOR A REWRITE, DO NOT EMPTY THE BASELINE. The snapshot above is built from the
                 # PARSED records, so it already holds what this version would write and an ordinary

@@ -29,8 +29,6 @@ from inspeximus._surface import open_store  # noqa: E402
 N = 60
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-08: every open serialises every row to build the save baseline")
 def test_opening_serialises_only_the_rows_normalisation_changed(tmp_path, monkeypatch):
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)
@@ -70,3 +68,40 @@ def test_opening_serialises_only_the_rows_normalisation_changed(tmp_path, monkey
         pytest.fail(f"control: {len(want)} records loaded, expected {N}")
 
     assert opened <= 1, f"opening serialised {opened} rows; only the 1 row normalisation changed needs it"
+
+
+def test_a_row_another_writer_encoded_differently_is_not_a_change(tmp_path, monkeypatch):
+    """The baseline now holds a row's stored text. A row another writer stored with different key order
+    and escapes is the same record, and a full reconcile must neither rewrite it nor emit an event for
+    it, as it did not before. Byte comparison alone would do both (measured: 5 rewrites and 5 events for
+    5 such rows); `sqlite_store._same` settles a byte mismatch the way the old baseline did."""
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
+    p = str(tmp_path / "f.json")
+    recs = [{"id": f"n{i}", "text": f"Drahos\u030cova\u0301 note {i}", "ts": 1.7e9 + i, "last_access": 1.7e9 + i,
+             "valid_from": 1.7e9 + i, "status": "active", "tags": [], "links": [], "meta": {}, "value": 1.0,
+             "mtype": "episodic", "iso": "2023-11-14T22:13:20Z"} for i in range(20)]
+    ss.save(p, recs, {})
+    con = sqlite3.connect(p)
+    for r in recs[:5]:
+        con.execute("UPDATE records SET doc=? WHERE id=?", (json.dumps(dict(reversed(list(r.items())))), r["id"]))
+    con.commit()
+    before = dict(con.execute("SELECT id, doc FROM records").fetchall())
+    con.close()
+
+    m = open_store(p)
+    m.open_session("s")
+    m.remember("boundary note", tags=["x"])
+    m.close_session("s")
+    m.flush()
+
+    con = sqlite3.connect(p)
+    after = dict(con.execute("SELECT id, doc FROM records").fetchall())
+    events = [mid for (mid,) in con.execute("SELECT memory_id FROM memory_events") if mid in before]
+    con.close()
+    if len(after) <= len(before):
+        pytest.fail("control: the boundary wrote nothing, so no full reconcile was exercised")
+    assert {k: after[k] for k in before} == before, "a row another writer encoded differently was rewritten"
+    assert events == [], f"events were emitted for unchanged rows: {events}"

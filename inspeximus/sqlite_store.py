@@ -170,14 +170,22 @@ def _connect(path):
 
 def load(path):
     """Every record, in the order it was written. Returns [] for a store that does not exist yet."""
+    return load_with_docs(path)[0]
+
+
+def load_with_docs(path):
+    """`load`, plus the stored text of each returned record, in the same order: ([records], [texts]).
+
+    The texts are what `snapshot_from_docs` reuses as the save baseline, so opening a store does not
+    serialise every record again (AUDIT-B B-08)."""
     if not os.path.exists(str(path)):
-        return []
+        return [], []
     con = _connect(path)
     try:
         rows = con.execute("SELECT doc FROM records ORDER BY ord").fetchall()
     finally:
         con.close()
-    out = []
+    out, docs = [], []
     for (doc,) in rows:
         try:
             out.append(json.loads(doc))
@@ -186,7 +194,8 @@ def load(path):
             # bad byte makes every record unreachable, and this project lost its coding store to
             # exactly that three times in ten days. Here the blast radius is one record.
             continue
-    return out
+        docs.append(doc)
+    return out, docs
 
 
 def _doc(rec, keep_vec: bool = True) -> str:
@@ -259,6 +268,49 @@ def snapshot(items, keep_vec: bool = True) -> dict:
     """
     return {_field(r, "id"): _doc(r, keep_vec)
             for r in items if isinstance(r, dict) and _field(r, "id")}
+
+
+def _same(now_doc, before_doc) -> bool:
+    """Does the baseline already hold `now_doc`?
+
+    The baseline holds a row's STORED text when `snapshot_from_docs` reused it, where it used to hold
+    this writer's serialisation of the loaded record. For every row this writer stored the two are the
+    same bytes. For a row another writer stored with different key order or escapes they are not, and
+    comparing bytes would call an unchanged record changed, rewrite it and emit an event for it. So a
+    byte mismatch is settled by serialising the stored text the way the old baseline was built: same
+    answer as before, and the cost falls only on rows whose bytes differ (AUDIT-B B-08)."""
+    if now_doc == before_doc:
+        return True
+    if before_doc is None:
+        return False
+    try:
+        return _doc(json.loads(before_doc)) == now_doc
+    except Exception:
+        return False
+
+
+def snapshot_from_docs(items, docs, reuse, keep_vec: bool = True) -> dict:
+    """`snapshot`, reusing the stored text of every record whose `reuse` flag is set.
+
+    `snapshot` serialised every record at every open: 1.27 s of a 5.51 s open on a 67,165-record
+    store, measured 2026-09-27, paid by opens that never save. A record that normalisation did not
+    touch serialises back to exactly the text it was read from when the store is in the current
+    encoding, which is what the doc_format marker certifies: measured on two real stores, 78,048 of
+    78,048 such rows. A record whose `vec` this writer would drop, or that carries an underscore key,
+    is serialised as before (AUDIT-B B-08).
+    """
+    out = {}
+    for r, doc, ok in zip(items, docs, reuse):
+        if not isinstance(r, dict):
+            continue
+        rid = _field(r, "id")
+        if not rid:
+            continue
+        if ok and (keep_vec or "vec" not in r) and not any(k[:1] == "_" for k in r):
+            out[rid] = doc
+        else:
+            out[rid] = _doc(r, keep_vec)
+    return out
 
 
 def _event_row(kind, rec, ts):
@@ -344,7 +396,7 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
     # `rewrite_all` re-writes every row that already exists, which is how a store moves to a new
     # encoding. It deliberately does NOT touch `before`: `removed` is computed from it, and emptying
     # the baseline to force the rewrite is what made deletions vanish.
-    changed = [k for k in now if k in before and (rewrite_all or now[k] != before[k])]
+    changed = [k for k in now if k in before and (rewrite_all or not _same(now[k], before[k]))]
     removed = [k for k in before if k not in now]
 
     con = _connect(path)
@@ -390,7 +442,7 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
             _by = {_field(r, "id"): r for r in items if isinstance(r, dict) and _field(r, "id")}
             _ev += [_event_row("record.added", _by.get(k), _ts) for k in added]
             _ev += [_event_row("record.changed", _by.get(k), _ts) for k in changed
-                    if not rewrite_all or now[k] != before.get(k)]
+                    if not rewrite_all or not _same(now[k], before.get(k))]
             _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
         seqs = _insert_events(con, _ev) if _ev else []
         con.execute("COMMIT")
@@ -452,7 +504,7 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True,
         rid = _field(r, "id") if isinstance(r, dict) else None
         if rid in dirty:
             doc = _doc(r, keep_vec)
-            if before.get(rid) != doc:
+            if not _same(doc, before.get(rid)):
                 touched.append((rid, order[rid], doc))
                 touched_recs.append(r)
                 now[rid] = doc

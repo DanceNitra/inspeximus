@@ -11,11 +11,12 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "type_inferences": 1000,
-   "current_active_scans": 0
+   "current_active_scans": 0,
+   "row_serializations": 1000
   },
-  "seconds_median": 7.2363,
-  "seconds_min": 7.1668,
-  "seconds_max": 7.2892
+  "seconds_median": 8.2492,
+  "seconds_min": 8.0008,
+  "seconds_max": 8.4632
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -29,11 +30,12 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "type_inferences": 0,
-   "current_active_scans": 0
+   "current_active_scans": 0,
+   "row_serializations": 0
   },
-  "seconds_median": 1.0754,
-  "seconds_min": 1.0643,
-  "seconds_max": 1.1082
+  "seconds_median": 1.156,
+  "seconds_min": 1.0565,
+  "seconds_max": 1.1675
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -48,12 +50,13 @@
    "order_updates": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
+   "row_serializations": 0,
    "erase_items_reads": 7,
    "erase_lower_calls": 4605
   },
-  "seconds_median": 0.0789,
-  "seconds_min": 0.0765,
-  "seconds_max": 0.0834
+  "seconds_median": 0.08,
+  "seconds_min": 0.0745,
+  "seconds_max": 0.0887
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -67,11 +70,12 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "type_inferences": 500,
-   "current_active_scans": 0
+   "current_active_scans": 0,
+   "row_serializations": 1099
   },
-  "seconds_median": 11.8458,
-  "seconds_min": 11.5059,
-  "seconds_max": 12.1666
+  "seconds_median": 11.6546,
+  "seconds_min": 11.5304,
+  "seconds_max": 11.9041
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
@@ -85,11 +89,12 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "type_inferences": 0,
-   "current_active_scans": 0
+   "current_active_scans": 0,
+   "row_serializations": 3
   },
-  "seconds_median": 0.1637,
-  "seconds_min": 0.1555,
-  "seconds_max": 0.1772
+  "seconds_median": 0.1213,
+  "seconds_min": 0.1212,
+  "seconds_max": 0.1218
  },
  "reports_k300": {
   "desc": "supersession_report + 5 suppressing recalls over 300 keys",
@@ -103,11 +108,12 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "type_inferences": 0,
-   "current_active_scans": 0
+   "current_active_scans": 0,
+   "row_serializations": 0
   },
-  "seconds_median": 0.1521,
-  "seconds_min": 0.1489,
-  "seconds_max": 0.1546
+  "seconds_median": 0.2265,
+  "seconds_min": 0.1479,
+  "seconds_max": 0.2487
  },
  "prompt_n2000": {
   "desc": "fresh handle opens a 2,000-record store and recalls once",
@@ -121,11 +127,12 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "type_inferences": 0,
-   "current_active_scans": 0
+   "current_active_scans": 0,
+   "row_serializations": 0
   },
-  "seconds_median": 0.076,
-  "seconds_min": 0.0756,
-  "seconds_max": 0.0784
+  "seconds_median": 0.0915,
+  "seconds_min": 0.0676,
+  "seconds_max": 0.1227
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",
@@ -140,20 +147,21 @@
    "order_updates": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
+   "row_serializations": 4000,
    "row_id_comparisons": 0
   },
-  "seconds_median": 0.0808,
-  "seconds_min": 0.0797,
-  "seconds_max": 0.0824
+  "seconds_median": 0.109,
+  "seconds_min": 0.1059,
+  "seconds_max": 0.1136
  },
  "hook_import": {
   "desc": "the hook process for a PreToolUse `ls`: does it import numpy",
   "counters": {
    "hook_imports_numpy": 0
   },
-  "seconds_median": 0.3179,
-  "seconds_min": 0.3116,
-  "seconds_max": 0.3211
+  "seconds_median": 0.3566,
+  "seconds_min": 0.3551,
+  "seconds_max": 0.3619
  },
  "boundary_n2000": {
   "desc": "session boundary (open, write, close, flush) on a 2,000-record store",
@@ -167,10 +175,11 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "type_inferences": 1,
-   "current_active_scans": 0
+   "current_active_scans": 0,
+   "row_serializations": 4005
   },
-  "seconds_median": 0.1501,
-  "seconds_min": 0.146,
-  "seconds_max": 0.1535
+  "seconds_median": 0.1911,
+  "seconds_min": 0.1567,
+  "seconds_max": 0.2062
  }
 }

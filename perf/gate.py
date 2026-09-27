@@ -184,9 +184,13 @@ class Counters:
 #:                    and discarded the result for every record that had a type (AUDIT-B B-04).
 #:   current_active_scans  one full scan of the store for one key. The per-key value reports ran one
 #:                    per key, O(keys x records): 40.5 s profiled at 10,934 records (AUDIT-B B-06).
+#:   row_serializations  one record serialised to its row text. Opening a store serialised every row
+#:                    to build the save baseline, 1.27 s of a 5.51 s open at 67,165 records, including
+#:                    opens that never save (AUDIT-B B-08).
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
     "current_active_scans": (core.Inspeximus, "_current_active"),
+    "row_serializations": (core._rows, "_doc"),
 }
 
 
