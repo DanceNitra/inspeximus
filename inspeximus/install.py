@@ -337,19 +337,6 @@ def _devin_paths(project):
             "project": pathlib.Path(project or os.getcwd()) / ".devin" / "mcp_config.json"}
 
 
-def muse_dir():
-    """Muse Code's user config directory: $XDG_CONFIG_HOME/muse, else ~/.config/muse
-    (dev.meta.ai/docs/muse-code/extending, read 2026-09-28). The docs name no Windows-specific path, so the
-    same location is used on every platform."""
-    xdg = os.environ.get("XDG_CONFIG_HOME")
-    return (pathlib.Path(xdg) if xdg else _home() / ".config") / "muse"
-
-
-def _muse_paths(project):
-    # Muse Code documents MCP servers in the user settings file only; no project-scoped MCP file.
-    return {"user": muse_dir() / "settings.json"}
-
-
 def _codex_paths(project):
     # CODEX_HOME defaults to ~/.codex on every platform (no OS branch in codex's own home-dir code).
     home = pathlib.Path(os.environ.get("CODEX_HOME") or (_home() / ".codex"))
@@ -435,24 +422,6 @@ HOSTS = {
         "docs": "https://docs.devin.ai/cli/extensibility/mcp/configuration",
         "note": "Devin Desktop (formerly Windsurf) and Devin CLI share this file. Restart Devin Desktop; "
                 "`devin mcp list` shows the server.",
-    },
-    "muse": {
-        "label": "Muse Code",
-        "format": "json",
-        "root_key": "mcp_servers",
-        # The settings file is rejected without it ("schema_version": 1 is mandatory). Set only when the
-        # file lacks it; an existing value is never changed.
-        "top_level": {"schema_version": 1},
-        "paths": _muse_paths,
-        # `mode` defaults to "required", which aborts a Muse Code run when the server fails to start.
-        # "optional" skips it with a warning instead, so a broken memory server never stops the agent.
-        "fields": lambda blk: {"transport": "stdio",
-                               **{k: v for k, v in blk.items() if k in ("command", "args", "env")},
-                               "mode": "optional", "enabled": True},
-        "verified": False,
-        "docs": "https://dev.meta.ai/docs/muse-code/extending",
-        "note": "Muse Code reads ~/.config/muse/settings.json at session start. Run /mcp in a session to "
-                "see the server and its tools. MCP servers run outside Muse Code's sandbox.",
     },
     "codex": {
         "label": "Codex CLI",
@@ -569,8 +538,6 @@ def plan(host, scope=None, project=None, store_path=None, name=SERVER_NAME, env=
             res["error"] = (f"{path}: top level is {type(data).__name__}, not an object; "
                             f"refusing to touch it")
             return res
-        for k, v in (spec.get("top_level") or {}).items():
-            data.setdefault(k, v)
         servers = data.setdefault(spec["root_key"], {})
         if not isinstance(servers, dict):
             res["error"] = f"{path}: '{spec['root_key']}' is not an object; refusing to touch it"

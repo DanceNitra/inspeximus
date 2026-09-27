@@ -29,7 +29,7 @@ import time
 import uuid
 
 WIN = os.name == "nt"
-HOSTS = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity", "devin", "muse")
+HOSTS = ("claude", "cursor", "windsurf", "codex", "cline", "gemini", "antigravity", "devin")
 RULE_HOSTS = ("cursor", "windsurf", "cline", "antigravity", "devin")
 
 
@@ -93,7 +93,6 @@ def entry_for(host, home, env):
         "gemini": os.path.join(home, ".gemini", "settings.json"),
         "antigravity": os.path.join(home, ".gemini", "config", "mcp_config.json"),
         "devin": os.path.join(devin_dir(home), "mcp_config.json"),
-        "muse": os.path.join(env.get("XDG_CONFIG_HOME") or os.path.join(home, ".config"), "muse", "settings.json"),
     }
     p = paths[host]
     if not os.path.exists(p):
@@ -107,8 +106,7 @@ def entry_for(host, home, env):
             return m and {"command": json.loads(m.group(1)), "args": json.loads(m.group(2)),
                           "env": {k: json.loads(v) for k, v in env_m}}
         return (tomllib.load(open(p, "rb")).get("mcp_servers") or {}).get("inspeximus")
-    root = "mcp_servers" if host == "muse" else "mcpServers"
-    return (json.load(open(p, encoding="utf-8")).get(root) or {}).get("inspeximus")
+    return (json.load(open(p, encoding="utf-8")).get("mcpServers") or {}).get("inspeximus")
 
 
 class Server:
