@@ -4366,7 +4366,7 @@
   "old": "and not _not_for_replay(h)][:2]",
   "new": "][:2]",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4375,7 +4375,7 @@
   "old": "if \"bash\" not in (rec.get(\"tags\") or []):",
   "new": "if False:",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4384,7 +4384,7 @@
   "old": "r\"\\btaskkill\\b[^\\n]*?\\s/im\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4393,7 +4393,7 @@
   "old": "r\"\\b(?:stop-process|spps|kill)\\b[^\\n]*?\\s-name\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4402,7 +4402,7 @@
   "old": "r\"\\bget-process\\b[^|\\n]*\\|\\s*stop-process\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4411,7 +4411,7 @@
   "old": "r\"\\b(?:pkill|killall)\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4420,7 +4420,7 @@
   "old": "r\"\\brm\\s+(?:[^\\n;&|]*\\s)?(?:-\\w*r\\w*|--recursive)\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4429,7 +4429,7 @@
   "old": "r\"\\bremove-item\\b[^\\n]*?\\s-r(?:ecurse)?\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4438,7 +4438,7 @@
   "old": "r\"\\b(?:del|erase|rmdir|rd)\\b[^\\n]*?\\s/s\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4447,7 +4447,7 @@
   "old": "r\"\\bgit\\s+reset\\b[^\\n]*?\\s--hard\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4456,7 +4456,7 @@
   "old": "r\"\\bgit\\s+clean\\b[^\\n]*?\\s(?:-\\w*f|--force)\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4465,7 +4465,7 @@
   "old": "r\"\\bgit\\s+push\\b[^\\n]*?\\s(?:--force\\b|--force-with-lease\\b|-f\\b|\\+\\S)\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4474,7 +4474,7 @@
   "old": "r\"\\bgit\\s+checkout\\b[^\\n]*?\\s(?:--\\s|-f\\b|--force\\b)\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4483,7 +4483,7 @@
   "old": "r\"\\bgit\\s+branch\\b[^\\n]*?\\s(?-i:-D)\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4492,7 +4492,7 @@
   "old": "r\"\\bgit\\s+stash\\s+(?:drop|clear)\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4501,7 +4501,7 @@
   "old": "r\"\\bgit\\s+worktree\\s+(?:remove|prune)\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4510,7 +4510,7 @@
   "old": "r\"\\bdrop\\s+(?:table|database|schema)\\b|\\btruncate\\s+table\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4519,7 +4519,7 @@
   "old": "r\"\\bmkfs\\b|\\bdd\\b[^\\n]*?\\bof=/dev/|\\bformat(?:\\.com)?\\s+[a-z]:\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
@@ -4528,7 +4528,7 @@
   "old": "r\"\\b(?:shutdown|restart-computer|stop-computer)\\b\",",
   "new": "r\"(?!x)x\",",
   "tests": [
-   "tests/test_the_injection_path_applies_the_read_guards.py"
+   "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
  },
  {
