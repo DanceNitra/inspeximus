@@ -25,8 +25,6 @@ def _heads(appdata):
     return sorted(os.listdir(d)) if os.path.isdir(d) else []
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-21: a standalone gate run writes chain heads into the real APPDATA")
 def test_the_gate_keeps_its_chain_heads_out_of_appdata(tmp_path, monkeypatch, capsys):
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)

@@ -32,6 +32,7 @@ unnoticed, which is how a pinned number stops being a pin.
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import statistics
@@ -348,8 +349,34 @@ HOOK_EVENTS = ["Read"] * 4 + ["Grep"] * 3 + ["Glob"] * 3 + ["Edit", "Write", "Ba
 
 def _clean_env():
     """Remove every INSPEXIMUS_* variable and return them, so a developer's shared store, embedder or
-    decision store cannot reach a workload. Restore with `_restore_env`."""
-    return {k: os.environ.pop(k) for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]}
+    decision store cannot reach a workload. Restore with `_restore_env`. INSPEXIMUS_KEY_HOME stays set:
+    it is where receipted temp stores record their chain heads, and `main()` points it at a temp folder."""
+    saved = {k: os.environ.pop(k) for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]}
+    if "INSPEXIMUS_KEY_HOME" in saved:
+        os.environ["INSPEXIMUS_KEY_HOME"] = saved["INSPEXIMUS_KEY_HOME"]
+    return saved
+
+
+@contextlib.contextmanager
+def _isolated_key_home():
+    """Point INSPEXIMUS_KEY_HOME at a temp folder for one gate run, then restore it and delete the folder.
+
+    A receipted store records its chain head under INSPEXIMUS_KEY_HOME, else APPDATA. The erase and session
+    workloads use receipted temp stores, so a standalone run left 9 head files per run in the user's real
+    `%APPDATA%/inspeximus/heads` (AUDIT-B B-21). Scoped to `main()` rather than set at import, because a
+    test that imports this module shares its process with tests that read the real key-home rules."""
+    import shutil
+    prev = os.environ.get("INSPEXIMUS_KEY_HOME")
+    home = tempfile.mkdtemp(prefix="inspeximus-gate-keys-")
+    os.environ["INSPEXIMUS_KEY_HOME"] = home
+    try:
+        yield home
+    finally:
+        if prev is None:
+            os.environ.pop("INSPEXIMUS_KEY_HOME", None)
+        else:
+            os.environ["INSPEXIMUS_KEY_HOME"] = prev
+        shutil.rmtree(home, ignore_errors=True)
 
 
 def _restore_env(saved):
@@ -610,7 +637,8 @@ def compare(base, now):
 
 def main(argv):
     cmd = argv[1] if len(argv) > 1 else "check"
-    now = measure()
+    with _isolated_key_home():
+        now = measure()
 
     if cmd == "record":
         BASELINE.write_text(json.dumps(now, indent=1) + "\n", encoding="utf-8")
