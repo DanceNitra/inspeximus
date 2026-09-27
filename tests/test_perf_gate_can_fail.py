@@ -202,3 +202,43 @@ def test_it_fails_when_opening_a_store_infers_types_it_discards():
     now = {"hook": {"counters": bad, "seconds_median": 0.1}}
     fail, _ = gate.compare(base, now)
     assert any("type_inferences" in f for f in fail), f"type_inferences grew and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_the_value_reports_scan_the_store_once_per_key():
+    """AUDIT-B B-06. `_short_values_suppression_cannot_see` and `_retired_values` called
+    `_current_active` once per key, a full scan each: 6,674 scans and 40.5 s (profiled) inside
+    supersession_report on a 10,934-record store.
+
+    Reintroduced by answering the one-pass index with one `_current_active` call per lookup, which is
+    what the loops did, and measured through the counter the gate reads.
+    """
+    class ScanPerKey(dict):
+        def __init__(self, store):
+            super().__init__()
+            self.store = store
+
+        def get(self, k, default=None):
+            r = core.Inspeximus._current_active(self.store, k)
+            return default if r is None else r
+
+    run = gate.w_reports(30)
+    with gate.Counters() as c:
+        run()
+    good = c.as_dict()
+    assert good["current_active_scans"] == 0, ("fixture error: the reports already scan per key", good)
+
+    real = core.Inspeximus._current_active_index
+    core.Inspeximus._current_active_index = lambda self: ScanPerKey(self)
+    try:
+        run = gate.w_reports(30)
+        with gate.Counters() as c:
+            run()
+        bad = c.as_dict()
+    finally:
+        core.Inspeximus._current_active_index = real
+    assert bad["current_active_scans"] >= 6 * 30, f"per-key scanning did not move the counter: {bad}"
+
+    base = {"reports": {"counters": good, "seconds_median": 0.1}}
+    now = {"reports": {"counters": bad, "seconds_median": 0.1}}
+    fail, _ = gate.compare(base, now)
+    assert any("current_active_scans" in f for f in fail), f"the scans grew and the gate stayed green: {fail}"

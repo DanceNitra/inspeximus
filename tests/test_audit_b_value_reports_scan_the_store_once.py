@@ -46,8 +46,6 @@ def store(tmp_path, monkeypatch):
     return m, calls
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-06: one full scan of the store per key in the value reports")
 def test_value_reports_do_not_scan_the_store_once_per_key(store):
     m, calls = store
     rep = m.supersession_report()
@@ -70,3 +68,70 @@ def test_value_reports_do_not_scan_the_store_once_per_key(store):
     assert report_calls == 0, f"supersession_report made {report_calls} full-store scans for {K + 1} keys"
     assert retired_calls == 0, f"_retired_values made {retired_calls} full-store scans for {K + 1} keys"
     assert recall_calls == 0, f"recall(suppress_stale_values=True) made {recall_calls} full-store scans"
+
+
+class _ScanPerKey(dict):
+    """The index answered by the old per-key scan, so a report can be computed both ways."""
+
+    def __init__(self, store):
+        super().__init__()
+        self._store = store
+
+    def get(self, k, default=None):
+        r = core.Inspeximus._current_active(self._store, k)
+        return default if r is None else r
+
+
+def _both_ways(m, fn):
+    fast = fn()
+    real = core.Inspeximus._current_active_index
+    core.Inspeximus._current_active_index = lambda self: _ScanPerKey(self)
+    try:
+        slow = fn()
+    finally:
+        core.Inspeximus._current_active_index = real
+    return fast, slow
+
+
+def test_the_index_gives_the_answer_the_scan_gave(tmp_path, monkeypatch):
+    """Same answer as one `_current_active` per key, on the shapes where an index could drift from a
+    scan: two active records under one key (the FIRST wins), a non-string key, a key whose only record
+    is superseded, and a tenant-bound handle that must not see another tenant's current record."""
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    p = str(tmp_path / "t.json")
+    m = Inspeximus(p)
+    for i in range(6):
+        m.remember(f"the city for {i} is Vienna", key=f"city{i}", object="Vienna")
+        m.remember(f"the city for {i} is Brno", key=f"city{i}", object="Brno")
+    m.remember("the code is EU", key="code", object="EU")
+    m.remember("the code is UK", key="code", object="UK")
+    m.flush()
+    rows = m._items
+    # a second ACTIVE record under an existing key, and a record whose key is an int
+    extra = dict(rows[-1]); extra["id"] = "dup-active"; extra["object"] = "US"; extra["text"] = "the code is US"
+    num = dict(rows[0]); num["id"] = "int-key"; num["key"] = 7; num["status"] = "active"
+    m._items = list(rows) + [extra, num]
+    for fn in (lambda: m.supersession_report(), lambda: m._retired_values()):
+        fast, slow = _both_ways(m, fn)
+        assert fast == slow
+
+    # TENANTS: two bound handles write the same keys into one file. Each bound handle must see its own
+    # current record; the unbound admin view sees both, and the first in store order wins.
+    tp = str(tmp_path / "ten.json")
+    for tenant, city in (("a", "Vienna"), ("b", "Brno")):
+        h = Inspeximus(tp, tenant=tenant)
+        h.remember(f"the office is in {city}", key="office", object=city)
+        h.remember(f"the office moved to {city}-West", key="office", object=f"{city}-West")
+        h.remember("the tier is EU", key="tier", object="EU")
+        h.remember("the tier is UK", key="tier", object="UK")
+        h.flush()
+    seen = set()
+    for tenant in ("a", "b", None):
+        h = Inspeximus(tp, tenant=tenant) if tenant else Inspeximus(tp)
+        for fn in (lambda: h.supersession_report(), lambda: h._retired_values()):
+            fast, slow = _both_ways(h, fn)
+            assert fast == slow, tenant
+        seen.add(repr(h._retired_values()))
+    if len(seen) != 3:
+        pytest.fail(f"control: the three views should differ, got {len(seen)} distinct answers")

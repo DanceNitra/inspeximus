@@ -148,8 +148,11 @@ class Counters:
 #: Calls counted by name: counter -> (owner, attribute). Each one is a unit of work that grew once.
 #:   type_inferences  two regex searches over a record's text. Opening a store ran it for every record
 #:                    and discarded the result for every record that had a type (AUDIT-B B-04).
+#:   current_active_scans  one full scan of the store for one key. The per-key value reports ran one
+#:                    per key, O(keys x records): 40.5 s profiled at 10,934 records (AUDIT-B B-06).
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
+    "current_active_scans": (core.Inspeximus, "_current_active"),
 }
 
 
@@ -286,12 +289,30 @@ def w_hook(n):
     return run
 
 
+def w_reports(k):
+    """The per-key value reports over k keys, each holding a retired and a current value: one
+    supersession_report and five recalls with suppress_stale_values. Each report must look up every
+    key's current record in one pass, so `current_active_scans` is 0 (AUDIT-B B-06)."""
+    m = Inspeximus(_store_path())
+    for i in range(k):
+        m.remember(f"the office for team {i} is in Vienna", key=f"office{i}", object="Vienna")
+        m.remember(f"the office for team {i} is in Prague", key=f"office{i}", object="Prague")
+    m.flush()
+
+    def run():
+        m.supersession_report()
+        for i in range(5):
+            m.recall(f"which office does team {i} use", k=5, suppress_stale_values=True)
+    return run
+
+
 WORKLOADS = {
     "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush"),
     "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records"),
     "erase_k200_n2000":   (lambda: w_erase(200, 2000),   "erase 200 subject records among 2,000"),
     "session_n500":       (lambda: w_session(500),       "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets"),
     "hook_n2000":         (lambda: w_hook(2000),         "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store"),
+    "reports_k300":       (lambda: w_reports(300),       "supersession_report + 5 suppressing recalls over 300 keys"),
 }
 
 

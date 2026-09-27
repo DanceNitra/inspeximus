@@ -7776,6 +7776,24 @@ class Inspeximus:
         return next((r for r in self.items if r.get("key") == str(key) and r.get("status") == "active"
                      and (tv is None or r.get("tenant") == tv)), None)
 
+    def _current_active_index(self) -> dict:
+        """`_current_active` for every key at once: key -> the record it would return, in one pass.
+
+        For a loop over keys. Calling `_current_active` per key is a full scan per key, and two reports
+        did exactly that: measured 2026-09-27 on a 10,934-record store, 6,674 scans and 40.5 s
+        (profiled) inside `supersession_report` (AUDIT-B B-06). Same answer by construction: the FIRST
+        active record in `self.items` order, tenant-matched, whose key equals the string asked for.
+        Only a `str` key can equal a string, so other key types are not indexed and look up to None,
+        as they would in the scan."""
+        tv = self.tenant
+        idx: dict = {}
+        for r in self.items:
+            k = r.get("key")
+            if isinstance(k, str) and k not in idx and r.get("status") == "active" \
+                    and (tv is None or r.get("tenant") == tv):
+                idx[k] = r
+        return idx
+
     @staticmethod
     def _support_sig(s) -> str:
         return re.sub(r"[^a-z0-9]+", " ", str(s).lower()).strip()
@@ -12938,8 +12956,9 @@ class Inspeximus:
             if k:
                 by_key.setdefault(str(k), []).append(r)
         keys: list = []
+        _cur = self._current_active_index()              # one pass, not one scan per key (B-06)
         for k, recs in by_key.items():
-            cur = self._current_active(k)
+            cur = _cur.get(k)
             if not cur:
                 continue
             cur_v = str(cur.get("object") or "").strip()
@@ -13025,8 +13044,9 @@ class Inspeximus:
             k = r.get("key")
             if k:
                 by_key.setdefault(str(k), []).append(r)
+        _cur = self._current_active_index()              # one pass, not one scan per key (B-06)
         for k, recs in by_key.items():
-            cur = self._current_active(k)
+            cur = _cur.get(k)
             if not cur:
                 continue
             cur_v = str(cur.get("object") or "").strip()

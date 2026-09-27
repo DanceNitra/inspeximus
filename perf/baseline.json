@@ -8,11 +8,12 @@
    "full_serializations": 0,
    "serialized_bytes": 0,
    "store_loads": 1,
-   "type_inferences": 1000
+   "type_inferences": 1000,
+   "current_active_scans": 0
   },
-  "seconds_median": 22.968,
-  "seconds_min": 21.9826,
-  "seconds_max": 28.6629
+  "seconds_median": 11.7515,
+  "seconds_min": 8.7152,
+  "seconds_max": 13.1458
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -23,11 +24,12 @@
    "full_serializations": 0,
    "serialized_bytes": 0,
    "store_loads": 0,
-   "type_inferences": 0
+   "type_inferences": 0,
+   "current_active_scans": 0
   },
-  "seconds_median": 1.6964,
-  "seconds_min": 1.6258,
-  "seconds_max": 2.05
+  "seconds_median": 1.9794,
+  "seconds_min": 1.2813,
+  "seconds_max": 2.8567
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -38,11 +40,12 @@
    "full_serializations": 0,
    "serialized_bytes": 0,
    "store_loads": 0,
-   "type_inferences": 0
+   "type_inferences": 0,
+   "current_active_scans": 0
   },
-  "seconds_median": 0.2045,
-  "seconds_min": 0.183,
-  "seconds_max": 0.2312
+  "seconds_median": 0.1702,
+  "seconds_min": 0.1672,
+  "seconds_max": 0.2093
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -53,11 +56,12 @@
    "full_serializations": 0,
    "serialized_bytes": 0,
    "store_loads": 1,
-   "type_inferences": 500
+   "type_inferences": 500,
+   "current_active_scans": 0
   },
-  "seconds_median": 26.8624,
-  "seconds_min": 21.5887,
-  "seconds_max": 27.6448
+  "seconds_median": 12.3075,
+  "seconds_min": 12.2142,
+  "seconds_max": 12.6654
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
@@ -68,10 +72,27 @@
    "full_serializations": 0,
    "serialized_bytes": 0,
    "store_loads": 3,
-   "type_inferences": 0
+   "type_inferences": 0,
+   "current_active_scans": 0
   },
-  "seconds_median": 0.2343,
-  "seconds_min": 0.234,
-  "seconds_max": 0.2347
+  "seconds_median": 0.1564,
+  "seconds_min": 0.1471,
+  "seconds_max": 0.1603
+ },
+ "reports_k300": {
+  "desc": "supersession_report + 5 suppressing recalls over 300 keys",
+  "counters": {
+   "replace_store": 0,
+   "replace_tombstones": 0,
+   "replace_receipts": 0,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 0,
+   "type_inferences": 0,
+   "current_active_scans": 0
+  },
+  "seconds_median": 0.1628,
+  "seconds_min": 0.1596,
+  "seconds_max": 0.1646
  }
 }
