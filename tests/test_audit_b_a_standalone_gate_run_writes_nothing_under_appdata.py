@@ -39,7 +39,7 @@ def test_the_gate_keeps_its_chain_heads_out_of_appdata(tmp_path, monkeypatch, ca
     for f in _heads(str(appdata)):
         os.remove(os.path.join(str(appdata), "inspeximus", "heads", f))
 
-    monkeypatch.setattr(gate, "WORKLOADS", {"erase_tiny": (lambda: gate.w_erase(3, 10), "tiny erase")})
+    monkeypatch.setattr(gate, "WORKLOADS", {"erase_tiny": (lambda: gate.w_erase(3, 10), "tiny erase", "rows")})
     monkeypatch.setattr(gate, "REPEATS", 1)
     monkeypatch.setattr(gate, "BASELINE", tmp_path / "no-baseline.json")
     # `check` measures every workload first, then finds no baseline and returns 2.

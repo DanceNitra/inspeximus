@@ -1,6 +1,10 @@
 {
  "write_n1000": {
   "desc": "1,000 remembers + flush",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 0,
@@ -15,12 +19,40 @@
    "current_active_scans": 0,
    "row_serializations": 1000
   },
-  "seconds_median": 7.756,
-  "seconds_min": 7.269,
-  "seconds_max": 7.7951
+  "seconds_median": 8.7672,
+  "seconds_min": 8.5155,
+  "seconds_max": 9.2167
+ },
+ "write_json_n1000": {
+  "desc": "1,000 remembers + flush, JSON store",
+  "backend": {
+   "declared": "json",
+   "observed": "json"
+  },
+  "counters": {
+   "replace_store": 1000,
+   "replace_tombstones": 0,
+   "replace_receipts": 0,
+   "full_serializations": 1000,
+   "serialized_bytes": 180168196,
+   "store_loads": 1,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "type_inferences": 1000,
+   "current_active_scans": 0,
+   "row_serializations": 0
+  },
+  "seconds_median": 9.8304,
+  "seconds_min": 9.6394,
+  "seconds_max": 9.8977
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 0,
@@ -35,12 +67,16 @@
    "current_active_scans": 0,
    "row_serializations": 0
   },
-  "seconds_median": 1.3274,
-  "seconds_min": 1.1517,
-  "seconds_max": 1.3819
+  "seconds_median": 1.6167,
+  "seconds_min": 1.4738,
+  "seconds_max": 1.6514
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 1,
@@ -57,12 +93,42 @@
    "erase_items_reads": 7,
    "erase_lower_calls": 4605
   },
-  "seconds_median": 0.0896,
-  "seconds_min": 0.0891,
-  "seconds_max": 0.1093
+  "seconds_median": 0.1491,
+  "seconds_min": 0.1237,
+  "seconds_max": 0.2241
+ },
+ "erase_json_k50_n500": {
+  "desc": "erase 50 subject records among 500, JSON store",
+  "backend": {
+   "declared": "json",
+   "observed": "json"
+  },
+  "counters": {
+   "replace_store": 1,
+   "replace_tombstones": 1,
+   "replace_receipts": 0,
+   "full_serializations": 1,
+   "serialized_bytes": 170303,
+   "store_loads": 0,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 0,
+   "erase_items_reads": 7,
+   "erase_lower_calls": 1155
+  },
+  "seconds_median": 0.0341,
+  "seconds_min": 0.0338,
+  "seconds_max": 0.035
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 500,
    "replace_tombstones": 1,
@@ -77,12 +143,40 @@
    "current_active_scans": 0,
    "row_serializations": 1099
   },
-  "seconds_median": 13.5729,
-  "seconds_min": 12.5051,
-  "seconds_max": 13.6396
+  "seconds_median": 27.1892,
+  "seconds_min": 26.1808,
+  "seconds_max": 27.8715
+ },
+ "session_json_n500": {
+  "desc": "mixed session as session_n500, JSON store",
+  "backend": {
+   "declared": "json",
+   "observed": "json"
+  },
+  "counters": {
+   "replace_store": 1051,
+   "replace_tombstones": 1,
+   "replace_receipts": 500,
+   "full_serializations": 551,
+   "serialized_bytes": 54267473,
+   "store_loads": 1,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "type_inferences": 500,
+   "current_active_scans": 0,
+   "row_serializations": 0
+  },
+  "seconds_median": 22.5318,
+  "seconds_min": 16.5078,
+  "seconds_max": 24.1047
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 0,
@@ -97,12 +191,16 @@
    "current_active_scans": 0,
    "row_serializations": 3
   },
-  "seconds_median": 0.1477,
-  "seconds_min": 0.141,
-  "seconds_max": 0.1612
+  "seconds_median": 0.1947,
+  "seconds_min": 0.1768,
+  "seconds_max": 0.2134
  },
  "reports_k300": {
   "desc": "supersession_report + 5 suppressing recalls over 300 keys",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 0,
@@ -117,12 +215,16 @@
    "current_active_scans": 0,
    "row_serializations": 0
   },
-  "seconds_median": 0.2616,
-  "seconds_min": 0.1841,
-  "seconds_max": 0.3159
+  "seconds_median": 0.154,
+  "seconds_min": 0.1525,
+  "seconds_max": 0.1716
  },
  "prompt_n2000": {
   "desc": "fresh handle opens a 2,000-record store and recalls once",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 0,
@@ -137,12 +239,16 @@
    "current_active_scans": 0,
    "row_serializations": 0
   },
-  "seconds_median": 0.1289,
-  "seconds_min": 0.0977,
-  "seconds_max": 0.1405
+  "seconds_median": 0.0956,
+  "seconds_min": 0.0744,
+  "seconds_max": 0.1081
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 0,
@@ -158,21 +264,29 @@
    "row_serializations": 4000,
    "row_id_comparisons": 0
   },
-  "seconds_median": 0.1065,
-  "seconds_min": 0.1025,
-  "seconds_max": 0.1103
+  "seconds_median": 0.1778,
+  "seconds_min": 0.1675,
+  "seconds_max": 0.1786
  },
  "hook_import": {
   "desc": "the hook process for a PreToolUse `ls`: does it import numpy",
+  "backend": {
+   "declared": "none",
+   "observed": "none"
+  },
   "counters": {
    "hook_imports_numpy": 0
   },
-  "seconds_median": 0.3979,
-  "seconds_min": 0.3898,
-  "seconds_max": 0.4133
+  "seconds_median": 0.3596,
+  "seconds_min": 0.3149,
+  "seconds_max": 0.3657
  },
  "boundary_n2000": {
   "desc": "session boundary (open, write, close, flush) on a 2,000-record store",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
   "counters": {
    "replace_store": 0,
    "replace_tombstones": 0,
@@ -187,19 +301,23 @@
    "current_active_scans": 0,
    "row_serializations": 2005
   },
-  "seconds_median": 0.2047,
-  "seconds_min": 0.1641,
-  "seconds_max": 0.3524
+  "seconds_median": 0.2274,
+  "seconds_min": 0.1816,
+  "seconds_max": 0.2306
  },
  "hook_install": {
   "desc": "--install into a temp project: is PostToolUse scoped to what capture records",
+  "backend": {
+   "declared": "none",
+   "observed": "none"
+  },
   "counters": {
    "post_tool_use_unscoped": 0,
    "post_tool_use_matcher_tools": 4,
    "post_tool_use_extra_tools": 0
   },
-  "seconds_median": 0.0054,
-  "seconds_min": 0.0048,
-  "seconds_max": 0.0058
+  "seconds_median": 0.0095,
+  "seconds_min": 0.0087,
+  "seconds_max": 0.0114
  }
 }

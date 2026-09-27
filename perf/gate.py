@@ -214,8 +214,43 @@ COUNTED_CALLS = {
 # so the counters are reproducible on any machine and any Python. If you change a fixture you change the
 # baseline -- say so in the commit.
 
+#: Every store path a workload created since `measure()` last cleared it. The backend witness reads
+#: these files after an arm runs (AUDIT-B B-13).
+_ARM_STORES: list = []
+
+
 def _store_path():
-    return os.path.join(tempfile.mkdtemp(), "s.json")
+    p = os.path.join(tempfile.mkdtemp(), "s.json")
+    _ARM_STORES.append(p)
+    return p
+
+
+@contextlib.contextmanager
+def _backend(backend):
+    """Run an arm on the backend it names. `json` sets INSPEXIMUS_STORE_FORMAT=json, the pin that keeps a
+    store in the JSON format; every other arm runs with the pin removed, so a developer's own pin cannot
+    turn a row-store arm into a JSON one. The previous value is restored afterwards.
+
+    WHY ARMS NAME A BACKEND (AUDIT-B B-13). The default store became rows after the 2026-08-16 baseline,
+    and the write, erase and session arms written for JSON ran on rows from then on. `write_n1000` went
+    from 1,000 full serializations to 0, the drop was reported as a NOTE, and the JSON write path was
+    measured by nothing. JSON stores are still read (encrypted stores, the pin), so both backends keep
+    arms, and `compare` fails when an arm's store files are not in the format it names."""
+    prev = os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+    if backend == "json":
+        os.environ["INSPEXIMUS_STORE_FORMAT"] = "json"
+    try:
+        yield
+    finally:
+        os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+        if prev is not None:
+            os.environ["INSPEXIMUS_STORE_FORMAT"] = prev
+
+
+def _observed_backend(paths):
+    """The format of the store files an arm left: `json`, `rows`, both joined by `+`, or `none`."""
+    kinds = {"rows" if core._rows.looks_like_sqlite(p) else "json" for p in paths if os.path.exists(p)}
+    return "+".join(sorted(kinds)) or "none"
 
 
 def w_write(n):
@@ -401,6 +436,7 @@ def w_hook(n):
     os.environ.update(env)
     try:
         m = cc._store(proj)
+        _ARM_STORES.append(str(m.path))
         for i in range(n):
             m.remember(f"ran: make target {i}", key=f"cmd:{i}", mtype="episodic", tags=["bash"])
         m.flush()
@@ -562,18 +598,23 @@ def w_hook_install():
     return run
 
 
+#: name -> (build, description, backend). The backend is `rows`, `json` or `none` (an arm that opens no
+#: store), and `compare` fails when an arm's store files are not in that format (AUDIT-B B-13).
 WORKLOADS = {
-    "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush"),
-    "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records"),
-    "erase_k200_n2000":   (lambda: w_erase(200, 2000),   "erase 200 subject records among 2,000"),
-    "session_n500":       (lambda: w_session(500),       "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets"),
-    "hook_n2000":         (lambda: w_hook(2000),         "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store"),
-    "reports_k300":       (lambda: w_reports(300),       "supersession_report + 5 suppressing recalls over 300 keys"),
-    "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once"),
-    "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them"),
-    "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy"),
-    "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store"),
-    "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records"),
+    "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush", "rows"),
+    "write_json_n1000":   (lambda: w_write(1000),        "1,000 remembers + flush, JSON store", "json"),
+    "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records", "rows"),
+    "erase_k200_n2000":   (lambda: w_erase(200, 2000),   "erase 200 subject records among 2,000", "rows"),
+    "erase_json_k50_n500": (lambda: w_erase(50, 500),    "erase 50 subject records among 500, JSON store", "json"),
+    "session_n500":       (lambda: w_session(500),       "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets", "rows"),
+    "session_json_n500":  (lambda: w_session(500),       "mixed session as session_n500, JSON store", "json"),
+    "hook_n2000":         (lambda: w_hook(2000),         "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store", "rows"),
+    "reports_k300":       (lambda: w_reports(300),       "supersession_report + 5 suppressing recalls over 300 keys", "rows"),
+    "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once", "rows"),
+    "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
+    "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
+    "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store", "rows"),
+    "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records", "none"),
 }
 
 
@@ -581,37 +622,53 @@ WORKLOADS = {
 
 def measure():
     out = {}
-    for name, (build, desc) in WORKLOADS.items():
-        run = build()                                   # fixture built OUTSIDE the counted region
-        with Counters() as c:
-            t0 = time.perf_counter()
-            run()
-            first = time.perf_counter() - t0
-        counters = getattr(run, "inner", None) or c.as_dict()
+    for name, (build, desc, backend) in WORKLOADS.items():
+        # A heartbeat per arm: a full run takes minutes, and a silent one cannot be told from a wedged one.
+        print(f"  measuring {name} ({backend})", file=sys.stderr, flush=True)
+        with _backend(backend):
+            _ARM_STORES.clear()
+            run = build()                               # fixture built OUTSIDE the counted region
+            with Counters() as c:
+                t0 = time.perf_counter()
+                run()
+                first = time.perf_counter() - t0
+            counters = getattr(run, "inner", None) or c.as_dict()
+            observed = _observed_backend(_ARM_STORES)
 
-        times = [getattr(run, "elapsed", first)]
-        for _ in range(REPEATS - 1):
-            r = build()
-            t0 = time.perf_counter()
-            r()
-            times.append(getattr(r, "elapsed", time.perf_counter() - t0))
+            times = [getattr(run, "elapsed", first)]
+            for _ in range(REPEATS - 1):
+                r = build()
+                t0 = time.perf_counter()
+                r()
+                times.append(getattr(r, "elapsed", time.perf_counter() - t0))
 
-        out[name] = {"desc": desc, "counters": counters,
+        out[name] = {"desc": desc, "backend": {"declared": backend, "observed": observed},
+                     "counters": counters,
                      "seconds_median": round(statistics.median(times), 4),
                      "seconds_min": round(min(times), 4), "seconds_max": round(max(times), 4)}
     return out
+
+
+def _backend_misses(now):
+    """Arms whose store files are not in the format the arm names."""
+    return [f"{name}: names backend {w['backend']['declared']} but its stores are {w['backend']['observed']}"
+            for name, w in now.items()
+            if "backend" in w and w["backend"]["observed"] != w["backend"]["declared"]]
 
 
 # ── the gate ───────────────────────────────────────────────────────────────────────────────────────
 
 def compare(base, now):
     """Counters are exact and gate the build. Time only alarms past TIME_ALARM_FACTOR."""
-    fail, warn = [], []
+    fail, warn = _backend_misses(now), []
     for name, b in base.items():
         n = now.get(name)
         if n is None:
             fail.append(f"{name}: workload MISSING from this run -- a gate that lost its workload is not a gate")
             continue
+        if "backend" in b and b["backend"]["declared"] != n.get("backend", {}).get("declared"):
+            fail.append(f"{name}: backend changed from {b['backend']['declared']} to "
+                        f"{n.get('backend', {}).get('declared')} without a new baseline")
         for key, bv in b["counters"].items():
             nv = n["counters"].get(key)
             if nv is None:
@@ -641,6 +698,12 @@ def main(argv):
         now = measure()
 
     if cmd == "record":
+        misses = _backend_misses(now)
+        if misses:
+            print("refusing to record: an arm did not run on the backend it names", file=sys.stderr)
+            for m in misses:
+                print(f"  {m}", file=sys.stderr)
+            return 1
         BASELINE.write_text(json.dumps(now, indent=1) + "\n", encoding="utf-8")
         print(f"recorded {len(now)} workloads -> {BASELINE.relative_to(ROOT)}")
         for k, v in now.items():

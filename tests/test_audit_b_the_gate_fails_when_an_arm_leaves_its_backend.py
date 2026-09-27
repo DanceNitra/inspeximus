@@ -28,9 +28,6 @@ import gate  # noqa: E402
 
 BACKENDS = {"json", "rows", "none"}
 
-pytestmark = pytest.mark.xfail(strict=True, raises=AssertionError,
-                                reason="B-13: the gate's arms name no backend, so leaving one stays green")
-
 
 def _names_backends():
     return hasattr(gate, "_backend") and all(len(spec) == 3 for spec in gate.WORKLOADS.values())
@@ -78,11 +75,12 @@ def test_every_arm_names_its_backend_and_the_baseline_saw_it():
     with open(os.path.join(ROOT, "perf", "baseline.json"), encoding="utf-8") as fh:
         base = json.load(fh)
     for name, (_build, _desc, backend) in gate.WORKLOADS.items():
-        assert base[name]["backend"] == {"declared": backend, "observed": backend}, (name, base[name].get("backend"))
+        seen = base.get(name, {}).get("backend")
+        assert seen == {"declared": backend, "observed": backend}, (name, seen)
     # Both backends keep a write, an erase and a session arm, so neither path goes unmeasured again.
     for kind in ("write", "erase", "session"):
         names = {gate.WORKLOADS[n][2] for n in gate.WORKLOADS if n.startswith(kind + "_")}
         assert {"json", "rows"} <= names, f"{kind}: arms cover only {names}"
     # A JSON write arm that serialises nothing is measuring nothing.
     json_writes = [n for n in gate.WORKLOADS if n.startswith("write_") and gate.WORKLOADS[n][2] == "json"]
-    assert all(base[n]["counters"]["full_serializations"] > 0 for n in json_writes), json_writes
+    assert json_writes and all(base[n]["counters"]["full_serializations"] > 0 for n in json_writes), json_writes
