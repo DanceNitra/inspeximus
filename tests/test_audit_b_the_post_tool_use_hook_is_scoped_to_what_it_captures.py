@@ -32,8 +32,6 @@ def _ours(entries):
                                       for h in e.get("hooks", []))]
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-02: the PostToolUse hook has no matcher, so every tool call starts a process")
 def test_install_and_the_plugin_manifest_scope_post_tool_use_to_the_captured_tools(tmp_path):
     assert cc.install(cwd=str(tmp_path)) is True
     cfg = json.load(open(tmp_path / ".claude" / "settings.json", encoding="utf-8"))

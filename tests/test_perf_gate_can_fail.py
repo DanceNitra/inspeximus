@@ -462,3 +462,29 @@ def test_it_fails_when_opening_a_store_serialises_every_row_again():
     fail, _ = gate.compare({"p": {"counters": good, "seconds_median": 0.1}},
                            {"p": {"counters": bad, "seconds_median": 0.1}})
     assert any("row_serializations" in f for f in fail), f"the serialisations grew and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_the_post_tool_use_hook_loses_its_matcher():
+    """AUDIT-B B-02. Without a matcher the PostToolUse hook starts a process for every tool call, and
+    `capture` returns at once for all but four tools. Reintroduced by removing the PostToolUse entry
+    from _EVENT_HOOK, which is exactly the pre-fix installer, and measured through the gate's counter."""
+    import inspeximus.claude_code as cc
+    run = gate.w_hook_install()
+    run()
+    good = run.inner
+    assert good == {"post_tool_use_unscoped": 0, "post_tool_use_matcher_tools": 4,
+                    "post_tool_use_extra_tools": 0}, good
+
+    real = dict(cc._EVENT_HOOK)
+    cc._EVENT_HOOK.pop("PostToolUse")
+    try:
+        run = gate.w_hook_install()
+        run()
+        bad = run.inner
+    finally:
+        cc._EVENT_HOOK.clear()
+        cc._EVENT_HOOK.update(real)
+    assert bad["post_tool_use_unscoped"] == 1, bad
+    fail, _ = gate.compare({"h": {"counters": good, "seconds_median": 0.1}},
+                           {"h": {"counters": bad, "seconds_median": 0.1}})
+    assert any("post_tool_use_unscoped" in f for f in fail), fail

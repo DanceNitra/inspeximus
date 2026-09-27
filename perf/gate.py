@@ -498,6 +498,29 @@ def w_hook_import(root=None):
     return run
 
 
+def w_hook_install():
+    """`--install` into a temp project, then read what it wrote. `post_tool_use_unscoped` is 1 when the
+    PostToolUse entry has no matcher, so every tool call of a session starts a hook process;
+    `post_tool_use_extra_tools` counts matcher tools `capture` does not record. Both 0 (AUDIT-B B-02)."""
+    import inspeximus.claude_code as cc
+
+    def run():
+        proj = tempfile.mkdtemp()
+        import contextlib
+        import io
+        with contextlib.redirect_stdout(io.StringIO()):
+            cc.install(cwd=proj)
+        with open(os.path.join(proj, ".claude", "settings.json"), encoding="utf-8") as fh:
+            post = json.load(fh)["hooks"]["PostToolUse"]
+        ours = [e for e in post if any("inspeximus.claude_code" in (h.get("command") or "")
+                                       for h in e.get("hooks", []))]
+        m = (ours[0].get("matcher") if ours else None) or ""
+        run.inner = {"post_tool_use_unscoped": int(not m),
+                     "post_tool_use_matcher_tools": len(set(m.split("|"))) if m else 0,
+                     "post_tool_use_extra_tools": len(set(m.split("|")) - set(cc._CAPTURED_TOOLS)) if m else 0}
+    return run
+
+
 WORKLOADS = {
     "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush"),
     "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records"),
@@ -509,6 +532,7 @@ WORKLOADS = {
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy"),
     "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store"),
+    "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records"),
 }
 
 

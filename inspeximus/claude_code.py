@@ -1112,7 +1112,13 @@ _PRE_TOOLS = ("Bash", "Write", "Edit", "MultiEdit", "NotebookEdit")
 # ~0.77 s each (measured, silent path included).
 _HOOK_PRE_TOOL = {"matcher": "|".join(_PRE_TOOLS),
                   "hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
-_EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END, "PreToolUse": _HOOK_PRE_TOOL}
+# THE SAME SCOPE FOR PostToolUse, derived from what `capture` records. Without it Claude Code started a
+# process that imports this package for every Read, Grep, Glob and WebFetch, and `capture` returned at
+# once: 0.29 to 0.43 s per such event after the handler stopped opening the store, measured 2026-09-27
+# (AUDIT-B B-02). An entry installed before this keeps no matcher; `capture` still returns early for it.
+_HOOK_POST_TOOL = {"matcher": "|".join(_CAPTURED_TOOLS),
+                   "hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
+_EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END, "PreToolUse": _HOOK_PRE_TOOL, "PostToolUse": _HOOK_POST_TOOL}
 
 # Hooks written before the 1.25.0 rename invoke `python -m inspeximus.claude_code`, which still works
 # through the compatibility alias. Both spellings must be RECOGNISED, or install() would add a second
