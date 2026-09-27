@@ -62,13 +62,19 @@ def _install():
         m = shadow_of(file) if isinstance(file, (str, bytes, os.PathLike)) else None
         if m is not None:
             real, copy = m
-            if any(c in mode for c in "wax+"):
+            writing = any(c in mode for c in "wax+")
+            if writing:
                 os.makedirs(os.path.dirname(copy), exist_ok=True)
                 if ("a" in mode or "+" in mode) and not os.path.exists(copy) and os.path.exists(real):
                     shutil.copyfile(real, copy)
+            if writing or os.path.exists(copy):
                 file = copy
-            elif os.path.exists(copy):
-                file = copy
+                # PYTHON 3.9 AND EARLIER: Path.open passes `opener=self._opener`, which opens the
+                # ORIGINAL path whatever name reaches open(), so Path.write_text escaped the shadow.
+                # Measured: CI's 3.9 leg and a local 3.8 wrote the tracked file; 3.11 and 3.12 did not.
+                # Dropping an opener bound to a path object leaves the default, which opens `file`.
+                if isinstance(getattr(kwargs.get("opener"), "__self__", None), os.PathLike):
+                    kwargs.pop("opener")
         return real_open(file, mode, *args, **kwargs)
 
     def guarded_move(real_fn):
