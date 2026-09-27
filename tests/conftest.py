@@ -61,6 +61,39 @@ def _every_temp_file_lands_under_pytests_basetemp(tmp_path_factory):
                 os.environ[k] = v
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _a_probe_run_by_the_suite_never_rewrites_a_tracked_file(tmp_path_factory):
+    """Every Python the suite starts loads tests/probe_shadow/sitecustomize.py, which sends a probe's
+    writes to tracked files into a shadow directory. The reason and the exact scope are in that file.
+
+    MEASURED 2026-09-27: CI's Python 3.9 leg failed test_running_the_examples_does_not_dirty_the_repository
+    because a probe on another worker rewrote agora_output/lab/data/forget_verification_bench.json, and
+    one full local run left two tracked probe receipts modified."""
+    import subprocess
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    listing = tmp_path_factory.getbasetemp() / "tracked-files.txt"
+    shadow = tmp_path_factory.getbasetemp() / "probe-shadow"
+    if not listing.exists():
+        out = subprocess.run(["git", "ls-files", "-z"], cwd=root, capture_output=True).stdout or b""
+        listing.write_text("\n".join(p for p in out.decode("utf-8", "replace").split("\0") if p) + "\n",
+                           encoding="utf-8")
+    shim = os.path.join(os.path.dirname(os.path.abspath(__file__)), "probe_shadow")
+    before = {k: os.environ.get(k) for k in ("PYTHONPATH", "INSPEXIMUS_PROBE_ROOT", "INSPEXIMUS_PROBE_SHADOW",
+                                             "INSPEXIMUS_PROBE_TRACKED")}
+    os.environ["PYTHONPATH"] = os.pathsep.join(p for p in (shim, before["PYTHONPATH"]) if p)
+    os.environ["INSPEXIMUS_PROBE_ROOT"] = root
+    os.environ["INSPEXIMUS_PROBE_SHADOW"] = str(shadow)
+    os.environ["INSPEXIMUS_PROBE_TRACKED"] = str(listing)
+    try:
+        yield
+    finally:
+        for k, v in before.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+
 def fork_of(ix, dest, records, receipt_key=None, keep=1):
     """A real fork of `ix` at `dest`: same genesis receipt, divergent history from `keep` onwards.
 

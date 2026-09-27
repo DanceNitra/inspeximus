@@ -290,6 +290,10 @@ def test_the_run_leaves_no_probe_churn_in_the_working_tree():
     writes = dict(os.environ)
     writes.pop("PYTEST_CURRENT_TEST", None)
     writes.pop("INSPEXIMUS_NO_RECEIPT", None)
+    # The same reason again for the probe shadow (tests/probe_shadow/sitecustomize.py): without these
+    # three variables the child writes the real receipt, which is what this test restores.
+    for k in ("INSPEXIMUS_PROBE_ROOT", "INSPEXIMUS_PROBE_SHADOW", "INSPEXIMUS_PROBE_TRACKED"):
+        writes.pop(k, None)
     try:
         assert subprocess.run([sys.executable, str(probe)], cwd=ROOT, env=writes,
                               capture_output=True, text=True, encoding="utf-8", errors="replace").returncode == 0
