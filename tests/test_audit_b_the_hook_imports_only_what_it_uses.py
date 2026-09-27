@@ -40,8 +40,6 @@ def _fresh(code):
     return json.loads(p.stdout.strip().splitlines()[-1])
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-19: importing the hook runs the package __init__, which imports every governance module")
 def test_importing_the_hook_loads_no_governance_module():
     loaded = _fresh("import json, sys; import inspeximus.claude_code; "
                     "print(json.dumps(sorted(m for m in sys.modules if m.startswith('inspeximus'))))")

@@ -286,11 +286,12 @@
    "observed": "none"
   },
   "counters": {
-   "hook_imports_numpy": 0
+   "hook_imports_numpy": 0,
+   "hook_imports_governance": 0
   },
-  "seconds_median": 0.679,
-  "seconds_min": 0.5651,
-  "seconds_max": 0.8884
+  "seconds_median": 0.2809,
+  "seconds_min": 0.2658,
+  "seconds_max": 0.2956
  },
  "memreport_n1000": {
   "desc": "memory_report over 1,000 records: 400 sampled recalls",

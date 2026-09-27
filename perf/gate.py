@@ -560,12 +560,26 @@ def w_boundary(n):
     return run
 
 
+#: The governance modules the package imported eagerly until 3.15.0. The hook calls none of them, and
+#: loading them was about 60 ms of every hook event (AUDIT-B B-19).
+GOVERNANCE_MODULES = ("actions", "agent_audit_trail", "cose", "deployer", "erasure_residue", "partitions",
+                      "scitt", "subject_rights", "technical_documentation", "timestamp", "trusted_list")
+
+
 def w_hook_import(root=None):
     """A PreToolUse event for `ls`, run as the real hook process. `hook_imports_numpy` is 1 when that
     process imported numpy. numpy only accelerates semantic recall, and an eager import was about
     0.17 s of every hook event (AUDIT-B B-10). A stand-in numpy first on PYTHONPATH records its own
     import, so the counter reads the same with or without numpy installed; if the stand-in is not
-    importable the workload raises instead of reporting a zero it did not measure."""
+    importable the workload raises instead of reporting a zero it did not measure.
+
+    `hook_imports_governance` counts the GOVERNANCE_MODULES the same process had loaded when it exited
+    (AUDIT-B B-19). A `sitecustomize` beside the stand-in numpy registers an exit handler that writes
+    `sys.modules` to a file, so the hook still runs as the real `-m` process. `-X importtime` was tried
+    first and is not a witness: it does not list a module loaded through `importlib.import_module`,
+    which is how the package loads these lazily, so an eager copy counted 1 of 11. If the file is
+    missing or does not list inspeximus.core, the workload raises instead of reporting a zero it did
+    not measure."""
     import json as _json
     import subprocess
     d = tempfile.mkdtemp()
@@ -574,10 +588,17 @@ def w_hook_import(root=None):
     with open(os.path.join(fake, "numpy", "__init__.py"), "w", encoding="utf-8") as fh:
         fh.write("import os\nopen(os.environ['NUMPY_MARKER'], 'w').write('imported')\n")
     marker = os.path.join(d, "numpy-was-imported")
+    modules_out = os.path.join(d, "modules-at-exit.json")
+    with open(os.path.join(fake, "sitecustomize.py"), "w", encoding="utf-8") as fh:
+        fh.write("import atexit, json, os, sys\n"
+                 "def _dump():\n"
+                 "    with open(os.environ['GATE_MODULES_OUT'], 'w') as f:\n"
+                 "        json.dump(sorted(sys.modules), f)\n"
+                 "atexit.register(_dump)\n")
     proj = os.path.join(d, "proj")
     os.makedirs(os.path.join(proj, ".git"))
     env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
-    env.update(PYTHONPATH=os.pathsep.join([fake, str(root or ROOT)]), NUMPY_MARKER=marker,
+    env.update(PYTHONPATH=os.pathsep.join([fake, str(root or ROOT)]), NUMPY_MARKER=marker, GATE_MODULES_OUT=modules_out,
                HOME=d, USERPROFILE=d, INSPEXIMUS_NO_UPDATE_CHECK="1")
     subprocess.run([sys.executable, "-c", "import numpy"], env=env, cwd=proj, check=True)
     if not os.path.exists(marker):
@@ -586,11 +607,21 @@ def w_hook_import(root=None):
           "cwd": proj.replace("\\", "/"), "session_id": "gate"}
 
     def run():
-        if os.path.exists(marker):
-            os.remove(marker)
+        for f in (marker, modules_out):
+            if os.path.exists(f):
+                os.remove(f)
         subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=_json.dumps(ev).encode(),
                        env=env, cwd=proj, capture_output=True)
-        run.inner = {"hook_imports_numpy": int(os.path.exists(marker))}
+        try:
+            with open(modules_out, encoding="utf-8") as fh:
+                imported = set(_json.load(fh))
+        except OSError:
+            imported = set()
+        if "inspeximus.core" not in imported:
+            raise RuntimeError("the hook process reported no inspeximus.core at exit; "
+                               "hook_imports_governance would measure nothing")
+        run.inner = {"hook_imports_numpy": int(os.path.exists(marker)),
+                     "hook_imports_governance": sum(f"inspeximus.{m}" in imported for m in GOVERNANCE_MODULES)}
     return run
 
 

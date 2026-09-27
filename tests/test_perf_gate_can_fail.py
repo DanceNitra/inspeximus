@@ -312,7 +312,7 @@ def test_it_fails_when_the_hook_imports_numpy_again(tmp_path):
     run = gate.w_hook_import()
     run()
     good = run.inner
-    assert good == {"hook_imports_numpy": 0}, ("fixture error: the hook already imports numpy", good)
+    assert good["hook_imports_numpy"] == 0, ("fixture error: the hook already imports numpy", good)
 
     pkg = tmp_path / "pkg"
     shutil.copytree(os.path.join(ROOT, "inspeximus"), pkg / "inspeximus",
@@ -324,7 +324,7 @@ def test_it_fails_when_the_hook_imports_numpy_again(tmp_path):
     run = gate.w_hook_import(root=pkg)
     run()
     bad = run.inner
-    assert bad == {"hook_imports_numpy": 1}, f"the eager import did not move the counter: {bad}"
+    assert bad["hook_imports_numpy"] == 1, f"the eager import did not move the counter: {bad}"
 
     fail, _ = gate.compare({"h": {"counters": good, "seconds_median": 0.1}},
                            {"h": {"counters": bad, "seconds_median": 0.1}})
@@ -543,3 +543,29 @@ def test_it_fails_when_memory_report_rebuilds_the_pool_per_query(monkeypatch):
     fail, _ = gate.compare({"r": {"counters": good, "seconds_median": 0.1}},
                            {"r": {"counters": bad, "seconds_median": 0.1}})
     assert any("read_guard_assessments" in f for f in fail), fail
+
+
+def test_it_fails_when_the_package_imports_its_governance_modules_eagerly_again(tmp_path):
+    """AUDIT-B B-19. The package __init__ imported eleven governance modules, so every hook event loaded
+    them although the hook calls none. Reintroduced in a copy of the package whose __init__ imports them
+    eagerly again, run as the real hook process, and measured through the counter the gate reads."""
+    import shutil
+    run = gate.w_hook_import()
+    run()
+    good = run.inner
+    assert good["hook_imports_governance"] == 0, ("fixture error: the hook already imports them", good)
+
+    pkg = tmp_path / "pkg"
+    shutil.copytree(os.path.join(ROOT, "inspeximus"), pkg / "inspeximus",
+                    ignore=shutil.ignore_patterns("__pycache__"))
+    init = pkg / "inspeximus" / "__init__.py"
+    init.write_text(init.read_text(encoding="utf-8") + "\nfrom . import "
+                    + ", ".join(gate.GOVERNANCE_MODULES) + "\n", encoding="utf-8")
+    run = gate.w_hook_import(root=pkg)
+    run()
+    bad = run.inner
+    assert bad["hook_imports_governance"] == len(gate.GOVERNANCE_MODULES), f"the eager imports did not move the counter: {bad}"
+
+    fail, _ = gate.compare({"h": {"counters": good, "seconds_median": 0.1}},
+                           {"h": {"counters": bad, "seconds_median": 0.1}})
+    assert any("hook_imports_governance" in f for f in fail), f"the eager imports came back and the gate stayed green: {fail}"
