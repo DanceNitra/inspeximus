@@ -22,6 +22,7 @@ import pathlib
 import platform
 import shutil
 import sys
+import time
 
 SERVER_NAME = "inspeximus"
 
@@ -101,12 +102,40 @@ def write_text_keeping_newlines(path, text, backup=True):
         data = data.replace("\n", nl)
     new = data.encode("utf-8")
     if path.exists() and path.read_bytes() == new:
-        return
+        return None
     tmp = path.with_suffix(path.suffix + ".inspeximus-tmp")
     tmp.write_bytes(new)
-    if backup and path.exists():
-        shutil.copy2(path, str(path) + ".bak")
+    bak = _backup(path) if backup and path.exists() else None
     tmp.replace(path)
+    return bak
+
+
+#: Every backup the installer made in this process, as (file, backup). `install --all` prints them.
+BACKUPS = []
+
+
+def _backup(path):
+    """Copy `path` to a backup that holds its current bytes, and return the backup's path.
+
+    AN EXISTING .BAK IS NEVER OVERWRITTEN (3.14.4). On 2026-09-27 an install left Hermes' config.yaml
+    with a config.yaml.bak stamped 14 minutes before the install, and nobody could say whose backup it
+    was. A .bak another tool made is that tool's copy, and copying over it destroys it. `<name>.bak` is
+    used when it is free, or when it already holds exactly these bytes; otherwise
+    `<name>.bak.<date>-<time>`. `copyfile`, not `copy2`: the backup's time is when it was made. copy2
+    stamps it with the source's last change, which is how a fresh backup can look 14 minutes old."""
+    cur = path.read_bytes()
+    cand = pathlib.Path(str(path) + ".bak")
+    if cand.exists() and cand.read_bytes() != cur:
+        stamp = time.strftime("%Y%m%d-%H%M%S")
+        cand = pathlib.Path(f"{path}.bak.{stamp}")
+        n = 1
+        while cand.exists() and cand.read_bytes() != cur:
+            n += 1
+            cand = pathlib.Path(f"{path}.bak.{stamp}-{n}")
+    if not (cand.exists() and cand.read_bytes() == cur):
+        shutil.copyfile(path, cand)
+    BACKUPS.append((str(path), str(cand)))
+    return cand
 
 
 def _write_json(path, data):

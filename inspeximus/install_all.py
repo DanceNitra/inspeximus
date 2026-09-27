@@ -161,6 +161,16 @@ def choose_store(hosts, store=None):
     return default_store(), None
 
 
+def merged_agents(store, labels, old=None):
+    """The agents shared.json names after this run: the ones already recorded for this store, then the
+    new ones. A different store starts a new list."""
+    if old is None:
+        from ._surface import shared_record
+        old = shared_record()
+    prev = [a for a in (old.get("agents") or []) if isinstance(a, str)] if old.get("store") == str(store) else []
+    return prev + [a for a in labels if a not in prev]
+
+
 def write_shared_record(store, agents=None, seal=None):
     """Write ~/.inspeximus/shared.json. Since 3.14.4 it also names the wired agents and the install SEAL,
     which the ARMED block, `install --check` and each agent's one-time "memory active" line read.
@@ -177,8 +187,7 @@ def write_shared_record(store, agents=None, seal=None):
     old = old if isinstance(old, dict) else {}
     same = old.get("store") == str(store)
     data = {"store": str(store), "written_by": "inspeximus install --all", "version": _version()}
-    prev = [a for a in (old.get("agents") or []) if isinstance(a, str)] if same else []
-    merged = prev + [a for a in (agents or []) if a not in prev]
+    merged = merged_agents(store, agents or [], old)
     if merged:
         data["agents"] = merged
     if seal:
@@ -624,6 +633,7 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     if err:
         out("ERROR: " + err)
         return 2
+    backups_from = len(_i.BACKUPS)                  # this run's backups are listed under the table
     kind, exe = _i.resolve_runtime()
     for what, p in (("--store", store), ("the Python running this installer", exe if kind == "python" else None)):
         var = unexpanded_variable(p)
@@ -685,14 +695,14 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     rid = seal = None
     labels = [_label(h) for h in wired]
     if not dry_run and wired:
-        from ._surface import shared_record
         path.parent.mkdir(parents=True, exist_ok=True)
-        write_shared_record(path, agents=labels)
-        migrated, source = import_project_store(path, project)
-        rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"],
-                               labels=shared_record().get("agents") or labels)
-        seal = read_store(path)[1]
-        write_shared_record(path, agents=labels, seal=seal)
+        try:
+            migrated, source = import_project_store(path, project)
+            rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"],
+                                   labels=merged_agents(path, labels))
+            seal = read_store(path)[1]
+        finally:                                  # ONE write, and it happens even if recording failed
+            write_shared_record(path, agents=labels, seal=seal)
 
     widths = [max(len(str(r[i])) for r in rows + [("host", "found", "wired", "store path", "recall")])
               for i in range(5)]
@@ -702,6 +712,8 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
         out("  ".join(str(c).ljust(widths[i]) for i, c in enumerate(r)))
     for n in notes:
         out("note: " + n)
+    for f, b in _i.BACKUPS[backups_from:]:
+        out(f"kept a copy of {f} as {b}")
     if source:
         out(f"imported {migrated} record(s) from {source} into the shared store")
     if rid:

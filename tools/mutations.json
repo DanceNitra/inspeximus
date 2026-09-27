@@ -3767,8 +3767,8 @@
  {
   "name": "a --only run drops the other agents from shared.json",
   "file": "inspeximus/install_all.py",
-  "old": "    merged = prev + [a for a in (agents or []) if a not in prev]\n",
-  "new": "    merged = list(agents or [])\n",
+  "old": "    return prev + [a for a in labels if a not in prev]\n",
+  "new": "    return list(labels)\n",
   "tests": [
    "tests/test_the_install_ends_with_the_armed_block.py"
   ]
@@ -3776,8 +3776,8 @@
  {
   "name": "the setup decision names only this run's agents",
   "file": "inspeximus/install_all.py",
-  "old": "                               labels=shared_record().get(\"agents\") or labels)\n",
-  "new": "                               labels=labels)\n",
+  "old": "                                   labels=merged_agents(path, labels))\n",
+  "new": "                                   labels=labels)\n",
   "tests": [
    "tests/test_the_install_ends_with_the_armed_block.py"
   ]
@@ -3887,6 +3887,15 @@
   "file": "inspeximus/__main__.py",
   "old": "    raise SystemExit(main())\n",
   "new": "    pass\n",
+  "tests": [
+   "tests/test_the_installer_backs_up_every_file_it_changes.py"
+  ]
+ },
+ {
+  "name": "an existing .bak is overwritten by the installer's backup",
+  "file": "inspeximus/install.py",
+  "old": "    if cand.exists() and cand.read_bytes() != cur:\n",
+  "new": "    if False:\n",
   "tests": [
    "tests/test_the_installer_backs_up_every_file_it_changes.py"
   ]
