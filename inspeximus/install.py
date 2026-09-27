@@ -117,12 +117,12 @@ BACKUPS = []
 def _backup(path):
     """Copy `path` to a backup that holds its current bytes, and return the backup's path.
 
-    AN EXISTING .BAK IS NEVER OVERWRITTEN (3.14.4). On 2026-09-27 an install left Hermes' config.yaml
-    with a config.yaml.bak stamped 14 minutes before the install, and nobody could say whose backup it
-    was. A .bak another tool made is that tool's copy, and copying over it destroys it. `<name>.bak` is
-    used when it is free, or when it already holds exactly these bytes; otherwise
-    `<name>.bak.<date>-<time>`. `copyfile`, not `copy2`: the backup's time is when it was made. copy2
-    stamps it with the source's last change, which is how a fresh backup can look 14 minutes old."""
+    AN EXISTING .BAK IS NEVER OVERWRITTEN (3.14.4). On 2026-09-27 the installer copied over the
+    config.yaml.bak that `hermes config set` had made 14 minutes earlier, so a second run would have left
+    no copy of the pre-install file. `<name>.bak` is used when it is free, or when it already holds
+    exactly these bytes; otherwise `<name>.bak.<date>-<time>`. `copyfile`, not `copy2`: copy2 stamped the
+    new backup with the source's last change, 20:32 for a copy made at 20:46, and a person reading the
+    folder took the fresh backup for a stale one."""
     cur = path.read_bytes()
     cand = pathlib.Path(str(path) + ".bak")
     if cand.exists() and cand.read_bytes() != cur:

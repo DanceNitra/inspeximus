@@ -30,12 +30,14 @@ Found on 2026-09-27 on a second machine, where Hermes Agent on a 9B local model 
   folder named `%HOME%`, because bash does not expand it. The installer refuses a `--store` path, or
   its own interpreter path, that still holds `%NAME%`, `$NAME` or `${NAME}`, and changes nothing. The
   install page says to write `~` or `$HOME` in bash.
-- **A copy of every file it changes, and no backup overwritten.** The install page promises a `.bak`
-  of every file the installer changes; the write of Hermes' `inspeximus/config.json` made none. Every
-  existing file whose content changes is now copied first. An existing `.bak`, which may be another
-  tool's backup, is never overwritten: the copy then goes to `<name>.bak.<date>-<time>`. The run prints
-  `kept a copy of <file> as <backup>` for each. A write that would change nothing is skipped, so a
-  re-run that changes nothing writes nothing and keeps the seal.
+- **No backup is overwritten, and each one is named.** On that machine the installer copied over the
+  `config.yaml.bak` that `hermes config set` had made 14 minutes earlier, so a second run would have
+  left no copy of the pre-install file. An existing `.bak` is now never overwritten: the copy then goes
+  to `<name>.bak.<date>-<time>`. The copy also gets the time it was made; it used to carry the source's
+  last change, so a fresh backup looked 14 minutes old. The run prints `kept a copy of <file> as
+  <backup>` for each. Every existing file the installer changes is copied first, including Hermes'
+  `inspeximus/config.json` on a re-run, which had no backup. A write that would change nothing is
+  skipped, so a re-run that changes nothing writes nothing and keeps the seal.
 - **The setup decision says DECISION once.** Its stored text read `DECISION: DECISION: every AI
   agent ...`.
 - **`inspeximus --version` and `python -m inspeximus` work.** The first exited with 2 and the second

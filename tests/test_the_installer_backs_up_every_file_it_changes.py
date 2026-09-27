@@ -118,7 +118,8 @@ def test_the_setup_decision_says_decision_once(home):
 def test_version_answers_through_both_entry_points(argv, tmp_path):
     env = {k: v for k, v in os.environ.items() if not k.upper().startswith("INSPEXIMUS_")}
     env.update(PYTHONPATH=REPO, INSPEXIMUS_NO_UPDATE_CHECK="1", PYTHONIOENCODING="utf-8")
-    r = subprocess.run([sys.executable, *argv], cwd=tmp_path, env=env, capture_output=True, text=True, timeout=120)
+    r = subprocess.run([sys.executable, *argv], cwd=tmp_path, env=env, capture_output=True, text=True,
+                       encoding="utf-8", errors="replace", timeout=120)
     assert r.returncode == 0 and r.stdout.strip() == f"inspeximus {__version__}", (r.returncode, r.stdout, r.stderr)
 
 
@@ -126,5 +127,6 @@ def test_python_dash_m_inspeximus_runs_a_command(tmp_path):
     env = {k: v for k, v in os.environ.items() if not k.upper().startswith("INSPEXIMUS_")}
     env.update(PYTHONPATH=REPO, INSPEXIMUS_NO_UPDATE_CHECK="1", PYTHONIOENCODING="utf-8")
     r = subprocess.run([sys.executable, "-m", "inspeximus", "--path", str(tmp_path / "s.json"), "stats"],
-                       cwd=tmp_path, env=env, capture_output=True, text=True, timeout=120)
+                       cwd=tmp_path, env=env, capture_output=True, text=True, encoding="utf-8",
+                       errors="replace", timeout=120)
     assert r.returncode == 0 and "0 total" in r.stdout, (r.returncode, r.stdout, r.stderr)
