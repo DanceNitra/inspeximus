@@ -53,12 +53,31 @@ python -m venv "$HOME\.inspeximus\venv"
 & "$HOME\.inspeximus\venv\Scripts\inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
-If `python -m venv` fails on Windows with "The system cannot find the file specified", `python` is the
-Microsoft Store alias; run the first command as `py -3 -m venv "$HOME\.inspeximus\venv"` instead. If your
-terminal on Windows is bash (Git Bash, as in Hermes Agent), run the Linux commands with `Scripts` in place
-of `bin`, and `py -3 -m venv` in place of `python3 -m venv`. In bash, write the home folder as `~` or
-`$HOME`, never `%HOME%`: bash leaves `%HOME%` as it is, the virtual environment lands in a folder named
-`%HOME%`, and the installer refuses to run from there.
+Check Python first on Windows. Run `python --version`: it must print a version, such as `Python 3.12.7`.
+If it prints `Python was not found` or nothing, `python` is the Microsoft Store alias, not Python; check
+`py -3 --version` the same way and, if that prints a version, use `py -3` in place of `python`. If neither
+prints a version:
+
+- If you are an agent that runs in Python, as Hermes Agent does, create the virtual environment with your
+  own interpreter, the path in its `sys.executable`: `"<that path>" -m venv "$HOME\.inspeximus\venv"`.
+- Otherwise install Python for this user only, open a new terminal, and check again:
+  `winget install -e --id Python.Python.3.12 --scope user`.
+
+After the first command, check that `~\.inspeximus\venv\Scripts\python.exe` exists before you run the
+next one. On a machine without Python, `py -3 -m venv` was measured to exit 0 and create nothing.
+
+The block above is PowerShell. In bash on Windows (Git Bash, as in Hermes Agent), a line that starts with
+`&` is a syntax error, so use these lines instead, with the Python that printed a version in place of
+`python`:
+
+```bash
+python -m venv "$HOME/.inspeximus/venv"
+"$HOME/.inspeximus/venv/Scripts/python.exe" -m pip install -U "inspeximus[mcp]"
+"$HOME/.inspeximus/venv/Scripts/inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
+```
+
+In bash, write the home folder as `~` or `$HOME`, never `%HOME%`: bash leaves `%HOME%` as it is, and
+the installer refuses to run from a folder named `%HOME%`.
 
 The virtual environment lives in `~/.inspeximus/venv` on purpose. Every agent's configuration names the
 Python in it, so it must stay where it is. To update later, run the same commands again: every agent is pinned to the version that wrote its configuration.
@@ -69,6 +88,8 @@ It looks for each agent that is installed on this computer: its command on the P
 usual install location. A configuration folder left behind by an uninstalled app does not count. It
 registers the inspeximus memory in every agent it finds, and points all of them at one store,
 `~/.inspeximus/coding_memory.json`. If your agents already point at one existing store, that store is kept.
+The store is a SQLite database despite its `.json` name, so a text editor shows binary; read it with
+inspeximus, for example `inspeximus stats`.
 If they point at different stores, it stops and asks you to choose one with `--store <path>`. It prints
 one table:
 
