@@ -223,6 +223,18 @@ def _redirect_home(config):
     hf = os.path.join(config._real_home, ".cache", "huggingface")
     if not os.environ.get("HF_HOME") and os.path.isdir(hf):
         new["HF_HOME"] = hf
+    # PLAYWRIGHT_BROWSERS_PATH keeps the real browser cache. CI installs Chromium once into the real
+    # home; with HOME redirected, Playwright looked for it under the temporary home, and the browser
+    # verifier job failed 144 tests at setup (run 36330567561). On Windows the cache is under
+    # LOCALAPPDATA, which is not redirected, so no candidate below exists there.
+    if not os.environ.get("PLAYWRIGHT_BROWSERS_PATH"):
+        xdg_cache = os.environ.get("XDG_CACHE_HOME")
+        for pw in ([os.path.join(xdg_cache, "ms-playwright")] if xdg_cache else []) + [
+                os.path.join(config._real_home, ".cache", "ms-playwright"),
+                os.path.join(config._real_home, "Library", "Caches", "ms-playwright")]:
+            if os.path.isdir(pw):
+                new["PLAYWRIGHT_BROWSERS_PATH"] = pw
+                break
     config._home_env_before = {k: os.environ.get(k) for k in new}
     os.environ.update(new)
     config._test_home = home

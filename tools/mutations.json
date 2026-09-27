@@ -3682,5 +3682,14 @@
   "tests": [
    "tests/test_the_cli_opens_the_shared_store.py"
   ]
+ },
+ {
+  "name": "the temporary home drops the real Playwright cache",
+  "file": "tests/conftest.py",
+  "old": "                new[\"PLAYWRIGHT_BROWSERS_PATH\"] = pw\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_the_temporary_home_keeps_the_browser_cache.py"
+  ]
  }
 ]
