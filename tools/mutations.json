@@ -2274,8 +2274,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "recall ignores standing objections",
-  "old": "            _withheld = self._withheld_ids()\n            if _withheld:\n                pool = [r for r in pool if r[\"id\"] not in _withheld]",
-  "new": "            _withheld = set()\n            if _withheld:\n                pool = [r for r in pool if r[\"id\"] not in _withheld]",
+  "old": "                _withheld = self._withheld_ids()\n                if _withheld:\n                    pool = [r for r in pool if r[\"id\"] not in _withheld]",
+  "new": "                _withheld = set()\n                if _withheld:\n                    pool = [r for r in pool if r[\"id\"] not in _withheld]",
   "tests": [
    "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
   ]
@@ -2427,8 +2427,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "quarantined records are served anyway",
-  "old": "            if not include_quarantined:\n                pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
-  "new": "            if False:\n                pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
+  "old": "                if not include_quarantined:\n                    pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
+  "new": "                if False:\n                    pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
@@ -2472,8 +2472,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "records written before the guards are never assessed at recall",
-  "old": "        if self.read_guards:\n            for r in pool:\n                self._assess_read_guards(r)\n            if not include_quarantined:",
-  "new": "        if self.read_guards:\n            if not include_quarantined:",
+  "old": "            if self.read_guards:\n                for r in pool:\n                    self._assess_read_guards(r)\n                if not include_quarantined:",
+  "new": "            if self.read_guards:\n                if not include_quarantined:",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
@@ -3296,8 +3296,8 @@
  {
   "name": "a row store skips the load normalisation",
   "file": "inspeximus/core.py",
-  "old": "            for r in self._items:\n                if isinstance(r, dict):\n                    Inspeximus._normalise_loaded(r)\n            self._track_all()",
-  "new": "            self._track_all()",
+  "old": "                    Inspeximus._normalise_loaded(r)\n                    _reuse.append(not _conv and len(r) == _n0)",
+  "new": "                    _reuse.append(not _conv and len(r) == _n0)",
   "tests": [
    "tests/test_a_record_with_a_string_timestamp_is_normalised_at_load.py"
   ]
