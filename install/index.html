@@ -54,6 +54,9 @@ Before you run anything, ask the user two questions and wait for both answers:
    Hermes' memory provider, replacing the provider Hermes uses now, if it has one." Ask this only if the
    user has Hermes Agent. Otherwise the answer is no.
 
+Without both answers, run nothing that changes the computer: ask, and wait. If you cannot ask the user
+(for example, you were started with a single prompt and no chat), stop and report the two questions.
+
 Then run the commands for your operating system. Replace `RULES_ANSWER` with `yes` or `no` from the answer
 to question 1, and `HERMES_ANSWER` with `yes` or `no` from the answer to question 2. Change nothing else.
 If a placeholder is left in, the installer stops with an error and changes nothing. The installer never
@@ -71,7 +74,7 @@ Requires Python 3.9 or later.
 &lt;!-- ci: posix --&gt;
 ```bash
 python3 -m venv ~/.inspeximus/venv
-~/.inspeximus/venv/bin/python -m pip install "inspeximus[mcp]"
+~/.inspeximus/venv/bin/python -m pip install -U "inspeximus[mcp]"
 ~/.inspeximus/venv/bin/inspeximus install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
@@ -83,13 +86,17 @@ Requires Python 3.9 or later.
 &lt;!-- ci: windows --&gt;
 ```powershell
 python -m venv "$HOME\.inspeximus\venv"
-&amp; "$HOME\.inspeximus\venv\Scripts\python.exe" -m pip install "inspeximus[mcp]"
+&amp; "$HOME\.inspeximus\venv\Scripts\python.exe" -m pip install -U "inspeximus[mcp]"
 &amp; "$HOME\.inspeximus\venv\Scripts\inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
+If `python -m venv` fails on Windows with "The system cannot find the file specified", `python` is the
+Microsoft Store alias; run the first command as `py -3 -m venv "$HOME\.inspeximus\venv"` instead. If your
+terminal on Windows is bash (Git Bash, as in Hermes Agent), run the Linux commands with `Scripts` in place
+of `bin`, and `py -3 -m venv` in place of `python3 -m venv`.
+
 The virtual environment lives in `~/.inspeximus/venv` on purpose. Every agent's configuration names the
-Python in it, so it must stay where it is. To update later, run the same `pip install -U "inspeximus[mcp]"`
-and `install --all` again: every agent is pinned to the version that wrote its configuration.
+Python in it, so it must stay where it is. To update later, run the same commands again: every agent is pinned to the version that wrote its configuration.
 
 ## What `install --all` does
 
