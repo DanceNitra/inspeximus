@@ -176,6 +176,82 @@ def _no_test_leaves_a_global_patched():
               "is a process-wide change, and the test that BREAKS is never the test that did it.")
 
 
+def _redirect_home(config):
+    """Every test, and every process a test starts, gets a temporary home.
+
+    MEASURED 2026-09-27: test_docs_examples_are_runnable.py runs every documented command, README.md
+    documents `inspeximus install --ide claude`, and the subprocess inherited the real HOME and
+    USERPROFILE. Each suite run installed this tree's version into the owner's ~/.claude.json and
+    ~/.claude/settings.json; a tree at 3.14.2 pinned a version not yet on PyPI, and every new Claude
+    Code session on that machine then launched an MCP server that could not start. A sandboxed run
+    found the same class elsewhere: chain heads under %APPDATA%\\inspeximus\\heads from subprocesses
+    that strip INSPEXIMUS_KEY_HOME, ~/.inspeximus/.update_check.json from a probe that starts the MCP
+    server (an update check is a network call), and third-party configs (~/.mem0, ~/.haystack).
+
+    APPLIED IN pytest_configure, BEFORE COLLECTION, not in a fixture. Four test modules copy
+    os.environ into a module-level ENV when they are imported, which is during collection, before
+    any fixture runs; the first version of this redirect was a session fixture, and the run-end guard
+    caught one of those modules' children writing a chain head into the real %APPDATA%. Not in the
+    xdist controller: it runs no tests, and a worker STARTED with a redirected USERPROFILE breaks the
+    Windows known-folder API (appdirs, used by crewai). Changed inside the worker it is not.
+
+    Set in os.environ, so a child inherits it however it builds its environment from ours. On
+    Windows expanduser() and Path.home() read USERPROFILE and ignore HOME, which is why a
+    HOME-only redirect would not have stopped this.
+
+    NO AppData\\Local IN THE TEMPORARY HOME, deliberately. With the Microsoft Store Python,
+    sys.executable is an alias under the profile's AppData\\Local\\Microsoft\\WindowsApps; measured
+    here, a process started with USERPROFILE pointing at a home that HAS AppData\\Local derives its
+    sys.executable from there and cannot start a child Python at all. LOCALAPPDATA itself is left
+    alone for the same reason.
+
+    RESIDUAL, stated: a lookup through the Windows known-folder API (appdirs, used by crewai)
+    resolves the real profile inside a process that changed its environment after it started. That
+    is third-party data, never a host configuration; `_home_guard` checks the configurations.
+
+    HF_HOME keeps the real Hugging Face cache, so a test that loads a local model does not download
+    it again into every temporary home. INSPEXIMUS_NO_UPDATE_CHECK=1: tests do not call PyPI."""
+    config._real_home = os.path.expanduser("~")
+    if not hasattr(config, "workerinput") and config.getoption("numprocesses", default=None):
+        return                                    # the xdist controller: its workers redirect themselves
+    import tempfile as _tempfile
+    home = _tempfile.mkdtemp(prefix="inspeximus-test-home-")
+    for sub in (("AppData", "Roaming"), (".config",)):
+        os.makedirs(os.path.join(home, *sub), exist_ok=True)
+    new = {"HOME": home, "USERPROFILE": home, "APPDATA": os.path.join(home, "AppData", "Roaming"),
+           "XDG_CONFIG_HOME": os.path.join(home, ".config"), "INSPEXIMUS_NO_UPDATE_CHECK": "1"}
+    hf = os.path.join(config._real_home, ".cache", "huggingface")
+    if not os.environ.get("HF_HOME") and os.path.isdir(hf):
+        new["HF_HOME"] = hf
+    config._home_env_before = {k: os.environ.get(k) for k in new}
+    os.environ.update(new)
+    config._test_home = home
+
+
+def _restore_home(config):
+    before = getattr(config, "_home_env_before", None)
+    if before is None:
+        return
+    for k, v in before.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+    shutil.rmtree(config._test_home, ignore_errors=True)
+
+
+@pytest.fixture(scope="session")
+def _no_test_writes_the_real_home(request):
+    """{"home": the temporary home every test runs in, "real": the home the run started with}.
+
+    The redirect itself happens in pytest_configure (see `_redirect_home`); a test asks for this
+    only to compare against the two paths, and it fails loudly if this process was not redirected."""
+    home = getattr(request.config, "_test_home", None)
+    if home is None:
+        pytest.fail("the conftest did not redirect the home in this process")
+    return {"home": home, "real": request.config._real_home}
+
+
 @pytest.fixture(autouse=True, scope="session")
 def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory):
     """Every store with receipts writes its chain head to the config home. One suite run left 6,102
@@ -299,6 +375,7 @@ def pytest_collection_modifyitems(config, items):
 # Taken out of the environment at configure time for the same reason as SHARD_REPORT: a test that runs
 # pytest in a subprocess must not overwrite the file with its own few tests.
 def pytest_configure(config):
+    _redirect_home(config)
     if not hasattr(config, "workerinput"):
         config._shard_times_path = os.environ.pop("SHARD_TIMES", None)
         config._shard_times = {}
@@ -315,12 +392,32 @@ def pytest_sessionstart(session):
     config = session.config
     if getattr(config, "_shard_times_path", None):
         pytest_runtest_logreport._sink = config._shard_times
+    # THE RUN-END GUARD for `_no_test_writes_the_real_home`, in the controlling process only: under
+    # xdist the workers change their own environment, and the controller still sees the real home.
+    if not hasattr(config, "workerinput"):
+        import _home_guard
+        config._real_home_before = _home_guard.snapshot(config._real_home)
 
 
 def pytest_sessionfinish(session):
     config = session.config
+    before = getattr(config, "_real_home_before", None)
+    if before is not None:
+        import _home_guard
+        changed = _home_guard.diff(before, _home_guard.snapshot(config._real_home))
+        if changed:
+            tr = config.pluginmanager.get_plugin("terminalreporter")
+            lines = ["THIS RUN CHANGED THE REAL HOME (%s). A test wrote outside its temporary home:"
+                     % config._real_home] + ["  " + c for c in changed]
+            for ln in lines:
+                (tr.write_line(ln, red=True) if tr else print(ln))
+            session.exitstatus = pytest.ExitCode.TESTS_FAILED
     path = getattr(config, "_shard_times_path", None)
     if path:
         import json
         with open(path, "w", encoding="utf-8") as fh:
             json.dump({k: round(v, 3) for k, v in sorted(config._shard_times.items())}, fh, indent=0)
+
+
+def pytest_unconfigure(config):
+    _restore_home(config)

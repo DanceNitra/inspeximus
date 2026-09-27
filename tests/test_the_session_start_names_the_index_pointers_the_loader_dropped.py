@@ -90,11 +90,15 @@ def test_a_dropped_line_pointing_at_an_entry_the_window_has_is_not_reported():
     assert "e1.md" not in out and "4 pointer(s)" in out
 
 
-def test_the_standalone_entry_point_reads_the_saved_before_state_to_four_names():
+def test_the_standalone_entry_point_reads_the_saved_before_state_to_four_names(_no_test_writes_the_real_home):
     """The same-day before/after published on claude-code#70555 came from a probe; the shipped module
-    must read the same file to the same four names or the two instruments disagree on the cut rule."""
-    saved = os.path.join(os.path.expanduser("~"), ".claude", "projects", os.environ.get("INSPEXIMUS_CLAUDE_PROJECT",
-                                   "C--Users-%s-agora" % os.path.basename(os.path.expanduser("~"))),
+    must read the same file to the same four names or the two instruments disagree on the cut rule.
+
+    It READS a file in the real home, so it takes the real home from the conftest fixture: every test
+    runs in a temporary home, where this file does not exist, and the test would skip everywhere."""
+    real = _no_test_writes_the_real_home["real"]
+    saved = os.path.join(real, ".claude", "projects", os.environ.get("INSPEXIMUS_CLAUDE_PROJECT",
+                                   "C--Users-%s-agora" % os.path.basename(real)),
                          "memory", "MEMORY.md.pre-compaction-2026-09-13")
     if not os.path.isfile(saved):
         pytest.skip("the saved pre-compaction index is not on this machine")

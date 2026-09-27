@@ -47,6 +47,11 @@ class _Resp:
 
 
 def _stub_pypi(monkeypatch, payload, calls=None):
+    # The suite turns the update check off for every test (conftest, `_no_test_writes_the_real_home`:
+    # tests do not call PyPI). These tests exercise the check itself against a stubbed PyPI, so they
+    # turn it back on; the opt-out test sets it again after this.
+    monkeypatch.delenv("INSPEXIMUS_NO_UPDATE_CHECK", raising=False)
+
     def fake(req, timeout=None):
         if calls is not None:
             calls.append(getattr(req, "full_url", req))
