@@ -609,7 +609,74 @@ def apply(p):
     if hooks_change:
         _write_json(hooks["path"], hooks["data"])
         msgs.append(f"hooks {hooks['action']} ({', '.join(hooks['added'])}) -> {hooks['path']}")
+    problems = verify_written(p)
+    if problems:
+        return False, "written, but reading it back found: " + "; ".join(problems)
     return True, "; ".join(msgs)
+
+
+def read_entry(host, scope=None, project=None, name=SERVER_NAME):
+    """(path, entry or None, error): the host's inspeximus entry as its config holds it now. Read-only."""
+    spec = HOSTS[host]
+    paths = spec["paths"](project)
+    path = paths.get(scope or ("user" if "user" in paths else sorted(paths)[0]))
+    if path is None or not path.exists():
+        return path, None, None
+    try:
+        text = path.read_text(encoding="utf-8")
+        if spec["format"] == "json":
+            data = json.loads(text or "{}")
+            servers = data.get(spec["root_key"]) if isinstance(data, dict) else None
+            return path, (servers or {}).get(name) if isinstance(servers, dict) else None, None
+        try:
+            import tomllib
+        except ImportError:
+            try:
+                import tomli as tomllib
+            except ImportError:
+                return path, None, "reading TOML needs Python 3.11 or later, or the tomli package"
+        return path, (tomllib.loads(text).get("mcp_servers") or {}).get(name), None
+    except Exception as e:                                   # noqa: BLE001 -- a report, never a crash
+        return path, None, f"unreadable ({str(e)[:120]})"
+
+
+def verify_written(p):
+    """Read back what apply() just wrote and list every difference from the plan. Empty means it holds.
+
+    VERIFY AFTER WRITE (3.14.3). On 2026-09-27 a Claude Code entry written by `install --all` read back
+    `==3.14.0` two hours later, and nothing had said so. Reading back at once catches a write that did
+    not land or was replaced straight away; `install --check` catches one replaced later. Only our own
+    entry and our own hooks are compared, so another program changing its keys in the same file is not
+    reported as ours."""
+    problems = []
+    if p["action"] not in ("unchanged", "present"):
+        try:
+            text = p["path"].read_text(encoding="utf-8")
+        except OSError as e:
+            return [f"{p['path']} cannot be read back ({e})"]
+        if p["format"] == "json":
+            try:
+                got = ((json.loads(text or "{}").get(HOSTS[p["host"]]["root_key"]) or {}).get(p["name"]))
+            except (ValueError, AttributeError) as e:
+                return [f"{p['path']} is not valid JSON after the write ({e})"]
+            want = (p["data"].get(HOSTS[p["host"]]["root_key"]) or {}).get(p["name"])
+            if got != want:
+                problems.append(f"the {p['name']} entry in {p['path']} is "
+                                f"{json.dumps(got, sort_keys=True)[:200] if got else 'missing'}")
+        elif text != p["data"]:
+            problems.append(f"{p['path']} differs from what was written")
+    hooks = p.get("hooks") or {}
+    if hooks.get("action") not in (None, "unchanged"):
+        try:
+            got = json.loads(hooks["path"].read_text(encoding="utf-8") or "{}").get("hooks") or {}
+        except (OSError, ValueError, AttributeError) as e:
+            return problems + [f"{hooks['path']} cannot be read back ({e})"]
+        from inspeximus import claude_code as cc
+        missing = [e for e in hooks.get("added") or []
+                   if not any(m in json.dumps(got.get(e, [])) for m in cc._HOOK_MARKERS)]
+        if missing:
+            problems.append(f"hooks missing after the write in {hooks['path']}: {', '.join(missing)}")
+    return problems
 
 
 def render(p, dry_run=False):

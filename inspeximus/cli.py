@@ -1329,6 +1329,12 @@ def main(argv=None):
     ins.add_argument("--store", default=None, help="value for INSPEXIMUS_PATH in the written config")
     ins.add_argument("--name", default=_install.SERVER_NAME, help="server name to write")
     ins.add_argument("--dry-run", action="store_true", help="print the exact diff, write nothing")
+    ins.add_argument("--only", default=None,
+                     help="with --all or --check: only these agents, comma-separated "
+                          "(hermes, claude, gemini, codex, antigravity, cursor, devin, windsurf, cline)")
+    ins.add_argument("--check", action="store_true",
+                     help="read-only: report whether each agent's inspeximus entry still matches this "
+                          "version and the shared store; exit 1 when one does not")
 
     a = ap.parse_args(argv)
 
@@ -1338,12 +1344,17 @@ def main(argv=None):
         from . import mcp_server
         return mcp_server.main(a.mcp_args)
 
+    if a.cmd == "install" and a.check:
+        from . import install_all as _all
+        return _all.check(store=a.store, only=a.only or (a.ide if a.ide else None))
     if a.cmd == "install" and a.all_hosts:
         from . import install_all as _all
         return _all.run(store=a.store, dry_run=a.dry_run, rules=a.rules,
-                        hermes_provider_change=a.hermes_provider, project=a.project)
+                        hermes_provider_change=a.hermes_provider, project=a.project, only=a.only)
+    if a.cmd == "install" and a.only:
+        ap.error("--only goes with --all or --check")
     if a.cmd == "install" and not a.ide:
-        ap.error("install needs --ide <host> or --all")
+        ap.error("install needs --ide <host>, --all, or --check")
     if a.cmd == "install":
         p = _install.plan(a.ide, scope=a.scope, project=a.project, store_path=a.store, name=a.name)
         print(_install.render(p, dry_run=a.dry_run))

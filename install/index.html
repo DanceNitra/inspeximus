@@ -115,6 +115,12 @@ Gemini CLI               yes    create               /home/you/.inspeximus/codin
 ...
 ```
 
+After each write it reads the file back and reports any entry that did not hold. To confirm later that
+every agent still points at the shared store and this version, run `inspeximus install --check`: it
+changes nothing, prints the same kind of table, and exits with 1 when an entry no longer matches. To wire
+only some agents, name them: `install --all --only claude,codex` (the names are hermes, claude, gemini,
+codex, antigravity, cursor, devin, windsurf, and cline).
+
 It never replaces your other settings in an agent's configuration, keeps a `.bak` copy of every file it
 changes, and records one decision in the shared memory, so the next session in any agent can confirm the
 memory works. If the current project had an older Claude Code memory in `.inspeximus/coding_memory.json`,

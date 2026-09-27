@@ -22,6 +22,7 @@ project's old Claude Code store into the shared one, and records one decision pr
 from __future__ import annotations
 
 import json
+import re
 import os
 import pathlib
 import shutil
@@ -503,8 +504,28 @@ def _hermes(path, change, dry_run, notes, wired):
     return rows
 
 
-def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", project=None, out=print):
+def select(only=None):
+    """(hosts, include Hermes, error) for `--only a,b,c`; every agent when `only` is empty.
+
+    3.14.3: the dogfood run on 2026-09-27 needed exactly Claude Code and Codex, and `--all` would also
+    have written Cline, Windsurf and Antigravity, so the per-agent step had to be called by hand."""
     hosts = [h for h in HOST_ORDER if h in _i.HOSTS] + [h for h in _i.HOSTS if h not in HOST_ORDER]
+    if not only:
+        return hosts, True, None
+    names = [n.strip().lower() for n in (only if isinstance(only, (list, tuple)) else str(only).split(",")) if n.strip()]
+    valid = set(hosts) | {"hermes"}
+    unknown = [n for n in names if n not in valid]
+    if unknown:
+        return None, False, (f"unknown agent(s) for --only: {', '.join(unknown)}; "
+                             f"known: hermes, {', '.join(hosts)}")
+    return [h for h in hosts if h in names], "hermes" in names, None
+
+
+def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", project=None, out=print, only=None):
+    hosts, with_hermes, err = select(only)
+    if err:
+        out("ERROR: " + err)
+        return 2
     found = {h: detect(h) for h in hosts}
     targets = [h for h in hosts if found[h][0]]
     path, err = choose_store(targets, store)
@@ -514,7 +535,8 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     rows, wired, notes = [], [], []
     # NEVER A PROMPT HERE. An agent runs this installer, and a question it cannot see hangs the install in
     # a pseudo-terminal. The agent asks the user first and passes the answer.
-    rows += _hermes(path, hermes_provider_change, dry_run, notes, wired)
+    if with_hermes:
+        rows += _hermes(path, hermes_provider_change, dry_run, notes, wired)
     env = {"INSPEXIMUS_PATH": str(path), "INSPEXIMUS_SCOPE": None}
     for h in hosts:
         if not found[h][0]:
@@ -575,3 +597,104 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     else:
         out("Restart each app listed as wired, so it starts the memory server.")
     return 0 if all(not str(r[2]).startswith("ERROR") for r in rows) else 1
+
+
+# ── install --check: read-only, what each agent's config says now ──────────────────────────────────────
+def _pin(entry):
+    for a in (entry or {}).get("args") or []:
+        m = re.search(r"inspeximus(?:\[[^\]]*\])?==([0-9][0-9A-Za-z.+-]*)", str(a))
+        if m:
+            return m.group(1)
+    return None
+
+
+def _same_file(a, b):
+    try:
+        return os.path.normcase(os.path.abspath(os.path.expanduser(str(a)))) == \
+            os.path.normcase(os.path.abspath(os.path.expanduser(str(b))))
+    except (TypeError, ValueError):
+        return False
+
+
+def entry_status(entry, store):
+    """'ok', or the reasons an entry no longer matches this version and this store."""
+    if not entry:
+        return "not wired"
+    reasons = []
+    pin = _pin(entry)
+    cmd = str(entry.get("command") or "")
+    if pin and pin != _version():
+        reasons.append(f"pin {pin}, this is {_version()}")
+    elif not pin and not (cmd and (shutil.which(cmd) or os.path.exists(cmd))):
+        reasons.append(f"command not found: {cmd or '(none)'}")
+    path = ((entry.get("env") or {}).get("INSPEXIMUS_PATH"))
+    if not path:
+        reasons.append("no INSPEXIMUS_PATH")
+    elif store and not _same_file(path, store):
+        reasons.append(f"store {path}, shared store {store}")
+    return "ok" if not reasons else "DIFFERS: " + "; ".join(reasons)
+
+
+def check(store=None, only=None, out=print):
+    """Read every agent's config and report whether its inspeximus entry still matches this version and
+    the shared store. Writes nothing. Returns 1 when an entry differs (or an agent named in --only is
+    not wired), else 0.
+
+    Written for 2026-09-27: a Claude Code entry `install --all` had written read back `==3.14.0` two
+    hours later, and only a person reading the file noticed."""
+    hosts, with_hermes, err = select(only)
+    if err:
+        out("ERROR: " + err)
+        return 2
+    from ._surface import shared_store_path
+    entries = {h: _i.read_entry(h) for h in hosts}
+    if store:
+        want = str(pathlib.Path(store).expanduser().resolve())
+    else:
+        named = sorted({(e or {}).get("env", {}).get("INSPEXIMUS_PATH") for _, e, _ in entries.values()
+                        if e and (e.get("env") or {}).get("INSPEXIMUS_PATH")})
+        want = shared_store_path() or (named[0] if len(named) == 1 else None)
+    rows, bad = [], 0
+    for h in hosts:
+        path, entry, rerr = entries[h]
+        found = detect(h)[0]
+        status = f"ERROR: {rerr}" if rerr else entry_status(entry, want)
+        if not found and not entry:
+            status = "-"
+        flagged = status.startswith(("DIFFERS", "ERROR")) or (only and status == "not wired")
+        bad += bool(flagged)
+        store_now = ((entry or {}).get("env") or {}).get("INSPEXIMUS_PATH") or "-"
+        rows.append((_i.HOSTS[h]["label"], "yes" if found else "no", _pin(entry) or ("-" if not entry else "python"),
+                     store_now, status))
+    if with_hermes:
+        for home, py, kind in hermes_installs():
+            cfg = home / "config.yaml"
+            provider = hermes_provider(cfg.read_text(encoding="utf-8")) if cfg.exists() else None
+            pc = home / "inspeximus" / "config.json"
+            try:
+                hpath = json.loads(pc.read_text(encoding="utf-8")).get("path") if pc.exists() else None
+            except (OSError, ValueError):
+                hpath = None
+            if provider != "inspeximus":
+                status = "not wired" if not provider else f"not wired (provider {provider})"
+            else:
+                reasons = []
+                if want and hpath and not _same_file(hpath, want):
+                    reasons.append(f"store {hpath}, shared store {want}")
+                if not hpath:
+                    reasons.append("no store path in inspeximus/config.json")
+                if py is None or not hermes_loads_provider(py):
+                    reasons.append("Hermes' loader does not list inspeximus (run install --all again)")
+                status = "ok" if not reasons else "DIFFERS: " + "; ".join(reasons)
+            flagged = status.startswith("DIFFERS") or (only and status.startswith("not wired"))
+            bad += bool(flagged)
+            rows.insert(0, (f"Hermes Agent ({home})", "yes", kind, hpath or "-", status))
+    head = ("host", "found", "pin", "store path", "status")
+    w = [max(len(str(r[i])) for r in rows + [head]) for i in range(5)]
+    for r in [head] + rows:
+        out("  ".join(str(c).ljust(w[i]) for i, c in enumerate(r)))
+    out(f"shared store: {want or 'none recorded'}; this is inspeximus {_version()}")
+    if bad:
+        out(f"{bad} agent(s) need attention. To rewrite them: inspeximus install --all"
+            + (f" --only {only if isinstance(only, str) else ','.join(only)}" if only else ""))
+    return 1 if bad else 0
