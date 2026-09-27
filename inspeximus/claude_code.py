@@ -1016,7 +1016,14 @@ def session_start(ev):
         if ctx.get("text"):
             emit.append(ctx["text"])
     files = [it for it in getattr(m, "items", []) if "file" in (it.get("tags") or [])
-             and it.get("status") != "superseded"][:int(cfg["files"])]
+             and it.get("status") != "superseded"]
+    # What recall withholds is not listed here either (A-03): a quarantined file state or an objected
+    # subject was injected by this block while recall held it back. Filtered BEFORE the cut, so a
+    # withheld row does not take a slot; on any error nothing is listed, never an unchecked row.
+    try:
+        files = m._served_rows(files, limit=int(cfg["files"]))
+    except Exception:
+        files = []
     if files:
         lines = "\n".join(f"- {_injected(it['text'])}" for it in files)
         block = f"[inspeximus] this project's current known files (mechanics, latest state only):\n{lines}"

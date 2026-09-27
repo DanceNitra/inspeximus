@@ -4287,5 +4287,87 @@
   "tests": [
    "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
   ]
+ },
+ {
+  "name": "the injection filter drops the Art. 21 objection check",
+  "file": "inspeximus/core.py",
+  "old": "withheld = self._withheld_ids() if self._objections else ()",
+  "new": "withheld = ()",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "the injection filter drops the quarantine check",
+  "file": "inspeximus/core.py",
+  "old": "guard = self.read_guards and not include_quarantined",
+  "new": "guard = False",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "the injection filter ignores include_quarantined",
+  "file": "inspeximus/core.py",
+  "old": "guard = self.read_guards and not include_quarantined",
+  "new": "guard = self.read_guards",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "the injection filter ignores its limit",
+  "file": "inspeximus/core.py",
+  "old": "if limit is not None and len(out) >= limit:",
+  "new": "if limit is not None and len(out) >= limit + 10**9:",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "the injection filter treats limit=0 as one row",
+  "file": "inspeximus/core.py",
+  "old": "if limit is not None and limit <= 0:",
+  "new": "if limit is not None and limit < 0:",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "decisions_in_force skips the injection filter",
+  "file": "inspeximus/core.py",
+  "old": "return self._served_rows(out, include_quarantined=include_quarantined, limit=limit or None)",
+  "new": "return out[:limit] if limit else out",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "session_context skips the injection filter",
+  "file": "inspeximus/core.py",
+  "old": "served = {r.get(\"id\") for r in self._served_rows([lv for _e, lv, _s in resolved])}",
+  "new": "served = {lv.get(\"id\") for _e, lv, _s in resolved}",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "the SessionStart files list skips the injection filter",
+  "file": "inspeximus/claude_code.py",
+  "old": "files = m._served_rows(files, limit=int(cfg[\"files\"]))",
+  "new": "files = files[:int(cfg[\"files\"])]",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py"
+  ]
+ },
+ {
+  "name": "the tenant view does not rebind the injection filter",
+  "file": "inspeximus/core.py",
+  "old": "    def _served_rows(self, *a, **k):    return Inspeximus._served_rows(self, *a, **k)\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_injection_path_applies_the_read_guards.py",
+   "tests/test_isolation_and_persistence.py"
+  ]
  }
 ]
