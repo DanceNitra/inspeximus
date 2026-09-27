@@ -4540,5 +4540,41 @@
    "tests/test_the_injection_path_applies_the_read_guards.py",
    "tests/test_isolation_and_persistence.py"
   ]
+ },
+ {
+  "name": "remember_decision prefixes a decision that already has one",
+  "file": "inspeximus/core.py",
+  "old": "decision = _strip_decision_prefix(decision) or (decision or \"\").strip()",
+  "new": "decision = (decision or \"\").strip()",
+  "tests": [
+   "tests/test_a_decision_is_prefixed_once.py"
+  ]
+ },
+ {
+  "name": "the decision prefix is stripped only once",
+  "file": "inspeximus/core.py",
+  "old": "_DECISION_PREFIX = re.compile(r\"^(?:\\s*decision\\s*:)+\\s*\", re.I)",
+  "new": "_DECISION_PREFIX = re.compile(r\"^(?:\\s*decision\\s*:)\\s*\", re.I)",
+  "tests": [
+   "tests/test_a_decision_is_prefixed_once.py"
+  ]
+ },
+ {
+  "name": "the decision prefix is matched in one case only",
+  "file": "inspeximus/core.py",
+  "old": "_DECISION_PREFIX = re.compile(r\"^(?:\\s*decision\\s*:)+\\s*\", re.I)",
+  "new": "_DECISION_PREFIX = re.compile(r\"^(?:\\s*decision\\s*:)+\\s*\")",
+  "tests": [
+   "tests/test_a_decision_is_prefixed_once.py"
+  ]
+ },
+ {
+  "name": "the hook's commit capture doubles a DECISION prefix",
+  "file": "inspeximus/claude_code.py",
+  "old": "subject = _strip_decision_prefix(subject) or subject",
+  "new": "subject = subject",
+  "tests": [
+   "tests/test_a_decision_is_prefixed_once.py"
+  ]
  }
 ]

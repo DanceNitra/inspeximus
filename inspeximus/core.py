@@ -2499,6 +2499,16 @@ def _durable_replace(path, payload, encoding: str = "utf-8") -> None:
                 pass
 
 
+_DECISION_PREFIX = re.compile(r"^(?:\s*decision\s*:)+\s*", re.I)
+
+
+def _strip_decision_prefix(text: str) -> str:
+    """The decision without any "DECISION:" its author already wrote, in any case or spacing, once or
+    more. The one place the prefix is added then adds exactly one. Found as "DECISION: DECISION: ..."
+    in a 3.14.3 install record: the caller wrote the prefix and remember_decision wrote it again."""
+    return _DECISION_PREFIX.sub("", text or "").strip()
+
+
 class UnresolvedLineage(ValueError):
     """Raised by remember() when strict_lineage=True and a declared derived_from id does not
     resolve to a record in the store.
@@ -8074,7 +8084,8 @@ class Inspeximus:
         LLM half — distilling decisions out of a raw transcript automatically, the way mem0/Zep extract facts on
         write — is `distill_and_remember()` (you choose whether to pay an LLM; the store/correction/erasure stays
         deterministic). Returns the new memory id."""
-        text = "DECISION: " + decision.strip()
+        decision = _strip_decision_prefix(decision) or (decision or "").strip()   # one prefix, whoever wrote it
+        text = "DECISION: " + decision
         if because:
             text += " — because: " + because.strip()
         md = {"kind": "decision"}

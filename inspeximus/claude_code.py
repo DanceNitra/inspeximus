@@ -726,6 +726,8 @@ def _capture_commit(m, raw_cmd, cwd, sid):
         return False
     from ._secrets import redact_secrets
     subject = redact_secrets(subject)[0]             # masked BEFORE any cut below (3.14.2)
+    from .core import _strip_decision_prefix
+    subject = _strip_decision_prefix(subject) or subject   # one prefix, as remember_decision writes it
     text = "DECISION: " + subject
     if body:
         text += " -- because: " + _capture_excerpt(body, 600)
