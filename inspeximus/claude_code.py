@@ -857,6 +857,44 @@ def _report_write_failure(cwd, err):
         pass                                   # the reporter must never be the thing that crashes
 
 
+# COMMANDS THE PROMPT BLOCK DOES NOT REPLAY. A captured `ran: <cmd>` is a true record of what ran, and
+# it stays in the store, recallable and erasable. What stops is re-suggesting it: the block below
+# prints it under "deterministic, corrections already applied", so a kill-by-image-name that once
+# took down three research runs on a shared machine came back as a "recent mechanic" to every agent
+# that asked how to stop a process (audit A-14, 2026-09-27). Each shape is irreversible, or reaches
+# past what the agent started: processes by name, recursive deletes, discarded git history and work,
+# dropped tables, whole disks. `_PRE_PATTERNS` further down warns before the agent's OWN next action
+# and has a different job; this list only decides what is not handed back as a suggestion.
+_NO_REPLAY = [re.compile(p, re.I) for p in (
+    r"\btaskkill\b[^\n]*?\s/im\b",                                   # kill by image name
+    r"\b(?:stop-process|spps|kill)\b[^\n]*?\s-name\b",
+    r"\bget-process\b[^|\n]*\|\s*stop-process\b",
+    r"\b(?:pkill|killall)\b",
+    r"\brm\s+(?:[^\n;&|]*\s)?(?:-\w*r\w*|--recursive)\b",           # rm -r, -rf, -fr, -Recurse
+    r"\bremove-item\b[^\n]*?\s-r(?:ecurse)?\b",
+    r"\b(?:del|erase|rmdir|rd)\b[^\n]*?\s/s\b",
+    r"\bgit\s+reset\b[^\n]*?\s--hard\b",
+    r"\bgit\s+clean\b[^\n]*?\s(?:-\w*f|--force)",
+    r"\bgit\s+push\b[^\n]*?\s(?:--force\b|--force-with-lease\b|-f\b|\+\S)",
+    r"\bgit\s+checkout\b[^\n]*?\s(?:--\s|-f\b|--force\b)",
+    r"\bgit\s+branch\b[^\n]*?\s(?-i:-D)\b",
+    r"\bgit\s+stash\s+(?:drop|clear)\b",
+    r"\bgit\s+worktree\s+(?:remove|prune)\b",
+    r"\bdrop\s+(?:table|database|schema)\b|\btruncate\s+table\b",
+    r"\bmkfs\b|\bdd\b[^\n]*?\bof=/dev/|\bformat(?:\.com)?\s+[a-z]:",
+    r"\b(?:shutdown|restart-computer|stop-computer)\b",
+)]
+
+
+def _not_for_replay(rec) -> bool:
+    """True for a captured shell command in a `_NO_REPLAY` shape. Only `bash` captures are judged:
+    a file's content that mentions `rm -rf` is a file state, not a suggestion to run it."""
+    if "bash" not in (rec.get("tags") or []):
+        return False
+    text = rec.get("text") or ""
+    return any(p.search(text) for p in _NO_REPLAY)
+
+
 def recall(ev):
     cwd = ev.get("cwd") or os.getcwd()
     if not injection_enabled(cwd):
@@ -921,7 +959,8 @@ def recall(ev):
         except Exception:
             pass
     knowledge = [h for h in hits if has(h, "knowledge") and not has(h, "decision")][:4]
-    mechanics = [h for h in hits if not has(h, "decision") and not has(h, "knowledge")][:2]
+    mechanics = [h for h in hits if not has(h, "decision") and not has(h, "knowledge")
+                 and not _not_for_replay(h)][:2]
     out = []
     if decisions:
         out.append("decisions/rules (what we concluded, and why):")
