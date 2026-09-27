@@ -4071,5 +4071,77 @@
   "tests": [
    "tests/test_the_store_lock_does_not_depend_on_temp.py"
   ]
+ },
+ {
+  "name": "a session digest stores its entries' text again",
+  "file": "inspeximus/core.py",
+  "old": "stored = [{\"kind\": e.get(\"kind\"), \"id\": e.get(\"id\"), \"salience\": e.get(\"salience\")} for e in entries]",
+  "new": "stored = entries",
+  "tests": [
+   "tests/test_an_erasure_reaches_the_session_digest.py"
+  ]
+ },
+ {
+  "name": "a session digest stores the rendered block again",
+  "file": "inspeximus/core.py",
+  "old": "stub = self._digest_stub(header, stored, footer)",
+  "new": "stub = text",
+  "tests": [
+   "tests/test_an_erasure_reaches_the_session_digest.py"
+  ]
+ },
+ {
+  "name": "recall shows a stored digest instead of rendering it live",
+  "file": "inspeximus/core.py",
+  "old": "_o[\"text\"] = self._digest_live_text(r)",
+  "new": "pass",
+  "tests": [
+   "tests/test_an_erasure_reaches_the_session_digest.py"
+  ]
+ },
+ {
+  "name": "forget leaves a pre-3.14.4 digest that copies its target",
+  "file": "inspeximus/core.py",
+  "old": "copies = self._digest_copies_of(target) - target if target else set()",
+  "new": "copies = set()",
+  "tests": [
+   "tests/test_an_erasure_reaches_the_session_digest.py"
+  ]
+ },
+ {
+  "name": "forget misses a digest that shows the erased value as was",
+  "file": "inspeximus/core.py",
+  "old": "                    holders.add(c)          # its digest entry shows this record's value as `was`",
+  "new": "                    pass",
+  "tests": [
+   "tests/test_an_erasure_reaches_the_session_digest.py"
+  ]
+ },
+ {
+  "name": "the next session number is a count again",
+  "file": "inspeximus/core.py",
+  "old": "seq = max([int((d.get(\"meta\") or {}).get(\"session_seq\") or 0) for d in self._session_digests()]\n                  or [0]) + 1",
+  "new": "seq = len(self._session_digests()) + 1",
+  "tests": [
+   "tests/test_an_erasure_reaches_the_session_digest.py"
+  ]
+ },
+ {
+  "name": "forget erases a digest that holds ids only",
+  "file": "inspeximus/core.py",
+  "old": "if e.get(\"id\") in holders and (\"text\" in e or \"was\" in e or \"object\" in e):",
+  "new": "if e.get(\"id\") in holders:",
+  "tests": [
+   "tests/test_an_erasure_reaches_the_session_digest.py"
+  ]
+ },
+ {
+  "name": "the tenant view does not rebind the digest resolver",
+  "file": "inspeximus/core.py",
+  "old": "    def _digest_resolved(self, *a, **k):  return Inspeximus._digest_resolved(self, *a, **k)\n",
+  "new": "",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
  }
 ]

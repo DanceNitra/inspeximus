@@ -8458,9 +8458,10 @@ class Inspeximus:
         lambda r: 'secret' in r['text']). VERIFIED FORGETTING: the matched records are deleted AND their ids
         are scrubbed from every surviving record's `links` and toggle-supersession pointers, and the cached
         vec matrix + token caches are dropped — so a forgotten memory cannot resurface via recall, via a
-        consolidation link, or via a stale derived-summary pointer. This is complete because consolidation
-        never copies raw text into other records (it only links ids and toggles status) — there is no merged
-        blob left holding the forgotten content.
+        consolidation link, or via a stale derived-summary pointer. Consolidation never copies raw text into
+        other records (it only links ids and toggles status), and a session digest stores ids from 3.14.4
+        on. A digest written earlier holds the text it summarised, so it is erased with the record it
+        copies and named in `derived_copies`.
 
         EVERY deletion emits a hash-chained, content-free tombstone, exactly like forget_subject() and
         forget_pii(). Until 1.24.0 only those two did, which meant a record removed through this method left
@@ -8496,11 +8497,16 @@ class Inspeximus:
         # `beta.forget([acme_id])` returned {'forgotten': 1} and acme's row was gone. Ids not visible to this
         # tenant are dropped exactly like ids that do not exist, so the call cannot probe for them either.
         target &= {r["id"] for r in self._tenant_rows()}
+        # A COPY GOES WITH ITS SOURCE (A-04). A session digest written before 3.14.4 holds the text of
+        # its entries; erasing the entry and keeping the digest kept the words.
+        copies = self._digest_copies_of(target) - target if target else set()
+        target |= copies
         if dry_run:
             by_id = {r["id"]: r for r in self._tenant_rows()}
             sample = [{"id": t, "text": (by_id[t].get("text") or "")[:120], "key": by_id[t].get("key")}
                       for t in sorted(target)[:10]]
-            return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True}
+            return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True,
+                    "derived_copies": sorted(copies)}
         if not target:
             # `coverage` belongs here for the same reason `residue_in_store` does, and it was the one
             # early return still missing it: a caller who has to check whether the field exists before
@@ -8559,7 +8565,7 @@ class Inspeximus:
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
         out = {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
-               "tombstones": len(target)}
+               "tombstones": len(target), "derived_copies": sorted(copies)}
         # coverage on EVERY erasure path, not just forget_subject. It shipped on that one alone earlier
         # today, which is the same mistake `_resolve_subject`'s docstring records 1.53.0 making: a fix at
         # one caller while the siblings keep the gap. A field the caller relies on is worse than useless
@@ -14190,6 +14196,9 @@ class Inspeximus:
                   "reliability": round(self._reliability(r), 3),
                   "source": r.get("source"),    # re-checkable origin (provenance), surfaced so a recalled fact can be traced back
                   "stale_derived": bool(r.get("_stale_derived"))}
+            if r.get("key") == self.SESSION_DIGEST_KEY:
+                # A digest stores ids (A-04); the reader gets its entries as the live store has them.
+                _o["text"] = self._digest_live_text(r)
             if (r.get("status") or "") == "superseded":
                 # A row returned by an explicit `include_superseded` ask arrived INDISTINGUISHABLE
                 # from a current fact: `status` was absent from the hit and `stale_derived` was False
@@ -16801,6 +16810,88 @@ class Inspeximus:
         text = "\n".join(out)
         return text[:max_chars], n, truncated
 
+    _SESSION_KIND_COUNT = {"decision": "decision(s) recorded", "correction": "correction(s)",
+                           "open": "still open", "key_new": "new keyed fact(s)", "note": "note(s)"}
+
+    @staticmethod
+    def _digest_stub(header: str, entries: list, footer: str) -> str:
+        """What a digest record STORES: the header recall matches on, a count per kind, the footer."""
+        counts: dict = {}
+        for e in entries:
+            counts[e.get("kind")] = counts.get(e.get("kind"), 0) + 1
+        kinds = sorted(counts, key=lambda k: Inspeximus._SESSION_KIND_ORDER.get(k, 9))
+        line = ", ".join(f"{counts[k]} {Inspeximus._SESSION_KIND_COUNT.get(k, k)}" for k in kinds) or "nothing kept"
+        return "\n".join([header, "  " + line + " (entries are read from the live store)", footer])
+
+    def _digest_resolved(self, digests: list, by_id: dict, counts: dict) -> list:
+        """(entry, live record, session seq) for every entry of `digests`, newest first, re-resolved
+        against the live store: an erased entry is dropped, a hub is dropped, and a retired keyed
+        value is replaced by the value current now. `counts` receives what was dropped or replaced.
+        One resolver for `session_context` and for a digest recall returns, so neither can repeat what
+        the other has stopped showing."""
+        resolved = []
+        for d in reversed(digests):
+            seq = (d.get("meta") or {}).get("session_seq") or 0
+            for e in ((d.get("meta") or {}).get("entries") or []):
+                live = by_id.get(e.get("id"))
+                if live is None:
+                    counts["dropped_erased"] += 1
+                    continue
+                if live.get("status") == "hub":
+                    counts["dropped_hub"] += 1
+                    continue
+                if live.get("status") != "active":
+                    k = live.get("key")
+                    cur = next((r for r in self._tenant_rows()
+                                if k and r.get("key") == k and r.get("status") == "active"), None)
+                    if cur is None:
+                        counts["dropped_superseded"] += 1
+                        continue
+                    counts["substituted_current"] += 1
+                    live = cur
+                resolved.append((e, live, seq))
+        return resolved
+
+    def _digest_live_text(self, rec: dict, max_chars: int = 1200, max_entry_chars: int = 200) -> str:
+        """A digest record as a reader should see it: its entries rendered from the live store."""
+        counts = {"dropped_superseded": 0, "dropped_erased": 0, "dropped_hub": 0, "substituted_current": 0}
+        by_id = {r.get("id"): r for r in self._tenant_rows()}
+        correctors = self._session_correctors()
+        seen, entries = set(), []
+        for e, live, _seq in self._digest_resolved([rec], by_id, counts):
+            dedup = live.get("key") or live.get("id")
+            if dedup in seen:
+                continue
+            seen.add(dedup)
+            prior = correctors.get(live.get("id")) or []
+            entries.append({"kind": e.get("kind"), "text": live.get("text") or "",
+                            "salience": e.get("salience") or 0.0,
+                            "was": (prior[0].get("object") or prior[0].get("text")) if prior else None})
+        entries.sort(key=self._session_sort_key)
+        lines = (rec.get("text") or "").split("\n")
+        header = lines[0] if lines else "SESSION DIGEST"
+        text, _n, _t = self._session_render(header, entries, max_chars, max_entry_chars)
+        return text
+
+    def _digest_copies_of(self, target: set) -> set:
+        """Digests written before 3.14.4 that hold a COPY of a record in `target`: their entries carry
+        the text, and a correction entry carries the value it retired under `was`. Such a digest cannot
+        be rewritten in place, because its write receipt commits to its text, so it is erased with the
+        record it copies. A digest from 3.14.4 on holds ids only and is never a copy."""
+        holders = set(target)
+        for r in self._tenant_rows():
+            if r.get("id") in target:
+                c = (r.get("meta") or {}).get("superseded_by_toggle")
+                if c:
+                    holders.add(c)          # its digest entry shows this record's value as `was`
+        out = set()
+        for d in self._session_digests():
+            for e in ((d.get("meta") or {}).get("entries") or []):
+                if e.get("id") in holders and ("text" in e or "was" in e or "object" in e):
+                    out.add(d["id"])
+                    break
+        return out
+
     def close_session(self, session_id: str | None = None, *, since: float | None = None,
                       threshold: float | None = None, max_items: int = 12, max_chars: int = 1200,
                       max_entry_chars: int = 200, sleep_pass: bool = False,
@@ -16850,7 +16941,10 @@ class Inspeximus:
         if t0 is not None:
             erased = sum(1 for t in getattr(self, "_tombstones", []) or []
                          if (t.get("ts") or 0.0) >= t0)
-        seq = len(self._session_digests()) + 1
+        # MAX + 1, not COUNT + 1: an erasure can remove a digest (see `_digest_copies_of`), and a count
+        # would then hand the next session a number an earlier one already carries.
+        seq = max([int((d.get("meta") or {}).get("session_seq") or 0) for d in self._session_digests()]
+                  or [0]) + 1
         marker = next((r for r in self._tenant_rows()
                        if r.get("key") == self.SESSION_OPEN_KEY and r.get("status") == "active"), None)
         sid = str(session_id) if session_id else (
@@ -16875,12 +16969,21 @@ class Inspeximus:
             report["written"] = False
             report["id"] = None
             return report
+        # THE STORED DIGEST HOLDS IDS, NEVER TEXT (A-04, 2026-09-27). It stored the rendered block and
+        # a second copy of every entry's text, so `forget` and `forget_subject` erased a record and left
+        # its words in an active record that recall returned: the "merged blob" `forget`'s docstring
+        # said could not exist. The block above is returned to the caller and never stored; the record
+        # keeps the header recall matches on, a count per kind, and each entry's kind, id and salience.
+        # Reading renders the entries from the live store (`_digest_live_text`, `session_context`), so
+        # an erased or corrected record is never repeated.
+        stored = [{"kind": e.get("kind"), "id": e.get("id"), "salience": e.get("salience")} for e in entries]
+        stub = self._digest_stub(header, stored, footer)
         mid = self._stamp(
-            text, key=self.SESSION_DIGEST_KEY,
-            object=hashlib.sha256(text.encode("utf-8")).hexdigest()[:16],
+            stub, key=self.SESSION_DIGEST_KEY,
+            object=hashlib.sha256((stub + "|" + ",".join(str(e["id"]) for e in stored)).encode("utf-8")).hexdigest()[:16],
             tags=["session-digest"], mtype="semantic", value=3.0,
-            meta={"kind": "session_digest", "session_seq": seq, "sid": sid,
-                  "entries": entries, "considered": considered,
+            meta={"kind": "session_digest", "session_seq": seq, "sid": sid, "format": 2,
+                  "entries": stored, "considered": considered,
                   "rejected_below_threshold": rejected, "erased": erased,
                   "threshold": thr, "store_digest_at_close": report["store_digest"]})
         report["written"] = True
@@ -16910,37 +17013,19 @@ class Inspeximus:
         counts = {"dropped_superseded": 0, "dropped_erased": 0, "dropped_hub": 0,
                   "dropped_below_threshold": 0, "substituted_current": 0}
         seen, cands = set(), []
-        for d in reversed(digests):                       # newest session first
-            seq = (d.get("meta") or {}).get("session_seq") or 0
-            for e in ((d.get("meta") or {}).get("entries") or []):
-                live = by_id.get(e.get("id"))
-                if live is None:
-                    counts["dropped_erased"] += 1
-                    continue
-                if live.get("status") == "hub":
-                    counts["dropped_hub"] += 1
-                    continue
-                if live.get("status") != "active":
-                    k = live.get("key")
-                    cur = next((r for r in self._tenant_rows()
-                                if k and r.get("key") == k and r.get("status") == "active"), None)
-                    if cur is None:
-                        counts["dropped_superseded"] += 1
-                        continue
-                    counts["substituted_current"] += 1
-                    live = cur
-                dedup = live.get("key") or live.get("id")
-                if dedup in seen:
-                    continue
-                sal = self.session_salience(live, correctors)
-                if sal < thr:
-                    counts["dropped_below_threshold"] += 1
-                    continue
-                seen.add(dedup)
-                prior = correctors.get(live.get("id")) or []
-                cands.append({"kind": e.get("kind"), "id": live.get("id"), "key": live.get("key"),
-                              "text": live.get("text") or "", "salience": sal, "session_seq": seq,
-                              "was": (prior[0].get("object") or prior[0].get("text")) if prior else None})
+        for e, live, seq in self._digest_resolved(digests, by_id, counts):   # newest session first
+            dedup = live.get("key") or live.get("id")
+            if dedup in seen:
+                continue
+            sal = self.session_salience(live, correctors)
+            if sal < thr:
+                counts["dropped_below_threshold"] += 1
+                continue
+            seen.add(dedup)
+            prior = correctors.get(live.get("id")) or []
+            cands.append({"kind": e.get("kind"), "id": live.get("id"), "key": live.get("key"),
+                          "text": live.get("text") or "", "salience": sal, "session_seq": seq,
+                          "was": (prior[0].get("object") or prior[0].get("text")) if prior else None})
         cands.sort(key=lambda e: (-int(e.get("session_seq") or 0), self._session_sort_key(e)))
         cands = cands[:max_items]
         out = {"enabled": True, "sessions": len(digests), "candidates": len(seen) + counts["dropped_below_threshold"],
@@ -18210,6 +18295,9 @@ class _TenantView:
     def _session_entries(self, *a, **k): return Inspeximus._session_entries(self, *a, **k)
     def _session_digests(self, *a, **k): return Inspeximus._session_digests(self, *a, **k)
     def _session_correctors(self, *a, **k): return Inspeximus._session_correctors(self, *a, **k)
+    def _digest_resolved(self, *a, **k):  return Inspeximus._digest_resolved(self, *a, **k)
+    def _digest_live_text(self, *a, **k): return Inspeximus._digest_live_text(self, *a, **k)
+    def _digest_copies_of(self, *a, **k): return Inspeximus._digest_copies_of(self, *a, **k)
 
 
 # --------------------------------------------------------------------------------------------------------------
