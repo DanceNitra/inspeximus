@@ -135,3 +135,40 @@ def test_the_index_gives_the_answer_the_scan_gave(tmp_path, monkeypatch):
         seen.add(repr(h._retired_values()))
     if len(seen) != 3:
         pytest.fail(f"control: the three views should differ, got {len(seen)} distinct answers")
+
+
+def test_the_index_is_scoped_on_a_tenant_view_and_an_agent_view(tmp_path, monkeypatch):
+    """A `for_tenant` view forwards attributes to its parent store, so a private helper that is not
+    rebound on the view runs parent-bound, over every tenant's rows. The reference here is the view's
+    own `_current_active` (rebound, so view-scoped), called explicitly on the view: it cannot share a
+    dispatch defect with the index it checks."""
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    s = Inspeximus(str(tmp_path / "v.json"))
+    for tenant, city in (("a", "Vienna"), ("b", "Brno")):
+        v = s.for_tenant(tenant)
+        v.remember(f"the office is in {city}", key="office", object=city)
+        v.remember(f"the office moved to {city}-West", key="office", object=f"{city}-West")
+        v.remember("the tier is EU", key="tier", object="EU")
+        v.remember("the tier is UK", key="tier", object="UK")
+    keys = ("office", "tier", "absent")
+    seen = set()
+    for name, v in (("a", s.for_tenant("a")), ("b", s.for_tenant("b")), ("agent", s.as_agent("scribe"))):
+        idx = v._current_active_index()
+        want = {k: v._current_active(k) for k in keys}
+        got = {k: idx.get(k) for k in keys}
+        assert {k: (r or {}).get("id") for k, r in got.items()} ==                {k: (r or {}).get("id") for k, r in want.items()}, name
+        seen.add(repr({k: (r or {}).get("object") for k, r in want.items()}))
+
+        def scan(_self, _v=v):
+            return _ScanPerKey(_v)
+        real = core.Inspeximus._current_active_index
+        fast = (v.supersession_report(), v._retired_values())
+        core.Inspeximus._current_active_index = scan
+        try:
+            slow = (v.supersession_report(), v._retired_values())
+        finally:
+            core.Inspeximus._current_active_index = real
+        assert fast == slow, name
+    if len(seen) < 2:
+        pytest.fail("control: the tenant views saw the same current values, so scoping was not exercised")

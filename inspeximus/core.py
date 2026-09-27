@@ -17992,6 +17992,7 @@ class _TenantView:
     def _resolve_read_conflicts(self, *a, **k): return Inspeximus._resolve_read_conflicts(self, *a, **k)
     def _nonce_consumed(self, *a, **k): return Inspeximus._nonce_consumed(self, *a, **k)
     def _current_active(self, *a, **k): return Inspeximus._current_active(self, *a, **k)
+    def _current_active_index(self, *a, **k): return Inspeximus._current_active_index(self, *a, **k)
     def _tenant_rows(self, *a, **k):    return Inspeximus._tenant_rows(self, *a, **k)
     # Later tenant-sensitive additions. Reached through __getattr__ these run PARENT-bound, so `self.tenant`
     # is the parent's (normally None): remember_decision/distill_and_remember wrote records with NO tenant
