@@ -1,3 +1,56 @@
+## 3.14.4 - UPGRADE IF you use Claude Desktop without the `claude` command, or install through an agent: `install --all` now wires Claude Desktop's Code tab, and it ends with a short ARMED block and a seal that an agent can copy to you.
+
+Found on 2026-09-27 on a second machine, where Hermes Agent on a 9B local model ran the install page.
+
+- **Claude Desktop counts as Claude Code.** On a machine with Claude Desktop and no `claude` on the
+  PATH, `install --all` reported Claude Code as not found, and a new Code-tab session had no inspeximus
+  hooks or tools. The installer now also finds the Claude Code that Claude Desktop keeps for itself:
+  `%APPDATA%\Claude\claude-code\<version>\claude.exe`, the Microsoft Store install's
+  `%LOCALAPPDATA%\Packages\Claude_*\LocalCache\Roaming\Claude\claude-code\<version>\claude.exe`, and
+  `~/Library/Application Support/Claude/claude-code/<version>/claude` on macOS. The executable is the
+  marker, so a folder without it does not count. It writes the same two files as for the CLI,
+  `~/.claude.json` and `~/.claude/settings.json`, which the Code tab reads. The macOS path follows the
+  Windows layout and was not measured on a Mac.
+- **The install ends with an ARMED block.** The agent that ran the install on that machine summarized
+  the installer's table in four bullets, and the owner saw no confirmation. `install --all` now prints a
+  fixed five-line block last: the version and `ARMED` (or `NOT ARMED`), the store and its record count,
+  the wired agents, the apps to restart, and the seal, plus an `attention:` line when something failed.
+  The install page tells the agent to end its reply with that block, copied exactly.
+- **The seal can be checked.** It is the id of the setup decision the installer stores, and the start
+  of that record's `immutable_sha256`, the hash a write receipt commits to. `~/.inspeximus/shared.json`
+  records it. `install --check` prints the same block, recomputes the seal from the store, and exits
+  with 1 when it no longer matches.
+- **One line in the first session.** After the restart, Claude Code shows
+  `inspeximus memory active: <N> records, shared with <agents>` as a system message when the session
+  starts, and Hermes Agent shows it in its memory line on the first turn that recalls something. Each
+  shows it once per install. Codex and the other agents do not show it.
+- **A `--only` run keeps the other agents.** `install --all --only claude` after a full install no
+  longer rewrites the setup decision and `shared.json` as if Claude Code were the only agent.
+- **A literal `%HOME%` is refused.** In Git Bash, `python -m venv "%HOME%/.inspeximus/venv"` creates a
+  folder named `%HOME%`, because bash does not expand it. The installer refuses a `--store` path, or
+  its own interpreter path, that still holds `%NAME%`, `$NAME` or `${NAME}`, and changes nothing. The
+  install page says to write `~` or `$HOME` in bash.
+- **A copy of every file it changes, and no backup overwritten.** The install page promises a `.bak`
+  of every file the installer changes; the write of Hermes' `inspeximus/config.json` made none. Every
+  existing file whose content changes is now copied first. An existing `.bak`, which may be another
+  tool's backup, is never overwritten: the copy then goes to `<name>.bak.<date>-<time>`. The run prints
+  `kept a copy of <file> as <backup>` for each. A write that would change nothing is skipped, so a
+  re-run that changes nothing writes nothing and keeps the seal.
+- **The setup decision says DECISION once.** Its stored text read `DECISION: DECISION: every AI
+  agent ...`.
+- **`inspeximus --version` and `python -m inspeximus` work.** The first exited with 2 and the second
+  had no `__main__`; they are the first two commands an agent tried after the install.
+- **The install page on Windows without Python.** It now says to check `python --version` before the
+  first command, because the Microsoft Store alias prints `Python was not found`, then `py -3`, then an
+  agent's own interpreter or a per-user `winget` install, and to check that
+  `~\.inspeximus\venv\Scripts\python.exe` exists before the next step. On that machine,
+  `py -3 -m venv` exited 0 and created nothing. The Git Bash lines, without PowerShell's `&`, are a
+  block of their own, and the page says that the store is a SQLite database despite its `.json` name.
+
+`tests/test_claude_desktop_counts_as_claude_code.py`, `tests/test_the_install_ends_with_the_armed_block.py`
+and `tests/test_the_installer_backs_up_every_file_it_changes.py` fail on 3.14.3 (27 of 28; the Codex
+guard passes on both). Each of the 23 new mutations in `tools/mutations.json` fails a test.
+
 ## 3.14.3 - UPGRADE IF you ran `install --all`: the plain `inspeximus` CLI and the MCP server now open the shared store it recorded, and `install --check` reports whether every agent still points at it.
 
 Found on 2026-09-27 while running `install --all` on our own machine and through Hermes Agent.
