@@ -1,4 +1,4 @@
-## Unreleased (planned 3.15.0) - UPGRADE IF you use partitions, or your store holds receipts written before 3.11.0: a record moved into another partition no longer verifies, and records whose receipts cannot say whose they are fail `verify_writes()` as UNSCOPED. VERIFICATION BEHAVIOUR CHANGES: receipts commit a new field, and `context_strict` defaults to True.
+## 3.16.0 - UPGRADE IF you use partitions, or your store holds receipts written before 3.11.0: a record moved into another partition no longer verifies, and records whose receipts cannot say whose they are fail `verify_writes()` as UNSCOPED. VERIFICATION BEHAVIOUR CHANGES: receipts commit a new field, and `context_strict` defaults to True.
 
 Found on 2026-09-27 while reproducing agmi issue #5 (T6, cross-context replay). Measured on 3.14.3,
 with receipts on and signed:

@@ -4346,7 +4346,7 @@ class Inspeximus:
                 # lack it; context_unbound() counts them as UNSCOPED, and verify_writes() fails them
                 # unless the caller passes context_strict=False.
                 "context_sha256": _sha256_hex(_canon(Inspeximus._rec_context(rec))),
-                # THE PARTITION, since 3.15.0 (agmi issue #5, T6 again). A partition is a
+                # THE PARTITION, since 3.16.0 (agmi issue #5, T6 again). A partition is a
                 # `partition:<name>` tag, and tags were in no commitment, so a record written into
                 # partition p1 and retagged on disk as p2's was served by p2's recall while
                 # verify_writes() returned (True, []). Measured on 3.14.3. The partition tag is set
@@ -7143,7 +7143,7 @@ class Inspeximus:
         cost of a false positive on a legitimate pre-1.68 slash()/restore(), which is indistinguishable
         from the attack by construction. Pass False to restore the previous, quieter behaviour.
 
-        `context_strict` (default True, a BEHAVIOUR CHANGE in 3.15.0) fails on UNSCOPED records, whose
+        `context_strict` (default True, a BEHAVIOUR CHANGE in 3.16.0) fails on UNSCOPED records, whose
         receipts predate the binding of whose a record is or which partition it is in (see
         `context_unbound()`). Pass False to accept that gap explicitly."""
         problems: list[str] = []
@@ -7515,7 +7515,7 @@ class Inspeximus:
                     f"into the chain -- or pass value_strict=False to accept the gap without a record of "
                     f"having done so. ({', '.join(uncovered[:5])}"
                     + (f", +{len(uncovered) - 5} more" if len(uncovered) > 5 else "") + ")")
-        # UNSCOPED RECEIPTS, failed by default since 3.15.0. A record whose receipt BINDS its context and
+        # UNSCOPED RECEIPTS, failed by default since 3.16.0. A record whose receipt BINDS its context and
         # partition and was moved fails above in every mode. One whose receipts predate a binding cannot
         # be checked on it. Until 3.14.3 such records passed here unless the caller asked for
         # context_strict, and context_unbound() counted only records that still carried a context, so a
@@ -7673,7 +7673,7 @@ class Inspeximus:
         """Active records whose receipts do not bind whose they are: UNSCOPED records.
 
         Two commitments answer "whose": `context_sha256` (3.11.0) binds the tenant, owning agent, user,
-        agent, session and project; `partition_sha256` (3.15.0) binds the partition. Against a receipt
+        agent, session and project; `partition_sha256` (3.16.0) binds the partition. Against a receipt
         written before either, a record copied in from another context verifies.
 
         Counted: every record no receipt of which commits `context_sha256`, whether or not it carries a
@@ -7681,7 +7681,7 @@ class Inspeximus:
         alice's uid makes a record visible to every user while leaving nothing to count (agmi issue #5,
         measured). Also counted: every record that carries a partition tag while no receipt of it
         commits `partition_sha256`. The one move this cannot see is a partition tag REMOVED from a
-        record whose receipts predate 3.15.0: the record leaves its partition's reads and enters no
+        record whose receipts predate 3.16.0: the record leaves its partition's reads and enters no
         other partition's.
 
         Returns {unbound, ids, warning}: `warning` is None when nothing is unscoped, else one line naming
@@ -7704,7 +7704,7 @@ class Inspeximus:
         if ids:
             warning = (f"{len(ids)} record(s) are UNSCOPED: their receipts predate the binding of whose a record "
                        f"is (3.11.0: tenant, owning agent, user, agent, session, project) or of its partition "
-                       f"(3.15.0), so a record copied in from another context verifies against them; check "
+                       f"(3.16.0), so a record copied in from another context verifies against them; check "
                        f"them against a copy you trust, then recommit(ids=[...]) binds their current context, "
                        f"or pass context_strict=False to accept the gap. ({', '.join(ids[:5])}"
                        + (f", +{len(ids) - 5} more" if len(ids) > 5 else "") + ")")
@@ -12404,7 +12404,7 @@ class Inspeximus:
                 "verified": ok,
                 "problems": problems,
                 # UNSCOPED records (receipts that predate the context or partition binding): counted,
-                # named, and failed in `verified` since 3.15.0
+                # named, and failed in `verified` since 3.16.0
                 "context_unbound": _cu["unbound"],
                 **({"warnings": [_cu["warning"]]} if _cu["warning"] else {}),
                 "all_signed": bool(toms) and all("sig" in t for t in toms),

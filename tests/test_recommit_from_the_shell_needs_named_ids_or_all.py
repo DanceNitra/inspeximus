@@ -1,7 +1,7 @@
 """`recommit` from a surface: the records are named, or the caller says all of them.
 
 `verify_writes()` and `context_unbound()` name `recommit(ids=[...])` as the remedy for UNSCOPED
-records, and since 3.15.0 an UNSCOPED record fails verification by default. Until this file, the
+records, and since 3.16.0 an UNSCOPED record fails verification by default. Until this file, the
 remedy existed in Python only: the MCP server and the CLI did not expose it, so a user who saw the
 line through either surface could not act on it. Measured on a copy of our own MCP store on
 2026-09-27: 4,035 records would be reported UNSCOPED.

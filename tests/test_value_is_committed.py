@@ -129,7 +129,7 @@ def test_supersession_and_revert_still_verify():
 def test_a_pre_182_store_does_not_raise_a_false_alarm_about_text():
     s, rid = _legacy_store()
     assert "value_sha256" not in (s._receipts[0].get("commit") or {}), "fixture must be genuinely legacy"
-    # The fixture predates 3.11.0 too, so its records are also UNSCOPED (3.15.0); that dimension has its
+    # The fixture predates 3.11.0 too, so its records are also UNSCOPED (3.16.0); that dimension has its
     # own tests in test_a_record_lifted_into_another_context_fails_verification.py.
     assert s.verify_writes(value_strict=False, context_strict=False)[0] is True, \
         "an untouched legacy store must verify; an upgrade that alarms on honest data gets ignored"

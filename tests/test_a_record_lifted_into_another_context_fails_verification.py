@@ -8,7 +8,7 @@ written for alice, signed, and then relabelled on disk as bob's is served in bob
 `verify_writes()` still reports the chain intact: every committed field is unchanged. The record is
 genuine; its context is forged.
 
-It failed on 3.9.6; 3.11.0 binds the context (`context_sha256`). Since 3.15.0 a store whose receipts
+It failed on 3.9.6; 3.11.0 binds the context (`context_sha256`). Since 3.16.0 a store whose receipts
 predate that binding FAILS verify_writes() by default, as UNSCOPED, instead of passing with a count on
 the side (agmi issue #5). The partition binding is in
 test_a_record_replayed_into_another_scope_fails_verification.py.
