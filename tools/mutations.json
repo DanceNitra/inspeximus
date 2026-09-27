@@ -1484,7 +1484,8 @@
   "old": "    try:\n        sys.stdout.reconfigure(errors=\"replace\")\n    except Exception:\n        pass\n",
   "new": "",
   "tests": [
-   "tests/test_claude_code_recall_surfaces_decisions.py"
+   "tests/test_claude_code_recall_surfaces_decisions.py",
+   "tests/test_the_hook_cli_survives_a_cp1250_console.py"
   ]
  },
  {
@@ -3506,6 +3507,126 @@
   "new": "    return True, \"config folder\"\n",
   "tests": [
    "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "the hook cuts an excerpt before masking it",
+  "file": "inspeximus/claude_code.py",
+  "old": "    return _excerpt(redact_secrets(s or \"\")[0], n)",
+  "new": "    return redact_secrets(_excerpt(s or \"\", n))[0]",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the hook's write chokepoint stops masking the text",
+  "file": "inspeximus/claude_code.py",
+  "old": "    text = redact_secrets(text)[0]\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the hook's write chokepoint stops masking object and key",
+  "file": "inspeximus/claude_code.py",
+  "old": "    for field in (\"object\", \"key\"):",
+  "new": "    for field in ():",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the hook's write chokepoint stops masking meta and source",
+  "file": "inspeximus/claude_code.py",
+  "old": "    for field in (\"meta\", \"source\"):",
+  "new": "    for field in ():",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "a secrets file is excerpted like any other file",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if is_secrets_file(fp):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the Bash capture cuts the command before masking it",
+  "file": "inspeximus/claude_code.py",
+  "old": "        cmd = _capture_excerpt(raw, 200)",
+  "new": "        cmd = _excerpt(raw, 200)",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the commit capture cuts the subject before masking it",
+  "file": "inspeximus/claude_code.py",
+  "old": "    subject = redact_secrets(subject)[0]             # masked BEFORE any cut below (3.14.2)",
+  "new": "    pass",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the commit capture cuts the body before masking it",
+  "file": "inspeximus/claude_code.py",
+  "old": "        text += \" -- because: \" + _capture_excerpt(body, 600)",
+  "new": "        text += \" -- because: \" + _excerpt(body, 600)",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the secrets scrub erases without --apply",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if apply and hits:",
+  "new": "    if hits:",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the secrets notice is shown on every run",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if json.load(fh).get(\"rev\") == _SECRETS_NOTICE_REV:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the fast secret detector loses the JWT trigger",
+  "file": "inspeximus/_secrets.py",
+  "old": "\"begin\", \"eyj\", \"key\",",
+  "new": "\"begin\", \"key\",",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
+  ]
+ },
+ {
+  "name": "the URL password rule matches its own mask",
+  "file": "inspeximus/_secrets.py",
+  "old": "r\"(?P<pre>[A-Za-z][A-Za-z0-9+.-]*://[^/\\s:@]+:)\" + _REFERENCE + r\"(?P<val>",
+  "new": "r\"(?P<pre>[A-Za-z][A-Za-z0-9+.-]*://[^/\\s:@]+:)\" + r\"(?P<val>",
+  "tests": [
+   "tests/test_the_hook_redacts_secrets_at_capture.py",
+   "tests/test_the_hook_never_stores_a_secret.py"
   ]
  }
 ]

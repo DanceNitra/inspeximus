@@ -21,6 +21,13 @@ Hook events handled (dispatched by hook_event_name on stdin JSON):
                        established. Stdout is discarded by Claude Code here, so this hook only writes.
 Fail-open: any error exits 0 with no output, so the hook never blocks the agent.
 
+SECRETS ARE MASKED AT CAPTURE (3.14.2). Every write goes through `_remember_masked`, which masks
+key-shaped strings and secret-named assignments (`inspeximus._secrets`) in the text, object, key,
+source and meta, and a write to a secrets file (`.env*`, `*.pem`, `*.key`, SSH private keys,
+`credentials*`) stores its path and nothing derived from its content. Records captured before
+3.14.2 are announced once and erased on request:
+`python -m inspeximus.claude_code --scrub-secrets [--apply]`.
+
 THE CROSS-SESSION LOOP (SessionEnd -> SessionStart), and why it needs no LLM. Other coding-agent memories
 close the loop by sending the transcript to a model and injecting its prose summary. inspeximus emits a LEDGER
 DIFF instead — which keys changed value, which decisions were recorded, what was erased, what is still
@@ -428,6 +435,106 @@ def _excerpt(s, n=180):
     return (s[:n] + "…") if len(s) > n else s
 
 
+def _capture_excerpt(s, n=180):
+    """`_excerpt` for text about to be STORED: secrets masked first, then cut (3.14.2).
+
+    The order is the point. Cutting first leaves the head of a key at the cut, too short for any
+    pattern to recognise, so it would be stored as a fragment. See `inspeximus._secrets`."""
+    from ._secrets import redact_secrets
+    return _excerpt(redact_secrets(s or "")[0], n)
+
+
+def _remember_masked(m, text, **kw):
+    """THE ONE PLACE this hook writes to the store (3.14.2).
+
+    Until 3.14.2 the hook stored the first 200 characters of every Bash command and an excerpt of
+    every Edit/Write verbatim, and two injection paths printed stored text back into the model: an
+    exported API key or a write to `.env` reached every later prompt, and since 3.14.0 every agent
+    sharing the store. Every capture goes through here, so text, object, key, source and meta are
+    masked on the way in, whichever call site built them. A test reads this module's source and
+    fails on any `remember(` call outside this function.
+
+    Call sites still mask BEFORE they cut an excerpt (`_capture_excerpt`); this pass is the net
+    under them, not a substitute, because it cannot recover a key that a cut already split."""
+    from ._secrets import redact_secrets, redact_value
+    text = redact_secrets(text)[0]
+    for field in ("object", "key"):
+        if isinstance(kw.get(field), str):
+            kw[field] = redact_secrets(kw[field])[0]
+    for field in ("meta", "source"):
+        if kw.get(field) is not None:
+            kw[field] = redact_value(kw[field])[0]
+    return m.remember(text, **kw)
+
+
+def _record_has_secret(r) -> bool:
+    from ._secrets import has_secret
+    return has_secret([r.get("text"), r.get("object"), r.get("key"), r.get("meta"), r.get("source")])
+
+
+#: Names beside a store that are full or partial copies of it rather than its own sidecars. The
+#: scrub cannot reach them (see the report's `copies_not_scrubbed`), so it names them.
+_COPY_MARKERS = ("bak", ".tmp", "torn", "corrupt", "pre-")
+
+
+def scrub_secrets(cwd=None, apply=False) -> dict:
+    """Find the records a pre-3.14.2 hook stored with a secret in them. DRY BY DEFAULT.
+
+    With `apply=True` they are erased through `forget`, so each one leaves a tombstone naming
+    `secret-scrub` as the basis. Nothing is erased automatically: the hook only announces the
+    count once, and the user runs this.
+
+    The report carries ids, never text. `copies_not_scrubbed` names the backup and temp copies
+    beside the store, which hold the same records and which this does not touch."""
+    import glob as _glob
+    m = _store(cwd)
+    hits = [r["id"] for r in m.items if _record_has_secret(r)]
+    base = str(m.path)
+    copies = sorted(os.path.basename(p) for p in _glob.glob(base + "*")
+                    if os.path.isfile(p) and p != base
+                    and any(k in os.path.basename(p)[len(os.path.basename(base)):] for k in _COPY_MARKERS))
+    report = {"store": base, "found": len(hits), "ids": hits, "applied": False, "erased": 0,
+              "copies_not_scrubbed": copies}
+    if apply and hits:
+        out = m.forget(ids=hits, basis="secret-scrub",
+                       request_id="scrub-secrets-" + datetime.datetime.now().strftime("%Y%m%dT%H%M%S"))
+        m.flush()
+        report.update(applied=True, erased=out.get("forgotten", 0), tombstones=out.get("tombstones", 0))
+    return report
+
+
+#: Bump when the scan changes enough that a store already scanned should be scanned again.
+_SECRETS_NOTICE_REV = 1
+
+
+def _secrets_notice(cwd, m):
+    """ONE line, ONCE per store: how many stored records look like they hold a secret, and the
+    command that erases them. The scan runs on the first SessionStart or UserPromptSubmit after the
+    upgrade and never again; the marker sits beside the store like the star nudge's counter."""
+    p = os.path.join(_store_dir(cwd), "secrets_notice.json")
+    try:
+        with open(p, encoding="utf-8") as fh:
+            if json.load(fh).get("rev") == _SECRETS_NOTICE_REV:
+                return None
+    except Exception:
+        pass
+    try:
+        n = sum(1 for r in getattr(m, "items", []) if _record_has_secret(r))
+    except Exception:
+        return None
+    try:
+        with open(p, "w", encoding="utf-8") as fh:
+            json.dump({"rev": _SECRETS_NOTICE_REV, "found": n,
+                       "at": datetime.datetime.now().isoformat(timespec="seconds")}, fh)
+    except Exception:
+        return None                          # no marker, no notice: never announce it every turn
+    if not n:
+        return None
+    return ("[inspeximus] %d stored record(s) look like they contain a secret, captured before inspeximus "
+            "3.14.2 masked them. Tell the user; to review: python -m inspeximus.claude_code --scrub-secrets "
+            "(add --apply to erase them, each with a tombstone)." % n)
+
+
 #: The literal strings this module prints to mark ITS OWN output. A record that reproduces one of
 #: them is claiming to be the hook, not content the hook is quoting.
 _OUR_HEADERS = (
@@ -605,17 +712,20 @@ def _capture_commit(m, raw_cmd, cwd, sid):
         ).stdout.decode("utf-8", "replace").split()
     except Exception:
         return False
+    from ._secrets import redact_secrets
+    subject = redact_secrets(subject)[0]             # masked BEFORE any cut below (3.14.2)
     text = "DECISION: " + subject
     if body:
-        text += " -- because: " + _excerpt(body, 600)
+        text += " -- because: " + _capture_excerpt(body, 600)
     try:
-        m.remember(text, key="commit::" + sha[:12], object=subject[:80], mtype="semantic",
-                   tags=["decision", "commit"], session_id=sid, agent_id=agent_id(),
-                   source={"doc": "git:" + sha[:12]},
-                   meta={"files": files[:20], "sha": sha})
+        _remember_masked(m, text, key="commit::" + sha[:12], object=subject[:80], mtype="semantic",
+                         tags=["decision", "commit"], session_id=sid, agent_id=agent_id(),
+                         source={"doc": "git:" + sha[:12]},
+                         meta={"files": files[:20], "sha": sha})
     except TypeError:                                   # older signature: no meta/source kwargs
         try:
-            m.remember(text, key="commit::" + sha[:12], mtype="semantic", tags=["decision", "commit"])
+            _remember_masked(m, text, key="commit::" + sha[:12], mtype="semantic",
+                             tags=["decision", "commit"])
         except Exception:
             return False
     except Exception:
@@ -639,15 +749,26 @@ def capture(ev):
         if not fp:
             return
         new = ti.get("new_string") or ti.get("content") or ""
-        m.remember(f"{fp} :: current state -> {_excerpt(new)}", key=f"file:{fp}", object=_excerpt(new, 80),
-                   mtype="semantic", tags=["file", "edit"], session_id=sid, agent_id=agent_id(ev))
+        # A SECRETS FILE IS NEVER EXCERPTED (3.14.2). Masking finds keys by shape, and a `.env`
+        # line such as `PORT_B=hunter2hunter2` has none; the file's whole purpose is the thing
+        # the mask exists to keep out. NOTHING derived from the content is stored either: a hash
+        # of it lets whoever holds the store confirm a guessed `.env` offline, and a salt kept
+        # beside the store is in the same hands. The record says the file was written, and when.
+        from ._secrets import is_secrets_file
+        if is_secrets_file(fp):
+            state, obj = "[secrets file: content not stored]", "[secrets file]"
+        else:
+            state, obj = _capture_excerpt(new), _capture_excerpt(new, 80)
+        _remember_masked(m, f"{fp} :: current state -> {state}", key=f"file:{fp}", object=obj,
+                         mtype="semantic", tags=["file", "edit"], session_id=sid, agent_id=agent_id(ev))
         did = True
     elif tool == "Bash":
         raw = ti.get("command", "")
-        cmd = _excerpt(raw, 200)
+        cmd = _capture_excerpt(raw, 200)
         if cmd:
-            m.remember(f"ran: {cmd}", key=f"cmd:{hashlib.sha1(cmd.encode()).hexdigest()[:10]}",
-                       object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid, agent_id=agent_id(ev))
+            _remember_masked(m, f"ran: {cmd}", key=f"cmd:{hashlib.sha1(cmd.encode()).hexdigest()[:10]}",
+                             object=cmd[:60], mtype="episodic", tags=["bash"], session_id=sid,
+                             agent_id=agent_id(ev))
             did = True
         # A COMMIT IS A DECISION THAT IS ALREADY WRITTEN DOWN. Everything above this line is mechanics:
         # which command ran, which file holds which bytes. Measured on this plugin's own dogfood store,
@@ -793,10 +914,12 @@ def recall(ev):
     if mechanics:
         out.append("recent mechanics (files/commands):")
         out += [f"  - {_injected(mm['text'])}" for mm in mechanics]
-    if out:
+    notice = _secrets_notice(cwd, m)
+    if out or notice:
         _emit("UserPromptSubmit",
-              "[inspeximus] relevant project memory (deterministic, corrections already applied):\n"
-              + "\n".join(out))
+              ("[inspeximus] relevant project memory (deterministic, corrections already applied):\n"
+               + "\n".join(out)) if out else "",
+              notice)
     _maybe_nudge(cwd)   # visible slot: UserPromptSubmit stdout is shown to the user
 
 
@@ -901,6 +1024,12 @@ def session_start(ev):
                 or cached_notice(__version__, cache_dir=_store_dir(cwd)))
         if note:
             emit.append(note)
+    except Exception:
+        pass
+    try:
+        notice = _secrets_notice(cwd, m)
+        if notice:
+            emit.append(notice)
     except Exception:
         pass
     # COLLECTED, THEN EMITTED ONCE. These were three separate print() calls, which is three lines of
@@ -1350,6 +1479,13 @@ def main():
         if not r["applied"] and r["new"]:
             print("Dry run. Add --apply to write %d new record(s) into %s (backed up first)."
                   % (r["new"], r["destination"]))
+        return
+    if "--scrub-secrets" in sys.argv:
+        r = scrub_secrets(apply="--apply" in sys.argv)
+        print(json.dumps(r, indent=2, default=str))
+        if not r["applied"] and r["found"]:
+            print("\nDry run. Add --apply to erase %d record(s) through forget; each leaves a tombstone."
+                  % r["found"])
         return
     try:
         ev = json.load(sys.stdin)
