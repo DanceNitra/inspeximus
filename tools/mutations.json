@@ -3858,7 +3858,7 @@
  {
   "name": "a write that changes no byte rewrites the file and its backup",
   "file": "inspeximus/install.py",
-  "old": "    if path.exists() and path.read_bytes() == new:\n        return\n",
+  "old": "    if path.exists() and path.read_bytes() == new:\n        return None\n",
   "new": "    if False:\n        return\n",
   "tests": [
    "tests/test_the_installer_backs_up_every_file_it_changes.py"
