@@ -28,9 +28,11 @@ def sandbox(tmp_path):
     work = tmp_path / "somewhere"
     work.mkdir()
     env = {k: v for k, v in os.environ.items() if not k.upper().startswith("INSPEXIMUS_")}
+    # No LOCALAPPDATA inside the temporary home: with the Microsoft Store Python that breaks
+    # sys.executable two process levels down (measured by AUDIT-A, 2026-09-27). `~` comes from
+    # USERPROFILE on Windows and HOME elsewhere, and both are set.
     env.update(HOME=str(home), USERPROFILE=str(home), APPDATA=str(home / "AppData" / "Roaming"),
-               LOCALAPPDATA=str(home / "AppData" / "Local"), PYTHONPATH=REPO, PYTHONIOENCODING="utf-8",
-               INSPEXIMUS_NO_UPDATE_CHECK="1")
+               PYTHONPATH=REPO, PYTHONIOENCODING="utf-8", INSPEXIMUS_NO_UPDATE_CHECK="1")
     shared = home / ".inspeximus" / "coding_memory.json"
     (home / ".inspeximus" / "shared.json").write_text(json.dumps({"store": str(shared)}), encoding="utf-8")
     return home, work, env, shared
