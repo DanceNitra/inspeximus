@@ -1,3 +1,34 @@
+## 3.14.3 - UPGRADE IF you ran `install --all`: the plain `inspeximus` CLI and the MCP server now open the shared store it recorded, and `install --check` reports whether every agent still points at it.
+
+Found on 2026-09-27 while running `install --all` on our own machine and through Hermes Agent.
+
+- **The CLI and the MCP server open the shared store.** After `install --all`, `inspeximus stats`
+  opened a new, empty `inspeximus_memory.json` in the working directory, while the hooks and every
+  agent's entry used the store recorded in `~/.inspeximus/shared.json`. Every CLI command and the MCP
+  server now read that record when no store is named. The order is `--path`, then `INSPEXIMUS_PATH`,
+  then an explicit `INSPEXIMUS_SCOPE` (including `user`), then the shared store record, then the old
+  default file. The MCP `where_am_i` tool names the rule it applied.
+- **The installer reads back what it wrote.** After each write, `install` reads the file again and
+  reports any entry that did not hold, instead of reporting success.
+- **`inspeximus install --check`.** It prints one row per agent: whether the agent is installed, the
+  pinned version, the store path, and `ok`, `DIFFERS` with the reason, or `not wired`. It writes
+  nothing and exits with 1 when an entry no longer matches this version or the shared store.
+- **`--only <agents>`.** `install --all --only claude,codex` and `install --check --only ...` limit
+  the run to the named agents. The names are hermes, claude, gemini, codex, antigravity, cursor,
+  devin, windsurf, and cline. An unknown name is refused, and Hermes is touched only when named.
+- **Line endings are kept.** On Windows each write of a JSON or TOML configuration turned its LF line
+  endings into CRLF, about 2.6 KB of churn in `~/.claude.json`. The installer now writes every file,
+  including an appended rules file, in the line endings it already uses. A new file gets LF.
+- **A running Claude Code keeps the entry.** `tools/claude_json_overwrite_repro.py` starts a Claude
+  Code session in a sandboxed home, writes the entry, and reports whether it held after Claude Code
+  rewrote `.claude.json`. On Claude Code 2.1.280 and 2.1.283 it held.
+  `tests/test_a_running_claude_code_keeps_our_entry.py` runs it when `INSPEXIMUS_CLAUDE_REPRO_BIN` is
+  set.
+
+`tests/test_the_cli_opens_the_shared_store.py`, `tests/test_install_verifies_what_it_wrote.py` and
+`tests/test_install_keeps_line_endings.py` fail on 3.14.2. Each of the 6 new mutations in
+`tools/mutations.json` fails a test.
+
 ## 3.14.2 - UPGRADE IF you use the Claude Code or Codex hooks: they stored API keys and tokens from Bash commands and file writes verbatim and printed them back into later prompts. The hooks now mask secrets before storing anything, and a one-line notice counts the records captured before this release.
 
 Found on 2026-09-27 with fake keys in a sandbox.
