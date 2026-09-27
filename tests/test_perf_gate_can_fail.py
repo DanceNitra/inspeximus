@@ -398,3 +398,41 @@ def test_it_fails_when_an_erasure_rebuilds_the_id_map_per_record():
     fail, _ = gate.compare({"e": {"counters": good, "seconds_median": 0.1}},
                            {"e": {"counters": bad, "seconds_median": 0.1}})
     assert any("erase_items_reads" in f for f in fail), f"the reads grew and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_the_residue_scan_lowercases_per_record():
+    """AUDIT-B B-18. scan_records lowercased every erased value once per surviving record and field:
+    2,008,775 calls and 9.58 s of a 12.8 s erasure on a 10,934-record store. Reintroduced by replaying
+    the pre-fix inner loop in front of the real scan, and measured through the counter the gate reads."""
+    from inspeximus import erasure_residue as er
+    run = gate.w_erase(60, 300)
+    run()
+    good = run.inner
+    assert good["erase_lower_calls"] < 60 * 300, ("fixture error: the scan already lowercases per record", good)
+
+    real = er.scan_records
+
+    def per_record(records, values, max_pairs=2_000_000):
+        vals = [v for v in {str(v).strip() for v in (values or [])} if len(v) >= 4]
+        for r in list(records or []):
+            for field in ("text", "object"):
+                blob = r.get(field)
+                if isinstance(blob, str) and blob:
+                    low = blob.lower()
+                    for v in vals:
+                        _ = v.lower() in low                  # the pre-fix inner loop
+        return real(records, values, max_pairs)
+
+    er.scan_records = per_record
+    try:
+        run = gate.w_erase(60, 300)
+        run()
+        bad = run.inner
+    finally:
+        er.scan_records = real
+    assert bad["erase_lower_calls"] >= good["erase_lower_calls"] + 60 * 300, f"the counter did not move: {bad}"
+
+    fail, _ = gate.compare({"e": {"counters": good, "seconds_median": 0.1}},
+                           {"e": {"counters": bad, "seconds_median": 0.1}})
+    assert any("erase_lower_calls" in f for f in fail), f"the calls grew and the gate stayed green: {fail}"
+

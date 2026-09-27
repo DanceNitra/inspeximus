@@ -36,8 +36,6 @@ def _count_lower(fn):
     return out, box[0]
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-18: every erased value is lowercased again for every record and field")
 def test_each_erased_value_is_lowercased_once():
     values = [f"Alice Example lives at {i} Elm Street, Springfield" for i in range(K)]
     records = [{"id": f"r{i}", "text": f"unrelated note {i}", "object": f"obj {i}"} for i in range(N)]

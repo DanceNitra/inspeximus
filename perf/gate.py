@@ -245,7 +245,39 @@ def w_erase(k, n):
             m.forget_subject("hr/alice")
             run.elapsed = time.perf_counter() - t0
         run.inner = {**c.as_dict(), "erase_items_reads": reads.n}
+        # A SECOND, identical erasure on a fresh copy of the fixture, counted apart because
+        # sys.setprofile slows everything it watches: the clock above must not include it.
+        m2 = Inspeximus(_store_path(), receipts=True)
+        for i in range(k):
+            m2.remember(f"subject record {i}", tags=["pii"], source={"doc": "hr/alice"})
+        for j in range(n):
+            m2.remember(f"other record {j}", tags=["ops"], source={"doc": f"ops/{j % 20}"})
+        m2.flush()
+        with _LowerCalls() as lowers:
+            m2.forget_subject("hr/alice")
+        run.inner["erase_lower_calls"] = lowers.n
     return run
+
+
+class _LowerCalls:
+    """Count `str.lower` calls inside a block, through sys.setprofile, which reports every call into a C
+    method. The residue scan lowercased every erased value once per surviving record and field:
+    2,008,775 calls and 9.58 s of a 12.8 s erasure on a 10,934-record store (AUDIT-B B-18)."""
+
+    def __enter__(self):
+        self.n = 0
+        counter = self
+
+        def prof(frame, event, arg):
+            if event == "c_call" and getattr(arg, "__name__", "") == "lower":
+                counter.n += 1
+
+        sys.setprofile(prof)
+        return self
+
+    def __exit__(self, *exc):
+        sys.setprofile(None)
+        return False
 
 
 class _ItemsReads:

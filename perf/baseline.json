@@ -13,9 +13,9 @@
    "type_inferences": 1000,
    "current_active_scans": 0
   },
-  "seconds_median": 13.8741,
-  "seconds_min": 10.9359,
-  "seconds_max": 14.1456
+  "seconds_median": 7.2363,
+  "seconds_min": 7.1668,
+  "seconds_max": 7.2892
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -31,9 +31,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 1.4179,
-  "seconds_min": 1.256,
-  "seconds_max": 1.5167
+  "seconds_median": 1.0754,
+  "seconds_min": 1.0643,
+  "seconds_max": 1.1082
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -48,11 +48,12 @@
    "order_updates": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
-   "erase_items_reads": 7
+   "erase_items_reads": 7,
+   "erase_lower_calls": 4605
   },
-  "seconds_median": 0.0883,
-  "seconds_min": 0.0864,
-  "seconds_max": 0.0886
+  "seconds_median": 0.0789,
+  "seconds_min": 0.0765,
+  "seconds_max": 0.0834
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -68,9 +69,9 @@
    "type_inferences": 500,
    "current_active_scans": 0
   },
-  "seconds_median": 12.0876,
-  "seconds_min": 11.8726,
-  "seconds_max": 13.0504
+  "seconds_median": 11.8458,
+  "seconds_min": 11.5059,
+  "seconds_max": 12.1666
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
@@ -86,9 +87,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 0.171,
-  "seconds_min": 0.1664,
-  "seconds_max": 0.1754
+  "seconds_median": 0.1637,
+  "seconds_min": 0.1555,
+  "seconds_max": 0.1772
  },
  "reports_k300": {
   "desc": "supersession_report + 5 suppressing recalls over 300 keys",
@@ -104,9 +105,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 0.1509,
-  "seconds_min": 0.1503,
-  "seconds_max": 0.1701
+  "seconds_median": 0.1521,
+  "seconds_min": 0.1489,
+  "seconds_max": 0.1546
  },
  "prompt_n2000": {
   "desc": "fresh handle opens a 2,000-record store and recalls once",
@@ -122,9 +123,9 @@
    "type_inferences": 0,
    "current_active_scans": 0
   },
-  "seconds_median": 0.0864,
-  "seconds_min": 0.0785,
-  "seconds_max": 0.1121
+  "seconds_median": 0.076,
+  "seconds_min": 0.0756,
+  "seconds_max": 0.0784
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",
@@ -141,18 +142,18 @@
    "current_active_scans": 0,
    "row_id_comparisons": 0
   },
-  "seconds_median": 0.1029,
-  "seconds_min": 0.0933,
-  "seconds_max": 0.1081
+  "seconds_median": 0.0808,
+  "seconds_min": 0.0797,
+  "seconds_max": 0.0824
  },
  "hook_import": {
   "desc": "the hook process for a PreToolUse `ls`: does it import numpy",
   "counters": {
    "hook_imports_numpy": 0
   },
-  "seconds_median": 0.3446,
-  "seconds_min": 0.3336,
-  "seconds_max": 0.356
+  "seconds_median": 0.3179,
+  "seconds_min": 0.3116,
+  "seconds_max": 0.3211
  },
  "boundary_n2000": {
   "desc": "session boundary (open, write, close, flush) on a 2,000-record store",
@@ -168,8 +169,8 @@
    "type_inferences": 1,
    "current_active_scans": 0
   },
-  "seconds_median": 0.1749,
-  "seconds_min": 0.1668,
-  "seconds_max": 0.3735
+  "seconds_median": 0.1501,
+  "seconds_min": 0.146,
+  "seconds_max": 0.1535
  }
 }

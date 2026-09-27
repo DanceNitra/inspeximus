@@ -102,6 +102,10 @@ def scan_records(records, values, max_pairs: int = 2_000_000) -> dict:
     budget = max_pairs
     findings: list[dict] = []
     checked = 0
+    # Lowercased ONCE. `v.lower()` sat in the innermost loop, so every erased value (usually a whole
+    # record text) was copied again for every surviving record and field: 2,008,775 calls and 9.58 s
+    # of a 12.8 s erasure on a 10,934-record store, measured 2026-09-27 (AUDIT-B B-18).
+    low_vals = [(v, v.lower()) for v in vals]
     for r in recs:
         if budget <= 0:
             problems.append(f"stopped after {checked} record(s): the comparison budget was reached, so "
@@ -113,9 +117,9 @@ def scan_records(records, values, max_pairs: int = 2_000_000) -> dict:
             if not isinstance(blob, str) or not blob:
                 continue
             low = blob.lower()
-            for v in vals:
+            for v, v_low in low_vals:
                 budget -= 1
-                if v.lower() in low:
+                if v_low in low:
                     findings.append({"id": r.get("id"), "field": field,
                                      "fingerprint": _fingerprint(v)})
     if findings:
