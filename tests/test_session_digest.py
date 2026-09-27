@@ -137,7 +137,7 @@ def test_a_reversed_decision_is_replaced_by_the_current_one():
     m = _m()
     _session(m, "s1", decisions=[("evict the cache LRU", "cache")])
     # the stale entry must genuinely be in the pool, or this test passes without exercising anything.
-    # A digest stores ids since 3.14.4 (A-04), so the entry is resolved to the record it names.
+    # A digest stores ids since 3.15.1 (A-04), so the entry is resolved to the record it names.
     by_id = {r["id"]: r for r in m.items}
     assert any("LRU" in (by_id.get(e.get("id"), {}).get("text") or "")
                for d in m._session_digests() for e in (d.get("meta") or {}).get("entries") or [])

@@ -8499,7 +8499,7 @@ class Inspeximus:
         are scrubbed from every surviving record's `links` and toggle-supersession pointers, and the cached
         vec matrix + token caches are dropped — so a forgotten memory cannot resurface via recall, via a
         consolidation link, or via a stale derived-summary pointer. Consolidation never copies raw text into
-        other records (it only links ids and toggles status), and a session digest stores ids from 3.14.4
+        other records (it only links ids and toggles status), and a session digest stores ids from 3.15.1
         on. A digest written earlier holds the text it summarised, so it is erased with the record it
         copies and named in `derived_copies`.
 
@@ -8537,7 +8537,7 @@ class Inspeximus:
         # `beta.forget([acme_id])` returned {'forgotten': 1} and acme's row was gone. Ids not visible to this
         # tenant are dropped exactly like ids that do not exist, so the call cannot probe for them either.
         target &= {r["id"] for r in self._tenant_rows()}
-        # A COPY GOES WITH ITS SOURCE (A-04). A session digest written before 3.14.4 holds the text of
+        # A COPY GOES WITH ITS SOURCE (A-04). A session digest written before 3.15.1 holds the text of
         # its entries; erasing the entry and keeping the digest kept the words.
         copies = self._digest_copies_of(target) - target if target else set()
         target |= copies
@@ -17129,10 +17129,10 @@ class Inspeximus:
         return text
 
     def _digest_copies_of(self, target: set) -> set:
-        """Digests written before 3.14.4 that hold a COPY of a record in `target`: their entries carry
+        """Digests written before 3.15.1 that hold a COPY of a record in `target`: their entries carry
         the text, and a correction entry carries the value it retired under `was`. Such a digest cannot
         be rewritten in place, because its write receipt commits to its text, so it is erased with the
-        record it copies. A digest from 3.14.4 on holds ids only and is never a copy."""
+        record it copies. A digest from 3.15.1 on holds ids only and is never a copy."""
         holders = set(target)
         for r in self._tenant_rows():
             if r.get("id") in target:

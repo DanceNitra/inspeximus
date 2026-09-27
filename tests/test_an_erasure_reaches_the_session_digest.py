@@ -6,7 +6,7 @@ words stayed in an active record that `recall` returned, while `forget`'s docstr
 blob could hold them. The existing check read `session_context`, which re-resolves ids, so it could
 not see the record itself.
 
-From 3.14.4 a digest stores ids, kinds and salience; every reader renders the entries from the live
+From 3.15.1 a digest stores ids, kinds and salience; every reader renders the entries from the live
 store. A digest written earlier still holds text, and its write receipt commits to that text, so it is
 erased together with the record it copies.
 """
@@ -116,9 +116,9 @@ def test_the_next_session_number_never_repeats_after_a_digest_is_erased(store):
     assert m.close_session("s4")["session_seq"] == 4
 
 
-# ── a digest written before 3.14.4 ───────────────────────────────────────────────────────────────────
+# ── a digest written before 3.15.1 ───────────────────────────────────────────────────────────────────
 def _legacy_digest(m, entries, seq=9):
-    """What close_session stored before 3.14.4: rendered text plus the entries' own text."""
+    """What close_session stored before 3.15.1: rendered text plus the entries' own text."""
     text = "SESSION DIGEST %d -- what changed in the last session (deterministic ledger diff, no LLM):\n" % seq
     text += "\n".join("  * " + e["text"] + (("  (was: %s)" % e["was"]) if e.get("was") else "") for e in entries)
     return m._stamp(text, key=Inspeximus.SESSION_DIGEST_KEY,
@@ -128,7 +128,7 @@ def _legacy_digest(m, entries, seq=9):
                           "entries": entries, "considered": len(entries)})
 
 
-def test_a_pre_3_14_4_digest_is_erased_with_the_record_it_copies(tmp_path):
+def test_a_pre_3_15_1_digest_is_erased_with_the_record_it_copies(tmp_path):
     m = Inspeximus(str(tmp_path / "s.json"), receipts=True)
     m.remember_decision(f"ship to Alice Novak, {MARK}", because="customer asked", topic="alice-shipping",
                         source={"doc": "crm/alice"})
@@ -148,7 +148,7 @@ def test_a_pre_3_14_4_digest_is_erased_with_the_record_it_copies(tmp_path):
     assert ok, problems
 
 
-def test_a_pre_3_14_4_digest_that_shows_an_erased_value_as_was_goes_too(tmp_path):
+def test_a_pre_3_15_1_digest_that_shows_an_erased_value_as_was_goes_too(tmp_path):
     """A correction entry shows the value it retired. Erasing the RETIRED record must reach the digest
     entry of the record that corrected it."""
     m = Inspeximus(str(tmp_path / "s.json"), receipts=True)
