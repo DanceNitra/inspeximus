@@ -50,8 +50,11 @@ def home(tmp_path, monkeypatch):
     return h
 
 
-def test_every_existing_file_the_install_changes_keeps_a_bak(home):
-    """Every target already exists with other content, as on a machine that had a previous setup."""
+@pytest.mark.parametrize("older_bak", [False, True], ids=["no-bak-yet", "another-tools-bak"])
+def test_every_existing_file_the_install_changes_keeps_a_bak(home, older_bak):
+    """Every target already exists with other content, as on a machine that had a previous setup. With
+    `another-tools-bak`, each also has a `.bak` another tool made (on PC2, `hermes config set` 14 minutes
+    earlier): that backup must survive, and the pre-install bytes must still be kept somewhere named."""
     hh = home / ".hermes"
     py = hh / "hermes-agent" / "venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
     py.parent.mkdir(parents=True)
@@ -67,14 +70,22 @@ def test_every_existing_file_the_install_changes_keeps_a_bak(home):
     for p, text in before.items():
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_bytes(text.encode("utf-8"))
+        if older_bak:
+            (p.parent / (p.name + ".bak")).write_bytes(b"another tool's backup of " + p.name.encode())
     rc, lines = _run(rules="no", hermes_provider_change="yes", only="hermes,claude,codex,cursor")
     assert rc == 0, lines
     changed = [p for p, text in before.items() if p.read_bytes() != text.encode("utf-8")]
     assert set(changed) == set(before), [str(p) for p in set(before) - set(changed)]   # control: all changed
-    missing = [str(p) for p, text in before.items()
-               if not (p.parent / (p.name + ".bak")).exists()
-               or (p.parent / (p.name + ".bak")).read_bytes() != text.encode("utf-8")]
-    assert not missing, missing
+    printed = "\n".join(lines)
+    lost, clobbered = [], []
+    for p, text in before.items():
+        baks = [b for b in p.parent.glob(p.name + ".bak*") if b.read_bytes() == text.encode("utf-8")]
+        if not baks or not any(f"kept a copy of {p} as {b}" in printed for b in baks):
+            lost.append(str(p))
+        if older_bak and (p.parent / (p.name + ".bak")).read_bytes() != b"another tool's backup of " + p.name.encode():
+            clobbered.append(str(p))
+    assert not lost, (lost, printed)
+    assert not clobbered, clobbered
 
 
 def test_a_write_that_changes_nothing_leaves_the_file_and_its_backup_alone(home, tmp_path):
@@ -83,9 +94,9 @@ def test_a_write_that_changes_nothing_leaves_the_file_and_its_backup_alone(home,
     I.write_text_keeping_newlines(p, '{"a": 2}\n')
     bak = p.parent / (p.name + ".bak")
     assert bak.read_text(encoding="utf-8") == '{"a": 1}\n'
-    stamp = (p.stat().st_mtime_ns, bak.read_bytes())
-    I.write_text_keeping_newlines(p, '{"a": 2}\n')                      # identical: nothing is rewritten
-    assert (p.stat().st_mtime_ns, bak.read_bytes()) == stamp
+    stamp = (p.stat().st_mtime_ns, bak.read_bytes(), sorted(x.name for x in tmp_path.iterdir()))
+    assert I.write_text_keeping_newlines(p, '{"a": 2}\n') is None       # identical: nothing is rewritten
+    assert (p.stat().st_mtime_ns, bak.read_bytes(), sorted(x.name for x in tmp_path.iterdir())) == stamp
 
 
 def _run(**kw):
