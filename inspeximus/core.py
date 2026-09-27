@@ -2204,7 +2204,7 @@ class _StoreLock:
     _CACHE: dict = {}
     _CACHE_GUARD = threading.Lock()
 
-    __slots__ = ("_path", "_fh", "_locker", "_tl", "_transient", "_legacy")
+    __slots__ = ("_path", "_fh", "_locker", "_tl", "_transient", "_legacy", "_try", "_busy")
 
     #: How long a writer retries OPENING the lock file before it gives up. Separate from LOCK_WAIT_S,
     #: the wait for a holder: an open that keeps failing is a directory this process cannot write, and
@@ -2212,7 +2212,7 @@ class _StoreLock:
     #: clears in milliseconds.
     OPEN_RETRY_S = 2.0
 
-    def __init__(self, path, _legacy: bool = False):
+    def __init__(self, path, _legacy: bool = False, try_only: bool = False):
         # BESIDE THE STORE, SINCE A-10 (2026-09-27). The lock used to live in `tempfile.gettempdir()`,
         # on the assumption of one temp dir per machine. TEMP is per user on Windows, and private to a
         # sandboxed agent, a snap or flatpak editor or a service; since 3.14.0 `install --all` points
@@ -2242,10 +2242,22 @@ class _StoreLock:
         else:
             self._path = os.path.normcase(os.path.realpath(os.path.abspath(str(path)))) + ".lock"
             self._transient = True
-            self._legacy = _StoreLock(path, _legacy=True)
+            self._legacy = _StoreLock(path, _legacy=True, try_only=try_only)
         self._fh = None
         self._tl = None
         self._locker = _LOCK_PRIMITIVE
+        # TRY-ONLY never waits and never degrades: it takes both locks now or neither, and `held` says
+        # which. For work that is only safe while holding the lock and can simply be skipped when a
+        # writer is busy -- removing what an interrupted save left (A-08). A blocking wait there would
+        # stall every open behind a busy writer, and a degraded "hold" would delete a live writer's file.
+        self._try = try_only
+        self._busy = False
+
+    @property
+    def held(self) -> bool:
+        """This handle holds its lock and, when it has one, the legacy lock (which may be unavailable,
+        but was not busy)."""
+        return self._fh is not None and not self._busy and (self._legacy is None or not self._legacy._busy)
 
     #: path -> how many times this process wrote to it WITHOUT the lock. Never reset; a non-zero
     #: entry is the one thing that explains a loss nothing else recorded.
@@ -2286,8 +2298,8 @@ class _StoreLock:
             self._degraded("no platform lock primitive is available (neither fcntl nor msvcrt), so "
                            "this write is not protected against another process")
             return self
-        self._acquire(kind, mod)
-        if self._legacy is not None:
+        got = self._acquire(kind, mod)
+        if self._legacy is not None and (got or not self._try):
             try:
                 self._legacy._acquire(kind, mod)
             except BaseException:
@@ -2303,7 +2315,12 @@ class _StoreLock:
                 ent = (threading.Lock(), None)
                 _StoreLock._CACHE[self._path] = ent
         self._tl = ent[0]
-        self._tl.acquire()                   # in-process first: one handle, so the OS lock cannot
+        if self._try and not self._tl.acquire(blocking=False):
+            self._tl = None
+            self._busy = True
+            return False
+        if not self._try:
+            self._tl.acquire()               # in-process first: one handle, so the OS lock cannot
         # THIS DEADLINE MUST OUTLAST THE LONGEST A HOLDER CAN LEGALLY HOLD THE LOCK, and it did not.
         # A writer inside the lock may wait out a busy database for `sqlite_store.BUSY_TIMEOUT_S`, so
         # a waiter that gives up sooner unlocks itself while the holder is still doing exactly what it
@@ -2341,7 +2358,7 @@ class _StoreLock:
                 _StoreLock._CACHE[self._path] = (self._tl, fh)
             try:
                 if kind == "fcntl":
-                    mod.flock(fh.fileno(), mod.LOCK_EX)
+                    mod.flock(fh.fileno(), mod.LOCK_EX | (mod.LOCK_NB if self._try else 0))
                     if self._transient and not _StoreLock._names(fh, self._path):
                         # The holder we waited on removed this name on release; our lock is on a
                         # file nobody else will open. Start again on the file the path names now.
@@ -2351,11 +2368,20 @@ class _StoreLock:
                         continue
                 else:
                     fh.seek(0)
-                    mod.locking(fh.fileno(), mod.LK_LOCK, 1)
+                    mod.locking(fh.fileno(), mod.LK_NBLCK if self._try else mod.LK_LOCK, 1)
                 self._fh = fh
                 return True
             except OSError:
                 _StoreLock._CACHE[self._path] = (self._tl, None)
+                if self._try:
+                    try:
+                        fh.close()
+                    except OSError:
+                        pass
+                    self._tl.release()
+                    self._tl = None
+                    self._busy = True
+                    return False
                 if time.time() >= deadline:
                     # DEGRADING IS NO LONGER SILENT. Unlocked concurrent writes are how eight
                     # writers lost 17, 6, 28 and 47 of 96 records while every one of them reported
@@ -3124,6 +3150,9 @@ class Inspeximus:
         if self._encrypted and not _HAVE_AEAD:
             raise RuntimeError("encryption needs the `cryptography` package (pip install cryptography)")
         self._load_from_disk()
+        # What a crashed save left beside the store is a copy of its records (A-08); remove it now,
+        # if no writer is busy. What is still there is kept for the erasure paths to report.
+        self._interrupted_saves = self._sweep_save_temps()
         # EMBED-RECIPE GUARD (persist_vectors only): persisted vectors are only comparable to a query embedded the
         # SAME way. If the store was written with a different embed recipe than the one now in use — most importantly
         # an ASYMMETRIC upgrade (e.g. adding nomic's search_document:/search_query: prefixes) — a query in the new
@@ -8580,6 +8609,15 @@ class Inspeximus:
         # reported beside the count, never as the verdict.
         from .erasure_residue import scan_records
         out["residue_in_store"] = scan_records(self.items, _residue_values)
+        left = self._sweep_save_temps()
+        if left:
+            rs = out["residue_in_store"]
+            rs["ok"] = False
+            rs.setdefault("findings", []).extend(
+                {"path": name, "kind": "INTERRUPTED_SAVE", "why_not_removed": why} for name, why in left)
+            rs.setdefault("problems", []).append(
+                "an interrupted save left a full copy of the store beside it, and it could not be removed "
+                "now; it holds the records as they were before this erasure")
         if verify_residue_in:
             # Prove the bytes went, not just the rows. The report carries fingerprints, never the values.
             from .erasure_residue import scan_residue
@@ -9436,6 +9474,55 @@ class Inspeximus:
         if self.path.exists():
             return _rows.looks_like_sqlite(self.path)
         return True                       # a store that does not exist yet is created as rows
+
+    def _save_temps(self) -> list:
+        """Files beside this store that an interrupted save or migration left behind, each a full copy
+        of the records: `<store>.<8 chars>.tmp` (the name `_durable_replace` gives its temp file, the
+        same in every version) and `<store>.rows-tmp` (a migration). Sidecar temps do not match."""
+        if not getattr(self, "path", None):
+            return []
+        d = os.path.dirname(os.path.abspath(str(self.path))) or "."
+        base = os.path.basename(str(self.path))
+        rx = re.compile(re.escape(base) + r"\.[a-z0-9_]{8}\.tmp$", re.I if os.name == "nt" else 0)
+        try:
+            names = os.listdir(d)
+        except OSError:
+            return []
+        rows_tmp = (base + ".rows-tmp").lower() if os.name == "nt" else base + ".rows-tmp"
+        return sorted(os.path.join(d, n) for n in names
+                      if rx.match(n) or (n.lower() if os.name == "nt" else n) == rows_tmp)
+
+    def _sweep_save_temps(self) -> list:
+        """Remove what an interrupted save left; return [(name, why)] for what is still there.
+
+        A CRASHED SAVE LEFT A PLAINTEXT COPY THAT NO ERASURE SAW (A-08, 2026-09-27). A process killed
+        between the fsync and the replace (a hook at its timeout, a closed terminal; on Windows the
+        replace retries for seconds while a reader holds the file) left `<store>.<random>.tmp` with
+        every record in it, and a later `forget_subject` and its certificate reported the erasure
+        verified. A writer holds the store lock for as long as its temp file exists, so a match found
+        while THIS handle holds the lock belongs to a writer that died. A busy lock means a live writer:
+        nothing is touched, and the next open or erasure looks again. Never raises."""
+        try:
+            if not self._save_temps():
+                return []
+            lock = _StoreLock(self.path, try_only=True)
+            with lock:
+                if not lock.held:
+                    return [(os.path.basename(p), "a writer holds the store lock, so it may be live")
+                            for p in self._save_temps()]
+                left = []
+                for p in self._save_temps():
+                    try:
+                        os.unlink(p)
+                    except FileNotFoundError:
+                        pass
+                    except OSError as e:
+                        left.append((os.path.basename(p), f"{type(e).__name__}: {e}"))
+                return left
+        except StoreLockUnavailable as e:
+            return [(os.path.basename(p), f"the store lock is unavailable: {e}") for p in self._save_temps()]
+        except Exception as e:                                                # noqa: BLE001
+            return [(os.path.basename(p), f"{type(e).__name__}: {e}") for p in self._save_temps()]
 
     def _migrate_json_store(self) -> dict | None:
         """Convert an existing JSON store to rows, in place, keeping the original beside it.
@@ -11323,6 +11410,12 @@ class Inspeximus:
         scoped = [t for t in toms if request_id is None or t.get("request_id") == request_id]
         erased_ids = sorted({t.get("memory_id") for t in scoped if t.get("memory_id")})
         ok, problems = self.verify_writes(expected_pubkey)
+        # Scanned, not swept: opening and erasing already remove what they can (A-08). A copy that is
+        # still there holds records as they were before an erasure, so nothing here is verified.
+        for p in self._save_temps():
+            ok = False
+            problems = list(problems) + [f"an interrupted save left {os.path.basename(p)} beside the store, "
+                                         "a full copy of its records that no erasure has removed"]
         return {
             "inspeximus_erasure_certificate": "1.0",
             "issued_ts": time.time(),

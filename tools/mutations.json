@@ -4012,7 +4012,7 @@
  {
   "name": "a new writer stops taking the old TEMP lock",
   "file": "inspeximus/core.py",
-  "old": "self._legacy = _StoreLock(path, _legacy=True)",
+  "old": "self._legacy = _StoreLock(path, _legacy=True, try_only=try_only)",
   "new": "self._legacy = None",
   "tests": [
    "tests/test_the_store_lock_does_not_depend_on_temp.py"
@@ -4142,6 +4142,87 @@
   "new": "",
   "tests": [
    "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "opening the store no longer sweeps a crashed save's copy",
+  "file": "inspeximus/core.py",
+  "old": "self._interrupted_saves = self._sweep_save_temps()",
+  "new": "self._interrupted_saves = []",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "the sweep deletes without holding the lock",
+  "file": "inspeximus/core.py",
+  "old": "                if not lock.held:\n",
+  "new": "                if False:\n",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "held ignores a busy legacy lock",
+  "file": "inspeximus/core.py",
+  "old": "        return self._fh is not None and not self._busy and (self._legacy is None or not self._legacy._busy)",
+  "new": "        return self._fh is not None and not self._busy",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "a try-only lock blocks on Windows",
+  "file": "inspeximus/core.py",
+  "old": "mod.locking(fh.fileno(), mod.LK_NBLCK if self._try else mod.LK_LOCK, 1)",
+  "new": "mod.locking(fh.fileno(), mod.LK_LOCK, 1)",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "a failed try degrades like a timed-out write",
+  "file": "inspeximus/core.py",
+  "old": "                _StoreLock._CACHE[self._path] = (self._tl, None)\n                if self._try:\n",
+  "new": "                _StoreLock._CACHE[self._path] = (self._tl, None)\n                if False:\n",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "forget reports clean while a crashed save's copy remains",
+  "file": "inspeximus/core.py",
+  "old": "        left = self._sweep_save_temps()\n        if left:\n",
+  "new": "        left = self._sweep_save_temps()\n        if False:\n",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "the certificate verifies while a crashed save's copy remains",
+  "file": "inspeximus/core.py",
+  "old": "        for p in self._save_temps():\n            ok = False\n",
+  "new": "        for p in []:\n            ok = False\n",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "the save-temp pattern matches any .tmp beside the store",
+  "file": "inspeximus/core.py",
+  "old": "rx = re.compile(re.escape(base) + r\"\\.[a-z0-9_]{8}\\.tmp$\", re.I if os.name == \"nt\" else 0)",
+  "new": "rx = re.compile(re.escape(base) + r\"\\..*\\.tmp$\", re.I if os.name == \"nt\" else 0)",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
+  ]
+ },
+ {
+  "name": "a crashed migration's rows-tmp is not swept",
+  "file": "inspeximus/core.py",
+  "old": "if rx.match(n) or (n.lower() if os.name == \"nt\" else n) == rows_tmp)",
+  "new": "if rx.match(n))",
+  "tests": [
+   "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
   ]
  }
 ]
