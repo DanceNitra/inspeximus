@@ -79,8 +79,18 @@ def _install_markers(host):
         return [str(la / "Programs" / name)] + [str(a / (name + ".app")) for a in apps]
     ext = [str(h / d / "extensions" / "saoudrizwan.claude-dev-*")
            for d in (".vscode", ".vscode-insiders", ".cursor", ".windsurf")]
+    # CLAUDE DESKTOP'S OWN CLAUDE CODE (3.14.4). Found on 2026-09-27 on a machine with Claude Desktop and
+    # no `claude` on PATH: install --all reported Claude Code as not found, and a new Code-tab session had
+    # no inspeximus hooks or tools. Desktop keeps a bundled Claude Code per version, and its Code tab reads
+    # ~/.claude.json and ~/.claude/settings.json like the CLI does. The executable inside a version folder
+    # is the marker, so a bare folder does not count. An MSIX install keeps the folder under its package's
+    # LocalCache (measured on Windows 11: 2.1.275 and 2.1.280 there, nothing under %APPDATA%\Claude).
+    # `_appdata()` is %APPDATA% on Windows and ~/Library/Application Support on macOS.
+    desktop = [str(_i._appdata() / "Claude" / "claude-code" / "*" / exe) for exe in ("claude.exe", "claude")] + [
+        str(la / "Packages" / "Claude_*" / "LocalCache" / "Roaming" / "Claude" / "claude-code" / "*" / "claude.exe")]
     return {
-        "claude": (["claude"], [str(h / ".claude" / "local" / "claude*"), str(h / ".local" / "bin" / "claude*")]),
+        "claude": (["claude"], [str(h / ".claude" / "local" / "claude*"), str(h / ".local" / "bin" / "claude*")]
+                   + desktop),
         "gemini": (["gemini"], []),
         "codex": (["codex"], [str(la / "Packages" / "OpenAI.Codex_*"), str(la / "Programs" / "OpenAI" / "Codex")]
                   + [str(a / "Codex.app") for a in apps]),
@@ -151,16 +161,33 @@ def choose_store(hosts, store=None):
     return default_store(), None
 
 
-def write_shared_record(store):
+def write_shared_record(store, agents=None, seal=None):
+    """Write ~/.inspeximus/shared.json. Since 3.14.4 it also names the wired agents and the install SEAL,
+    which the ARMED block, `install --check` and each agent's one-time "memory active" line read.
+
+    AGENTS ACCUMULATE while the store stays the same: `--only claude` after a full install must not drop
+    Hermes and Codex from the list every agent's first-session line names."""
     from ._surface import shared_config_path
     p = pathlib.Path(shared_config_path())
-    data = {"store": str(store), "written_by": "inspeximus install --all", "version": _version()}
     old = None
     try:
         old = json.loads(p.read_text(encoding="utf-8"))
     except Exception:                                        # noqa: BLE001
         pass
-    if isinstance(old, dict) and old.get("store") == str(store):
+    old = old if isinstance(old, dict) else {}
+    same = old.get("store") == str(store)
+    data = {"store": str(store), "written_by": "inspeximus install --all", "version": _version()}
+    prev = [a for a in (old.get("agents") or []) if isinstance(a, str)] if same else []
+    merged = prev + [a for a in (agents or []) if a not in prev]
+    if merged:
+        data["agents"] = merged
+    if seal:
+        data["seal"] = {"id": seal[0], "sha256": seal[1]}
+    elif same and old.get("seal"):
+        data["seal"] = old["seal"]
+    if same and agents is None and seal is None:
+        return "unchanged"
+    if old == data:
         return "unchanged"
     _i._write_json(p, data)
     return "written"
@@ -404,16 +431,79 @@ def uninstall_from_hermes(py, runner=subprocess.run):
 
 
 # ── the first-run proof and the migration ────────────────────────────────────────────────────────────
-def record_first_run(store, wired):
+def record_first_run(store, wired, labels=None):
+    """`labels`, when given, names every agent on the shared store (3.14.4: a `--only claude` re-run
+    no longer rewrites the setup decision as if Claude Code were the only agent)."""
     from ._surface import open_store
     m = open_store(str(store))
-    labels = ", ".join("Hermes Agent" if h == "hermes" else _i.HOSTS[h]["label"] for h in wired) or "none"
+    labels = ", ".join(labels or ["Hermes Agent" if h == "hermes" else _i.HOSTS[h]["label"] for h in wired]) or "none"
     text = (f"DECISION: every AI agent on this machine shares one inspeximus memory: {labels}. "
             f"Installed with inspeximus {_version()} on {time.strftime('%Y-%m-%d')}; store {store}.")
+    # A SECOND RUN CHANGES NOTHING (3.14.4). The seal is this record, so writing it again on an unchanged
+    # re-run would give the same install a new seal and rewrite shared.json. The decision is kept when
+    # the current one says exactly this; a changed agent list, version or day writes a new one.
+    current = [it for it in getattr(m, "items", []) or []
+               if it.get("key") == SETUP_KEY and it.get("status") != "superseded"]
+    if current and current[-1].get("object") == text:
+        return current[-1]["id"]
     rid = m.remember_decision(text, because="inspeximus install --all wired these agents to one store",
                               topic="inspeximus-setup")
     m.flush()
     return rid if isinstance(rid, str) else (rid or {}).get("id")
+
+
+# ── the ARMED block: the last thing install --all and install --check print (3.14.4) ───────────────────
+#: The key record_first_run's decision is stored under.
+SETUP_KEY = "decision::inspeximus-setup"
+
+
+def seal_of(rec):
+    """(id, sha256) of a setup record. The hash is the record's `immutable_sha256`, the value a write
+    receipt commits to, so the seal can be recomputed from the store and compared, and on a store with
+    receipts `verify_writes` checks the same binding."""
+    from .core import Inspeximus
+    return rec["id"], Inspeximus._write_commit(rec)["immutable_sha256"]
+
+
+def read_store(store):
+    """(record count, seal of the current setup record or None). Reads only; (0, None) for no store."""
+    p = pathlib.Path(str(store)).expanduser() if store else None
+    if not p or not p.exists():
+        return 0, None
+    from ._surface import open_store
+    items = list(getattr(open_store(str(p)), "items", []) or [])
+    setup = [it for it in items if it.get("key") == SETUP_KEY and it.get("status") != "superseded"]
+    return len(items), (seal_of(setup[-1]) if setup else None)
+
+
+def armed_block(store, records, wired, restart, seal, attention=(), dry_run=False, seal_note=""):
+    """The fixed, short block printed LAST.
+
+    WHY A BLOCK AND NOT THE TABLE (3.14.4). On 2026-09-27 Hermes Agent on a 9B local model followed the
+    install page, installed correctly, and answered "Yes, done" in four bullets. The page told it to show
+    the table; it summarized the table away, and the owner saw no confirmation at all. A weak model
+    rewrites a table, and it copies a short block. Every line is ASCII, starts with a fixed word, and
+    the block is the same shape on every run, so the page can say: copy it exactly."""
+    n = len(wired)
+    agents = "agent" if n == 1 else "agents"
+    if dry_run:
+        head = f"inspeximus {_version()} DRY RUN: would wire {n} {agents}"
+    elif n:
+        head = f"inspeximus {_version()} ARMED: one memory for {n} {agents}"
+    else:
+        head = f"inspeximus {_version()} NOT ARMED: no agent is wired"
+    lines = [head,
+             f"store: {store} ({records} record{'' if records == 1 else 's'})",
+             "wired: " + (", ".join(wired) or "none"),
+             "restart: " + (", ".join(restart) or "none"),
+             ("seal: %s %s" % (seal[0], seal[1][:12]) if seal else "seal: none") + seal_note]
+    if attention:
+        lines.append("attention: " + ", ".join(attention) + " (see the table above)")
+    return lines
+
+
+def _label(h):
+    return "Hermes Agent" if h == "hermes" else _i.HOSTS[h]["label"]
 
 
 def import_project_store(store, project=None):
@@ -513,11 +603,36 @@ def select(only=None):
     return [h for h in hosts if h in names], "hermes" in names, None
 
 
+_UNEXPANDED = re.compile(r"%[A-Za-z_][A-Za-z0-9_]*%|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?")
+
+
+def unexpanded_variable(path):
+    """The shell variable a path still carries literally (`%HOME%`, `$HOME`, `${HOME}`), or None.
+
+    Found on 2026-09-27: in Git Bash, Hermes Agent ran `python -m venv "%HOME%/.inspeximus/venv"`. Bash
+    does not expand %HOME%, so the venv landed in a folder literally named `%HOME%` under the working
+    directory. An installer run from there writes that interpreter path into every agent's config, and a
+    hook command that a host runs through cmd.exe would expand the variable and name another path."""
+    m = _UNEXPANDED.search(str(path or ""))
+    return m.group(0) if m else None
+
+
 def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", project=None, out=print, only=None):
     hosts, with_hermes, err = select(only)
     if err:
         out("ERROR: " + err)
         return 2
+    kind, exe = _i.resolve_runtime()
+    for what, p in (("--store", store), ("the Python running this installer", exe if kind == "python" else None)):
+        var = unexpanded_variable(p)
+        if var:
+            fix = ("Pass it with the home folder written out." if what == "--store" else
+                   "Create the virtual environment again with the home folder written out (bash: "
+                   "\"$HOME/.inspeximus/venv\"; PowerShell: \"$HOME\\.inspeximus\\venv\") and run the installer "
+                   "from there.")
+            out(f"ERROR: {what} contains {var} literally: {p}. A shell did not expand it, so the path names a "
+                f"folder called {var}. Nothing was changed. {fix}")
+            return 2
     found = {h: detect(h) for h in hosts}
     targets = [h for h in hosts if found[h][0]]
     path, err = choose_store(targets, store)
@@ -565,12 +680,17 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
                              f"{r['path']}: {RULE_LINE}")
 
     migrated = source = None
-    rid = None
+    rid = seal = None
+    labels = [_label(h) for h in wired]
     if not dry_run and wired:
+        from ._surface import shared_record
         path.parent.mkdir(parents=True, exist_ok=True)
-        write_shared_record(path)
+        write_shared_record(path, agents=labels)
         migrated, source = import_project_store(path, project)
-        rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"])
+        rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"],
+                               labels=shared_record().get("agents") or labels)
+        seal = read_store(path)[1]
+        write_shared_record(path, agents=labels, seal=seal)
 
     widths = [max(len(str(r[i])) for r in rows + [("host", "found", "wired", "store path", "recall")])
               for i in range(5)]
@@ -588,7 +708,13 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
         out("(dry run - nothing written)")
     else:
         out("Restart each app listed as wired, so it starts the memory server.")
-    return 0 if all(not str(r[2]).startswith("ERROR") for r in rows) else 1
+    failed = [str(r[0]) for r in rows if str(r[2]).startswith("ERROR")]
+    records = read_store(path)[0] if not dry_run else 0
+    out("")
+    for line in armed_block(path, records, labels, [] if dry_run else labels, seal, attention=failed,
+                            dry_run=dry_run):
+        out(line)
+    return 0 if not failed else 1
 
 
 # ── install --check: read-only, what each agent's config says now ──────────────────────────────────────
@@ -686,7 +812,30 @@ def check(store=None, only=None, out=print):
     for r in [head] + rows:
         out("  ".join(str(c).ljust(w[i]) for i, c in enumerate(r)))
     out(f"shared store: {want or 'none recorded'}; this is inspeximus {_version()}")
+    # THE SAME BLOCK, READ-ONLY (3.14.4), so a friend can see it again at any time. The seal is
+    # recomputed from the store and compared with the one the install recorded in shared.json.
+    from ._surface import shared_record
+    records, seal = read_store(want)
+    recorded = shared_record().get("seal") or {}
+    note = ""
+    if seal and recorded.get("id"):
+        if (recorded.get("id"), recorded.get("sha256")) == seal:
+            note = " (matches the install)"
+        else:
+            note = " (DIFFERS from the install: %s %s)" % (recorded.get("id"), str(recorded.get("sha256"))[:12])
+            bad += 1
+    elif seal:
+        note = " (not recorded by an install; run install --all to record it)"
+
+    def name(r):
+        return "Hermes Agent" if str(r[0]).startswith("Hermes Agent") else str(r[0])
+    ok = [name(r) for r in rows if r[4] == "ok"]
+    attention = [name(r) for r in rows if str(r[4]).startswith(("DIFFERS", "ERROR"))
+                 or (only and str(r[4]).startswith("not wired"))] + (["seal"] if "DIFFERS" in note else [])
     if bad:
-        out(f"{bad} agent(s) need attention. To rewrite them: inspeximus install --all"
+        out(f"{bad} item(s) need attention. To rewrite the agents: inspeximus install --all"
             + (f" --only {only if isinstance(only, str) else ','.join(only)}" if only else ""))
+    out("")
+    for line in armed_block(want or "none recorded", records, ok, [], seal, attention=attention, seal_note=note):
+        out(line)
     return 1 if bad else 0

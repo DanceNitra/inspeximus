@@ -3691,5 +3691,159 @@
   "tests": [
    "tests/test_the_temporary_home_keeps_the_browser_cache.py"
   ]
+ },
+ {
+  "name": "Claude Desktop's own Claude Code is not a marker again",
+  "file": "inspeximus/install_all.py",
+  "old": "                   + desktop),\n",
+  "new": "                   ),\n",
+  "tests": [
+   "tests/test_claude_desktop_counts_as_claude_code.py"
+  ]
+ },
+ {
+  "name": "the Microsoft Store Claude Desktop path is not a marker",
+  "file": "inspeximus/install_all.py",
+  "old": "        str(la / \"Packages\" / \"Claude_*\" / \"LocalCache\" / \"Roaming\" / \"Claude\" / \"claude-code\" / \"*\" / \"claude.exe\")]",
+  "new": "        ]",
+  "tests": [
+   "tests/test_claude_desktop_counts_as_claude_code.py"
+  ]
+ },
+ {
+  "name": "a Claude Desktop version folder counts without its executable",
+  "file": "inspeximus/install_all.py",
+  "old": "/ \"claude-code\" / \"*\" / exe) for exe in (\"claude.exe\", \"claude\")]",
+  "new": "/ \"claude-code\" / \"*\") for exe in (\"claude.exe\", \"claude\")]",
+  "tests": [
+   "tests/test_claude_desktop_counts_as_claude_code.py"
+  ]
+ },
+ {
+  "name": "install --all does not print the ARMED block",
+  "file": "inspeximus/install_all.py",
+  "old": "        out(line)\n    return 0 if not failed else 1\n",
+  "new": "        pass\n    return 0 if not failed else 1\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "install --check does not print the ARMED block",
+  "file": "inspeximus/install_all.py",
+  "old": "        out(line)\n    return 1 if bad else 0\n",
+  "new": "        pass\n    return 1 if bad else 0\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "install --check accepts any recorded seal",
+  "file": "inspeximus/install_all.py",
+  "old": "        if (recorded.get(\"id\"), recorded.get(\"sha256\")) == seal:\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "the seal is not recorded in shared.json",
+  "file": "inspeximus/install_all.py",
+  "old": "        data[\"seal\"] = {\"id\": seal[0], \"sha256\": seal[1]}\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "a literal %HOME% in a path is no longer refused",
+  "file": "inspeximus/install_all.py",
+  "old": "_UNEXPANDED = re.compile(r\"%[A-Za-z_][A-Za-z0-9_]*%|\\$\\{?[A-Za-z_][A-Za-z0-9_]*\\}?\")",
+  "new": "_UNEXPANDED = re.compile(r\"(?!x)x\")",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "a --only run drops the other agents from shared.json",
+  "file": "inspeximus/install_all.py",
+  "old": "    merged = prev + [a for a in (agents or []) if a not in prev]\n",
+  "new": "    merged = list(agents or [])\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "the setup decision names only this run's agents",
+  "file": "inspeximus/install_all.py",
+  "old": "                               labels=shared_record().get(\"agents\") or labels)\n",
+  "new": "                               labels=labels)\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "the memory-active line is shown in every session",
+  "file": "inspeximus/_surface.py",
+  "old": "            if (json.load(fh) or {}).get(agent) == seal:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "the memory-active line names a store the agent does not read",
+  "file": "inspeximus/_surface.py",
+  "old": "        if os.path.normcase(os.path.abspath(str(store_path))) != os.path.normcase(os.path.abspath(store)):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "Codex gets the systemMessage field",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if agent_id(ev) == \"claude-code\" and (ev.get(\"source\") or \"\") != \"compact\":\n",
+  "new": "        if agent_id(ev) in (\"claude-code\", \"codex\") and (ev.get(\"source\") or \"\") != \"compact\":\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "the hook never shows the memory-active line",
+  "file": "inspeximus/claude_code.py",
+  "old": "        out[\"systemMessage\"] = system_message\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "Hermes never shows the memory-active line",
+  "file": "inspeximus/integrations/hermes_agent.py",
+  "old": "                    mark_announced(\"hermes\")\n                    return line\n",
+  "new": "                    mark_announced(\"hermes\")\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
+ },
+ {
+  "name": "with no uvx the entry names a bare uvx again",
+  "file": "inspeximus/install.py",
+  "old": "    return \"python\", sys.executable\n\n\ndef missing_mcp_warning",
+  "new": "    return \"uvx\", \"uvx\"\n\n\ndef missing_mcp_warning",
+  "tests": [
+   "tests/test_claude_desktop_counts_as_claude_code.py"
+  ]
+ },
+ {
+  "name": "an identical re-run writes a new setup decision and a new seal",
+  "file": "inspeximus/install_all.py",
+  "old": "    if current and current[-1].get(\"object\") == text:\n        return current[-1][\"id\"]\n",
+  "new": "    if False:\n        return current[-1][\"id\"]\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py",
+   "tests/test_the_install_ends_with_the_armed_block.py"
+  ]
  }
 ]

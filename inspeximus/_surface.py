@@ -96,6 +96,76 @@ def shared_store_path():
         return None
 
 
+def shared_record() -> dict:
+    """Everything `inspeximus install --all` recorded in shared.json, or {}: the store, the agents it
+    wired, and since 3.14.4 the SEAL, the id and `immutable_sha256` of the setup decision it wrote."""
+    try:
+        import json
+        with open(shared_config_path(), encoding="utf-8") as fh:
+            d = json.load(fh)
+        return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+#: Which agents have shown the one-time "memory active" line for which install seal.
+ANNOUNCED_FILENAME = "announced.json"
+
+
+def _announced_path() -> str:
+    return os.path.join(os.path.expanduser("~"), ".inspeximus", ANNOUNCED_FILENAME)
+
+
+def announcement(agent: str, label: str, store_path, records: int):
+    """The one-time line an agent shows its user in the first session after `install --all` (3.14.4),
+    or None: no install seal, this agent already showed it for this seal, or the agent's store is not the
+    shared one (the line would then name a store the agent does not read).
+
+    Found on 2026-09-27: the owner saw no sign that the install worked until he asked an agent. The line
+    is shown once per install seal, so a re-install shows it again and an ordinary session does not."""
+    rec = shared_record()
+    seal = (rec.get("seal") or {}).get("id")
+    store = rec.get("store")
+    if not seal or not store or not store_path:
+        return None
+    try:
+        if os.path.normcase(os.path.abspath(str(store_path))) != os.path.normcase(os.path.abspath(store)):
+            return None
+        import json
+        with open(_announced_path(), encoding="utf-8") as fh:
+            if (json.load(fh) or {}).get(agent) == seal:
+                return None
+    except Exception:                       # no marker yet, or an unreadable one: show the line
+        pass
+    others = [a for a in rec.get("agents") or [] if isinstance(a, str) and a != label]
+    return ("inspeximus memory active: %d record%s" % (int(records), "" if int(records) == 1 else "s")
+            + (", shared with " + ", ".join(others) if others else ""))
+
+
+def mark_announced(agent: str) -> None:
+    """Record that `agent` showed the line for the current install seal. Never raises."""
+    try:
+        import json
+        seal = (shared_record().get("seal") or {}).get("id")
+        if not seal:
+            return
+        p = _announced_path()
+        try:
+            with open(p, encoding="utf-8") as fh:
+                d = json.load(fh)
+            d = d if isinstance(d, dict) else {}
+        except Exception:
+            d = {}
+        d[agent] = seal
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        tmp = p + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(d, fh)
+        os.replace(tmp, p)
+    except Exception:
+        pass
+
+
 def coding_store_dir(cwd=None, env=None) -> str:
     """The directory holding a project's Claude Code store: `<git root or cwd>/.inspeximus`.
 
