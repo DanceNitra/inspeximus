@@ -242,3 +242,34 @@ def test_it_fails_when_the_value_reports_scan_the_store_once_per_key():
     now = {"reports": {"counters": bad, "seconds_median": 0.1}}
     fail, _ = gate.compare(base, now)
     assert any("current_active_scans" in f for f in fail), f"the scans grew and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_the_read_guard_searches_text_that_cannot_match():
+    """AUDIT-B B-05. The read guard ran seven regex searches over every clean record in every new
+    process: 8.1 s of a 12.0 s hook recall at 67,165 records.
+
+    Reintroduced by emptying the word pre-check, which is exactly the old behaviour (every pattern
+    searched), and measured through the counter the gate reads.
+    """
+    run = gate.w_prompt(200)
+    with gate.Counters() as c:
+        run()
+    good = c.as_dict()
+    assert good["store_loads"] == 1 and good["guard_regex_searches"] == 0, (
+        "fixture error: a fresh recall over clean text should load once and search nothing", good)
+
+    real = core._SHAPE_REQUIRES
+    core._SHAPE_REQUIRES = {}
+    try:
+        run = gate.w_prompt(200)
+        with gate.Counters() as c:
+            run()
+        bad = c.as_dict()
+    finally:
+        core._SHAPE_REQUIRES = real
+    assert bad["guard_regex_searches"] >= 7 * 200, f"searching every text did not move the counter: {bad}"
+
+    base = {"prompt": {"counters": good, "seconds_median": 0.1}}
+    now = {"prompt": {"counters": bad, "seconds_median": 0.1}}
+    fail, _ = gate.compare(base, now)
+    assert any("guard_regex_searches" in f for f in fail), f"the searches grew and the gate stayed green: {fail}"

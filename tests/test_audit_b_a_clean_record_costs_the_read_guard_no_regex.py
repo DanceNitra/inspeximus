@@ -52,8 +52,6 @@ def searches(monkeypatch):
     return box
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-05: seven regex searches per record, even for text no pattern can match")
 def test_a_text_without_any_required_word_costs_no_regex_search(searches):
     # CONTROL: the real injection still gets its full verdict through the counted patterns.
     if core._instruction_shape(INJECTION) != ["override_prior_instructions", "exfiltration_order"]:

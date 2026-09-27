@@ -126,6 +126,22 @@ class Counters:
                 return _real(*a, **k)
 
             setattr(owner, attr, counted)
+
+        # A regex search by the read guard. `recall` assesses every pooled record in every new process,
+        # and seven searches per clean record were 8.1 s of a 12.0 s hook recall (AUDIT-B B-05).
+        self.searches = 0
+        self._real_shapes = core._INSTRUCTION_SHAPES
+        counter = self
+
+        class _Counted:
+            def __init__(self, rx):
+                self._rx = rx
+
+            def search(self, *a, **k):
+                counter.searches += 1
+                return self._rx.search(*a, **k)
+
+        core._INSTRUCTION_SHAPES = [(n, _Counted(rx)) for n, rx in self._real_shapes]
         return self
 
     def __exit__(self, *exc):
@@ -133,6 +149,7 @@ class Counters:
         core.Inspeximus._load_from_disk = self._real_load
         for name, (owner, attr) in COUNTED_CALLS.items():
             setattr(owner, attr, self._real_calls[name])
+        core._INSTRUCTION_SHAPES = self._real_shapes
         return False
 
     def as_dict(self):
@@ -142,6 +159,7 @@ class Counters:
                 "full_serializations": self.dumps,
                 "serialized_bytes": self.dump_bytes,
                 "store_loads": self.loads,
+                "guard_regex_searches": self.searches,
                 **self.calls}
 
 
@@ -306,6 +324,23 @@ def w_reports(k):
     return run
 
 
+def w_prompt(n):
+    """What a UserPromptSubmit hook does: a FRESH handle opens a store of n records and recalls once.
+
+    A fresh process has assessed nothing, so the read guard runs over every record. None of these
+    texts holds a word any instruction shape requires, so `guard_regex_searches` is 0 (AUDIT-B B-05);
+    it was 7 per record."""
+    p = _store_path()
+    m = Inspeximus(p)
+    for i in range(n):
+        m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+    m.flush()
+
+    def run():
+        Inspeximus(p).recall("which make target builds the docs", k=6)
+    return run
+
+
 WORKLOADS = {
     "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush"),
     "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records"),
@@ -313,6 +348,7 @@ WORKLOADS = {
     "session_n500":       (lambda: w_session(500),       "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets"),
     "hook_n2000":         (lambda: w_hook(2000),         "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store"),
     "reports_k300":       (lambda: w_reports(300),       "supersession_report + 5 suppressing recalls over 300 keys"),
+    "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once"),
 }
 
 

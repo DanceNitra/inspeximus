@@ -1888,10 +1888,52 @@ _STUFF_STOP = frozenset("the and for with that this from are was were you your o
 _STUFF_WORDS = re.compile(r"[a-z0-9][a-z0-9']*")
 
 
+#: The words each instruction shape cannot match without: a list of groups, and a text must contain at
+#: least one word of EVERY group before the pattern is worth searching. Read off the patterns above,
+#: branch by branch. A shape missing here is always searched, so forgetting an entry costs time, never a
+#: verdict. tests/test_audit_b_the_read_guard_prefilter_is_exact.py holds the evidence that each group is
+#: necessary, over every text of two real stores and the guard's own attack corpus.
+_SHAPE_REQUIRES = {
+    "override_prior_instructions": (("ignore", "disregard", "forget", "override"),),
+    "new_instructions_block": (("new", "updated", "revised", "real", "actual", "secret"),
+                               ("instruction", "rule", "directive")),
+    "persona_switch": (("you are now", "from now on", "act as "),),
+    "system_prompt_reference": (("system prompt", "developer message", "hidden instruction"),),
+    "exfiltration_order": (("send", "forward", "email", "post", "upload", "transmit", "exfiltrate", "leak", "copy"),
+                           ("@", "http", "www.")),
+    "concealment_order": (("do not", "don't", "never", "must not"),
+                          ("tell", "inform", "reveal", "mention", "show", "disclose"),
+                          ("user", "human", "operator", "owner", "anyone")),
+    "execution_order": (("execute", "run"),
+                        ("command", "code", "script", "shell", "`", "curl", "wget")),
+}
+
+#: The four characters outside ASCII that `re.IGNORECASE` matches to an ASCII letter (Python's `re`
+#: documentation names them: U+0130, U+0131, U+017F, U+212A). Folded before the word check, so the check
+#: sees what the case-insensitive pattern sees. Without this, "ıgnore previous instructions" with a
+#: dotless i would match the pattern and fail the word check, and a speed fix would be a quarantine
+#: bypass. The table is proved complete by an exhaustive test over every code point.
+_RE_I_ASCII_FOLD = {0x130: "i", 0x131: "i", 0x17F: "s", 0x212A: "k"}
+_RE_I_FOLD_CHARS = re.compile("[" + "".join(map(chr, _RE_I_ASCII_FOLD)) + "]")
+
+
 def _instruction_shape(text: str) -> list:
-    """The names of every instruction shape found in `text`, in list order; empty when none."""
+    """The names of every instruction shape found in `text`, in list order; empty when none.
+
+    A PATTERN IS SEARCHED ONLY WHEN THE TEXT HOLDS THE WORDS IT REQUIRES (`_SHAPE_REQUIRES`). The
+    verdict is unchanged; the cost is. `recall` assesses every pooled record in every new process, and
+    measured 2026-09-27 that was 8.1 s of a 12.0 s hook recall at 67,165 records, nearly all of it
+    seven regex searches over texts that contained none of the words (AUDIT-B B-05)."""
     t = text or ""
-    return [name for name, rx in _INSTRUCTION_SHAPES if rx.search(t)]
+    # translate() with a dict costs a lookup per character: 1.95 s over 78,099 texts, more than the
+    # regexes it saves. Only a text that holds one of the four characters needs it.
+    low = (t.translate(_RE_I_ASCII_FOLD) if not t.isascii() and _RE_I_FOLD_CHARS.search(t) else t).lower()
+    out = []
+    for name, rx in _INSTRUCTION_SHAPES:
+        groups = _SHAPE_REQUIRES.get(name, ())
+        if all(any(w in low for w in g) for g in groups) and rx.search(t):
+            out.append(name)
+    return out
 
 
 def _stuffing(text: str) -> dict | None:
@@ -1904,15 +1946,16 @@ def _stuffing(text: str) -> dict | None:
     n = len(words)
     if n < 12:
         return None
-    counts: dict = {}
-    for w in words:
-        if len(w) >= 3 and w not in _STUFF_STOP:
-            counts[w] = counts.get(w, 0) + 1
+    # Counted in C (collections.Counter), and the tie-break is resolved only for a text that is flagged:
+    # the largest count first, then the largest word among those, which is what max() over
+    # (count, word) returned. Same verdict, about half the cost on the recall path (AUDIT-B B-05).
+    counts = _collections.Counter([w for w in words if len(w) >= 3 and w not in _STUFF_STOP])
     if not counts:
         return None
-    w, c = max(counts.items(), key=lambda kv: (kv[1], kv[0]))
+    c = max(counts.values())
     share = c / n
     if c >= 4 and share >= 0.12:
+        w = max(k for k, v in counts.items() if v == c)
         return {"word": w, "count": c, "share": round(share, 3), "words": n}
     return None
 
