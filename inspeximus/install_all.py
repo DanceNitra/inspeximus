@@ -207,16 +207,12 @@ def plan_rules(host, project=None):
 
 def apply_rules(r):
     p = r["path"]
-    p.parent.mkdir(parents=True, exist_ok=True)
     if r["action"] == "append" and p.exists():
-        shutil.copy2(p, str(p) + ".bak")
         text = p.read_text(encoding="utf-8")
-        p.write_text(text + ("" if text.endswith("\n") or not text else "\n") + "\n" + r["content"],
-                     encoding="utf-8")
+        _i.write_text_keeping_newlines(p, text + ("" if text.endswith("\n") or not text else "\n") + "\n"
+                                       + r["content"], backup=True)
     elif r["action"] in ("create", "append"):
-        if p.exists():
-            shutil.copy2(p, str(p) + ".bak")
-        p.write_text(r["content"], encoding="utf-8")
+        _i.write_text_keeping_newlines(p, r["content"], backup=True)
 
 
 # ── Hermes Agent ─────────────────────────────────────────────────────────────────────────────────────
@@ -492,13 +488,9 @@ def _hermes(path, change, dry_run, notes, wired):
                          f"({HERMES_INSTALL_DOCS}), then run install --all again")
             continue
         if current != "inspeximus":
-            if cfg.exists():
-                shutil.copy2(cfg, str(cfg) + ".bak")
-            cfg.parent.mkdir(parents=True, exist_ok=True)
-            cfg.write_text(hermes_set_provider(text), encoding="utf-8")
-        pc = home / "inspeximus" / "config.json"
-        pc.parent.mkdir(parents=True, exist_ok=True)
-        pc.write_text(json.dumps({"path": str(path)}, indent=2) + "\n", encoding="utf-8")
+            _i.write_text_keeping_newlines(cfg, hermes_set_provider(text), backup=True)
+        _i.write_text_keeping_newlines(home / "inspeximus" / "config.json",
+                                       json.dumps({"path": str(path)}, indent=2) + "\n")
         rows.append((label, "yes", "provider inspeximus", str(path), "provider"))
         wired.append("hermes")
     return rows

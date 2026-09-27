@@ -3664,5 +3664,14 @@
   "tests": [
    "tests/test_install_verifies_what_it_wrote.py"
   ]
+ },
+ {
+  "name": "the installer writes the platform's line ending instead of the file's",
+  "file": "inspeximus/install.py",
+  "old": "    nl = _newline_of(path)\n",
+  "new": "    nl = os.linesep\n",
+  "tests": [
+   "tests/test_install_keeps_line_endings.py"
+  ]
  }
 ]

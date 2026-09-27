@@ -71,13 +71,38 @@ def _read_json(path):
         return None, f"{path} exists but is not valid JSON ({e}); refusing to touch it"
 
 
-def _write_json(path, data):
+def _newline_of(path):
+    """The line ending a file already uses: CRLF if its first CRLF comes before its first bare LF, else
+    LF. A file that does not exist yet gets LF."""
+    try:
+        head = path.read_bytes()[:65536]
+    except OSError:
+        return "\n"
+    i = head.find(b"\n")
+    return "\r\n" if i > 0 and head[i - 1:i] == b"\r" else "\n"
+
+
+def write_text_keeping_newlines(path, text, backup=False):
+    """Write `text` to `path` in the line endings the file already has, atomically.
+
+    KEEP THE USER'S LINE ENDINGS (3.14.3). `Path.write_text` translates "\\n" to the platform's line
+    ending, so on Windows every rewrite of an LF file by the installer turned it into CRLF: measured
+    2026-09-27 on ~/.claude.json, 2,604 lines and about 2.6 KB of churn per write, flipped back to LF
+    by Claude Code's next write. The bytes are written as they are meant to be, with no translation."""
     path.parent.mkdir(parents=True, exist_ok=True)
+    nl = _newline_of(path)
+    data = text.replace("\r\n", "\n")
+    if nl != "\n":
+        data = data.replace("\n", nl)
     tmp = path.with_suffix(path.suffix + ".inspeximus-tmp")
-    tmp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-    if path.exists():
+    tmp.write_bytes(data.encode("utf-8"))
+    if backup and path.exists():
         shutil.copy2(path, str(path) + ".bak")
     tmp.replace(path)
+
+
+def _write_json(path, data):
+    write_text_keeping_newlines(path, json.dumps(data, indent=2) + "\n", backup=True)
 
 
 def _toml_block(name, block):
@@ -601,10 +626,7 @@ def apply(p):
         if p["format"] == "json":
             _write_json(p["path"], p["data"])
         else:
-            p["path"].parent.mkdir(parents=True, exist_ok=True)
-            if p["path"].exists():
-                shutil.copy2(p["path"], str(p["path"]) + ".bak")
-            p["path"].write_text(p["data"], encoding="utf-8")
+            write_text_keeping_newlines(p["path"], p["data"], backup=True)
         msgs.append(f"{p['action']} -> {p['path']}")
     if hooks_change:
         _write_json(hooks["path"], hooks["data"])
