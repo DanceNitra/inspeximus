@@ -1,3 +1,40 @@
+## 3.15.0 - UPGRADE IF your Claude Code hooks or memory_report feel slow on a large store: a Read, Grep or Glob no longer opens the store, and opening, recalling, reporting and erasing do less work per record
+
+Found in a speed audit on 2026-09-27 and measured on copies of two real stores (67,165 and 10,934
+records), old and new code interleaved on one machine. Every change keeps its output identical, and each
+is pinned by a work counter in `perf/gate.py` that a test proves can go red. The timings are wall-clock
+on one machine and move with its load; the counters do not. The memory_report timings are against
+3.14.3, the hook import compares this package with and without the change, and the rest are against
+3.14.0.
+
+- **The hook starts nothing for tools it does not capture.** The PostToolUse hook is scoped to Edit,
+  MultiEdit, Write and Bash in `--install`, `install --ide claude` and the plugin's hooks.json. An entry
+  installed earlier keeps working: capture() returns before opening the store for any other tool. A Read
+  went from 4.96 s to 0.41 s on the 67,165-record store, and starts no process at all with the matcher.
+- **Opening a store does less.** Types and dates are computed only for records that lack them, and the
+  save baseline reuses each row's stored text. Open of the 67,165-record store: 3.19 s to 1.15 s.
+- **The first recall in a new process does less.** The read guard searches an instruction pattern only
+  when the text holds the words that pattern requires (exact under re.IGNORECASE, proved over every code
+  point), and numpy loads on first use. UserPromptSubmit: 13.78 s to 5.57 s; first MCP recall: 3.30 s
+  to 1.51 s.
+- **The hook imports only what it uses.** The package loads its governance modules (erasure residue,
+  SCITT and COSE, qualified timestamps, the action ledger and the others) the first time one of their
+  names is read. `import inspeximus`, `from inspeximus import *`, `dir(inspeximus)` and every submodule
+  attribute give what 3.14.3 gave. Importing the hook: 208 ms to 148 ms.
+- **No quadratic loops in reports and erasure.** supersession_report and recall(suppress_stale_values)
+  look up current records in one pass (53.6 s to 4.4 s at 10,934 records). forget_subject builds its id
+  map once and lowercases each erased value once (13.4 s to 1.7 s for 1,011 records). A full row save
+  tests membership in sets.
+- **A session boundary reconciles the store once.** open_session no longer triggers a full reconcile,
+  and a full save updates only rows whose order moved. SessionStart: 6.10 s to 3.04 s.
+- **memory_report shares one candidate pool across its sampled queries.** The 400 queries stay; each no
+  longer rebuilds the pool, the id and position maps, or the stale-derived check. At 10,934 records: 52.4 s
+  to 24.6 s. At 67,165 records: 973.6 s to 322.4 s, which includes the supersession_report change above.
+- **The performance gate measures both store formats.** Every gate workload names the store backend it
+  measures, and the gate fails when a workload's store files are in another format. The JSON write, erase
+  and session workloads are back. A standalone `python perf/gate.py` run no longer writes receipt chain
+  heads into your `%APPDATA%`.
+
 ## 3.14.4 - UPGRADE IF you use Claude Desktop without the `claude` command, or install through an agent: `install --all` now wires Claude Desktop's Code tab, and it ends with a short ARMED block and a seal that an agent can copy to you.
 
 Found on 2026-09-27 on a second machine, where Hermes Agent on a 9B local model ran the install page.
