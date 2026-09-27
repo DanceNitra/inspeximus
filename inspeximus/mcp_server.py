@@ -134,19 +134,11 @@ def _path_source(env: dict | None = None) -> str:
     """WHICH rule decided the store path — reported by `where_am_i`, never inferred by the user.
 
     A scope that is silently outranked by an explicit INSPEXIMUS_PATH looks exactly like a scope that did
-    not work, so the precedence is made visible rather than left to be guessed.
+    not work, so the precedence is made visible rather than left to be guessed. One wording, kept beside
+    the resolution it describes (`_surface.resolved_path_source`), so the two cannot drift.
     """
-    env = os.environ if env is None else env
-    scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
-    if env.get("INSPEXIMUS_PATH"):
-        if scope in ("project", "claude-code"):
-            return f"INSPEXIMUS_PATH (explicit path OUTRANKS INSPEXIMUS_SCOPE={scope})"
-        return "INSPEXIMUS_PATH"
-    if scope == "project":
-        return "INSPEXIMUS_SCOPE=project (git root)"
-    if scope == "claude-code":
-        return "INSPEXIMUS_SCOPE=claude-code (the Claude Code hook's store)"
-    return "default filename, relative to this server's working directory"
+    from ._surface import resolved_path_source
+    return resolved_path_source(env=env)
 
 
 # ONE resolution site (inspeximus/_surface.py), not two. This module used to re-derive the same fallback

@@ -163,7 +163,17 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
     if from_env:
         return from_env
     scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
-    if scope in ("", "user"):
+    if scope == "":
+        # THE SHARED STORE, WHEN `install --all` RECORDED ONE (3.14.3). The hooks already read the record
+        # (coding_store_path); this function, which every CLI command and the MCP server go through, did
+        # not, so on 2026-09-27 `inspeximus stats` after install --all opened an empty file in the working
+        # directory while the memory sat in the shared store. An explicit scope, including `user`, keeps
+        # its old meaning.
+        shared = shared_store_path()
+        if shared:
+            return shared
+        return "inspeximus_memory.json"
+    if scope == "user":
         return "inspeximus_memory.json"
     if scope == "project":
         root = find_project_root(cwd)
@@ -180,6 +190,26 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
         return coding_store_path(cwd, env)
     raise StoreScopeError(f"INSPEXIMUS_SCOPE={scope!r} is not a known scope; "
                           f"use 'user', 'project' or 'claude-code'")
+
+
+def resolved_path_source(path=None, env=None) -> str:
+    """WHICH rule `resolve_path` applied, in words. Reported by the MCP `where_am_i` tool, so a store
+    chosen by the shared record is never mistaken for one chosen by the working directory."""
+    env = os.environ if env is None else env
+    scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
+    if path:
+        return "--path"
+    if env.get("INSPEXIMUS_PATH"):
+        if scope in ("project", "claude-code"):
+            return f"INSPEXIMUS_PATH (explicit path OUTRANKS INSPEXIMUS_SCOPE={scope})"
+        return "INSPEXIMUS_PATH"
+    if scope == "project":
+        return "INSPEXIMUS_SCOPE=project (git root)"
+    if scope == "claude-code":
+        return "INSPEXIMUS_SCOPE=claude-code (the Claude Code hook's store)"
+    if scope == "" and shared_store_path():
+        return f"the shared store recorded by install --all ({shared_config_path()})"
+    return "default filename, relative to this server's working directory"
 
 
 def open_store(path=None, *, receipts: bool = False, persist_vectors: bool = False, embed=None,
