@@ -34,7 +34,8 @@ def _fresh(code):
     """Run `code` in a new interpreter on this tree and return what it printed as JSON."""
     env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
     env["PYTHONPATH"] = ROOT
-    p = subprocess.run([sys.executable, "-c", code], cwd=ROOT, env=env, capture_output=True, text=True)
+    p = subprocess.run([sys.executable, "-c", code], cwd=ROOT, env=env, capture_output=True, text=True,
+                       encoding="utf-8", errors="replace")
     if p.returncode:
         pytest.fail(f"the fresh interpreter failed: {p.stderr[-1500:]}")
     return json.loads(p.stdout.strip().splitlines()[-1])
