@@ -3455,15 +3455,6 @@
   ]
  },
  {
-  "name": "the installer asks about Hermes on the terminal again",
-  "file": "inspeximus/install_all.py",
-  "old": "        if current in (None, \"inspeximus\") or hermes_provider_change == \"yes\":",
-  "new": "        if current in (None, \"inspeximus\") or _ask(\"Switch Hermes?\", \"ask\"):",
-  "tests": [
-   "tests/test_install_all_wires_every_agent_to_one_store.py"
-  ]
- },
- {
   "name": "Devin Desktop is written to the old Windsurf file only",
   "file": "inspeximus/install.py",
   "old": "    return {\"user\": devin_dir() / \"mcp_config.json\",",
@@ -3477,6 +3468,42 @@
   "file": "inspeximus/install_all.py",
   "old": "        return _i.devin_dir() / \"AGENTS.md\", RULE_LINE + \"\\n\", \"append\"",
   "new": "        return None, None, None",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "no still changes Hermes",
+  "file": "inspeximus/install_all.py",
+  "old": "        if change != \"yes\":\n",
+  "new": "        if change == \"never\":\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "a Hermes that cannot load the provider is wired anyway",
+  "file": "inspeximus/install_all.py",
+  "old": "        if not hermes_loads_provider(py):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "a current Hermes is not found through its package manager record",
+  "file": "inspeximus/install_all.py",
+  "old": "            if py.exists():\n                return py\n    return None\n",
+  "new": "            if False:\n                return py\n    return None\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "a config folder counts as an install again",
+  "file": "inspeximus/install_all.py",
+  "old": "    return False, \"\"\n",
+  "new": "    return True, \"config folder\"\n",
   "tests": [
    "tests/test_install_all_wires_every_agent_to_one_store.py"
   ]

@@ -320,7 +320,7 @@ def hermes_installs():
 
     The official installer's layout comes first (see hermes_candidates). A `hermes` command on PATH
     that lives outside those homes is a pip install, and its interpreter is the Python beside it.
-    Measured 2026-09-27: `pip install hermes-agent` gives 0.19.0 from PyPI, whose provider loader has
+    Measured 2026-09-27: the hermes-agent package on PyPI is 0.19.0, and its provider loader has
     no entry-point discovery, so it never lists inspeximus; the official install (0.21.3 on the owner's
     machine) does. The kind is reported, and hermes_loads_provider() decides, not the version number."""
     out = [(home, py, "official installer") for home, py in hermes_candidates()]

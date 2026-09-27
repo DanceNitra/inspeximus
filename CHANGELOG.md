@@ -5,8 +5,8 @@ Found while preparing our own machine for `install --all` on 3.14.0, before runn
 - **`--hermes-provider no` changes nothing in Hermes.** On 3.14.0, when Hermes had no memory provider,
   `--all` installed inspeximus into Hermes' venv and set `memory.provider: inspeximus` even with `no`.
   Now only `yes` touches Hermes, and the table says `skipped (no)`.
-- **A Hermes that cannot load the provider is never reported as wired.** `pip install hermes-agent` gives
-  0.19.0 from PyPI, whose provider loader has no entry-point discovery, so it never lists inspeximus;
+- **A Hermes that cannot load the provider is never reported as wired.** The hermes-agent package on
+  PyPI is 0.19.0, and its provider loader has no entry-point discovery, so it never lists inspeximus;
   the official installer's build (0.21.3, measured 2026-09-27) does. After installing into Hermes' venv,
   `--all` asks Hermes' own loader whether it lists inspeximus. If not, it removes what it installed,
   changes nothing else, and the table says `cannot load provider (hermes-agent <version>, <install
