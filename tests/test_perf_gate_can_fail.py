@@ -329,3 +329,42 @@ def test_it_fails_when_the_hook_imports_numpy_again(tmp_path):
     fail, _ = gate.compare({"h": {"counters": good, "seconds_median": 0.1}},
                            {"h": {"counters": bad, "seconds_median": 0.1}})
     assert any("hook_imports_numpy" in f for f in fail), f"numpy came back and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_a_session_boundary_updates_every_unmoved_row():
+    """AUDIT-B B-09. A full-diff save issued an order UPDATE for every unmoved row: 67,165 no-op
+    statements per session boundary on a real hook store. Reintroduced through the real save path by
+    hiding the stored order from the filter (its SELECT returns no rows), so every unmoved row is updated
+    again, exactly as before the fix, and measured through the counter the gate reads."""
+    run = gate.w_boundary(300)
+    with gate.Counters() as c:
+        run()
+    good = c.as_dict()
+    assert good["order_updates"] == 0, ("fixture error: the boundary already updates rows", good)
+
+    class HidesOrder:
+        def __init__(self, con):
+            object.__setattr__(self, "_con", con)
+
+        def execute(self, sql, *a):
+            if sql.strip().upper().startswith("SELECT ID, ORD FROM RECORDS"):
+                return self._con.execute("SELECT id, ord FROM records WHERE 0")
+            return self._con.execute(sql, *a)
+
+        def __getattr__(self, name):
+            return getattr(self._con, name)
+
+    real = core._rows._connect
+    core._rows._connect = lambda path: HidesOrder(real(path))
+    try:
+        run = gate.w_boundary(300)
+        with gate.Counters() as c:
+            run()
+        bad = c.as_dict()
+    finally:
+        core._rows._connect = real
+    assert bad["order_updates"] >= 300, f"updating every unmoved row did not move the counter: {bad}"
+
+    fail, _ = gate.compare({"b": {"counters": good, "seconds_median": 0.1}},
+                           {"b": {"counters": bad, "seconds_median": 0.1}})
+    assert any("order_updates" in f for f in fail), f"the updates grew and the gate stayed green: {fail}"

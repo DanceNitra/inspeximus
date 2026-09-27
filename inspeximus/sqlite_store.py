@@ -364,6 +364,13 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
         _written = set(added) | set(changed)
         stale_order = [(order[k], k) for k in now if k not in _written and k in order]
         if stale_order:
+            # ONLY THE ROWS WHOSE ORDER MOVED. `ord<>?` below already made every other row a no-op, but
+            # each was still a statement: 67,165 of them and 1.18 s per full reconcile on a copy of a
+            # real hook store, paid at every session boundary. One read of the stored order, in this
+            # transaction, selects the same rows the WHERE clause would have changed (AUDIT-B B-09).
+            _on_disk = dict(con.execute("SELECT id, ord FROM records").fetchall())
+            stale_order = [(o, k) for o, k in stale_order if _on_disk.get(k) != o]
+        if stale_order:
             con.executemany("UPDATE records SET ord=? WHERE id=? AND ord<>?",
                             [(o, k, o) for o, k in stale_order])
         # ONLY THE FULL DIFF MAY STAMP THIS. The marker says "every row in this file is in the

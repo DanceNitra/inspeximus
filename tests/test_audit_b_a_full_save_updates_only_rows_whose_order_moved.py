@@ -45,8 +45,6 @@ def _order_on_disk(p):
         con.close()
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-09: one no-op UPDATE per unmoved row on every full-diff save")
 def test_a_full_save_updates_only_the_rows_that_moved(tmp_path, updates):
     p = str(tmp_path / "s.json")
     items = [{"id": f"id{i:04d}", "text": f"record {i}", "ts": 1.0, "mtype": "episodic"} for i in range(N)]

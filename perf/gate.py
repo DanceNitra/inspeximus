@@ -142,6 +142,20 @@ class Counters:
                 return self._rx.search(*a, **k)
 
         core._INSTRUCTION_SHAPES = [(n, _Counted(rx)) for n, rx in self._real_shapes]
+
+        # An order UPDATE executed by the row store. A full-diff save issued one per unmoved row, each a
+        # no-op: 67,165 statements per session boundary on a real hook store (AUDIT-B B-09). SQLite's
+        # trace callback fires once per row of an executemany, so this is an exact count.
+        self.order_updates = 0
+        self._real_connect = real_connect = core._rows._connect
+
+        def connect(path):
+            con = real_connect(path)
+            con.set_trace_callback(lambda s: setattr(counter, "order_updates", counter.order_updates + 1)
+                                   if s.lstrip().upper().startswith("UPDATE RECORDS SET ORD") else None)
+            return con
+
+        core._rows._connect = connect
         return self
 
     def __exit__(self, *exc):
@@ -150,6 +164,7 @@ class Counters:
         for name, (owner, attr) in COUNTED_CALLS.items():
             setattr(owner, attr, self._real_calls[name])
         core._INSTRUCTION_SHAPES = self._real_shapes
+        core._rows._connect = self._real_connect
         return False
 
     def as_dict(self):
@@ -160,6 +175,7 @@ class Counters:
                 "serialized_bytes": self.dump_bytes,
                 "store_loads": self.loads,
                 "guard_regex_searches": self.searches,
+                "order_updates": self.order_updates,
                 **self.calls}
 
 
@@ -371,6 +387,25 @@ def w_row_rewrite(n):
     return run
 
 
+def w_boundary(n):
+    """A session boundary on a store of n records: open_session, one write, close_session, flush.
+    close_session asks for a full reconcile, and the full-diff save issued an order UPDATE for every
+    unmoved row. `order_updates` counts the ones executed: 0 when no order moved (AUDIT-B B-09)."""
+    p = _store_path()
+    m = Inspeximus(p)
+    for i in range(n):
+        m.remember(f"note {i} about the release", key=f"k{i}", mtype="episodic")
+    m.flush()
+
+    def run():
+        h = Inspeximus(p)
+        h.open_session("gate")
+        h.remember("the release moved to Friday", tags=["decision"])
+        h.close_session("gate")
+        h.flush()
+    return run
+
+
 def w_hook_import(root=None):
     """A PreToolUse event for `ls`, run as the real hook process. `hook_imports_numpy` is 1 when that
     process imported numpy. numpy only accelerates semantic recall, and an eager import was about
@@ -415,6 +450,7 @@ WORKLOADS = {
     "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy"),
+    "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store"),
 }
 
 
