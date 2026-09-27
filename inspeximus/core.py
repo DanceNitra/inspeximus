@@ -16669,7 +16669,12 @@ class Inspeximus:
         # END OF A SESSION IS WHERE A MISSED `_touch` GETS CAUGHT. An in-place edit that
         # nothing marked is invisible to the count check, so the one complete diff a session
         # pays for happens here, once, rather than on every write.
-        self._full_reconcile = True
+        # ONLY WHEN THIS CLOSE WRITES. `open_session` calls a `write=False` preview to look for an
+        # unclosed earlier session, and the flag set there made the open marker's save a second
+        # full reconcile: every row serialised and compared twice per boundary, measured 2026-09-27
+        # (AUDIT-B B-20).
+        if write:
+            self._full_reconcile = True
         thr = self.SESSION_SALIENCE_THRESHOLD if threshold is None else float(threshold)
         report: dict = {"threshold": thr, "bound": max_chars}
         if sleep_pass and write:

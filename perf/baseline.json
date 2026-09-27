@@ -10,13 +10,14 @@
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 0,
    "type_inferences": 1000,
    "current_active_scans": 0,
    "row_serializations": 1000
   },
-  "seconds_median": 8.1819,
-  "seconds_min": 7.7277,
-  "seconds_max": 8.7577
+  "seconds_median": 7.756,
+  "seconds_min": 7.269,
+  "seconds_max": 7.7951
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -29,13 +30,14 @@
    "store_loads": 0,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0
   },
-  "seconds_median": 1.117,
-  "seconds_min": 1.0907,
-  "seconds_max": 1.2664
+  "seconds_median": 1.3274,
+  "seconds_min": 1.1517,
+  "seconds_max": 1.3819
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -48,15 +50,16 @@
    "store_loads": 0,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
    "erase_items_reads": 7,
    "erase_lower_calls": 4605
   },
-  "seconds_median": 0.0887,
-  "seconds_min": 0.0843,
-  "seconds_max": 0.0896
+  "seconds_median": 0.0896,
+  "seconds_min": 0.0891,
+  "seconds_max": 0.1093
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -69,13 +72,14 @@
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 0,
    "type_inferences": 500,
    "current_active_scans": 0,
    "row_serializations": 1099
   },
-  "seconds_median": 12.5823,
-  "seconds_min": 12.5401,
-  "seconds_max": 12.6337
+  "seconds_median": 13.5729,
+  "seconds_min": 12.5051,
+  "seconds_max": 13.6396
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
@@ -88,13 +92,14 @@
    "store_loads": 3,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 3
   },
-  "seconds_median": 0.1286,
-  "seconds_min": 0.1146,
-  "seconds_max": 0.1679
+  "seconds_median": 0.1477,
+  "seconds_min": 0.141,
+  "seconds_max": 0.1612
  },
  "reports_k300": {
   "desc": "supersession_report + 5 suppressing recalls over 300 keys",
@@ -107,13 +112,14 @@
    "store_loads": 0,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0
   },
-  "seconds_median": 0.2261,
-  "seconds_min": 0.2106,
-  "seconds_max": 0.2291
+  "seconds_median": 0.2616,
+  "seconds_min": 0.1841,
+  "seconds_max": 0.3159
  },
  "prompt_n2000": {
   "desc": "fresh handle opens a 2,000-record store and recalls once",
@@ -126,13 +132,14 @@
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0
   },
-  "seconds_median": 0.0992,
-  "seconds_min": 0.0913,
-  "seconds_max": 0.1024
+  "seconds_median": 0.1289,
+  "seconds_min": 0.0977,
+  "seconds_max": 0.1405
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",
@@ -145,23 +152,24 @@
    "store_loads": 0,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 2,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 4000,
    "row_id_comparisons": 0
   },
-  "seconds_median": 0.1055,
-  "seconds_min": 0.1006,
-  "seconds_max": 0.1064
+  "seconds_median": 0.1065,
+  "seconds_min": 0.1025,
+  "seconds_max": 0.1103
  },
  "hook_import": {
   "desc": "the hook process for a PreToolUse `ls`: does it import numpy",
   "counters": {
    "hook_imports_numpy": 0
   },
-  "seconds_median": 0.3275,
-  "seconds_min": 0.2915,
-  "seconds_max": 0.3312
+  "seconds_median": 0.3979,
+  "seconds_min": 0.3898,
+  "seconds_max": 0.4133
  },
  "boundary_n2000": {
   "desc": "session boundary (open, write, close, flush) on a 2,000-record store",
@@ -174,13 +182,14 @@
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
+   "full_diff_saves": 1,
    "type_inferences": 1,
    "current_active_scans": 0,
-   "row_serializations": 4005
+   "row_serializations": 2005
   },
-  "seconds_median": 0.2205,
-  "seconds_min": 0.1875,
-  "seconds_max": 0.2253
+  "seconds_median": 0.2047,
+  "seconds_min": 0.1641,
+  "seconds_max": 0.3524
  },
  "hook_install": {
   "desc": "--install into a temp project: is PostToolUse scoped to what capture records",
@@ -189,8 +198,8 @@
    "post_tool_use_matcher_tools": 4,
    "post_tool_use_extra_tools": 0
   },
-  "seconds_median": 0.0053,
-  "seconds_min": 0.0052,
-  "seconds_max": 0.0059
+  "seconds_median": 0.0054,
+  "seconds_min": 0.0048,
+  "seconds_max": 0.0058
  }
 }

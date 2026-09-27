@@ -21,8 +21,6 @@ from inspeximus import Inspeximus  # noqa: E402
 from inspeximus import sqlite_store as ss  # noqa: E402
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-20: the preview close inside open_session forces a full reconcile")
 def test_opening_a_session_saves_only_what_it_wrote(tmp_path, monkeypatch):
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)

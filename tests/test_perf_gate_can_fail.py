@@ -488,3 +488,36 @@ def test_it_fails_when_the_post_tool_use_hook_loses_its_matcher():
     fail, _ = gate.compare({"h": {"counters": good, "seconds_median": 0.1}},
                            {"h": {"counters": bad, "seconds_median": 0.1}})
     assert any("post_tool_use_unscoped" in f for f in fail), fail
+
+
+def test_it_fails_when_a_session_boundary_reconciles_the_store_twice():
+    """AUDIT-B B-20. close_session requested a full reconcile even as a write=False preview, and
+    open_session runs that preview, so every boundary serialised and compared the whole store twice.
+    Reintroduced by setting the flag after every preview, which is what the pre-fix code did, and
+    measured through the counter the gate reads."""
+    run = gate.w_boundary(300)
+    with gate.Counters() as c:
+        run()
+    good = c.as_dict()
+    assert good["full_diff_saves"] == 1, ("fixture error: the boundary does not pay exactly one", good)
+
+    real = core.Inspeximus.close_session
+
+    def flagging(self, *a, write=True, **k):
+        out = real(self, *a, write=write, **k)
+        if not write:
+            self._full_reconcile = True
+        return out
+
+    core.Inspeximus.close_session = flagging
+    try:
+        run = gate.w_boundary(300)
+        with gate.Counters() as c:
+            run()
+        bad = c.as_dict()
+    finally:
+        core.Inspeximus.close_session = real
+    assert bad["full_diff_saves"] == 2, f"the preview flag did not move the counter: {bad}"
+    fail, _ = gate.compare({"b": {"counters": good, "seconds_median": 0.1}},
+                           {"b": {"counters": bad, "seconds_median": 0.1}})
+    assert any("full_diff_saves" in f for f in fail), fail

@@ -156,6 +156,18 @@ class Counters:
             return con
 
         core._rows._connect = connect
+
+        # A FULL-DIFF SAVE serialises and compares every row. A session boundary is meant to pay one;
+        # a write=False preview inside open_session made it two (AUDIT-B B-20).
+        self.full_diff_saves = 0
+        self._real_save = real_save = core._rows.save
+
+        def save(path, items, before, dirty=None, rewrite_all=False, **k):
+            if dirty is None or rewrite_all:
+                counter.full_diff_saves += 1
+            return real_save(path, items, before, dirty=dirty, rewrite_all=rewrite_all, **k)
+
+        core._rows.save = save
         return self
 
     def __exit__(self, *exc):
@@ -165,6 +177,7 @@ class Counters:
             setattr(owner, attr, self._real_calls[name])
         core._INSTRUCTION_SHAPES = self._real_shapes
         core._rows._connect = self._real_connect
+        core._rows.save = self._real_save
         return False
 
     def as_dict(self):
@@ -176,6 +189,7 @@ class Counters:
                 "store_loads": self.loads,
                 "guard_regex_searches": self.searches,
                 "order_updates": self.order_updates,
+                "full_diff_saves": self.full_diff_saves,
                 **self.calls}
 
 
