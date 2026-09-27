@@ -4647,5 +4647,14 @@
    "tests/test_mcp_review_maintenance.py",
    "tests/test_the_checks_can_actually_fail.py"
   ]
+ },
+ {
+  "name": "an unpersisted MCP write comes back as a success again",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    if not out[\"persisted\"]:\n        raise RuntimeError(",
+  "new": "    if False:\n        raise RuntimeError(",
+  "tests": [
+   "tests/test_an_unpersisted_mcp_write_is_an_error.py"
+  ]
  }
 ]

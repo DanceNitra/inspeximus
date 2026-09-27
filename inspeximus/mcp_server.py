@@ -791,6 +791,14 @@ def _write_verdict() -> dict:
         out["note"] = lw["note"]
     if lw.get("previous"):
         out["previous"] = lw["previous"]
+    # AN ERROR, NOT A FIELD (3.15.1, audit A-22). `persisted: false` sat inside a result whose
+    # isError was false, and a client that reads only the error flag -- most agent loops -- believed
+    # the write had landed. The record stays in memory and the next save retries it, as before.
+    if not out["persisted"]:
+        raise RuntimeError(
+            f"the write was not persisted: {out.get('persist_error') or 'the save failed'}. "
+            f"Record {lw.get('id')} is held in this server's memory and the next save retries it; "
+            f"until then it is not on disk.")
     return out
 
 
