@@ -341,6 +341,36 @@ def w_prompt(n):
     return run
 
 
+class _CountedId(str):
+    """A record id that counts its own `__eq__` calls. A set or dict lookup finds the identical object
+    without calling it; a list membership test calls it once per element it passes."""
+    compared = 0
+
+    def __eq__(self, other):
+        _CountedId.compared += 1
+        return str.__eq__(self, other)
+
+    __hash__ = str.__hash__
+
+
+def w_row_rewrite(n):
+    """A row store saved with n new rows, then every row rewritten (`rewrite_all`, the first open after
+    an encoding upgrade). `row_id_comparisons` stays near 0: it was n^2 / 2 per save when the full diff
+    tested membership in lists (AUDIT-B B-15)."""
+    from inspeximus import sqlite_store as ss
+    items = [{"id": _CountedId(f"id{i:06d}"), "text": f"record {i}", "ts": 1.0, "mtype": "episodic"}
+             for i in range(n)]
+
+    def run():
+        p = _store_path()
+        with Counters() as c:
+            _CountedId.compared = 0
+            snap = ss.save(p, items, {})["snapshot"]
+            ss.save(p, items, snap, rewrite_all=True)
+        run.inner = {**c.as_dict(), "row_id_comparisons": _CountedId.compared}
+    return run
+
+
 WORKLOADS = {
     "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush"),
     "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records"),
@@ -349,6 +379,7 @@ WORKLOADS = {
     "hook_n2000":         (lambda: w_hook(2000),         "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store"),
     "reports_k300":       (lambda: w_reports(300),       "supersession_report + 5 suppressing recalls over 300 keys"),
     "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once"),
+    "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them"),
 }
 
 

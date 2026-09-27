@@ -358,8 +358,11 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
                             [(k, order.get(k, 0), now[k]) for k in added + changed])
         # Reordering without a content change still has to land, or a store reopened after a
         # consolidation comes back in the wrong order and `history()` reads backwards.
-        stale_order = [(order[k], k) for k in now
-                       if k not in added and k not in changed and k in order]
+        # SETS for the membership test. `added` and `changed` are lists, and asking a list is a scan,
+        # so a save that adds or rewrites every row (a JSON-to-rows migration, the rewrite_all after
+        # an encoding upgrade) was O(rows^2): 0.34 s at 8,000 rows, about 3x per doubling (AUDIT-B B-15).
+        _written = set(added) | set(changed)
+        stale_order = [(order[k], k) for k in now if k not in _written and k in order]
         if stale_order:
             con.executemany("UPDATE records SET ord=? WHERE id=? AND ord<>?",
                             [(o, k, o) for o, k in stale_order])

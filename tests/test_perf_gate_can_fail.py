@@ -273,3 +273,32 @@ def test_it_fails_when_the_read_guard_searches_text_that_cannot_match():
     now = {"prompt": {"counters": bad, "seconds_median": 0.1}}
     fail, _ = gate.compare(base, now)
     assert any("guard_regex_searches" in f for f in fail), f"the searches grew and the gate stayed green: {fail}"
+
+
+def test_it_fails_when_a_full_row_save_goes_quadratic(monkeypatch):
+    """AUDIT-B B-15. The full-diff save tested every id for membership in the `added` and `changed`
+    LISTS, so a save that adds or rewrites every row was O(rows^2): 0.34 s at 8,000 rows and about 3x
+    per doubling. Reintroduced through the real save path: `set` inside sqlite_store is replaced by a
+    list that answers `in` by scanning, which is what the membership test did before the fix."""
+    from inspeximus import sqlite_store as ss
+
+    class ListSet(list):
+        def __or__(self, other):
+            return ListSet(list(self) + list(other))
+
+    run = gate.w_row_rewrite(300)
+    run()
+    good = run.inner
+    assert good["row_id_comparisons"] <= 2 * 300, ("fixture error: the save already scans lists", good)
+
+    monkeypatch.setattr(ss, "set", ListSet, raising=False)
+    run = gate.w_row_rewrite(300)
+    run()
+    bad = run.inner
+    monkeypatch.undo()
+    assert bad["row_id_comparisons"] >= 300 * 299 // 2, f"list membership did not move the counter: {bad}"
+
+    base = {"rows": {"counters": good, "seconds_median": 0.1}}
+    now = {"rows": {"counters": bad, "seconds_median": 0.1}}
+    fail, _ = gate.compare(base, now)
+    assert any("row_id_comparisons" in f for f in fail), f"the comparisons grew and the gate stayed green: {fail}"

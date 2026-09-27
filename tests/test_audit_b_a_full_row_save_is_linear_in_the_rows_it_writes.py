@@ -38,8 +38,6 @@ def _items():
             for i in range(N)]
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-15: list membership makes a full-diff save quadratic in added or changed rows")
 def test_a_save_that_adds_or_rewrites_every_row_is_linear(tmp_path):
     p = str(tmp_path / "s.json")
     items = _items()
