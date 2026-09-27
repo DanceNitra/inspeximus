@@ -130,3 +130,37 @@ def test_every_recorded_arm_actually_does_something(baseline):
     dead = [name for name, w in baseline.items()
             if not any(w["counters"].values()) and w["seconds_median"] < 0.05]
     assert dead == [], f"workload(s) with no measurable work at all: {dead}"
+
+
+def test_it_fails_when_the_hook_opens_the_store_for_a_tool_it_ignores():
+    """AUDIT-B B-01. A PostToolUse event for Read, Grep or Glob captures nothing, and before the fix it
+    still loaded the whole store: 5.2 s per event on a 67,165-record hook store.
+
+    Reintroduced by adding the ignored tools to `_CAPTURED_TOOLS`, which puts the open back in front of
+    them and changes nothing else, and measured through the counter the gate reads.
+    """
+    import inspeximus.claude_code as cc
+    run = gate.w_hook(200)
+    with gate.Counters() as c:
+        run()
+    good = c.as_dict()
+    captured = sum(1 for t in gate.HOOK_EVENTS if t in cc._CAPTURED_TOOLS)
+    assert good["store_loads"] == captured == 3, ("fixture error: the fixed hook does not load once per "
+                                                  "captured event", good)
+
+    real = cc._CAPTURED_TOOLS
+    cc._CAPTURED_TOOLS = real + ("Read", "Grep", "Glob")
+    try:
+        run = gate.w_hook(200)
+        with gate.Counters() as c:
+            run()
+        bad = c.as_dict()
+    finally:
+        cc._CAPTURED_TOOLS = real
+    assert bad["store_loads"] == len(gate.HOOK_EVENTS) == 13, (
+        f"reopening the store for ignored tools did not move the counter: {bad}")
+
+    base = {"hook": {"counters": good, "seconds_median": 0.1}}
+    now = {"hook": {"counters": bad, "seconds_median": 0.1}}
+    fail, _ = gate.compare(base, now)
+    assert any("store_loads" in f for f in fail), f"store_loads moved 3 -> 13 and the gate stayed green: {fail}"

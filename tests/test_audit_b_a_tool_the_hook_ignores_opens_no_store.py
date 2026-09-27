@@ -65,8 +65,6 @@ def _count(proj):
     return len(cc._store(str(proj)).items)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-01: capture() opens the store before it checks the tool")
 def test_an_ignored_tool_opens_no_store_and_a_captured_one_still_does(project, capsys):
     proj, loads = project
     # CONTROL: a captured tool opens the store exactly once and writes. If this stops holding, the

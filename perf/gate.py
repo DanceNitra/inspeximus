@@ -77,11 +77,23 @@ class Counters:
         self.replaces = {"store": 0, "tombstones": 0, "receipts": 0, "other": 0}
         self.dumps = 0
         self.dump_bytes = 0
+        self.loads = 0
         self._real_replace = None
         self._real_dump = None
+        self._real_load = None
 
     def __enter__(self):
         self._real_replace, self._real_dump = core.os.replace, core._dump_store
+        self._real_load = real_load = core.Inspeximus._load_from_disk
+
+        # A STORE LOAD reads and parses every row of the file. It is the unit of work a hook event
+        # pays before it can do anything, and on 2026-09-27 a Read event paid it to write nothing:
+        # 5.2 s per event on a 67,165-record store (AUDIT-B B-01).
+        def load(inner_self):
+            self.loads += 1
+            return real_load(inner_self)
+
+        core.Inspeximus._load_from_disk = load
 
         def replace(src, dst):
             name = str(dst)
@@ -106,6 +118,7 @@ class Counters:
 
     def __exit__(self, *exc):
         core.os.replace, core._dump_store = self._real_replace, self._real_dump
+        core.Inspeximus._load_from_disk = self._real_load
         return False
 
     def as_dict(self):
@@ -113,7 +126,8 @@ class Counters:
                 "replace_tombstones": self.replaces["tombstones"],
                 "replace_receipts": self.replaces["receipts"],
                 "full_serializations": self.dumps,
-                "serialized_bytes": self.dump_bytes}
+                "serialized_bytes": self.dump_bytes,
+                "store_loads": self.loads}
 
 
 # ── locked workloads ───────────────────────────────────────────────────────────────────────────────
@@ -196,11 +210,65 @@ def w_session(n):
     return run
 
 
+#: The PostToolUse events of `w_hook`, in order. Ten are tools the hook does not capture; three are.
+HOOK_EVENTS = ["Read"] * 4 + ["Grep"] * 3 + ["Glob"] * 3 + ["Edit", "Write", "Bash"]
+
+
+def _clean_env():
+    """Remove every INSPEXIMUS_* variable and return them, so a developer's shared store, embedder or
+    decision store cannot reach a workload. Restore with `_restore_env`."""
+    return {k: os.environ.pop(k) for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]}
+
+
+def _restore_env(saved):
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        del os.environ[k]
+    os.environ.update(saved)
+
+
+def w_hook(n):
+    """The Claude Code hook's PostToolUse path over a project store of n records.
+
+    The hook is a fresh process per event, so every event that opens the store pays one full load.
+    `store_loads` must equal the number of CAPTURED events (3): an ignored tool writes nothing and must
+    not read the store either (AUDIT-B B-01).
+    """
+    import inspeximus.claude_code as cc
+    proj = tempfile.mkdtemp()
+    os.makedirs(os.path.join(proj, ".git"))
+    c = proj.replace("\\", "/")
+    env = {"INSPEXIMUS_CODING_STORE": os.path.join(proj, ".inspeximus"), "INSPEXIMUS_NO_NUDGE": "1"}
+    saved = _clean_env()
+    os.environ.update(env)
+    try:
+        m = cc._store(proj)
+        for i in range(n):
+            m.remember(f"ran: make target {i}", key=f"cmd:{i}", mtype="episodic", tags=["bash"])
+        m.flush()
+    finally:
+        _restore_env(saved)
+    inputs = {"Read": {"file_path": c + "/x.py"}, "Grep": {"pattern": "foo"}, "Glob": {"pattern": "*.py"},
+              "Edit": {"file_path": c + "/a.py", "new_string": "x = 1"},
+              "Write": {"file_path": c + "/b.py", "content": "y = 2"}, "Bash": {"command": "ls -la"}}
+
+    def run():
+        saved_run = _clean_env()
+        os.environ.update(env)
+        try:
+            for tool in HOOK_EVENTS:
+                cc.capture({"hook_event_name": "PostToolUse", "tool_name": tool, "tool_input": inputs[tool],
+                            "cwd": c, "session_id": "gate"})
+        finally:
+            _restore_env(saved_run)
+    return run
+
+
 WORKLOADS = {
     "write_n1000":        (lambda: w_write(1000),        "1,000 remembers + flush"),
     "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records"),
     "erase_k200_n2000":   (lambda: w_erase(200, 2000),   "erase 200 subject records among 2,000"),
     "session_n500":       (lambda: w_session(500),       "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets"),
+    "hook_n2000":         (lambda: w_hook(2000),         "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store"),
 }
 
 

@@ -733,10 +733,21 @@ def _capture_commit(m, raw_cmd, cwd, sid):
     return True
 
 
+#: The tools `capture` records. Every other PostToolUse event returns before the store is opened.
+_CAPTURED_TOOLS = ("Edit", "MultiEdit", "Write", "Bash")
+
+
 def capture(ev):
     cwd = ev.get("cwd") or os.getcwd()
     tool = ev.get("tool_name", "")
     ti = ev.get("tool_input", {}) or {}
+    # OPEN ONLY FOR A TOOL THIS FUNCTION CAPTURES. The save below was made conditional on 2026-09-06,
+    # and the open was left in front of it: a Read, Grep or Glob event still read and parsed every
+    # row of the store in order to write nothing. Measured 2026-09-27 on a copy of this project's
+    # hook store (67,165 records): 5.2 s per Read event, 5.51 of 5.62 s inside open_store, on every
+    # tool call, because the installed PostToolUse hook has no matcher.
+    if tool not in _CAPTURED_TOOLS:
+        return
     m = _store(cwd)
     # STAMP THE SESSION. Every hook event carries `session_id`; passing it to remember() puts it in
     # meta['sid'], which is what lets SessionEnd digest exactly THIS session's writes instead of guessing
