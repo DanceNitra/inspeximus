@@ -8609,6 +8609,29 @@ class Inspeximus:
         # reported beside the count, never as the verdict.
         from .erasure_residue import scan_records
         out["residue_in_store"] = scan_records(self.items, _residue_values)
+        # SIBLING COPIES (A-12). What the library made is gone by now (`_drop_pre_rows_backup`); a copy
+        # that is still here -- one kept on purpose, one that could not be removed, or one this version
+        # does not account for -- is read for the values this erasure removed, while they are in hand.
+        sib = self._store_siblings()
+        rs = out["residue_in_store"]
+        for p in sib["unknown"] + sib["own"]:
+            name = os.path.basename(p)
+            try:
+                if os.path.getsize(p) > 512 * 1024 * 1024:
+                    raise OSError("larger than 512 MB, not read")
+                with open(p, "rb") as fh:
+                    blob = fh.read()
+            except OSError as e:
+                rs["ok"] = False
+                rs.setdefault("findings", []).append({"path": name, "kind": "SIBLING_UNCHECKED", "why": str(e)})
+                continue
+            if any(isinstance(v, str) and v.strip() and v.encode("utf-8") in blob for v in _residue_values):
+                rs["ok"] = False
+                rs.setdefault("findings", []).append({"path": name, "kind": "SIBLING_COPY"})
+        if any(f.get("kind", "").startswith("SIBLING_") for f in rs.get("findings") or []):
+            rs.setdefault("problems", []).append(
+                "a file beside the store still holds a value this erasure removed (or could not be read); "
+                "it is named in findings, and the erasure did not reach it")
         left = self._sweep_save_temps()
         if left:
             rs = out["residue_in_store"]
@@ -9434,6 +9457,7 @@ class Inspeximus:
         """
         if not self.path:
             return {"state": "no store path"}
+        self._drop_merge_backups()
         backup = self.path.with_suffix(self.path.suffix + ".pre-rows.bak")
         try:
             if not backup.exists():
@@ -9451,6 +9475,26 @@ class Inspeximus:
                      "erasure_reached_it": False, "error": str(e)}
         self._conversion_backup = state
         return state
+
+    def _drop_merge_backups(self) -> list:
+        """THE MERGE TOOLS' COPY GOES THE SAME WAY (A-12, 2026-09-27). `claude_code.merge_store` and
+        `merge_fragments` copy the whole store to `<store>.bak-merge-<time>` before they merge, and
+        SessionStart suggests running them. After `forget_subject` the erased text sat in that copy and
+        neither the result nor the certificate named it. Like the conversion backup, it is a copy this
+        library made without being asked, so an erasure ends its rollback window. Recorded per file."""
+        states = []
+        for p in self._store_siblings()["own"]:
+            if p.lower().endswith(".pre-rows.bak"):
+                continue                                   # its own switch and state, below
+            try:
+                os.unlink(p)
+                states.append({"state": "removed", "path": p, "erasure_reached_it": True})
+            except OSError as e:
+                states.append({"state": "could not remove", "path": p, "erasure_reached_it": False,
+                               "error": str(e)})
+        if states:
+            self._merge_backups = (getattr(self, "_merge_backups", None) or []) + states
+        return states
 
     def _rows_available(self) -> bool:
         """Whether this store is written as rows. NOBODY CHOOSES THIS, which is the point.
@@ -9491,6 +9535,54 @@ class Inspeximus:
         rows_tmp = (base + ".rows-tmp").lower() if os.name == "nt" else base + ".rows-tmp"
         return sorted(os.path.join(d, n) for n in names
                       if rx.match(n) or (n.lower() if os.name == "nt" else n) == rows_tmp)
+
+    #: Full copies of the store that this library or its tools make beside it, matched on the part of
+    #: the name after the store's own: the JSON-to-rows conversion backup, and the backup the Claude Code
+    #: merge tools take before they merge (`claude_code.merge_store`, `merge_fragments`).
+    _OWN_COPY_RE = re.compile(r"\.(pre-rows\.bak|bak-merge-\d{8}-\d{6})")
+    #: The store's sidecars, their archives, salts and temp files, and the lock. None is a copy of the
+    #: records, so none is a sibling an erasure has to account for.
+    _SIDECAR_RE = re.compile(r"(\.(receipts|tombstones|objections|irrev|cusum|partitions|actions)\.json"
+                             r"(\.archive\.\d{4}\.json)?(\.salt)?|\.salt|\.embedid|\.app|\.lock)"
+                             r"(\.tmp\.\d+|\.[a-z0-9_]{8}\.tmp)?")
+
+    def _store_siblings(self) -> dict:
+        """Files named `<store>.<something>` beside the store, sorted into `own` (a full copy this
+        library or its tools made) and `unknown` (nothing here accounts for it: a copy an older version
+        or another tool made, or the user's). Sidecars and the temps `_save_temps` handles are neither."""
+        if not getattr(self, "path", None):
+            return {"own": [], "unknown": []}
+        d = os.path.dirname(os.path.abspath(str(self.path))) or "."
+        base = os.path.basename(str(self.path))
+        nt = os.name == "nt"
+        temps = {os.path.normcase(t) for t in self._save_temps()}
+        own, unknown = [], []
+        try:
+            names = os.listdir(d)
+        except OSError:
+            return {"own": [], "unknown": []}
+        for n in names:
+            if not (n.lower() if nt else n).startswith((base.lower() if nt else base) + "."):
+                continue
+            full = os.path.join(d, n)
+            if os.path.normcase(full) in temps or not os.path.isfile(full):
+                continue
+            rest = n[len(base):]
+            flags = re.I if nt else 0
+            if re.fullmatch(Inspeximus._OWN_COPY_RE.pattern, rest, flags):
+                own.append(full)
+            elif not re.fullmatch(Inspeximus._SIDECAR_RE.pattern, rest, flags):
+                unknown.append(full)
+        return {"own": sorted(own), "unknown": sorted(unknown)}
+
+    @staticmethod
+    def _describe_file(p: str) -> dict:
+        try:
+            st = os.stat(p)
+            return {"name": os.path.basename(p), "bytes": st.st_size,
+                    "modified": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(st.st_mtime))}
+        except OSError as e:
+            return {"name": os.path.basename(p), "error": f"{type(e).__name__}: {e}"}
 
     def _sweep_save_temps(self) -> list:
         """Remove what an interrupted save left; return [(name, why)] for what is still there.
@@ -11416,6 +11508,14 @@ class Inspeximus:
             ok = False
             problems = list(problems) + [f"an interrupted save left {os.path.basename(p)} beside the store, "
                                          "a full copy of its records that no erasure has removed"]
+        # Named, with size and date, and never verified around (A-12). A content-free certificate cannot
+        # tell whether such a file holds the erased records, so it says the erasure did not reach it.
+        sib = self._store_siblings()
+        not_reached = [self._describe_file(p) for p in sib["unknown"] + sib["own"]]
+        for f in not_reached:
+            ok = False
+            problems = list(problems) + [f"{f['name']} beside the store is not the store or one of its "
+                                         "sidecars; if it is a copy of the records, the erasure did not reach it"]
         return {
             "inspeximus_erasure_certificate": "1.0",
             "issued_ts": time.time(),
@@ -11431,6 +11531,8 @@ class Inspeximus:
             "pubkey": self.receipt_pubkey,
             "anchor": self.anchor(),
             "self_check": {"verified": ok, "problems": problems},
+            "merge_backups": list(getattr(self, "_merge_backups", None) or []),
+            "siblings_not_reached": not_reached,
             # THE COPY THIS LIBRARY MADE ITSELF. Converting a JSON store to rows leaves the original
             # beside it, and that file holds the records a subject asked to have erased. An erasure
             # removes it, which ends the rollback window; an operator can keep it with

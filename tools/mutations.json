@@ -4224,5 +4224,68 @@
   "tests": [
    "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
   ]
+ },
+ {
+  "name": "an erasure leaves the merge tools' backup",
+  "file": "inspeximus/core.py",
+  "old": "        self._drop_merge_backups()\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
+  ]
+ },
+ {
+  "name": "a merge backup is not recognised as the library's copy",
+  "file": "inspeximus/core.py",
+  "old": "_OWN_COPY_RE = re.compile(r\"\\.(pre-rows\\.bak|bak-merge-\\d{8}-\\d{6})\")",
+  "new": "_OWN_COPY_RE = re.compile(r\"\\.(pre-rows\\.bak)\")",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
+  ]
+ },
+ {
+  "name": "forget does not read a sibling copy for the erased values",
+  "file": "inspeximus/core.py",
+  "old": "if any(isinstance(v, str) and v.strip() and v.encode(\"utf-8\") in blob for v in _residue_values):",
+  "new": "if False:",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
+  ]
+ },
+ {
+  "name": "the certificate names no sibling copy",
+  "file": "inspeximus/core.py",
+  "old": "not_reached = [self._describe_file(p) for p in sib[\"unknown\"] + sib[\"own\"]]",
+  "new": "not_reached = []",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
+  ]
+ },
+ {
+  "name": "the certificate verifies around a sibling copy",
+  "file": "inspeximus/core.py",
+  "old": "        for f in not_reached:\n            ok = False\n",
+  "new": "        for f in not_reached:\n            pass\n",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
+  ]
+ },
+ {
+  "name": "the action ledger is taken for a copy of the store",
+  "file": "inspeximus/core.py",
+  "old": "(receipts|tombstones|objections|irrev|cusum|partitions|actions)",
+  "new": "(receipts|tombstones|objections|irrev|cusum|partitions)",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
+  ]
+ },
+ {
+  "name": "a sidecar's temp file is taken for a copy of the store",
+  "file": "inspeximus/core.py",
+  "old": "r\"(\\.tmp\\.\\d+|\\.[a-z0-9_]{8}\\.tmp)?\")",
+  "new": "r\"\")",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
+  ]
  }
 ]
