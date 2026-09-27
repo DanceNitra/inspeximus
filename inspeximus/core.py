@@ -2160,6 +2160,15 @@ _LOCK_PRIMITIVE = _lock_primitive()
 LOCK_WAIT_S = 60.0
 
 
+class StoreLockUnavailable(OSError):
+    """The lock file beside a store could not be created, so a write there cannot be protected.
+
+    Raised rather than writing unprotected or taking a lock somewhere else: a lock in a directory the
+    other writers do not share is no lock (A-10). The write that needed it fails the way any
+    unwritable store fails -- `_save` records it and `flush()` raises -- and reading never locks, so a
+    store in a read-only directory still opens, recalls and verifies."""
+
+
 class _StoreLock:
     """A real inter-process lock around the read-modify-write of one store file.
 
@@ -2195,24 +2204,45 @@ class _StoreLock:
     _CACHE: dict = {}
     _CACHE_GUARD = threading.Lock()
 
-    __slots__ = ("_path", "_fh", "_locker", "_tl")
+    __slots__ = ("_path", "_fh", "_locker", "_tl", "_transient", "_legacy")
 
-    def __init__(self, path):
-        # The lock lives in the SYSTEM TEMP DIR, keyed by a hash of the resolved store path -- NOT
-        # beside the store. A first version put `<store>.lock` next to it and the erasure-residue
-        # scanner immediately counted 6 files where the docs promise 3: inspeximus scans data
-        # directories for DSAR residue, so dropping new files into one is not free, and a user should
-        # not have to clean up after a lock. It carries no content (it is opened, never written), so
-        # nothing about it is data.
+    #: How long a writer retries OPENING the lock file before it gives up. Separate from LOCK_WAIT_S,
+    #: the wait for a holder: an open that keeps failing is a directory this process cannot write, and
+    #: the only transient case, a lock file another writer is deleting at that instant on Windows,
+    #: clears in milliseconds.
+    OPEN_RETRY_S = 2.0
+
+    def __init__(self, path, _legacy: bool = False):
+        # BESIDE THE STORE, SINCE A-10 (2026-09-27). The lock used to live in `tempfile.gettempdir()`,
+        # on the assumption of one temp dir per machine. TEMP is per user on Windows, and private to a
+        # sandboxed agent, a snap or flatpak editor or a service; since 3.14.0 `install --all` points
+        # every host at ONE store, so the writers most likely to share a file were the ones most
+        # likely to disagree about TEMP. Measured: 8 writers x 12 writes on one JSON store, one TEMP:
+        # 96 of 96 landed in 3 of 3 trials; two TEMPs: 85, 96 and 91 of 96, every writer told it had
+        # succeeded. A file beside the store is the one location every writer of that store shares.
         #
-        # The tradeoff, stated: two users on one machine share the temp dir and therefore the lock,
-        # which is what we want; two machines sharing a network mount do not -- but flock/LockFile
-        # over SMB/NFS is unreliable anyway, so a co-located file would not have bought that either.
-        # `normcase`, because two spellings of one path on a case-insensitive filesystem are two
-        # lock files and therefore no lock at all: measured 2026-09-22, `C:\\Users\\...` and
-        # `c:\\users\\...` hashed to different keys while naming the same store.
-        h = hashlib.sha256(os.path.normcase(os.path.abspath(str(path))).encode("utf-8", "replace")).hexdigest()[:16]
-        self._path = os.path.join(tempfile.gettempdir(), f"inspeximus-{h}.lock")
+        # TRANSIENT, so the store's directory does not collect lock files. An earlier version put
+        # `<store>.lock` there permanently and the erasure-residue scan counted 6 files where the docs
+        # promise 3. It now exists only while a write holds it: Windows removes it on release when no
+        # other process has it open (the reasoning is in `_release`), and POSIX removes the name while
+        # still holding it, with every acquirer checking after `flock` that the file it locked is still
+        # the one the path names.
+        #
+        # THE OLD TEMP LOCK IS STILL TAKEN, second, with its old path and its old per-platform
+        # behaviour. A host pinned to an older version (a `uvx` pin keeps an old MCP server alive for
+        # days: the 1.46.0 incident) takes only that one, and a new writer must still exclude it. The
+        # order is fixed and old writers take one lock, so no two writers can wait on each other.
+        # `normcase`: two spellings of one path on a case-insensitive filesystem must be one lock
+        # (measured 2026-09-22), and `realpath` so a symlinked directory is not a second one.
+        if _legacy:
+            h = hashlib.sha256(os.path.normcase(os.path.abspath(str(path))).encode("utf-8", "replace")).hexdigest()[:16]
+            self._path = os.path.join(tempfile.gettempdir(), f"inspeximus-{h}.lock")
+            self._transient = os.name == "nt"
+            self._legacy = None
+        else:
+            self._path = os.path.normcase(os.path.realpath(os.path.abspath(str(path)))) + ".lock"
+            self._transient = True
+            self._legacy = _StoreLock(path, _legacy=True)
         self._fh = None
         self._tl = None
         self._locker = _LOCK_PRIMITIVE
@@ -2256,6 +2286,17 @@ class _StoreLock:
             self._degraded("no platform lock primitive is available (neither fcntl nor msvcrt), so "
                            "this write is not protected against another process")
             return self
+        self._acquire(kind, mod)
+        if self._legacy is not None:
+            try:
+                self._legacy._acquire(kind, mod)
+            except BaseException:
+                self._release()
+                raise
+        return self
+
+    def _acquire(self, kind, mod) -> bool:
+        """Take this one lock file. True when held; False when this write goes out without it."""
         with _StoreLock._CACHE_GUARD:
             ent = _StoreLock._CACHE.get(self._path)
             if ent is None:
@@ -2272,19 +2313,47 @@ class _StoreLock:
         # `test_the_lock_outlasts_a_busy_database` pins the ordering, because the two numbers live in
         # different files and nothing else connects them.
         deadline = time.time() + LOCK_WAIT_S # separate two threads of ours
+        open_deadline = time.time() + _StoreLock.OPEN_RETRY_S
+        made_dir = False
         while True:
-            try:
-                fh = _StoreLock._CACHE[self._path][1]
-                if fh is None or fh.closed:
+            fh = _StoreLock._CACHE[self._path][1]
+            if fh is None or fh.closed:
+                try:
                     fh = open(self._path, "a+b")
-                    _StoreLock._CACHE[self._path] = (self._tl, fh)
+                except OSError as e:
+                    if isinstance(e, FileNotFoundError) and not made_dir and self._legacy is not None:
+                        made_dir = True              # the store's first write: its directory is new
+                        try:
+                            os.makedirs(os.path.dirname(self._path), exist_ok=True)
+                        except OSError:
+                            pass
+                        continue
+                    if time.time() < open_deadline:
+                        time.sleep(0.05)
+                        continue
+                    self._tl.release()
+                    self._tl = None
+                    if self._legacy is None:
+                        return False                 # the old TEMP lock is compatibility, not protection
+                    raise StoreLockUnavailable(
+                        f"inspeximus cannot create the store lock {self._path} ({type(e).__name__}: {e}); "
+                        f"the store's directory must be writable to write the store") from e
+                _StoreLock._CACHE[self._path] = (self._tl, fh)
+            try:
                 if kind == "fcntl":
                     mod.flock(fh.fileno(), mod.LOCK_EX)
+                    if self._transient and not _StoreLock._names(fh, self._path):
+                        # The holder we waited on removed this name on release; our lock is on a
+                        # file nobody else will open. Start again on the file the path names now.
+                        mod.flock(fh.fileno(), mod.LOCK_UN)
+                        fh.close()
+                        _StoreLock._CACHE[self._path] = (self._tl, None)
+                        continue
                 else:
                     fh.seek(0)
                     mod.locking(fh.fileno(), mod.LK_LOCK, 1)
                 self._fh = fh
-                return self
+                return True
             except OSError:
                 _StoreLock._CACHE[self._path] = (self._tl, None)
                 if time.time() >= deadline:
@@ -2294,13 +2363,39 @@ class _StoreLock:
                     # branch left no trace of having been taken.
                     self._degraded("waited %.0fs for the store lock and gave up; this write is not "
                                    "protected against another process" % LOCK_WAIT_S)
-                    return self              # degrade to unlocked rather than lose the write
+                    return False             # degrade to unlocked rather than lose the write
                 time.sleep(0.05)
 
+    @staticmethod
+    def _names(fh, path) -> bool:
+        """Is the file behind `fh` still the one `path` names?"""
+        try:
+            a, b = os.fstat(fh.fileno()), os.stat(path)
+        except OSError:
+            return False
+        return (a.st_dev, a.st_ino) == (b.st_dev, b.st_ino)
+
     def __exit__(self, *exc):
+        try:
+            if self._legacy is not None:
+                self._legacy._release()
+        finally:
+            self._release()
+        return False
+
+    def _release(self):
         kind, mod = self._locker
         try:
             if self._fh is not None:
+                if self._transient and kind == "fcntl":
+                    # POSIX: remove the name WHILE still holding the lock. A waiter blocked on this
+                    # inode wakes holding a file the path no longer names, sees it in `_names`, and
+                    # starts again; a newcomer creates a fresh file. Unlinking after the unlock
+                    # would let a waiter lock the old inode while a newcomer locks the new one.
+                    try:
+                        os.unlink(self._path)
+                    except OSError:
+                        pass
                 try:
                     if kind == "fcntl":
                         mod.flock(self._fh.fileno(), mod.LOCK_UN)
@@ -2320,23 +2415,23 @@ class _StoreLock:
                 # new one would both believe they hold the lock; there the file stays, as before.
                 # The cached handle is closed first, because our own open handle would also refuse
                 # the unlink; the next acquire re-opens it, one syscall against a 16 ms write.
-                if os.name == "nt":
+                if self._transient:
                     try:
                         self._fh.close()
                     except OSError:
                         pass
                     with _StoreLock._CACHE_GUARD:
                         _StoreLock._CACHE[self._path] = (self._tl, None)
-                    try:
-                        os.unlink(self._path)
-                    except OSError:
-                        pass                 # another process holds it: it is still in use
+                    if os.name == "nt":
+                        try:
+                            os.unlink(self._path)
+                        except OSError:
+                            pass             # another process holds it: it is still in use
                 self._fh = None
         finally:
             if self._tl is not None:
                 self._tl.release()
                 self._tl = None
-        return False
 
 
 def _durable_replace(path, payload, encoding: str = "utf-8") -> None:
@@ -9364,7 +9459,12 @@ class Inspeximus:
             return None
         backup = self.path.with_suffix(self.path.suffix + ".pre-rows.bak")
         tmp = str(self.path) + ".rows-tmp"
-        with _StoreLock(self.path):
+        held = contextlib.ExitStack()
+        try:
+            held.enter_context(_StoreLock(self.path))
+        except StoreLockUnavailable:
+            return None                  # a directory we cannot write: open the JSON store as it is
+        with held:
             if _rows.looks_like_sqlite(self.path):
                 # A peer created the row store between this handle's read and this lock. There is
                 # nothing to convert; the caller reloads the rows the peer wrote.

@@ -2103,10 +2103,11 @@
  {
   "file": "inspeximus/core.py",
   "name": "the lock file is never removed",
-  "old": "                if os.name == \"nt\":\n                    try:\n                        self._fh.close()",
+  "old": "                if self._transient:\n                    try:\n                        self._fh.close()",
   "new": "                if False:\n                    try:\n                        self._fh.close()",
   "tests": [
-   "tests/test_the_store_lock_file_does_not_outlive_the_lock_on_windows.py"
+   "tests/test_the_store_lock_file_does_not_outlive_the_lock_on_windows.py",
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
   ]
  },
  {
@@ -3997,6 +3998,78 @@
   "new": "",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the store lock goes back to TEMP",
+  "file": "inspeximus/core.py",
+  "old": "self._path = os.path.normcase(os.path.realpath(os.path.abspath(str(path)))) + \".lock\"",
+  "new": "self._path = os.path.join(tempfile.gettempdir(), \"inspeximus-%s.lock\" % hashlib.sha256(str(path).encode()).hexdigest()[:16])",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
+  ]
+ },
+ {
+  "name": "a new writer stops taking the old TEMP lock",
+  "file": "inspeximus/core.py",
+  "old": "self._legacy = _StoreLock(path, _legacy=True)",
+  "new": "self._legacy = None",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
+  ]
+ },
+ {
+  "name": "the lock beside the store outlives the write",
+  "file": "inspeximus/core.py",
+  "old": "            self._transient = True\n",
+  "new": "            self._transient = False\n",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
+  ]
+ },
+ {
+  "name": "an unwritable store directory degrades silently instead of failing",
+  "file": "inspeximus/core.py",
+  "old": "                    if self._legacy is None:\n                        return False",
+  "new": "                    if True:\n                        return False",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
+  ]
+ },
+ {
+  "name": "the lock does not create a new store directory",
+  "file": "inspeximus/core.py",
+  "old": "                            os.makedirs(os.path.dirname(self._path), exist_ok=True)\n",
+  "new": "                            pass\n",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
+  ]
+ },
+ {
+  "name": "opening a JSON store in a read-only directory fails",
+  "file": "inspeximus/core.py",
+  "old": "            return None                  # a directory we cannot write: open the JSON store as it is",
+  "new": "            raise",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
+  ]
+ },
+ {
+  "name": "the hook's store directory does not ignore the lock",
+  "file": "inspeximus/claude_code.py",
+  "old": "fh.write(_STORE_DIR_GITIGNORE)",
+  "new": "fh.write(\"\")",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
+  ]
+ },
+ {
+  "name": "the hook writes a .gitignore into a directory it did not create",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if not os.path.isdir(d):\n        os.makedirs(d, exist_ok=True)",
+  "new": "    if True:\n        os.makedirs(d, exist_ok=True)",
+  "tests": [
+   "tests/test_the_store_lock_does_not_depend_on_temp.py"
   ]
  }
 ]

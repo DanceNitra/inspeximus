@@ -152,11 +152,13 @@ def test_the_lock_outlasts_a_busy_database():
     assert got == ss.BUSY_TIMEOUT_S * 1000, (
         "the constant is not what a connection ends up with: %r ms" % got)
 
-    names = _StoreLock.__enter__.__code__.co_names
+    # `_acquire` holds the wait loop since A-10, which takes two lock files per write (`__enter__`
+    # calls it for each).
+    names = _StoreLock._acquire.__code__.co_names
     assert "LOCK_WAIT_S" in names, (
-        "the lock wait is a literal inside __enter__ again, so the ordering above is checking a "
+        "the lock wait is a literal inside _acquire again, so the ordering above is checking a "
         "number nothing uses")
-    assert 20.0 not in _StoreLock.__enter__.__code__.co_consts, "the old 20 s literal is back"
+    assert 20.0 not in _StoreLock._acquire.__code__.co_consts, "the old 20 s literal is back"
 
 
 def test_an_unprotected_write_leaves_a_trace():
