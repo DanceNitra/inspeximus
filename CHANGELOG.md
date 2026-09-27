@@ -1,3 +1,33 @@
+## 3.14.2 - UPGRADE IF you use the Claude Code or Codex hooks: they stored API keys and tokens from Bash commands and file writes verbatim and printed them back into later prompts. The hooks now mask secrets before storing anything, and a one-line notice counts the records captured before this release.
+
+Found on 2026-09-27 with fake keys in a sandbox.
+
+- **Secrets are masked at capture.** Every write the hook makes goes through one masking step. It
+  replaces key-shaped strings (OpenAI and Anthropic `sk-`, Stripe, GitHub, GitLab, AWS, Slack, Google,
+  Hugging Face and npm tokens, PEM private keys, JWTs, URL passwords and Bearer tokens) and the value
+  of any assignment or flag whose name says it holds a secret (`*KEY*`, `*TOKEN*`, `*SECRET*`,
+  `*PASSWORD*`, `*PWD*`, `*CREDENTIAL*`, `*AUTH*`) with `[REDACTED:<kind>]`. It covers the stored
+  text, object, key, source and metadata, and it runs before the excerpt is cut, so a key at the
+  200-character limit is not stored as a fragment. A reference such as `$OPENAI_API_KEY` is kept.
+- **A secrets file is never excerpted.** A write to `.env*`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, an
+  SSH private key, `credentials*`, `.netrc`, `.pgpass`, `.pypirc` or `.npmrc` stores the path and a
+  fixed marker. Nothing derived from the content is stored, because a hash of the content lets anyone
+  who holds the store confirm a guessed file.
+- **Records captured before 3.14.2 stay until you erase them.** The first session after the upgrade
+  shows one line with the number of stored records that look like they contain a secret. To list
+  them by id, run `python -m inspeximus.claude_code --scrub-secrets`. To erase them, add `--apply`:
+  each one goes through `forget` and leaves a tombstone. Copies beside the store (`*.bak*`, `*.tmp`)
+  are named in the report and left unchanged.
+- **Masking is a heuristic.** A secret with no known prefix, stored under a name that does not say
+  secret, is not recognised.
+- **A mutation with no teeth now has one.** "the recall hook loses its encoding guard" survived,
+  because the hook events print ASCII JSON and its test could not fail.
+  `tests/test_the_hook_cli_survives_a_cp1250_console.py` exercises the plain-text messages the guard
+  still protects.
+
+`tests/test_the_hook_never_stores_a_secret.py` fails on 3.14.1. `tests/test_the_hook_redacts_secrets_at_capture.py`
+pins the class, and each of the 12 new mutations in `tools/mutations.json` fails a test.
+
 ## 3.14.1 - UPGRADE IF you use Hermes Agent, or ran `install --all` on 3.14.0: "no" now leaves Hermes untouched, a Hermes that cannot load the provider is reported instead of wired, and only agents that are installed get a configuration.
 
 Found while preparing our own machine for `install --all` on 3.14.0, before running it.
