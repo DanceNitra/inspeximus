@@ -82,20 +82,28 @@ def _newline_of(path):
     return "\r\n" if i > 0 and head[i - 1:i] == b"\r" else "\n"
 
 
-def write_text_keeping_newlines(path, text, backup=False):
+def write_text_keeping_newlines(path, text, backup=True):
     """Write `text` to `path` in the line endings the file already has, atomically.
 
     KEEP THE USER'S LINE ENDINGS (3.14.3). `Path.write_text` translates "\\n" to the platform's line
     ending, so on Windows every rewrite of an LF file by the installer turned it into CRLF: measured
     2026-09-27 on ~/.claude.json, 2,604 lines and about 2.6 KB of churn per write, flipped back to LF
-    by Claude Code's next write. The bytes are written as they are meant to be, with no translation."""
+    by Claude Code's next write. The bytes are written as they are meant to be, with no translation.
+
+    A .BAK OF EVERY FILE IT CHANGES (3.14.4). The install page promises one, and the backup was a flag
+    each caller had to pass; the write of Hermes' inspeximus/config.json did not. Now an existing file
+    whose bytes change is always copied to `<name>.bak` first, and a write that changes no byte is
+    skipped, so a re-run neither rewrites a file nor replaces its backup with a copy of itself."""
     path.parent.mkdir(parents=True, exist_ok=True)
     nl = _newline_of(path)
     data = text.replace("\r\n", "\n")
     if nl != "\n":
         data = data.replace("\n", nl)
+    new = data.encode("utf-8")
+    if path.exists() and path.read_bytes() == new:
+        return
     tmp = path.with_suffix(path.suffix + ".inspeximus-tmp")
-    tmp.write_bytes(data.encode("utf-8"))
+    tmp.write_bytes(new)
     if backup and path.exists():
         shutil.copy2(path, str(path) + ".bak")
     tmp.replace(path)

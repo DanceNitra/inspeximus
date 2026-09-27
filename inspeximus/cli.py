@@ -519,6 +519,10 @@ def _num(text: str):
 def main(argv=None):
     _survive_a_narrow_console()
     ap = argparse.ArgumentParser(prog="inspeximus", description="inspeximus — the self-correcting memory layer (CLI).")
+    # 3.14.4: `inspeximus --version` exited 2 ("the following arguments are required: cmd"), and it is the
+    # first command an agent or a person tries after an install.
+    from inspeximus import __version__ as _v
+    ap.add_argument("--version", action="version", version=f"inspeximus {_v}")
     ap.add_argument("--path", help="store file (default: $INSPEXIMUS_PATH or ./inspeximus_memory.json)")
     ap.add_argument("--json", action="store_true", help="emit JSON")
     ap.add_argument("--receipts", action="store_true",

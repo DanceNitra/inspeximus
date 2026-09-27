@@ -437,7 +437,9 @@ def record_first_run(store, wired, labels=None):
     from ._surface import open_store
     m = open_store(str(store))
     labels = ", ".join(labels or ["Hermes Agent" if h == "hermes" else _i.HOSTS[h]["label"] for h in wired]) or "none"
-    text = (f"DECISION: every AI agent on this machine shares one inspeximus memory: {labels}. "
+    # NO "DECISION: " HERE (3.14.4): remember_decision adds it, and the stored text read
+    # "DECISION: DECISION: every AI agent ..." on every install before this.
+    text = (f"every AI agent on this machine shares one inspeximus memory: {labels}. "
             f"Installed with inspeximus {_version()} on {time.strftime('%Y-%m-%d')}; store {store}.")
     # A SECOND RUN CHANGES NOTHING (3.14.4). The seal is this record, so writing it again on an unchanged
     # re-run would give the same install a new seal and rewrite shared.json. The decision is kept when

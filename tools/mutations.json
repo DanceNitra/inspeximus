@@ -3845,5 +3845,50 @@
    "tests/test_install_all_wires_every_agent_to_one_store.py",
    "tests/test_the_install_ends_with_the_armed_block.py"
   ]
+ },
+ {
+  "name": "the installer backs up only when a caller asks",
+  "file": "inspeximus/install.py",
+  "old": "def write_text_keeping_newlines(path, text, backup=True):\n",
+  "new": "def write_text_keeping_newlines(path, text, backup=False):\n",
+  "tests": [
+   "tests/test_the_installer_backs_up_every_file_it_changes.py"
+  ]
+ },
+ {
+  "name": "a write that changes no byte rewrites the file and its backup",
+  "file": "inspeximus/install.py",
+  "old": "    if path.exists() and path.read_bytes() == new:\n        return\n",
+  "new": "    if False:\n        return\n",
+  "tests": [
+   "tests/test_the_installer_backs_up_every_file_it_changes.py"
+  ]
+ },
+ {
+  "name": "the setup decision says DECISION twice again",
+  "file": "inspeximus/install_all.py",
+  "old": "    text = (f\"every AI agent on this machine shares one inspeximus memory: {labels}. \"\n",
+  "new": "    text = (f\"DECISION: every AI agent on this machine shares one inspeximus memory: {labels}. \"\n",
+  "tests": [
+   "tests/test_the_installer_backs_up_every_file_it_changes.py"
+  ]
+ },
+ {
+  "name": "inspeximus --version exits 2 again",
+  "file": "inspeximus/cli.py",
+  "old": "    ap.add_argument(\"--version\", action=\"version\", version=f\"inspeximus {_v}\")\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_installer_backs_up_every_file_it_changes.py"
+  ]
+ },
+ {
+  "name": "python -m inspeximus does not run the CLI",
+  "file": "inspeximus/__main__.py",
+  "old": "    raise SystemExit(main())\n",
+  "new": "    pass\n",
+  "tests": [
+   "tests/test_the_installer_backs_up_every_file_it_changes.py"
+  ]
  }
 ]
