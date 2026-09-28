@@ -6269,5 +6269,32 @@
   "tests": [
    "tests/test_verifier_page_examples.py"
   ]
+ },
+ {
+  "name": "a relpath across drives crashes the compliance evidence",
+  "file": "inspeximus/_surface.py",
+  "old": "        return os.path.relpath(path, start) if start is not None else os.path.relpath(path)\n    except ValueError:\n",
+  "new": "        return os.path.relpath(path, start) if start is not None else os.path.relpath(path)\n    except KeyError:\n",
+  "tests": [
+   "tests/test_a_path_on_another_drive_never_crashes.py"
+  ]
+ },
+ {
+  "name": "the compliance evidence calls relpath directly again",
+  "file": "inspeximus/compliance.py",
+  "old": "relpath_or_abs(r[\"receipt\"], \"probes\")",
+  "new": "_os.path.relpath(r[\"receipt\"], \"probes\")",
+  "tests": [
+   "tests/test_a_path_on_another_drive_never_crashes.py"
+  ]
+ },
+ {
+  "name": "the hook crashes on a file on another drive",
+  "file": "inspeximus/claude_code.py",
+  "old": "        return os.path.relpath(p, cwd) if cwd and p else p\n    except Exception:\n",
+  "new": "        return os.path.relpath(p, cwd) if cwd and p else p\n    except KeyError:\n",
+  "tests": [
+   "tests/test_a_path_on_another_drive_never_crashes.py"
+  ]
  }
 ]

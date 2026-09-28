@@ -18,6 +18,7 @@ import html as _html
 import json as _json
 import os as _os
 import time
+from ._surface import relpath_or_abs
 from .core import __version__
 
 
@@ -56,7 +57,7 @@ def robustness_evidence(probes_dir: str | None = None) -> dict:
     rows = []
     for r in doc.get("rows") or []:
         row = dict(r)
-        path = _os.path.join(probes_dir, _os.path.relpath(r["receipt"], "probes")) if probes_dir else None
+        path = _os.path.join(probes_dir, relpath_or_abs(r["receipt"], "probes")) if probes_dir else None
         if path and _os.path.exists(path):
             with open(path, "rb") as fh:
                 # line endings normalised to LF, as the generator hashes them: a checkout with

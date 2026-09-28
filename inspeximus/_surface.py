@@ -51,6 +51,18 @@ class StoreLocationError(FileNotFoundError):
     """A store path whose directory does not exist, outside the locations inspeximus creates itself."""
 
 
+def relpath_or_abs(path, start=None):
+    """`path` relative to `start` (default: the working directory), or absolute when that is impossible.
+
+    On Windows os.path.relpath raises ValueError when the two are on different drives, and a store on D:
+    with the working directory on C: is an ordinary setup (Windows CI trial, 2026-09-28: a checkout on D:
+    and the temp folder on C: crashed make_examples.py)."""
+    try:
+        return os.path.relpath(path, start) if start is not None else os.path.relpath(path)
+    except ValueError:
+        return os.path.abspath(path)
+
+
 def git_bash_misread(path):
     """The intended path when `path` is a Git Bash `/c/...` path that Windows read as `C:\\c\\...`, or None.
 

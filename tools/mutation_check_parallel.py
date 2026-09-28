@@ -139,6 +139,14 @@ def _run_worker(idx: int, mutations: list[dict], base: str, keep: bool) -> dict:
     return out
 
 
+def _shown(path):
+    # A spec on another drive than the checkout (Windows: C: and D:) is not a crash (2026-09-28).
+    try:
+        return os.path.relpath(path, ROOT)
+    except ValueError:
+        return os.path.abspath(path)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("spec", nargs="?", default=os.path.join("tools", "mutations.json"))
@@ -185,7 +193,7 @@ def main() -> int:
     os.makedirs(base, exist_ok=True)
 
     head = _git("rev-parse", "--short", "HEAD").stdout.strip()
-    print(f"{len(mutations)} mutations from {os.path.relpath(path, ROOT)} across {n} worker(s) at {head}")
+    print(f"{len(mutations)} mutations from {_shown(path)} across {n} worker(s) at {head}")
     print(f"  shard sizes: {[len(s) for s in shards]}\n")
 
     t0 = time.time()

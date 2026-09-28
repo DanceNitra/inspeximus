@@ -422,6 +422,14 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
     return 1 if (survived or skipped) else 0
 
 
+def _shown(path):
+    # A spec on another drive than the checkout (Windows: C: and D:) is not a crash (2026-09-28).
+    try:
+        return os.path.relpath(path, ROOT)
+    except ValueError:
+        return os.path.abspath(path)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("spec", nargs="?", default=os.path.join("tools", "mutations.json"),
@@ -434,7 +442,7 @@ def main() -> int:
     if not mutations:
         print("the spec is empty: a run over zero mutations is a green result over nothing")
         return 1
-    print(f"{len(mutations)} mutations from {os.path.relpath(path, ROOT)}\n")
+    print(f"{len(mutations)} mutations from {_shown(path)}\n")
     return run(mutations)
 
 
