@@ -4692,5 +4692,32 @@
   "tests": [
    "tests/test_a_malformed_statement_gets_a_verdict.py"
   ]
+ },
+ {
+  "name": "the gate stops lifting the marker filter for a mutation-marked entry",
+  "file": "tools/mutation_check.py",
+  "old": "    extra = [\"-n\", \"0\", \"-m\", \"\"] if _marked_mutation(tests) else []\n",
+  "new": "    extra = []\n",
+  "tests": [
+   "tests/test_every_mutation_entry_runs_its_tests.py"
+  ]
+ },
+ {
+  "name": "the gate reads an empty selection as not green again",
+  "file": "tools/mutation_check.py",
+  "old": "        if pre.returncode == 5:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_every_mutation_entry_runs_its_tests.py"
+  ]
+ },
+ {
+  "name": "the gate cannot recognise a mutation-marked test file",
+  "file": "tools/mutation_check.py",
+  "old": "_MUTATION_MARK = re.compile(r\"^pytestmark\\s*=.*\\bmark\\.mutation\\b|^\\s*@pytest\\.mark\\.mutation\\b\", re.M)",
+  "new": "_MUTATION_MARK = re.compile(r\"(?!x)x\", re.M)",
+  "tests": [
+   "tests/test_every_mutation_entry_runs_its_tests.py"
+  ]
  }
 ]

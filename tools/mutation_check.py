@@ -36,11 +36,35 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+_MUTATION_MARK = re.compile(r"^pytestmark\s*=.*\bmark\.mutation\b|^\s*@pytest\.mark\.mutation\b", re.M)
+
+
+def _marked_mutation(tests: list[str]) -> bool:
+    """Does any listed test file carry the `mutation` marker, which pytest.ini deselects by default?"""
+    for t in tests:
+        path = os.path.join(ROOT, t.split("::", 1)[0])
+        try:
+            if _MUTATION_MARK.search(io.open(path, encoding="utf-8", errors="replace").read()):
+                return True
+        except OSError:
+            pass
+    return False
+
+
 def _pytest(tests: list[str], env: dict) -> subprocess.CompletedProcess:
     # No `-x`: a mutant may break several tests, and stopping early hides which. `-rfE` reports BOTH
     # failures and errors -- an error is a kill, not a crash to be discounted.
+    #
+    # THE LISTED TESTS MUST ACTUALLY RUN (A-24, 2026-09-27). pytest.ini's addopts carries
+    # `-m "not mutation"`, so an entry whose tests are marked `mutation` (the harness's own tests,
+    # which edit source in place) collected nothing: pytest exited 5 and this gate read it as "not
+    # green before mutating". Nine entries could never be evaluated on any machine, so no full run
+    # could ever exit 0. For such an entry the marker filter is lifted for its own tests, and they run
+    # serially, as their CI step runs them, because they edit files the other workers would import.
+    extra = ["-n", "0", "-m", ""] if _marked_mutation(tests) else []
     return subprocess.run(
-        [sys.executable, "-m", "pytest", *tests, "-q", "--no-header", "--tb=no", "-rfE", "-p", "no:randomly"],
+        [sys.executable, "-m", "pytest", *tests, "-q", "--no-header", "--tb=no", "-rfE", "-p", "no:randomly",
+         *extra],
         cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
 
 
@@ -173,6 +197,13 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
 
         # Pre-flight: tests that are already red would make every mutant look killed.
         pre = _pytest(tests, env)
+        if pre.returncode == 5:
+            # Exit 5 is "no tests collected". That is a broken entry, not a red test, and reading it
+            # as "not green" is how nine entries hid for as long as they did.
+            skipped.append(f"{name}: its listed tests collect nothing, so the mutant cannot be judged")
+            if verbose:
+                print(f"  {name[:58]:58s} -> SKIPPED (listed tests collect nothing)")
+            continue
         if pre.returncode != 0:
             skipped.append(f"{name}: tests are not green before mutating")
             if verbose:
