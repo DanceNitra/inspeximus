@@ -125,10 +125,15 @@ def test_certificates_issued_apart_are_ordered_by_time_either_way_round(tmp_path
 
 # ── the same-tick class: as_of and believed_at ───────────────────────────────────────────────────────
 
+@pytest.mark.parametrize("fmt", ["rows", "json"])
 @pytest.mark.parametrize("step", [0.0, 1.0], ids=["same_tick", "apart"])
-def test_the_value_as_of_now_is_the_last_one_written_even_in_one_tick(tmp_path, monkeypatch, step):
+def test_the_value_as_of_now_is_the_last_one_written_even_in_one_tick(tmp_path, monkeypatch, step, fmt):
     """Found by the class sweep: `max` over (valid_from, ts) returns the first of a tie, so three writes in
-    one tick answered as_of(key, now) with the oldest value. `apart` is the control that passes on v3.15.2."""
+    one tick answered as_of(key, now) with the oldest value. `apart` is the control that passes on v3.15.2.
+    Both store formats, because the tiebreak is write order and each format keeps it its own way. This is
+    also A-40's product question: records that share a recording time get a defined answer."""
+    if fmt == "json":
+        monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
     clock = {"t": T}
     monkeypatch.setattr(time, "time", lambda: clock["t"])
     m = Inspeximus(str(tmp_path / "mem.json"))

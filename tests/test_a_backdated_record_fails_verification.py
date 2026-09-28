@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 
 import pytest
 
@@ -27,6 +28,14 @@ def _rows(data):
 
 def _two_writes(tmp_path, monkeypatch):
     monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    # A STEPPED CLOCK (A-40). Two remembers in one tick shared a recording time, so the control
+    # `t_new > t_old` failed in 3 of 8 runs on PC2. Every call now reads a later time.
+    clock = {"t": 1_790_000_000.0}
+
+    def tick():
+        clock["t"] += 1.0
+        return clock["t"]
+    monkeypatch.setattr(time, "time", tick)
     path = tmp_path / "mem.json"
     key = os.urandom(32).hex()
     m = Inspeximus(str(path), receipts=True, receipt_key=key)
