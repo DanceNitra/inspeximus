@@ -2115,7 +2115,13 @@ class ActionLedger:
         key, and a signed ledger refuses to rotate without it. The archive file is not signed as a whole:
         its entries are, and the checkpoint carries its SHA-256. Whoever holds the key can rewrite the
         archive, the checkpoint and the live tail consistently, and a live tail cut after the checkpoint
-        reads as complete; both are the witness's job, not this file's."""
+        reads as complete; both are the witness's job, not this file's.
+
+        THE CUTOFF (A-39). `before_ts` archives the entries strictly before it. `keep_days` archives the
+        entries older than that many days, strictly, and `keep_days=0` keeps nothing: every entry up to
+        this call is archived, including the ones written in the call's own clock tick. It used to be
+        `ts < now` there too, so the last tick stayed live and the archived count depended on the clock
+        (PC2: 2 instead of 3, in 4 of 4 runs)."""
         now = time.time() if now is None else now
         if before_ts is None and keep_days is None:
             raise ValueError("archive needs keep_days or before_ts")
@@ -2130,7 +2136,9 @@ class ActionLedger:
                 raise ValueError(f"seq {e.get('seq')} carries no numeric ts; refusing to rotate a ledger whose "
                                  f"entries cannot be placed in time")
         n = 0
-        while n < len(self._entries) and self._entries[n]["ts"] < cutoff:
+        keep_nothing = before_ts is None and float(keep_days) == 0.0
+        while n < len(self._entries) and (self._entries[n]["ts"] <= cutoff if keep_nothing
+                                          else self._entries[n]["ts"] < cutoff):
             n += 1
         base = self.base_seq
         # an open incident stays live

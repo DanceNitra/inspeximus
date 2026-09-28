@@ -121,3 +121,52 @@ def test_certificates_issued_apart_are_ordered_by_time_either_way_round(tmp_path
     a, b = certificate_drift(after, before), certificate_drift(before, after)
     assert a == b and a["comparable"] is True
     assert a["clean_to_dirty"] is True and a["added"] == ["leak.log"]
+
+
+# ── the same-tick class: as_of and believed_at ───────────────────────────────────────────────────────
+
+@pytest.mark.parametrize("step", [0.0, 1.0], ids=["same_tick", "apart"])
+def test_the_value_as_of_now_is_the_last_one_written_even_in_one_tick(tmp_path, monkeypatch, step):
+    """Found by the class sweep: `max` over (valid_from, ts) returns the first of a tie, so three writes in
+    one tick answered as_of(key, now) with the oldest value. `apart` is the control that passes on v3.15.2."""
+    clock = {"t": T}
+    monkeypatch.setattr(time, "time", lambda: clock["t"])
+    m = Inspeximus(str(tmp_path / "mem.json"))
+    for v in ("one", "two", "three"):
+        m.remember(f"the colour is {v}", key="colour", object=v)
+        clock["t"] += step
+    now = clock["t"]
+    assert [r["object"] for r in m.items if r.get("key") == "colour" and r.get("status") == "active"] == ["three"]
+    assert m.as_of("colour", now)["object"] == "three"
+    assert m.as_of("colour", now, as_recorded=now)["object"] == "three"
+    assert m.believed_at("colour", now)["object"] == "three"
+    assert Inspeximus(str(tmp_path / "mem.json")).as_of("colour", now)["object"] == "three", "after a reload"
+
+
+# ── A-39: ledger rotation with keep_days=0 ───────────────────────────────────────────────────────────
+
+def _ledger_with_three(tmp_path, t):
+    m = Inspeximus(str(tmp_path / "mem.json"), receipts=True, receipt_key=os.urandom(32).hex())
+    led = ActionLedger(m, actor="agent")
+    for i in range(3):
+        led.oversight("approve", actor="dpo", reason=f"entry {i}")
+    assert {e["ts"] for e in led.entries()} == {t}, "control: all three written in one tick"
+    return led
+
+
+def test_keep_days_zero_archives_everything_up_to_now(tmp_path, monkeypatch):
+    monkeypatch.setattr(time, "time", lambda: T)
+    led = _ledger_with_three(tmp_path, T)
+    out = led.archive(keep_days=0, now=T)
+    assert out["archived"] == 3, out
+
+
+@pytest.mark.parametrize("how", ["keep_days", "before_ts"])
+def test_a_positive_window_and_an_explicit_cutoff_stay_strict(tmp_path, monkeypatch, how):
+    """The control: only keep_days=0 changed. An entry exactly keep_days old, or exactly at before_ts, is
+    not before the cutoff and stays live."""
+    monkeypatch.setattr(time, "time", lambda: T)
+    led = _ledger_with_three(tmp_path, T)
+    kw = {"keep_days": 1} if how == "keep_days" else {"before_ts": T}
+    out = led.archive(now=T + 86400 if how == "keep_days" else T, **kw)
+    assert out["archived"] == 0, out
