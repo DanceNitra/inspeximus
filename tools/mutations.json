@@ -7404,5 +7404,23 @@
   "tests": [
    "tests/test_audit_b_archive_kill_points.py"
   ]
+ },
+ {
+  "name": "B-16: the pair loop drops the later sets' prefix probe (misses pairs whose smaller set is later)",
+  "file": "inspeximus/core.py",
+  "old": "post = pref.get(w)",
+  "new": "post = ()",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
+ },
+ {
+  "name": "B-16: the pair-loop prefix is one token too short",
+  "file": "inspeximus/core.py",
+  "old": "p = order[:len(order) - _overlap_need(len(order), t) + 1] if order else []",
+  "new": "p = order[:len(order) - _overlap_need(len(order), t)] if order else []",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
  }
 ]

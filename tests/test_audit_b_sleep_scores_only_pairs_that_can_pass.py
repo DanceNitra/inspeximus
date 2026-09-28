@@ -289,8 +289,6 @@ def _pair_calls(src, tmp_path, monkeypatch, reference):
     return calls
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-16: the pair loop scores every later member (11,328 of 11,328 here)")
 def test_the_pair_loop_scores_only_pairs_that_can_pass(stores, tmp_path, monkeypatch):
     ref = _pair_calls(stores["topics"], tmp_path, monkeypatch, reference=True)
     new = _pair_calls(stores["topics"], tmp_path, monkeypatch, reference=False)

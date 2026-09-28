@@ -17581,12 +17581,18 @@ class Inspeximus:
                 continue                              # sparse — leave the raw episodes alone
             fired += 1
             members.sort(key=lambda r: -r["value"])
+            # Only the later members that can reach dup_threshold, in the same order (AUDIT-B B-16). A
+            # member left out scores below the threshold, and for such a pair the loop body below does
+            # nothing: the checks have no side effect and the `if` fails. Token sets do not change during
+            # the loop. Cosine has no token bound, so an embedder keeps every later member.
+            cands = (_dup_candidates([self._rec_tokens(m) for m in members], dup_threshold)
+                     if not self.embed and 0 < dup_threshold <= 1 else None)
             for i, a in enumerate(members):
                 if a["status"] != "active":
                     continue
                 avec = self._qvec(a["text"])
                 atok = self._rec_tokens(a)
-                for b in members[i + 1:]:
+                for b in (members[i + 1:] if cands is None else [members[j] for j in cands[i]]):
                     if b["status"] != "active" or b["id"] in a["links"]:
                         continue
                     if self._similarity(a["text"], b, avec, atok) >= dup_threshold:
@@ -18974,6 +18980,63 @@ def _infer_type(text: str) -> str:
     if _SEMANTIC_RE.search(t):
         return "semantic"
     return "episodic"
+
+
+def _overlap_need(s: int, t: float) -> int:
+    """The smallest shared-token count n with `n / s >= t`, for s > 0 and 0 < t <= 1.
+
+    Found by evaluating `n / s < t` itself, the float expression the overlap coefficient compares, so
+    41 of 50 at 0.82 is decided exactly as `_similarity` decides it."""
+    n = max(0, int(t * s) - 1)
+    while n / s < t:
+        n += 1
+    return n
+
+
+def _dup_candidates(toks: list, t: float) -> list:
+    """For each i, the ascending indices j > i whose token set can reach overlap coefficient `t` with
+    `toks[i]`. For 0 < t <= 1; the caller keeps every later member otherwise.
+
+    WHY THIS IS EXACT (AUDIT-B B-16). A pair passes only if its smaller set x shares at least
+    `need = _overlap_need(|x|, t)` tokens with the other. Any `|x| - need + 1` tokens of x then include
+    one of those shared tokens, because the rest of x has only `need - 1` tokens. So with each set's
+    PREFIX taken as that many of its tokens, a passing pair has the smaller set's prefix inside the other
+    set: i's prefix is probed against every token of the later sets (`full`), and every token of i is
+    probed against the later sets' prefixes (`pref`). Rarest tokens first makes the prefixes select
+    few members; any fixed order would be exact.
+
+    WHY IT EXISTS. `consolidate_clusters` scored every later member of a ripe cluster. On a copy of a
+    67k hook store that was 13,792,476 `_similarity` calls in one sleep(), of which 342,181 passed;
+    with these candidates it was 986,588, and the result was identical."""
+    from bisect import bisect_right
+    df: dict = {}
+    for ts in toks:
+        for w in ts:
+            df[w] = df.get(w, 0) + 1
+    rank = {w: (n, w) for w, n in df.items()}
+    full: dict = {}                          # token -> ascending member indices holding it
+    pref: dict = {}                          # token -> ascending member indices whose prefix holds it
+    prefixes = []
+    for j, ts in enumerate(toks):
+        order = sorted(ts, key=rank.__getitem__)
+        p = order[:len(order) - _overlap_need(len(order), t) + 1] if order else []
+        prefixes.append(p)
+        for w in ts:
+            full.setdefault(w, []).append(j)
+        for w in p:
+            pref.setdefault(w, []).append(j)
+    out = []
+    for i, ts in enumerate(toks):
+        got: set = set()
+        for w in prefixes[i]:
+            post = full[w]
+            got.update(post[bisect_right(post, i):])
+        for w in ts:
+            post = pref.get(w)
+            if post:
+                got.update(post[bisect_right(post, i):])
+        out.append(sorted(got))
+    return out
 
 
 def _negation_clash(a: str, b: str) -> bool:

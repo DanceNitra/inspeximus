@@ -695,6 +695,66 @@ def w_boundary(n):
     return run
 
 
+def _sleep_word(prefix, *ns):
+    # Letters only: a digit inside a word is a number to `_value_clash`, and every near-duplicate pair
+    # would become a numeric update.
+    return prefix + "".join(chr(97 + n // 26) + chr(97 + n % 26) for n in ns)
+
+
+def w_sleep(n):
+    """`sleep()` over n records in topics of 50: each topic is one ripe cluster, a skewed shared word makes
+    some members near-duplicates (7 of 8 tokens), and each topic carries a numeric update and a negation.
+
+    `sleep_similarity_calls_pairs` counts the pairs the dedup loop scored. 3.15.1 scored every later
+    member of a ripe cluster; the prefix filter scores only members that share one of the rarest
+    tokens, which every pair able to reach `dup_threshold` does (AUDIT-B B-16).
+    `sleep_similarity_calls_cluster` must not move with that change: it is the witness that clustering
+    still scores the same candidates."""
+    p = _store_path()
+    m = Inspeximus(p)
+    topics, per = max(1, n // 50), 46
+    i = 0
+    for t in range(topics):
+        base = " ".join(_sleep_word("tpc", t, j) for j in range(6))
+        texts = [f"{base} {_sleep_word('skw', t, int((((k * 0.6180339887) % 1.0) ** 2) * 9))} "
+                 f"{_sleep_word('own', t, k)}" for k in range(per)]
+        texts += [f"{base} retry limit is 5", f"{base} retry limit is 9",
+                  f"{base} nightly cache enabled", f"{base} nightly cache not enabled"]
+        for text in texts:
+            m.remember(text, value=round(1.0 - i / (4 * n), 6))
+            i += 1
+    m.flush()
+
+    def run():
+        calls = {"cluster": 0, "pairs": 0}
+        phase = ["pairs"]
+        real_sim, real_cluster = core.Inspeximus._similarity, core.Inspeximus._cluster_active
+
+        def sim(self, *a, **k):
+            calls[phase[0]] += 1
+            return real_sim(self, *a, **k)
+
+        def cluster(self, *a, **k):
+            phase[0] = "cluster"
+            try:
+                return real_cluster(self, *a, **k)
+            finally:
+                phase[0] = "pairs"
+
+        h = Inspeximus(p)
+        core.Inspeximus._similarity, core.Inspeximus._cluster_active = sim, cluster
+        try:
+            with Counters() as c:
+                t0 = time.perf_counter()
+                h.sleep()
+                run.elapsed = time.perf_counter() - t0
+        finally:
+            core.Inspeximus._similarity, core.Inspeximus._cluster_active = real_sim, real_cluster
+        run.inner = {**c.as_dict(), "sleep_similarity_calls_cluster": calls["cluster"],
+                     "sleep_similarity_calls_pairs": calls["pairs"]}
+    return run
+
+
 #: The governance modules the package imported eagerly until 3.15.1. The hook calls none of them, and
 #: loading them was about 60 ms of every hook event (AUDIT-B B-19).
 GOVERNANCE_MODULES = ("actions", "agent_audit_trail", "cose", "deployer", "erasure_residue", "partitions",
@@ -806,6 +866,7 @@ WORKLOADS = {
     "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store", "rows"),
     "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records", "none"),
     "prompt_archived_n2000": (lambda: w_prompt_archived(2000), "fresh handle recalls once after --archive moved 80 % of 2,000 captures", "rows"),
+    "sleep_n2000":        (lambda: w_sleep(2000),        "sleep() over 2,000 records in 40 ripe topic clusters", "rows"),
 }
 
 
