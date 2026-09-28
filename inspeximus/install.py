@@ -252,22 +252,39 @@ def _claude_settings_path(mcp_config_path):
     return pathlib.Path(mcp_config_path).parent / ".claude" / "settings.json"
 
 
-#: A hook line this installer wrote (3.9.7 and later, `hook_command`): an ABSOLUTE interpreter running the
-#: hook module, or an ABSOLUTE uvx running it from a pinned (or, before the pin, unpinned) inspeximus. A
-#: line in any other form -- `python -m ...` on the PATH, a wrapper, extra arguments -- was written by a
-#: person, and is theirs.
+#: A hook line in a form this installer writes (3.9.7 and later, `hook_command`): an ABSOLUTE interpreter
+#: running the hook module, or an ABSOLUTE uvx running it from a pinned (or, before the pin, unpinned)
+#: inspeximus. A line in any other form -- `python -m ...` on the PATH, a wrapper, extra arguments -- was
+#: written by a person, and is theirs.
 _OWN_HOOK_LINE = re.compile(
     r'^(?P<exe>"(?:[A-Za-z]:[\\/]|/)[^"]+"|(?:[A-Za-z]:[\\/]|/)\S+)\s+'
     r'(?:(?P<uvx>--from\s+inspeximus(?:==[0-9][0-9A-Za-z.+-]*)?\s+python\s+))?-m\s+inspeximus\.claude_code$')
 
 
-def is_installer_hook_line(command):
-    """True when `command` is a hook line in a form this installer writes (see `_OWN_HOOK_LINE`)."""
+def _hook_exe(command):
     m = _OWN_HOOK_LINE.match(str(command or "").strip())
+    return (m, m.group("exe").strip('"').replace("\\", "/")) if m else (None, "")
+
+
+def is_installer_hook_line(command, current=None):
+    """True when `command` is a hook line this installer wrote (see `_OWN_HOOK_LINE`).
+
+    The uvx form is the installer's by its shape. A person can write the interpreter form too
+    (`/opt/py/bin/python -m inspeximus.claude_code`, kept since 3.9.6), so it counts as the installer's only
+    when the interpreter lives in a folder named `inspeximus` or `.inspeximus` (the install page's venv, a
+    pipx or uv tool environment), or is the interpreter of `current`, the line this run writes."""
+    m, path = _hook_exe(command)
     if not m:
         return False
-    exe = os.path.basename(m.group("exe").strip('"').replace("\\", "/")).lower()
-    return (exe in ("uvx", "uvx.exe")) == bool(m.group("uvx"))
+    exe = os.path.basename(path).lower()
+    if m.group("uvx"):
+        return exe in ("uvx", "uvx.exe")
+    if exe in ("uvx", "uvx.exe"):
+        return False
+    if {part.lower() for part in path.split("/")[:-1]} & {"inspeximus", ".inspeximus"}:
+        return True
+    cm, cpath = _hook_exe(current)
+    return bool(cm) and not cm.group("uvx") and os.path.normcase(cpath) == os.path.normcase(path)
 
 
 def plan_claude_hooks(settings_path, command):
@@ -311,7 +328,7 @@ def plan_claude_hooks(settings_path, command):
         if any(m in json.dumps(present) for m in cc._HOOK_MARKERS):
             ours = [(g, h) for g in present if isinstance(g, dict) for h in g.get("hooks") or []
                     if isinstance(h, dict) and any(m in str(h.get("command", "")) for m in cc._HOOK_MARKERS)]
-            mine = [(g, h) for g, h in ours if is_installer_hook_line(h.get("command"))]
+            mine = [(g, h) for g, h in ours if is_installer_hook_line(h.get("command"), command)]
             kept += [f"{evt}: {h.get('command')}" for g, h in ours if (g, h) not in mine]
             changed = False
             for g, h in mine:

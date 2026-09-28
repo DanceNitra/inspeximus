@@ -91,6 +91,14 @@ def store_location_problem(path):
         return None
     if os.path.basename(parent) == ".inspeximus" and os.path.isdir(os.path.dirname(parent)):
         return None
+    blocker = parent
+    while not os.path.exists(blocker) and os.path.dirname(blocker) != blocker:
+        blocker = os.path.dirname(blocker)
+    if os.path.exists(blocker) and not os.path.isdir(blocker):
+        # A FILE WHERE A FOLDER SHOULD BE. Before 3.15.3 a write here failed with NOT PERSISTED and a read
+        # served an empty store; now both are refused, and the message keeps the marker scripts look for.
+        return (f"NOT PERSISTED: store path {path}: {blocker} is a file, not a directory, so no store can be "
+                f"read or written there. Correct the path.")
     top = parent
     while not os.path.isdir(os.path.dirname(top)) and os.path.dirname(top) != top:
         top = os.path.dirname(top)

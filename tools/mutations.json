@@ -4877,8 +4877,8 @@
  {
   "name": "an installer-written hook line counts as hand-written",
   "file": "inspeximus/install.py",
-  "old": "    return (exe in (\"uvx\", \"uvx.exe\")) == bool(m.group(\"uvx\"))\n",
-  "new": "    return False\n",
+  "old": "        return exe in (\"uvx\", \"uvx.exe\")\n",
+  "new": "        return False\n",
   "tests": [
    "tests/test_install_upgrade_path.py"
   ]
@@ -5090,6 +5090,71 @@
   "new": "inspeximus install --all",
   "tests": [
    "tests/test_install_page_survives_hermes_git_bash.py"
+  ]
+ },
+ {
+  "name": "a venv interpreter hook line counts as hand-written",
+  "file": "inspeximus/install.py",
+  "old": "    if {part.lower() for part in path.split(\"/\")[:-1]} & {\"inspeximus\", \".inspeximus\"}:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a system interpreter hook line counts as the installer's",
+  "file": "inspeximus/install.py",
+  "old": "    if {part.lower() for part in path.split(\"/\")[:-1]} & {\"inspeximus\", \".inspeximus\"}:\n        return True\n",
+  "new": "    return True\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py",
+   "tests/test_a_decision_made_through_mcp_reaches_the_next_session.py"
+  ]
+ },
+ {
+  "name": "the install does not create the folder of the store it names",
+  "file": "inspeximus/install_all.py",
+  "old": "    if not dry_run and wired:\n        # THE INSTALL MAKES THE STORE'S FOLDER",
+  "new": "    if False:\n        # THE INSTALL MAKES THE STORE'S FOLDER",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "nothing wired still names an --only seal reason",
+  "file": "inspeximus/install_all.py",
+  "old": "    seal_reason = \"--only without a shared store\" if wired and not record_shared else None\n",
+  "new": "    seal_reason = \"--only without a shared store\" if not record_shared else None\n",
+  "tests": [
+   "tests/test_the_install_ends_with_the_armed_block.py::test_nothing_found_says_not_armed"
+  ]
+ },
+ {
+  "name": "a file where the store folder should be is not refused",
+  "file": "inspeximus/_surface.py",
+  "old": "    if os.path.exists(blocker) and not os.path.isdir(blocker):\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py",
+   "tests/test_audit_round_four.py"
+  ]
+ },
+ {
+  "name": "check-code refuses a store path without saying it gave no verdict",
+  "file": "inspeximus/cli.py",
+  "old": "        if a.cmd == \"check-code\":                   # a gate says in its own words that it gave no verdict\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_check_code_gate_fails_closed.py"
+  ]
+ },
+ {
+  "name": "the Hermes provider refuses the path the installer configured",
+  "file": "inspeximus/integrations/hermes_agent.py",
+  "old": "                self._store = open_store(path, resolve=False)\n",
+  "new": "                self._store = open_store(path)\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py::test_the_hermes_provider_opens_the_configured_store"
   ]
  }
 ]
