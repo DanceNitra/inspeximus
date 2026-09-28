@@ -52,7 +52,8 @@ def test_importing_the_hook_loads_no_governance_module():
 def test_dir_lists_exactly_what_3_14_3_listed():
     got = _fresh("import json, inspeximus; print(json.dumps({'dir': dir(inspeximus), 'all': inspeximus.__all__}))")
     want = sorted(set(got["all"]) | set(SUBMODULES_3_14_3) | set(DUNDERS_3_14_3))
-    assert len(got["all"]) == 51, f"control: __all__ has {len(got['all'])} names, 3.14.3 had 51"
+    # 3.14.3 had 51 names; 3.15.4 adds one, ProofNotWritten (A-34), and nothing else.
+    assert len(got["all"]) == 52 and "ProofNotWritten" in got["all"],         f"control: __all__ has {len(got['all'])} names, 3.14.3 had 51 and 3.15.4 adds ProofNotWritten"
     assert sorted(got["dir"]) == want, (sorted(set(want) - set(got["dir"])), sorted(set(got["dir"]) - set(want)))
 
 
