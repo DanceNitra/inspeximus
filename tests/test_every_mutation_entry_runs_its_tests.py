@@ -5,10 +5,15 @@ pre-flight collected nothing, pytest exited 5, and the gate reported "tests are 
 they were skipped on every machine, and no full run could exit 0 (RELEASING.md requires 0 skipped). The gate
 now lifts the marker filter for such an entry, and this file proves, for the committed spec, that each
 entry's listed tests collect under exactly the selection the gate uses.
+
+A file that skips at import because an optional dependency is missing (`pytest.importorskip("mcp")`)
+collects nothing on a machine without that extra, and nothing else can be said about it there. Such an
+entry is named "not collectable here", not "broken"; a job with the extras installed checks it.
 """
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -17,13 +22,35 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import mutation_check  # noqa: E402
 
 
-def _collected(files, lift):
-    args = [sys.executable, "-m", "pytest", *files, "--collect-only", "-q", "-p", "no:randomly", "-n", "0"]
+_IMPORT_SKIP = re.compile(r"SKIPPED \[\d+\] (.+?):\d+: could not import ")
+
+
+def _collected(files, lift, cwd=ROOT):
+    """The ids the gate's selection collects from `files`, and the files that skipped at import for a
+    missing module."""
+    args = [sys.executable, "-m", "pytest", *files, "--collect-only", "-q", "-rs", "-p", "no:randomly",
+            "-n", "0"]
     if lift:
         args += ["-m", ""]
-    r = subprocess.run(args, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+    r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        timeout=900)
-    return {ln.strip().replace("\\", "/") for ln in r.stdout.splitlines() if "::" in ln}
+    lines = [ln.strip().replace("\\", "/") for ln in r.stdout.splitlines()]
+    ids = {ln for ln in lines if "::" in ln and not ln.startswith("SKIPPED")}
+    skipped = {m.group(1) for m in map(_IMPORT_SKIP.match, lines) if m}
+    return ids, skipped
+
+
+def _classify(lists, marked, default, lifted):
+    """(broken, not_here): entries whose listed tests collect nothing. An entry is not collectable here
+    only when EVERY file it lists skipped at import; any other empty entry is broken."""
+    broken, not_here = [], []
+    for t in sorted(lists):
+        ids, skipped = lifted if t in marked else default
+        if any(_selects(x, ids) for x in t):
+            continue
+        files = {x.split("::", 1)[0].replace("\\", "/") for x in t}
+        (not_here if files <= skipped else broken).append(t)
+    return broken, not_here
 
 
 def _selects(item, ids):
@@ -39,19 +66,38 @@ def test_every_entrys_listed_tests_collect_under_the_gates_selection():
     if not marked:
         raise AssertionError("control: no entry lists a mutation-marked test, so the marker case is not exercised")
     files = sorted({x.split("::", 1)[0] for t in lists for x in t})
-    default_ids = _collected(files, lift=False)
-    lifted_ids = _collected(sorted({x.split("::", 1)[0] for t in marked for x in t}), lift=True)
-    empty = [t for t in sorted(lists)
-             if not any(_selects(x, lifted_ids if t in marked else default_ids) for x in t)]
-    assert not empty, f"{len(empty)} entries' listed tests collect nothing under the gate: {empty[:5]}"
+    default = _collected(files, lift=False)
+    lifted = _collected(sorted({x.split("::", 1)[0] for t in marked for x in t}), lift=True)
+    broken, not_here = _classify(lists, marked, default, lifted)
+    if len(not_here) > len(lists) // 2:
+        raise AssertionError(f"control: {len(not_here)} of {len(lists)} entries cannot be collected on this "
+                             f"machine, so this run checked too little to pass: {not_here[:5]}")
+    assert not broken, f"{len(broken)} entries' listed tests collect nothing under the gate: {broken[:5]}"
+
+
+def test_a_missing_extra_is_told_apart_from_an_empty_entry(tmp_path):
+    """CONTROL: an entry whose file skips at import is not collectable here; an entry whose file defines
+    no test, alone or beside such a file, is still broken."""
+    (tmp_path / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
+    (tmp_path / "test_extra.py").write_text(
+        'import pytest\npytest.importorskip("no_such_module_a24")\ndef test_a(): pass\n', encoding="utf-8")
+    (tmp_path / "test_empty.py").write_text("# a test file that defines no test\n", encoding="utf-8")
+    (tmp_path / "test_fine.py").write_text("def test_b(): pass\n", encoding="utf-8")
+    lists = {("test_extra.py",), ("test_empty.py",), ("test_fine.py::test_b",),
+             ("test_extra.py", "test_empty.py")}
+    got = _collected(sorted({x.split("::", 1)[0] for t in lists for x in t}), lift=False, cwd=str(tmp_path))
+    assert got[1] == {"test_extra.py"}, got
+    broken, not_here = _classify(lists, set(), got, got)
+    assert not_here == [("test_extra.py",)], not_here
+    assert broken == [("test_empty.py",), ("test_extra.py", "test_empty.py")], broken
 
 
 def test_without_the_marker_lift_the_harness_tests_collect_nothing():
     """CONTROL: the defect this file guards is real in the repo's own config."""
     tests = ["tests/test_mutation_restore_is_byte_exact.py"]
     assert mutation_check._marked_mutation(tests)
-    assert not _collected(tests, lift=False)
-    assert _collected(tests, lift=True)
+    assert not _collected(tests, lift=False)[0]
+    assert _collected(tests, lift=True)[0]
 
 
 def test_exit_5_is_named_as_an_empty_selection_not_as_red(tmp_path):

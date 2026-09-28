@@ -50,17 +50,23 @@ _HOLDER = textwrap.dedent("""
     if {legacy!r}:      # what an older version takes: the TEMP lock alone
         lock = _StoreLock({store!r}, _legacy=True)
         lock._acquire(*lock._locker)
+        release = lock._release
     else:               # what this version's writers take
-        _StoreLock({store!r}).__enter__()
+        lock = _StoreLock({store!r})
+        lock.__enter__()
+        release = lambda: lock.__exit__(None, None, None)
     open({ready!r}, "w").close()
+    time.sleep({hold!r})
+    release()
     time.sleep(30)
 """)
 
 
-def _hold(tmp_path, store, temp, legacy=False):
-    """Start a process that holds the lock; return it once it holds."""
+def _hold(tmp_path, store, temp, legacy=False, hold=30.0):
+    """Start a process that holds the lock for `hold` seconds, then releases it and stays alive; return
+    it once it holds."""
     ready = str(tmp_path / f"ready-{len(os.listdir(tmp_path))}")
-    code = _HOLDER.format(root=ROOT, temp=temp, store=store, ready=ready, legacy=legacy)
+    code = _HOLDER.format(root=ROOT, temp=temp, store=store, ready=ready, legacy=legacy, hold=hold)
     proc = subprocess.Popen([sys.executable, "-c", code])
     t0 = time.time()
     while not os.path.exists(ready):
@@ -71,15 +77,25 @@ def _hold(tmp_path, store, temp, legacy=False):
     return proc
 
 
-def _blocked(store, monkeypatch, wait=1.5):
-    """Does a writer in THIS process wait on the lock and degrade, rather than take it at once?"""
-    import inspeximus.core as core
-    monkeypatch.setattr(core, "LOCK_WAIT_S", wait)
-    before = sum(_StoreLock.DEGRADED.values())
-    t0 = time.time()
-    with _StoreLock(store):
-        took = time.time() - t0
-    return sum(_StoreLock.DEGRADED.values()) > before and took >= wait * 0.9
+def _free(store):
+    """Can a writer in THIS process take the lock right now?
+
+    A try-only acquire never waits and never degrades, on either platform, so the answer is the lock's
+    state and not a timing. An earlier version of this helper measured exclusion by the wait-and-degrade
+    path, which exists only on Windows: POSIX `flock` waits for the holder and never degrades, so on
+    Linux a correct lock read as "not excluded" (3.15.2 CI, 2026-09-28)."""
+    lock = _StoreLock(store, try_only=True)
+    lock.__enter__()
+    try:
+        return lock.held
+    finally:
+        lock.__exit__(None, None, None)
+
+
+def _excluded(tmp_path, store):
+    if not _free(str(tmp_path / "unrelated" / "memory.json")):
+        pytest.fail("control: a writer cannot take a lock nobody holds, so a busy answer means nothing")
+    return not _free(store)
 
 
 def test_a_writer_with_another_temp_dir_is_excluded(tmp_path, monkeypatch):
@@ -91,8 +107,7 @@ def test_a_writer_with_another_temp_dir_is_excluded(tmp_path, monkeypatch):
     (tmp_path / "our-temp").mkdir()
     proc = _hold(tmp_path, store, str(other_temp))
     try:
-        assert _blocked(store, monkeypatch), \
-            "a writer whose TEMP differs took the lock while another process held it"
+        assert _excluded(tmp_path, store),             "a writer whose TEMP differs took the lock while another process held it"
     finally:
         proc.kill()
         proc.wait()
@@ -107,11 +122,47 @@ def test_an_older_writer_on_the_same_temp_is_still_excluded(tmp_path, monkeypatc
     monkeypatch.setattr(tempfile, "tempdir", str(temp))
     proc = _hold(tmp_path, store, str(temp), legacy=True)
     try:
-        assert _blocked(store, monkeypatch), \
-            "a new writer ignored the TEMP lock an older version holds"
+        assert _excluded(tmp_path, store),             "a new writer ignored the TEMP lock an older version holds"
     finally:
         proc.kill()
         proc.wait()
+
+
+def _blocking_write(store):
+    """Seconds a blocking writer in THIS process takes to hold the lock, and whether it held it."""
+    t0 = time.time()
+    with _StoreLock(store) as lock:
+        return time.time() - t0, lock.held
+
+
+@pytest.mark.parametrize("legacy", [False, True], ids=["another-temp", "older-writer"])
+def test_a_blocking_writer_waits_for_the_holder_and_proceeds_after_release(tmp_path, monkeypatch, legacy):
+    """What both platforms share: a blocking writer neither degrades nor takes the lock while another
+    process holds it, and takes it once the holder releases. Windows retries `msvcrt.locking` until
+    `LOCK_WAIT_S`, POSIX `flock` blocks; the wait here is set far beyond the hold, so either reaching
+    the deadline would be a failure, not a pass."""
+    import inspeximus.core as core
+    monkeypatch.setattr(core, "LOCK_WAIT_S", 60)
+    hold = 2.0
+    store = str(tmp_path / "shared" / "memory.json")
+    os.makedirs(os.path.dirname(store))
+    (tmp_path / "our-temp").mkdir()
+    (tmp_path / "their-temp").mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path / "our-temp"))
+    took, held = _blocking_write(str(tmp_path / "unrelated" / "memory.json"))
+    if took >= hold / 2 or not held:
+        pytest.fail(f"control: a free lock took {took:.2f} s (held={held}), so a wait means nothing")
+    before = sum(_StoreLock.DEGRADED.values())
+    proc = _hold(tmp_path, store, str(tmp_path / ("our-temp" if legacy else "their-temp")), legacy, hold)
+    try:
+        took, held = _blocking_write(store)
+    finally:
+        proc.kill()
+        proc.wait()
+    assert sum(_StoreLock.DEGRADED.values()) == before, "the writer degraded instead of waiting"
+    assert held, "the writer returned without the lock"
+    assert took >= hold / 2, f"the writer took the lock after {took:.2f} s while the holder held it for {hold} s"
+    assert took < 30, f"the writer waited {took:.2f} s, long after the holder released at {hold} s"
 
 
 def test_the_lock_file_does_not_outlive_the_write(tmp_path):
