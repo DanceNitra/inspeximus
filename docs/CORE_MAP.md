@@ -6,13 +6,13 @@ matching the code rather than quietly becoming fiction.
 
 ## Why one big file, and why the size is not the problem
 
-`inspeximus/core.py` is **1,307,606 bytes** across **19,020 lines**. Of that:
+`inspeximus/core.py` is **1,307,947 bytes** across **19,024 lines**. Of that:
 
 | | bytes | share |
 |---|---:|---:|
-| comments | 411,058 | 31% |
+| comments | 411,367 | 31% |
 | docstrings | 323,841 | 25% |
-| executable code | 572,707 | 44% |
+| executable code | 572,739 | 44% |
 
 **56% of the file is explanatory prose.** Nearly every guarantee
 carries the reason it exists and, usually, the failure that produced it. That is the audit
