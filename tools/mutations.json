@@ -6152,5 +6152,50 @@
   "tests": [
    "tests/test_perf_gate_can_fail.py"
   ]
+ },
+ {
+  "name": "mandate: every action is computed as within its mandate",
+  "file": "inspeximus/actions.py",
+  "old": "        return {\"mandate_seq\": m_entry[\"seq\"], \"within\": not reasons, \"reasons\": reasons}\n",
+  "new": "        return {\"mandate_seq\": m_entry[\"seq\"], \"within\": True, \"reasons\": reasons}\n",
+  "tests": [
+   "tests/test_mandate_check_flags_actions_outside_the_declared_scope.py"
+  ]
+ },
+ {
+  "name": "mandate: the mandate check is left out of the signed entry hash",
+  "file": "inspeximus/actions.py",
+  "old": "    core = {k: v for k, v in entry.items() if k not in _SIGNED_FIELDS_EXCLUDED}\n",
+  "new": "    core = {k: v for k, v in entry.items() if k not in _SIGNED_FIELDS_EXCLUDED and k != \"mandate_check\"}\n",
+  "tests": [
+   "tests/test_mandate_check_flags_actions_outside_the_declared_scope.py"
+  ]
+ },
+ {
+  "name": "mandate: on_mandate_breach is never called",
+  "file": "inspeximus/actions.py",
+  "old": "        if check is not None and not check[\"within\"] and self.on_mandate_breach is not None:\n",
+  "new": "        if False and check is not None and not check[\"within\"] and self.on_mandate_breach is not None:\n",
+  "tests": [
+   "tests/test_mandate_check_flags_actions_outside_the_declared_scope.py"
+  ]
+ },
+ {
+  "name": "mandate: an action with no mandate is not counted as unchecked",
+  "file": "inspeximus/actions.py",
+  "old": "                unchecked += 1\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_mandate_check_flags_actions_outside_the_declared_scope.py"
+  ]
+ },
+ {
+  "name": "mandate: one actor's mandate judges every actor",
+  "file": "inspeximus/actions.py",
+  "old": "        return force.get(None)\n",
+  "new": "        return force.get(None) or next(iter(force.values()), None)\n",
+  "tests": [
+   "tests/test_mandate_check_flags_actions_outside_the_declared_scope.py"
+  ]
  }
 ]
