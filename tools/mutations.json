@@ -5147,5 +5147,14 @@
   "tests": [
    "tests/test_install_all_wires_every_agent_to_one_store.py::test_the_hermes_provider_opens_the_configured_store"
   ]
+ },
+ {
+  "name": "an identical re-run rewrites ARMED.txt with a new time",
+  "file": "inspeximus/install_all.py",
+  "old": "        if not (old.startswith(\"written \") and old.endswith(rest) and \"\\n\" not in old[:-len(rest)]):\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
  }
 ]

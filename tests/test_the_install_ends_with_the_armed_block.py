@@ -202,7 +202,7 @@ def test_the_line_names_only_the_shared_store(home, tmp_path):
 
 
 def test_codex_never_gets_the_field(home, tmp_path):
-    _run(A.run, rules="no", only="claude,codex")
+    _run(A.run, rules="no")
     out = _session_start(tmp_path / "proj", str(home / ".codex" / "sessions" / "s1.jsonl"))
     assert "systemMessage" not in out, out
 
