@@ -242,6 +242,37 @@ def test_sleep_returns_what_3_15_1_returned(stores, tmp_path, monkeypatch, store
     assert new[2] == ref[2], "a record's status, links or meta differs from 3.15.1"
 
 
+@pytest.mark.parametrize("numpy_on", _numpy_modes())
+@pytest.mark.parametrize("threshold", [0.0, -1.0, 0.5, 1.0])
+def test_clustering_matches_3_15_1_at_any_threshold(stores, tmp_path, monkeypatch, threshold, numpy_on):
+    """The same clusters AND the same number of `_similarity` calls as 3.15.1. At a threshold of 0 or
+    below every count passes the bound, and only the rule that a cluster must share a token keeps the
+    candidates the same; a centroid that shares none scores 0 and never wins, so only the call count
+    can tell."""
+    out, calls = [], []
+    real_sim = Inspeximus._similarity
+    for reference in (True, False):
+        p = str(tmp_path / f"t{int(reference)}.json")
+        shutil.copy(stores["boundary"], p)
+        n = [0]
+
+        def sim(self, *a, **k):
+            n[0] += 1
+            return real_sim(self, *a, **k)
+
+        with monkeypatch.context() as mp:
+            mp.setattr(core.time, "time", lambda: FROZEN_NOW)
+            if not numpy_on:
+                mp.setattr(core, "_numpy", lambda: None)
+            mp.setattr(Inspeximus, "_similarity", sim)
+            m = Inspeximus(p)
+            fn = ref_cluster_active if reference else Inspeximus._cluster_active
+            out.append([[r["id"] for r in c] for c in fn(m, threshold)])
+        calls.append(n[0])
+    assert out[1] == out[0]
+    assert calls[1] == calls[0], f"3.15.1 scored {calls[0]} centroids, this code {calls[1]}"
+
+
 def test_an_embedder_store_takes_the_3_15_1_path(stores, tmp_path, monkeypatch):
     ref = _run(stores["embedded"], tmp_path, "ref", True, True, monkeypatch, embed=_fake_embed)
     new = _run(stores["embedded"], tmp_path, "new", False, True, monkeypatch, embed=_fake_embed)

@@ -7422,5 +7422,32 @@
   "tests": [
    "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
   ]
+ },
+ {
+  "name": "B-16: the numpy cluster count drops clusters that reach the threshold exactly",
+  "file": "inspeximus/core.py",
+  "old": "candidates = np.flatnonzero((counts >= 1) & (counts >= lim)).tolist()",
+  "new": "candidates = np.flatnonzero((counts >= 1) & (counts > lim)).tolist()",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
+ },
+ {
+  "name": "B-16: the numpy cluster count admits clusters that share no token",
+  "file": "inspeximus/core.py",
+  "old": "candidates = np.flatnonzero((counts >= 1) & (counts >= lim)).tolist()",
+  "new": "candidates = np.flatnonzero(counts >= lim).tolist()",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
+ },
+ {
+  "name": "B-16: the pure-Python cluster count drops clusters that reach the threshold exactly",
+  "file": "inspeximus/core.py",
+  "old": "                                  if n >= sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
+  "new": "                                  if n > sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
  }
 ]

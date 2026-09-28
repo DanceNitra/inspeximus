@@ -17525,12 +17525,22 @@ class Inspeximus:
         can pass only if it shares at least ceil(threshold * min(|q|, |t|)) tokens with the record; an
         inverted index from token to cluster counts shared tokens per candidate first and scores only
         the clusters that can pass. Both changes are exact: the same clusters come out, in the same
-        order. Semantic mode (a vec on every record) skips the index, because cosine has no such bound."""
+        order. Semantic mode (a vec on every record) skips the index, because cosine has no such bound.
+
+        THE COUNT RUNS IN C (AUDIT-B B-16). Counting walked every posting in bytecode: 300,786,149 of
+        them for one pass over a copy of a 67k hook store, 112 s of it. With numpy the postings are
+        counted by `np.bincount` and the predicate is evaluated on the array; without it, by
+        `collections.Counter`. Same predicate, same ascending order, so the same clusters: the counts
+        are integers, exact in int64 and float64, and `sim_threshold * min(...)` is one IEEE double
+        multiply either way."""
+        from itertools import chain
         active = sorted([r for r in self.items if r["status"] == "active"
                          and (self.tenant is None or r.get("tenant") == self.tenant)],   # tenant-scoped clustering
                         key=lambda r: -r["value"])
         cents: list[dict] = []
         index: dict = {}                     # token -> [cluster index], lexical mode only
+        np = _numpy()
+        sizes = np.zeros(64, dtype=np.float64) if np is not None else None   # len(tok) per centroid
         for r in active:
             rvec = self._qvec(r["text"])
             rtok = self._rec_tokens(r)
@@ -17540,13 +17550,23 @@ class Inspeximus:
                 candidates = range(len(cents))
             else:
                 # count shared tokens per cluster; only clusters that can reach the threshold are scored
-                shared: dict = {}
-                for t in rtok:
-                    for ci in index.get(t, ()):
-                        shared[ci] = shared.get(ci, 0) + 1
-                candidates = [ci for ci, n in shared.items()
-                              if n >= sim_threshold * min(len(rtok), len(cents[ci]["tok"]))]
-                candidates.sort()
+                posts = [index[t] for t in rtok if t in index]
+                if np is not None:
+                    total = sum(map(len, posts))
+                    if total:
+                        counts = np.bincount(np.fromiter(chain.from_iterable(posts), dtype=np.int64,
+                                                         count=total))
+                        lim = sim_threshold * np.minimum(float(len(rtok)), sizes[:len(counts)])
+                        # `counts >= 1` is the shipped rule that a cluster sharing no token is no
+                        # candidate, which decides when sim_threshold <= 0
+                        candidates = np.flatnonzero((counts >= 1) & (counts >= lim)).tolist()
+                    else:
+                        candidates = []
+                else:
+                    shared = _collections.Counter(chain.from_iterable(posts))
+                    candidates = [ci for ci, n in shared.items()
+                                  if n >= sim_threshold * min(len(rtok), len(cents[ci]["tok"]))]
+                    candidates.sort()
             for ci in candidates:
                 c = cents[ci]
                 s = self._similarity(c["rec"]["text"], r, c["vec"], c["tok"])
@@ -17556,6 +17576,10 @@ class Inspeximus:
                 best[0]["members"].append(r)
             else:
                 cents.append({"rec": r, "vec": rvec, "tok": rtok, "members": [r]})
+                if sizes is not None:
+                    if len(cents) > len(sizes):
+                        sizes = np.concatenate([sizes, np.zeros(len(sizes), dtype=np.float64)])
+                    sizes[len(cents) - 1] = len(rtok)
                 for t in rtok:
                     index.setdefault(t, []).append(len(cents) - 1)
         return [c["members"] for c in cents]
