@@ -16686,8 +16686,8 @@ class Inspeximus:
         of it and left a fix that reads complete -- which is why this is an extraction rather than a
         patch: a guard added here in a year cannot land on one path only.
 
-        Returns ("toggled", older) or ("linked", None). The caller counts and, on "toggled", checks
-        whether its own anchor was the record retired.
+        Returns ("toggled", older), ("linked", None) or ("distinct_keys", None). The caller counts and,
+        on "toggled", checks whether its own anchor was the record retired.
         """
         # VALIDITY time, not ingest order. A fact learned LATE about an EARLIER state must not
         # overwrite the genuinely-current one just because it arrived later. The cluster path used
@@ -16695,6 +16695,19 @@ class Inspeximus:
         # inversion this rule exists to prevent.
         _vf = lambda r: r.get("valid_from", r["ts"])
         older, newer = (a, b) if _vf(a) <= _vf(b) else (b, a)
+
+        # DISTINCT KEYS ARE DISTINCT FACTS. A keyed record is the current value of its key, and only
+        # a write with the same key (in the same tenant, the identity write-time supersession uses)
+        # replaces it. Retiring it for a record with another key, or with none, leaves the key with
+        # no current value: retire() without a reason, done by a similarity heuristic. Measured
+        # 2026-09-28 on the Crew OS store: one sleep() retired 426 keyed records this way, 389 of them
+        # persona layers written from one template (`...::55-centurion::weaknesses` retired by
+        # `...::55-centurion::agent-bus`). Checked before the guards, so no record is flagged as
+        # contested either: nothing contradicted it. The pair is linked like any near duplicate.
+        if older.get("key") and ((older.get("tenant"), older.get("key"))
+                                 != (newer.get("tenant"), newer.get("key"))):
+            a["links"].append(b["id"])
+            return ("distinct_keys", None)
 
         # Fast-novelty guard (opt-in): supersede only on a CORROBORATED contradiction -- earned
         # credit, or the same bar as graduation. An uncorroborated single contradiction is recorded
@@ -16810,7 +16823,7 @@ class Inspeximus:
                     hubs += 1
             active = [r for r in active if r["status"] == "active"]
         active.sort(key=lambda r: -r["value"])
-        linked = toggled = 0
+        linked = toggled = distinct_keys = 0
         if link_duplicates:
             # Pairwise near-duplicate pass. A high-similarity pair is normally LINKED (dedup without
             # delete) — UNLESS it's a polarity clash (one negates the other), which is a STATE TOGGLE
@@ -16833,8 +16846,9 @@ class Inspeximus:
                             # path only. See _resolve_state_toggle for the four measured divergences.
                             _verdict, _older = self._resolve_state_toggle(
                                 a, b, active, dup_threshold, _by_id)
-                            if _verdict == "linked":
+                            if _verdict != "toggled":
                                 linked += 1
+                                distinct_keys += _verdict == "distinct_keys"
                                 continue
                             toggled += 1
                             if _older is a:
@@ -16883,6 +16897,7 @@ class Inspeximus:
         # so a caller can still see what was asked for.
         _live = len([r for r in self.items if r["status"] == "active"])
         return {"active": _live, "graduated": graduated, "hubs_flagged": hubs, "linked_pairs": linked, "toggled": toggled,
+                "distinct_keys": distinct_keys,
                 "staled": staled, "kept": _live, "keep_requested": keep, "total": len(self.items)}
 
     # ── cluster-triggered consolidation ───────────────────────────────────────
@@ -16941,10 +16956,12 @@ class Inspeximus:
         `threshold` members — not a global nightly blanket. Avoids (1) prematurely consolidating sparse
         topics, where the raw episodes are still the best representation, and (2) unbounded growth in
         dense ones. Cheap to call often (no-op until a cluster is ripe). Runs dedup + the state-toggle
-        guard (+ optional keep-budget) WITHIN each ripe cluster only."""
+        guard (+ optional keep-budget) WITHIN each ripe cluster only. A clashing pair where the older
+        record is keyed and the newer one has another key (or none) is linked, not toggled, and
+        counted in `distinct_keys` (see _resolve_state_toggle)."""
         clusters = [[r for r in c if not Inspeximus._is_session_bookkeeping(r)]
                     for c in self._cluster_active(cluster_sim)]
-        fired = linked = toggled = staled = 0
+        fired = linked = toggled = staled = distinct_keys = 0
         # The population the persistence guard counts support in, and the id map the corroboration
         # guard resolves links through. Computed once: both are store-wide questions, not per-cluster.
         _live = [r for r in self.items if r.get("status") == "active"]
@@ -16969,8 +16986,9 @@ class Inspeximus:
                             # fail-loud flag -- and sleep() runs THIS one.
                             _verdict, _older = self._resolve_state_toggle(
                                 a, b, _live, dup_threshold, _by_id)
-                            if _verdict == "linked":
+                            if _verdict != "toggled":
                                 linked += 1
+                                distinct_keys += _verdict == "distinct_keys"
                                 continue
                             toggled += 1
                             if _older is a:
@@ -16986,7 +17004,8 @@ class Inspeximus:
                     self._declare_retired(r, "keep-budget: outside the cluster's retained set")
         self._save(force=True)                   # forced: see consolidate() (mcp-tools-review M4)
         return {"clusters_total": len(clusters), "clusters_fired": fired, "threshold": threshold,
-                "linked_pairs": linked, "toggled": toggled, "staled": staled}
+                "linked_pairs": linked, "toggled": toggled, "distinct_keys": distinct_keys,
+                "staled": staled}
 
     def apply_retention(self, max_age_days: float, drop_superseded: bool = True,
                         drop_stale_episodic: bool = True) -> dict:

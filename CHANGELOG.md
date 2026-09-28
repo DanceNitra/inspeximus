@@ -1,3 +1,29 @@
+## Unreleased (state toggle) - UPGRADE IF you run `sleep()` or `consolidate()` on a store with keyed records that share a template: a state toggle no longer retires a keyed record because of a record with another key. CONSOLIDATION BEHAVIOUR CHANGES: such pairs are linked, not toggled, and both reports gain `distinct_keys`.
+
+Found on 2026-09-28 on the Crew OS store. The crew daemon calls `sleep(cluster_threshold=15)`
+every tenth tick. The first sleep that completed after a restart on 2026-09-27 retired 426 records
+with `superseded_by_policy: "state_toggle"`. Every one of them was keyed and was retired by a record
+with another key: 389 were persona layers `crew-os::persona::<agent>::<layer>` of 23 agents, written
+from one template. `current()` answered None for those keys afterwards. Replayed on a copy of the
+store with the retirements undone, 3.15.1 retired 446 keyed records the same way; with this change
+it retires none.
+
+- **Distinct keys are distinct facts.** `_resolve_state_toggle`, the one resolution `consolidate()`
+  and `consolidate_clusters()` share, retires the older record of a clashing pair only when the older
+  record has no key, or when the newer record has the same key in the same tenant. Otherwise the pair
+  is linked like any near duplicate, and no record is flagged as contested. An unkeyed record still
+  toggles as before, and a keyed record still replaces an older unkeyed note it contradicts.
+- **The reports count it.** `consolidate()` and `consolidate_clusters()` (and so `sleep()`) return
+  `distinct_keys`: clashing pairs left standing because the keys differ. `linked_pairs` includes them.
+
+Measured on the copy: the first pass after the change links about 24,600 more pairs (the persona
+layers are near duplicates of each other and none is retired any more) and grows the store by about
+1 %; the next pass links 0. `tests/test_supersede_corroboration_bar.py` used two keys only to stay
+off write-time supersession; it now uses unkeyed records, which reach the same guard.
+
+`tests/test_a_state_toggle_never_ends_another_key.py` fails on 3.15.1 (6 of 9; the other 3 are
+controls). Each of the 4 new mutations in `tools/mutations.json` fails a test.
+
 ## 3.15.3 - UPGRADE NOTE if INSPEXIMUS_PATH or --path points into a folder that does not exist: create it first; inspeximus no longer creates it silently (test: `tests/test_first_run_and_scoped_certificate.py::test_the_cli_refuses_a_nested_path_until_its_folder_exists`). UPGRADE IF you install or upgrade through an agent, on Windows, or over an earlier install: the upgrade path now moves your hooks to the new version, never switches your store without saying so, and cannot be run by an older copy by mistake.
 
 Found on 2026-09-28, when our own machine moved to 3.15.1 and a friend-flow re-test ran on a second machine,

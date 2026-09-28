@@ -40,13 +40,16 @@ LEGITIMATE = ["bank-statement.pdf", "vendor-invoice.pdf", "auditor-report.pdf"]
 
 
 def _toggle_fixture(sources, guard=True, strict=False):
-    """Two records that CONTRADICT under DIFFERENT keys, so supersession is decided by the
-    consolidate-time toggle path -- the one this guard actually protects."""
+    """Two UNKEYED records that CONTRADICT, so supersession is decided by the consolidate-time toggle
+    path -- the one this guard actually protects. This fixture used two DIFFERENT keys until the toggle
+    stopped ending a keyed value for another key (test_a_state_toggle_never_ends_another_key.py): two
+    keys are two facts now, so that pair never reaches the guard. Unkeyed still avoids write-time keyed
+    supersession, which is why the keys were there."""
     m = Inspeximus(path=None)
     m.supersede_requires_corroboration = guard
     m.strict_corroboration = strict
-    standing = m.remember(STANDING, key="printer::a")
-    newer = m.remember(CONTRADICTION, key="printer::b", source={"doc": sources[0]})
+    standing = m.remember(STANDING)
+    newer = m.remember(CONTRADICTION, source={"doc": sources[0]})
     f1 = m.remember("filler about the office printer floor", source={"doc": sources[1]})
     f2 = m.remember("more filler about the office printer floor", source={"doc": sources[2]})
     by_id = {r["id"]: r for r in m.items}
