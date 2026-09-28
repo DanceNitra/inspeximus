@@ -89,6 +89,10 @@ def run(threshold, reuse, n_pairs=120):
 
 
 def main():
+    import os as _hb_os, sys as _hb_sys
+    _hb_sys.path.insert(0, _hb_os.path.dirname(_hb_os.path.abspath(__file__)))
+    import _heartbeat  # noqa: E402  (phase and elapsed time on stderr every 30 s)
+    _heartbeat.start(__file__)
     print("infer_lineage — precision/recall vs constructed ground truth")
     print("negatives are same-domain, same-vocabulary writes issued right after the same recall\n")
     for reuse in (0.9, 0.7, 0.5, 0.3):

@@ -319,6 +319,10 @@ def measure_bounds(k: int = 6, max_followups: int = 3) -> dict:
 
 
 def main(argv=None):
+    import os as _hb_os, sys as _hb_sys
+    _hb_sys.path.insert(0, _hb_os.path.dirname(_hb_os.path.abspath(__file__)))
+    import _heartbeat  # noqa: E402  (phase and elapsed time on stderr every 30 s)
+    _heartbeat.start(__file__)
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("-k", type=int, default=6)
     ap.add_argument("--max-followups", type=int, default=3)

@@ -201,12 +201,18 @@ def measure(n: int, turns: int) -> dict:
 
 
 def main() -> int:
+    import os as _hb_os, sys as _hb_sys
+    _hb_sys.path.insert(0, _hb_os.path.dirname(_hb_os.path.abspath(__file__)))
+    import _heartbeat  # noqa: E402  (phase and elapsed time on stderr every 30 s)
+    _heartbeat.start(__file__)
     _install_host_stub()
     started = time.time()
     result = {"when_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
               "turns_per_arm": TURNS, "sizes": {}}
     for n in SIZES:
+        _heartbeat.phase("build and measure %d records" % n)
         result["sizes"][str(n)] = measure(n, TURNS)
+    _heartbeat.phase("control, one record")
     print("  control: one record, every arm must agree", flush=True)
     result["control_one_record"] = measure(1, TURNS)
 

@@ -97,12 +97,17 @@ SEEDS = 25
 
 
 def main():
+    import os as _hb_os, sys as _hb_sys
+    _hb_sys.path.insert(0, _hb_os.path.dirname(_hb_os.path.abspath(__file__)))
+    import _heartbeat  # noqa: E402  (phase and elapsed time on stderr every 30 s)
+    _heartbeat.start(__file__)
     print(f"=== IDENTITY-GATE SUPERSESSION PROBE (inspeximus {__version__}, E={E}, rounds={ROUNDS}, "
           f"p_miss={P_MISS}, fork_below={FORK_BELOW}) ===")
     print("authoritative-ledger corruption rate = entities whose current value is WRONG (lower better)\n")
     ung, gat = [], []
     ncand = 0
     for s in range(SEEDS):
+        _heartbeat.phase("seed %d of %d" % (s + 1, SEEDS))
         rng = random.Random(SEED + s)
         u, _ = run("ungated", rng)
         rng = random.Random(SEED + s)

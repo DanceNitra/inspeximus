@@ -933,6 +933,10 @@ def render(doc: dict) -> str:
 
 
 def main(argv=None) -> int:
+    import os as _hb_os, sys as _hb_sys
+    _hb_sys.path.insert(0, _hb_os.path.dirname(_hb_os.path.abspath(__file__)))
+    import _heartbeat  # noqa: E402  (phase and elapsed time on stderr every 30 s)
+    _heartbeat.start(__file__)
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--distractors", type=int, default=2400,
                     help="same-vocabulary records across many subjects (default 2400; with the siblings "

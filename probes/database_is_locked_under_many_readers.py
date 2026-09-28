@@ -55,6 +55,10 @@ def _writer(args):
 
 
 def main():
+    import os as _hb_os, sys as _hb_sys
+    _hb_sys.path.insert(0, _hb_os.path.dirname(_hb_os.path.abspath(__file__)))
+    import _heartbeat  # noqa: E402  (phase and elapsed time on stderr every 30 s)
+    _heartbeat.start(__file__)
     src = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/.inspeximus/mcp_memory_chain.json")
     full = len(sys.argv) > 1
     readers = int(sys.argv[2]) if len(sys.argv) > 2 else (12 if full else 4)

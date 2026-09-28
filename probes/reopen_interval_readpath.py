@@ -73,7 +73,14 @@ def run(seed):
 
 
 def main():
-    rows = [run(s) for s in range(SEEDS)]
+    import os as _hb_os, sys as _hb_sys
+    _hb_sys.path.insert(0, _hb_os.path.dirname(_hb_os.path.abspath(__file__)))
+    import _heartbeat  # noqa: E402  (phase and elapsed time on stderr every 30 s)
+    _heartbeat.start(__file__)
+    rows = []
+    for s in range(SEEDS):
+        _heartbeat.phase("seed %d of %d" % (s + 1, SEEDS))
+        rows.append(run(s))
     def mean(k): return round(sum(r[k] for r in rows) / len(rows), 3)
     agg = {k: mean(k) for k in ("wm_caught_base", "wm_caught_reopen", "revert_keyed_base",
                                 "revert_keyed_reopen", "false_reopen_rate")}
