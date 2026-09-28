@@ -5710,5 +5710,32 @@
   "tests": [
    "tests/test_audit_b_same_tick_boundaries.py"
   ]
+ },
+ {
+  "name": "same-tick class: as_of and believed_at take the first of a tie again",
+  "file": "inspeximus/core.py",
+  "old": "        k = (r.get(\"valid_from\", r[\"ts\"]), r[\"ts\"], pos)",
+  "new": "        k = (r.get(\"valid_from\", r[\"ts\"]), r[\"ts\"])",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "A-39: keep_days=0 leaves the call's own tick live again",
+  "file": "inspeximus/actions.py",
+  "old": "(self._entries[n][\"ts\"] <= cutoff if keep_nothing",
+  "new": "(self._entries[n][\"ts\"] < cutoff if keep_nothing",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "A-39: every rotation cutoff becomes inclusive",
+  "file": "inspeximus/actions.py",
+  "old": "        keep_nothing = before_ts is None and float(keep_days) == 0.0",
+  "new": "        keep_nothing = True",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
  }
 ]
