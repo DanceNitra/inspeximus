@@ -131,6 +131,23 @@ def test_the_guard_names_what_a_test_would_change(tmp_path, change):
     assert _home_guard.diff(before, _home_guard.snapshot(str(home))), f"the guard missed a {change} change"
 
 
+def test_a_new_chain_head_names_the_store_that_wrote_it(tmp_path):
+    """The guard's line for a new head carries the store path the head records, and the full count, so a
+    non-reproducing failure can be traced to its writer afterwards (2026-09-28: 15 heads, 3 shown)."""
+    home = _fake_real_home(tmp_path)
+    heads = home / "AppData" / "Roaming" / "inspeximus" / "heads"
+    heads.mkdir(parents=True, exist_ok=True)
+    before = _home_guard.snapshot(str(home))
+    for i in range(5):
+        (heads / f"head{i}.json").write_text(json.dumps({"path": f"C:/tmp/gov_{i}_x/store.jsonl"}),
+                                            encoding="utf-8")
+    lines = _home_guard.diff(before, _home_guard.snapshot(str(home)), str(home))
+    assert any(ln.startswith(os.path.join("AppData", "Roaming", "inspeximus", "heads")) and ": +5 -0" in ln
+               for ln in lines), lines
+    assert sum("(store C:/tmp/gov_" in ln for ln in lines) == 5, lines
+    assert _home_guard.diff(before, _home_guard.snapshot(str(home))), "control: without home it still fails"
+
+
 def test_a_leak_into_the_real_home(_no_test_writes_the_real_home):
     """The inner half of the next test: skipped unless that test starts it, and then it writes where
     the run-end guard must see it. Never writes when run as part of the normal suite."""
@@ -140,6 +157,10 @@ def test_a_leak_into_the_real_home(_no_test_writes_the_real_home):
     os.makedirs(target, exist_ok=True)
     with open(os.path.join(target, "written-by-a-test.json"), "w", encoding="utf-8") as fh:
         fh.write("{}")
+    heads = os.path.join(_no_test_writes_the_real_home["real"], "AppData", "Roaming", "inspeximus", "heads")
+    os.makedirs(heads, exist_ok=True)
+    with open(os.path.join(heads, "leaked-head.json"), "w", encoding="utf-8") as fh:
+        json.dump({"path": "C:/tmp/gov_0_selftest/store.jsonl"}, fh)
 
 
 def test_the_run_end_guard_fails_a_run_that_wrote_the_real_home(tmp_path):
@@ -155,3 +176,4 @@ def test_the_run_end_guard_fails_a_run_that_wrote_the_real_home(tmp_path):
         pytest.fail(f"control: the inner test did not write, so the guard had nothing to see: {r.stdout[-400:]}")
     assert r.returncode != 0, "a run that wrote the real home exited 0"
     assert "THIS RUN CHANGED THE REAL HOME" in r.stdout and "written-by-a-test.json" in r.stdout, r.stdout[-600:]
+    assert "(store C:/tmp/gov_0_selftest/store.jsonl)" in r.stdout, "the run-end line did not name the head's writer"

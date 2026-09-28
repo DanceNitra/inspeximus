@@ -93,8 +93,23 @@ def snapshot(home: str) -> dict:
     return snap
 
 
-def diff(before: dict, after: dict) -> list:
-    """Human-readable lines, one per path whose guarded content changed; empty when nothing did."""
+def _writer(home, rel: str, name: str) -> str:
+    """For a new chain head: the store it records, which names the writer. A head's file name is a hash
+    of that path, so the name alone says nothing. Measured 2026-09-28: a run that exited 1 on this guard
+    had 15 new heads; reading their `path` by hand showed 13 temp stores of claims_audit.py and
+    governance_audit.py (a concurrent release_check), one pytest temp store and one live MCP store."""
+    if home is None or not rel.endswith("heads"):
+        return ""
+    try:
+        with open(os.path.join(home, rel, name), encoding="utf-8") as fh:
+            return " (store " + str(json.load(fh).get("path")) + ")"
+    except (OSError, ValueError, AttributeError):
+        return " (store unreadable)"
+
+
+def diff(before: dict, after: dict, home: str | None = None) -> list:
+    """Human-readable lines, one per path whose guarded content changed; empty when nothing did. With
+    `home`, each new chain head also names the store that wrote it."""
     out = []
     for rel in sorted(set(before) | set(after)):
         b, a = before.get(rel), after.get(rel)
@@ -105,5 +120,6 @@ def diff(before: dict, after: dict) -> list:
         added, removed = sorted(set(a or []) - set(b or [])), sorted(set(b or []) - set(a or []))
         state = "" if (b is None) == (a is None) else f" ({'absent' if b is None else 'present'} -> " \
                                                        f"{'absent' if a is None else 'present'})"
-        out.append(f"{rel}{state}: +{added[:3]} -{removed[:3]}")
+        out.append(f"{rel}{state}: +{len(added)} -{len(removed)}, first +{added[:3]} -{removed[:3]}")
+        out += [f"    new {n}{_writer(home, rel, n)}" for n in added[:20] if _writer(home, rel, n)]
     return out

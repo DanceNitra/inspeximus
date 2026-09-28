@@ -5899,5 +5899,32 @@
   "tests": [
    "tests/test_a_red_preflight_names_its_failing_test.py"
   ]
+ },
+ {
+  "name": "home guard: a new chain head does not name the store that wrote it",
+  "file": "tests/_home_guard.py",
+  "old": "            return \" (store \" + str(json.load(fh).get(\"path\")) + \")\"",
+  "new": "            return \"\"",
+  "tests": [
+   "tests/test_the_suite_never_writes_the_real_home.py"
+  ]
+ },
+ {
+  "name": "home guard: the run-end check reads no writer",
+  "file": "tests/conftest.py",
+  "old": "_home_guard.snapshot(config._real_home), config._real_home)",
+  "new": "_home_guard.snapshot(config._real_home))",
+  "tests": [
+   "tests/test_the_suite_never_writes_the_real_home.py"
+  ]
+ },
+ {
+  "name": "home guard: the count of changed names stops at three",
+  "file": "tests/_home_guard.py",
+  "old": "+{len(added)} -{len(removed)}, first",
+  "new": "+{len(added[:3])} -{len(removed[:3])}, first",
+  "tests": [
+   "tests/test_the_suite_never_writes_the_real_home.py"
+  ]
  }
 ]

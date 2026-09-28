@@ -420,7 +420,7 @@ def pytest_sessionfinish(session):
     before = getattr(config, "_real_home_before", None)
     if before is not None:
         import _home_guard
-        changed = _home_guard.diff(before, _home_guard.snapshot(config._real_home))
+        changed = _home_guard.diff(before, _home_guard.snapshot(config._real_home), config._real_home)
         if changed:
             tr = config.pluginmanager.get_plugin("terminalreporter")
             lines = ["THIS RUN CHANGED THE REAL HOME (%s). A test wrote outside its temporary home:"
