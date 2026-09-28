@@ -123,6 +123,8 @@ def _args_for(name, sig, mod):
         "items": ["rights"], "channel": "ui", "ground": "own_situation", "role": "controller",
         # record_qms / declare_out_of_band_deletion (3.6.0): one Art. 17 procedure with a review date, and a
         # declaration aimed at the sweep record, which is present, so an error dict and never a raise
+        # declare_mandate (mandate check): one allowed action pattern; `actor` is shared
+        "actions": ["tool:*"],
         "procedure": "incident reporting", "version": "1.0", "owner": "ops lead", "review_due_ts": 4102444800.0,
         # release_quarantine (3.5.0): aimed at the sweep record, which is not quarantined, so an error dict
         "documents": [{"kind": "technical_documentation", "sha256": "a" * 64},

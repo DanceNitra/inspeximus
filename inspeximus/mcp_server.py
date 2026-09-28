@@ -2736,6 +2736,34 @@ def action_timeline(session: str | None = None, principal: str | None = None) ->
 
 
 @mcp.tool()
+def declare_mandate(actions: list[str], actor: str, targets: list[str] | None = None,
+                    for_actor: str | None = None, note: str | None = None) -> dict:
+    """Declare what an agent may do, as a signed entry in the action ledger. Every later action of
+    `for_actor` (every actor when omitted) is checked against it at write time and carries the verdict.
+    Patterns are shell-style: `tool:search`, `https://*.gov.example/*`. With `targets`, an action that
+    records no target counts as outside. This flags an action outside the mandate; it does not block it."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    try:
+        e = led.mandate(actions, actor=actor, targets=targets, for_actor=for_actor, note=note)
+    except ValueError as ex:
+        return {"error": str(ex)}
+    return {"seq": e["seq"], "mandate": e["mandate"], "hash": e["hash"], "signed": "sig" in e}
+
+
+@mcp.tool()
+def mandate_breaches(since: float | None = None, actor: str | None = None) -> dict:
+    """Every recorded action that its signed mandate check marked outside the declared mandate, oldest
+    first, with the reasons, plus how many actions were checked and how many ran with no mandate in force.
+    Read from the entries as written; nothing is re-judged or inferred."""
+    led = _action_ledger()
+    if led is None:
+        return {"error": "the action ledger is off; set INSPEXIMUS_ACTIONS=1"}
+    return led.mandate_breaches(since=since, actor=actor)
+
+
+@mcp.tool()
 def timestamp_actions(url: str, actor: str | None = None) -> dict:
     """Ask an RFC 3161 Time-Stamping Authority at `url` to stamp the action ledger's tail hash and append the
     token as a chained entry. Everything else in the ledger proves order on the operator's clock; a TSA token

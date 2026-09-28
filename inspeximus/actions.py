@@ -41,6 +41,7 @@ receipt chain, so a rewritten memory history is caught from the action side as w
 from __future__ import annotations
 
 import contextlib
+import fnmatch
 import functools
 import hashlib
 import json
@@ -333,7 +334,8 @@ class ActionLedger:
 
     def __init__(self, store=None, path: str | os.PathLike | None = None, actor: str | None = None,
                  signing_key: str | None = None, keep_content: bool = False,
-                 redact: Callable[[Any], Any] | None = None):
+                 redact: Callable[[Any], Any] | None = None,
+                 on_mandate_breach: Callable[[dict], Any] | None = None):
         if store is None and path is None:
             raise ValueError("ActionLedger needs a store or a path")
         self.store = store
@@ -347,6 +349,7 @@ class ActionLedger:
         self.actor = actor
         self.keep_content = bool(keep_content)
         self.redact = redact
+        self.on_mandate_breach = on_mandate_breach  # called with each stored entry outside its mandate
         self._sk = signing_key if signing_key is not None else getattr(store, "_receipt_sk", None)
         self._entries: list[dict] = []
         self._checkpoint: dict | None = None       # the header a rotated ledger starts with, see archive()
@@ -540,23 +543,29 @@ class ActionLedger:
                error: str | None = None, meta: dict | None = None, started: float | None = None,
                actor: str | None = None, kind: str = "action", extra: dict | None = None,
                memory_state: dict | None = None, model: str | None = None,
-               principal: str | None = None, session: str | None = None) -> dict:
+               principal: str | None = None, session: str | None = None,
+               target: str | None = None) -> dict:
         """Append one entry. Returns it as stored (with hash, and sig when a key is set). `kind` is
         "action" for what the agent did; `oversight()` and `disclosure()` set the other two.
 
         `model` names the model version behind a model call and `principal` the person or account on
         whose behalf the agent acted. Both are what an ISO/IEC 42001 or SOC 2 reviewer asks for on every
         action (identity-tied attribution, model version per call) and neither is inferred: absent when
-        the caller did not say."""
+        the caller did not say.
+
+        `target` is what the action touched, as the caller names it: a URL, a domain, a path, a table.
+        It is stored as given, in plain text, because a mandate is checked against it. When a mandate is
+        in force for the actor (see `mandate()`), an action entry also carries `mandate_check`, computed
+        and signed at write time, and `on_mandate_breach` is called with every entry outside it."""
         if not isinstance(action, str) or not action:
             raise ValueError("action must be a non-empty string, for example 'tool:search'")
         if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp",
                         "lifecycle", "risk", "monitoring", "corrective", "authority", "breach",
                         "literacy", "attestation", "responsibilities", "declaration", "documentation",
-                        "notice", "processing_role", "qms"):
+                        "notice", "processing_role", "qms", "mandate"):
             raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
                              "lifecycle, risk, monitoring, corrective, authority, breach, literacy, attestation, "
-                             "responsibilities, declaration, documentation, notice, processing_role or qms")
+                             "responsibilities, declaration, documentation, notice, processing_role, qms or mandate")
         self.require_readable()
         now = time.time()
         inp = self.redact(inputs) if (self.redact and inputs is not None) else inputs
@@ -597,6 +606,11 @@ class ActionLedger:
             entry["meta"] = meta
         if extra:
             entry.update(extra)
+        if target is not None:
+            entry["target"] = str(target)[:500]
+        check = self._mandate_check(entry) if kind == "action" else None
+        if check is not None:
+            entry["mandate_check"] = check
         if self.keep_content:
             entry["inputs"] = inp
             entry["output"] = out
@@ -606,11 +620,92 @@ class ActionLedger:
         self._entries.append(entry)
         self._save()
         self._seen_recall = consumed
+        if check is not None and not check["within"] and self.on_mandate_breach is not None:
+            # The entry is already on disk; a failing alert must not undo the record of the breach.
+            try:
+                self.on_mandate_breach(entry)
+            except Exception:  # noqa: BLE001
+                pass
         return entry
+
+    # ----------------------------------------------------------------- mandate
+    def mandate(self, actions: Iterable[str], actor: str, targets: Iterable[str] | None = None,
+                for_actor: str | None = None, note: str | None = None) -> dict:
+        """Declare what an agent may do, as a signed entry in the chain. Every later action entry of
+        `for_actor` (every actor when None) is checked against the newest mandate in force for it and
+        carries the verdict in `mandate_check`.
+
+        `actions` and `targets` are shell-style patterns (fnmatch, case-sensitive): `tool:search`,
+        `http:GET`, `https://*.gov.example/*`. With `targets` None only the action name is checked. With
+        a target list, an action that records no target is outside the mandate, because nothing shows it
+        stayed inside.
+
+        This flags; it does not block. The action has already happened when it is recorded. What the
+        check changes is when anyone finds out: at write time, through `on_mandate_breach` and
+        `mandate_breaches()`, instead of when someone next reads the log. A mandate lives in the live
+        file, so declare it again after `archive()` rotates it out."""
+        acts = [str(a) for a in actions]
+        if not acts:
+            raise ValueError("a mandate needs at least one allowed action pattern")
+        tg = None if targets is None else [str(t) for t in targets]
+        body = {"actions": acts, "targets": tg, "for_actor": for_actor}
+        if note:
+            body["note"] = str(note)[:500]
+        return self.record("mandate:declare", actor=actor, kind="mandate", extra={"mandate": body},
+                           memory_state={"digest": None, "note": "a mandate is not an action"})
+
+    def _mandate_for(self, actor: str | None) -> dict | None:
+        for e in reversed(self._entries):
+            if e.get("kind") != "mandate":
+                continue
+            if (e.get("mandate") or {}).get("for_actor") in (None, actor):
+                return e
+        return None
+
+    def _mandate_check(self, entry: dict) -> dict | None:
+        m_entry = self._mandate_for(entry.get("actor"))
+        if m_entry is None:
+            return None
+        m = m_entry["mandate"]
+        reasons = []
+        if not any(fnmatch.fnmatchcase(entry["action"], pat) for pat in m["actions"]):
+            reasons.append("action %r matches no allowed action pattern" % entry["action"])
+        if m.get("targets") is not None:
+            t = entry.get("target")
+            if t is None:
+                reasons.append("no target recorded while the mandate restricts targets")
+            elif not any(fnmatch.fnmatchcase(t, pat) for pat in m["targets"]):
+                reasons.append("target %r matches no allowed target pattern" % t)
+        return {"mandate_seq": m_entry["seq"], "within": not reasons, "reasons": reasons}
+
+    def mandate_breaches(self, since: float | None = None, actor: str | None = None) -> dict:
+        """Every action entry whose signed mandate check marked it outside its mandate, oldest first, plus
+        how many actions were checked and how many ran with no mandate in force. Read from the entries as
+        written: a mandate declared later does not re-judge earlier actions."""
+        rows, checked, unchecked = [], 0, 0
+        for e in self._entries:
+            if e.get("kind", "action") != "action":
+                continue
+            if since is not None and e.get("ts", 0) < since:
+                continue
+            if actor is not None and e.get("actor") != actor:
+                continue
+            c = e.get("mandate_check")
+            if c is None:
+                unchecked += 1
+                continue
+            checked += 1
+            if not c.get("within"):
+                rows.append({"seq": e["seq"], "ts": e.get("ts"), "actor": e.get("actor"), "action": e.get("action"),
+                             "target": e.get("target"), "status": e.get("status"),
+                             "mandate_seq": c.get("mandate_seq"), "reasons": c.get("reasons")})
+        return {"breaches": rows, "outside": len(rows), "checked": checked, "unchecked": unchecked,
+                "first_breach_ts": rows[0]["ts"] if rows else None}
 
     @contextlib.contextmanager
     def action(self, action: str, inputs: Any = None, meta: dict | None = None, actor: str | None = None,
-               model: str | None = None, principal: str | None = None, session: str | None = None):
+               model: str | None = None, principal: str | None = None, session: str | None = None,
+               target: str | None = None):
         """Record an action around a block of code. The block's exception, if any, is recorded as the
         action's error and re-raised. `model`, `principal` and `session` are recorded as on record().
 
@@ -625,13 +720,14 @@ class ActionLedger:
             ctx.fail(e)
             ctx.entry = self.record(action, inputs, None, status="error", error=ctx._error,
                                     meta=ctx.meta or None, started=ctx.started, actor=actor,
-                                    memory_state=before, model=model, principal=principal, session=session)
+                                    memory_state=before, model=model, principal=principal, session=session,
+                                    target=target)
             raise
         status = "error" if ctx._error else "ok"
         ctx.entry = self.record(action, inputs, ctx._output if ctx._has_output else None,
                                 status=status, error=ctx._error, meta=ctx.meta or None,
                                 started=ctx.started, actor=actor, memory_state=before,
-                                model=model, principal=principal, session=session)
+                                model=model, principal=principal, session=session, target=target)
 
     def wrap(self, name: str | None = None, actor: str | None = None, model: str | None = None,
              principal: str | None = None):
