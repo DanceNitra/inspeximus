@@ -63,7 +63,7 @@ def _pytest(tests: list[str], env: dict) -> subprocess.CompletedProcess:
     # serially, as their CI step runs them, because they edit files the other workers would import.
     extra = ["-n", "0", "-m", ""] if _marked_mutation(tests) else []
     return subprocess.run(
-        [sys.executable, "-m", "pytest", *tests, "-q", "--no-header", "--tb=no", "-rfE", "-p", "no:randomly",
+        [sys.executable, "-m", "pytest", *tests, "-q", "--no-header", "--tb=no", "-rfEs", "-p", "no:randomly",
          *extra],
         cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
 
@@ -75,6 +75,23 @@ def _killers(stdout: str) -> list[str]:
         if line.startswith(("FAILED ", "ERROR ")):
             out.append(line.split()[1].split("::")[-1])
     return sorted(set(out))
+
+
+def _ran(stdout: str) -> tuple[int, list[str]]:
+    """How many listed tests PASSED, and why any were skipped (from `-rs`).
+
+    A skipped test saw nothing. Before A-26 the gate read "exit 0" as "every listed test ran and none
+    noticed", so a mutant whose one catching test needed a missing Playwright browser was called a
+    survivor, and a pre-flight in which every listed test skipped was called green.
+    """
+    passed, reasons = 0, []
+    for line in stdout.splitlines():
+        if line.startswith("SKIPPED "):
+            reasons.append(line.split("]", 1)[-1].strip().split(": ", 1)[-1])
+        m = re.search(r"(\d+) passed", line)
+        if m and " in " in line:
+            passed = int(m.group(1))
+    return passed, reasons
 
 
 def _dirty_tracked() -> set:
@@ -209,10 +226,17 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             if verbose:
                 print(f"  {name[:58]:58s} -> SKIPPED (not green before mutating)")
             continue
+        ran, why = _ran(pre.stdout)
+        if not ran:
+            skipped.append(f"{name}: no listed test ran before mutating ({'; '.join(sorted(set(why)))})")
+            if verbose:
+                print(f"  {name[:58]:58s} -> SKIPPED (no listed test ran)")
+            continue
 
         try:
             io.open(path, "w", encoding="utf-8", newline="").write(src.replace(old, new, 1))
-            killers = _killers(_pytest(tests, env).stdout)
+            post = _pytest(tests, env)
+            killers = _killers(post.stdout)
         finally:
             io.open(path, "w", encoding="utf-8", newline="").write(src)
             # RESTORE THE MUTANT'S ARTIFACTS NOW, NOT AT THE END OF THE RUN. The source was always put
@@ -230,6 +254,15 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             if verbose:
                 print(f"  {name[:58]:58s} -> killed by {', '.join(killers[:3])}"
                       f"{f' (+{len(killers) - 3})' if len(killers) > 3 else ''}")
+        elif _ran(post.stdout)[1]:
+            # NOT caught, but a listed test did not run against the mutant, and it may be the one that
+            # would have. That is not a survival and not a kill: it is an entry this machine cannot
+            # judge, and it fails the gate as a skip does (A-26, PC2's three verify-page "survivors").
+            why = sorted(set(_ran(post.stdout)[1]))
+            skipped.append(f"{name}: NOT EVALUATED, not caught while {len(why)} listed test reason(s) "
+                           f"skipped: {'; '.join(why)}")
+            if verbose:
+                print(f"  {name[:58]:58s} -> NOT EVALUATED (a listed test skipped: {why[0][:60]})")
         else:
             survived.append(name)
             if verbose:

@@ -4719,5 +4719,32 @@
   "tests": [
    "tests/test_every_mutation_entry_runs_its_tests.py"
   ]
+ },
+ {
+  "name": "the gate accepts a pre-flight in which no listed test ran again",
+  "file": "tools/mutation_check.py",
+  "old": "        if not ran:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_skipped_test_is_not_a_survivor.py"
+  ]
+ },
+ {
+  "name": "a mutant whose catching test skipped is called a survivor again",
+  "file": "tools/mutation_check.py",
+  "old": "        elif _ran(post.stdout)[1]:\n",
+  "new": "        elif False:\n",
+  "tests": [
+   "tests/test_a_skipped_test_is_not_a_survivor.py"
+  ]
+ },
+ {
+  "name": "the gate stops asking pytest why a listed test skipped",
+  "file": "tools/mutation_check.py",
+  "old": "\"-rfEs\", \"-p\", \"no:randomly\",",
+  "new": "\"-rfE\", \"-p\", \"no:randomly\",",
+  "tests": [
+   "tests/test_a_skipped_test_is_not_a_survivor.py"
+  ]
  }
 ]
