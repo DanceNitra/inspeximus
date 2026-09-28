@@ -17601,6 +17601,7 @@ class Inspeximus:
         # guard resolves links through. Computed once: both are store-wide questions, not per-cluster.
         _live = [r for r in self.items if r.get("status") == "active"]
         _by_id = {r["id"]: r for r in self.items}
+        clash = _clash_checker()                  # each text's negation and numbers read once (B-16)
         for members in clusters:
             if len(members) < threshold:
                 continue                              # sparse — leave the raw episodes alone
@@ -17621,7 +17622,7 @@ class Inspeximus:
                     if b["status"] != "active" or b["id"] in a["links"]:
                         continue
                     if self._similarity(a["text"], b, avec, atok) >= dup_threshold:
-                        if _negation_clash(a["text"], b["text"]) or _value_clash(a["text"], b["text"]):
+                        if clash(a["text"], b["text"]):
                             # ONE resolution, shared with consolidate(). This loop used to inline its
                             # own -- ts ordering, no corroboration guard, no persistence guard, no
                             # fail-loud flag -- and sleep() runs THIS one.
@@ -19068,8 +19069,10 @@ def _dup_candidates(toks: list, t: float) -> list:
 def _negation_clash(a: str, b: str) -> bool:
     """Cheap default: two highly-related statements where exactly one negates. Replace with an
     LLM judge for production — but gate it behind similarity first to keep it O(neighbourhood)."""
-    neg = re.compile(r"\b(not|no|never|cannot|can't|doesn't|isn't|won't|fails?|false)\b", re.I)
-    return bool(neg.search(a)) != bool(neg.search(b))
+    return bool(_NEG_WORDS.search(a)) != bool(_NEG_WORDS.search(b))
+
+
+_NEG_WORDS = re.compile(r"\b(not|no|never|cannot|can't|doesn't|isn't|won't|fails?|false)\b", re.I)
 
 
 _NUM = re.compile(r"-?\d+(?:\.\d+)?")
@@ -19112,6 +19115,58 @@ def _value_clash(a: str, b: str) -> bool:
     # (_WORD requires length >= 3), so a multi-digit value ('...is 123') would otherwise spuriously make
     # the skeletons differ and miss the update. Strip numbers first, exactly as before this guard existed.
     return _tokens(_NUM.sub("", a)) == _tokens(_NUM.sub("", b))   # identical apart from the one value
+
+
+#: The shipped contradiction checks. `_clash_checker` reads their features once per text only while these
+#: are the functions in place, so a replacement (an LLM judge, as `_negation_clash` suggests) is still
+#: called for every pair.
+_DEFAULT_NEGATION_CLASH, _DEFAULT_VALUE_CLASH = _negation_clash, _value_clash
+
+
+def _clash_checker():
+    """`_negation_clash(a, b) or _value_clash(a, b)` for one consolidation pass, reading each text once.
+
+    Both checks compare features of one text each: whether it negates, its numbers in order, and its
+    tokens with the numbers removed. `consolidate_clusters` ran them for every pair at or above
+    `dup_threshold`, and each call read both texts again: 684,362 negation searches and 677,190 number
+    scans for 342,181 matched pairs in one sleep() on a copy of a 67k hook store, with 65,028 feature
+    reads needed. The memo lives for one call, keyed by the text, so nothing outlives the pass and the
+    answer is the one the two functions give (AUDIT-B B-16)."""
+    neg, val = _negation_clash, _value_clash
+    if neg is not _DEFAULT_NEGATION_CLASH or val is not _DEFAULT_VALUE_CLASH:
+        return lambda a, b: neg(a, b) or val(a, b)
+    flags: dict = {}
+    nums: dict = {}
+    rests: dict = {}
+
+    def flag(t):
+        v = flags.get(t)
+        if v is None:
+            v = flags[t] = bool(_NEG_WORDS.search(t))
+        return v
+
+    def numbers(t):
+        v = nums.get(t)
+        if v is None:
+            v = nums[t] = _NUM.findall(t)
+        return v
+
+    def rest(t):
+        v = rests.get(t)
+        if v is None:
+            v = rests[t] = _tokens(_NUM.sub("", t))
+        return v
+
+    def clash(a, b):
+        if flag(a) != flag(b):
+            return True
+        na, nb = numbers(a), numbers(b)
+        if not na or len(na) != len(nb):
+            return False
+        if sum(1 for x, y in zip(na, nb) if x != y) != 1:
+            return False
+        return rest(a) == rest(b)
+    return clash
 
 
 class _TenantBucket:

@@ -7449,5 +7449,32 @@
   "tests": [
    "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
   ]
+ },
+ {
+  "name": "B-16: the memoised clash checks ignore a replaced _negation_clash or _value_clash",
+  "file": "inspeximus/core.py",
+  "old": "    if neg is not _DEFAULT_NEGATION_CLASH or val is not _DEFAULT_VALUE_CLASH:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
+ },
+ {
+  "name": "B-16: the memoised numbers are read from a prefix of the text",
+  "file": "inspeximus/core.py",
+  "old": "            v = nums[t] = _NUM.findall(t)",
+  "new": "            v = nums[t] = _NUM.findall(t[:40])",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
+ },
+ {
+  "name": "B-16: the memoised negation check compares a text with itself",
+  "file": "inspeximus/core.py",
+  "old": "        if flag(a) != flag(b):",
+  "new": "        if flag(a) != flag(a):",
+  "tests": [
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
+  ]
  }
 ]

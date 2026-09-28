@@ -365,8 +365,6 @@ def _pair_loop_regex_calls(src, tmp_path, monkeypatch):
     return rx.n, report, len(m._items)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="B-16 part 3: the clash checks re-read both texts for every matched pair")
 def test_the_contradiction_checks_read_each_text_once(stores, tmp_path, monkeypatch):
     n, report, records = _pair_loop_regex_calls(stores["topics"], tmp_path, monkeypatch)
     assert report["linked_pairs"] + report["toggled"] > records, "the fixture must match more pairs than texts"

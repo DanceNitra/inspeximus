@@ -709,21 +709,27 @@ def w_sleep(n):
     member of a ripe cluster; the prefix filter scores only members that share one of the rarest
     tokens, which every pair able to reach `dup_threshold` does (AUDIT-B B-16).
     `sleep_similarity_calls_cluster` must not move with that change: it is the witness that clustering
-    still scores the same candidates."""
-    p = _store_path()
-    m = Inspeximus(p)
-    topics, per = max(1, n // 50), 46
-    i = 0
-    for t in range(topics):
-        base = " ".join(_sleep_word("tpc", t, j) for j in range(6))
-        texts = [f"{base} {_sleep_word('skw', t, int((((k * 0.6180339887) % 1.0) ** 2) * 9))} "
-                 f"{_sleep_word('own', t, k)}" for k in range(per)]
-        texts += [f"{base} retry limit is 5", f"{base} retry limit is 9",
-                  f"{base} nightly cache enabled", f"{base} nightly cache not enabled"]
-        for text in texts:
-            m.remember(text, value=round(1.0 - i / (4 * n), 6))
-            i += 1
-    m.flush()
+    still scores the same candidates. `sleep_regex_calls` counts calls into compiled patterns during a
+    second sleep() on an identical store: the contradiction checks read each text's features once, not
+    once per matched pair."""
+    def build():
+        p = _store_path()
+        m = Inspeximus(p)
+        topics, per = max(1, n // 50), 46
+        i = 0
+        for t in range(topics):
+            base = " ".join(_sleep_word("tpc", t, j) for j in range(6))
+            texts = [f"{base} {_sleep_word('skw', t, int((((k * 0.6180339887) % 1.0) ** 2) * 9))} "
+                     f"{_sleep_word('own', t, k)}" for k in range(per)]
+            texts += [f"{base} retry limit is 5", f"{base} retry limit is 9",
+                      f"{base} nightly cache enabled", f"{base} nightly cache not enabled"]
+            for text in texts:
+                m.remember(text, value=round(1.0 - i / (4 * n), 6))
+                i += 1
+        m.flush()
+        return p
+
+    p, p2 = build(), build()
 
     def run():
         calls = {"cluster": 0, "pairs": 0}
@@ -752,7 +758,35 @@ def w_sleep(n):
             core.Inspeximus._similarity, core.Inspeximus._cluster_active = real_sim, real_cluster
         run.inner = {**c.as_dict(), "sleep_similarity_calls_cluster": calls["cluster"],
                      "sleep_similarity_calls_pairs": calls["pairs"]}
+        # Counted apart, on the second store, because sys.setprofile slows everything it watches.
+        h2 = Inspeximus(p2)
+        with _RegexCalls() as rx:
+            h2.sleep()
+        run.inner["sleep_regex_calls"] = rx.n
     return run
+
+
+class _RegexCalls:
+    """Count calls into a compiled pattern's `search`, `findall` and `sub` inside a block, through
+    sys.setprofile. The contradiction checks in `consolidate_clusters` read both texts again for every
+    matched pair: 684,362 negation searches for 342,181 pairs on a copy of a 67k store (AUDIT-B B-16)."""
+
+    NAMES = ("search", "findall", "sub")
+
+    def __enter__(self):
+        self.n = 0
+        counter = self
+
+        def prof(frame, event, arg):
+            if event == "c_call" and getattr(arg, "__name__", "") in counter.NAMES                     and isinstance(getattr(arg, "__self__", None), core.re.Pattern):
+                counter.n += 1
+
+        sys.setprofile(prof)
+        return self
+
+    def __exit__(self, *exc):
+        sys.setprofile(None)
+        return False
 
 
 #: The governance modules the package imported eagerly until 3.15.1. The hook calls none of them, and
