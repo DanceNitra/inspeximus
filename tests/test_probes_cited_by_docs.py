@@ -446,10 +446,26 @@ _SLOW_PROBES = {
     "forget_verification_bench.py": 400,
 }
 _DEFAULT_PROBE_TIMEOUT = 180
+# WINDOWS BUDGETS (2026-09-28). The first Windows CI trial (run 36464283180, 4 vCPU windows-latest) timed
+# these seven out at 15-20x their Linux CI times. Run alone on PC1 (Windows, with another session's
+# gates running) every one FINISHED, none hung: seconds and longest silence below. Windows pays for
+# process start-up and for every durable save (fsync, the inter-process lock), and these probes do
+# thousands of saves; the CI runner is slower again. Budget = about 3x the PC1 time, never below the
+# Linux budget. A probe that goes silent past its budget on Windows is still a hang and still fails.
+_WINDOWS_BUDGETS = {
+    "infer_lineage_precision.py": 300,                                   # 85 s, gaps <= 6 s
+    "reopen_interval_readpath.py": 400,                                  # 129 s, prints at the end
+    "database_is_locked_under_many_readers.py": 400,                     # 27 s alone; > 180 s on CI
+    "dogfood_cross_session.py": 300,                                     # 67 s, steady output
+    "recall_iterative_surface_multihop.py": 500,                         # 156 s, steady output
+    "identity_gate_supersession_probe.py": 1100,                         # 347 s, prints at the end
+    "what_a_turn_pays_for_recall_before_and_after_the_queue.py": 1800,   # 576 s, 529 s of it the build
+}
 
 
 def _budget(probe):
-    return _SLOW_PROBES.get(probe, _DEFAULT_PROBE_TIMEOUT)
+    base = _SLOW_PROBES.get(probe, _DEFAULT_PROBE_TIMEOUT)
+    return max(base, _WINDOWS_BUDGETS.get(probe, 0)) if os.name == "nt" else base
 
 
 def test_the_slow_probe_budget_names_real_probes():
@@ -459,6 +475,14 @@ def test_the_slow_probe_budget_names_real_probes():
     on_disk = {f for f in os.listdir(PROBES) if f.endswith(".py")}
     unknown = sorted(set(_SLOW_PROBES) - on_disk)
     assert not unknown, "the slow-probe budget names probes that are not on disk: %r" % unknown
+
+
+def test_the_windows_budget_names_real_probes_and_only_raises():
+    """The Windows table has the same decay risk as the one above, and it must never LOWER a budget."""
+    on_disk = {f for f in os.listdir(PROBES) if f.endswith(".py")}
+    assert not sorted(set(_WINDOWS_BUDGETS) - on_disk), sorted(set(_WINDOWS_BUDGETS) - on_disk)
+    for probe, seconds in _WINDOWS_BUDGETS.items():
+        assert seconds >= _SLOW_PROBES.get(probe, _DEFAULT_PROBE_TIMEOUT), probe
 
 
 def _missing_module(stderr):
