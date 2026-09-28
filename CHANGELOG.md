@@ -12,7 +12,8 @@ it retires none.
   and `consolidate_clusters()` share, retires the older record of a clashing pair only when the older
   record has no key, or when the newer record has the same key in the same tenant. Otherwise the pair
   is linked like any near duplicate, and no record is flagged as contested. An unkeyed record still
-  toggles as before, and a keyed record still replaces an older unkeyed note it contradicts.
+  toggles as before, a keyed record still replaces an older unkeyed note it contradicts, and two
+  active values of one key (two agent-bound handles) still toggle.
 - **The reports count it.** `consolidate()` and `consolidate_clusters()` (and so `sleep()`) return
   `distinct_keys`: clashing pairs left standing because the keys differ. `linked_pairs` includes them.
 
@@ -21,8 +22,9 @@ layers are near duplicates of each other and none is retired any more) and grows
 1 %; the next pass links 0. `tests/test_supersede_corroboration_bar.py` used two keys only to stay
 off write-time supersession; it now uses unkeyed records, which reach the same guard.
 
-`tests/test_a_state_toggle_never_ends_another_key.py` fails on 3.15.1 (6 of 9; the other 3 are
-controls). Each of the 4 new mutations in `tools/mutations.json` fails a test.
+`tests/test_a_state_toggle_never_ends_another_key.py` fails on 3.15.1 (8 of 14; the other 6 are
+controls, each run through `consolidate()` and `sleep()`). Each of the 5 new mutations in
+`tools/mutations.json` fails a test.
 
 ## 3.15.3 - UPGRADE NOTE if INSPEXIMUS_PATH or --path points into a folder that does not exist: create it first; inspeximus no longer creates it silently (test: `tests/test_first_run_and_scoped_certificate.py::test_the_cli_refuses_a_nested_path_until_its_folder_exists`). UPGRADE IF you install or upgrade through an agent, on Windows, or over an earlier install: the upgrade path now moves your hooks to the new version, never switches your store without saying so, and cannot be run by an older copy by mistake.
 

@@ -29,7 +29,9 @@ an unkeyed record, is linked, not retired, and the pass counts it under `distinc
 
 EVERY TEST IS PARAMETRISED OVER BOTH ENTRY POINTS, because `consolidate()` and `sleep()` reach the
 toggle through different loops (see test_the_idle_path_runs_the_same_guards.py). The controls prove
-that the fixtures reach the toggle path at all: the same texts without keys are still toggled.
+that the fixtures reach the toggle path at all and that the rule is not "keyed records never toggle":
+the same texts without keys are still toggled, a keyed record still replaces an older unkeyed note,
+and two values of ONE key still toggle.
 """
 from __future__ import annotations
 
@@ -46,6 +48,9 @@ from inspeximus import Inspeximus  # noqa: E402
 #: The two ways a store consolidates. `sleep` is the one the crew daemon runs unattended.
 PATHS = [("consolidate", lambda ix: ix.consolidate()),
          ("sleep", lambda ix: ix.sleep(cluster_threshold=15))]
+#: The two-record fixtures below: a cluster of two is ripe at threshold 2.
+PAIR_PATHS = [("consolidate", lambda ix: ix.consolidate()),
+              ("sleep", lambda ix: ix.sleep(cluster_threshold=2))]
 
 #: Eight agents, two layers each: sixteen records, so the sleep path's cluster is ripe (>= 15).
 AGENTS = [f"{n}-agent" for n in range(41, 49)]
@@ -115,36 +120,57 @@ STANDING = "the office printer is on floor 3 of the east wing"
 CONTRADICTION = "the office printer is not on floor 3 of the east wing"
 
 
-@pytest.mark.parametrize("name,run", [PATHS[0]])
+def _policy(m, rid):
+    return (next(r for r in m.items if r["id"] == rid).get("meta") or {}).get("superseded_by_policy")
+
+
+@pytest.mark.parametrize("name,run", PAIR_PATHS)
 def test_an_unkeyed_note_does_not_end_a_keyed_value(name, run):
     """Keyed older, unkeyed newer. The note may be right, but it does not carry the key, so retiring
     the keyed record would leave `current(key)` empty. The keyed write is the way to change a key."""
     m = Inspeximus(path=None)
     standing = m.remember(STANDING, key="printer::floor")
     note = m.remember(CONTRADICTION)
-    rep = run(m)
+    rep = _report(name, run(m))
     assert _status(m, standing) == "active", "an unkeyed note ended a keyed value"
     assert m.current("printer::floor") is not None
     assert _status(m, note) == "active"
     assert rep["distinct_keys"] == 1 and rep["toggled"] == 0, rep
 
 
-@pytest.mark.parametrize("name,run", [PATHS[0]])
+@pytest.mark.parametrize("name,run", PAIR_PATHS)
 def test_control_a_keyed_record_still_replaces_an_unkeyed_note(name, run):
     """Unkeyed older, keyed newer: no key loses its value, so the toggle works as it always did.
     Without this control the rule could be "keyed records never toggle", which would also pass above."""
     m = Inspeximus(path=None)
     note = m.remember(STANDING)
     keyed = m.remember(CONTRADICTION, key="printer::floor")
-    rep = run(m)
+    rep = _report(name, run(m))
     assert _status(m, note) == "superseded", "a keyed record no longer replaces the older note it contradicts"
-    assert (next(r for r in m.items if r["id"] == note).get("meta") or {}).get(
-        "superseded_by_policy") == "state_toggle"
+    assert _policy(m, note) == "state_toggle"
     assert _status(m, keyed) == "active"
     assert rep["toggled"] == 1, rep
 
 
-@pytest.mark.parametrize("name,run", [PATHS[0]])
+@pytest.mark.parametrize("name,run", PAIR_PATHS)
+def test_control_two_values_of_one_key_still_toggle(name, run):
+    """A genuine same-key state toggle still works. Two agent-bound handles each keep their own
+    active record for one key (write isolation, see _supersede_by_key), so the operator's view holds
+    two values of the same fact, and the newer one retires the older. Without this control the rule
+    could be "keyed records never toggle", which would pass every defect test above."""
+    m = Inspeximus(path=None)
+    old = m.as_agent("alice").remember(STANDING, key="printer::floor")
+    new = m.as_agent("bob").remember(CONTRADICTION, key="printer::floor")
+    assert _status(m, old) == "active" and _status(m, new) == "active", \
+        "precondition: both values of the key must be active before the pass"
+    rep = _report(name, run(m))
+    assert _status(m, old) == "superseded" and _policy(m, old) == "state_toggle", \
+        f"the older value of ONE key was not toggled: {_status(m, old)}, {_policy(m, old)}"
+    assert _status(m, new) == "active"
+    assert rep["toggled"] == 1 and rep.get("distinct_keys", 0) == 0, rep
+
+
+@pytest.mark.parametrize("name,run", PAIR_PATHS)
 def test_the_same_key_in_two_tenants_is_two_facts(name, run):
     """Write-time supersession already treats a key as (tenant, key): "only same-tenant records
     collide on a key". An unbound store consolidates across tenants, so the toggle must use the same

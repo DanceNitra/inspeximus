@@ -5356,6 +5356,15 @@
   ]
  },
  {
+  "name": "keyed records never toggle, not even two values of one key",
+  "file": "inspeximus/core.py",
+  "old": "        if older.get(\"key\") and ((older.get(\"tenant\"), older.get(\"key\"))",
+  "new": "        if older.get(\"key\") or ((older.get(\"tenant\"), older.get(\"key\"))",
+  "tests": [
+   "tests/test_a_state_toggle_never_ends_another_key.py"
+  ]
+ },
+ {
   "name": "the state toggle's key identity ignores the tenant",
   "file": "inspeximus/core.py",
   "old": "!= (newer.get(\"tenant\"), newer.get(\"key\"))):",
