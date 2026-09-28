@@ -224,7 +224,7 @@ def test_remember_on_a_signed_store_keeps_the_chain_verifiable(monkeypatch, tmp_
     from inspeximus.core import new_receipt_keypair
 
     sk, pk = new_receipt_keypair()
-    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "key_home"))
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path.parent / (tmp_path.name + "-key_home")))
     lib = Inspeximus(path=str(tmp_path / "store.json"), receipts=True, receipt_key=sk)
     lib.remember("the office is on elm street")
     del lib

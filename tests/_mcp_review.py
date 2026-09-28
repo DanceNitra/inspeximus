@@ -56,8 +56,10 @@ def load_server(monkeypatch, tmp_path, **env: str):
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "store.json"))
     # A receipted store records its chain head under the key home (~/.config/inspeximus/heads by default)
     # so a tail cut can be caught later. Keep that inside tmp_path too: nothing a test writes may land in
-    # the developer's config directory.
-    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "key_home"))
+    # the developer's config directory. BESIDE tmp_path, not in it: the store lives in tmp_path, and a
+    # read-guard key is refused inside the store's own directory (A-30), so a key home there makes every
+    # release fail with "no read-guard key".
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path.parent / (tmp_path.name + "-key_home")))
     for k, v in env.items():
         monkeypatch.setenv(k, v)
     return importlib.reload(importlib.import_module("inspeximus.mcp_server"))

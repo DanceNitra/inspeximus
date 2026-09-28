@@ -39,7 +39,7 @@ def signed_store(monkeypatch, tmp_path):
 
     for k in SERVER_ENV:
         monkeypatch.delenv(k, raising=False)
-    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "key_home"))
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path.parent / (tmp_path.name + "-key_home")))
     sk, pk = new_receipt_keypair()
     lib = Inspeximus(path=str(tmp_path / "store.json"), receipts=True, receipt_key=sk)
     a = lib.remember("alice lives at 5 elm st", source={"doc": "crm/alice"})
