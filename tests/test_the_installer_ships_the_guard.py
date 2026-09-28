@@ -42,9 +42,13 @@ def _install(tmp_path):
 
 
 def _fire(command):
-    ev = {"hook_event_name": "PreToolUse", "tool_name": "Bash",
+    # A project of its own (A-29): the hook opens the store at the event's cwd, or at its own, and
+    # without one here that was the repository root.
+    import tempfile
+    project = tempfile.mkdtemp()
+    ev = {"hook_event_name": "PreToolUse", "tool_name": "Bash", "cwd": project,
           "tool_input": {"command": command}}
-    return subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(ev),
+    return subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(ev), cwd=project,
                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180, env=ENV)
 
 
@@ -198,3 +202,25 @@ def test_CONTROL_an_ordinary_command_stays_silent():
     at: a stray byte on stderr at exit 0 is a warning the host would show and nobody wrote."""
     r = _fire("ls -la")
     assert (r.returncode, r.stdout.strip(), r.stderr.strip()) == (0, "", "")
+
+
+
+def test_firing_the_guard_writes_nothing_into_the_repository(monkeypatch):
+    """A-29: `_fire` ran the hook with no cwd, so the hook opened its project store at the repository
+    root. That left an empty `.inspeximus/` there, invisible to git, until 3.15.2's store lock started
+    writing a `.gitignore` into a store directory the hook creates; then every suite run left an
+    untracked directory one `git add -A` from a commit. Checked on the call itself, not on the
+    directory, which a parallel test could create or remove at any moment."""
+    seen = {}
+    real = subprocess.run
+
+    def spy(args, **kw):
+        seen.update(kw)
+        return real(args, **kw)
+
+    monkeypatch.setattr(subprocess, "run", spy)
+    _fire("gh issue comment 5 --body hi")
+    ran_in = os.path.abspath(seen.get("cwd") or os.getcwd())
+    store_at = os.path.abspath(json.loads(seen["input"]).get("cwd") or ran_in)
+    inside = lambda d: (os.path.normcase(d) + os.sep).startswith(os.path.normcase(ROOT) + os.sep)  # noqa: E731
+    assert not inside(ran_in) and not inside(store_at), (ran_in, store_at)

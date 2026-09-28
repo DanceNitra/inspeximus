@@ -4791,5 +4791,14 @@
   "tests": [
    "tests/test_every_hook_run_prints_one_strict_json_object.py"
   ]
+ },
+ {
+  "name": "the guard's test fires the hook from the repository root again",
+  "file": "tests/test_the_installer_ships_the_guard.py",
+  "old": "    ev = {\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"Bash\", \"cwd\": project,\n          \"tool_input\": {\"command\": command}}\n    return subprocess.run([sys.executable, \"-m\", \"inspeximus.claude_code\"], input=json.dumps(ev), cwd=project,\n",
+  "new": "    ev = {\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"Bash\",\n          \"tool_input\": {\"command\": command}}\n    return subprocess.run([sys.executable, \"-m\", \"inspeximus.claude_code\"], input=json.dumps(ev),\n",
+  "tests": [
+   "tests/test_the_installer_ships_the_guard.py"
+  ]
  }
 ]
