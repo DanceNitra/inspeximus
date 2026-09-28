@@ -7395,5 +7395,14 @@
   "tests": [
    "tests/test_audit_b_archive_kill_points.py"
   ]
+ },
+ {
+  "name": "B25-R1: the certificate does not list a withdrawn erasure",
+  "file": "inspeximus/archive.py",
+  "old": "\"temps\": files[\"temps\"], \"aborted\": aborted, \"problems\": problems}",
+  "new": "\"temps\": files[\"temps\"], \"aborted\": [], \"problems\": problems}",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
  }
 ]

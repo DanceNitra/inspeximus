@@ -269,3 +269,19 @@ def test_a_stop_between_the_log_and_its_head_leaves_a_log_that_verifies(tmp_path
     assert set(ids) <= {r["id"] for r in Inspeximus(p)._items}, "control: the hot rows were not dropped"
     assert archive.apply(Inspeximus(p), 7, now=T0)["applied"]
     assert archive.recorded_head(p)["count"] == len(archive.read_log(p))
+
+
+def test_a_withdrawn_erasure_is_listed_in_the_certificate_and_does_not_fail_it(tmp_path, monkeypatch):
+    """AUDIT-A's re-review: an aborted intent claims nothing, so it is not a certificate problem, but an
+    auditor sees that an erasure was attempted there and withdrawn."""
+    p, ids, hot = _store(tmp_path, monkeypatch)
+    by_seg = archive.locate(Inspeximus(p), [ids[1]])
+    archive.prepare_erasure(Inspeximus(p), by_seg)
+    assert (next(iter(by_seg)), "aborted") in archive.recover(Inspeximus(p)), "control: the intent was aborted"
+    Inspeximus(p).forget(ids=[ids[2]], request_id="later")
+    cert = Inspeximus(p).erasure_certificate()
+    aborted = cert["archive"]["aborted"]
+    assert aborted == [{"segment": next(iter(by_seg)), "ids": 1, "reason": "its tombstones are not on disk"}]
+    # The fixture store runs without write receipts, so self_check is never verified here; the archive
+    # block is what an abort could fail, and it must report nothing.
+    assert cert["archive"]["problems"] == [], cert["archive"]["problems"]

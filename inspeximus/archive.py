@@ -1085,8 +1085,13 @@ def certificate_block(store, erased_ids) -> dict | None:
     for n in files["temps"]:
         problems.append(f"{n} is a segment temp beside the store, a copy no erasure has checked")
     lp_path = log_path(m.path)
+    # WITHDRAWN ERASURES, as information and never as a problem (AUDIT-A, re-review of B25-R1): an
+    # aborted intent claims nothing, because its ids have no tombstones on disk. An auditor still sees
+    # that an erasure was attempted there and withdrawn, and why.
+    aborted = [{"segment": e.get("segment"), "ids": len(e.get("ids") or ()), "reason": e.get("reason")}
+               for e in entries if e.get("kind") == "amend-abort"]
     return {"log_sha256": _segment_sha256(lp_path) if lp_path.exists() else None, "segments": segs,
-            "unlisted": files["unlisted"], "temps": files["temps"], "problems": problems}
+            "unlisted": files["unlisted"], "temps": files["temps"], "aborted": aborted, "problems": problems}
 
 
 def verify_certificate_block(cert: dict, store_path, erased: set) -> tuple:
