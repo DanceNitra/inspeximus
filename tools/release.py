@@ -1,7 +1,7 @@
-"""The ONLY way to tag an inspeximus release: push HEAD to main, wait for CI on that exact commit, then tag.
+"""The ONLY way to tag an inspeximus release: CI green on a release branch, then main, then the tag.
 
     python tools/release.py X.Y.Z --dry-run         # the pre-flight only; nothing leaves this machine
-    python tools/release.py X.Y.Z                   # push, wait for CI, tag, stop at the owner's gate
+    python tools/release.py X.Y.Z                   # branch CI, main, main CI, tag, stop at the owner's gate
 
 WHY THIS EXISTS. On 2026-09-28 v3.15.0 was tagged by hand before CI had run on its commit. The release
 workflow's test gate then failed on a stale mutation target, and the tag cannot be deleted (repository
@@ -9,16 +9,26 @@ rule GH013), so 3.15.0 is a version that will never exist and 3.15.1 shipped the
 that would have stopped it lived in one session's scratch script; a guard only one session has protects
 one session. Every guard below refuses BEFORE the step it protects, and says which one fired.
 
+MAIN NEVER CARRIES A COMMIT CI HAS NOT CLEARED (2026-09-28). The first version of this script pushed HEAD
+to main and then waited for CI, so a red release commit sat on main: 3.15.2's 7fdb11c2 did, and every
+session that rebased onto main inherited it. HEAD now goes to a `release/X.Y.Z` branch first, and main
+moves only after the branch runs are green on that exact commit.
+
 Pre-flight, before anything leaves this machine:
   1. `tools/release_check.py --skip-tests` reports no [FAIL]. "ci on HEAD" is exempt: it cannot pass
-     before the push, and guard 5 is its real check.
+     before the push, and guards 5 and 7 are its real check.
   2. pyproject.toml says X.Y.Z.
   3. vX.Y.Z exists neither locally nor on origin.
-  4. HEAD is a fast-forward of origin/main, so the push cannot rewrite anything.
-Then HEAD is pushed to main, and before the tag:
-  5. the `push` run of ci.yml for exactly HEAD finished with conclusion success, and its headSha is HEAD.
-  6. origin/main is still HEAD, so the tag names the commit CI just cleared.
+  4. HEAD is a fast-forward of origin/main, so the push to main cannot rewrite anything.
+Then HEAD is pushed to `release/X.Y.Z` and the workflows are started there by workflow_dispatch: ci.yml
+always, and one-memory.yml and clean-install.yml when HEAD changes a path their own `push: paths:` list
+names. Before main moves:
+  5. every one of those runs finished with conclusion success, and its headSha is HEAD.
+Then HEAD is pushed to main as a fast-forward, and before the tag:
+  6. origin/main is HEAD, so the tag names the commit CI cleared.
+  7. the `push` run of ci.yml on main for exactly HEAD finished with conclusion success.
 Then the tag is created and pushed, and the script finds the release run and STOPS at its `pypi` gate.
+The release branch stays on origin; nothing here deletes a ref.
 
 THE PYPI GATE IS THE OWNER'S, AND NOTHING HERE APPROVES IT. The `pypi` environment's required reviewer is
 the owner's account; a session that approves it through the API bypasses the one review CI cannot make.
@@ -33,6 +43,7 @@ watch each guard fire without a network or a repository (tests/test_the_release_
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import json
 import pathlib
 import re
@@ -42,6 +53,8 @@ import time
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPO = "DanceNitra/inspeximus"
+#: Started on the release branch when HEAD changes one of their own `push: paths:` entries.
+INSTALL_WORKFLOWS = ("one-memory.yml", "clean-install.yml")
 
 
 def default_sh(args, cwd=None):
@@ -75,46 +88,111 @@ def preflight(version, sh, root=ROOT):
     return reasons
 
 
-def ci_run(head, sh, sleep, polls=180, every=30):
-    """The finished `push` run of ci.yml for exactly `head`, or Stop."""
+def push_paths(workflow_text):
+    """The globs under `push: paths:` in a workflow file, read line by line (no YAML dependency)."""
+    globs, in_push, in_paths = [], False, False
+    for ln in workflow_text.splitlines():
+        if re.match(r"^\S", ln):
+            in_push = in_paths = False
+        elif re.match(r"^  push:\s*$", ln):
+            in_push, in_paths = True, False
+        elif re.match(r"^  \S", ln):
+            in_push = in_paths = False
+        elif in_push and re.match(r"^    paths:\s*$", ln):
+            in_paths = True
+        elif in_push and re.match(r"^    \S", ln):
+            in_paths = False
+        elif in_paths:
+            m = re.match(r'^\s+-\s+["\']?([^"\']+?)["\']?\s*$', ln)
+            if m:
+                globs.append(m.group(1))
+    return globs
+
+
+def branch_workflows(sh, root=ROOT):
+    """ci.yml, plus each install workflow whose own push paths HEAD changes against origin/main."""
+    changed = [p.strip() for p in sh(["git", "diff", "--name-only", "origin/main", "HEAD"])[1].splitlines()
+               if p.strip()]
+    chosen = ["ci.yml"]
+    for wf in INSTALL_WORKFLOWS:
+        path = pathlib.Path(root) / ".github" / "workflows" / wf
+        globs = push_paths(path.read_text(encoding="utf-8")) if path.exists() else []
+        if any(fnmatch.fnmatch(p, g) for p in changed for g in globs):
+            chosen.append(wf)
+    return chosen
+
+
+def finished_run(head, workflow, event, sh, sleep, branch=None, polls=180, every=30):
+    """The newest finished run of `workflow` from `event` for exactly `head`, or Stop."""
+    args = ["gh", "run", "list", "-R", REPO, "--workflow", workflow, "--commit", head,
+            "--json", "databaseId,event,headSha,headBranch,status,conclusion"]
     for _ in range(polls):
-        rc, out = sh(["gh", "run", "list", "-R", REPO, "--commit", head, "--workflow", "ci.yml",
-                      "--json", "databaseId,event,headSha,status,conclusion"])
+        rc, out = sh(args)
         runs = [r for r in (json.loads(out) if rc == 0 and out.strip().startswith("[") else [])
-                if r.get("event") == "push" and r.get("headSha") == head]
+                if r.get("event") == event and r.get("headSha") == head
+                and (branch is None or r.get("headBranch") == branch)]
         if runs and runs[0].get("status") == "completed":
             return runs[0]
         sleep(every)
-    raise Stop("no finished push run of ci.yml for %s" % head)
+    raise Stop("no finished %s run of %s for %s" % (event, workflow, head))
 
 
 def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
-    ap = argparse.ArgumentParser(prog="release.py", description="Push, wait for CI, then tag. The only way to tag.")
+    ap = argparse.ArgumentParser(prog="release.py", description="Branch CI, main, main CI, then the tag. "
+                                                                "The only way to tag.")
     ap.add_argument("version")
     ap.add_argument("--dry-run", action="store_true", help="run the pre-flight only")
     a = ap.parse_args(argv)
     v = a.version
+    branch = "release/%s" % v
     try:
         reasons = preflight(v, sh, root)
         if reasons:
             raise Stop("; ".join(reasons))
         head = sh(["git", "rev-parse", "HEAD"])[1].strip()
+        workflows = branch_workflows(sh, root)
         if a.dry_run:
-            out("pre-flight clear for v%s at %s; --dry-run, nothing pushed" % (v, head[:12]))
+            out("pre-flight clear for v%s at %s; would run %s on %s first; --dry-run, nothing pushed"
+                % (v, head[:12], ", ".join(workflows), branch))
             return 0
+
+        # THE BRANCH FIRST. Main moves only after every run below is green on this exact commit.
+        rc, msg = sh(["git", "push", "origin", "%s:refs/heads/%s" % (head, branch)])
+        if rc != 0:
+            raise Stop("push to %s refused: %s" % (branch, msg.strip()[-300:]))
+        out("pushed %s to %s" % (head[:12], branch))
+        for wf in workflows:
+            rc, msg = sh(["gh", "workflow", "run", wf, "-R", REPO, "--ref", branch])
+            if rc != 0:
+                raise Stop("could not start %s on %s: %s" % (wf, branch, msg.strip()[-300:]))
+        cleared = []
+        for wf in workflows:
+            run = finished_run(head, wf, "workflow_dispatch", sh, sleep, branch=branch)
+            if run.get("conclusion") != "success" or run.get("headSha") != head:
+                raise Stop("%s run %s on %s is %s on %s, not success on %s; main was not touched" % (
+                    wf, run.get("databaseId"), branch, run.get("conclusion"), str(run.get("headSha"))[:12],
+                    head[:12]))
+            cleared.append("%s run %s" % (wf, run.get("databaseId")))
+        out("%s: success on %s" % (", ".join(cleared), head[:12]))
+
         rc, msg = sh(["git", "push", "origin", "%s:main" % head])
         if rc != 0:
             raise Stop("push to main refused: " + msg.strip()[-300:])
         out("pushed %s to main" % head[:12])
-        run = ci_run(head, sh, sleep)
+        now = sh(["git", "ls-remote", "origin", "refs/heads/main"])[1].split()
+        if not now or now[0] != head:
+            raise Stop("origin/main moved to %s after the push; the tag would not name what CI cleared"
+                       % (now[0][:12] if now else "nothing"))
+        run = finished_run(head, "ci.yml", "push", sh, sleep)
         if run.get("conclusion") != "success" or run.get("headSha") != head:
             raise Stop("main CI run %s is %s on %s, not success on %s" % (
                 run.get("databaseId"), run.get("conclusion"), str(run.get("headSha"))[:12], head[:12]))
         out("main CI run %s: success on %s" % (run.get("databaseId"), head[:12]))
         now = sh(["git", "ls-remote", "origin", "refs/heads/main"])[1].split()
         if not now or now[0] != head:
-            raise Stop("origin/main moved to %s after the push; the tag would not name what CI cleared"
+            raise Stop("origin/main moved to %s during main CI; the tag would not name what CI cleared"
                        % (now[0][:12] if now else "nothing"))
+
         for cmd in (["git", "tag", "-a", "v%s" % v, head, "-m", "inspeximus %s" % v],
                     ["git", "push", "origin", "v%s" % v]):
             rc, msg = sh(cmd)
@@ -134,8 +212,9 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
         if release_id is None:
             raise Stop("no release run for v%s" % v)
         url = "https://github.com/%s/actions/runs/%s" % (REPO, release_id)
-        out("gates passed: release_check, pyproject %s, no existing tag, fast-forward, ci.yml run %s success "
-            "on %s, origin/main unchanged; tagged v%s" % (v, run.get("databaseId"), head[:12], v))
+        out("gates passed: release_check, pyproject %s, no existing tag, fast-forward, %s on %s, main CI run "
+            "%s success on %s, origin/main unchanged; tagged v%s"
+            % (v, ", ".join(cleared), branch, run.get("databaseId"), head[:12], v))
         out("waiting for owner: approve the PyPI publish of v%s at %s" % (v, url))
         out("  Actions > run %s > Review deployments > pypi > Approve" % release_id)
         return 0

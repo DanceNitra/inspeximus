@@ -3949,8 +3949,8 @@
  {
   "name": "the release script tags after a red CI run",
   "file": "tools/release.py",
-  "old": "        if run.get(\"conclusion\") != \"success\" or run.get(\"headSha\") != head:\n",
-  "new": "        if False:\n",
+  "old": "        if run.get(\"conclusion\") != \"success\" or run.get(\"headSha\") != head:\n            raise Stop(\"main CI run %s is %s on %s, not success on %s\" % (\n",
+  "new": "        if False:\n            raise Stop(\"main CI run %s is %s on %s, not success on %s\" % (\n",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
@@ -3958,8 +3958,8 @@
  {
   "name": "the release script accepts another commit's CI run",
   "file": "tools/release.py",
-  "old": "                if r.get(\"event\") == \"push\" and r.get(\"headSha\") == head]",
-  "new": "                if r.get(\"event\") == \"push\"]",
+  "old": "                if r.get(\"event\") == event and r.get(\"headSha\") == head\n",
+  "new": "                if r.get(\"event\") == event\n",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
@@ -3967,8 +3967,8 @@
  {
   "name": "the release script tags after origin/main moved",
   "file": "tools/release.py",
-  "old": "        if not now or now[0] != head:\n",
-  "new": "        if False:\n",
+  "old": "        if not now or now[0] != head:\n            raise Stop(\"origin/main moved to %s during main CI; the tag would not name what CI cleared\"\n",
+  "new": "        if False:\n            raise Stop(\"origin/main moved to %s during main CI; the tag would not name what CI cleared\"\n",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
@@ -5182,6 +5182,78 @@
   "new": "        _make_store_dir(path.parent, ignore_lock=None)\n",
   "tests": [
    "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "main moves after a red branch run",
+  "file": "tools/release.py",
+  "old": "            if run.get(\"conclusion\") != \"success\" or run.get(\"headSha\") != head:\n                raise Stop(\"%s run %s on %s is %s on %s, not success on %s; main was not touched\" % (\n",
+  "new": "            if False:\n                raise Stop(\"%s run %s on %s is %s on %s, not success on %s; main was not touched\" % (\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "HEAD goes to main without waiting for the branch runs",
+  "file": "tools/release.py",
+  "old": "        for wf in workflows:\n            run = finished_run(",
+  "new": "        for wf in []:\n            run = finished_run(",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "a branch run of another branch counts",
+  "file": "tools/release.py",
+  "old": "                and (branch is None or r.get(\"headBranch\") == branch)]\n",
+  "new": "                ]\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "a workflow that could not start on the branch is ignored",
+  "file": "tools/release.py",
+  "old": "            if rc != 0:\n                raise Stop(\"could not start",
+  "new": "            if False:\n                raise Stop(\"could not start",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "a refused branch push goes on to main",
+  "file": "tools/release.py",
+  "old": "        if rc != 0:\n            raise Stop(\"push to %s refused",
+  "new": "        if False:\n            raise Stop(\"push to %s refused",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "an install change does not run the install workflows",
+  "file": "tools/release.py",
+  "old": "        if any(fnmatch.fnmatch(p, g) for p in changed for g in globs):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "every change runs the install workflows",
+  "file": "tools/release.py",
+  "old": "        if any(fnmatch.fnmatch(p, g) for p in changed for g in globs):\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "origin/main moving right after the push goes unnoticed",
+  "file": "tools/release.py",
+  "old": "        if not now or now[0] != head:\n            raise Stop(\"origin/main moved to %s after the push; the tag would not name what CI cleared\"\n",
+  "new": "        if False:\n            raise Stop(\"origin/main moved to %s after the push; the tag would not name what CI cleared\"\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
   ]
  }
 ]
