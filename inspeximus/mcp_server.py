@@ -1228,10 +1228,11 @@ def consolidate(keep: int | None = None) -> dict:
 @mcp.tool()
 def sleep(cluster_threshold: int = 15, keep: int | None = None) -> dict:
     """SLEEP-TIME COMPUTE: call this whenever the agent is IDLE to run background memory maintenance in
-    one cheap, idempotent pass — the expensive reorganization the write path defers. It consolidates any
+    one idempotent pass — the expensive reorganization the write path defers. It consolidates any
     ripe near-duplicate clusters (dedup + preference-flip handling), and, if `keep` is given (or a
-    capacity was configured), prunes/re-affirms the memory budget. A no-op until something is ripe, so
-    it's safe to call on every idle tick; a second immediate call does no new work; it never edits raw
+    capacity was configured), prunes/re-affirms the memory budget. It changes nothing until something is
+    ripe, but each call clusters every active record (under a minute at 60,000), so call it on a long
+    idle, not on every tick; a second immediate call does no new work; it never edits raw
     text. This is the recommended place to do heavy cleanup so remember()/recall() stay fast."""
     return _MEM.sleep(cluster_threshold=cluster_threshold, keep=keep)
 
@@ -1240,8 +1241,8 @@ def sleep(cluster_threshold: int = 15, keep: int | None = None) -> dict:
 def consolidate_clusters(threshold: int = 15) -> dict:
     """Cluster-TRIGGERED consolidation: consolidate a semantic cluster only once it has grown past
     `threshold` members — not a global blanket. Avoids prematurely consolidating sparse topics (raw
-    episodes stay the best representation) and unbounded growth in dense ones. Cheap to call often
-    (a no-op until a cluster is ripe). Returns clusters_total / clusters_fired / linked_pairs / ..."""
+    episodes stay the best representation) and unbounded growth in dense ones. It changes nothing until
+    a cluster is ripe, but each call clusters every active record. Returns clusters_total / clusters_fired / linked_pairs / ..."""
     return _MEM.consolidate_clusters(threshold=threshold)
 
 

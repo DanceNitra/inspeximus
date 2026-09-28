@@ -17589,9 +17589,10 @@ class Inspeximus:
         """Cluster-TRIGGERED consolidation: consolidate a semantic cluster only once it has grown past
         `threshold` members — not a global nightly blanket. Avoids (1) prematurely consolidating sparse
         topics, where the raw episodes are still the best representation, and (2) unbounded growth in
-        dense ones. Cheap to call often (no-op until a cluster is ripe). Runs dedup + the state-toggle
-        guard (+ optional keep-budget) WITHIN each ripe cluster only. A clashing pair where the older
-        record is keyed and the newer one has another key (or none) is linked, not toggled, and
+        dense ones. It changes nothing until a cluster is ripe, but every call clusters all active
+        records: seconds at a few thousand, under a minute at 60,000 (AUDIT-B B-16). Runs dedup + the
+        state-toggle guard (+ optional keep-budget) WITHIN each ripe cluster only. A clashing pair where the
+        older record is keyed and the newer one has another key (or none) is linked, not toggled, and
         counted in `distinct_keys` (see _resolve_state_toggle)."""
         clusters = [[r for r in c if not Inspeximus._is_session_bookkeeping(r)]
                     for c in self._cluster_active(cluster_sim)]
@@ -17680,12 +17681,13 @@ class Inspeximus:
 
     def sleep(self, cluster_threshold: int = 15, keep: int | None = None,
               retention_days: float | None = None) -> dict:
-        """SLEEP-TIME COMPUTE: one idempotent, cheap idle-maintenance call the host runs whenever the
-        agent is idle. The write path (remember) stays fast — append + keyed supersession + (opt-in)
+        """SLEEP-TIME COMPUTE: one idempotent idle-maintenance call the host runs whenever the agent is
+        idle. The write path (remember) stays fast — append + keyed supersession + (opt-in)
         capacity eviction — and the EXPENSIVE O(n) reorganization is deferred here: cluster-triggered
         consolidation (dedup + state-toggle linking within ripe clusters), then optional keep-budget
-        pruning and capacity re-affirmation. Cheap-to-call: a no-op until a cluster is ripe / capacity
-        is exceeded, so the host can invoke it on every idle tick. Idempotent: a second immediate call
+        pruning and capacity re-affirmation. It changes nothing until a cluster is ripe or capacity is
+        exceeded, but every call clusters all active records (51 s on a copy with 60,808 active records,
+        AUDIT-B B-16), so on a large store the host runs it on a long idle, not on every tick. Idempotent: a second immediate call
         does no new work. Never edits raw text. Returns what the pass did.
 
         This is inspeximus's answer to Letta-style sleep-time compute, but as a pure library primitive (the
