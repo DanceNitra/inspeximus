@@ -7085,5 +7085,104 @@
   "tests": [
    "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
   ]
+ },
+ {
+  "name": "B-25: a subject erasure runs with a missing or altered segment",
+  "file": "inspeximus/archive.py",
+  "old": "    problems = check_segments(m.path)\r\n    if problems:\r\n        raise SegmentsUnreachable(problems)\r\n    with pooled(store):",
+  "new": "    problems = []\r\n    if problems:\r\n        raise SegmentsUnreachable(problems)\r\n    with pooled(store):",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: erasing by id ignores a missing segment that holds the id",
+  "file": "inspeximus/archive.py",
+  "old": "    problems = check_segments(m.path, names)",
+  "new": "    problems = []",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: forget does not look for its ids in the archive",
+  "file": "inspeximus/core.py",
+  "old": "            _arch_ids = _archive.locate(self, _req)",
+  "new": "            _arch_ids = {}",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: forget_subject erases only in the hot store",
+  "file": "inspeximus/core.py",
+  "old": "                          _archive_ids=_archive.locate(self, subj_ids))",
+  "new": "                          _archive_ids={})",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: forget_pii erases only in the hot store",
+  "file": "inspeximus/core.py",
+  "old": "                          _archive_ids=_archive.locate(self, target))",
+  "new": "                          _archive_ids={})",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: the temp sweep removes a temp a pending amend still needs",
+  "file": "inspeximus/archive.py",
+  "old": "            if name in keep:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: a certificate verifies with a segment it could not check",
+  "file": "inspeximus/core.py",
+  "old": "             and checks.get(\"archive_absent\") is not False",
+  "new": "             and True",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: the archive log is an unknown sibling to erase_past_copies",
+  "file": "inspeximus/core.py",
+  "old": "irrev|cusum|partitions|actions|archive)",
+  "new": "irrev|cusum|partitions|actions)",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: a git-tracked segment that held an erased record is not named",
+  "file": "inspeximus/archive.py",
+  "old": "            if erased & ever.get(name, set()):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: erasure_audit reads only the hot store",
+  "file": "inspeximus/core.py",
+  "old": "        if _archive.active(self):\r\n            with _archive.pooled(self):\r\n                return self.erasure_audit(subject, values)",
+  "new": "        if False:\r\n            with _archive.pooled(self):\r\n                return self.erasure_audit(subject, values)",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: an erasure's rewrite of a segment is not committed in the log",
+  "file": "inspeximus/archive.py",
+  "old": "        _append(m.path, {\"v\": 1, \"kind\": \"amend\", \"ts\": time.time(), \"segment\": p[\"segment\"],",
+  "new": "        _append(m.path, {\"v\": 1, \"kind\": \"amend-lost\", \"ts\": time.time(), \"segment\": p[\"segment\"],",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
  }
 ]

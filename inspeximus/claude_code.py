@@ -494,7 +494,9 @@ def scrub_secrets(cwd=None, apply=False) -> dict:
         raise TypeError(f"scrub_secrets(apply=...) takes True or False, not {apply!r}")
     import glob as _glob
     m = _store(cwd)
-    hits = [r["id"] for r in m.items if _record_has_secret(r)]
+    from . import archive as _archive
+    with _archive.erasure_pool(m):                  # archived captures are read and erased too (B-25)
+        hits = [r["id"] for r in m.items if _record_has_secret(r)]
     base = str(m.path)
     copies = sorted(os.path.basename(p) for p in _glob.glob(base + "*")
                     if os.path.isfile(p) and p != base

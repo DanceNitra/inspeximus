@@ -25,10 +25,18 @@ SEGMENTS are row stores named `<stem>.archive-YYYY-MM.<n><suffix>`, for example
 `coding_memory.archive-2026-09.1.json`, holding the moved records verbatim and a manifest in their `meta`
 table. A segment is closed at `SEGMENT_CAP_BYTES` of record documents and the next one takes `.2`.
 
-WHAT THIS VERSION DOES NOT DO YET, stated so nobody relies on it: erasure (`forget`, `forget_subject`,
-`forget_pii`, the certificate and the residue scans) does not yet reach segments, and `verify_writes` does
-not yet read the log. Both are the next step of B-25 and ship in the same release as this module, which is
-why `apply` refuses a store with write receipts and nothing here is on by default.
+ERASURE REACHES THE SEGMENTS. `forget`, `forget_subject`, `forget_pii` and `--scrub-secrets` select over the
+hot rows and the archived rows as one store, rewrite each segment that held a match (an `amend-intent`,
+the rewrite, then the `amend`; `recover` finishes one that stopped), and put the tombstones in the hot
+store's one chain. A segment that is missing or does not match the log refuses the erasure before anything
+is erased (`SegmentsUnreachable`): every segment for a subject, a PII sweep or a predicate, and only the
+segments holding the ids for `forget(ids=...)`. The erasure certificate names each segment and whether the
+erased ids were checked absent in it; `verify_erasure_certificate` re-checks that, and a segment it cannot
+find is a named gap, never a pass.
+
+NOT YET, stated so nobody relies on it: `verify_writes` does not read the log, so `apply` still refuses a
+store with write receipts. Encrypted stores and the JSON pin are refused, because a segment is a plain
+row store.
 """
 from __future__ import annotations
 
@@ -119,14 +127,266 @@ def _write_log(store_path, entries: list) -> None:
 
 
 def listed_segments(store_path) -> dict:
-    """segment file name -> {"sha256", "ids"} as the log last recorded it."""
+    """segment file name -> {"sha256", "ids"} as the log last recorded it: moves add ids, a committed
+    amend (an erasure inside the segment) removes its ids and sets the new sha256."""
     out: dict = {}
     for e in read_log(store_path):
         if e.get("kind") == "move":
             seg = out.setdefault(e["segment"], {"sha256": None, "ids": []})
             seg["sha256"] = e["segment_sha256"]
             seg["ids"] = sorted(set(seg["ids"]) | set(e["ids"]))
+        elif e.get("kind") == "amend" and e.get("segment") in out:
+            seg = out[e["segment"]]
+            seg["sha256"] = e["new_sha256"]
+            seg["ids"] = sorted(set(seg["ids"]) - set(e["ids"]))
     return out
+
+
+def _append(store_path, entry: dict) -> dict:
+    entries = read_log(store_path)
+    entry["prev"] = entries[-1]["hash"] if entries else GENESIS
+    entry["hash"] = _entry_hash(entry)
+    entries.append(entry)
+    _write_log(store_path, entries)
+    return entry
+
+
+def _pending_intents(entries: list) -> list:
+    """`amend-intent` entries with no `amend` that commits them."""
+    done = {e.get("intent") for e in entries if e.get("kind") == "amend"}
+    return [e for e in entries if e.get("kind") == "amend-intent" and e["hash"] not in done]
+
+
+def _segment_rx(store_path):
+    import re
+    p = Path(store_path)
+    return re.compile(re.escape(p.stem) + r"\.archive-\d{4}-\d{2}\.\d+" + re.escape(p.suffix) + r"$")
+
+
+def segment_files(store_path) -> dict:
+    """Every file beside the store that holds archived rows, whether or not the log names it.
+
+    `listed`: in the log. `unlisted`: a segment the log does not name (a run that stopped after writing
+    it); it holds copies of rows that are still in the hot store. `temps`: a segment being written or
+    rewritten (`<segment>.tmp.<pid>`). An erasure has to account for all three."""
+    import re
+    p = Path(store_path)
+    rx = _segment_rx(store_path)
+    trx = re.compile(rx.pattern[:-1] + r"\.tmp\.\d+$")
+    try:
+        names = os.listdir(p.parent)
+    except OSError:
+        names = []
+    listed = listed_segments(store_path) if log_path(store_path).exists() else {}
+    return {"listed": listed,
+            "unlisted": sorted(n for n in names if rx.match(n) and n not in listed),
+            "temps": sorted(n for n in names if trx.match(n))}
+
+
+def present(store_path) -> bool:
+    """Whether this store has an archive at all: a log, or a segment or segment temp beside it."""
+    if not store_path:
+        return False
+    if log_path(store_path).exists():
+        return True
+    f = segment_files(store_path)
+    return bool(f["unlisted"] or f["temps"])
+
+
+class SegmentsUnreachable(ValueError):
+    """An erasure needs segments that are missing or do not match the log. Nothing was erased."""
+
+    def __init__(self, problems: list):
+        self.problems = problems
+        super().__init__("the erasure was refused and nothing was erased, because these archive segments "
+                         "cannot be checked: " + "; ".join(f"{p['segment']} ({p['state']})" for p in problems))
+
+
+def check_segments(store_path, names=None) -> list:
+    """[{segment, state}] for each listed segment (or each of `names`) that is missing or whose sha256
+    differs from the log. Empty when every one is present and matches."""
+    listed = listed_segments(store_path)
+    out = []
+    for name in (sorted(listed) if names is None else sorted(names)):
+        sp = Path(store_path).with_name(name)
+        if not sp.exists():
+            out.append({"segment": name, "state": "missing"})
+        elif _segment_sha256(sp) != listed[name]["sha256"]:
+            out.append({"segment": name, "state": "altered"})
+    return out
+
+
+def recover(store_path) -> list:
+    """Finish an erasure that stopped between its `amend-intent` and its `amend`. A segment still at its
+    logged sha256 with the prepared temp beside it is replaced by the temp; a segment already at the
+    intent's sha256 is committed. Anything else is left for `check_segments` to report. Returns what it
+    did, as [(segment, action)]."""
+    from .core import _StoreLock
+    done = []
+    if not log_path(store_path).exists():
+        return done
+    with _StoreLock(store_path):
+        _recover_locked(store_path, done)
+    return done
+
+
+def _recover_locked(store_path, done: list) -> None:
+    for it in _pending_intents(read_log(store_path)):
+        sp = Path(store_path).with_name(it["segment"])
+        tmp = Path(store_path).with_name(it["temp"])
+        cur = _segment_sha256(sp) if sp.exists() else None
+        if cur == it["old_sha256"] and tmp.exists() and _segment_sha256(tmp) == it["new_sha256"]:
+            os.replace(tmp, sp)
+            cur = it["new_sha256"]
+            done.append((it["segment"], "replaced"))
+        if cur == it["new_sha256"]:
+            _append(store_path, {"v": 1, "kind": "amend", "ts": time.time(), "segment": it["segment"],
+                                 "new_sha256": it["new_sha256"], "ids": it["ids"], "intent": it["hash"]})
+            done.append((it["segment"], "committed"))
+
+
+def sweep_temps(store_path) -> list:
+    """Remove segment temps no pending amend refers to, under the store's lock; return their names.
+
+    A temp is a segment being written: by a move (a copy of rows that are still in the hot store or
+    already in a finished segment) or by an erasure (the segment without the erased rows). One that a
+    stopped process left behind is a copy nothing accounts for, the shape of A-08's save temps, so an
+    erasure or a run removes it rather than reporting a clean pass beside it."""
+    from .core import _StoreLock
+    if not store_path:
+        return []
+    swept = []
+    with _StoreLock(store_path):
+        keep = {it.get("temp") for it in _pending_intents(read_log(store_path))}             if log_path(store_path).exists() else set()
+        for name in segment_files(store_path)["temps"]:
+            if name in keep:
+                continue
+            try:
+                os.unlink(Path(store_path).with_name(name))
+                swept.append(name)
+            except OSError:
+                pass
+    return swept
+
+
+def active(store) -> bool:
+    """Whether erasures on this store must reach an archive: it has one, and this call is not already
+    inside a pooled read (where the archive rows are part of the selection)."""
+    m = _base(store)
+    return bool(getattr(m, "path", None)) and not getattr(m, "_archive_pooled", False) and present(m.path)
+
+
+@contextlib.contextmanager
+def erasure_pool(store):
+    """The selection phase of an erasure that can match in any month (a subject, a PII sweep, a
+    predicate): finish any interrupted amend, refuse unless EVERY segment is present and matches the log,
+    then pool the segment rows in, so the selection, its ambiguity checks and its lineage closure see the
+    hot rows and the archived rows as one store. Nothing is erased inside the block."""
+    if not active(store):
+        yield
+        return
+    m = _base(store)
+    recover(m.path)
+    sweep_temps(m.path)
+    problems = check_segments(m.path)
+    if problems:
+        raise SegmentsUnreachable(problems)
+    with pooled(store):
+        yield
+
+
+def locate(store, ids) -> dict:
+    """{segment name: [ids]}: where the given ids sit in the archive. Listed segments are read from the
+    log; an unlisted segment (a copy of rows still in the hot store) is read from disk, so an erasure
+    reaches its copies too. Refuses (SegmentsUnreachable) when a listed segment holding one of the ids is
+    missing or does not match the log: only those segments, so erasing by id needs only what it touches."""
+    from . import sqlite_store as _rows
+    m = _base(store)
+    want = set(ids or ())
+    if not want or not present(m.path):
+        return {}
+    recover(m.path)
+    sweep_temps(m.path)
+    files = segment_files(m.path)
+    names = [n for n, seg in files["listed"].items() if want & set(seg["ids"])]
+    problems = check_segments(m.path, names)
+    if problems:
+        raise SegmentsUnreachable(problems)
+    out = {n: sorted(want & set(files["listed"][n]["ids"])) for n in names}
+    tenant = getattr(store, "tenant", None) if store is not m else None
+    for n in files["unlisted"]:
+        got = sorted(r["id"] for r in _rows.load(Path(m.path).with_name(n))
+                     if isinstance(r, dict) and r.get("id") in want
+                     and (tenant is None or r.get("tenant") == tenant))
+        if got:
+            out[n] = got
+    if tenant is not None:
+        for n in names:
+            rows = {r["id"]: r for r in _rows.load(Path(m.path).with_name(n)) if isinstance(r, dict)}
+            out[n] = [i for i in out[n] if rows.get(i, {}).get("tenant") == tenant]
+        out = {n: v for n, v in out.items() if v}
+    return out
+
+
+def prepare_erasure(store, by_segment: dict) -> list:
+    """For each segment, write the rewritten segment beside it as a temp (without the erased rows) and
+    log an `amend-intent` naming the ids, the old and the new sha256. Returns the prepared entries and
+    the erased rows' text and object values, for the residue checks."""
+    from . import sqlite_store as _rows
+    from .core import _StoreLock
+    m = _base(store)
+    prepared = []
+    with _StoreLock(m.path):
+        _prepare_locked(m, by_segment, prepared, _rows)
+    return prepared
+
+
+def _prepare_locked(m, by_segment: dict, prepared: list, _rows) -> None:
+    listed = listed_segments(m.path)
+    for name, ids in sorted(by_segment.items()):
+        sp = Path(m.path).with_name(name)
+        rows = [r for r in _rows.load(sp) if isinstance(r, dict) and r.get("id")]
+        drop = set(ids)
+        erased = [r for r in rows if r["id"] in drop]
+        keep = [r for r in rows if r["id"] not in drop]
+        tmp = sp.with_name(sp.name + ".tmp.%d" % os.getpid())
+        if tmp.exists():
+            tmp.unlink()
+        keep_ids = sorted(r["id"] for r in keep)
+        manifest = {"kind": SEGMENT_KIND, "hot_store": Path(m.path).name, "segment": name,
+                    "month": name.split(".archive-")[1][:7], "count": len(keep_ids),
+                    "ids_sha256": hashlib.sha256("\n".join(keep_ids).encode("utf-8")).hexdigest()}
+        new_sha = _write_segment_file(tmp, keep, manifest)
+        # Logged for an unlisted segment too, so a concurrent sweep keeps the temp (it keeps whatever a
+        # pending intent names) and a crash before the commit is finished by `recover`.
+        old_sha = listed[name]["sha256"] if name in listed else _segment_sha256(sp)
+        entry = _append(m.path, {"v": 1, "kind": "amend-intent", "ts": time.time(), "segment": name,
+                                 "ids": sorted(drop), "old_sha256": old_sha,
+                                 "new_sha256": new_sha, "temp": tmp.name})
+        prepared.append({"segment": name, "ids": sorted(drop), "temp": tmp.name, "intent": entry,
+                         "values": [v for r in erased for v in (r.get("text"), r.get("object"))
+                                    if isinstance(v, str) and v.strip()]})
+
+
+def commit_erasure(store, prepared: list) -> list:
+    """Replace each segment by its prepared temp and log the `amend`. An unlisted segment has no log
+    entry: it is rewritten and stays unlisted. Returns [{segment, state}]."""
+    from .core import _StoreLock
+    m = _base(store)
+    states = []
+    with _StoreLock(m.path):
+        _commit_locked(m, prepared, states)
+    return states
+
+
+def _commit_locked(m, prepared: list, states: list) -> None:
+    for p in prepared:
+        sp = Path(m.path).with_name(p["segment"])
+        os.replace(Path(m.path).with_name(p["temp"]), sp)
+        _append(m.path, {"v": 1, "kind": "amend", "ts": time.time(), "segment": p["segment"],
+                         "new_sha256": p["intent"]["new_sha256"], "ids": p["ids"],
+                         "intent": p["intent"]["hash"]})
+        states.append({"segment": p["segment"], "state": "rewritten", "erased": len(p["ids"])})
 
 
 # ── selection ────────────────────────────────────────────────────────────────────────────────────────
@@ -293,28 +553,15 @@ def _segment_sha256(path) -> str:
     return h.hexdigest()
 
 
-def _write_segment(seg_path: Path, records: list, manifest: dict) -> str:
-    """Write one segment as a row store holding `records` verbatim, then its manifest. Returns its sha256.
-
-    A segment left by a run that crashed before its log entry is reused when it holds exactly these ids,
-    and refused otherwise, as `actions.py` treats an archive file it finds in place."""
+def _write_segment_file(path: Path, records: list, manifest: dict) -> str:
+    """Write a new row store at `path` holding `records` verbatim, then the manifest; return its sha256."""
     from . import sqlite_store as _rows
     from .core import Inspeximus
-    ids = sorted(r["id"] for r in records)
-    if seg_path.exists():
-        have = sorted(r.get("id") for r in _rows.load(seg_path) if isinstance(r, dict))
-        if have != ids:
-            raise ArchiveRefused(f"{seg_path.name} already exists with other records; refusing to overwrite a "
-                                 f"segment the log does not name")
-        return _segment_sha256(seg_path)
-    tmp = seg_path.with_name(seg_path.name + ".tmp.%d" % os.getpid())
-    if tmp.exists():
-        tmp.unlink()
-    seg = Inspeximus(path=str(tmp), receipts=False)
+    seg = Inspeximus(path=str(path), receipts=False)
     seg._items = [copy.deepcopy(dict(r)) for r in records]
     seg._save(force=True)
     seg.flush()
-    con = _rows._connect(tmp)
+    con = _rows._connect(path)
     try:
         con.execute("INSERT OR REPLACE INTO meta(k, v) VALUES('archive_manifest', ?)",
                     (json.dumps(manifest, sort_keys=True),))
@@ -322,6 +569,29 @@ def _write_segment(seg_path: Path, records: list, manifest: dict) -> str:
     finally:
         con.close()
     del seg
+    return _segment_sha256(path)
+
+
+def _write_segment(seg_path: Path, records: list, manifest: dict, hot_ids=frozenset()) -> str:
+    """Write one segment holding `records` verbatim, then its manifest. Returns its sha256.
+
+    A segment the log does not name is left by a run that stopped before its log entry. It is reused
+    when it holds exactly these ids, and replaced when every row it holds is still in the hot store (a
+    stale copy, for example one an erasure has since rewritten). Anything else is refused, as
+    `actions.py` treats an archive file it finds in place."""
+    from . import sqlite_store as _rows
+    ids = sorted(r["id"] for r in records)
+    if seg_path.exists():
+        have = sorted(r.get("id") for r in _rows.load(seg_path) if isinstance(r, dict))
+        if have == ids:
+            return _segment_sha256(seg_path)
+        if not set(have) <= set(hot_ids):
+            raise ArchiveRefused(f"{seg_path.name} already exists with records the hot store does not hold; "
+                                 f"refusing to overwrite a segment the log does not name")
+    tmp = seg_path.with_name(seg_path.name + ".tmp.%d" % os.getpid())
+    if tmp.exists():
+        tmp.unlink()
+    _write_segment_file(tmp, records, manifest)
     os.replace(tmp, seg_path)
     return _segment_sha256(seg_path)
 
@@ -334,6 +604,8 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
     from .core import _StoreLock
     m = _base(store)
     _refuse_unsupported(m)
+    recover(m.path)
+    sweep_temps(m.path)
     ok, problems = verify_log(read_log(m.path))
     if not ok:
         raise ArchiveRefused(f"the archive log does not verify: {problems[0]}")
@@ -370,7 +642,7 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
             ids_sha = hashlib.sha256("\n".join(ids).encode("utf-8")).hexdigest()
             manifest = {"kind": SEGMENT_KIND, "hot_store": Path(m.path).name, "segment": name,
                         "month": name.split(".archive-")[1][:7], "count": len(ids), "ids_sha256": ids_sha}
-            sha = _write_segment(seg_path, recs, manifest)
+            sha = _write_segment(seg_path, recs, manifest, {r["id"] for r in m._items})
             entry = {"v": 1, "kind": "move", "ts": now, "classes": list(classes),
                      "cutoff_ts": cutoff, "segment": name, "segment_sha256": sha,
                      "count": len(ids), "ids": ids, "ids_sha256": ids_sha,
@@ -430,6 +702,14 @@ def _segment_records(store_path) -> list:
     return out
 
 
+def segment_rows(store) -> list:
+    """Every row in the listed segments (a copy per call), tenant-scoped for a tenant view."""
+    m = _base(store)
+    rows = _segment_records(m.path) if getattr(m, "path", None) else []
+    tenant = getattr(store, "tenant", None) if store is not m else None
+    return [r for r in rows if tenant is None or r.get("tenant") == tenant]
+
+
 @contextlib.contextmanager
 def pooled(store):
     """The hot store's rows plus every listed segment's, for the duration of one read, on the hot
@@ -456,3 +736,94 @@ def pooled(store):
     finally:
         m._items = [r for r in m._items if id(r) not in marks]
         m._archive_pooled = prev_flag
+
+
+# ── certificates ─────────────────────────────────────────────────────────────────────────────────────
+
+GIT_HISTORY = "in a git work tree: history not reachable"
+
+
+def certificate_block(store, erased_ids) -> dict | None:
+    """What an erasure certificate says about the archive: every listed segment with its state and
+    whether the erased ids were checked absent there, the log's hash, and every problem. None when the
+    store has no archive.
+
+    Problems (each makes the certificate unverified): the log does not verify; an erasure's amend was
+    not completed; an erased id was moved into a segment and no amend removed it; an erased id is still
+    in a segment; a segment is missing or altered; a segment the log does not name, or a segment temp,
+    sits beside the store; a segment that held an erased id is in a git work tree, whose history an
+    erasure cannot reach."""
+    from . import sqlite_store as _rows
+    m = _base(store)
+    if not getattr(m, "path", None) or not present(m.path):
+        return None
+    problems = []
+    entries = read_log(m.path) if log_path(m.path).exists() else []
+    ok, lp = verify_log(entries)
+    problems += [f"archive log: {x}" for x in lp]
+    for it in _pending_intents(entries):
+        problems.append(f"an erasure in {it['segment']} was not completed: its amend-intent has no amend")
+    erased = set(erased_ids)
+    ever: dict = {}
+    for e in entries:
+        if e.get("kind") == "move":
+            ever.setdefault(e["segment"], set()).update(e["ids"])
+    amended = {i for e in entries if e.get("kind") == "amend" for i in e["ids"]}
+    for i in sorted((erased & set().union(*ever.values())) - amended) if ever else []:
+        problems.append(f"erased id {i} was moved to an archive segment and no amend removed it there")
+    listed = listed_segments(m.path) if entries else {}
+    segs = []
+    for name in sorted(listed):
+        sp = Path(m.path).with_name(name)
+        state = "missing" if not sp.exists() else (
+            "present" if _segment_sha256(sp) == listed[name]["sha256"] else "altered")
+        entry = {"segment": name, "sha256": listed[name]["sha256"], "state": state}
+        if state == "present":
+            held = {r.get("id") for r in _rows.load(sp) if isinstance(r, dict)}
+            leaked = sorted(erased & held)
+            entry["erased_ids"] = "absent (checked)" if not leaked else f"{len(leaked)} PRESENT"
+            if leaked:
+                problems.append(f"{len(leaked)} erased id(s) are still in {name}")
+        else:
+            entry["erased_ids"] = f"not checked (segment {state})"
+            problems.append(f"{name} is {state}, so the erased ids were not checked there")
+        repo = git_work_tree(sp.parent)
+        if repo:
+            entry["git_work_tree"] = repo
+            if erased & ever.get(name, set()):
+                entry["git"] = GIT_HISTORY
+                problems.append(f"{name} held an erased record and is {GIT_HISTORY} ({repo}): a commit or a "
+                                f"clone can still hold it")
+        segs.append(entry)
+    files = segment_files(m.path)
+    for n in files["unlisted"]:
+        problems.append(f"{n} is an archive segment the log does not name, a copy the erasure accounted for "
+                        f"only if it was rewritten in this call")
+    for n in files["temps"]:
+        problems.append(f"{n} is a segment temp beside the store, a copy no erasure has checked")
+    lp_path = log_path(m.path)
+    return {"log_sha256": _segment_sha256(lp_path) if lp_path.exists() else None, "segments": segs,
+            "unlisted": files["unlisted"], "temps": files["temps"], "problems": problems}
+
+
+def verify_certificate_block(cert: dict, store_path, erased: set) -> tuple:
+    """(levels, problems) for a certificate's archive block, re-checked against the segments beside
+    `store_path`: each named segment either has the erased ids checked absent, or says why not."""
+    from . import sqlite_store as _rows
+    arch = cert.get("archive")
+    if not arch:
+        return [], []
+    levels, problems = [], []
+    for seg in arch.get("segments") or []:
+        sp = Path(store_path).with_name(seg["segment"])
+        if not sp.exists():
+            levels.append({"segment": seg["segment"], "content": "not checked (segment absent)"})
+            problems.append(f"segment {seg['segment']} is not present beside the store, so the erased ids "
+                            f"were not checked there")
+            continue
+        held = {r.get("id") for r in _rows.load(sp) if isinstance(r, dict)}
+        leaked = sorted(erased & held)
+        levels.append({"segment": seg["segment"], "content": "absent (checked)" if not leaked else "PRESENT"})
+        if leaked:
+            problems.append(f"{len(leaked)} erased id(s) STILL PRESENT in segment {seg['segment']}: {leaked[:5]}")
+    return levels, problems

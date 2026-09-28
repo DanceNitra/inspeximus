@@ -1508,6 +1508,17 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
         if leaked:
             problems.append(f"{len(leaked)} erased id(s) STILL PRESENT in the store: {leaked[:5]}")
 
+    # ARCHIVE SEGMENTS (AUDIT-B B-25). Absence is checked in every segment the certificate names, and a
+    # segment that is not beside the store is a named gap, never a pass: `archive_levels` says, per
+    # segment, "absent (checked)" or "not checked (segment absent)".
+    checks["archive_absent"] = None
+    if cert.get("archive") and store_path:
+        from inspeximus.archive import verify_certificate_block as _vcb
+        _levels, _aprob = _vcb(cert, store_path, erased)
+        checks["archive_levels"] = _levels
+        checks["archive_absent"] = not _aprob
+        problems.extend(_aprob)
+
     # (8) ABSENT FROM WHICH STORE. The certificate names the store by its receipt tip at issue time;
     # the handed store's chain must hold that hash, or the absence was checked against a stranger.
     checks["store_bound"] = None
@@ -1583,6 +1594,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
              and checks["summary_derivable"] and checks["scope_intact"] is not False
              and checks["attests_an_erasure"]
              and (bool(signed) or not require_signed)
+             and checks.get("archive_absent") is not False
              and (checks["store_absent"] is True or not store_requested))
     # `limits` is separate from `problems` on purpose, the way verify_bundle already does it: a thing
     # that was NOT CHECKED is not a thing that FAILED, and collapsing the two either invalidates honest
@@ -8887,7 +8899,8 @@ class Inspeximus:
                request_id: str | None = None, basis: str | None = None,
                authorized_by: str | None = None, authorization: str | None = None,
                dry_run: bool = False,
-               verify_residue_in: str | None = None, residue_values=None) -> dict:
+               verify_residue_in: str | None = None, residue_values=None,
+               _archive_ids: dict | None = None) -> dict:
         """HARD-DELETE memories — the one operation that genuinely REMOVES content. inspeximus is otherwise
         append-only: supersession / invalidation only DEMOTE a record (it still exists, recallable with
         include_superseded). forget() is for the cases where demotion is not enough: a right-to-be-forgotten
@@ -8947,13 +8960,31 @@ class Inspeximus:
         # `erase_items_reads` from 7 to 9.
         copies = self._digest_copies_of(target, rows) - target if target else set()
         target |= copies
+        # ARCHIVE SEGMENTS (AUDIT-B B-25). Rows that `--archive` moved out of this store are erased where
+        # they sit: the same selection runs over the hot rows and the archived rows as one pool, and each
+        # segment that holds a match is rewritten without it. The tombstones go into THIS store's chain.
+        # A segment that is missing or does not match the archive log refuses the whole erasure, before
+        # anything is erased (SegmentsUnreachable), because a partial erasure must never read complete.
+        from . import archive as _archive
+        _arch_ids = _archive_ids
+        if _arch_ids is None and _archive.active(self):
+            _req = {ids} if isinstance(ids, str) else set(ids or ())
+            if where is not None:
+                with _archive.erasure_pool(self):
+                    _req |= set(self.forget(where=where, dry_run=True)["ids"])
+            _arch_ids = _archive.locate(self, _req)
+        _arch_ids = _arch_ids or {}
+        _seg_ids = {i for v in _arch_ids.values() for i in v}
         if dry_run:
             by_id = {r["id"]: r for r in self._tenant_rows()}
             sample = [{"id": t, "text": (by_id[t].get("text") or "")[:120], "key": by_id[t].get("key")}
                       for t in sorted(target)[:10]]
-            return {"would_forget": len(target), "ids": sorted(target), "sample": sample, "dry_run": True,
-                    "derived_copies": sorted(copies)}
-        if not target:
+            out = {"would_forget": len(target | _seg_ids), "ids": sorted(target | _seg_ids), "sample": sample,
+                   "dry_run": True, "derived_copies": sorted(copies)}
+            if _arch_ids:
+                out["archive"] = {n: len(v) for n, v in sorted(_arch_ids.items())}
+            return out
+        if not target and not _seg_ids:
             # `coverage` belongs here for the same reason `residue_in_store` does, and it was the one
             # early return still missing it: a caller who has to check whether the field exists before
             # reading it will eventually read its absence as "nothing to report".
@@ -8975,6 +9006,9 @@ class Inspeximus:
                     v = r.get(field)
                     if isinstance(v, str) and v.strip():
                         _residue_values.append(v)
+        _arch_prepared = _archive.prepare_erasure(self, _arch_ids) if _arch_ids else []
+        for _p in _arch_prepared:
+            _residue_values.extend(_p["values"])
         # PROOF FIRST (A-34). The tombstones are written before anything is removed, and a chain that
         # cannot be written stops the erasure with nothing changed: before 3.15.4 a failed write was
         # recorded in `_sidecar_errors`, the rows were deleted anyway, and the call answered
@@ -8983,7 +9017,7 @@ class Inspeximus:
         now = time.time()
         _emitted = [self._emit_tombstone(tid, now, request_id, basis=basis or "forget",
                                          authorized_by=authorized_by, authorization=authorization, defer=True)
-                    for tid in sorted(target)]              # deterministic order -> reproducible chain
+                    for tid in sorted(target | _seg_ids)]              # deterministic order -> reproducible chain
         # ONE sidecar write for the whole batch. Each _emit_tombstone used to rewrite the ENTIRE chain, so
         # erasing k records cost k rewrites of a chain growing to k -- O(k^2) serialization plus k atomic
         # replaces. Deferring is also strictly SAFER on a crash: the old order left j-of-k tombstones on
@@ -9021,8 +9055,11 @@ class Inspeximus:
         self._prune_derived_caches()
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
-        out = {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
-               "tombstones": len(target), "derived_copies": sorted(copies)}
+        _arch_states = _archive.commit_erasure(self, _arch_prepared) if _arch_prepared else []
+        out = {"forgotten": len(target | _seg_ids), "ids": sorted(target | _seg_ids), "scrubbed_links": scrubbed,
+               "tombstones": len(target | _seg_ids), "derived_copies": sorted(copies)}
+        if _arch_states:
+            out["archive"] = {"segments": _arch_states}
         # coverage on EVERY erasure path, not just forget_subject. It shipped on that one alone earlier
         # today, which is the same mistake `_resolve_subject`'s docstring records 1.53.0 making: a fix at
         # one caller while the siblings keep the gap. A field the caller relies on is worse than useless
@@ -9036,7 +9073,10 @@ class Inspeximus:
         # Heuristic and labelled as one -- a paraphrase carries the fact without the string -- so it is
         # reported beside the count, never as the verdict.
         from .erasure_residue import scan_records
-        out["residue_in_store"] = scan_records(self.items, _residue_values)
+        # The archive segments are read too (AUDIT-B B-25): a value that survived in a segment row is
+        # residue like one that survived in the hot store.
+        out["residue_in_store"] = scan_records(list(self.items) + (_archive.segment_rows(self) if _arch_ids
+                                               or _archive.active(self) else []), _residue_values)
         # SIBLING COPIES (A-12). What the library made is gone by now (`_drop_pre_rows_backup`); a copy
         # that is still here -- one kept on purpose, one that could not be removed, or one this version
         # does not account for -- is read for the values this erasure removed, while they are in hand.
@@ -9634,56 +9674,61 @@ class Inspeximus:
         treat it as a read of the content, and mind where your call path logs it."""
         # match the subject against canonical sources; accept either the raw string the caller wrote or its
         # entity-resolved form (_canon_source collapses "user-42"/"user_42"/"User 42" -> one canonical id).
-        cand = {subject, Inspeximus._canon_source(subject)}
-        subj_ids = [r["id"] for r in self.items if cand & Inspeximus._rec_sources(r)
-                    and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant isolation on erasure
-        subj_ids = self._narrow_to_subject(subject, subj_ids)
-        collisions = self._erasure_collisions(subject, cand, subj_ids)
-        if collisions and not allow_ambiguous:
-            subj_ids = [rid for rid in subj_ids if rid not in collisions["ids"]]
-        if dry_run:
-            return self._erasure_preview(subject, cand, subj_ids, collisions, allow_ambiguous)
-        if collisions and exact and not allow_ambiguous:
-            # EXACT is the records whose RAW source is this subject, plus the LINEAGE DESCENDANTS of those
-            # records — computed forward from them, not "everything carrying the shared canonical taint".
-            # The first version simply cleared `collisions`, which left in every record that inherited from
-            # the COLLIDING subject: measured, a summary derived from the other person's record was
-            # hard-deleted. That is the third-party over-erasure the guard exists to prevent, reintroduced by
-            # its own escape hatch. `_erasure_collisions` says the derived tier cannot separate colliding
-            # subjects and that it "refuses rather than guessing" — so exact must not guess either.
-            # The id-map is built ONCE. It used to sit inside this comprehension's condition, so it was
-            # rebuilt for every rid in subj_ids -- an O(len(subj_ids) x n) scan in the erasure path.
-            # Pure function of _tenant_rows(), which nothing here mutates, so hoisting is identical.
-            _rows_by_id = {r["id"]: r for r in self._tenant_rows()}
-            roots = {rid for rid in subj_ids
-                     if self._raw_source(_rows_by_id.get(rid, {})) == subject}
-            keep, frontier = set(roots), set(roots)
-            while frontier:                       # forward closure over declared derived_from edges
-                nxt = {r["id"] for r in self._tenant_rows()
-                       if r["id"] not in keep and (set(r.get("derived_from") or []) & frontier)}
-                keep |= nxt
-                frontier = nxt
-            subj_ids = [rid for rid in subj_ids if rid in keep]
-            collisions = {}
-        if False:
-            # EXACT mode: erase only the records whose RAW source is this subject, leaving the colliding
-            # one alone. The safe set is already computed above — refusing outright meant a single junk
-            # write whose source canonicalises onto a victim's ("User_42" vs "user-42") made every later
-            # DSAR for that person unperformable, with allow_ambiguous the only escape and it deletes both.
-            # An attacker-triggerable denial of a legal obligation is worse than the collision it guards.
-            collisions = {}
-        if collisions and not allow_ambiguous:
-            raise AmbiguousSubject(
-                f"'{subject}' canonicalizes to '{Inspeximus._canon_source(subject)}', which is ALSO the "
-                f"canonical form of {sorted(collisions['sources'])} in this store. Erasing would hard-delete "
-                f"{len(collisions['ids'])} record(s) belonging to a different subject. Pass the exact source "
-                f"string, or allow_ambiguous=True to erase all of them deliberately.")
-        if not subj_ids:
-            # coverage belongs here too: "nothing matched" is itself an answer a DSAR reply is built on,
-            # and a field the caller can only rely on when it is ALWAYS present.
-            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0, "scrubbed_links": 0,
-                    "coverage": self._erasure_coverage(None, len(getattr(self, "_erasure_targets", []))),
-                    "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
+        # THE SELECTION RUNS OVER THE HOT ROWS AND THE ARCHIVED ROWS AS ONE STORE (AUDIT-B B-25), so the
+        # ambiguity check and the lineage closure see a subject's records in every month. It refuses
+        # when a segment is missing or altered; nothing is erased inside the block.
+        from . import archive as _archive
+        with _archive.erasure_pool(self):
+            cand = {subject, Inspeximus._canon_source(subject)}
+            subj_ids = [r["id"] for r in self.items if cand & Inspeximus._rec_sources(r)
+                        and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant isolation on erasure
+            subj_ids = self._narrow_to_subject(subject, subj_ids)
+            collisions = self._erasure_collisions(subject, cand, subj_ids)
+            if collisions and not allow_ambiguous:
+                subj_ids = [rid for rid in subj_ids if rid not in collisions["ids"]]
+            if dry_run:
+                return self._erasure_preview(subject, cand, subj_ids, collisions, allow_ambiguous)
+            if collisions and exact and not allow_ambiguous:
+                # EXACT is the records whose RAW source is this subject, plus the LINEAGE DESCENDANTS of those
+                # records — computed forward from them, not "everything carrying the shared canonical taint".
+                # The first version simply cleared `collisions`, which left in every record that inherited from
+                # the COLLIDING subject: measured, a summary derived from the other person's record was
+                # hard-deleted. That is the third-party over-erasure the guard exists to prevent, reintroduced by
+                # its own escape hatch. `_erasure_collisions` says the derived tier cannot separate colliding
+                # subjects and that it "refuses rather than guessing" — so exact must not guess either.
+                # The id-map is built ONCE. It used to sit inside this comprehension's condition, so it was
+                # rebuilt for every rid in subj_ids -- an O(len(subj_ids) x n) scan in the erasure path.
+                # Pure function of _tenant_rows(), which nothing here mutates, so hoisting is identical.
+                _rows_by_id = {r["id"]: r for r in self._tenant_rows()}
+                roots = {rid for rid in subj_ids
+                         if self._raw_source(_rows_by_id.get(rid, {})) == subject}
+                keep, frontier = set(roots), set(roots)
+                while frontier:                       # forward closure over declared derived_from edges
+                    nxt = {r["id"] for r in self._tenant_rows()
+                           if r["id"] not in keep and (set(r.get("derived_from") or []) & frontier)}
+                    keep |= nxt
+                    frontier = nxt
+                subj_ids = [rid for rid in subj_ids if rid in keep]
+                collisions = {}
+            if False:
+                # EXACT mode: erase only the records whose RAW source is this subject, leaving the colliding
+                # one alone. The safe set is already computed above — refusing outright meant a single junk
+                # write whose source canonicalises onto a victim's ("User_42" vs "user-42") made every later
+                # DSAR for that person unperformable, with allow_ambiguous the only escape and it deletes both.
+                # An attacker-triggerable denial of a legal obligation is worse than the collision it guards.
+                collisions = {}
+            if collisions and not allow_ambiguous:
+                raise AmbiguousSubject(
+                    f"'{subject}' canonicalizes to '{Inspeximus._canon_source(subject)}', which is ALSO the "
+                    f"canonical form of {sorted(collisions['sources'])} in this store. Erasing would hard-delete "
+                    f"{len(collisions['ids'])} record(s) belonging to a different subject. Pass the exact source "
+                    f"string, or allow_ambiguous=True to erase all of them deliberately.")
+            if not subj_ids:
+                # coverage belongs here too: "nothing matched" is itself an answer a DSAR reply is built on,
+                # and a field the caller can only rely on when it is ALWAYS present.
+                return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0, "scrubbed_links": 0,
+                        "coverage": self._erasure_coverage(None, len(getattr(self, "_erasure_targets", []))),
+                        "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # capture the sensitive values BEFORE deletion so the cross-store residue check has something to
         # verify against (caller-supplied `values` win; else the erased records' own text/object strings).
         targets = list(getattr(self, "_erasure_targets", []))
@@ -9700,7 +9745,8 @@ class Inspeximus:
         # wrote TWO receipts per record — one carrying the real basis, one carrying the generic
         # basis="forget" — so an auditor saw a single deletion twice, with conflicting reasons.
         res = self.forget(ids=subj_ids, request_id=request_id, basis=basis,
-                          authorized_by=authorized_by, authorization=authorization)
+                          authorized_by=authorized_by, authorization=authorization,
+                          _archive_ids=_archive.locate(self, subj_ids))
         out = {"erased": res["forgotten"], "ids": res["ids"],
                "request_id": request_id, "tombstones": len(res["ids"]),
                # The link scrub is half of what this call promises ("AND scrub its id from survivors'
@@ -9712,6 +9758,8 @@ class Inspeximus:
                # doing. A field the caller relies on is worse than useless when it is sometimes absent:
                # its absence reads as "nothing to report" rather than "nobody looked".
                "residue_in_store": res.get("residue_in_store")}
+        if res.get("archive"):
+            out["archive"] = res["archive"]              # the segments this erasure rewrote (AUDIT-B B-25)
         if targets:
             out["manifest"] = self._erasure_manifest(subject, values or [], targets, request_id,
                                                      basis, authorized_by, already_erased=res["forgotten"])
@@ -10276,7 +10324,7 @@ class Inspeximus:
     _OWN_COPY_RE = re.compile(r"\.(pre-rows\.bak|bak-merge-\d{8}-\d{6})")
     #: The store's sidecars, their archives, salts and temp files, and the lock. None is a copy of the
     #: records, so none is a sibling an erasure has to account for.
-    _SIDECAR_RE = re.compile(r"(\.(receipts|tombstones|objections|irrev|cusum|partitions|actions)\.json"
+    _SIDECAR_RE = re.compile(r"(\.(receipts|tombstones|objections|irrev|cusum|partitions|actions|archive)\.json"
                              r"(\.archive\.\d{4}\.json)?(\.salt)?|\.salt|\.embedid|\.app|\.lock)"
                              r"(\.tmp\.\d+|\.[a-z0-9_]{8}\.tmp)?")
 
@@ -11196,74 +11244,82 @@ class Inspeximus:
         iterated the string as the types "e", "m", "a", "i", "l" and reported erased 0. A type is known when
         the detector names it or a record in this store (this tenant's rows) carries it; any other type is a
         typo or a type this store has never seen, and erased 0 would read as "nothing to erase"."""
-        if isinstance(types, str):
-            types = [types]
-        want = set(types) if types is not None else None
-        if want:
-            known = {p[0] for p in _PII_PATTERNS}
+        # Selected over the hot rows and the archived rows as one store (AUDIT-B B-25); refused when a
+        # segment is missing or altered. Nothing is erased inside the block.
+        from . import archive as _archive
+        with _archive.erasure_pool(self):
+            if isinstance(types, str):
+                types = [types]
+            want = set(types) if types is not None else None
+            if want:
+                known = {p[0] for p in _PII_PATTERNS}
+                for r in self._tenant_rows():
+                    known.update(str(t) for t in (r.get("pii") or ()))
+                unknown = sorted(want - known)
+                if unknown:
+                    raise ValueError(f"forget_pii: unknown PII type(s) {unknown}; known here: {sorted(known)}")
+            cand = None
+            sel_ids = None
+            if subject is not None:
+                cand, _sel, _coll = self._resolve_subject(subject, allow_ambiguous)
+                if _coll and not allow_ambiguous:
+                    raise Inspeximus._ambiguous_error(subject, _coll, "forget_pii")
+                # Select by the RESOLVED ids, not by the coarse candidate set. Re-matching on `cand` below
+                # threw away the resolver's narrowing, so this path still deleted every record sharing a host
+                # with the subject -- including for a subject that was never in the store. The resolver is
+                # "THE one place a subject becomes a set of records" only if its callers use the set.
+                sel_ids = set(_sel)
+            target = []
             for r in self._tenant_rows():
-                known.update(str(t) for t in (r.get("pii") or ()))
-            unknown = sorted(want - known)
-            if unknown:
-                raise ValueError(f"forget_pii: unknown PII type(s) {unknown}; known here: {sorted(known)}")
-        cand = None
-        sel_ids = None
-        if subject is not None:
-            cand, _sel, _coll = self._resolve_subject(subject, allow_ambiguous)
-            if _coll and not allow_ambiguous:
-                raise Inspeximus._ambiguous_error(subject, _coll, "forget_pii")
-            # Select by the RESOLVED ids, not by the coarse candidate set. Re-matching on `cand` below
-            # threw away the resolver's narrowing, so this path still deleted every record sharing a host
-            # with the subject -- including for a subject that was never in the store. The resolver is
-            # "THE one place a subject becomes a set of records" only if its callers use the set.
-            sel_ids = set(_sel)
-        target = []
-        for r in self._tenant_rows():
-            tags = r.get("pii")
-            if not tags:
-                continue
-            if want is not None and not (want & set(tags)):
-                continue
-            if sel_ids is not None and r["id"] not in sel_ids:
-                continue
-            if cand is not None and not (cand & Inspeximus._rec_sources(r)):
-                continue
-            target.append(r["id"])
-        cov = self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))
-        # WHAT THIS SWEEP CANNOT REACH. The selection above is `r.get("pii")`, a tag stamped at
-        # write time, so every record written while `pii_detect` was off is invisible to a
-        # data-minimization sweep -- and turning the flag on later does not backfill it. That makes
-        # a destructive operation report success over a partial pass, which is the failure mode a
-        # DSAR cannot afford. Re-running the same detector over the untagged remainder costs one
-        # regex sweep and turns a silent miss into a named one. It does NOT widen what is erased:
-        # erasing on an untagged heuristic match would delete records the caller never tagged.
-        unswept = []
-        for r in self._tenant_rows():
-            if r.get("status") != "active" or r.get("pii") or r["id"] in target:
-                continue
-            if cand is not None and not (cand & Inspeximus._rec_sources(r)):
-                continue
-            hit = detect_pii(r.get("text") or "")
-            if hit and (want is None or (want & set(hit))):
-                unswept.append(r["id"])
-        unswept_block = {"count": len(unswept), "ids": unswept[:20]}
-        if unswept:
-            unswept_block["problem"] = (
-                "%d active record(s) match the PII detector but carry no tag, so this sweep did NOT "
-                "erase them. They were written while pii_detect was off; enabling it does not "
-                "backfill. Treat this result as PARTIAL." % len(unswept))
-        if not target:
-            return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
-                    "coverage": cov, "unswept_matches": unswept_block,
-                    "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
+                tags = r.get("pii")
+                if not tags:
+                    continue
+                if want is not None and not (want & set(tags)):
+                    continue
+                if sel_ids is not None and r["id"] not in sel_ids:
+                    continue
+                if cand is not None and not (cand & Inspeximus._rec_sources(r)):
+                    continue
+                target.append(r["id"])
+            cov = self._erasure_coverage(None, len(getattr(self, "_erasure_targets", [])))
+            # WHAT THIS SWEEP CANNOT REACH. The selection above is `r.get("pii")`, a tag stamped at
+            # write time, so every record written while `pii_detect` was off is invisible to a
+            # data-minimization sweep -- and turning the flag on later does not backfill it. That makes
+            # a destructive operation report success over a partial pass, which is the failure mode a
+            # DSAR cannot afford. Re-running the same detector over the untagged remainder costs one
+            # regex sweep and turns a silent miss into a named one. It does NOT widen what is erased:
+            # erasing on an untagged heuristic match would delete records the caller never tagged.
+            unswept = []
+            for r in self._tenant_rows():
+                if r.get("status") != "active" or r.get("pii") or r["id"] in target:
+                    continue
+                if cand is not None and not (cand & Inspeximus._rec_sources(r)):
+                    continue
+                hit = detect_pii(r.get("text") or "")
+                if hit and (want is None or (want & set(hit))):
+                    unswept.append(r["id"])
+            unswept_block = {"count": len(unswept), "ids": unswept[:20]}
+            if unswept:
+                unswept_block["problem"] = (
+                    "%d active record(s) match the PII detector but carry no tag, so this sweep did NOT "
+                    "erase them. They were written while pii_detect was off; enabling it does not "
+                    "backfill. Treat this result as PARTIAL." % len(unswept))
+            if not target:
+                return {"erased": 0, "ids": [], "request_id": request_id, "tombstones": 0,
+                        "coverage": cov, "unswept_matches": unswept_block,
+                        "residue_in_store": {"ok": True, "checked_records": 0, "searched_values": 0, "findings": [], "problems": [], "method": "nothing was erased, so there is nothing that could be left over"}}
         # same as forget_subject: forget() emits the receipts, so pass the reason through it rather
         # than writing a second tombstone per record on top of the one it already wrote
-        res = self.forget(ids=target, request_id=request_id, basis=basis or "pii_minimization")
-        return {"erased": res["forgotten"], "ids": res["ids"],
-                "request_id": request_id, "tombstones": len(res["ids"]),
-                "coverage": res.get("coverage", cov),
-                "unswept_matches": unswept_block,
-                "residue_in_store": res.get("residue_in_store")}
+        res = self.forget(ids=target, request_id=request_id, basis=basis or "pii_minimization",
+                          _archive_ids=_archive.locate(self, target))
+        out = {"erased": res["forgotten"], "ids": res["ids"],
+               "request_id": request_id, "tombstones": len(res["ids"]),
+               "coverage": res.get("coverage", cov),
+               "unswept_matches": unswept_block,
+               "residue_in_store": res.get("residue_in_store")}
+        if res.get("archive"):
+            out["archive"] = res["archive"]              # the segments this erasure rewrote (AUDIT-B B-25)
+        return out
 
     def for_tenant(self, tenant: str):
         """Return a TENANT VIEW over THIS store (one physical store, many logically-isolated tenants). The view
@@ -11725,6 +11781,11 @@ class Inspeximus:
         Prior art: DELF-style deletion-correctness auditing (Cohn-Gordon et al., "DELF: Safeguarding deletion
         correctness in Online Social Networks", USENIX Security 2020) applied to an agent-memory store, with
         the orphan/dangling half being classical referential-integrity checking."""
+        # THE ARCHIVE IS PART OF WHAT SURVIVED (AUDIT-B B-25): the audit reads the segment rows too.
+        from . import archive as _archive
+        if _archive.active(self):
+            with _archive.pooled(self):
+                return self.erasure_audit(subject, values)
         residue: list[dict] = []
         advisory: list[dict] = []
         by_id = {r["id"]: r for r in self.items}
@@ -12316,7 +12377,14 @@ class Inspeximus:
             ok = False
             problems = list(problems) + [f"{f['name']} beside the store is not the store or one of its "
                                          "sidecars; if it is a copy of the records, the erasure did not reach it"]
-        return {
+        # ARCHIVE SEGMENTS (AUDIT-B B-25): each segment's state and whether the erased ids were checked
+        # absent in it, plus anything beside the store that holds archived rows and is not accounted for.
+        from . import archive as _archive
+        _arch = _archive.certificate_block(self, erased_ids)
+        if _arch and _arch["problems"]:
+            ok = False
+            problems = list(problems) + _arch["problems"]
+        _cert = {
             "inspeximus_erasure_certificate": "1.0",
             "issued_ts": time.time(),
             "issued_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -12344,6 +12412,9 @@ class Inspeximus:
             "scope_excludes": list(_CERT_SCOPE_EXCLUDES),
             "verify_with": "inspeximus.verify_erasure_certificate(cert, store_path=<file>)  # or store_items=<list>",
         }
+        if _arch:
+            _cert["archive"] = _arch
+        return _cert
 
     def remember_certificate(self, cert: dict, key: str | None = None, **kw) -> dict:
         """Remember a residue certificate, so a repeat engagement can see what changed.
