@@ -508,3 +508,27 @@ def test_an_upgrade_that_does_not_load_puts_the_old_provider_back(home, monkeypa
     rc, table = _run(rules="no", hermes_provider_change="yes")
     assert specs == [None, "inspeximus==3.14.3"], specs
     assert "inspeximus 3.14.3 is installed again" in table and not (hh / "config.yaml").exists(), table
+
+
+# ── 3.15.6: uvx is warmed once, and a stale uv index is refreshed exactly once ─────────────────────────
+def test_an_unresolvable_uvx_pin_is_refreshed_exactly_once(tmp_path):
+    uvx = tmp_path / "uvx.exe"
+    uvx.write_text("", encoding="utf-8")
+    calls = []
+
+    def runner(cmd, **kw):
+        calls.append(cmd)
+        return _R(0) if "--refresh-package" in cmd else \
+            _R(1, "Because there is no version of inspeximus[mcp]==%s" % A._version())
+    ok, note = A.warm_uvx(str(uvx), runner=runner)
+    assert ok and "refreshed" in note, note
+    assert sum("--refresh-package" in c for c in calls) == 1 and len(calls) == 2, calls
+
+
+def test_a_pin_that_resolves_is_not_refreshed_and_no_uvx_is_skipped(tmp_path):
+    uvx = tmp_path / "uvx.exe"
+    uvx.write_text("", encoding="utf-8")
+    calls = []
+    assert A.warm_uvx(str(uvx), runner=lambda cmd, **kw: calls.append(cmd) or _R(0)) == (True, "")
+    assert len(calls) == 1                                                     # control: one call, no refresh
+    assert A.warm_uvx(str(tmp_path / "missing-uvx.exe"), runner=lambda *a, **k: 1 / 0) is None

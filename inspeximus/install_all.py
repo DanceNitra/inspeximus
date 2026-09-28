@@ -430,6 +430,33 @@ def _stale_uv_index(r):
     return "no version of inspeximus" in text
 
 
+def warm_uvx(exe, runner=subprocess.run):
+    """Run the pin every agent entry now launches, once, so uv resolves and caches it here.
+
+    A STALE INDEX IS REFRESHED ONCE (3.15.6). On PC1 on 2026-09-28 uvx answered "no version of
+    inspeximus[mcp]==3.15.3" from a cached index an hour after PyPI served it: every MCP server and hook
+    would have failed to start. Returns None when there is no uvx to run, else (ok, note)."""
+    if not exe or not (os.path.isfile(str(exe)) or shutil.which(str(exe))):
+        return None
+    cmd = [str(exe), "--from", "inspeximus[mcp]==%s" % _version(), "python", "-c", "import inspeximus"]
+    try:
+        r = runner(cmd, capture_output=True, text=True, timeout=300)
+        if r.returncode == 0:
+            return True, ""
+        if not _stale_uv_index(r):
+            return False, ("uvx could not start inspeximus %s here: %s"
+                           % (_version(), (r.stderr or r.stdout or "").strip()[-200:]))
+        r = runner([str(exe), "--refresh-package", "inspeximus"] + cmd[1:], capture_output=True, text=True,
+                   timeout=300)
+    except (OSError, subprocess.SubprocessError) as e:
+        return False, "uvx could not be run: %s" % e
+    if r.returncode == 0:
+        return True, ("uv's cached package index did not know inspeximus %s yet; it was refreshed "
+                      "(uvx --refresh-package inspeximus)" % _version())
+    return False, ("uv does not find inspeximus %s even after refreshing its index; the agents' servers "
+                   "and hooks will not start until it does: %s" % (_version(), (r.stderr or "").strip()[-200:]))
+
+
 def install_into_hermes(py, runner=subprocess.run, spec=None):
     """Install this version of inspeximus (or `spec`) into Hermes' own venv. Hermes ships uv, and its
     interpreter can refuse `pip install` (PEP 668), so uv is tried first.
@@ -917,6 +944,10 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
         out("(dry run - nothing written)")
     else:
         out("Restart each app listed as wired, so it starts the memory server.")
+    if not dry_run and wired and kind == "uvx":
+        warmed = warm_uvx(exe)
+        if warmed and warmed[1]:
+            out("note: " + warmed[1])
     failed = [str(r[0]) for r in rows if str(r[2]).startswith("ERROR")]
     # A DRY RUN COUNTS TOO (3.15.6). It printed 0 records for a store of 11,423 on PC1, because the read
     # was skipped on purpose; read_store only reads, so a dry run can say what is there.
