@@ -5264,5 +5264,77 @@
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
+ },
+ {
+  "name": "the read guard trusts a clean stamp without checking its MAC again",
+  "file": "inspeximus/core.py",
+  "old": "                if _guard_mac_ok(held.get(\"mac\"), key, \"clean\", rid, th, gset):\n",
+  "new": "                if True:\n",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
+ },
+ {
+  "name": "the read guard trusts read_guards_v on any record again",
+  "file": "inspeximus/core.py",
+  "old": "        key = self._guard_key()\n        q = meta.get(\"quarantined\") if isinstance",
+  "new": "        key = self._guard_key()\n        if meta.get(\"read_guards_v\") == 1:\n            return meta\n        q = meta.get(\"quarantined\") if isinstance",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
+ },
+ {
+  "name": "a quarantine release is honoured without its MAC again",
+  "file": "inspeximus/core.py",
+  "old": "                if _guard_mac_ok(q.get(\"release_mac\"), key, \"release\", rid, th):\n",
+  "new": "                if True:\n",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
+ },
+ {
+  "name": "an import keeps a peer's read-guard fields again",
+  "file": "inspeximus/core.py",
+  "old": "            if isinstance(_r.get(\"meta\"), dict) and any(k in _r[\"meta\"] for k in _GUARD_META):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
+ },
+ {
+  "name": "the read-guard key may sit inside the store's directory again",
+  "file": "inspeximus/core.py",
+  "old": "                _guard_key_location(os.path.dirname(kf), self.path)\n                with open(kf, encoding=\"utf-8\") as fh:\n",
+  "new": "                with open(kf, encoding=\"utf-8\") as fh:\n",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
+ },
+ {
+  "name": "a guard change leaves the guard set unchanged",
+  "file": "inspeximus/core.py",
+  "old": "            for name in _GUARD_INPUTS:\n",
+  "new": "            for name in ():\n",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
+ },
+ {
+  "name": "remember no longer mints the read-guard key",
+  "file": "inspeximus/core.py",
+  "old": "            self._guard_key(create=True)          # a write mints the key, so its clean verdict is stamped\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
+ },
+ {
+  "name": "a release is not bound to the record's text",
+  "file": "inspeximus/core.py",
+  "old": "                q[\"release_mac\"] = _guard_mac(key, \"release\", id, th)\n",
+  "new": "                q[\"release_mac\"] = _guard_mac(key, \"release\", id, \"\")\n",
+  "tests": [
+   "tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py"
+  ]
  }
 ]
