@@ -5674,5 +5674,41 @@
   "tests": [
    "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
   ]
+ },
+ {
+  "name": "A-36: a report up to now drops the entries of the call's own tick again",
+  "file": "inspeximus/actions.py",
+  "old": "(open_ended or float(e.get(\"ts\") or 0) < until)]",
+  "new": "(float(e.get(\"ts\") or 0) < until)]",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "A-36: a report does not say whether its period was open-ended",
+  "file": "inspeximus/actions.py",
+  "old": "\"open_ended\": open_ended},",
+  "new": "\"open_ended\": False},",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "A-35: a same-tick certificate pair is left in argument order",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "    if ot == nt:\n        def _key(doc):",
+  "new": "    if False:\n        def _key(doc):",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "A-35: a same-tick certificate pair is not put in content order",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "        if _key(old) > _key(new):\n            old, new = new, old\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
  }
 ]
