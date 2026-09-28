@@ -82,7 +82,7 @@ def test_install_all_ends_with_the_block(home):
     assert block, lines
     assert block[0] == f"inspeximus {__version__} ARMED: one memory for 2 agents", block
     assert block[2] == "wired: Claude Code, Codex CLI" and block[3] == "restart: Claude Code, Codex CLI", block
-    assert re.fullmatch(r"seal: [0-9a-f]+ [0-9a-f]{12}", block[4]), block
+    assert re.fullmatch(r"seal: [0-9a-f]+ [0-9a-f]{12} unsigned", block[4]), block
     assert block_at_end(lines[:-1]) is None, "control: the checker must fail when the block is cut"
 
 
@@ -92,7 +92,7 @@ def test_the_seal_is_the_setup_record_and_check_recomputes_it(home):
     shared = json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))
     records, seal = A.read_store(shared["store"])
     assert (shared["seal"]["id"], shared["seal"]["sha256"]) == seal, (shared, seal)
-    assert block_at_end(lines)[4] == f"seal: {seal[0]} {seal[1][:12]}"
+    assert block_at_end(lines)[4] == f"seal: {seal[0]} {seal[1][:12]} unsigned"
     assert shared["agents"] == ["Claude Code", "Codex CLI"], shared
 
     rc, lines = _run(A.check, only="claude,codex")

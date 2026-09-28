@@ -100,11 +100,25 @@ def test_the_same_version_is_not_older(home):
 def test_a_git_bash_path_read_by_windows_is_refused(home, monkeypatch, what):
     drive, rest = os.path.splitdrive(str(home))
     misread = drive + "\\" + drive[0].lower() + rest                  # C:\c\Users\... for C:\Users\...
-    if what == "--store":
-        rc, lines = _run(rules="no", only="claude", store="/" + drive[0].lower() + (rest + "/s.json").replace("\\", "/"))
-    else:
-        monkeypatch.setattr(I, "resolve_runtime", lambda: ("python", misread + "\\.inspeximus\\venv\\Scripts\\python.exe"))
-        rc, lines = _run(rules="no", only="claude")
+    # A VERSION WITHOUT THE REFUSAL WRITES UNDER C:\c (a control run against 3.15.2 left a store there on
+    # PC1, 2026-09-28). Remove the highest folder of that path this test could have created, and nothing
+    # that existed before it: C:\c may hold other files a person has to look at.
+    created = misread
+    while not os.path.exists(os.path.dirname(created)):
+        created = os.path.dirname(created)
+    created = None if os.path.exists(misread) else created
+    try:
+        if what == "--store":
+            rc, lines = _run(rules="no", only="claude",
+                             store="/" + drive[0].lower() + (rest + "/s.json").replace("\\", "/"))
+        else:
+            monkeypatch.setattr(I, "resolve_runtime",
+                                lambda: ("python", misread + "\\.inspeximus\\venv\\Scripts\\python.exe"))
+            rc, lines = _run(rules="no", only="claude")
+    finally:
+        if created:
+            import shutil
+            shutil.rmtree(created, ignore_errors=True)
     assert rc == 2 and "Git Bash path" in "\n".join(lines) and str(home) in "\n".join(lines), lines
     assert not (home / ".claude.json").exists()
 
@@ -156,7 +170,7 @@ def test_an_unsigned_store_gets_the_setup_decision_as_before(home):
     rc, lines = _run(rules="no", store=str(home / "chain.json"))
     rec = _setup(home / "chain.json")
     assert rc == 0 and len(rec) == 1 and not rec[0].get("attested_key"), lines
-    assert re.fullmatch(r"seal: [0-9a-f]+ [0-9a-f]{12}", lines[-1]), lines[-1]
+    assert re.fullmatch(r"seal: [0-9a-f]+ [0-9a-f]{12} unsigned", lines[-1]), lines[-1]
 
 
 def test_a_signed_store_with_a_key_gets_it_signed(home, tmp_path, monkeypatch):
@@ -168,6 +182,29 @@ def test_a_signed_store_with_a_key_gets_it_signed(home, tmp_path, monkeypatch):
     rc, lines = _run(rules="no", store=str(store))
     rec = _setup(store)
     assert rc == 0 and len(rec) == 1 and rec[0].get("attested_key"), lines
+
+
+def test_the_seal_line_says_signed_on_a_signed_store(home, tmp_path, monkeypatch):
+    """3.15.6 G5 (PC2 friend flow): the seal line says whether the setup decision carries the writer key."""
+    store = home / "chain.json"
+    key = _signed_store(store)
+    kf = tmp_path / "writer.key"
+    kf.write_text(key, encoding="utf-8")
+    monkeypatch.setenv("INSPEXIMUS_WRITER_KEY_FILE", str(kf))
+    rc, lines = _run(rules="no", store=str(store))
+    assert rc == 0 and re.fullmatch(r"seal: [0-9a-f]+ [0-9a-f]{12} signed", lines[-1]), lines[-5:]
+
+
+def test_a_dry_run_counts_the_records_in_the_store(home):
+    """A dry run printed "0 records" for a store of 11,423 on PC1: the read was skipped on purpose."""
+    from inspeximus import Inspeximus
+    store = home / "chain.json"
+    m = Inspeximus(path=str(store))
+    for i in range(3):
+        m.remember("fact number %d" % i)
+    m.flush()
+    rc, lines = _run(rules="no", store=str(store), dry_run=True)
+    assert rc == 0 and any(ln.startswith("store: ") and "(3 records)" in ln for ln in lines), lines[-5:]
 
 
 def test_a_signed_store_without_a_key_gets_no_unsigned_record(home):

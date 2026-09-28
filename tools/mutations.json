@@ -6296,5 +6296,23 @@
   "tests": [
    "tests/test_a_path_on_another_drive_never_crashes.py"
   ]
+ },
+ {
+  "name": "the seal line calls a signed setup decision unsigned",
+  "file": "inspeximus/install_all.py",
+  "old": "\"\" if signed is None else (\" signed\" if signed else \" unsigned\")",
+  "new": "\"\" if signed is None else (\" unsigned\" if signed else \" signed\")",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a dry run reports 0 records again",
+  "file": "inspeximus/install_all.py",
+  "old": "    records, _seal_now, signed = read_store(path, with_signed=True)\n",
+  "new": "    records, _seal_now, signed = 0, None, None\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
  }
 ]

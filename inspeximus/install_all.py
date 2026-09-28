@@ -476,18 +476,25 @@ def seal_of(rec):
     return rec["id"], Inspeximus._write_commit(rec)["immutable_sha256"]
 
 
-def read_store(store):
-    """(record count, seal of the current setup record or None). Reads only; (0, None) for no store."""
+def read_store(store, with_signed=False):
+    """(record count, seal of the current setup record or None). Reads only; (0, None) for no store.
+
+    with_signed=True adds a third value: whether that setup record carries a writer signature
+    (attested_key), None when there is no setup record (3.15.6: the ARMED block says which it is)."""
     p = pathlib.Path(str(store)).expanduser() if store else None
     if not p or not p.exists():
-        return 0, None
+        return (0, None, None) if with_signed else (0, None)
     from ._surface import open_store
     items = list(getattr(open_store(str(p)), "items", []) or [])
     setup = [it for it in items if it.get("key") == SETUP_KEY and it.get("status") != "superseded"]
-    return len(items), (seal_of(setup[-1]) if setup else None)
+    seal = seal_of(setup[-1]) if setup else None
+    if with_signed:
+        return len(items), seal, (bool(setup[-1].get("attested_key")) if setup else None)
+    return len(items), seal
 
 
-def armed_block(store, records, wired, restart, seal, attention=(), dry_run=False, seal_note="", seal_reason=None):
+def armed_block(store, records, wired, restart, seal, attention=(), dry_run=False, seal_note="", seal_reason=None,
+                signed=None):
     """The fixed, short block printed LAST.
 
     WHY A BLOCK AND NOT THE TABLE (3.14.4). On 2026-09-27 Hermes Agent on a 9B local model followed the
@@ -507,7 +514,10 @@ def armed_block(store, records, wired, restart, seal, attention=(), dry_run=Fals
              f"store: {store} ({records} record{'' if records == 1 else 's'})",
              "wired: " + (", ".join(wired) or "none"),
              "restart: " + (", ".join(restart) or "none"),
-             ("seal: %s %s" % (seal[0], seal[1][:12]) if seal
+             # SIGNED OR UNSIGNED, SAID (3.15.6, PC2 friend-flow G5): a seal id alone did not tell the user
+             # whether the setup decision carries the writer signature the store's other writes carry.
+             ("seal: %s %s%s" % (seal[0], seal[1][:12],
+                                 "" if signed is None else (" signed" if signed else " unsigned")) if seal
               else "seal: none" + (" (%s)" % seal_reason if seal_reason else "")) + seal_note]
     if attention:
         lines.append("attention: " + ", ".join(attention) + " (see the table above)")
@@ -864,8 +874,10 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     else:
         out("Restart each app listed as wired, so it starts the memory server.")
     failed = [str(r[0]) for r in rows if str(r[2]).startswith("ERROR")]
-    records = read_store(path)[0] if not dry_run else 0
-    block = armed_block(path, records, labels, [] if dry_run else labels, seal, attention=failed,
+    # A DRY RUN COUNTS TOO (3.15.6). It printed 0 records for a store of 11,423 on PC1, because the read
+    # was skipped on purpose; read_store only reads, so a dry run can say what is there.
+    records, _seal_now, signed = read_store(path, with_signed=True)
+    block = armed_block(path, records, labels, [] if dry_run else labels, seal, attention=failed, signed=signed,
                         dry_run=dry_run, seal_reason=seal_reason)
     if not dry_run:
         # THE BLOCK IN A FILE THE USER CAN OPEN (3.15.3). An agent on a 9B model printed an ARMED block the
@@ -1003,7 +1015,7 @@ def check(store=None, only=None, out=print):
     # THE SAME BLOCK, READ-ONLY (3.14.4), so a friend can see it again at any time. The seal is
     # recomputed from the store and compared with the one the install recorded in shared.json.
     from ._surface import shared_record
-    records, seal = read_store(want)
+    records, seal, signed = read_store(want, with_signed=True)
     recorded = shared_record().get("seal") or {}
     note = ""
     if seal and recorded.get("id"):
@@ -1024,6 +1036,7 @@ def check(store=None, only=None, out=print):
         out(f"{bad} item(s) need attention. To rewrite the agents: inspeximus install --all"
             + (f" --only {only if isinstance(only, str) else ','.join(only)}" if only else ""))
     out("")
-    for line in armed_block(want or "none recorded", records, ok, [], seal, attention=attention, seal_note=note):
+    for line in armed_block(want or "none recorded", records, ok, [], seal, attention=attention, seal_note=note,
+                            signed=signed):
         out(line)
     return 1 if bad else 0
