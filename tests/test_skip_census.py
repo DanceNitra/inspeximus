@@ -100,7 +100,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: (12, review X1/X3) and test_mcp_scope_and_write_verdicts.py (5, review X4/X6). Every one drives a tool
 #: through a real MCP client session, so the SDK is the thing under test and none can run without it. They
 #: run in the `integrations` job, which installs .[mcp,...]. Exactly +87, no slack: 170 + 87 = 257.
-MAX_HIDDEN_IN_BASE_ENV = 257
+#: 3.15.1: +3, test_an_unpersisted_mcp_write_is_an_error.py (audit A-22: an unpersisted MCP write is an
+#: error the client sees). It imports inspeximus.mcp_server, which needs the SDK, and runs in the
+#: `integrations` job. Exactly +3, no slack: 257 + 3 = 260.
+MAX_HIDDEN_IN_BASE_ENV = 260
 
 
 def _base_env_census():
