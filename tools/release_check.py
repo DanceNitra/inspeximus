@@ -448,7 +448,56 @@ def check_mutation_targets(rep, root=ROOT):
         rep.add("mutation targets", FAIL, "%d of %d mutation(s) no longer name one place in the tree, so the "
                 "gate would skip them: %s" % (len(broken), len(spec), " | ".join(b[:90] for b in broken[:4])))
         return
-    rep.add("mutation targets", PASS, "%d mutations each name exactly one place in the tree" % len(spec))
+    needles, stale = _test_registry_needles(root)
+    if stale:
+        rep.add("mutation targets", FAIL, "%d of %d hard-coded target(s) in the mutation-marked tests no longer "
+                "occur in the tree: %s" % (len(stale), needles, " | ".join(s[:90] for s in stale[:4])))
+        return
+    rep.add("mutation targets", PASS, "%d mutations each name exactly one place in the tree; %d hard-coded "
+            "target(s) in the mutation-marked tests all occur" % (len(spec), needles))
+
+
+def _test_registry_needles(root):
+    """Check the SECOND registry: the `MUTATIONS` lists that `mutation`-marked test modules keep in code.
+
+    tools/mutations.json is not the only place a mutation names a line. tests/test_claims_audit_mutation_score.py
+    holds its own (needle, replacement) pairs against inspeximus/core.py, and the `mutation` marker keeps it out
+    of every default run (pytest.ini deselects it). So a release that moved one of those lines passed its suite
+    and this check, and failed 2 minutes into CI's serial mutation step: 3.15.0's first tag, when the recall
+    tenant filter moved one indent level (AUDIT-B). A needle only has to occur, because the test replaces the
+    first occurrence. Returns (needles checked, [stale descriptions])."""
+    import importlib.util
+    checked, stale = 0, []
+    for path in sorted((root / "tests").glob("test_*.py")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if "pytest.mark.mutation" not in text or "MUTATIONS" not in text:
+            continue
+        spec = importlib.util.spec_from_file_location("_mutation_registry_" + path.stem, path)
+        mod = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(mod)
+        except Exception as e:                                   # noqa: BLE001
+            stale.append("%s [cannot load: %s]" % (path.name, e))
+            continue
+        registry = getattr(mod, "MUTATIONS", None)
+        if not isinstance(registry, (list, tuple)):
+            continue
+        target = root / getattr(mod, "CORE", os.path.join("inspeximus", "core.py"))
+        if not target.exists():
+            stale.append("%s [file gone: %s]" % (path.name, target))
+            continue
+        src = target.read_text(encoding="utf-8")
+        for param in registry:
+            values = getattr(param, "values", param)
+            if len(values) < 3:
+                continue
+            case = getattr(param, "id", None) or str(values[0])
+            needle = values[2]
+            for n in ([needle] if isinstance(needle, str) else list(needle)):
+                checked += 1
+                if n not in src:
+                    stale.append("%s::%s [needle gone: %s]" % (path.name, case, n.strip().splitlines()[0][:60]))
+    return checked, stale
 
 
 def check_release_notes(rep, root=ROOT):
