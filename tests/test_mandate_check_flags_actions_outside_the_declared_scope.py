@@ -27,7 +27,8 @@ def test_no_mandate_means_no_check_and_no_breach(tmp_path):
     e = led.record("http:GET", target="https://portal.example.gov/records")
     assert "mandate_check" not in e
     rep = led.mandate_breaches()
-    assert rep == {"breaches": [], "outside": 0, "checked": 0, "unchecked": 1, "first_breach_ts": None}
+    assert rep == {"breaches": [], "outside": 0, "checked": 0, "unchecked": 1, "first_breach_ts": None,
+                   "mandates": []}
 
 
 def test_action_inside_and_outside_the_mandate(tmp_path):
@@ -109,3 +110,87 @@ def test_action_context_manager_passes_the_target(tmp_path):
 def test_empty_mandate_is_refused(tmp_path):
     with pytest.raises(ValueError):
         _ledger(tmp_path).mandate([], actor="operator")
+
+
+# ---------------------------------------------------------------- red-team findings, 2026-09-28
+
+def test_a_mandate_keeps_a_store_backed_ledger_verifiable(tmp_path):
+    import os
+    pytest.importorskip("cryptography")
+    from inspeximus import Inspeximus
+    m = Inspeximus(str(tmp_path / "mem.json"), receipts=True, receipt_key=os.urandom(32).hex())
+    led = ActionLedger(m, actor="agent")
+    led.record("tool:search")
+    led.mandate(["tool:*"], actor="operator")
+    led.record("tool:search")
+    ok, problems = led.verify()
+    assert ok, problems
+
+
+def test_every_declaration_is_listed_and_a_self_declared_one_is_marked(tmp_path):
+    led = ActionLedger(path=tmp_path / "actions.json", actor="agent-1")   # the agent's own handle
+    led.mandate(["http:GET"], actor="operator", for_actor="agent-1")
+    led.mandate(["*"], actor="agent-1", for_actor="agent-1")               # the agent widens its own scope
+    ms = led.mandate_breaches()["mandates"]
+    assert [x["actions"] for x in ms] == [["http:GET"], ["*"]]
+    assert all(x["declared_by"] == "agent-1" for x in ms)
+    assert [x["self_declared"] for x in ms] == [True, True]                # written by the handle it governs
+
+
+def test_url_targets_match_host_by_label_and_path_normalised(tmp_path):
+    led = _ledger(tmp_path)
+    led.mandate(["http:GET"], actor="operator", targets=["https://*.example.gov/*"])
+    within = {t: led.record("http:GET", target=t)["mandate_check"]["within"] for t in [
+        "https://data.example.gov/x",
+        "https://evil.com/.example.gov/x",
+        "https://evil.com?.example.gov/x",
+        "https://evil.com#.example.gov/x",
+        "https://data.example.gov.evil.com/x",
+        "https://user@data.example.gov/x",
+        "https://data.example.gov:8443/x",
+        "http://data.example.gov/x",
+    ]}
+    assert within == {"https://data.example.gov/x": True, "https://evil.com/.example.gov/x": False,
+                      "https://evil.com?.example.gov/x": False, "https://evil.com#.example.gov/x": False,
+                      "https://data.example.gov.evil.com/x": False, "https://user@data.example.gov/x": False,
+                      "https://data.example.gov:8443/x": False, "http://data.example.gov/x": False}
+    led2 = ActionLedger(path=tmp_path / "b.json", actor="agent-1")
+    led2.mandate(["http:GET"], actor="operator", targets=["https://data.example.gov/public/*"])
+    assert led2.record("http:GET", target="https://data.example.gov/public/../admin")["mandate_check"]["within"] is False
+    assert led2.record("http:GET", target="https://DATA.example.gov./public/a")["mandate_check"]["within"] is True
+
+
+def test_a_bare_string_is_refused(tmp_path):
+    with pytest.raises(TypeError):
+        _ledger(tmp_path).mandate("http:GET", actor="operator")
+    with pytest.raises(TypeError):
+        _ledger(tmp_path).mandate(["http:GET"], actor="operator", targets="https://a.example/*")
+
+
+def test_an_actor_mandate_outranks_a_later_global_one(tmp_path):
+    led = _ledger(tmp_path)
+    led.mandate(["http:GET"], actor="operator", for_actor="agent-1")
+    led.mandate(["*"], actor="operator")
+    assert led.record("rm:rf", actor="agent-1")["mandate_check"]["within"] is False
+    assert led.record("rm:rf", actor="agent-2")["mandate_check"]["within"] is True
+
+
+def test_archive_keeps_the_mandate_in_force_live(tmp_path):
+    led = _ledger(tmp_path)
+    led.record("tool:old")
+    led.mandate(["tool:*"], actor="operator")
+    led.record("tool:search")
+    led.archive(before_ts=led._entries[-1]["ts"] + 1)
+    e = led.record("shell:rm")
+    assert e["mandate_check"]["within"] is False
+    assert led.verify()[0] is True
+
+
+def test_the_alert_gets_a_copy_it_cannot_corrupt(tmp_path):
+    def meddle(entry):
+        entry["mandate_check"]["within"] = True
+    led = _ledger(tmp_path, on_mandate_breach=meddle)
+    led.mandate(["tool:*"], actor="operator")
+    led.record("shell:rm")
+    assert led.mandate_breaches()["outside"] == 1
+    assert led.verify()[0] is True

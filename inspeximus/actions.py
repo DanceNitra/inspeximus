@@ -41,8 +41,10 @@ receipt chain, so a rewritten memory history is caught from the action side as w
 from __future__ import annotations
 
 import contextlib
+import copy
 import fnmatch
 import functools
+import posixpath
 import hashlib
 import json
 import os
@@ -623,7 +625,7 @@ class ActionLedger:
         if check is not None and not check["within"] and self.on_mandate_breach is not None:
             # The entry is already on disk; a failing alert must not undo the record of the breach.
             try:
-                self.on_mandate_breach(entry)
+                self.on_mandate_breach(copy.deepcopy(entry))
             except Exception:  # noqa: BLE001
                 pass
         return entry
@@ -635,32 +637,80 @@ class ActionLedger:
         `for_actor` (every actor when None) is checked against the newest mandate in force for it and
         carries the verdict in `mandate_check`.
 
-        `actions` and `targets` are shell-style patterns (fnmatch, case-sensitive): `tool:search`,
-        `http:GET`, `https://*.gov.example/*`. With `targets` None only the action name is checked. With
-        a target list, an action that records no target is outside the mandate, because nothing shows it
-        stayed inside.
+        `actions` are shell-style patterns (fnmatch, case-sensitive): `tool:search`, `http:GET`. A
+        `targets` pattern that starts with http:// or https:// is matched as a URL: scheme and port
+        exactly, host label by label (`*.example.gov` matches `a.example.gov`, never `example.gov.evil.com`),
+        and the path, normalised so `..` cannot climb out, by fnmatch. A target with user info
+        (`user@host`) never matches a URL pattern. Other patterns are matched by fnmatch on the whole
+        string. With `targets` None only the action name is checked. With a target list, an action that
+        records no target is outside the mandate, because nothing shows it stayed inside.
+
+        A mandate for one actor takes precedence over a mandate for every actor, whichever is newer.
+        Any handle can declare a mandate, including the agent it governs, so every declaration is listed
+        by `mandate_breaches()` with the handle that wrote it, and one written by the actor it governs is
+        marked `self_declared`. Keep the declaring handle out of the agent's reach: the MCP server does
+        not expose a tool to declare one.
 
         This flags; it does not block. The action has already happened when it is recorded. What the
         check changes is when anyone finds out: at write time, through `on_mandate_breach` and
-        `mandate_breaches()`, instead of when someone next reads the log. A mandate lives in the live
-        file, so declare it again after `archive()` rotates it out."""
+        `mandate_breaches()`, instead of when someone next reads the log. `archive()` keeps a mandate in
+        force in the live file, with everything after it."""
+        if isinstance(actions, (str, bytes)) or (targets is not None and isinstance(targets, (str, bytes))):
+            raise TypeError("actions and targets are lists of patterns; wrap a single pattern in a list")
         acts = [str(a) for a in actions]
         if not acts:
             raise ValueError("a mandate needs at least one allowed action pattern")
         tg = None if targets is None else [str(t) for t in targets]
-        body = {"actions": acts, "targets": tg, "for_actor": for_actor}
+        body = {"actions": acts, "targets": tg, "for_actor": for_actor,
+                # the handle that wrote it, which the caller cannot choose per call; `actor` is what the
+                # caller says. A mandate whose governed actor wrote it is reported as self_declared.
+                "declared_by": self.actor}
         if note:
             body["note"] = str(note)[:500]
-        return self.record("mandate:declare", actor=actor, kind="mandate", extra={"mandate": body},
-                           memory_state={"digest": None, "note": "a mandate is not an action"})
+        return self.record("mandate:declare", actor=actor, kind="mandate", extra={"mandate": body})
+
+    def _mandates_in_force(self) -> dict:
+        """The newest mandate per governed actor (None = every actor), as {for_actor: entry}."""
+        out: dict = {}
+        for e in self._entries:
+            if e.get("kind") == "mandate":
+                out[(e.get("mandate") or {}).get("for_actor")] = e
+        return out
 
     def _mandate_for(self, actor: str | None) -> dict | None:
-        for e in reversed(self._entries):
-            if e.get("kind") != "mandate":
-                continue
-            if (e.get("mandate") or {}).get("for_actor") in (None, actor):
-                return e
-        return None
+        force = self._mandates_in_force()
+        if actor is not None and actor in force:
+            return force[actor]
+        return force.get(None)
+
+    @staticmethod
+    def _target_matches(target: str, pattern: str) -> bool:
+        from urllib.parse import urlsplit
+        if not pattern.lower().startswith(("http://", "https://")):
+            return fnmatch.fnmatchcase(target, pattern)
+        try:
+            t, p = urlsplit(target), urlsplit(pattern)
+            t_port, p_port = t.port, p.port
+        except ValueError:
+            return False
+        if t.username is not None or t.password is not None or "@" in t.netloc:
+            return False
+        if t.scheme.lower() != p.scheme.lower():
+            return False
+        default = {"http": 80, "https": 443}.get(t.scheme.lower())
+        if (t_port or default) != (p_port or default):
+            return False
+        th = (t.hostname or "").rstrip(".").split(".")
+        ph = (p.hostname or "").rstrip(".").split(".")
+        if len(th) != len(ph) or not all(fnmatch.fnmatchcase(a, b) for a, b in zip(th, ph)):
+            return False
+        tpath = posixpath.normpath("/" + (t.path or "/").lstrip("/"))
+        if (t.path or "/").endswith("/") and tpath != "/":
+            tpath += "/"
+        ppath = p.path or "/"
+        if not fnmatch.fnmatchcase(tpath, ppath):
+            return False
+        return not (p.query or p.fragment) or fnmatch.fnmatchcase(t.query, p.query) and fnmatch.fnmatchcase(t.fragment, p.fragment)
 
     def _mandate_check(self, entry: dict) -> dict | None:
         m_entry = self._mandate_for(entry.get("actor"))
@@ -674,7 +724,7 @@ class ActionLedger:
             t = entry.get("target")
             if t is None:
                 reasons.append("no target recorded while the mandate restricts targets")
-            elif not any(fnmatch.fnmatchcase(t, pat) for pat in m["targets"]):
+            elif not any(self._target_matches(t, pat) for pat in m["targets"]):
                 reasons.append("target %r matches no allowed target pattern" % t)
         return {"mandate_seq": m_entry["seq"], "within": not reasons, "reasons": reasons}
 
@@ -699,8 +749,18 @@ class ActionLedger:
                 rows.append({"seq": e["seq"], "ts": e.get("ts"), "actor": e.get("actor"), "action": e.get("action"),
                              "target": e.get("target"), "status": e.get("status"),
                              "mandate_seq": c.get("mandate_seq"), "reasons": c.get("reasons")})
+        mandates = []
+        for e in self._entries:
+            if e.get("kind") != "mandate":
+                continue
+            m = e.get("mandate") or {}
+            gov = m.get("for_actor")
+            mandates.append({"seq": e["seq"], "ts": e.get("ts"), "actor": e.get("actor"),
+                             "declared_by": m.get("declared_by"), "for_actor": gov, "actions": m.get("actions"),
+                             "targets": m.get("targets"),
+                             "self_declared": gov is not None and gov in (e.get("actor"), m.get("declared_by"))})
         return {"breaches": rows, "outside": len(rows), "checked": checked, "unchecked": unchecked,
-                "first_breach_ts": rows[0]["ts"] if rows else None}
+                "first_breach_ts": rows[0]["ts"] if rows else None, "mandates": mandates}
 
     @contextlib.contextmanager
     def action(self, action: str, inputs: Any = None, meta: dict | None = None, actor: str | None = None,
@@ -2007,6 +2067,10 @@ class ActionLedger:
                    "principal": e.get("principal"), "session": e.get("session"),
                    "memory_digest": ms.get("digest"), "recalled": len(ms.get("recalled") or []),
                    "refers_to": (e.get("refers_to") or {}).get("seq") if isinstance(e.get("refers_to"), dict) else None}
+            if "target" in e:
+                row["target"] = e["target"]
+            if "mandate_check" in e:
+                row["within_mandate"] = e["mandate_check"].get("within")
             if e.get("kind") == "oversight":
                 row["event"] = e.get("event")
             if e.get("kind") == "incident":
@@ -2064,6 +2128,12 @@ class ActionLedger:
         for i in range(n):
             e = self._entries[i]
             if e.get("kind") == "incident" and e.get("event") != "reported" and not self._reported_ts(e):
+                n = i
+                break
+        # a mandate in force stays live, with everything after it, or later actions would run unchecked
+        in_force = {e["seq"] for e in self._mandates_in_force().values()}
+        for i in range(n):
+            if self._entries[i]["seq"] in in_force:
                 n = i
                 break
         # a kept entry may not point into the archive
