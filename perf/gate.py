@@ -169,9 +169,27 @@ class Counters:
             return real_save(path, items, before, dirty=dirty, rewrite_all=rewrite_all, **k)
 
         core._rows.save = save
+
+        # A DIRECTORY LISTING (os.listdir, os.scandir). 3.15.2's merge-backup removal ran once per
+        # tombstone and listed the store's directory twice each time: 2k + 3 listings for k erased records.
+        # The other counters saw it only on Windows, where the listed names were lowercased; on Linux the
+        # gate stayed green (A->B-2). Counted on every platform, so per-record directory work fails here.
+        self.listings = 0
+        self._real_listdir, self._real_scandir = core.os.listdir, core.os.scandir
+
+        def listdir(*a, **k):
+            counter.listings += 1
+            return self._real_listdir(*a, **k)
+
+        def scandir(*a, **k):
+            counter.listings += 1
+            return self._real_scandir(*a, **k)
+
+        core.os.listdir, core.os.scandir = listdir, scandir
         return self
 
     def __exit__(self, *exc):
+        core.os.listdir, core.os.scandir = self._real_listdir, self._real_scandir
         core.os.replace, core._dump_store = self._real_replace, self._real_dump
         core.Inspeximus._load_from_disk = self._real_load
         for name, (owner, attr) in COUNTED_CALLS.items():
@@ -191,6 +209,7 @@ class Counters:
                 "guard_regex_searches": self.searches,
                 "order_updates": self.order_updates,
                 "full_diff_saves": self.full_diff_saves,
+                "dir_listings": self.listings,
                 **self.calls}
 
 
@@ -655,6 +674,7 @@ WORKLOADS = {
     "write_json_n1000":   (lambda: w_write(1000),        "1,000 remembers + flush, JSON store", "json"),
     "recall_n2000_q100":  (lambda: w_recall(2000, 100),  "100 lexical recalls over 2,000 records", "rows"),
     "erase_k200_n2000":   (lambda: w_erase(200, 2000),   "erase 200 subject records among 2,000", "rows"),
+    "erase_k20_n2000":    (lambda: w_erase(20, 2000),    "erase 20 subject records among 2,000: dir_listings equals k=200's", "rows"),
     "erase_json_k50_n500": (lambda: w_erase(50, 500),    "erase 50 subject records among 500, JSON store", "json"),
     "session_n500":       (lambda: w_session(500),       "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets", "rows"),
     "session_json_n500":  (lambda: w_session(500),       "mixed session as session_n500, JSON store", "json"),

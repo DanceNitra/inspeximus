@@ -15,14 +15,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 1,
    "type_inferences": 1000,
    "current_active_scans": 0,
    "row_serializations": 1000,
    "read_guard_assessments": 1000
   },
-  "seconds_median": 24.9519,
-  "seconds_min": 19.986,
-  "seconds_max": 36.8755
+  "seconds_median": 8.4052,
+  "seconds_min": 7.7294,
+  "seconds_max": 8.791
  },
  "write_json_n1000": {
   "desc": "1,000 remembers + flush, JSON store",
@@ -35,19 +36,20 @@
    "replace_tombstones": 0,
    "replace_receipts": 0,
    "full_serializations": 1000,
-   "serialized_bytes": 180198853,
+   "serialized_bytes": 180196855,
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 1,
    "type_inferences": 1000,
    "current_active_scans": 0,
    "row_serializations": 0,
    "read_guard_assessments": 1000
   },
-  "seconds_median": 15.1465,
-  "seconds_min": 14.623,
-  "seconds_max": 15.1963
+  "seconds_median": 8.3408,
+  "seconds_min": 8.2953,
+  "seconds_max": 8.5488
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -65,14 +67,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
    "read_guard_assessments": 200000
   },
-  "seconds_median": 1.5427,
-  "seconds_min": 1.268,
-  "seconds_max": 1.8076
+  "seconds_median": 1.1416,
+  "seconds_min": 1.0774,
+  "seconds_max": 1.2044
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -90,6 +93,7 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 5,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
@@ -97,9 +101,37 @@
    "erase_items_reads": 7,
    "erase_lower_calls": 4605
   },
-  "seconds_median": 0.1212,
-  "seconds_min": 0.1082,
-  "seconds_max": 0.1222
+  "seconds_median": 0.0743,
+  "seconds_min": 0.072,
+  "seconds_max": 0.0982
+ },
+ "erase_k20_n2000": {
+  "desc": "erase 20 subject records among 2,000: dir_listings equals k=200's",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
+  "counters": {
+   "replace_store": 0,
+   "replace_tombstones": 1,
+   "replace_receipts": 0,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 0,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "dir_listings": 5,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 0,
+   "read_guard_assessments": 0,
+   "erase_items_reads": 7,
+   "erase_lower_calls": 4065
+  },
+  "seconds_median": 0.0469,
+  "seconds_min": 0.0409,
+  "seconds_max": 0.0516
  },
  "erase_json_k50_n500": {
   "desc": "erase 50 subject records among 500, JSON store",
@@ -112,11 +144,12 @@
    "replace_tombstones": 1,
    "replace_receipts": 0,
    "full_serializations": 1,
-   "serialized_bytes": 170255,
+   "serialized_bytes": 170237,
    "store_loads": 0,
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 5,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
@@ -124,9 +157,9 @@
    "erase_items_reads": 7,
    "erase_lower_calls": 1155
   },
-  "seconds_median": 0.0398,
-  "seconds_min": 0.0385,
-  "seconds_max": 0.0495
+  "seconds_median": 0.0317,
+  "seconds_min": 0.0252,
+  "seconds_max": 0.0384
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -144,14 +177,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 6,
    "type_inferences": 500,
    "current_active_scans": 0,
    "row_serializations": 1099,
    "read_guard_assessments": 50500
   },
-  "seconds_median": 19.1594,
-  "seconds_min": 18.7983,
-  "seconds_max": 19.4328
+  "seconds_median": 12.2909,
+  "seconds_min": 12.2719,
+  "seconds_max": 12.9414
  },
  "session_json_n500": {
   "desc": "mixed session as session_n500, JSON store",
@@ -164,19 +198,20 @@
    "replace_tombstones": 1,
    "replace_receipts": 500,
    "full_serializations": 551,
-   "serialized_bytes": 54269180,
+   "serialized_bytes": 54266471,
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 6,
    "type_inferences": 500,
    "current_active_scans": 0,
    "row_serializations": 0,
    "read_guard_assessments": 50500
   },
-  "seconds_median": 16.9854,
-  "seconds_min": 15.866,
-  "seconds_max": 17.6144
+  "seconds_median": 10.8762,
+  "seconds_min": 10.7512,
+  "seconds_max": 11.3193
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
@@ -194,14 +229,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 3,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 3,
    "read_guard_assessments": 3
   },
-  "seconds_median": 0.2506,
-  "seconds_min": 0.1863,
-  "seconds_max": 0.3116
+  "seconds_median": 0.1257,
+  "seconds_min": 0.1212,
+  "seconds_max": 0.1511
  },
  "reports_k300": {
   "desc": "supersession_report + 5 suppressing recalls over 300 keys",
@@ -219,14 +255,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
    "read_guard_assessments": 1500
   },
-  "seconds_median": 0.3223,
-  "seconds_min": 0.2076,
-  "seconds_max": 0.325
+  "seconds_median": 0.2205,
+  "seconds_min": 0.1468,
+  "seconds_max": 0.2235
  },
  "prompt_n2000": {
   "desc": "fresh handle opens a 2,000-record store and recalls once",
@@ -244,14 +281,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 1,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
    "read_guard_assessments": 2000
   },
-  "seconds_median": 0.1118,
-  "seconds_min": 0.1023,
-  "seconds_max": 0.1505
+  "seconds_median": 0.0754,
+  "seconds_min": 0.0729,
+  "seconds_max": 0.0766
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",
@@ -269,15 +307,16 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 2,
+   "dir_listings": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 4000,
    "read_guard_assessments": 0,
    "row_id_comparisons": 0
   },
-  "seconds_median": 0.2079,
-  "seconds_min": 0.2048,
-  "seconds_max": 0.2092
+  "seconds_median": 0.0857,
+  "seconds_min": 0.0857,
+  "seconds_max": 0.0871
  },
  "hook_import": {
   "desc": "the hook process for a PreToolUse `ls`: does it import numpy",
@@ -289,9 +328,9 @@
    "hook_imports_numpy": 0,
    "hook_imports_governance": 0
   },
-  "seconds_median": 0.2809,
-  "seconds_min": 0.2658,
-  "seconds_max": 0.2956
+  "seconds_median": 0.2997,
+  "seconds_min": 0.2796,
+  "seconds_max": 0.3006
  },
  "memreport_n1000": {
   "desc": "memory_report over 1,000 records: 400 sampled recalls",
@@ -309,14 +348,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
+   "dir_listings": 0,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
    "read_guard_assessments": 1000
   },
-  "seconds_median": 4.2342,
-  "seconds_min": 3.933,
-  "seconds_max": 4.3353
+  "seconds_median": 1.6631,
+  "seconds_min": 1.6416,
+  "seconds_max": 1.779
  },
  "boundary_n2000": {
   "desc": "session boundary (open, write, close, flush) on a 2,000-record store",
@@ -334,14 +374,15 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 1,
+   "dir_listings": 1,
    "type_inferences": 1,
    "current_active_scans": 0,
    "row_serializations": 2005,
    "read_guard_assessments": 3
   },
-  "seconds_median": 0.2539,
-  "seconds_min": 0.1827,
-  "seconds_max": 0.6497
+  "seconds_median": 0.1497,
+  "seconds_min": 0.1468,
+  "seconds_max": 0.1783
  },
  "hook_install": {
   "desc": "--install into a temp project: is PostToolUse scoped to what capture records",
@@ -354,8 +395,8 @@
    "post_tool_use_matcher_tools": 4,
    "post_tool_use_extra_tools": 0
   },
-  "seconds_median": 0.0088,
-  "seconds_min": 0.0065,
-  "seconds_max": 0.0109
+  "seconds_median": 0.0057,
+  "seconds_min": 0.0056,
+  "seconds_max": 0.0058
  }
 }

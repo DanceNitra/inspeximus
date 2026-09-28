@@ -6124,5 +6124,14 @@
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
+ },
+ {
+  "name": "A->B-2: the merge-backup removal runs once per tombstone again (2k + 3 directory listings)",
+  "file": "inspeximus/core.py",
+  "old": "        if not defer:\r\n            self._drop_pre_rows_backup()\r\n            self._flush_tombstones()",
+  "new": "        self._drop_pre_rows_backup()\r\n        if not defer:\r\n            self._flush_tombstones()",
+  "tests": [
+   "tests/test_audit_b_the_gate_counts_directory_listings.py"
+  ]
  }
 ]
