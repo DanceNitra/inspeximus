@@ -137,6 +137,32 @@ def test_main_is_never_pushed_before_a_green_branch_run_on_the_same_sha(root, na
     assert fake.index(MAIN_PUSH) is None and fake.index("git tag") is None, (name, fake.calls)
 
 
+def test_a_gh_that_cannot_start_stops_the_release_after_three_polls(root):
+    """2026-09-28: a release.py that outlived its shell started every gh with exit 0xC0000142 and no output,
+    and read each poll as "not finished yet" for an hour. It now stops, names the exit, and says what to do."""
+    fake = Fake(**{"gh run list": (3221225794, "")})
+    rc, out = _run(root, fake)
+    assert rc == 1 and "gh cannot run" in out and "0xC0000142" in out and "STATUS_DLL_INIT_FAILED" in out, out
+    assert "re-run release.py from a live shell" in out, out
+    assert sum(1 for c in fake.calls if c.startswith("gh run list")) == 3, fake.calls
+    assert fake.index(MAIN_PUSH) is None and fake.index("git tag") is None
+
+
+class _GhFailsTwice(Fake):
+    def __call__(self, args, cwd=None):
+        cmd = " ".join(str(a) for a in args)
+        if cmd.startswith("gh run list") and sum(1 for c in self.calls if c.startswith("gh run list")) < 2:
+            self.calls.append(cmd)
+            return 3221225794, ""
+        return super().__call__(args, cwd)
+
+
+def test_two_failed_gh_polls_do_not_stop_the_release(root):
+    fake = _GhFailsTwice()
+    rc, out = _run(root, fake)
+    assert rc == 0, out                                             # control: a passing failure keeps polling
+
+
 def test_an_install_change_runs_the_install_workflows_and_a_red_one_keeps_main_untouched(root):
     diff = {"git diff --name-only origin/main HEAD": (0, "inspeximus/install_all.py\nREADME.md\n")}
     fake = Fake(**diff)

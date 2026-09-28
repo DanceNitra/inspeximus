@@ -122,12 +122,45 @@ def branch_workflows(sh, root=ROOT):
     return chosen
 
 
+#: Windows exit codes a `gh` poll has died with, and what they mean for the release.
+_KNOWN_EXITS = {0xC0000142: "STATUS_DLL_INIT_FAILED: the process could not start, as when the console of the "
+                            "shell that started release.py is gone"}
+#: Consecutive failed `gh` calls before a poll stops.
+GH_FAILURES = 3
+
+
+class GhPoll:
+    """Runs one `gh` poll after another and stops after GH_FAILURES consecutive non-zero exits.
+
+    2026-09-28: Claude Code stopped the shell that ran `release.py 3.15.3`. The process survived, but every child it
+    started exited with 0xC0000142 and printed nothing, so each poll read as "no finished run yet". It polled for
+    an hour and would have stopped untagged, while the run it waited for had been green for twenty minutes."""
+
+    def __init__(self, sh):
+        self.sh, self.failures = sh, 0
+
+    def __call__(self, args):
+        rc, out = self.sh(args)
+        if rc == 0:
+            self.failures = 0
+            return rc, out
+        self.failures += 1
+        if self.failures >= GH_FAILURES:
+            code = rc & 0xFFFFFFFF
+            meaning = _KNOWN_EXITS.get(code)
+            raise Stop("gh cannot run: exit %d (0x%08X%s) on %d consecutive polls, output %r; re-run release.py "
+                       "from a live shell" % (rc, code, ", " + meaning if meaning else "", self.failures,
+                                              out.strip()[-200:]))
+        return rc, out
+
+
 def finished_run(head, workflow, event, sh, sleep, branch=None, polls=180, every=30):
     """The newest finished run of `workflow` from `event` for exactly `head`, or Stop."""
     args = ["gh", "run", "list", "-R", REPO, "--workflow", workflow, "--commit", head,
             "--json", "databaseId,event,headSha,headBranch,status,conclusion"]
+    poll = sh if isinstance(sh, GhPoll) else GhPoll(sh)
     for _ in range(polls):
-        rc, out = sh(args)
+        rc, out = poll(args)
         runs = [r for r in (json.loads(out) if rc == 0 and out.strip().startswith("[") else [])
                 if r.get("event") == event and r.get("headSha") == head
                 and (branch is None or r.get("headBranch") == branch)]
@@ -200,9 +233,10 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
                 raise Stop("%s failed: %s" % (" ".join(cmd[:3]), msg.strip()[-300:]))
         out("tagged v%s at %s" % (v, head[:12]))
         release_id = None
+        poll = GhPoll(sh)
         for _ in range(60):
-            rc, o = sh(["gh", "run", "list", "-R", REPO, "--workflow", "release.yml",
-                        "--json", "databaseId,headBranch"])
+            rc, o = poll(["gh", "run", "list", "-R", REPO, "--workflow", "release.yml",
+                          "--json", "databaseId,headBranch"])
             ids = [r["databaseId"] for r in (json.loads(o) if rc == 0 and o.strip().startswith("[") else [])
                    if r.get("headBranch") == "v%s" % v]
             if ids:

@@ -5255,5 +5255,14 @@
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
+ },
+ {
+  "name": "a gh that cannot start is polled until the timeout",
+  "file": "tools/release.py",
+  "old": "        if self.failures >= GH_FAILURES:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
  }
 ]
