@@ -5156,5 +5156,14 @@
   "tests": [
    "tests/test_install_upgrade_path.py"
   ]
+ },
+ {
+  "name": "a flush writes a store nobody changed",
+  "file": "inspeximus/core.py",
+  "old": "        if self._dirty:\n            self._save(force=True)\n",
+  "new": "        if True:\n            self._save(force=True)\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
  }
 ]
