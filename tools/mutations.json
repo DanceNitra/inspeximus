@@ -6341,5 +6341,23 @@
   "tests": [
    "tests/test_install_upgrade_path.py"
   ]
+ },
+ {
+  "name": "the install page is not a version carrier",
+  "file": "tools/release_check.py",
+  "old": "    \"docs/install/index.md\",\n    \"install/index.html\",\n)\n",
+  "new": ")\n",
+  "tests": [
+   "tests/test_the_install_page_names_a_version_floor.py"
+  ]
+ },
+ {
+  "name": "the page's floor reader finds nothing",
+  "file": "tools/release_check.py",
+  "old": "            return [(\"floor[%d]\" % i, v) for i, v in enumerate(floors)], None\n",
+  "new": "            return [], None\n",
+  "tests": [
+   "tests/test_the_install_page_names_a_version_floor.py"
+  ]
  }
 ]

@@ -53,7 +53,7 @@ Requires Python 3.9 or later.
 <!-- ci: posix -->
 ```bash
 python3 -m venv ~/.inspeximus/venv
-~/.inspeximus/venv/bin/python -m pip install -U "inspeximus[mcp]"
+~/.inspeximus/venv/bin/python -m pip install -U "inspeximus[mcp]>=3.15.3"
 ~/.inspeximus/venv/bin/inspeximus install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
@@ -65,7 +65,7 @@ Requires Python 3.9 or later.
 <!-- ci: windows -->
 ```powershell
 python -m venv "$HOME\.inspeximus\venv"
-& "$HOME\.inspeximus\venv\Scripts\python.exe" -m pip install -U "inspeximus[mcp]"
+& "$HOME\.inspeximus\venv\Scripts\python.exe" -m pip install -U "inspeximus[mcp]>=3.15.3"
 & "$HOME\.inspeximus\venv\Scripts\inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
@@ -89,7 +89,7 @@ The block above is PowerShell. In bash on Windows (Git Bash, as in Hermes Agent)
 <!-- ci: gitbash -->
 ```bash
 python -m venv "$USERPROFILE/.inspeximus/venv"
-"$USERPROFILE/.inspeximus/venv/Scripts/python.exe" -m pip install -U "inspeximus[mcp]"
+"$USERPROFILE/.inspeximus/venv/Scripts/python.exe" -m pip install -U "inspeximus[mcp]>=3.15.3"
 "$USERPROFILE/.inspeximus/venv/Scripts/inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
@@ -97,11 +97,19 @@ These lines use `$USERPROFILE`, not `$HOME`, on purpose. Some Git Bash sessions,
 hand a path to a Windows program without converting it, and Windows reads `/c/Users/<you>/...` as
 `C:\c\Users\<you>\...`. Measured on a friend's machine: `py -3 -m venv` on 2026-09-27 and `python -m venv` on 2026-09-28,
 both given `"$HOME/.inspeximus/venv"`, exited 0 and created the environment under `C:\c\Users\<you>`, not in the home.
-`$USERPROFILE` is the Windows form, which both kinds of session pass through unchanged. Never write
+`$USERPROFILE` is the Windows form, which both kinds of session pass through unchanged. Never give a
+Windows Python a path that starts with `/c/`: it creates `C:\c\...`, measured again on the friend's
+machine on 2026-09-28 with `-m venv /c/Users/<you>/...`. On Windows, use the PowerShell block if you can.
+Never write
 `%HOME%` in bash either: bash leaves it as it is, and the installer refuses to run from such a folder.
 
 The virtual environment lives in `~/.inspeximus/venv` on purpose. Every agent's configuration names the
 Python in it, so it must stay where it is. To update later, run the same commands again: every agent is pinned to the version that wrote its configuration.
+Each `pip install` line names the version this page was written for (`>=` that version), so pip upgrades an
+older copy even if `-U` is left out: on the friend's machine an agent dropped `-U` and pip kept 3.14.3.
+If an agent is launched through `uvx` and it reports that no version matches after an upgrade, uv's cached
+package index is older than the release: run `uvx --refresh-package inspeximus --from "inspeximus[mcp]" inspeximus --version`
+once (or `uv cache clean inspeximus`), then restart the app.
 
 ## What `install --all` does
 

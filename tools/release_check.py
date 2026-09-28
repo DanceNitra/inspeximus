@@ -63,6 +63,11 @@ REQUIRED_CARRIERS = (
     # lagged and died on a scope it does not know. A pin that lags the release is the same defect.
     ".mcp.json",
     "hooks/hooks.json",
+    # THE INSTALL PAGE'S VERSION FLOOR, ADDED IN 3.15.6. On a friend's machine an agent dropped `-U` and
+    # pip kept 3.14.3, so every install line names `inspeximus[mcp]>=X.Y.Z`; a floor that lags the release
+    # installs the previous one. The generated HTML carries the same lines.
+    "docs/install/index.md",
+    "install/index.html",
 )
 
 
@@ -151,6 +156,11 @@ def _read_carrier(root, rel):
             found += [("eyebrow[%d]" % i, v) for i, v in
                       enumerate(re.findall(r'(?<![\w.])v(\d+\.\d+\.\d+)(?![\w.])', text))]
             return found, None
+        if rel in ("docs/install/index.md", "install/index.html"):
+            floors = re.findall(r'inspeximus\[mcp\]&?g?t?;?>?=([0-9][0-9A-Za-z.+-]*)', path.read_text(encoding="utf-8"))
+            if len(floors) < 3:
+                return [], "has %d install lines with a version floor, not 3" % len(floors)
+            return [("floor[%d]" % i, v) for i, v in enumerate(floors)], None
         if rel in (".mcp.json", "hooks/hooks.json"):
             pins = re.findall(r'inspeximus(?:\[[^\]]*\])?==([0-9][^"\s]*)', path.read_text(encoding="utf-8"))
             if not pins:
