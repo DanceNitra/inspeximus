@@ -5897,7 +5897,7 @@
   "old": "    os.environ[\"MUTATION_FULL_SUITE\"] = \"off\"\n",
   "new": "",
   "tests": [
-   "tests/test_a_red_preflight_names_its_failing_test.py::test_the_test_session_turns_the_full_suite_run_off"
+   "tests/test_a_red_preflight_names_its_failing_test.py"
   ]
  }
 ]
