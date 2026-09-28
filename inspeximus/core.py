@@ -17894,11 +17894,6 @@ class Inspeximus:
             # concurrent-writer-safe — last writer wins, never a torn JSON file).
             # ONE critical section for the check AND the write. Split apart, the window
             # between them is exactly the race the check exists to report.
-            # NOTHING TO PERSIST, NOTHING WRITTEN (3.15.3). A store with no file and no records is a store
-            # that was only read; a flush() after a recall must not create its directory and an empty file.
-            if not self._items and not self.path.exists():
-                self._dirty = False
-                return
             _make_store_dir(self.path.parent)
             with _StoreLock(self.path):
                 if self._file_sig is not None and self._stat_sig() != self._file_sig:

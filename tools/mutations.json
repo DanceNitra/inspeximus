@@ -5012,15 +5012,6 @@
   ]
  },
  {
-  "name": "an empty flush writes a store file",
-  "file": "inspeximus/core.py",
-  "old": "            if not self._items and not self.path.exists():\n                self._dirty = False\n                return\n",
-  "new": "",
-  "tests": [
-   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
-  ]
- },
- {
   "name": "the first write does not create the store directory",
   "file": "inspeximus/core.py",
   "old": "            _make_store_dir(self.path.parent)\n",

@@ -76,7 +76,7 @@ def block_at_end(lines):
 
 
 def test_install_all_ends_with_the_block(home):
-    rc, lines = _run(A.run, rules="no", only="claude,codex")
+    rc, lines = _run(A.run, rules="no")
     assert rc == 0, lines
     block = block_at_end(lines)
     assert block, lines
@@ -87,7 +87,7 @@ def test_install_all_ends_with_the_block(home):
 
 
 def test_the_seal_is_the_setup_record_and_check_recomputes_it(home):
-    rc, lines = _run(A.run, rules="no", only="claude,codex")
+    rc, lines = _run(A.run, rules="no")
     assert rc == 0, lines
     shared = json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))
     records, seal = A.read_store(shared["store"])
@@ -110,7 +110,7 @@ def test_the_seal_is_the_setup_record_and_check_recomputes_it(home):
 
 
 def test_check_prints_the_block_last_and_writes_nothing(home):
-    _run(A.run, rules="no", only="claude,codex")
+    _run(A.run, rules="no")
     watched = [home / ".claude.json", home / ".claude" / "settings.json", home / ".codex" / "config.toml",
                home / ".inspeximus" / "shared.json"]
     store = json.loads(watched[-1].read_text(encoding="utf-8"))["store"]
@@ -133,7 +133,8 @@ def test_nothing_found_says_not_armed(home):
 @pytest.mark.parametrize("bad", ["%HOME%/.inspeximus/s.json", "$HOME/.inspeximus/s.json", "${HOME}/s.json"])
 def test_a_store_path_with_a_literal_variable_is_refused(home, bad):
     rc, lines = _run(A.run, rules="no", only="claude,codex", store=bad)
-    assert rc == 2 and "literally" in lines[0], lines
+    assert lines[0].startswith("running "), lines                  # F5: even a refusal names the installer
+    assert rc == 2 and "literally" in lines[1], lines
     assert not (home / ".claude.json").exists()
     rc, lines = _run(A.run, rules="no", only="claude,codex", store=str(home / "ok.json"))
     assert rc == 0, lines                                     # control: a written-out path installs
@@ -144,12 +145,13 @@ def test_an_interpreter_in_a_literal_percent_home_folder_is_refused(home, monkey
     monkeypatch.setattr(I, "resolve_runtime",
                         lambda: ("python", str(home / "proj" / "%HOME%" / ".inspeximus" / "venv" / "python")))
     rc, lines = _run(A.run, rules="no", only="claude,codex")
-    assert rc == 2 and "%HOME%" in lines[0] and "virtual environment" in lines[0], lines
+    assert lines[0].startswith("running "), lines                  # F5: even a refusal names the installer
+    assert rc == 2 and "%HOME%" in lines[1] and "virtual environment" in lines[1], lines
     assert not (home / ".claude.json").exists()
 
 
 def test_only_one_agent_after_a_full_install_keeps_the_others_named(home):
-    _run(A.run, rules="no", only="claude,codex")
+    _run(A.run, rules="no")
     rc, lines = _run(A.run, rules="no", only="claude")
     assert rc == 0, lines
     shared = json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))
@@ -172,18 +174,18 @@ def _session_start(proj, transcript):
 
 
 def test_claude_code_shows_the_line_once_per_install(home, tmp_path):
-    _run(A.run, rules="no", only="claude,codex")
+    _run(A.run, rules="no")
     first = _session_start(tmp_path / "proj", str(home / ".claude" / "projects" / "p" / "s1.jsonl"))
     msg = first.get("systemMessage", "")
     assert re.fullmatch(r"inspeximus memory active: \d+ records?, shared with Codex CLI", msg), first
     again = _session_start(tmp_path / "proj", str(home / ".claude" / "projects" / "p" / "s2.jsonl"))
     assert "systemMessage" not in again, again
     seal = json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))["seal"]
-    _run(A.run, rules="no", only="claude,codex")               # an identical re-run keeps the seal
+    _run(A.run, rules="no")                                    # an identical re-run keeps the seal
     assert json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))["seal"] == seal
     assert "systemMessage" not in _session_start(tmp_path / "proj", str(home / ".claude" / "p" / "s3.jsonl"))
     (home / "fakebin" / "gemini").write_text("", encoding="utf-8")
-    _run(A.run, rules="no", only="claude,codex,gemini")        # a new agent is a new install seal
+    _run(A.run, rules="no")                                    # a new agent is a new install seal
     assert json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))["seal"] != seal
     shown = _session_start(tmp_path / "proj", str(home / ".claude" / "p" / "s4.jsonl")).get("systemMessage", "")
     assert shown.endswith("shared with Codex CLI, Gemini CLI"), shown
@@ -191,7 +193,7 @@ def test_claude_code_shows_the_line_once_per_install(home, tmp_path):
 
 def test_the_line_names_only_the_shared_store(home, tmp_path):
     """An agent whose store is not the shared one would announce a store it does not read."""
-    _run(A.run, rules="no", only="claude,codex")
+    _run(A.run, rules="no")
     from inspeximus._surface import announcement
     store = json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))["store"]
     assert announcement("claude-code", "Claude Code", store, 3) == \
@@ -238,7 +240,7 @@ def hermes_stub(monkeypatch):
 
 
 def test_hermes_shows_the_line_once_in_its_memory_line(home, hermes_stub, tmp_path):
-    _run(A.run, rules="no", only="claude,codex")
+    _run(A.run, rules="no")
     store = json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))["store"]
     hh = tmp_path / "hermes-home"
     (hh / "inspeximus").mkdir(parents=True)

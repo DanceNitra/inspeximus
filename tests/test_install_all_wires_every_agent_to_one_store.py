@@ -448,7 +448,10 @@ def test_hermes_comes_first_in_the_table(home, monkeypatch):
     monkeypatch.setattr(A, "install_into_hermes", lambda p: (True, "ok"))
     _all_hosts(home)
     rc, table = _run(rules="no", hermes_provider_change="yes")
-    labels = [ln.split("  ")[0] for ln in table.splitlines()[1:] if ln and not ln.startswith("note")]
+    assert table.splitlines()[0].startswith("running "), table       # F5: the first line names the installer
+    rows = table.splitlines()
+    head = next(i for i, ln in enumerate(rows) if ln.startswith("host "))    # the notes F1 and F5 print come first
+    labels = [ln.split("  ")[0] for ln in rows[head + 1:] if ln and not ln.startswith("note")]
     assert labels[0].startswith("Hermes Agent") and labels[1] == "Claude Code" and labels[2] == "Gemini CLI", labels
 
 

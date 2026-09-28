@@ -71,12 +71,20 @@ def test_an_unwritable_parent_is_still_reported():
         m.flush()
 
 
-def test_the_cli_writes_to_a_nested_path_too():
+def test_the_cli_refuses_a_nested_path_until_its_folder_exists():
+    """3.15.3 UPGRADE NOTE: inspeximus no longer creates a missing folder for --path (AUDIT-A A-11).
+
+    Until 3.15.2 this test asserted the opposite: the CLI created nested/deep/ and wrote there. A typo in
+    --path then gave a new, empty store with no error."""
     d = tempfile.mkdtemp()
     p = os.path.join(d, "nested", "deep", "m.json")
-    out = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", p, "remember", "a fact"],
-                         capture_output=True, text=True, encoding="utf-8", errors="replace")
-    assert out.returncode == 0, out.stdout + out.stderr
+    argv = [sys.executable, "-m", "inspeximus.cli", "--path", p, "remember", "a fact"]
+    out = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    assert out.returncode == 2 and "no such directory" in out.stderr, out.stdout + out.stderr
+    assert not os.path.exists(os.path.join(d, "nested")), "the refused path was created anyway"
+    os.makedirs(os.path.dirname(p))
+    out = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    assert out.returncode == 0, out.stdout + out.stderr                  # control: made first, it writes
     assert os.path.exists(p)
 
 
