@@ -5593,5 +5593,50 @@
   "tests": [
    "tests/test_a34_nothing_changes_without_its_written_proof.py"
   ]
+ },
+ {
+  "name": "the writer guard compares the stat signature only again",
+  "file": "inspeximus/core.py",
+  "old": "                if (not _changed and self._file_sig is not None and self._file_hash is not None",
+  "new": "                if (False and self._file_sig is not None and self._file_hash is not None",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
+ },
+ {
+  "name": "a load records no content hash",
+  "file": "inspeximus/core.py",
+  "old": "        self._file_hash = (hashlib.sha256(raw).hexdigest()\n                           if raw is not None and self._row_snapshot is None else None)",
+  "new": "        self._file_hash = None",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
+ },
+ {
+  "name": "a save drops its content hash instead of re-syncing it",
+  "file": "inspeximus/core.py",
+  "old": "                    self._file_hash = hashlib.sha256(\n                        payload if isinstance(payload, bytes) else payload.encode(\"utf-8\")).hexdigest()",
+  "new": "                    self._file_hash = None",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
+ },
+ {
+  "name": "a save keeps the content hash of the previous read",
+  "file": "inspeximus/core.py",
+  "old": "                    self._file_hash = hashlib.sha256(\n                        payload if isinstance(payload, bytes) else payload.encode(\"utf-8\")).hexdigest()",
+  "new": "                    pass",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
+ },
+ {
+  "name": "a save re-syncs its content hash from a re-read",
+  "file": "inspeximus/core.py",
+  "old": "                    self._file_hash = hashlib.sha256(\n                        payload if isinstance(payload, bytes) else payload.encode(\"utf-8\")).hexdigest()",
+  "new": "                    self._file_hash = self._disk_hash()",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
  }
 ]

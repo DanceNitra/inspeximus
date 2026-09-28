@@ -2866,6 +2866,7 @@ class Inspeximus:
         self._l1_last_stat = 0.0
         self._items: list[dict] = []
         self._file_sig = None       # (mtime_ns, size) of the file we loaded; guards against clobbering a peer
+        self._file_hash = None      # sha256 of the bytes this handle last read or wrote (JSON and encrypted; A-37)
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -10151,6 +10152,7 @@ class Inspeximus:
                 self._dirty = True
             self._touched = set()
             self._file_sig = sig_before_read
+            self._file_hash = None                    # a row store merges; it has no whole-file overwrite
             return
         if raw is not None:
             if raw[:5] == _INSPEXIMUS_ENC_MAGIC:                           # encrypted store -> decrypt or FAIL LOUD
@@ -10265,6 +10267,11 @@ class Inspeximus:
         if self._row_snapshot is None:
             self._json_persisted = {r.get("id") for r in self._items if isinstance(r, dict)}
         self._file_sig = sig_before_read
+        # THE BYTES THIS HANDLE READ, hashed as read (A-37). The stat signature cannot tell a peer's
+        # same-tick, same-size write from no write at all; the guard in `_save` compares this instead
+        # when the signature has not moved. None after a migration: the file is a row store now.
+        self._file_hash = (hashlib.sha256(raw).hexdigest()
+                           if raw is not None and self._row_snapshot is None else None)
 
     def _persisted_ids(self):
         """The ids this handle last read from, or wrote to, the store file; None when unknown."""
@@ -10327,6 +10334,14 @@ class Inspeximus:
                 last = e
                 time.sleep(0.01 * (attempt + 1))
         raise last
+
+    def _disk_hash(self):
+        """sha256 of the store file's bytes as they are now, or None when it cannot be read (A-37).
+        None never equals a recorded hash, so an unreadable file reads as changed, which refuses."""
+        try:
+            return hashlib.sha256(self.path.read_bytes()).hexdigest()
+        except OSError:
+            return None
 
     def _stat_sig(self, raise_transient: bool = False):
         """(mtime_ns, size) of the store file, or the ABSENT sentinel if it is not there.
@@ -18191,7 +18206,19 @@ class Inspeximus:
             # between them is exactly the race the check exists to report.
             _make_store_dir(self.path.parent)
             with _StoreLock(self.path):
-                if self._file_sig is not None and self._stat_sig() != self._file_sig:
+                # THE CONTENT, WHEN THE STAT SIGNATURE HAS NOT MOVED (A-37). (mtime_ns, size) is all
+                # the guard compared, and a peer's write in the same clock tick that leaves the size
+                # unchanged moves neither: measured on 3.15.2 with a fixed clock, a JSON or encrypted
+                # save then rewrote the file and the peer's write was gone. The hash of the bytes this
+                # handle last read or wrote is compared against the file as it is now, inside THIS
+                # store lock (the one beside the store plus the legacy TEMP lock), so no writer that
+                # takes the lock can change the file between the check and the replace below. A writer
+                # that takes no lock (older than 3.15.2's A-10 lock, or an external tool) still can.
+                _changed = self._file_sig is not None and self._stat_sig() != self._file_sig
+                if (not _changed and self._file_sig is not None and self._file_hash is not None
+                        and self._row_snapshot is None):
+                    _changed = self._disk_hash() != self._file_hash
+                if _changed:
                     # A ROW STORE CAN MERGE, SO IT DOES. The refusal below exists because a JSON save
                     # rewrites the whole file, so writing over a changed file replaces the other
                     # writer's records with ours. A row write touches only the ids the caller names, so
@@ -18275,6 +18302,7 @@ class Inspeximus:
                     self._touched = set()
                     self._pending_events = []          # committed with the rows, or rolled back with them
                     self._file_sig = self._stat_sig()
+                    self._file_hash = None
                     _wrote_rows = True
                     _committed_events = _res.get("event_seqs") or []
                 else:
@@ -18294,6 +18322,10 @@ class Inspeximus:
                     else:
                         payload = data
                     _durable_replace(self.path, payload)
+                    # FROM THE BYTES WRITTEN, not from a re-read: a re-read would take in whatever a
+                    # writer outside the lock put there after the replace, and bless it (A-37).
+                    self._file_hash = hashlib.sha256(
+                        payload if isinstance(payload, bytes) else payload.encode("utf-8")).hexdigest()
                     self._json_persisted = {r.get("id") for r in slim if isinstance(r, dict)}
                     # INSIDE the lock, and that is the whole point. The check and the write already shared
                     # one critical section, but this line sat outside it, so the window simply moved: A

@@ -26,6 +26,28 @@ off write-time supersession; it now uses unkeyed records, which reach the same g
 controls, each run through `consolidate()` and `sleep()`). Each of the 5 new mutations in
 `tools/mutations.json` fails a test.
 
+## Unreleased (A-37) - UPGRADE IF you keep a JSON or encrypted store open in more than one process: a peer's write in the same clock tick is no longer overwritten
+
+Before this version the single-writer guard compared only the store file's modification time and
+size. A peer's write in the same clock tick (1 to 16 ms on Windows) that left the size unchanged moved
+neither, so a stale handle's save rewrote the file and the peer's write was lost, silently. It needed a
+same-length change: a counter, a credit, a value of equal length. A record added by the peer always
+changes the size and was always refused over. Row stores (the default since 3.0) write rows, not the
+whole file, and were not affected.
+
+- **The guard compares content.** When the modification time and size have not moved, a JSON or
+  encrypted save compares the sha256 of the file on disk with the hash of the bytes this handle last read
+  or wrote, and refuses with `StoreChangedOnDisk` on a mismatch. The check and the replace run under one
+  hold of the store lock. The hash is taken from the bytes written, never from a re-read.
+- **What it cannot cover.** A writer that takes no store lock (a version older than 3.15.2, which locked
+  in TEMP only, or a tool that writes the file directly) can still change the file between the check
+  and the replace.
+- **Cost.** One extra read of the store file per save, on JSON and encrypted stores only.
+
+`tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` pins the clock with `os.utime`, so it
+fails on 3.15.2 on every OS (5 of 7; the other 2 are controls), and each of the 5 new mutations in
+`tools/mutations.json` fails a test.
+
 ## Unreleased (A-34) - UPGRADE IF you erase memories, record objections, spend an irreversible budget, or keep write receipts: an operation whose written proof cannot be stored no longer reports success
 
 Before this version a failed write of an erasure's tombstones, an objection, a spend against the
