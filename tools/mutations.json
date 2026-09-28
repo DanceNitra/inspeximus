@@ -5165,5 +5165,14 @@
   "tests": [
    "tests/test_a_missing_store_directory_is_refused_everywhere.py"
   ]
+ },
+ {
+  "name": "a store directory not named .inspeximus gets the lock .gitignore",
+  "file": "inspeximus/core.py",
+  "old": "    if d.name == \".inspeximus\":\n",
+  "new": "    if True:\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py::test_only_a_created_inspeximus_directory_gets_the_lock_gitignore"
+  ]
  }
 ]

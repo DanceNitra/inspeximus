@@ -75,6 +75,22 @@ def test_opening_and_reading_an_unwritten_store_writes_nothing(tmp_path, monkeyp
     assert (present.parent / "memory.json.receipts.json").exists() == receipts
 
 
+def test_only_a_created_inspeximus_directory_gets_the_lock_gitignore(tmp_path):
+    """A-10's .gitignore moved from the hook to the first write: a `.inspeximus` directory inspeximus creates
+    gets it, any other directory it creates does not, and an existing one is left alone (see
+    tests/test_the_store_lock_does_not_depend_on_temp.py for the hook's side)."""
+    from inspeximus import Inspeximus
+    for store in (tmp_path / "proj" / ".inspeximus" / "memory.json", tmp_path / "new" / "deep" / "memory.json"):
+        if store.parent.name == ".inspeximus":
+            store.parent.parent.mkdir()
+        m = Inspeximus(path=str(store))
+        m.remember("the first fact")
+        m.flush()
+    ignore = tmp_path / "proj" / ".inspeximus" / ".gitignore"
+    assert ignore.exists() and "*.lock" in ignore.read_text(encoding="utf-8")                 # control
+    assert not (tmp_path / "new" / "deep" / ".gitignore").exists(), "a directory the user named got one"
+
+
 def test_the_refusal_suggests_a_near_match(tmp_path):
     from inspeximus._surface import store_location_problem
     (tmp_path / "project").mkdir()
