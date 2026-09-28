@@ -66,7 +66,7 @@ MUTATIONS = [
     pytest.param(
         "tenant_isolation",
         "tenant isolation on recall",
-        # The recall filter sits one level deeper since 3.15.0: recall builds its pool inside an
+        # The recall filter sits one level deeper since 3.15.1: recall builds its pool inside an
         # `else:` so a report's sampled recalls can share it (AUDIT-B B-07).
         ['            if self.tenant is not None:\n'
          '                pool = [r for r in pool if r.get("tenant") == self.tenant]',

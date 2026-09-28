@@ -560,7 +560,7 @@ def w_boundary(n):
     return run
 
 
-#: The governance modules the package imported eagerly until 3.15.0. The hook calls none of them, and
+#: The governance modules the package imported eagerly until 3.15.1. The hook calls none of them, and
 #: loading them was about 60 ms of every hook event (AUDIT-B B-19).
 GOVERNANCE_MODULES = ("actions", "agent_audit_trail", "cose", "deployer", "erasure_residue", "partitions",
                       "scitt", "subject_rights", "technical_documentation", "timestamp", "trusted_list")

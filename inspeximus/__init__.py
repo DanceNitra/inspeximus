@@ -36,7 +36,7 @@ from .core import (
     __version__,
 )
 
-# THE GOVERNANCE EXPORTS LOAD ON FIRST USE (3.15.0, AUDIT-B B-19). Every name below is still exported,
+# THE GOVERNANCE EXPORTS LOAD ON FIRST USE (3.15.1, AUDIT-B B-19). Every name below is still exported,
 # listed by dir() and bound by `from inspeximus import *`; its module is imported the first time the
 # name, or the submodule itself, is read from the package. The Claude Code hook is a new process per
 # event, and importing it ran all eleven of these modules although it calls none of them: 208 ms per

@@ -1,4 +1,4 @@
-## 3.15.0 - UPGRADE IF your Claude Code hooks or memory_report feel slow on a large store: a Read, Grep or Glob no longer opens the store, and opening, recalling, reporting and erasing do less work per record
+## 3.15.1 - UPGRADE IF your Claude Code hooks or memory_report feel slow on a large store: a Read, Grep or Glob no longer opens the store, and opening, recalling, reporting and erasing do less work per record
 
 Found in a speed audit on 2026-09-27 and measured on copies of two real stores (67,165 and 10,934
 records), old and new code interleaved on one machine. Every change keeps its output identical, and each
@@ -35,10 +35,10 @@ on one machine and move with its load; the counters do not. The memory_report ti
   and session workloads are back. A standalone `python perf/gate.py` run no longer writes receipt chain
   heads into your `%APPDATA%`.
 
-Release record: v3.15.0 was first tagged at 57ffc469. Its release run failed in the test gate before
-the build, because a mutation test named a line this release moved, so nothing was published. The fix
-is 0de4253b, and 5ae94399 makes release_check read that test's targets. The tag moved to the commit
-that carries this line after main CI passed on it.
+Release record: 3.15.0 was tagged at 57ffc469 and never published. Its release run failed in the test
+gate before the build, because a mutation test named a line this release moved. The tag cannot be
+moved, so the same release ships as 3.15.1: the fix is 0de4253b, and 5ae94399 makes release_check read
+that test's targets.
 
 ## 3.14.4 - UPGRADE IF you use Claude Desktop without the `claude` command, or install through an agent: `install --all` now wires Claude Desktop's Code tab, and it ends with a short ARMED block and a seal that an agent can copy to you.
 
