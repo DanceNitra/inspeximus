@@ -4656,5 +4656,41 @@
   "tests": [
    "tests/test_an_unpersisted_mcp_write_is_an_error.py"
   ]
+ },
+ {
+  "name": "the SCITT verifier raises on a malformed statement again",
+  "file": "inspeximus/scitt.py",
+  "old": "    except cose.CoseDecodeError as e:                     # third-party bytes: a verdict, not a raise\n        out[\"problems\"].append(\"the statement is not well-formed CBOR/COSE: %s\" % e)\n        return out\n    if not receipts:\n        out[\"problems\"].append(\"no Receipt: this is a Signed Statement",
+  "new": "    except ZeroDivisionError as e:\n        out[\"problems\"].append(\"the statement is not well-formed CBOR/COSE: %s\" % e)\n        return out\n    if not receipts:\n        out[\"problems\"].append(\"no Receipt: this is a Signed Statement",
+  "tests": [
+   "tests/test_a_malformed_statement_gets_a_verdict.py"
+  ]
+ },
+ {
+  "name": "the registered-statement verifier raises on a malformed statement again",
+  "file": "inspeximus/transparency.py",
+  "old": "    except cose.CoseDecodeError as e:                     # third-party bytes: a verdict, not a raise\n",
+  "new": "    except ZeroDivisionError as e:\n",
+  "tests": [
+   "tests/test_a_malformed_statement_gets_a_verdict.py"
+  ]
+ },
+ {
+  "name": "the CBOR decoder raises its old mix of error types again",
+  "file": "inspeximus/cose.py",
+  "old": "    except (IndexError, ValueError, TypeError, KeyError, UnicodeDecodeError, OverflowError,\n            RecursionError) as e:\n",
+  "new": "    except (ZeroDivisionError,) as e:\n",
+  "tests": [
+   "tests/test_a_malformed_statement_gets_a_verdict.py"
+  ]
+ },
+ {
+  "name": "a wrongly shaped COSE_Sign1 raises TypeError out of receipts_of again",
+  "file": "inspeximus/scitt.py",
+  "old": "    except (TypeError, ValueError, AttributeError) as e:\n        raise CoseDecodeError(\"not a well-formed COSE_Sign1",
+  "new": "    except ZeroDivisionError as e:\n        raise CoseDecodeError(\"not a well-formed COSE_Sign1",
+  "tests": [
+   "tests/test_a_malformed_statement_gets_a_verdict.py"
+  ]
  }
 ]

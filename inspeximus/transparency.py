@@ -328,7 +328,11 @@ def verify_registered_statement(statement: bytes, verify_issuer, verify_service,
     out["statement"] = st
     out["problems"] += ["statement: " + p for p in st["problems"]]
 
-    receipts = scitt.receipts_of(statement)
+    try:
+        receipts = scitt.receipts_of(statement)
+    except cose.CoseDecodeError as e:                     # third-party bytes: a verdict, not a raise
+        out["problems"].append("the statement is not well-formed CBOR/COSE: %s" % e)
+        return out
     if not receipts:
         out["problems"].append("no Receipt: this statement was never registered, or the Receipt was "
                                "stripped")

@@ -176,11 +176,15 @@ def transparent_statement(statement: bytes, receipts) -> bytes:
 
 def receipts_of(statement: bytes) -> list:
     """The Receipts carried by a Transparent Statement, or an empty list for a bare Signed Statement."""
+    from .cose import CoseDecodeError
     tagged = decode(statement)
     if not isinstance(tagged, CBORTag) or tagged.tag != COSE_SIGN1_TAG:
         return []
-    _protected, unprotected, _payload, _sig = tagged.value
-    return [bytes(r) for r in (unprotected or {}).get(HDR_RECEIPTS, [])]
+    try:
+        _protected, unprotected, _payload, _sig = tagged.value
+        return [bytes(r) for r in (unprotected or {}).get(HDR_RECEIPTS, [])]
+    except (TypeError, ValueError, AttributeError) as e:
+        raise CoseDecodeError("not a well-formed COSE_Sign1 (%s: %s)" % (type(e).__name__, e)) from None
 
 
 def verify_transparent_statement(statement: bytes, verify_statement, verify_receipt_sig,
@@ -209,7 +213,11 @@ def verify_transparent_statement(statement: bytes, verify_statement, verify_rece
     out["statement"] = st
     out["problems"] += ["statement: " + p for p in st["problems"]]
 
-    receipts = receipts_of(statement)
+    try:
+        receipts = receipts_of(statement)
+    except cose.CoseDecodeError as e:                     # third-party bytes: a verdict, not a raise
+        out["problems"].append("the statement is not well-formed CBOR/COSE: %s" % e)
+        return out
     if not receipts:
         out["problems"].append("no Receipt: this is a Signed Statement, not a Transparent one")
         return out

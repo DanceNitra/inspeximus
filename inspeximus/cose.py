@@ -147,10 +147,26 @@ def _dec(b: bytes, i: int):
     raise ValueError("unsupported CBOR major type %d" % major)
 
 
+class CoseDecodeError(ValueError):
+    """The bytes are not one well-formed CBOR item (or not a well-formed COSE structure).
+
+    ONE TYPE FOR EVERY WAY INPUT CAN BE MALFORMED (A-20, 2026-09-27). The decoder raised IndexError on a
+    truncated item, UnicodeDecodeError on a bad text string, ValueError on trailing bytes and TypeError
+    on a wrong shape, so a verifier of third-party bytes could not catch "malformed" without catching
+    its own bugs too, and raised instead of returning its verdict. A ValueError, so code that caught
+    the old trailing-bytes error still catches this."""
+
+
 def decode(b: bytes):
-    v, i = _dec(bytes(b), 0)
+    try:
+        v, i = _dec(bytes(b), 0)
+    except CoseDecodeError:
+        raise
+    except (IndexError, ValueError, TypeError, KeyError, UnicodeDecodeError, OverflowError,
+            RecursionError) as e:
+        raise CoseDecodeError("malformed CBOR (%s: %s)" % (type(e).__name__, e)) from None
     if i != len(b):
-        raise ValueError("trailing bytes after CBOR item (%d of %d consumed)" % (i, len(b)))
+        raise CoseDecodeError("trailing bytes after CBOR item (%d of %d consumed)" % (i, len(b)))
     return v
 
 
