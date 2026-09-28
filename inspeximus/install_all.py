@@ -424,19 +424,35 @@ def _uv_for(py):
     return None
 
 
-def install_into_hermes(py, runner=subprocess.run):
-    """Install this version of inspeximus into Hermes' own venv. Hermes ships uv, and its interpreter can
-    refuse `pip install` (PEP 668), so uv is tried first."""
-    spec = f"inspeximus=={_version()}"
+def _stale_uv_index(r):
+    """uv answered from a cached index that does not know the version yet (PC1 and PC2, 2026-09-28)."""
+    text = (r.stderr or "") + (r.stdout or "")
+    return "no version of inspeximus" in text
+
+
+def install_into_hermes(py, runner=subprocess.run, spec=None):
+    """Install this version of inspeximus (or `spec`) into Hermes' own venv. Hermes ships uv, and its
+    interpreter can refuse `pip install` (PEP 668), so uv is tried first.
+
+    EVERY ATTEMPT'S ERROR, AND ONE RETRY (3.15.6, PC2 friend flow G3). Only the last error was returned,
+    so PC2 saw pip's "No module named pip" while uv's real failure stayed hidden; 49 s later the same run
+    succeeded, because uv's cached index had caught up. A uv failure that names no version of inspeximus
+    is retried once with --refresh-package inspeximus, and a failure reports every attempt."""
+    spec = spec or f"inspeximus=={_version()}"
     uv = _uv_for(py)
     cmds = ([[uv, "pip", "install", "--python", str(py), spec]] if uv else []) + \
         [[str(py), "-m", "pip", "install", "-q", spec]]
-    last = None
+    errors = []
     for cmd in cmds:
-        last = runner(cmd, capture_output=True, text=True)
-        if last.returncode == 0:
+        r = runner(cmd, capture_output=True, text=True)
+        if r.returncode != 0 and uv and cmd[0] == uv and _stale_uv_index(r):
+            errors.append("%s: %s" % (" ".join(cmd[:3]), (r.stderr or r.stdout or "").strip()[-300:]))
+            cmd = cmd[:3] + ["--refresh-package", "inspeximus"] + cmd[3:]
+            r = runner(cmd, capture_output=True, text=True)
+        if r.returncode == 0:
             return True, " ".join(cmd[:2] + ["...", spec])
-    return False, ((last.stderr or last.stdout or "")[-300:] if last else "no installer found")
+        errors.append("%s: %s" % (" ".join(cmd[:3]), (r.stderr or r.stdout or "").strip()[-300:]))
+    return False, (" | ".join(errors) if errors else "no installer found")
 
 
 def uninstall_from_hermes(py, runner=subprocess.run):
@@ -596,7 +612,8 @@ def _hermes(path, change, dry_run, notes, wired):
         if dry_run:
             rows.append((label, "yes", "would install", str(path), "provider"))
             continue
-        had_it = _hermes_python(py, "import inspeximus")[0]
+        had_it, old_ver = _hermes_python(py, "import inspeximus; print(inspeximus.__version__)")
+        old_ver = (old_ver or "").strip().splitlines()[-1] if had_it and (old_ver or "").strip() else ""
         ok, msg = install_into_hermes(py)
         if not ok:
             rows.append((label, "yes", "ERROR", "-", msg))
@@ -604,6 +621,14 @@ def _hermes(path, change, dry_run, notes, wired):
         if not hermes_loads_provider(py):
             if not had_it:
                 uninstall_from_hermes(py)
+            elif old_ver and old_ver != _version():
+                # THE OLD PROVIDER COMES BACK (3.15.6, PC2 friend flow G6). An upgrade that does not load
+                # left Hermes' config naming a provider that could not load: 3.14.3 had removed the old
+                # package before a failed install. The new version went in first, and it did not load,
+                # so the version that was there is installed again.
+                back, why = install_into_hermes(py, spec=f"inspeximus=={old_ver}")
+                notes.append(f"Hermes Agent: inspeximus {old_ver} is installed again in its venv"
+                             if back else f"Hermes Agent: could not reinstall inspeximus {old_ver}: {why}")
             ver = hermes_version(py)
             rows.append((label, "yes", f"cannot load provider (hermes-agent {ver}, {kind})", "-", "provider"))
             notes.append(f"Hermes Agent: hermes-agent {ver} ({kind}) does not load memory-provider packages, so "

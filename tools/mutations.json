@@ -6359,5 +6359,32 @@
   "tests": [
    "tests/test_the_install_page_names_a_version_floor.py"
   ]
+ },
+ {
+  "name": "a stale uv index is not retried",
+  "file": "inspeximus/install_all.py",
+  "old": "        if r.returncode != 0 and uv and cmd[0] == uv and _stale_uv_index(r):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "a failed provider install reports only the last error",
+  "file": "inspeximus/install_all.py",
+  "old": "    return False, (\" | \".join(errors) if errors else \"no installer found\")\n",
+  "new": "    return False, (errors[-1] if errors else \"no installer found\")\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
+ },
+ {
+  "name": "an upgrade that does not load leaves the new provider in place",
+  "file": "inspeximus/install_all.py",
+  "old": "            elif old_ver and old_ver != _version():\n",
+  "new": "            elif False:\n",
+  "tests": [
+   "tests/test_install_all_wires_every_agent_to_one_store.py"
+  ]
  }
 ]

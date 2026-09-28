@@ -468,3 +468,43 @@ def test_a_current_hermes_is_found_through_its_package_manager_record(home):
     assert A.hermes_candidates() == [(hh, py)]
     (hh / "hermes-agent" / "plugins" / "memory").mkdir(parents=True)
     assert A.hermes_root(py) == hh / "hermes-agent", "Hermes' own modules are imported from its checkout"
+
+
+# ── 3.15.6: G3, every attempt's error and one retry; G6, the old provider comes back ─────────────────
+class _R:
+    def __init__(self, rc, err=""):
+        self.returncode, self.stderr, self.stdout = rc, err, ""
+
+
+def test_a_stale_uv_index_is_retried_once_with_a_refresh(monkeypatch):
+    monkeypatch.setattr(A, "_uv_for", lambda py: "uv")
+    calls = []
+
+    def runner(cmd, **kw):
+        calls.append(cmd)
+        if "--refresh-package" in cmd:
+            return _R(0)
+        return _R(1, "Because there is no version of inspeximus==9.9.9 and you require it")
+    ok, msg = A.install_into_hermes("py", runner=runner, spec="inspeximus==9.9.9")
+    assert ok and calls[1][:5] == ["uv", "pip", "install", "--refresh-package", "inspeximus"], calls
+
+
+def test_a_failed_provider_install_reports_every_attempt(monkeypatch):
+    monkeypatch.setattr(A, "_uv_for", lambda py: "uv")
+    runner = lambda cmd, **kw: _R(1, "uv broke" if cmd[0] == "uv" else "No module named pip")  # noqa: E731
+    ok, msg = A.install_into_hermes("py", runner=runner)
+    assert not ok and "uv broke" in msg and "No module named pip" in msg, msg          # control: both errors
+
+
+def test_an_upgrade_that_does_not_load_puts_the_old_provider_back(home, monkeypatch):
+    hh, py = _hermes_venv(home)
+    specs = []
+    monkeypatch.setattr(A, "install_into_hermes", lambda p, spec=None: (specs.append(spec) or (True, "ok")))
+    monkeypatch.setattr(A, "uninstall_from_hermes", lambda p: specs.append("UNINSTALL") or True)
+    monkeypatch.setattr(A, "_hermes_python", lambda p, code, runner=None: (True, "3.14.3\n"))
+    monkeypatch.setattr(A, "hermes_loads_provider", lambda p, runner=None: False)
+    monkeypatch.setattr(A, "hermes_version", lambda p, runner=None: "0.19.0")
+    _install(home, "cursor")
+    rc, table = _run(rules="no", hermes_provider_change="yes")
+    assert specs == [None, "inspeximus==3.14.3"], specs
+    assert "inspeximus 3.14.3 is installed again" in table and not (hh / "config.yaml").exists(), table
