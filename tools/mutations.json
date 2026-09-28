@@ -2656,7 +2656,8 @@
   "old": "        h = hashlib.sha256(os.path.normcase(os.path.abspath(str(path))).encode(\"utf-8\", \"replace\")).hexdigest()[:16]",
   "new": "        h = hashlib.sha256(os.path.abspath(str(path)).encode(\"utf-8\", \"replace\")).hexdigest()[:16]",
   "tests": [
-   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py",
+   "tests/test_a38_the_legacy_lock_key_is_the_old_versions_key.py"
   ]
  },
  {
