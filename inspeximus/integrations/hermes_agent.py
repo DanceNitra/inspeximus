@@ -186,7 +186,9 @@ def _make_class(base):
                     home = kwargs.get("hermes_home") or os.path.expanduser("~/.hermes")
                     path = os.path.join(home, "inspeximus", "memory.json")
                     os.makedirs(os.path.dirname(path), exist_ok=True)
-                self._store = open_store(path)
+                # The configured path is one a program wrote (`install --all`, which now creates the folder,
+                # or the dashboard), so it opens like an adapter's: its folder appears with the first write.
+                self._store = open_store(path, resolve=False)
 
         @staticmethod
         def _configured_path(hermes_home):

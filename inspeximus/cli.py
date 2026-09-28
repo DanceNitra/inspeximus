@@ -1590,6 +1590,9 @@ def main(argv=None):
                    receipt_key=_rk)
     except StoreLocationError as e:
         print(f"inspeximus: {e}", file=sys.stderr)
+        if a.cmd == "check-code":                   # a gate says in its own words that it gave no verdict
+            print("check-code: no deprecation could be read and nothing was checked. Refusing to report clean.",
+                  file=sys.stderr)
         return 2
 
     if a.cmd == "retire":

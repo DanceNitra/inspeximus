@@ -222,6 +222,32 @@ def test_a_hand_written_hook_line_is_kept_and_named(home):
                if "inspeximus.claude_code" in h["command"]) == 5, "no event runs twice"
 
 
+def test_a_venv_interpreter_line_is_the_installers_and_a_system_one_is_the_users(home):
+    """PC2's install wrote the interpreter form from ~/.inspeximus/venv; a person's /opt/py line stays theirs."""
+    venv = str(home / ".inspeximus" / "venv" / "Scripts" / "python.exe").replace("\\", "/")
+    theirs = ("C:/opt/py/python.exe" if os.name == "nt" else "/opt/py/bin/python") + " -m inspeximus.claude_code"
+    cmds = {e: venv + " -m inspeximus.claude_code" for e in EVENTS}
+    cmds["SessionEnd"] = theirs
+    _settings(home, cmds)
+    rc, lines = _run(rules="no", only="claude")
+    s = json.loads((home / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    assert s["hooks"]["SessionStart"][0]["hooks"][0]["command"] == I.hook_command("uvx", UVX), lines
+    assert s["hooks"]["SessionEnd"][0]["hooks"][0]["command"] == theirs              # control: kept
+    assert any("kept a hook line written by hand" in ln and "SessionEnd" in ln for ln in lines), lines
+
+
+def test_the_install_creates_the_folder_of_the_store_it_names(home):
+    """The MCP server refuses a store in a missing folder, so the install that names one must create it."""
+    from inspeximus._surface import store_location_problem
+    store = home / "memories" / "team.json"
+    assert store_location_problem(str(store)), "control: before the install the path is refused"
+    rc, lines = _run(rules="no", only="claude", store=str(store))
+    assert rc == 0 and store.parent.is_dir(), lines
+    assert store_location_problem(str(store)) is None
+    rc, lines = _run(rules="no", only="claude", store=str(home / "dry" / "s.json"), dry_run=True)
+    assert not (home / "dry").exists(), "a dry run creates nothing"
+
+
 def test_an_update_that_did_not_hold_is_reported(home, monkeypatch):
     old = UVX + " --from inspeximus==3.14.3 python -m inspeximus.claude_code"
     _settings(home, {e: old for e in EVENTS})

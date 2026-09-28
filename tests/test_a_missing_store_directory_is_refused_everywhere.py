@@ -52,6 +52,9 @@ def test_the_refusal_suggests_a_near_match(tmp_path):
     far = store_location_problem(str(tmp_path / "zzzzzz" / "memory.json"))
     assert far and "Did you mean" not in far, far                                      # control: no match, no guess
     assert store_location_problem(str(tmp_path / "project" / "memory.json")) is None  # control: an existing folder
+    (tmp_path / "notes.txt").write_text("a file", encoding="utf-8")
+    under_a_file = store_location_problem(str(tmp_path / "notes.txt" / "memory.json"))
+    assert under_a_file and "is a file, not a directory" in under_a_file and "NOT PERSISTED" in under_a_file
 
 
 # ── MCP ────────────────────────────────────────────────────────────────────────────────────────────────
