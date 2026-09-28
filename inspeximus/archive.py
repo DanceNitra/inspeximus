@@ -172,12 +172,65 @@ def _sig_problem(obj: dict, what: str, expected_pubkey: str | None = None) -> st
     return None
 
 
-def _write_log(store_path, entries: list) -> None:
+def _write_log(target, entries: list) -> None:
+    store_path = _path_of(target)
     p = log_path(store_path)
     tmp = p.with_name(p.name + ".tmp.%d" % os.getpid())
     tmp.write_text(json.dumps({"kind": LOG_KIND, "entries": entries}, indent=1, ensure_ascii=False) + "\n",
                    encoding="utf-8")
     os.replace(tmp, p)
+    # The log first, then its head: a crash between the two leaves a log LONGER than its head, which
+    # still verifies, never a head that claims entries the log does not have.
+    _write_head(store_path, entries)
+    m = _store_of(target)
+    if m is not None and getattr(m, "_file_sig", None) is not None:
+        # This handle wrote only the head, under the lock. Without this it would read its own write as
+        # another writer's and merge the rows it just moved or erased back in from disk.
+        m._file_sig = m._stat_sig()
+
+
+def _write_head(store_path, entries: list) -> None:
+    """Record the log's entry count and head hash inside the hot store's own file (its `meta` table), so a
+    log cut at an entry boundary no longer verifies against itself."""
+    from . import sqlite_store as _rows
+    head = {"count": len(entries), "head": entries[-1]["hash"] if entries else GENESIS}
+    con = _rows._connect(store_path)
+    try:
+        con.execute("INSERT OR REPLACE INTO meta(k, v) VALUES('archive_log_head', ?)", (json.dumps(head),))
+        con.commit()
+    finally:
+        con.close()
+
+
+def recorded_head(store_path):
+    """{count, head} as the hot store recorded it, or None."""
+    from . import sqlite_store as _rows
+    try:
+        if not _rows.looks_like_sqlite(store_path):
+            return None
+        return _meta(store_path, "archive_log_head")
+    except Exception:                                                # noqa: BLE001
+        return None
+
+
+def log_head_problems(store_path) -> list:
+    """The log against the head the hot store recorded. THREAT MODEL: this catches a log truncated or
+    replaced on its own (by accident, a sync, a partial restore). Someone who edits both the store file
+    and the log can make them agree again; only receipts, or a head kept outside the store, catch that."""
+    head = recorded_head(store_path)
+    if not head:
+        return []
+    try:
+        entries = read_log(store_path) if log_path(store_path).exists() else []
+    except Exception as e:                                           # noqa: BLE001
+        return [f"the archive log cannot be read ({type(e).__name__}); the store records {head['count']} entries"]
+    if len(entries) < head["count"]:
+        return [f"the archive log holds {len(entries)} entries but the store recorded {head['count']}: "
+                f"{head['count'] - len(entries)} entr{'y' if head['count'] - len(entries) == 1 else 'ies'} "
+                f"missing, and the rows they moved are not accounted for"]
+    if head["count"] and entries[head["count"] - 1].get("hash") != head["head"]:
+        return ["the archive log does not match the head the store recorded: it was replaced or rewritten"]
+    return []
 
 
 def listed_segments(store_path) -> dict:
@@ -205,7 +258,7 @@ def _append(target, entry: dict) -> dict:
     entry["hash"] = _entry_hash(entry)
     entry.update(_sign_fields(target, entry["hash"]))
     entries.append(entry)
-    _write_log(store_path, entries)
+    _write_log(target, entries)
     return entry
 
 
@@ -248,7 +301,7 @@ def present(store_path) -> bool:
     if log_path(store_path).exists():
         return True
     f = segment_files(store_path)
-    return bool(f["unlisted"] or f["temps"])
+    return bool(f["unlisted"] or f["temps"]) or bool(recorded_head(store_path))
 
 
 class SegmentsUnreachable(ValueError):
@@ -347,7 +400,7 @@ def erasure_pool(store):
     m = _base(store)
     recover(m)
     sweep_temps(m.path)
-    problems = check_segments(m.path)
+    problems = check_segments(m.path) + [{"segment": "archive log", "state": x} for x in log_head_problems(m.path)]
     if problems:
         raise SegmentsUnreachable(problems)
     with pooled(store):
@@ -368,7 +421,8 @@ def locate(store, ids) -> dict:
     sweep_temps(m.path)
     files = segment_files(m.path)
     names = [n for n, seg in files["listed"].items() if want & set(seg["ids"])]
-    problems = check_segments(m.path, names)
+    problems = check_segments(m.path, names) + [{"segment": "archive log", "state": x}
+                                                for x in log_head_problems(m.path)]
     if problems:
         raise SegmentsUnreachable(problems)
     out = {n: sorted(want & set(files["listed"][n]["ids"])) for n in names}
@@ -751,7 +805,7 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
             entries.append(entry)
             written.append({"file": name, "records": len(ids), "sha256": sha, "entry_hash": entry["hash"]})
             moved_ids.update(ids)
-        _write_log(m.path, entries)
+        _write_log(m, entries)
         m._items = [r for r in m._items if r["id"] not in moved_ids]
         m._dirty = True
     m._save(force=True)
@@ -860,7 +914,7 @@ def certificate_block(store, erased_ids) -> dict | None:
     problems = []
     entries = read_log(m.path) if log_path(m.path).exists() else []
     ok, lp = verify_log(entries)
-    problems += [f"archive log: {x}" for x in lp]
+    problems += [f"archive log: {x}" for x in lp] + log_head_problems(m.path)
     for it in _pending_intents(entries):
         problems.append(f"an erasure in {it['segment']} was not completed: its amend-intent has no amend")
     erased = set(erased_ids)

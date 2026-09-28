@@ -7489,6 +7489,8 @@ class Inspeximus:
                         f"(edited after write)")
             prev = r.get("hash")
         # verify the DELETION-TOMBSTONE chain too — else a forged tombstone could hide a real out-of-band delete
+        if _archive.active(self):
+            problems.extend(_archive.log_head_problems(self.path))     # a truncated log (AUDIT-B B-25)
         for (_seg, _state), _n in sorted(_arch_gaps.items()):
             problems.append(f"{_n} receipted record(s) are archived in {_seg}, which is {_state}: they "
                             f"were not verified")
@@ -11805,7 +11807,10 @@ class Inspeximus:
         from . import archive as _archive
         if _archive.active(self):
             with _archive.pooled(self):
-                return self.erasure_audit(subject, values)
+                _out = self.erasure_audit(subject, values)
+            _lp = _archive.log_head_problems(self.path)
+            _out["archive_log"] = {"ok": not _lp, "problems": _lp}
+            return _out
         residue: list[dict] = []
         advisory: list[dict] = []
         by_id = {r["id"]: r for r in self.items}

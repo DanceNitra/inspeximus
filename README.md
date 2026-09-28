@@ -706,6 +706,10 @@ python -m inspeximus.claude_code --archive --older-than 7 --apply    # move it
 - A limit of this version: an encrypted store and a store pinned to JSON are refused, because an
   archive file is a plain row store. An encrypted store stays whole. To archive a JSON-pinned store,
   unset `INSPEXIMUS_STORE_FORMAT` and open it once, which converts it to a row store.
+- The store records how many entries the archive log holds and the hash of the last one, so a log
+  that was truncated or replaced on its own fails verification and blocks erasure until it is
+  restored. This catches an accident or a single edited file. Someone who edits both the store and
+  the log can make them agree again; only write receipts (a signed log) detect that.
 
 ---
 

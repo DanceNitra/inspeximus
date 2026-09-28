@@ -207,3 +207,35 @@ def test_erasure_audit_reads_the_segment_rows(tmp_path, monkeypatch):
     flagged = {a.get("id") for a in audit["advisory"]}
     assert set(ids) - {ids[1]} <= flagged, "every archived record still holding the value is reported"
     assert ids[1] not in flagged
+
+
+def test_a_log_cut_by_one_whole_entry_is_a_named_gap(tmp_path, monkeypatch):
+    """The hot store records the log's entry count and head. A log cut at an entry boundary is still a
+    valid chain on its own; against that record it is a gap in verify_writes, the certificate, erasure
+    and erasure_audit. The untouched copy is the control."""
+    cut = tmp_path / "cut"
+    ctl = tmp_path / "control"
+    for d in (cut, ctl):
+        d.mkdir()
+        p = str(d / "coding_memory.json")
+        m = Inspeximus(p)
+        for i in range(8):
+            monkeypatch.setattr(core.time, "time", lambda i=i: T0 - (40 if i % 2 else 75) * DAY + i)
+            m.remember(f"ran: step {i}", key=f"cmd:s{i}", tags=["bash"], source={"doc": "hr/alice"})
+        m.flush()
+        monkeypatch.setattr(core.time, "time", lambda: T0)
+        archive.apply(Inspeximus(p), 7, now=T0)
+    p, q = str(cut / "coding_memory.json"), str(ctl / "coding_memory.json")
+    entries = archive.read_log(p)
+    assert len(entries) == 2
+    archive.log_path(p).write_text(json.dumps({"kind": archive.LOG_KIND, "entries": entries[:1]}), encoding="utf-8")
+    assert archive.verify_log(archive.read_log(p))[0], "the cut log is a valid chain on its own"
+    gap = "1 entry missing"
+    assert any(gap in x for x in Inspeximus(p).verify_writes()[1])
+    assert not any(gap in x for x in Inspeximus(q).verify_writes()[1]), "the control"
+    assert Inspeximus(p).erasure_audit(values=["step"])["archive_log"]["ok"] is False
+    assert Inspeximus(q).erasure_audit(values=["step"])["archive_log"]["ok"] is True
+    with pytest.raises(archive.SegmentsUnreachable, match="entry missing"):
+        Inspeximus(p).forget_subject("hr/alice")
+    Inspeximus(q).forget_subject("hr/alice", request_id="r")
+    assert Inspeximus(q).erasure_certificate("r")["self_check"]["verified"], "the control erases and verifies"

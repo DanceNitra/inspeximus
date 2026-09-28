@@ -7265,5 +7265,35 @@
   "tests": [
    "tests/test_audit_b_archive_receipted_and_refused_stores.py"
   ]
+ },
+ {
+  "name": "B-25: a log shorter than the head the store recorded passes",
+  "file": "inspeximus/archive.py",
+  "old": "    if len(entries) < head[\"count\"]:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py",
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
+ },
+ {
+  "name": "B-25: the log's head is never recorded in the store",
+  "file": "inspeximus/archive.py",
+  "old": "    _write_head(store_path, entries)\r\n    m = _store_of(target)",
+  "new": "    pass\r\n    m = _store_of(target)",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py",
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
+ },
+ {
+  "name": "B-25: a handle reads its own head write as another writer's",
+  "file": "inspeximus/archive.py",
+  "old": "        m._file_sig = m._stat_sig()\r\n\r\n\r\ndef _write_head",
+  "new": "        pass\r\n\r\n\r\ndef _write_head",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py",
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
  }
 ]
