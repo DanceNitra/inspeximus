@@ -5169,10 +5169,19 @@
  {
   "name": "a store directory not named .inspeximus gets the lock .gitignore",
   "file": "inspeximus/core.py",
-  "old": "    if d.name == \".inspeximus\":\n",
+  "old": "    if ignore_lock or (ignore_lock is None and d.name == \".inspeximus\"):\n",
   "new": "    if True:\n",
   "tests": [
    "tests/test_a_missing_store_directory_is_refused_everywhere.py::test_only_a_created_inspeximus_directory_gets_the_lock_gitignore"
+  ]
+ },
+ {
+  "name": "the folder the install creates gets no lock .gitignore",
+  "file": "inspeximus/install_all.py",
+  "old": "        _make_store_dir(path.parent, ignore_lock=True)\n",
+  "new": "        _make_store_dir(path.parent, ignore_lock=None)\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py::test_the_folder_the_install_creates_ignores_the_lock_and_an_existing_one_is_left_alone"
   ]
  }
 ]

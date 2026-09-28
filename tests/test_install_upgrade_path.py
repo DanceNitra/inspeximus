@@ -248,6 +248,19 @@ def test_the_install_creates_the_folder_of_the_store_it_names(home):
     assert not (home / "dry").exists(), "a dry run creates nothing"
 
 
+def test_the_folder_the_install_creates_ignores_the_lock_and_an_existing_one_is_left_alone(home):
+    """3.15.2's hook wrote A-10's lock .gitignore into a store folder it created. The hook no longer creates
+    one (A-11), so the folder the installer creates for the store it names carries it instead."""
+    store = home / "memories" / "team.json"
+    rc, lines = _run(rules="no", only="claude", store=str(store))
+    ignore = store.parent / ".gitignore"
+    assert rc == 0 and ignore.exists() and "*.lock" in ignore.read_text(encoding="utf-8"), lines
+    mine = home / "mine"
+    mine.mkdir()
+    rc, lines = _run(rules="no", only="claude", store=str(mine / "team.json"))
+    assert rc == 0 and not (mine / ".gitignore").exists(), "a folder that already existed is the user's"
+
+
 def test_an_update_that_did_not_hold_is_reported(home, monkeypatch):
     old = UVX + " --from inspeximus==3.14.3 python -m inspeximus.claude_code"
     _settings(home, {e: old for e in EVENTS})

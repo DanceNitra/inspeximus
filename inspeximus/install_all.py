@@ -822,8 +822,10 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     if not dry_run and wired:
         # THE INSTALL MAKES THE STORE'S FOLDER (3.15.3). Opening a store no longer creates its directory, and
         # the MCP server refuses a store in a folder that does not exist; the installer is where the user
-        # named this store, and the table shows the path, so a run that wires an agent creates the folder.
-        path.parent.mkdir(parents=True, exist_ok=True)
+        # named this store, and the table shows the path, so a run that wires an agent creates the folder,
+        # with the lock .gitignore that 3.15.2's hook wrote into a store folder it created.
+        from .core import _make_store_dir
+        _make_store_dir(path.parent, ignore_lock=True)
     if not dry_run and wired and record_shared:
         try:
             migrated, source = import_project_store(path, project)

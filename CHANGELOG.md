@@ -9,13 +9,18 @@ where Hermes Agent on a 9B local model upgraded an earlier install through Git B
   folder does not exist, and suggests the intended path when there is a near match. The CLI exits with
   2 and the same message. A Claude Code hook never blocks a prompt: it exits 0 with nothing on stdout
   and the reason on stderr. Opening or reading a store never creates a folder; the first write does,
-  and only `~/.inspeximus` and `<project>/.inspeximus` are created without being asked; such a folder
-  still gets 3.15.2's `.gitignore` for the store's lock file. `install --all`
+  and only `~/.inspeximus` and `<project>/.inspeximus` are created without being asked. `install --all`
   creates the folder of the store it names, since that is where you chose it. A path whose folder is
   a file is refused too, with the `NOT PERSISTED` marker. An MCP `recall`
   on a store that has no file yet returns a `no_store_yet` entry instead of an empty list. Library code
   that passes a path to an adapter, and the Hermes provider's configured path, keep their old
   behaviour, except that the folder appears with the first write rather than when the store is opened.
+- **The lock `.gitignore` goes into every store folder inspeximus creates.** 3.15.2's hook wrote it into
+  a store folder the hook created. It now goes into a `.inspeximus` folder the first write creates and
+  into the folder `install --all` creates for its store, including the default `~/.inspeximus`; 3.15.2
+  left those two without one. A folder named by `INSPEXIMUS_CODING_STORE` that does not exist is
+  refused now instead of created, so it no longer gets one: create it yourself, as the upgrade note
+  says, and add `*.lock` to its `.gitignore` if it is inside a repository.
 - **A Git Bash path read by Windows is refused.** In a Git Bash that hands paths to Windows programs
   unconverted, as Hermes Agent's does, `/c/Users/<you>/...` becomes `C:\c\Users\<you>\...`. On the
   friend's machine `py -3 -m venv "$HOME/.inspeximus/venv"` and later `python -m venv "$HOME/..."`
