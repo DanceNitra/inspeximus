@@ -59,6 +59,9 @@ def test_exit_5_is_named_as_an_empty_selection_not_as_red(tmp_path):
              "old": "def _first_unencodable(value, path: str):", "new": "def _first_unencodable(value, path):",
              "tests": [str(tmp_path / "test_nothing_here.py")]}]
     (tmp_path / "test_nothing_here.py").write_text("# a test file that defines no test", encoding="utf-8")
+    # Its own ini makes tmp_path the rootdir; without one pytest 9 lists every ancestor of the file,
+    # all 131,179 entries of TEMP included (see test_a_skipped_test_is_not_a_survivor.py).
+    (tmp_path / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
     p = tmp_path / "spec.json"
     p.write_text(json.dumps(spec), encoding="utf-8")
     r = subprocess.run([sys.executable, os.path.join("tools", "mutation_check.py"), str(p)], cwd=ROOT,
