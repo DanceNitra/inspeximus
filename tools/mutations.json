@@ -4102,7 +4102,7 @@
  {
   "name": "forget leaves a pre-3.15.2 digest that copies its target",
   "file": "inspeximus/core.py",
-  "old": "copies = self._digest_copies_of(target) - target if target else set()",
+  "old": "copies = self._digest_copies_of(target, rows) - target if target else set()",
   "new": "copies = set()",
   "tests": [
    "tests/test_an_erasure_reaches_the_session_digest.py"
@@ -4219,7 +4219,7 @@
  {
   "name": "a crashed migration's rows-tmp is not swept",
   "file": "inspeximus/core.py",
-  "old": "if rx.match(n) or (n.lower() if os.name == \"nt\" else n) == rows_tmp)",
+  "old": "if rx.match(n) or rows_tmp.match(n))",
   "new": "if rx.match(n))",
   "tests": [
    "tests/test_a_crashed_save_leaves_no_unreported_copy.py"
@@ -4853,6 +4853,25 @@
   "new": "",
   "tests": [
    "tests/test_isolation_and_persistence.py"
+  ]
+ },
+ {
+  "name": "a batch erasure removes the backups once per erased record again",
+  "file": "inspeximus/core.py",
+  "old": "        if not defer:\n            self._drop_pre_rows_backup()\n            self._flush_tombstones()\n",
+  "new": "        self._drop_pre_rows_backup()\n        if not defer:\n            self._flush_tombstones()\n",
+  "tests": [
+   "tests/test_an_erasure_lists_the_store_directory_a_fixed_number_of_times.py"
+  ]
+ },
+ {
+  "name": "a batch erasure leaves the backups",
+  "file": "inspeximus/core.py",
+  "old": "        if target:\n            self._drop_pre_rows_backup()\n            self._flush_tombstones()\n",
+  "new": "        if target:\n            self._flush_tombstones()\n",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_beside_the_store.py",
+   "tests/test_an_erasure_reaches_every_copy_the_library_made.py"
   ]
  }
 ]

@@ -8571,10 +8571,13 @@ class Inspeximus:
         # against self.items, so a tenant view could pass another tenant's id and hard-delete it —
         # `beta.forget([acme_id])` returned {'forgotten': 1} and acme's row was gone. Ids not visible to this
         # tenant are dropped exactly like ids that do not exist, so the call cannot probe for them either.
-        target &= {r["id"] for r in self._tenant_rows()}
+        rows = self._tenant_rows()
+        target &= {r["id"] for r in rows}
         # A COPY GOES WITH ITS SOURCE (A-04). A session digest written before 3.15.2 holds the text of
-        # its entries; erasing the entry and keeping the digest kept the words.
-        copies = self._digest_copies_of(target) - target if target else set()
+        # its entries; erasing the entry and keeping the digest kept the words. The rows are passed, not
+        # read again: two more whole-store passes per erasure turned the perf gate's
+        # `erase_items_reads` from 7 to 9.
+        copies = self._digest_copies_of(target, rows) - target if target else set()
         target |= copies
         if dry_run:
             by_id = {r["id"]: r for r in self._tenant_rows()}
@@ -8636,6 +8639,7 @@ class Inspeximus:
         # still present. Now it is all-or-nothing, and still written BEFORE _save, so a crash can only lose
         # the proof of a deletion that did not happen -- never the reverse.
         if target:
+            self._drop_pre_rows_backup()
             self._flush_tombstones()
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
@@ -8739,11 +8743,14 @@ class Inspeximus:
         # still sat in `memory.json.pre-rows.bak`, where nothing in the erasure path could see it. A file
         # this library created without being asked is not somewhere personal data gets to survive a
         # deletion request. The rollback window ends at the first erasure, which is the right trade.
-        self._drop_pre_rows_backup()
+        #
         # `defer` is for a BATCH erasure, which is the only caller that emits more than one: it writes the
         # chain once at the end instead of once per tombstone. The default stays False so a single emit is
-        # durable the moment it returns, exactly as before.
+        # durable the moment it returns, exactly as before. The backups go once per batch as well, in
+        # forget(): since A-12 their removal lists the store's directory twice, and once per tombstone
+        # that was two listings for every erased record.
         if not defer:
+            self._drop_pre_rows_backup()
             self._flush_tombstones()
         return t
 
@@ -9650,9 +9657,9 @@ class Inspeximus:
             names = os.listdir(d)
         except OSError:
             return []
-        rows_tmp = (base + ".rows-tmp").lower() if os.name == "nt" else base + ".rows-tmp"
+        rows_tmp = re.compile(re.escape(base) + r"\.rows-tmp$", re.I if os.name == "nt" else 0)
         return sorted(os.path.join(d, n) for n in names
-                      if rx.match(n) or (n.lower() if os.name == "nt" else n) == rows_tmp)
+                      if rx.match(n) or rows_tmp.match(n))
 
     #: Full copies of the store that this library or its tools make beside it, matched on the part of
     #: the name after the store's own: the JSON-to-rows conversion backup, and the backup the Claude Code
@@ -9679,8 +9686,11 @@ class Inspeximus:
             names = os.listdir(d)
         except OSError:
             return {"own": [], "unknown": []}
+        # A regex, not `.lower()` per name: the perf gate counts `str.lower` calls on an erasure, and
+        # these scans run on every one.
+        mine = re.compile(re.escape(base) + r"\.", re.I if nt else 0)
         for n in names:
-            if not (n.lower() if nt else n).startswith((base.lower() if nt else base) + "."):
+            if not mine.match(n):
                 continue
             full = os.path.join(d, n)
             if os.path.normcase(full) in temps or not os.path.isfile(full):
@@ -17202,19 +17212,25 @@ class Inspeximus:
         text, _n, _t = self._session_render(header, entries, max_chars, max_entry_chars)
         return text
 
-    def _digest_copies_of(self, target: set) -> set:
+    def _digest_copies_of(self, target: set, rows: list | None = None) -> set:
         """Digests written before 3.15.2 that hold a COPY of a record in `target`: their entries carry
         the text, and a correction entry carries the value it retired under `was`. Such a digest cannot
         be rewritten in place, because its write receipt commits to its text, so it is erased with the
-        record it copies. A digest from 3.15.2 on holds ids only and is never a copy."""
+        record it copies. A digest from 3.15.2 on holds ids only and is never a copy.
+
+        `rows` is this tenant's rows when the caller already holds them; one pass finds both the
+        toggle correctors and the digests."""
         holders = set(target)
-        for r in self._tenant_rows():
+        digests = []
+        for r in (self._tenant_rows() if rows is None else rows):
             if r.get("id") in target:
                 c = (r.get("meta") or {}).get("superseded_by_toggle")
                 if c:
                     holders.add(c)          # its digest entry shows this record's value as `was`
+            if r.get("key") == self.SESSION_DIGEST_KEY:
+                digests.append(r)
         out = set()
-        for d in self._session_digests():
+        for d in digests:
             for e in ((d.get("meta") or {}).get("entries") or []):
                 if e.get("id") in holders and ("text" in e or "was" in e or "object" in e):
                     out.add(d["id"])

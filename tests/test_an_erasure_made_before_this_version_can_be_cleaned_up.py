@@ -56,7 +56,7 @@ def erased_before(tmp_path, monkeypatch):
     shutil.copy2(p, p + ".bak-merge-20260901-120000")          # what merge_store made before a merge
     shutil.copy2(p, p + ".old-copy")                            # a copy nothing here accounts for
     with monkeypatch.context() as mp:                           # forget as 3.15.1 did it
-        mp.setattr(Inspeximus, "_digest_copies_of", lambda self, target: set())
+        mp.setattr(Inspeximus, "_digest_copies_of", lambda self, target, rows=None: set())
         mp.setattr(Inspeximus, "_drop_merge_backups", lambda self: [])
         m.forget(ids=[alice["id"]], request_id="DSAR-OLD")
     m.flush()
