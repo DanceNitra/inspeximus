@@ -5791,5 +5791,50 @@
   "tests": [
    "tests/test_audit_b_same_tick_boundaries.py"
   ]
+ },
+ {
+  "name": "mutation gate: a red pre-flight's reason drops the failing test ids",
+  "file": "tools/mutation_check.py",
+  "old": "{', '.join(ids) if ids else 'no FAILED or ERROR line'}",
+  "new": "{'no FAILED or ERROR line'}",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "mutation gate: the pre-flight runs without tracebacks again",
+  "file": "tools/mutation_check.py",
+  "old": "pre = _pytest(tests, env, tb=\"short\")",
+  "new": "pre = _pytest(tests, env)",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "mutation gate: the pre-flight output file is written on a green run too",
+  "file": "tools/mutation_check.py",
+  "old": "        if pre.returncode != 0:\n            why = _preflight_red(name, pre)",
+  "new": "        _preflight_red(name, pre)\n        if pre.returncode != 0:\n            why = _preflight_red(name, pre)",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "parallel mutation gate: a worker's pre-flight output stays in its removed worktree",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "           \"MUTATION_PREFLIGHT_DIR\": os.path.join(base, \"preflight\"),\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "parallel mutation gate: a worker's output is not written to its log",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "fh.write(f\"--- stdout ---\\n{p.stdout}\\n--- stderr ---\\n{p.stderr}\\n\")",
+  "new": "fh.write(\"\")",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
  }
 ]
