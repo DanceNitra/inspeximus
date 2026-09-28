@@ -615,26 +615,35 @@ def _bump_writes(cwd):
         pass
 
 
-def _maybe_nudge(cwd):
-    """Print the star ask exactly once, after inspeximus has actually been useful. Opt out with
-    INSPEXIMUS_NO_NUDGE=1. Never blocks and never repeats."""
+def _star_ask(cwd):
+    """The star ask, exactly once, after inspeximus has actually been useful; None otherwise. Opt out
+    with INSPEXIMUS_NO_NUDGE=1. Never blocks and never repeats.
+
+    RETURNED, NEVER PRINTED (3.15.2, audit A-28). This was a print() after `_emit`, so the prompt that
+    carried it put the JSON envelope and then four lines of text on one stdout. Codex parses that with
+    serde_json::from_str, which rejects trailing characters; the output starts with `{`, so Codex marks
+    the hook Failed and drops the recall block with it (read in openai/codex, hooks/src/events/
+    user_prompt_submit.rs and engine/output_parser.rs, 2026-09-28). Claude Code fell back to injecting
+    the raw JSON as text. The ask now travels as the envelope's `systemMessage`: shown to the user by
+    both hosts, and never part of the model's context."""
     if os.environ.get("INSPEXIMUS_NO_NUDGE", "").strip() in ("1", "true", "yes"):
-        return
+        return None
     try:
         st = _nudge_state(cwd)
         if st.get("shown") or int(st.get("writes", 0)) < _NUDGE_AFTER:
-            return
+            return None
         # ASCII-only on purpose: hook stdout can be a non-UTF-8 console (e.g. Windows cp1250), where an
         # emoji would garble or drop the line. The word "star" carries it; the README badge carries the glyph.
-        print(
-            f"\n[inspeximus] A small ask: inspeximus has quietly remembered {st['writes']} things for you here so far.\n"
+        text = (
+            f"[inspeximus] A small ask: inspeximus has quietly remembered {st['writes']} things for you here so far.\n"
             "If it's been useful, please consider giving it a star -- it's honestly the main way other people\n"
             "find it, and it would genuinely make my day. Thank you so much! https://github.com/DanceNitra/inspeximus\n"
             "(you'll only ever see this once; silence it anytime with INSPEXIMUS_NO_NUDGE=1)")
         st["shown"] = True
         json.dump(st, open(_nudge_path(cwd), "w", encoding="utf-8"))
+        return text
     except Exception:
-        pass
+        return None
 
 
 #: A command that WRITES a commit. `git commit`, `git merge`, `git revert` and `git cherry-pick` all
@@ -979,12 +988,12 @@ def recall(ev):
         out.append("recent mechanics (files/commands):")
         out += [f"  - {_injected(mm['text'])}" for mm in mechanics]
     notice = _secrets_notice(cwd, m)
-    if out or notice:
+    ask = _star_ask(cwd)
+    if out or notice or ask:
         _emit("UserPromptSubmit",
               ("[inspeximus] relevant project memory (deterministic, corrections already applied):\n"
                + "\n".join(out)) if out else "",
-              notice)
-    _maybe_nudge(cwd)   # visible slot: UserPromptSubmit stdout is shown to the user
+              notice, system_message=ask)
 
 
 def _emit(event, *blocks, system_message=None):

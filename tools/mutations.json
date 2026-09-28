@@ -4764,5 +4764,32 @@
   "tests": [
    "tests/test_a_child_pool_starts_under_the_test_home.py"
   ]
+ },
+ {
+  "name": "the star ask is printed after the hook's JSON envelope again",
+  "file": "inspeximus/claude_code.py",
+  "old": "              notice, system_message=ask)\n",
+  "new": "              notice)\n    if ask:\n        print(ask)\n",
+  "tests": [
+   "tests/test_every_hook_run_prints_one_strict_json_object.py"
+  ]
+ },
+ {
+  "name": "the star ask goes into the model's context instead of to the user",
+  "file": "inspeximus/claude_code.py",
+  "old": "              notice, system_message=ask)\n",
+  "new": "              notice, ask)\n",
+  "tests": [
+   "tests/test_every_hook_run_prints_one_strict_json_object.py"
+  ]
+ },
+ {
+  "name": "a prompt whose only message is the star ask prints nothing",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if out or notice or ask:\n",
+  "new": "    if out or notice:\n",
+  "tests": [
+   "tests/test_every_hook_run_prints_one_strict_json_object.py"
+  ]
  }
 ]
