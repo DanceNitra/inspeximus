@@ -77,8 +77,25 @@ def _pytest(tests: list[str], env: dict, tb: str = "no") -> subprocess.Completed
         cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
 
 
-#: What a survivor is re-run against (session 1, 2026-09-28). A test swaps it for a small fixture suite.
+#: What a survivor is re-run against (session 1, 2026-09-28).
 _FULL_SUITE = ["tests"]
+_OFF = ("", "0", "off", "no", "false")
+
+
+def _full_suite() -> list:
+    """The suite a survivor is classified against, read at call time.
+
+    MUTATION_FULL_SUITE unset: `_FULL_SUITE`. Set to paths (os.pathsep-separated): those. Set to "off":
+    none, and a survivor is reported as not classified. It is "off" in two places, both measured the
+    first time this ran: inside the full-suite run itself, because suite tests that drive this tool
+    with a survivor on purpose started a full-suite run of their own, recursively; and for the whole
+    test session (tests/conftest.py), because those same tests otherwise cost a full serial suite each."""
+    v = os.environ.get("MUTATION_FULL_SUITE")
+    if v is None:
+        return list(_FULL_SUITE)
+    if v.strip().lower() in _OFF:
+        return []
+    return [x for x in v.split(os.pathsep) if x]
 
 
 def _failed_ids(stdout: str) -> list[str]:
@@ -90,7 +107,7 @@ def _failed_ids(stdout: str) -> list[str]:
 def _locate(nodeid: str) -> str:
     """A node id pytest printed relative to its rootdir, made runnable from ROOT."""
     path, sep, rest = nodeid.partition("::")
-    for base in [ROOT] + [os.path.join(ROOT, s) if not os.path.isabs(s) else s for s in _FULL_SUITE]:
+    for base in [ROOT] + [os.path.join(ROOT, s) if not os.path.isabs(s) else s for s in _full_suite()]:
         cand = os.path.join(base, path)
         if os.path.exists(cand):
             return cand + sep + rest
@@ -105,16 +122,21 @@ def _spec_gap(tests: list[str], env: dict, mutated_path: str, mutated: str, orig
     catches this". So the whole suite runs once against the same mutant, serially (-n 0, as every run
     inside a worker), and each test it reports is re-run on the UNMUTATED code: a test that is red
     without the mutant is not a kill, and dropping it keeps a flaky or already-red test from posing as
-    the missing entry. Returns the confirmed killers' node ids, empty when the mutant survives it all."""
+    the missing entry. Returns the confirmed killers' node ids, empty when the mutant survives it all,
+    and None when classification is off (MUTATION_FULL_SUITE, see `_full_suite`)."""
+    suite = _full_suite()
+    if not suite:
+        return None
+    inner = {**env, "MUTATION_FULL_SUITE": "off"}          # no survivor inside this run recurses
     io.open(mutated_path, "w", encoding="utf-8", newline="").write(mutated)
     try:
-        full = _pytest(list(_FULL_SUITE), env)
+        full = _pytest(suite, inner)
     finally:
         io.open(mutated_path, "w", encoding="utf-8", newline="").write(original)
     found = [_locate(i) for i in _failed_ids(full.stdout)]
     if not found:
         return []
-    clean = _pytest(found, env)
+    clean = _pytest(found, inner)
     red_without = {_locate(i) for i in _failed_ids(clean.stdout)}
     return sorted(i for i in found if i not in red_without)
 
@@ -356,6 +378,10 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
                 if verbose:
                     print(f"  {name[:58]:58s} -> SURVIVES its listed tests; SPEC GAP, caught by {gap[0]}"
                           f"{f' (+{len(gap) - 1})' if len(gap) > 1 else ''}")
+            elif gap is None:
+                why_survived[name] = ("SURVIVED", "not classified: MUTATION_FULL_SUITE is off")
+                if verbose:
+                    print(f"  {name[:58]:58s} -> SURVIVES <<< NO TEETH (not re-run against the full suite)")
             else:
                 why_survived[name] = ("SURVIVED", "survives the full suite")
                 if verbose:

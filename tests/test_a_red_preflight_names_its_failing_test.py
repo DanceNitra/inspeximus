@@ -93,7 +93,7 @@ def test_every_pytest_run_inside_a_worker_is_serial(tmp_path, monkeypatch):
     """Session 1's rule: parallelism lives only in mutation_check_parallel's --workers. The pre-flight, the
     mutant run and a survivor's full-suite run all carry `-n 0`, which overrides pytest.ini's `-n auto`. An
     unmarked test file is used, because a `mutation`-marked one got `-n 0` before this rule existed."""
-    monkeypatch.setattr(mutation_check, "_FULL_SUITE", ["full-suite-stand-in"])
+    monkeypatch.setenv("MUTATION_FULL_SUITE", "full-suite-stand-in")
     target = tmp_path / "target.py"
     target.write_text("VALUE = 1\n", encoding="utf-8")
     calls = []
@@ -140,7 +140,7 @@ def test_a_survivor_is_classified_against_the_full_suite(tmp_path, monkeypatch, 
     """Session 1, after PC2's survivor #428: SURVIVED_SPEC_GAP names the unlisted test that kills the
     mutant; SURVIVED says it survives the full suite. Both fail the gate."""
     suite, target = _fixture_suite(tmp_path, catcher)
-    monkeypatch.setattr(mutation_check, "_FULL_SUITE", [str(suite)])
+    monkeypatch.setenv("MUTATION_FULL_SUITE", str(suite))
     rc = mutation_check.run([{"name": "registry check", "file": str(target), "old": "VALUE = 1",
                               "new": "VALUE = 2", "tests": [str(suite / "test_listed.py")]}])
     out = capsys.readouterr().out
@@ -159,12 +159,35 @@ def test_a_test_that_is_red_without_the_mutant_is_not_counted_as_its_killer(tmp_
     """The full-suite run's reds are re-run on the unmutated code: an already-red test is not a kill."""
     suite, target = _fixture_suite(tmp_path, catcher=False)
     (suite / "test_already_red.py").write_text("def test_already_red():\n    assert False\n", encoding="utf-8")
-    monkeypatch.setattr(mutation_check, "_FULL_SUITE", [str(suite)])
+    monkeypatch.setenv("MUTATION_FULL_SUITE", str(suite))
     mutation_check.run([{"name": "red elsewhere", "file": str(target), "old": "VALUE = 1",
                          "new": "VALUE = 2", "tests": [str(suite / "test_listed.py")]}])
     out = capsys.readouterr().out
     assert "SURVIVED: red elsewhere -- survives the full suite" in out, out
     assert "SPEC_GAP" not in out
+
+
+def test_off_reports_the_survivor_as_not_classified_and_the_full_run_cannot_recurse(tmp_path, monkeypatch,
+                                                                                  capsys):
+    """MUTATION_FULL_SUITE=off: no full-suite run, and the report says the survivor was not classified
+    rather than claiming it survives the suite. The full-suite run itself carries off, so a suite test
+    that drives this tool with a survivor does not start a run of its own."""
+    suite, target = _fixture_suite(tmp_path, catcher=True)
+    monkeypatch.setenv("MUTATION_FULL_SUITE", "off")
+    mutation_check.run([{"name": "unclassified", "file": str(target), "old": "VALUE = 1",
+                         "new": "VALUE = 2", "tests": [str(suite / "test_listed.py")]}])
+    assert "SURVIVED: unclassified -- not classified: MUTATION_FULL_SUITE is off" in capsys.readouterr().out
+    envs = []
+    real = mutation_check._pytest
+
+    def spy(tests, env, tb="no"):
+        envs.append(env.get("MUTATION_FULL_SUITE"))
+        return real(tests, env, tb)
+    monkeypatch.setattr(mutation_check, "_pytest", spy)
+    monkeypatch.setenv("MUTATION_FULL_SUITE", str(suite))
+    mutation_check.run([{"name": "classified", "file": str(target), "old": "VALUE = 1",
+                         "new": "VALUE = 2", "tests": [str(suite / "test_listed.py")]}], verbose=False)
+    assert envs[2:] and all(e == "off" for e in envs[2:]), envs
 
 
 def test_the_parallel_runner_keeps_the_survivor_label():
@@ -174,3 +197,8 @@ def test_the_parallel_runner_keeps_the_survivor_label():
         "  SURVIVED: b -- survives the full suite\n")
     assert parsed["survived"] == ["SURVIVED_SPEC_GAP: a -- killed outside its listed tests by: tests/t.py::x",
                                   "SURVIVED: b -- survives the full suite"]
+
+
+def test_the_test_session_turns_the_full_suite_run_off():
+    """tests/conftest.py sets it, so a test that drives the gate with a survivor does not cost a full run."""
+    assert os.environ.get("MUTATION_FULL_SUITE") == "off"

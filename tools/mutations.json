@@ -5872,5 +5872,32 @@
   "tests": [
    "tests/test_a_red_preflight_names_its_failing_test.py"
   ]
+ },
+ {
+  "name": "mutation gate: the full-suite run can start a full-suite run of its own",
+  "file": "tools/mutation_check.py",
+  "old": "    inner = {**env, \"MUTATION_FULL_SUITE\": \"off\"}",
+  "new": "    inner = env",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "mutation gate: MUTATION_FULL_SUITE=off is read as a path",
+  "file": "tools/mutation_check.py",
+  "old": "_OFF = (\"\", \"0\", \"off\", \"no\", \"false\")",
+  "new": "_OFF = ()",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "the test session leaves the survivor's full-suite run on",
+  "file": "tests/conftest.py",
+  "old": "    os.environ[\"MUTATION_FULL_SUITE\"] = \"off\"\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py::test_the_test_session_turns_the_full_suite_run_off"
+  ]
  }
 ]

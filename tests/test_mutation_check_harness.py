@@ -38,7 +38,7 @@ def _small_full_suite(tmp_path_factory, monkeypatch):
     d = tmp_path_factory.mktemp("full-suite")
     (d / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
     (d / "test_nothing.py").write_text("def test_nothing():\n    assert True\n", encoding="utf-8")
-    monkeypatch.setattr(mutation_check, "_FULL_SUITE", [str(d)])
+    monkeypatch.setenv("MUTATION_FULL_SUITE", str(d))
 
 
 def test_a_setup_error_counts_as_a_kill():

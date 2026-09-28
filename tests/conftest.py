@@ -388,6 +388,10 @@ def pytest_collection_modifyitems(config, items):
 # pytest in a subprocess must not overwrite the file with its own few tests.
 def pytest_configure(config):
     _redirect_home(config)
+    # A mutation survivor is re-run against the full suite (tools/mutation_check.py). Tests that drive the
+    # gate with a survivor on purpose would each start a full serial suite run, so the session turns that
+    # off; the tests of the classification itself set MUTATION_FULL_SUITE to their own small suite.
+    os.environ["MUTATION_FULL_SUITE"] = "off"
     if not hasattr(config, "workerinput"):
         config._shard_times_path = os.environ.pop("SHARD_TIMES", None)
         config._shard_times = {}
