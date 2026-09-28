@@ -51,10 +51,10 @@ that fails on 3.15.1 and passes here, and a mutation entry that the gate kills.
   them, an entry whose tests collect nothing is named as broken, and a mutant whose catching test was
   skipped is reported as not evaluated rather than as a survivor.
 
-Release record: on this release's tree the full suite passes 5,549 tests, and the 31 that fail or error
+Release record: on this release's tree the full suite passes 5,554 tests, and the 31 that fail or error
 are the same 31 that fail or error on 3.15.1 in the same environment (tests that need optional
-packages or a real user profile). The mutation-marked tests pass, and the mutation gate kills 96 of
-the 96 entries this release adds or changes.
+packages or a real user profile). The mutation-marked tests pass, and the mutation gate kills 98 of
+the 98 entries this release adds or changes.
 
 ## 3.15.1 - UPGRADE IF your Claude Code hooks or memory_report feel slow on a large store: a Read, Grep or Glob no longer opens the store, and opening, recalling, reporting and erasing do less work per record
 
