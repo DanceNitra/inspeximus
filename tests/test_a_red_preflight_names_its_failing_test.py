@@ -17,6 +17,7 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import mutation_check  # noqa: E402
+import mutation_check_parallel  # noqa: E402
 
 #: Runs the in-place mutation harness, so it runs serially with the other harness tests.
 pytestmark = pytest.mark.mutation
@@ -89,9 +90,10 @@ def test_the_parallel_runner_reports_the_failing_test_and_keeps_worker_output(tm
 
 
 def test_every_pytest_run_inside_a_worker_is_serial(tmp_path, monkeypatch):
-    """Session 1's rule: parallelism lives only in mutation_check_parallel's --workers. The pre-flight and
-    the mutant run both carry `-n 0`, which overrides pytest.ini's `-n auto`. An unmarked test file is
-    used, because a `mutation`-marked one got `-n 0` before this rule existed (the control)."""
+    """Session 1's rule: parallelism lives only in mutation_check_parallel's --workers. The pre-flight, the
+    mutant run and a survivor's full-suite run all carry `-n 0`, which overrides pytest.ini's `-n auto`. An
+    unmarked test file is used, because a `mutation`-marked one got `-n 0` before this rule existed."""
+    monkeypatch.setattr(mutation_check, "_FULL_SUITE", ["full-suite-stand-in"])
     target = tmp_path / "target.py"
     target.write_text("VALUE = 1\n", encoding="utf-8")
     calls = []
@@ -107,8 +109,68 @@ def test_every_pytest_run_inside_a_worker_is_serial(tmp_path, monkeypatch):
     assert not mutation_check._marked_mutation(tests), "control: the listed test file is not marked"
     mutation_check.run([{"name": "serial worker", "file": str(target), "old": "VALUE = 1",
                          "new": "VALUE = 2", "tests": tests}], verbose=False)
-    assert len(calls) == 2, "control: a pre-flight and a mutant run"
+    assert len(calls) == 3, "control: a pre-flight, a mutant run and the survivor's full-suite run"
+    assert "full-suite-stand-in" in calls[2]
     for cmd in calls:
         i = cmd.index("-n")
         assert cmd[i + 1] == "0", cmd
     assert target.read_text(encoding="utf-8") == "VALUE = 1\n"
+
+
+# ── a survivor says whether the registry or the suite is short ───────────────────────────────────────
+
+def _fixture_suite(tmp_path, catcher: bool):
+    """A target module, a listed test that never looks at it, and optionally an UNLISTED test that does."""
+    suite = tmp_path / "suite"
+    suite.mkdir()
+    (suite / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
+    target = tmp_path / "target.py"
+    target.write_text("VALUE = 1\n", encoding="utf-8")
+    (suite / "test_listed.py").write_text("def test_listed_looks_elsewhere():\n    assert True\n",
+                                          encoding="utf-8")
+    if catcher:
+        (suite / "test_unlisted.py").write_text(
+            "def test_unlisted_reads_the_target():\n"
+            f"    assert open(r'{target}', encoding='utf-8').read() == 'VALUE = 1\\n'\n", encoding="utf-8")
+    return suite, target
+
+
+@pytest.mark.parametrize("catcher", [True, False], ids=["spec_gap", "full_suite"])
+def test_a_survivor_is_classified_against_the_full_suite(tmp_path, monkeypatch, capsys, catcher):
+    """Session 1, after PC2's survivor #428: SURVIVED_SPEC_GAP names the unlisted test that kills the
+    mutant; SURVIVED says it survives the full suite. Both fail the gate."""
+    suite, target = _fixture_suite(tmp_path, catcher)
+    monkeypatch.setattr(mutation_check, "_FULL_SUITE", [str(suite)])
+    rc = mutation_check.run([{"name": "registry check", "file": str(target), "old": "VALUE = 1",
+                              "new": "VALUE = 2", "tests": [str(suite / "test_listed.py")]}])
+    out = capsys.readouterr().out
+    assert rc == 1, "a survivor of either kind fails the gate"
+    line = [ln.strip() for ln in out.splitlines() if ln.strip().startswith("SURVIVED")]
+    assert len(line) == 1, out
+    if catcher:
+        assert line[0].startswith("SURVIVED_SPEC_GAP: registry check -- killed outside its listed tests by:"), out
+        assert "test_unlisted.py::test_unlisted_reads_the_target" in line[0]
+    else:
+        assert line[0] == "SURVIVED: registry check -- survives the full suite"
+    assert target.read_text(encoding="utf-8") == "VALUE = 1\n", "the mutant was left in place"
+
+
+def test_a_test_that_is_red_without_the_mutant_is_not_counted_as_its_killer(tmp_path, monkeypatch, capsys):
+    """The full-suite run's reds are re-run on the unmutated code: an already-red test is not a kill."""
+    suite, target = _fixture_suite(tmp_path, catcher=False)
+    (suite / "test_already_red.py").write_text("def test_already_red():\n    assert False\n", encoding="utf-8")
+    monkeypatch.setattr(mutation_check, "_FULL_SUITE", [str(suite)])
+    mutation_check.run([{"name": "red elsewhere", "file": str(target), "old": "VALUE = 1",
+                         "new": "VALUE = 2", "tests": [str(suite / "test_listed.py")]}])
+    out = capsys.readouterr().out
+    assert "SURVIVED: red elsewhere -- survives the full suite" in out, out
+    assert "SPEC_GAP" not in out
+
+
+def test_the_parallel_runner_keeps_the_survivor_label():
+    parsed = mutation_check_parallel._parse(
+        "1/3 killed, 2 survived, 0 skipped\n"
+        "  SURVIVED_SPEC_GAP: a -- killed outside its listed tests by: tests/t.py::x\n"
+        "  SURVIVED: b -- survives the full suite\n")
+    assert parsed["survived"] == ["SURVIVED_SPEC_GAP: a -- killed outside its listed tests by: tests/t.py::x",
+                                  "SURVIVED: b -- survives the full suite"]

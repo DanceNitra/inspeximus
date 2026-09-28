@@ -77,6 +77,48 @@ def _pytest(tests: list[str], env: dict, tb: str = "no") -> subprocess.Completed
         cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
 
 
+#: What a survivor is re-run against (session 1, 2026-09-28). A test swaps it for a small fixture suite.
+_FULL_SUITE = ["tests"]
+
+
+def _failed_ids(stdout: str) -> list[str]:
+    """Full node ids of the FAILED and ERROR summary lines."""
+    return sorted({ln.split()[1] for ln in stdout.splitlines()
+                   if ln.startswith(("FAILED ", "ERROR ")) and len(ln.split()) > 1})
+
+
+def _locate(nodeid: str) -> str:
+    """A node id pytest printed relative to its rootdir, made runnable from ROOT."""
+    path, sep, rest = nodeid.partition("::")
+    for base in [ROOT] + [os.path.join(ROOT, s) if not os.path.isabs(s) else s for s in _FULL_SUITE]:
+        cand = os.path.join(base, path)
+        if os.path.exists(cand):
+            return cand + sep + rest
+    return nodeid
+
+
+def _spec_gap(tests: list[str], env: dict, mutated_path: str, mutated: str, original: str) -> list[str]:
+    """For a mutant its listed tests did not catch: the tests ELSEWHERE in the suite that do.
+
+    PC2's survivor #428 was a registry gap: the entry listed one test file and an unlisted one kills the
+    mutant. A survivor could not tell "the registry lists the wrong tests" from "nothing in the suite
+    catches this". So the whole suite runs once against the same mutant, serially (-n 0, as every run
+    inside a worker), and each test it reports is re-run on the UNMUTATED code: a test that is red
+    without the mutant is not a kill, and dropping it keeps a flaky or already-red test from posing as
+    the missing entry. Returns the confirmed killers' node ids, empty when the mutant survives it all."""
+    io.open(mutated_path, "w", encoding="utf-8", newline="").write(mutated)
+    try:
+        full = _pytest(list(_FULL_SUITE), env)
+    finally:
+        io.open(mutated_path, "w", encoding="utf-8", newline="").write(original)
+    found = [_locate(i) for i in _failed_ids(full.stdout)]
+    if not found:
+        return []
+    clean = _pytest(found, env)
+    red_without = {_locate(i) for i in _failed_ids(clean.stdout)}
+    return sorted(i for i in found if i not in red_without)
+
+
 def _killers(stdout: str) -> list[str]:
     """Which tests noticed. Setup errors count: a fixture that refuses to build IS the test failing."""
     out = []
@@ -214,6 +256,7 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
     env = {**os.environ, "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", ""),
            "PYTHONIOENCODING": "utf-8"}
     survived, skipped, restored_all = [], [], set()
+    why_survived: dict = {}
     # A mutant does not only change code -- the tests it runs execute PROBES, and probes write their
     # result files, which are TRACKED. Restoring only the mutated source left
     # `probes/echo_policy_panel_result.json` holding the mutant's output: safe = 0.00 echo-blocked /
@@ -305,9 +348,18 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             if verbose:
                 print(f"  {name[:58]:58s} -> NOT EVALUATED (a listed test skipped: {why[0][:60]})")
         else:
+            gap = _spec_gap(tests, env, path, src.replace(old, new, 1), src)
+            restored_all.update(_restore(_dirty_tracked() - dirty_before))   # the full suite's receipts
             survived.append(name)
-            if verbose:
-                print(f"  {name[:58]:58s} -> SURVIVES <<< NO TEETH")
+            if gap:
+                why_survived[name] = ("SURVIVED_SPEC_GAP", "killed outside its listed tests by: " + ", ".join(gap))
+                if verbose:
+                    print(f"  {name[:58]:58s} -> SURVIVES its listed tests; SPEC GAP, caught by {gap[0]}"
+                          f"{f' (+{len(gap) - 1})' if len(gap) > 1 else ''}")
+            else:
+                why_survived[name] = ("SURVIVED", "survives the full suite")
+                if verbose:
+                    print(f"  {name[:58]:58s} -> SURVIVES <<< NO TEETH (the full suite too)")
 
     left = _dirty_tracked() - dirty_before
     for _p in _restore(left):                                 # anything a skip path left behind
@@ -333,7 +385,8 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
         for s in skipped:
             print(f"  skipped: {s}")
         for s in survived:
-            print(f"  SURVIVED: {s}")
+            label, why = why_survived.get(s, ("SURVIVED", "survives the full suite"))
+            print(f"  {label}: {s} -- {why}")
     # A SKIP IS NOT A PASS. This returned 0 whenever nothing survived, so a mutation whose target had
     # drifted, or whose tests were already red, was reported on one line and then counted as if it had been
     # evaluated -- and the process exit code, which is what CI reads, said everything was fine. Measured

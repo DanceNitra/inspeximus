@@ -79,8 +79,10 @@ def _parse(stdout: str) -> dict:
         if m:
             totals = tuple(int(g) for g in m.groups())
             continue
-        if s.startswith("SURVIVED: "):
-            survived.append(s[len("SURVIVED: "):])
+        if s.startswith(("SURVIVED: ", "SURVIVED_SPEC_GAP: ")):
+            # Both are failures. The label is kept, because it says what to do next: a spec gap is fixed
+            # in tools/mutations.json, a survivor of the full suite needs a new test.
+            survived.append(s)
         elif s.startswith("skipped: "):
             # KEEP THE REASON. This split the line on ":" and took the name alone, which threw away the
             # only part that decides what to do next: "target appears 0x" is a drifted spec, while
@@ -230,7 +232,7 @@ def main() -> int:
     if any(r.get("preflight_red") for r in results):
         print(f"  red pre-flight output: {os.path.join(base, 'preflight')}; worker logs: {base}")
     for s in survived:
-        print(f"  SURVIVED: {s}")
+        print(f"  {s}")
     for s in sorted(set(lost))[:40]:
         print(f"  UNACCOUNTED: {s}")
     if accounted != len(mutations) or lost:

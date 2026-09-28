@@ -29,6 +29,18 @@ pytestmark = pytest.mark.mutation
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+@pytest.fixture(autouse=True)
+def _small_full_suite(tmp_path_factory, monkeypatch):
+    """A survivor is re-run against the full suite (SURVIVED_SPEC_GAP). Several tests here make a mutant
+    survive on purpose, and the real suite would cost minutes each time, so they get a one-test suite
+    that catches nothing. The spec-gap classification has its own tests in
+    test_a_red_preflight_names_its_failing_test.py."""
+    d = tmp_path_factory.mktemp("full-suite")
+    (d / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
+    (d / "test_nothing.py").write_text("def test_nothing():\n    assert True\n", encoding="utf-8")
+    monkeypatch.setattr(mutation_check, "_FULL_SUITE", [str(d)])
+
+
 def test_a_setup_error_counts_as_a_kill():
     """THE regression guard. This summary is what pytest prints when a mutant breaks a module-scoped
     fixture: no test ever runs, so nothing is FAILED, and the old harness read that as survival."""

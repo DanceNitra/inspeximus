@@ -5845,5 +5845,32 @@
   "tests": [
    "tests/test_a_red_preflight_names_its_failing_test.py"
   ]
+ },
+ {
+  "name": "mutation gate: a survivor is not re-run against the full suite",
+  "file": "tools/mutation_check.py",
+  "old": "            gap = _spec_gap(tests, env, path, src.replace(old, new, 1), src)",
+  "new": "            gap = []",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "mutation gate: a test that is red without the mutant counts as its killer",
+  "file": "tools/mutation_check.py",
+  "old": "    return sorted(i for i in found if i not in red_without)",
+  "new": "    return sorted(found)",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "parallel mutation gate: a spec-gap survivor is not counted",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "        if s.startswith((\"SURVIVED: \", \"SURVIVED_SPEC_GAP: \")):",
+  "new": "        if s.startswith(\"SURVIVED: \"):",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
  }
 ]
