@@ -726,6 +726,12 @@ def main(argv=None):
     ea.add_argument("--value", action="append", default=[],
                     help="an erased string to also scan for (heuristic; repeatable)")
 
+    epc = sub.add_parser("erase-past-copies",
+                         help="find what an erasure made before 3.15.2 left behind (old session digests, "
+                              "save temps, merge and conversion backups); --apply removes it")
+    epc.add_argument("--apply", action="store_true", help="remove what the dry run lists")
+    epc.add_argument("--request-id", default=None, help="carried into the tombstones of erased digests")
+
     ec = sub.add_parser("erasure-certificate",
                         help="write the portable, independently-verifiable erasure certificate for a "
                              "request (the receipt you hand an auditor)")
@@ -2564,6 +2570,18 @@ def main(argv=None):
     elif a.cmd == "why":
         exp = m.why_recalled(a.query)
         _out(exp, a.json) or print(json.dumps(exp, indent=2, default=str))
+
+    elif a.cmd == "erase-past-copies":
+        res = m.erase_past_copies(apply=a.apply, request_id=a.request_id)
+        if a.json:
+            _out(res, True)
+        else:
+            verb = "removed" if res["applied"] else "would remove (dry run; --apply to remove)"
+            print(f"{res['erased_before']} record(s) erased before; {verb}: {len(res['digests'])} old "
+                  f"session digest(s), {len(res['save_temps'])} save temp(s), {len(res['backups'])} backup(s)")
+            for n in res["siblings_not_reached"]:
+                print(f"  not touched, nothing here accounts for it: {n}")
+            print("  check the result: inspeximus erasure-certificate")
 
     elif a.cmd == "erasure-audit":
         res = m.erasure_audit(subject=a.subject, values=a.value or None)

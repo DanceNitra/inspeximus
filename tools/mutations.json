@@ -4800,5 +4800,50 @@
   "tests": [
    "tests/test_the_installer_ships_the_guard.py"
   ]
+ },
+ {
+  "name": "erase_past_copies finds no old session digest",
+  "file": "inspeximus/core.py",
+  "old": "               \"digests\": sorted(self._digest_copies_of(erased)) if erased else [],\n",
+  "new": "               \"digests\": [],\n",
+  "tests": [
+   "tests/test_an_erasure_made_before_this_version_can_be_cleaned_up.py"
+  ]
+ },
+ {
+  "name": "erase_past_copies applied leaves the old session digests",
+  "file": "inspeximus/core.py",
+  "old": "        out[\"forgot\"] = (self.forget(ids=out[\"digests\"], request_id=request_id,\n                                     basis=\"erasure_cleanup\")[\"forgotten\"] if out[\"digests\"] else 0)\n",
+  "new": "        out[\"forgot\"] = 0\n",
+  "tests": [
+   "tests/test_an_erasure_made_before_this_version_can_be_cleaned_up.py"
+  ]
+ },
+ {
+  "name": "erase_past_copies applied leaves the merge backups",
+  "file": "inspeximus/core.py",
+  "old": "        backups = self._drop_merge_backups()\n        if any(p.lower().endswith(\".pre-rows.bak\") for p in sib[\"own\"]):\n",
+  "new": "        backups = []\n        if any(p.lower().endswith(\".pre-rows.bak\") for p in sib[\"own\"]):\n",
+  "tests": [
+   "tests/test_an_erasure_made_before_this_version_can_be_cleaned_up.py"
+  ]
+ },
+ {
+  "name": "an erase_past_copies dry run removes what it lists",
+  "file": "inspeximus/core.py",
+  "old": "               \"applied\": False}\n        if not apply:\n            return out\n",
+  "new": "               \"applied\": False}\n        if False:\n            return out\n",
+  "tests": [
+   "tests/test_an_erasure_made_before_this_version_can_be_cleaned_up.py"
+  ]
+ },
+ {
+  "name": "the erase-past-copies command applies on a dry run",
+  "file": "inspeximus/cli.py",
+  "old": "        res = m.erase_past_copies(apply=a.apply, request_id=a.request_id)\n",
+  "new": "        res = m.erase_past_copies(apply=True, request_id=a.request_id)\n",
+  "tests": [
+   "tests/test_an_erasure_made_before_this_version_can_be_cleaned_up.py"
+  ]
  }
 ]

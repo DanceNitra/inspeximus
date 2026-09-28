@@ -9555,6 +9555,45 @@ class Inspeximus:
         self._conversion_backup = state
         return state
 
+    def erase_past_copies(self, apply: bool = False, request_id: str | None = None) -> dict:
+        """What an erasure made before 3.15.2 can have left behind, and with `apply=True`, its removal.
+
+        Before 3.15.2 an erasure removed the record, but its text could stay in a session digest written
+        before 3.15.2 (its entries carried the text of the records they listed), in the temp file of a
+        save that was interrupted, and in a merge or conversion backup beside the store
+        (`<store>.bak-merge-<time>`, `<store>.pre-rows.bak`). From 3.15.2 every erasure reaches all
+        three. This reaches them for the erasures already made, read from the tombstone chain, so a
+        store erased under an older version can be brought to the same state once.
+
+        A dry run by default. `apply=True` erases each such digest through forget(), which leaves its own
+        tombstone, removes the temps and the backups, and says what it removed. Files beside the store
+        that nothing here accounts for are named in `siblings_not_reached` and never touched. Check the
+        result with erasure_certificate(): it names every copy it still cannot vouch for.
+
+        Returns {erased_before, digests, save_temps, backups, siblings_not_reached, applied}, plus
+        {forgot, removed} when applied."""
+        erased = {t.get("memory_id") for t in (self._tombstones or []) if t.get("memory_id")}
+        sib = self._store_siblings()
+        out = {"erased_before": len(erased),
+               "digests": sorted(self._digest_copies_of(erased)) if erased else [],
+               "save_temps": [os.path.basename(p) for p in self._save_temps()],
+               "backups": sorted(os.path.basename(p) for p in sib["own"]),
+               "siblings_not_reached": sorted(os.path.basename(p) for p in sib["unknown"]),
+               "applied": False}
+        if not apply:
+            return out
+        out["forgot"] = (self.forget(ids=out["digests"], request_id=request_id,
+                                     basis="erasure_cleanup")["forgotten"] if out["digests"] else 0)
+        left = self._sweep_save_temps()
+        backups = self._drop_merge_backups()
+        if any(p.lower().endswith(".pre-rows.bak") for p in sib["own"]):
+            backups.append(self._drop_pre_rows_backup())
+        out["removed"] = {"save_temps": [n for n in out["save_temps"] if n not in {x[0] for x in left}],
+                          "save_temps_left": [{"name": n, "why": w} for n, w in left],
+                          "backups": backups}
+        out["applied"] = True
+        return out
+
     def _drop_merge_backups(self) -> list:
         """THE MERGE TOOLS' COPY GOES THE SAME WAY (A-12, 2026-09-27). `claude_code.merge_store` and
         `merge_fragments` copy the whole store to `<store>.bak-merge-<time>` before they merge, and
