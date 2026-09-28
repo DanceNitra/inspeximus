@@ -85,7 +85,6 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False, receipt_
     # receipts (OPT-IN): builds the tamper-evident write/erasure chain (persisted to <path>.receipts.json) that
     # `audit-build` exports; reload needs it on too, so audit-build/governance force it regardless of the flag.
     from ._surface import open_store
-    _warn_if_store_dir_missing(path)
     # A signing key implies receipts: signing an erasure into a chain that is not being kept writes a
     # signature nothing will ever read. Inspeximus() already treats receipt_key as turning receipts on;
     # passing it here too keeps the sidecar-detection branch in open_store from deciding otherwise.
@@ -117,33 +116,6 @@ def _nonnegative(raw: str) -> int:
     if v < 0:
         raise argparse.ArgumentTypeError(f"must be >= 0, got {v}")
     return v
-
-
-def _warn_if_store_dir_missing(path) -> None:
-    """A --path whose DIRECTORY does not exist is a typo, not an empty store.
-
-    Reads against such a path printed "(nothing in memory for that query)" and exited 0, so a user or a
-    script could not tell a mistyped path from a genuinely empty memory. Writes already fail loudly here
-    (_flush_or_fail returns 3, 'NOT PERSISTED'), so only the read side was silent.
-
-    This WARNS rather than exits: a missing FILE in an existing directory is the legitimate
-    brand-new-store case and must keep working, and changing read exit codes would alter the contract
-    that `_flush_or_fail(required=False)` deliberately established for read-only files. Making the typo
-    visible is the part that can be done without touching that contract; turning it into a non-zero exit
-    for read commands is a behaviour change and is written up instead.
-    """
-    try:
-        parent = os.path.dirname(os.path.abspath(str(path)))
-        if parent and not os.path.isdir(parent):
-            # ASCII ONLY. This lands on a Windows console that is not UTF-8 (cp1250 here): an em dash
-            # rendered as a replacement character, and on a stricter console non-ASCII raises
-            # UnicodeEncodeError and takes the whole command down. A diagnostic must never be the thing
-            # that crashes the run it is diagnosing.
-            print(f"warning: no such directory {parent!r} - nothing can be read from or written to "
-                  f"{str(path)!r}. If this is a typo, results below are from an EMPTY store, not your data.",
-                  file=sys.stderr)
-    except Exception:
-        pass          # diagnostics must never break a command
 
 
 def _need_ed25519() -> int:
@@ -1345,6 +1317,12 @@ def main(argv=None):
     ins.add_argument("--check", action="store_true",
                      help="read-only: report whether each agent's inspeximus entry still matches this "
                           "version and the shared store; exit 1 when one does not")
+    ins.add_argument("--shared-store", action="store_true",
+                     help="with --all --only: also record the shared store (~/.inspeximus/shared.json), which "
+                          "moves every project's Claude Code hooks onto it; --all alone always records it")
+    ins.add_argument("--allow-older", action="store_true",
+                     help="with --all: run even though this installer is older than a version an agent is "
+                          "already pinned to")
 
     a = ap.parse_args(argv)
 
@@ -1360,7 +1338,8 @@ def main(argv=None):
     if a.cmd == "install" and a.all_hosts:
         from . import install_all as _all
         return _all.run(store=a.store, dry_run=a.dry_run, rules=a.rules,
-                        hermes_provider_change=a.hermes_provider, project=a.project, only=a.only)
+                        hermes_provider_change=a.hermes_provider, project=a.project, only=a.only,
+                        shared_store=a.shared_store, allow_older=a.allow_older)
     if a.cmd == "install" and a.only:
         ap.error("--only goes with --all or --check")
     if a.cmd == "install" and not a.ide:
@@ -1600,11 +1579,18 @@ def main(argv=None):
 
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
-    m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
-                                                        "provenance", "erasure-certificate", "anchor", "actions", "subject", "coverage",
-                                                        "technical-documentation", "deployer-report",
-                                                        "registration-export", "partitions", "receipts", "retire"),
-               receipt_key=_rk)
+    # A REFUSED STORE PATH IS AN ERROR, NOT A TRACEBACK (3.15.3, AUDIT-A A-11): the message names the path,
+    # the missing directory and the fix, and the exit code is non-zero.
+    from inspeximus._surface import StoreLocationError
+    try:
+        m = _store(a.path, receipts=a.receipts or a.cmd in ("audit-build", "compliance", "retention",
+                                                            "provenance", "erasure-certificate", "anchor", "actions", "subject", "coverage",
+                                                            "technical-documentation", "deployer-report",
+                                                            "registration-export", "partitions", "receipts", "retire"),
+                   receipt_key=_rk)
+    except StoreLocationError as e:
+        print(f"inspeximus: {e}", file=sys.stderr)
+        return 2
 
     if a.cmd == "retire":
         res = m.retire(a.key, a.reason, source={"doc": a.source} if a.source else None)

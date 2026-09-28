@@ -3,7 +3,9 @@
     python tools/run_install_page.py <workdir> [--find-links DIR] [--constraint SPEC] [--keep-uv] [--expect-fail] [--answers yes|no]
 
 The block after `<!-- ci: posix -->` runs under bash on Linux and macOS, the block after
-`<!-- ci: windows -->` under PowerShell on Windows, with HOME pointing at a sandbox that holds every
+`<!-- ci: windows -->` under PowerShell on Windows (with `--shell gitbash`, the block after
+`<!-- ci: gitbash -->` under Git Bash instead, and with `--no-pathconv` as well, in a Git Bash that hands
+paths to Windows programs unconverted, as Hermes Agent's does), with HOME pointing at a sandbox that holds every
 host's config directory (tools/one_memory_check.py builds it). The page is not paraphrased: if a command on
 it stops working, this fails. `--find-links` lets pip see a wheel built from this checkout before it is on
 PyPI; `--answers` is what the user said to the page's two questions (default yes), and with no the
@@ -67,6 +69,20 @@ def install_hermes(env, cwd):
         raise SystemExit("the official Hermes installer did not produce a Hermes install")
 
 
+def git_bash():
+    """Git for Windows' bash.exe: next to git.exe's install, not the WSL bash that may come first on PATH."""
+    import shutil
+    git = shutil.which("git")
+    if git:
+        d = os.path.dirname(os.path.realpath(git))          # ...\Git\cmd, or ...\Git\mingw64\bin
+        for _ in range(3):
+            d = os.path.dirname(d)
+            for cand in (os.path.join(d, "bin", "bash.exe"), os.path.join(d, "usr", "bin", "bash.exe")):
+                if os.path.exists(cand):
+                    return cand
+    raise SystemExit("--shell gitbash needs Git for Windows' bash.exe, and it was not found")
+
+
 def main():
     for stream in (sys.stdout, sys.stderr):          # the installers print arrows a cp1252 console cannot encode
         try:
@@ -91,10 +107,21 @@ def main():
         env["PIP_CONSTRAINT"] = c
     answer = args[args.index("--answers") + 1] if "--answers" in args else "yes"
     win = os.name == "nt"
-    block = page_block("windows" if win else "posix", answer)
-    if win:
+    shell = args[args.index("--shell") + 1] if "--shell" in args else ("pwsh" if win else "bash")
+    if shell == "gitbash":
+        if not win:
+            raise SystemExit("--shell gitbash is for Windows")
+        block = page_block("gitbash", answer)
+        cmd = [git_bash(), "-e", "-c", block]
+        if "--no-pathconv" in args:
+            # Hermes Agent's Git Bash, measured 2026-09-28: a Windows program received /c/Users/... as
+            # typed and read it as C:\\c\\Users\\...
+            env = dict(env, MSYS_NO_PATHCONV="1", MSYS2_ARG_CONV_EXCL="*")
+    elif win:
+        block = page_block("windows", answer)
         cmd = ["pwsh", "-NoProfile", "-NonInteractive", "-Command", "$ErrorActionPreference='Stop'\n" + block]
     else:
+        block = page_block("posix", answer)
         cmd = ["bash", "-e", "-c", block]
     r = subprocess.run(cmd, cwd=proj, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
     print("page commands exit", r.returncode)

@@ -440,11 +440,11 @@ def uninstall_from_hermes(py, runner=subprocess.run):
 
 
 # ── the first-run proof and the migration ────────────────────────────────────────────────────────────
-def record_first_run(store, wired, labels=None):
+def record_first_run(store, wired, labels=None, writer_key=None):
     """`labels`, when given, names every agent on the shared store (3.14.4: a `--only claude` re-run
     no longer rewrites the setup decision as if Claude Code were the only agent)."""
     from ._surface import open_store
-    m = open_store(str(store))
+    m = open_store(str(store), writer_key=writer_key) if writer_key else open_store(str(store))
     labels = ", ".join(labels or ["Hermes Agent" if h == "hermes" else _i.HOSTS[h]["label"] for h in wired]) or "none"
     # NO "DECISION: " HERE (3.14.4): remember_decision adds it, and the stored text read
     # "DECISION: DECISION: every AI agent ..." on every install before this.
@@ -487,7 +487,7 @@ def read_store(store):
     return len(items), (seal_of(setup[-1]) if setup else None)
 
 
-def armed_block(store, records, wired, restart, seal, attention=(), dry_run=False, seal_note=""):
+def armed_block(store, records, wired, restart, seal, attention=(), dry_run=False, seal_note="", seal_reason=None):
     """The fixed, short block printed LAST.
 
     WHY A BLOCK AND NOT THE TABLE (3.14.4). On 2026-09-27 Hermes Agent on a 9B local model followed the
@@ -507,7 +507,8 @@ def armed_block(store, records, wired, restart, seal, attention=(), dry_run=Fals
              f"store: {store} ({records} record{'' if records == 1 else 's'})",
              "wired: " + (", ".join(wired) or "none"),
              "restart: " + (", ".join(restart) or "none"),
-             ("seal: %s %s" % (seal[0], seal[1][:12]) if seal else "seal: none") + seal_note]
+             ("seal: %s %s" % (seal[0], seal[1][:12]) if seal
+              else "seal: none" + (" (%s)" % seal_reason if seal_reason else "")) + seal_note]
     if attention:
         lines.append("attention: " + ", ".join(attention) + " (see the table above)")
     return lines
@@ -628,7 +629,91 @@ def unexpanded_variable(path):
     return m.group(0) if m else None
 
 
-def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", project=None, out=print, only=None):
+def _vtuple(v):
+    """(3, 15, 1) from "3.15.1"; non-numeric parts end the tuple. () for no version."""
+    out = []
+    for part in str(v or "").split("."):
+        m = re.match(r"\d+", part)
+        if not m:
+            break
+        out.append(int(m.group(0)))
+    return tuple(out)
+
+
+def running_line():
+    """WHICH installer is running (3.15.3). On 2026-09-28 a bare `inspeximus` on PATH resolved to a 3.14.3
+    inside another program's venv, and the output looked like any other install; this line makes the
+    interpreter and the version the first thing an install prints."""
+    import inspeximus as _pkg
+    return f"running {sys.executable}, inspeximus {_version()} from {os.path.dirname(_pkg.__file__)}"
+
+
+def newer_versions(hosts):
+    """[(where, version)] for every version newer than this installer: the one shared.json was written by,
+    and each selected agent's pin."""
+    from ._surface import shared_record
+    mine = _vtuple(_version())
+    seen = []
+    v = shared_record().get("version")
+    if v and _vtuple(v) > mine:
+        seen.append((str(pathlib.Path(_i._home()) / ".inspeximus" / "shared.json"), v))
+    for h in hosts:
+        try:
+            _, entry, _ = _i.read_entry(h)
+        except Exception:                                    # noqa: BLE001 - an unreadable config says nothing
+            continue
+        pin = _pin(entry)
+        if pin and _vtuple(pin) > mine:
+            seen.append((_i.HOSTS[h]["label"], pin))
+    return seen
+
+
+def git_bash_misread(path):
+    """See `_surface.git_bash_misread`: one definition for the installer and every store surface."""
+    from ._surface import git_bash_misread as _g
+    return _g(path)
+
+
+def _writer_key(hosts, store):
+    """The writer key the MCP server would sign with, or None: INSPEXIMUS_WRITER_KEY_FILE or
+    INSPEXIMUS_WRITER_KEY in this process, else the key file named in an agent's entry for this store."""
+    files = [os.environ.get("INSPEXIMUS_WRITER_KEY_FILE", "").strip()]
+    for h in hosts:
+        try:
+            _, entry, _ = _i.read_entry(h)
+        except Exception:                                    # noqa: BLE001
+            continue
+        env = (entry or {}).get("env") or {}
+        if env.get("INSPEXIMUS_WRITER_KEY_FILE") and _same_file(env.get("INSPEXIMUS_PATH") or "", store):
+            files.append(str(env["INSPEXIMUS_WRITER_KEY_FILE"]).strip())
+    for f in files:
+        if f:
+            try:
+                k = open(os.path.expanduser(f), encoding="utf-8").read().strip()
+                if k:
+                    return k
+            except OSError:
+                continue
+    return os.environ.get("INSPEXIMUS_WRITER_KEY", "").strip() or None
+
+
+def store_is_signed(store):
+    """True when any record in `store` carries a writer signature (`attested_key`)."""
+    p = pathlib.Path(str(store))
+    if not p.exists():
+        return False
+    from ._surface import open_store
+    return any(it.get("attested_key") for it in getattr(open_store(str(p)), "items", []) or [])
+
+
+def armed_file():
+    """~/.inspeximus/ARMED.txt: the last install's block with its time, for the user to open (3.15.3)."""
+    return pathlib.Path(_i._home()) / ".inspeximus" / "ARMED.txt"
+
+
+def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", project=None, out=print, only=None,
+        shared_store=False, allow_older=False):
+    out(running_line())
     hosts, with_hermes, err = select(only)
     if err:
         out("ERROR: " + err)
@@ -639,18 +724,50 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
         var = unexpanded_variable(p)
         if var:
             fix = ("Pass it with the home folder written out." if what == "--store" else
-                   "Create the virtual environment again with the home folder written out (bash: "
-                   "\"$HOME/.inspeximus/venv\"; PowerShell: \"$HOME\\.inspeximus\\venv\") and run the installer "
-                   "from there.")
+                   "Create the virtual environment again with the home folder written out (Git Bash: "
+                   "\"$USERPROFILE/.inspeximus/venv\"; PowerShell: \"$HOME\\.inspeximus\\venv\") and run the "
+                   "installer from there.")
             out(f"ERROR: {what} contains {var} literally: {p}. A shell did not expand it, so the path names a "
                 f"folder called {var}. Nothing was changed. {fix}")
             return 2
+        real = git_bash_misread(p)
+        if real:
+            fix = ("Pass the Windows form of the path." if what == "--store" else
+                   "Create the virtual environment with the Windows form of the home folder (Git Bash: "
+                   "\"$USERPROFILE/.inspeximus/venv\") and run the installer from there.")
+            out(f"ERROR: {what} is {p}: a Git Bash path (/{real[0].lower()}/...) that Windows read as a folder "
+                f"under {os.path.splitdrive(os.path.abspath(str(p)))[0]}\\. The intended place is {real}. Nothing "
+                f"was changed. {fix}")
+            return 2
+    # NEVER OLDER THAN WHAT IS ALREADY WIRED (3.15.3). On 2026-09-28 a bare `inspeximus` on PATH ran a 3.14.3
+    # inside another program's venv over agents pinned to 3.15.1, and the output looked like an install.
+    newer = newer_versions(hosts)
+    if newer and not allow_older:
+        out(f"ERROR: this installer is inspeximus {_version()}, older than what is already wired: "
+            + "; ".join(f"{w} is {v}" for w, v in newer)
+            + ". Nothing was changed. Run the newer installer by its full path (for example "
+              "~/.inspeximus/venv/Scripts/inspeximus.exe on Windows, ~/.inspeximus/venv/bin/inspeximus elsewhere), "
+              "or pass --allow-older to go back on purpose.")
+        return 2
     found = {h: detect(h) for h in hosts}
     targets = [h for h in hosts if found[h][0]]
     path, err = choose_store(targets, store)
     if err:
         out("ERROR: " + err)
         return 2
+    # A PIN MOVE NEVER SWITCHES THE STORE TOPOLOGY (3.15.3). shared.json makes every project's hooks, the
+    # plain CLI and every MCP server without a named store use one store. `--all` records it; `--all --only`
+    # records it only when it already exists or --shared-store asks, and says so before anything is written.
+    from ._surface import shared_config_path
+    had_shared = os.path.exists(shared_config_path())
+    record_shared = had_shared or not only or shared_store
+    if not dry_run and record_shared and not had_shared:
+        out(f"note: this run records the shared store in {shared_config_path()}: from now on the Claude Code "
+            f"hooks of every project, the plain CLI and every MCP server without a named store use {path}.")
+    elif not record_shared:
+        out(f"note: --only does not record a shared store: {shared_config_path()} is not created, each "
+            f"project's Claude Code hooks keep their own store, and no setup decision (seal) is written. To "
+            f"share one store, run install --all without --only, or add --shared-store.")
     rows, wired, notes = [], [], []
     # NEVER A PROMPT HERE. An agent runs this installer, and a question it cannot see hangs the install in
     # a pseudo-terminal. The agent asks the user first and passes the answer.
@@ -665,6 +782,13 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
         if p.get("error"):
             rows.append((_i.HOSTS[h]["label"], "yes", "ERROR", "-", p["error"]))
             continue
+        hk = p.get("hooks") or {}
+        if hk.get("updated"):
+            notes.append(f"{_i.HOSTS[h]['label']}: hooks this installer wrote before are updated to this "
+                         f"version: {', '.join(hk['updated'])}")
+        for line in hk.get("kept") or []:
+            notes.append(f"{_i.HOSTS[h]['label']}: kept a hook line written by hand, not by this installer "
+                         f"(update it yourself if it should run {_version()}): {line}")
         if dry_run:
             state = p["action"]
         else:
@@ -693,14 +817,25 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
 
     migrated = source = None
     rid = seal = None
+    seal_reason = "--only without a shared store" if not record_shared else None
     labels = [_label(h) for h in wired]
-    if not dry_run and wired:
+    if not dry_run and wired and record_shared:
         path.parent.mkdir(parents=True, exist_ok=True)
         try:
             migrated, source = import_project_store(path, project)
-            rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"],
-                                   labels=merged_agents(path, labels))
-            seal = read_store(path)[1]
+            # THE SEAL IS SIGNED WHERE THE STORE IS SIGNED (3.15.3). The setup decision was written through
+            # open_store with no writer key, so it was the one unsigned record in a store whose MCP writes
+            # are signed. A signed store gets it signed when a key is available, and not at all otherwise.
+            key = _writer_key([h for h in wired if h in _i.HOSTS], path)
+            if store_is_signed(path) and not key:
+                seal_reason = "signed store, no writer key"
+                notes.append(f"the setup decision was not written: {path} holds writer-signed records and no "
+                             f"writer key was found (INSPEXIMUS_WRITER_KEY_FILE, or an agent entry that names "
+                             f"one), and an unsigned record would be the only one of its kind")
+            else:
+                rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"],
+                                       labels=merged_agents(path, labels), writer_key=key)
+                seal = read_store(path)[1]
         finally:                                  # ONE write, and it happens even if recording failed
             write_shared_record(path, agents=labels, seal=seal)
 
@@ -724,9 +859,17 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
         out("Restart each app listed as wired, so it starts the memory server.")
     failed = [str(r[0]) for r in rows if str(r[2]).startswith("ERROR")]
     records = read_store(path)[0] if not dry_run else 0
+    block = armed_block(path, records, labels, [] if dry_run else labels, seal, attention=failed,
+                        dry_run=dry_run, seal_reason=seal_reason)
+    if not dry_run:
+        # THE BLOCK IN A FILE THE USER CAN OPEN (3.15.3). An agent on a 9B model printed an ARMED block the
+        # installer never wrote; the file is the installer's own copy, with the time it was written.
+        _i.write_text_keeping_newlines(
+            armed_file(), "written %s by %s\n%s\n" % (time.strftime("%Y-%m-%d %H:%M:%S %z"), running_line(),
+                                                     "\n".join(block)), backup=False)
+        out(f"The block below is also saved, with the time, in {armed_file()}.")
     out("")
-    for line in armed_block(path, records, labels, [] if dry_run else labels, seal, attention=failed,
-                            dry_run=dry_run):
+    for line in block:
         out(line)
     return 0 if not failed else 1
 
@@ -774,6 +917,7 @@ def check(store=None, only=None, out=print):
 
     Written for 2026-09-27: a Claude Code entry `install --all` had written read back `==3.14.0` two
     hours later, and only a person reading the file noticed."""
+    out(running_line())
     hosts, with_hermes, err = select(only)
     if err:
         out("ERROR: " + err)
@@ -826,6 +970,23 @@ def check(store=None, only=None, out=print):
     for r in [head] + rows:
         out("  ".join(str(c).ljust(w[i]) for i, c in enumerate(r)))
     out(f"shared store: {want or 'none recorded'}; this is inspeximus {_version()}")
+    # A GIT BASH COPY OF THE HOME (3.15.3). On a friend's machine a venv, and on ours eleven files from
+    # other sessions, sat under C:\c\Users\<you>: paths a Git Bash passed to Windows programs unconverted.
+    # Nothing reads there, so it is only reported; the installer running from there is a failure.
+    here = git_bash_misread(sys.executable)
+    if here:
+        out(f"warning: this installer runs from {sys.executable}, a Git Bash path Windows read as a folder "
+            f"under {os.path.splitdrive(sys.executable)[0]}\\; the intended place is {here}")
+        bad += 1
+    home = str(_i._home())
+    drive, rest = os.path.splitdrive(home)
+    if os.name == "nt" and drive:
+        copy = f"{drive}\\{drive[0].lower()}{rest}"
+        if os.path.isdir(copy):
+            n = sum(len(fs) for _, _, fs in os.walk(copy))
+            out(f"warning: {copy} exists ({n} files): a copy of your home that a Windows program made from "
+                f"the Git Bash path /{drive[0].lower()}{rest.replace(os.sep, '/')}. The real home is {home}. "
+                f"Nothing reads it; check it and delete it.")
     # THE SAME BLOCK, READ-ONLY (3.14.4), so a friend can see it again at any time. The seal is
     # recomputed from the store and compared with the one the install recorded in shared.json.
     from ._surface import shared_record

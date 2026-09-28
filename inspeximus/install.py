@@ -20,6 +20,7 @@ import json
 import os
 import pathlib
 import platform
+import re
 import shutil
 import sys
 import time
@@ -251,13 +252,38 @@ def _claude_settings_path(mcp_config_path):
     return pathlib.Path(mcp_config_path).parent / ".claude" / "settings.json"
 
 
+#: A hook line this installer wrote (3.9.7 and later, `hook_command`): an ABSOLUTE interpreter running the
+#: hook module, or an ABSOLUTE uvx running it from a pinned (or, before the pin, unpinned) inspeximus. A
+#: line in any other form -- `python -m ...` on the PATH, a wrapper, extra arguments -- was written by a
+#: person, and is theirs.
+_OWN_HOOK_LINE = re.compile(
+    r'^(?P<exe>"(?:[A-Za-z]:[\\/]|/)[^"]+"|(?:[A-Za-z]:[\\/]|/)\S+)\s+'
+    r'(?:(?P<uvx>--from\s+inspeximus(?:==[0-9][0-9A-Za-z.+-]*)?\s+python\s+))?-m\s+inspeximus\.claude_code$')
+
+
+def is_installer_hook_line(command):
+    """True when `command` is a hook line in a form this installer writes (see `_OWN_HOOK_LINE`)."""
+    m = _OWN_HOOK_LINE.match(str(command or "").strip())
+    if not m:
+        return False
+    exe = os.path.basename(m.group("exe").strip('"').replace("\\", "/")).lower()
+    return (exe in ("uvx", "uvx.exe")) == bool(m.group("uvx"))
+
+
 def plan_claude_hooks(settings_path, command):
     """The hooks half of `install --ide claude`: the same five events the plugin ships.
 
     README promises that the plugin and `inspeximus install --ide claude` both wire "the same hooks".
     On 3.9.5 the installer wrote only `mcpServers`, so an installer user got the tools and no
-    SessionStart digest. An event that already has an inspeximus hook is left as it is: the user's
-    own command line wins, and a second copy would run every hook twice."""
+    SessionStart digest.
+
+    AN EVENT THE INSTALLER ALREADY WIRED IS UPDATED; ONE A PERSON WIRED IS KEPT (3.15.3). Before this, any
+    inspeximus hook counted as "the user's own command line", so an upgrade moved the MCP server to the new
+    version and left the hooks on the old pin and the old PostToolUse matcher: measured on 2026-09-28, an
+    install that 3.14.3 had written stayed on 3.14.3 after 3.15.1's install --all. A line in the form
+    `hook_command` writes (`is_installer_hook_line`) now gets this run's command, and its group gets this
+    release's matcher; any other inspeximus line is kept, and reported in `kept`, because a second copy
+    would run every hook twice."""
     import copy
     import difflib
     from inspeximus import claude_code as cc
@@ -275,22 +301,43 @@ def plan_claude_hooks(settings_path, command):
     if not isinstance(hooks, dict):
         res["error"] = f"{settings_path}: 'hooks' is not an object; refusing to touch it"
         return res
-    added = []
+    added, updated, kept = [], [], []
     for evt in ("PreToolUse", "PostToolUse", "UserPromptSubmit", "SessionStart", "SessionEnd"):
         present = hooks.get(evt, [])
         if not isinstance(present, list):
             res["error"] = f"{settings_path}: hooks.{evt} is not a list; refusing to touch it"
             return res
+        template = cc._EVENT_HOOK.get(evt, cc._HOOK)
         if any(m in json.dumps(present) for m in cc._HOOK_MARKERS):
+            ours = [(g, h) for g in present if isinstance(g, dict) for h in g.get("hooks") or []
+                    if isinstance(h, dict) and any(m in str(h.get("command", "")) for m in cc._HOOK_MARKERS)]
+            mine = [(g, h) for g, h in ours if is_installer_hook_line(h.get("command"))]
+            kept += [f"{evt}: {h.get('command')}" for g, h in ours if (g, h) not in mine]
+            changed = False
+            for g, h in mine:
+                if h.get("command") != command:
+                    h["command"] = command
+                    changed = True
+                others = [x for x in g.get("hooks") or [] if not any(
+                    m in str((x or {}).get("command", "")) for m in cc._HOOK_MARKERS)]
+                if not others and g.get("matcher") != template.get("matcher"):
+                    if template.get("matcher") is None:
+                        g.pop("matcher", None)
+                    else:
+                        g["matcher"] = template["matcher"]
+                    changed = True
+            if changed:
+                updated.append(evt)
             continue
-        entry = copy.deepcopy(cc._EVENT_HOOK.get(evt, cc._HOOK))
+        entry = copy.deepcopy(template)
         for h in entry["hooks"]:
             h["command"] = command
         hooks.setdefault(evt, []).append(entry)
         added.append(evt)
     after = json.dumps(data, indent=2) + "\n"
-    res.update(data=data, added=added,
-               action=("unchanged" if not added else "create" if not settings_path.exists() else "add"),
+    res.update(data=data, added=added, updated=updated, kept=kept, command=command,
+               action=("unchanged" if not (added or updated) else "create" if not settings_path.exists()
+                       else "update" if updated and not added else "add"),
                diff="".join(difflib.unified_diff(
                    before.splitlines(True), after.splitlines(True),
                    fromfile=str(settings_path) + (" (missing)" if not settings_path.exists() else ""),
@@ -667,7 +714,8 @@ def apply(p):
         msgs.append(f"{p['action']} -> {p['path']}")
     if hooks_change:
         _write_json(hooks["path"], hooks["data"])
-        msgs.append(f"hooks {hooks['action']} ({', '.join(hooks['added'])}) -> {hooks['path']}")
+        msgs.append(f"hooks {hooks['action']} ({', '.join((hooks.get('added') or []) + (hooks.get('updated') or []))}) "
+                    f"-> {hooks['path']}")
     problems = verify_written(p)
     if problems:
         return False, "written, but reading it back found: " + "; ".join(problems)
@@ -735,6 +783,11 @@ def verify_written(p):
                    if not any(m in json.dumps(got.get(e, [])) for m in cc._HOOK_MARKERS)]
         if missing:
             problems.append(f"hooks missing after the write in {hooks['path']}: {', '.join(missing)}")
+        stale = [e for e in hooks.get("updated") or []
+                 if not any(isinstance(h, dict) and h.get("command") == hooks.get("command")
+                            for g in got.get(e, []) if isinstance(g, dict) for h in g.get("hooks") or [])]
+        if stale:
+            problems.append(f"hooks not updated after the write in {hooks['path']}: {', '.join(stale)}")
     return problems
 
 
