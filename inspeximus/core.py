@@ -18278,6 +18278,10 @@ class _TenantView:
         # the leak tests sweep it and find nothing to narrow. `export_changeset`, which does
         # return text, is REBOUND rather than listed here.
         "import_changeset",
+        # `erase_past_copies` is the same kind of act at the same level: it finishes erasures already made,
+        # read from the one tombstone chain over every tenant's records, and removes files beside the
+        # store, which belong to no tenant. It returns ids, counts and file names, never record text.
+        "erase_past_copies",
         # `transparent_statement` is OPERATOR-ONLY for the same reason `erasure_certificate` is: it
         # builds its Receipt from inclusion_proof(), which walks the whole write log. On a
         # tenant-bound view that would put another tenant's leaf in the audit path of a proof handed

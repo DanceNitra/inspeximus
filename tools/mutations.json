@@ -4845,5 +4845,14 @@
   "tests": [
    "tests/test_an_erasure_made_before_this_version_can_be_cleaned_up.py"
   ]
+ },
+ {
+  "name": "erase_past_copies is left unclassified for tenant views",
+  "file": "inspeximus/core.py",
+  "old": "        \"erase_past_copies\",\n",
+  "new": "",
+  "tests": [
+   "tests/test_isolation_and_persistence.py"
+  ]
  }
 ]
