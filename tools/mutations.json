@@ -6260,5 +6260,14 @@
   "tests": [
    "tests/test_the_gate_fails_when_twin_arms_differ_only_in_time.py"
   ]
+ },
+ {
+  "name": "make_examples crashes on a path on another drive",
+  "file": "docs/verify/examples/make_examples.py",
+  "old": "    except ValueError:\n        return os.path.abspath(path)\n",
+  "new": "    except KeyError:\n        return os.path.abspath(path)\n",
+  "tests": [
+   "tests/test_verifier_page_examples.py"
+  ]
  }
 ]

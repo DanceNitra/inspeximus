@@ -74,6 +74,18 @@ def _generator():
 
 # ─── tests that need no browser ─────────────────────────────────────────────────────────────────────
 
+def test_a_path_on_another_drive_is_shown_absolute(monkeypatch, tmp_path):
+    """Windows CI: checkout on D:, temp on C:, and os.path.relpath raised ValueError, crashing the script."""
+    gen = _generator()
+    inside = os.path.join(gen.ROOT, "docs", "verify", "index.html")
+    assert gen.shown(inside) == os.path.join("docs", "verify", "index.html")          # control: same drive
+
+    def other_drive(path, start=None):
+        raise ValueError("path is on mount 'C:', start on mount 'D:'")
+    monkeypatch.setattr(gen.os.path, "relpath", other_drive)
+    assert gen.shown(str(tmp_path / "index.html")) == os.path.abspath(str(tmp_path / "index.html"))
+
+
 def test_the_page_carries_each_example_byte_for_byte():
     blocks = re.findall(r'<script type="application/json" id="example-([\w-]+)" data-file="([\w.-]+)">(.*?)</script>',
                         base._page_source(), re.S)

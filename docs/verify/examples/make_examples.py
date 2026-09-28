@@ -186,7 +186,7 @@ def main(argv=None) -> int:
             same = False
         if same:
             continue
-        stale.append(os.path.relpath(path, ROOT))
+        stale.append(shown(path))
         if not a.check:
             with open(path, "w", encoding="utf-8", newline="") as fh:
                 fh.write(text)
@@ -195,6 +195,18 @@ def main(argv=None) -> int:
         return 1 if stale else 0
     print("wrote " + ", ".join(stale) if stale else "nothing changed")
     return 0
+
+
+def shown(path):
+    """`path` relative to the repository, or absolute when it is on another drive.
+
+    Windows CI, 2026-09-28: the checkout is on D: and pytest's temporary folder on C:, where
+    os.path.relpath raises ValueError ("path is on mount 'C:', start on mount 'D:'"), so the script crashed
+    after writing nothing and its bytes could not be compared."""
+    try:
+        return os.path.relpath(path, ROOT)
+    except ValueError:
+        return os.path.abspath(path)
 
 
 if __name__ == "__main__":
