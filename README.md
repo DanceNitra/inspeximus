@@ -709,7 +709,10 @@ python -m inspeximus.claude_code --archive --older-than 7 --apply    # move it
 - The store records how many entries the archive log holds and the hash of the last one, so a log
   that was truncated or replaced on its own fails verification and blocks erasure until it is
   restored. This catches an accident or a single edited file. Someone who edits both the store and
-  the log can make them agree again; only write receipts (a signed log) detect that.
+  the log can make them agree again. A second copy of the head sits outside the store's directory,
+  where the receipt chain's head has been kept since 2.38.0 (`INSPEXIMUS_HEADS=0` turns both off), and
+  catches that edit unless the same person can also write there; write receipts (a signed log) are the
+  check for that case.
 
 ---
 

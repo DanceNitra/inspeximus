@@ -200,6 +200,46 @@ def _write_head(store_path, entries: list) -> None:
         con.commit()
     finally:
         con.close()
+    _write_outside_head(store_path, entries)
+
+
+def _outside_head_file(store_path):
+    """The log's head outside the store's directory: the location and switch the receipt chain's head
+    has used since 2.38.0 (`core._head_path`: INSPEXIMUS_KEY_HOME, else APPDATA, else XDG_CONFIG_HOME,
+    else ~/.config; INSPEXIMUS_HEADS=0 turns it off), one file keyed by the log's own path."""
+    from .core import _head_path
+    return _head_path(str(log_path(store_path)))
+
+
+def _write_outside_head(store_path, entries: list) -> None:
+    """Record {genesis, count, head} for the log outside the store. Never lowered by a write, as the
+    receipt head is not (core `_record_head`): a log cut and then appended to would otherwise overwrite
+    the evidence of the cut. Never raises: a head that cannot be written is a check that does not run."""
+    hp = _outside_head_file(store_path)
+    if not hp or not entries:
+        return
+    try:
+        prev = _read_outside_head(store_path)
+        if prev and prev.get("genesis") == entries[0]["hash"] and prev.get("count", 0) > len(entries):
+            return
+        os.makedirs(os.path.dirname(hp), exist_ok=True)
+        tmp = f"{hp}.{os.getpid()}.tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps({"path": os.path.abspath(str(log_path(store_path))), "genesis": entries[0]["hash"],
+                                 "count": len(entries), "head": entries[-1]["hash"], "ts": time.time()}))
+        os.replace(tmp, hp)
+    except Exception:                                                # noqa: BLE001
+        pass
+
+
+def _read_outside_head(store_path):
+    hp = _outside_head_file(store_path)
+    if not hp or not os.path.exists(hp):
+        return None
+    try:
+        return json.loads(open(hp, encoding="utf-8").read())
+    except (OSError, ValueError):
+        return None
 
 
 def recorded_head(store_path):
@@ -218,19 +258,30 @@ def log_head_problems(store_path) -> list:
     replaced on its own (by accident, a sync, a partial restore). Someone who edits both the store file
     and the log can make them agree again; only receipts, or a head kept outside the store, catch that."""
     head = recorded_head(store_path)
-    if not head:
-        return []
     try:
         entries = read_log(store_path) if log_path(store_path).exists() else []
     except Exception as e:                                           # noqa: BLE001
-        return [f"the archive log cannot be read ({type(e).__name__}); the store records {head['count']} entries"]
+        return [f"the archive log cannot be read ({type(e).__name__})"]
+    out = []
+    # THE HEAD OUTSIDE THE STORE catches what the store's own record cannot: the log AND the store edited
+    # to agree. It is ignored when its genesis is not this log's (a new store at a reused path).
+    far = _read_outside_head(store_path)
+    if far and (not entries or far.get("genesis") == entries[0]["hash"]):
+        if len(entries) < far.get("count", 0):
+            out.append(f"the archive log holds {len(entries)} entries but the head kept outside the store "
+                       f"recorded {far['count']}: the log was cut, and the store's own record was changed "
+                       f"to match or cannot tell")
+        elif far.get("count") and entries[far["count"] - 1].get("hash") != far.get("head"):
+            out.append("the archive log does not match the head kept outside the store: it was rewritten")
+    if not head:
+        return out
     if len(entries) < head["count"]:
-        return [f"the archive log holds {len(entries)} entries but the store recorded {head['count']}: "
-                f"{head['count'] - len(entries)} entr{'y' if head['count'] - len(entries) == 1 else 'ies'} "
-                f"missing, and the rows they moved are not accounted for"]
+        return out + [f"the archive log holds {len(entries)} entries but the store recorded {head['count']}: "
+                      f"{head['count'] - len(entries)} entr{'y' if head['count'] - len(entries) == 1 else 'ies'} "
+                      f"missing, and the rows they moved are not accounted for"]
     if head["count"] and entries[head["count"] - 1].get("hash") != head["head"]:
-        return ["the archive log does not match the head the store recorded: it was replaced or rewritten"]
-    return []
+        return out + ["the archive log does not match the head the store recorded: it was replaced or rewritten"]
+    return out
 
 
 def listed_segments(store_path) -> dict:
@@ -301,7 +352,8 @@ def present(store_path) -> bool:
     if log_path(store_path).exists():
         return True
     f = segment_files(store_path)
-    return bool(f["unlisted"] or f["temps"]) or bool(recorded_head(store_path))
+    return (bool(f["unlisted"] or f["temps"]) or bool(recorded_head(store_path))
+            or bool(_read_outside_head(store_path)))
 
 
 class SegmentsUnreachable(ValueError):

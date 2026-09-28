@@ -239,3 +239,75 @@ def test_a_log_cut_by_one_whole_entry_is_a_named_gap(tmp_path, monkeypatch):
         Inspeximus(p).forget_subject("hr/alice")
     Inspeximus(q).forget_subject("hr/alice", request_id="r")
     assert Inspeximus(q).erasure_certificate("r")["self_check"]["verified"], "the control erases and verifies"
+
+
+def _two_entry_store(d, monkeypatch):
+    d.mkdir()
+    p = str(d / "coding_memory.json")
+    m = Inspeximus(p)
+    for i in range(8):
+        monkeypatch.setattr(core.time, "time", lambda i=i: T0 - (40 if i % 2 else 75) * DAY + i)
+        m.remember(f"ran: step {i}", key=f"cmd:s{i}", tags=["bash"], source={"doc": "hr/alice"})
+    m.flush()
+    monkeypatch.setattr(core.time, "time", lambda: T0)
+    archive.apply(Inspeximus(p), 7, now=T0)
+    return p
+
+
+def _cut_log_and_the_stores_record(p):
+    """What someone with write access to the store's directory does: cut the log by one entry AND make
+    the store's own record agree with the cut."""
+    import sqlite3
+    entries = archive.read_log(p)[:1]
+    archive.log_path(p).write_text(json.dumps({"kind": archive.LOG_KIND, "entries": entries}), encoding="utf-8")
+    con = sqlite3.connect(p)
+    con.execute("UPDATE meta SET v=? WHERE k='archive_log_head'",
+                (json.dumps({"count": 1, "head": entries[0]["hash"]}),))
+    con.commit()
+    con.close()
+
+
+def test_the_head_kept_outside_the_store_catches_a_cut_the_store_was_edited_to_match(tmp_path, monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
+    p = _two_entry_store(tmp_path / "a", monkeypatch)
+    _cut_log_and_the_stores_record(p)
+    assert any("head kept outside the store" in x for x in Inspeximus(p).verify_writes()[1])
+    with pytest.raises(archive.SegmentsUnreachable, match="head kept outside"):
+        Inspeximus(p).forget_subject("hr/alice")
+    monkeypatch.setenv("INSPEXIMUS_HEADS", "0")
+    q = _two_entry_store(tmp_path / "b", monkeypatch)
+    _cut_log_and_the_stores_record(q)
+    assert not any("archive log" in x for x in Inspeximus(q).verify_writes()[1]), \
+        "the control: without the outside head, a cut that both files agree on is not seen"
+
+
+def test_a_handle_keeps_working_after_it_archived_and_after_it_erased(tmp_path, monkeypatch):
+    """Every path that writes the hot file outside the normal save (the log head, the VACUUM) re-syncs the
+    handle, or its next save reads the write as another writer's and merges the moved or erased rows
+    back from disk."""
+    p = _two_entry_store(tmp_path / "a", monkeypatch)
+    moved = {i for s in archive.listed_segments(p).values() for i in s["ids"]}
+    m = Inspeximus(p)
+    m.remember("a note written after the move", tags=["note"])
+    m.flush()
+    assert not ({r["id"] for r in Inspeximus(p)._items} & moved)
+    q = str(tmp_path / "b" / "coding_memory.json")
+    os.makedirs(os.path.dirname(q))
+    h = Inspeximus(q)
+    for i in range(6):
+        monkeypatch.setattr(core.time, "time", lambda i=i: T0 - 40 * DAY + i)
+        h.remember(f"ran: step {i}", key=f"cmd:s{i}", tags=["bash"])
+    h.flush()
+    monkeypatch.setattr(core.time, "time", lambda: T0)
+    same = Inspeximus(q)
+    archive.apply(same, 7, now=T0)
+    same.remember("written by the handle that archived", tags=["note"])
+    same.flush()
+    assert len(Inspeximus(q)._items) == 1, "the archiving handle did not bring the moved rows back"
+    gone = sorted(archive.listed_segments(q).values(), key=lambda s: s["ids"])[0]["ids"][0]
+    e = Inspeximus(q)
+    e.forget(ids=[gone])
+    e.remember("written by the handle that erased", tags=["note"])
+    e.flush()
+    assert gone not in {i for s in archive.listed_segments(q).values() for i in s["ids"]}
+    assert gone not in {r["id"] for r in Inspeximus(q)._items}

@@ -7295,5 +7295,23 @@
    "tests/test_audit_b_erasure_reaches_archive_segments.py",
    "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
   ]
+ },
+ {
+  "name": "B-25: the log head outside the store is not compared",
+  "file": "inspeximus/archive.py",
+  "old": "    if far and (not entries or far.get(\"genesis\") == entries[0][\"hash\"]):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
+ },
+ {
+  "name": "B-25: the log head outside the store is never written",
+  "file": "inspeximus/archive.py",
+  "old": "        con.close()\r\n    _write_outside_head(store_path, entries)",
+  "new": "        con.close()\r\n    pass",
+  "tests": [
+   "tests/test_audit_b_erasure_reaches_archive_segments.py"
+  ]
  }
 ]

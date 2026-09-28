@@ -1381,7 +1381,7 @@ NON_CLAIM_TOKENS = {
         "5": (2, "twice, both parameters a reader changes rather than results we claim: the --n 5 "
               "argument in the offered local-judge command, and k=5 in the next-five-minutes recall "
               "snippet"),
-        "0": (17, "One more since 2026-09-23: `ots verify` exit code 0 for ANCHORED. 16 since 3.1.0: the retire example reads history(\"on-call\")[0]. 15 since 3.0.0: the enable_receipts example reads verify_writes()[1][0], split(':', 1)[0] and verify_writes()[0]. One more [0] in the quickstart snippet on the first screen (2026-09-17). Python list indices [0] in the code examples, not measurements. Was 3 until the "
+        "0": (18, "One more since 2026-09-28: the INSPEXIMUS_HEADS=0 switch in the archive section. One more since 2026-09-23: `ots verify` exit code 0 for ANCHORED. 16 since 3.1.0: the retire example reads history(\"on-call\")[0]. 15 since 3.0.0: the enable_receipts example reads verify_writes()[1][0], split(':', 1)[0] and verify_writes()[0]. One more [0] in the quickstart snippet on the first screen (2026-09-17). Python list indices [0] in the code examples, not measurements. Was 3 until the "
               "tamper-detection example landed, which reads verify_writes()[0] and [1][0]; 6 since "
               "the audit-trail example, whose transparent_statement(0, ...) names the record's "
               "position in the log; 11 since the action-ledger example (2.29.0): recall()[0] twice, "
