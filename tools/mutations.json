@@ -5448,5 +5448,50 @@
   "tests": [
    "tests/test_release_check_runs_the_work_counters.py"
   ]
+ },
+ {
+  "name": "forget accepts a where that is not callable again",
+  "file": "inspeximus/core.py",
+  "old": "        if where is not None and not callable(where):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
+  ]
+ },
+ {
+  "name": "forget_pii iterates a bare string type as characters again",
+  "file": "inspeximus/core.py",
+  "old": "        if isinstance(types, str):\n            types = [types]\n        want = set(types)",
+  "new": "        want = set(types)",
+  "tests": [
+   "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
+  ]
+ },
+ {
+  "name": "forget_pii answers an unknown PII type with erased 0",
+  "file": "inspeximus/core.py",
+  "old": "            if unknown:\n                raise ValueError(f\"forget_pii: unknown",
+  "new": "            if False:\n                raise ValueError(f\"forget_pii: unknown",
+  "tests": [
+   "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
+  ]
+ },
+ {
+  "name": "erase_past_copies takes a truthy string as apply",
+  "file": "inspeximus/core.py",
+  "old": "        if not isinstance(apply, bool):\n            raise TypeError(f\"erase_past_copies",
+  "new": "        if False:\n            raise TypeError(f\"erase_past_copies",
+  "tests": [
+   "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
+  ]
+ },
+ {
+  "name": "scrub_secrets takes a truthy string as apply",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if not isinstance(apply, bool):                     # A-33",
+  "new": "    if False:                     # A-33",
+  "tests": [
+   "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
+  ]
  }
 ]

@@ -8648,6 +8648,10 @@ class Inspeximus:
         target = set()
         if ids is not None:
             target |= ({ids} if isinstance(ids, str) else set(ids))
+        # A-33: `where` is a predicate. A string or a dict used to be refused only when the store had a
+        # row to call it on, and an empty store answered it with forgotten 0.
+        if where is not None and not callable(where):
+            raise TypeError(f"forget(where=...) takes a predicate fn(record) -> bool, not {type(where).__name__}")
         if where is not None:
             for r in self._tenant_rows():
                 try:
@@ -9756,6 +9760,8 @@ class Inspeximus:
     def erase_past_copies(self, apply: bool = False, request_id: str | None = None) -> dict:
         """What an erasure made before 3.15.2 can have left behind, and with `apply=True`, its removal.
 
+        `apply` must be a bool (A-33): `apply="false"` is truthy and removed files the caller said not to.
+
         Before 3.15.2 an erasure removed the record, but its text could stay in a session digest written
         before 3.15.2 (its entries carried the text of the records they listed), in the temp file of a
         save that was interrupted, and in a merge or conversion backup beside the store
@@ -9770,6 +9776,8 @@ class Inspeximus:
 
         Returns {erased_before, digests, save_temps, backups, siblings_not_reached, applied}, plus
         {forgot, removed} when applied."""
+        if not isinstance(apply, bool):
+            raise TypeError(f"erase_past_copies(apply=...) takes True or False, not {apply!r}")
         erased = {t.get("memory_id") for t in (self._tombstones or []) if t.get("memory_id")}
         sib = self._store_siblings()
         out = {"erased_before": len(erased),
@@ -10727,8 +10735,23 @@ class Inspeximus:
         deletion as deliberate, not tampering. Same HONEST SCOPE as forget_subject: erases within THIS inspeximus
         store only, not the app's vector store / logs / backups; not a compliance certification.
 
-        Returns {erased, ids, request_id, tombstones}."""
+        Returns {erased, ids, request_id, tombstones}.
+
+        A-33, one rule for every erasure entry point: a bare str where a collection is expected is ONE
+        item (as `forget(ids=)` always took it), and a name nothing here knows is refused. `forget_pii("email")`
+        iterated the string as the types "e", "m", "a", "i", "l" and reported erased 0. A type is known when
+        the detector names it or a record in this store (this tenant's rows) carries it; any other type is a
+        typo or a type this store has never seen, and erased 0 would read as "nothing to erase"."""
+        if isinstance(types, str):
+            types = [types]
         want = set(types) if types is not None else None
+        if want:
+            known = {p[0] for p in _PII_PATTERNS}
+            for r in self._tenant_rows():
+                known.update(str(t) for t in (r.get("pii") or ()))
+            unknown = sorted(want - known)
+            if unknown:
+                raise ValueError(f"forget_pii: unknown PII type(s) {unknown}; known here: {sorted(known)}")
         cand = None
         sel_ids = None
         if subject is not None:

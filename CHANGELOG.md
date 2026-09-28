@@ -26,6 +26,25 @@ off write-time supersession; it now uses unkeyed records, which reach the same g
 controls, each run through `consolidate()` and `sleep()`). Each of the 5 new mutations in
 `tools/mutations.json` fails a test.
 
+## Unreleased (A-33) - UPGRADE IF you erase with `forget_pii`, `forget(where=)`, `erase_past_copies` or `scrub_secrets`: a wrongly typed or unknown argument is refused instead of reported as erased 0
+
+`forget_pii("email")` iterated the string as the types "e", "m", "a", "i", "l", matched nothing, and
+returned erased 0. A caller running an erasure request reads that as "nothing to erase". One rule now
+holds for every erasure entry point:
+
+- **A bare string where a list is expected is one item.** `forget_pii("email")` erases the email records,
+  as `forget(ids="<id>")` always erased that one record.
+- **An unknown name is refused.** `forget_pii` raises ValueError for a PII type that the detector does
+  not name and that no record in the store carries, and names the known types.
+- **A wrong type is refused.** `forget(where=...)` raises TypeError for anything that is not callable,
+  also on an empty store; `erase_past_copies(apply=...)` and `scrub_secrets(apply=...)` raise TypeError
+  for anything that is not True or False (`apply="false"` used to apply).
+
+Already right, and now pinned by the same test: `forget(ids=)`, `forget_subject` (a list raises
+TypeError), and the MCP tools, whose argument validation refuses a string for a list.
+`tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py` fails on 3.15.2 (5 of 8; the
+other 3 are controls), and each of the 5 new mutations in `tools/mutations.json` fails a test.
+
 ## 3.15.3 - UPGRADE NOTE if INSPEXIMUS_PATH or --path points into a folder that does not exist: create it first; inspeximus no longer creates it silently (test: `tests/test_first_run_and_scoped_certificate.py::test_the_cli_refuses_a_nested_path_until_its_folder_exists`). UPGRADE IF you install or upgrade through an agent, on Windows, or over an earlier install: the upgrade path now moves your hooks to the new version, never switches your store without saying so, and cannot be run by an older copy by mistake.
 
 Found on 2026-09-28, when our own machine moved to 3.15.1 and a friend-flow re-test ran on a second machine,

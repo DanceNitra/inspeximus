@@ -489,6 +489,8 @@ def scrub_secrets(cwd=None, apply=False) -> dict:
 
     The report carries ids, never text. `copies_not_scrubbed` names the backup and temp copies
     beside the store, which hold the same records and which this does not touch."""
+    if not isinstance(apply, bool):                     # A-33: apply="false" is truthy and would erase
+        raise TypeError(f"scrub_secrets(apply=...) takes True or False, not {apply!r}")
     import glob as _glob
     m = _store(cwd)
     hits = [r["id"] for r in m.items if _record_has_secret(r)]
