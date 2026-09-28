@@ -345,3 +345,43 @@ def test_a_dry_run_and_a_check_write_no_copy(home):
     _run(rules="no", dry_run=True)
     A.check(out=lambda s: None, only="claude")
     assert not (home / ".inspeximus" / "ARMED.txt").exists()
+
+
+# ── G4: a failed agent keeps its membership ──────────────────────────────────────────────────────────
+def _codex_fails(monkeypatch):
+    real = I.apply
+
+    def apply(p):
+        if p.get("host") == "codex":
+            return False, "simulated failure"
+        return real(p)
+    monkeypatch.setattr(I, "apply", apply)
+
+
+def test_a_failed_agent_keeps_its_membership_marked_failed(home, monkeypatch):
+    """3.15.6 G4 (PC2 friend flow): Hermes failed on the first run and shared.json named Claude Code alone."""
+    _codex_fails(monkeypatch)
+    rc, lines = _run(rules="no", store=str(home / "chain.json"))
+    shared = json.loads(_shared(home).read_text(encoding="utf-8"))
+    assert shared["agents"] == ["Claude Code", "Codex CLI"] and shared["failed"] == ["Codex CLI"], shared
+    assert "Codex CLI (failed)" in _setup(home / "chain.json")[-1]["text"]
+    monkeypatch.undo()
+    monkeypatch.setattr(I, "resolve_runtime", lambda: ("uvx", UVX))
+    monkeypatch.setattr(A.shutil, "which",
+                        lambda cmd: str(home / "fakebin" / cmd) if (home / "fakebin" / cmd).exists() else None)
+    for k in ("HOME", "USERPROFILE"):
+        monkeypatch.setenv(k, str(home))
+    monkeypatch.setenv("APPDATA", str(home / "AppData" / "Roaming"))
+    monkeypatch.setenv("LOCALAPPDATA", str(home / "AppData" / "Local"))
+    rc, lines = _run(rules="no", store=str(home / "chain.json"))                    # control: wired now
+    shared = json.loads(_shared(home).read_text(encoding="utf-8"))
+    assert rc == 0 and shared["agents"] == ["Claude Code", "Codex CLI"] and "failed" not in shared, shared
+
+
+def test_a_failure_after_a_full_install_never_shrinks_shared_json(home, monkeypatch):
+    rc, lines = _run(rules="no", store=str(home / "chain.json"))
+    assert json.loads(_shared(home).read_text(encoding="utf-8"))["agents"] == ["Claude Code", "Codex CLI"]
+    _codex_fails(monkeypatch)
+    _run(rules="no", store=str(home / "chain.json"))
+    shared = json.loads(_shared(home).read_text(encoding="utf-8"))
+    assert shared["agents"] == ["Claude Code", "Codex CLI"] and shared["failed"] == ["Codex CLI"], shared

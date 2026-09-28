@@ -3778,8 +3778,8 @@
  {
   "name": "the setup decision names only this run's agents",
   "file": "inspeximus/install_all.py",
-  "old": "                                       labels=merged_agents(path, labels), writer_key=key)\n",
-  "new": "                                       labels=labels, writer_key=key)\n",
+  "old": "                                               for a in merged_agents(path, labels + failed_agents)],\n",
+  "new": "                                               for a in labels],\n",
   "tests": [
    "tests/test_the_install_ends_with_the_armed_block.py"
   ]
@@ -4924,8 +4924,8 @@
  {
   "name": "the setup decision is not signed with the available key",
   "file": "inspeximus/install_all.py",
-  "old": "                                       labels=merged_agents(path, labels), writer_key=key)\n",
-  "new": "                                       labels=merged_agents(path, labels), writer_key=None)\n",
+  "old": "                                       writer_key=key)\n",
+  "new": "                                       writer_key=None)\n",
   "tests": [
    "tests/test_install_upgrade_path.py"
   ]
@@ -6311,6 +6311,33 @@
   "file": "inspeximus/install_all.py",
   "old": "    records, _seal_now, signed = read_store(path, with_signed=True)\n",
   "new": "    records, _seal_now, signed = 0, None, None\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a failed agent drops out of shared.json",
+  "file": "inspeximus/install_all.py",
+  "old": "    merged = merged_agents(store, wired_now + [a for a in (failed or []) if a not in wired_now], old)\n",
+  "new": "    merged = merged_agents(store, wired_now, old)\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a failed agent is not marked failed",
+  "file": "inspeximus/install_all.py",
+  "old": "    if still:\n        data[\"failed\"] = still\n",
+  "new": "",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a failed agent stays marked failed after it is wired",
+  "file": "inspeximus/install_all.py",
+  "old": "        if a not in wired_now and a not in still:\n",
+  "new": "        if a not in still:\n",
   "tests": [
    "tests/test_install_upgrade_path.py"
   ]

@@ -171,7 +171,7 @@ def merged_agents(store, labels, old=None):
     return prev + [a for a in labels if a not in prev]
 
 
-def write_shared_record(store, agents=None, seal=None):
+def write_shared_record(store, agents=None, seal=None, failed=None):
     """Write ~/.inspeximus/shared.json. Since 3.14.4 it also names the wired agents and the install SEAL,
     which the ARMED block, `install --check` and each agent's one-time "memory active" line read.
 
@@ -187,9 +187,20 @@ def write_shared_record(store, agents=None, seal=None):
     old = old if isinstance(old, dict) else {}
     same = old.get("store") == str(store)
     data = {"store": str(store), "written_by": "inspeximus install --all", "version": _version()}
-    merged = merged_agents(store, agents or [], old)
+    # A FAILED AGENT STAYS A MEMBER (3.15.6, PC2 friend flow G4). Hermes failed on PC2's first run and
+    # shared.json then named Claude Code alone, as if Hermes had left. It keeps its place, is listed
+    # under `failed` until a run wires it, and the list never shrinks for the same store.
+    wired_now = list(agents or [])
+    merged = merged_agents(store, wired_now + [a for a in (failed or []) if a not in wired_now], old)
     if merged:
         data["agents"] = merged
+    prev_failed = [a for a in (old.get("failed") or []) if isinstance(a, str)] if same else []
+    still = []
+    for a in prev_failed + list(failed or []):
+        if a not in wired_now and a not in still:
+            still.append(a)
+    if still:
+        data["failed"] = still
     if seal:
         data["seal"] = {"id": seal[0], "sha256": seal[1]}
     elif same and old.get("seal"):
@@ -829,6 +840,12 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     rid = seal = None
     seal_reason = "--only without a shared store" if wired and not record_shared else None
     labels = [_label(h) for h in wired]
+    failed_agents = []
+    for r in rows:
+        if str(r[2]).startswith("ERROR"):
+            name = "Hermes Agent" if str(r[0]).startswith("Hermes Agent") else str(r[0])
+            if name not in failed_agents:
+                failed_agents.append(name)
     if not dry_run and wired:
         # THE INSTALL MAKES THE STORE'S FOLDER (3.15.3). Opening a store no longer creates its directory, and
         # the MCP server refuses a store in a folder that does not exist; the installer is where the user
@@ -850,10 +867,12 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
                              f"one), and an unsigned record would be the only one of its kind")
             else:
                 rid = record_first_run(path, [h for h in wired if h in _i.HOSTS or h == "hermes"],
-                                       labels=merged_agents(path, labels), writer_key=key)
+                                       labels=[a + " (failed)" if a in failed_agents else a
+                                               for a in merged_agents(path, labels + failed_agents)],
+                                       writer_key=key)
                 seal = read_store(path)[1]
         finally:                                  # ONE write, and it happens even if recording failed
-            write_shared_record(path, agents=labels, seal=seal)
+            write_shared_record(path, agents=labels, seal=seal, failed=failed_agents)
 
     widths = [max(len(str(r[i])) for r in rows + [("host", "found", "wired", "store path", "recall")])
               for i in range(5)]
