@@ -38,6 +38,12 @@ WHY EACH PROPERTY, rather than "these seem sensible":
 
 Every test carries the control that makes it non-vacuous: a fixture that never reaches the guard
 would satisfy most of these by accident.
+
+WHY THE CONTRADICTIONS ARE UNKEYED. These fixtures used two different keys ("p::a" against "p::b")
+only to stay off write-time keyed supersession. Since the toggle stopped ending a keyed value for
+another key (test_a_state_toggle_never_ends_another_key.py), such a pair never reaches the guards at
+all, so the fixtures use unkeyed records, which do. P4 needs a KEYED record carrying an observe()
+accrual; it reaches the guards when the unkeyed contradiction is the OLDER record of the pair.
 """
 import os
 import sys
@@ -70,8 +76,8 @@ def _contested(guard, boost_contradiction=False):
     outer loop's sort order -- and `value` is reachable by an attacker through reinforcement or credit.
     Nothing else differs between the two arms."""
     m = _store(guard)
-    standing = m.remember(STANDING, key="p::a")
-    contra = m.remember(CONTRA, key="p::b", source={"doc": "one-actor.internal"})
+    standing = m.remember(STANDING)
+    contra = m.remember(CONTRA, source={"doc": "one-actor.internal"})
     f1 = m.remember("filler about the office printer floor", source={"doc": "one-actor.internal"})
     f2 = m.remember("more filler about the office printer floor", source={"doc": "one-actor.internal"})
     by_id = {r["id"]: r for r in m.items}
@@ -102,8 +108,8 @@ def test_control_the_guard_is_reached_and_refuses_the_overturn(guard):
         f"{guard}: the overturn was NOT refused, so no property below is being exercised")
 
     off = Inspeximus(path=None)
-    a = off.remember(STANDING, key="p::a")
-    off.remember(CONTRA, key="p::b", source={"doc": "one-actor.internal"})
+    a = off.remember(STANDING)
+    off.remember(CONTRA, source={"doc": "one-actor.internal"})
     off.consolidate()
     assert _status(off, a) == "superseded", (
         "with both guards OFF the contradiction did not overturn anything either, so this fixture "
@@ -155,9 +161,9 @@ def test_p3_a_campaign_from_one_source_is_dismissable_in_one_pass(guard):
     n = 8
     m = _store(guard)
     for i in range(n):
-        m.remember(f"the printer on floor {i} is working", key=f"pr::{i}")
+        m.remember(f"the printer on floor {i} is working")
     for i in range(n):
-        m.remember(f"the printer on floor {i} is not working", key=f"atk::{i}",
+        m.remember(f"the printer on floor {i} is not working",
                    source={"doc": "one-actor.internal"})
     m.consolidate()
 
@@ -184,14 +190,19 @@ def test_p4_a_blocked_write_does_not_destroy_an_in_flight_observation(guard):
     """`_do_reopen` belongs to the observe() read path. Calling it from consolidation must not throw
     away evidence another party is part-way through accumulating."""
     m = _store(guard)
+    # The unkeyed contradiction is written FIRST, so it is the older record of the pair and the pair
+    # reaches the guards (see the module docstring); the keyed standing fact carries the accrual.
+    m.remember(CONTRA, source={"doc": "one-actor.internal"})
     standing = m.remember(STANDING, key="p::a")
     m.observe(CONTRA, key="p::a", support="auditor.pdf")
     before = dict(next(r for r in m.items if r["id"] == standing).get("meta") or {})
 
-    m.remember(CONTRA, key="p::b", source={"doc": "one-actor.internal"})
     m.consolidate()
     after = dict(next(r for r in m.items if r["id"] == standing).get("meta") or {})
 
+    assert any(e["id"] == standing for e in (m.reopened() or [])), (
+        f"{guard}: consolidation never flagged the keyed record, so the guard was not reached and "
+        f"nothing below is exercised")
     lost = [k for k in before if k.startswith("_reopen") and k not in after]
     assert not lost, (
         f"{guard}: an attacker's single blocked write destroyed in-flight observation state {lost}; "
