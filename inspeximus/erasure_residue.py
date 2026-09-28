@@ -560,8 +560,22 @@ def certificate_drift(old: dict, new: dict) -> dict:
             return {"comparable": False, "problems": [name + " is not a residue certificate"],
                     "clean_to_dirty": None, "dirty_to_clean": None, "changed": [], "added": [],
                     "removed": [], "findings_delta": None, "days": None}
-    if (old.get("issued_ts") or 0) > (new.get("issued_ts") or 0):
-        old, new = new, old                       # order by issue time, not by argument position
+    # ORDER BY ISSUE TIME, NOT BY ARGUMENT POSITION, and say so when issue time cannot decide (A-35). Two
+    # certificates issued in one clock tick carry the same `issued_ts`, and the strict `>` then left them
+    # in argument order: the same pair gave clean_to_dirty in one order and dirty_to_clean in the other.
+    # Which of the two is older is not knowable from them, so the pair is ordered by content (the same
+    # result either way round) and reported as not comparable, because the direction of every change
+    # rests on that order.
+    ot, nt = (old.get("issued_ts") or 0), (new.get("issued_ts") or 0)
+    if ot == nt:
+        def _key(doc):
+            return hashlib.sha256(json.dumps(doc, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+        if _key(old) > _key(new):
+            old, new = new, old
+        problems.append("both certificates carry the same issue time, so which one is older cannot be "
+                        "told; the direction of every change below is undetermined")
+    elif ot > nt:
+        old, new = new, old
     if old.get("root_label") != new.get("root_label"):
         problems.append("the two certificates are about different stores (" +
                         repr(old.get("root_label")) + " and " + repr(new.get("root_label")) +
