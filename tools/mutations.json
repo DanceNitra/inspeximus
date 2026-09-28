@@ -1472,8 +1472,8 @@
  {
   "name": "the MCP server reads the observe flag and never passes it to the store",
   "file": "inspeximus/mcp_server.py",
-  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
-  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "old": "    _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                      receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                      persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "new": "    _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                      receipt_key=_SIGNING[\"key\"], writer_key=_WRITER_KEY,\n                      persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
   "tests": [
    "tests/test_mcp_observe_recall.py"
   ]
@@ -1581,8 +1581,8 @@
  {
   "name": "the MCP server reads the persist-vectors flag and never passes it to the store",
   "file": "inspeximus/mcp_server.py",
-  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
-  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY, pii_detect=_PII_DETECT)",
+  "old": "    _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                      receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                      persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "new": "    _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                      receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY, pii_detect=_PII_DETECT)",
   "tests": [
    "tests/test_the_server_can_keep_the_vectors_it_paid_for.py"
   ]
@@ -1590,8 +1590,8 @@
  {
   "name": "the MCP server reads the PII flag and never passes it to the store",
   "file": "inspeximus/mcp_server.py",
-  "old": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
-  "new": "_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                  receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                  persist_vectors=_PERSIST_VECTORS)",
+  "old": "    _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                      receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                      persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)",
+  "new": "    _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,\n                      receipt_key=_SIGNING[\"key\"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,\n                      persist_vectors=_PERSIST_VECTORS)",
   "tests": [
    "tests/test_the_server_can_keep_the_vectors_it_paid_for.py"
   ]
@@ -3777,8 +3777,8 @@
  {
   "name": "the setup decision names only this run's agents",
   "file": "inspeximus/install_all.py",
-  "old": "                                   labels=merged_agents(path, labels))\n",
-  "new": "                                   labels=labels)\n",
+  "old": "                                       labels=merged_agents(path, labels), writer_key=key)\n",
+  "new": "                                       labels=labels, writer_key=key)\n",
   "tests": [
    "tests/test_the_install_ends_with_the_armed_block.py"
   ]
@@ -4056,18 +4056,18 @@
  },
  {
   "name": "the hook's store directory does not ignore the lock",
-  "file": "inspeximus/claude_code.py",
-  "old": "fh.write(_STORE_DIR_GITIGNORE)",
-  "new": "fh.write(\"\")",
+  "file": "inspeximus/core.py",
+  "old": "                fh.write(_STORE_DIR_GITIGNORE)\n",
+  "new": "                fh.write(\"\")\n",
   "tests": [
    "tests/test_the_store_lock_does_not_depend_on_temp.py"
   ]
  },
  {
   "name": "the hook writes a .gitignore into a directory it did not create",
-  "file": "inspeximus/claude_code.py",
-  "old": "    if not os.path.isdir(d):\n        os.makedirs(d, exist_ok=True)",
-  "new": "    if True:\n        os.makedirs(d, exist_ok=True)",
+  "file": "inspeximus/core.py",
+  "old": "    d = Path(d)\n    if d.exists():\n        return\n",
+  "new": "    d = Path(d)\n",
   "tests": [
    "tests/test_the_store_lock_does_not_depend_on_temp.py"
   ]
@@ -4872,6 +4872,224 @@
   "tests": [
    "tests/test_an_erasure_reaches_every_copy_beside_the_store.py",
    "tests/test_an_erasure_reaches_every_copy_the_library_made.py"
+  ]
+ },
+ {
+  "name": "an installer-written hook line counts as hand-written",
+  "file": "inspeximus/install.py",
+  "old": "    return (exe in (\"uvx\", \"uvx.exe\")) == bool(m.group(\"uvx\"))\n",
+  "new": "    return False\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "an updated hook keeps the old matcher",
+  "file": "inspeximus/install.py",
+  "old": "                if not others and g.get(\"matcher\") != template.get(\"matcher\"):\n",
+  "new": "                if False:\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a hook update that did not hold is not reported",
+  "file": "inspeximus/install.py",
+  "old": "        if stale:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "--only records a shared store again",
+  "file": "inspeximus/install_all.py",
+  "old": "    record_shared = had_shared or not only or shared_store\n",
+  "new": "    record_shared = True\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a signed store gets an unsigned setup decision",
+  "file": "inspeximus/install_all.py",
+  "old": "            if store_is_signed(path) and not key:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "the setup decision is not signed with the available key",
+  "file": "inspeximus/install_all.py",
+  "old": "                                       labels=merged_agents(path, labels), writer_key=key)\n",
+  "new": "                                       labels=merged_agents(path, labels), writer_key=None)\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "an older installer runs over newer pins",
+  "file": "inspeximus/install_all.py",
+  "old": "    if newer and not allow_older:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "the install does not say which installer runs",
+  "file": "inspeximus/install_all.py",
+  "old": "        shared_store=False, allow_older=False):\n    out(running_line())\n",
+  "new": "        shared_store=False, allow_older=False):\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "a Git Bash path read by Windows is accepted by the installer",
+  "file": "inspeximus/install_all.py",
+  "old": "        real = git_bash_misread(p)\n        if real:\n",
+  "new": "        real = None\n        if real:\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "the ARMED block is not saved to a file",
+  "file": "inspeximus/install_all.py",
+  "old": "    if not dry_run:\n        # THE BLOCK IN A FILE",
+  "new": "    if False:\n        # THE BLOCK IN A FILE",
+  "tests": [
+   "tests/test_install_upgrade_path.py"
+  ]
+ },
+ {
+  "name": "install --check says nothing about a Git Bash copy of the home",
+  "file": "inspeximus/install_all.py",
+  "old": "        if os.path.isdir(copy):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "a store in a missing directory opens silently again",
+  "file": "inspeximus/_surface.py",
+  "old": "    problem = store_location_problem(p) if resolve else None\n",
+  "new": "    problem = None\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py",
+   "tests/test_audit_a_a_wrong_path_is_not_a_silent_empty_store.py"
+  ]
+ },
+ {
+  "name": "a Git Bash path is not recognised",
+  "file": "inspeximus/_surface.py",
+  "old": "    return real + (m.group(4) or \"\") if os.path.isdir(real) else None\n",
+  "new": "    return None\n",
+  "tests": [
+   "tests/test_install_upgrade_path.py",
+   "tests/test_audit_a_a_wrong_path_is_not_a_silent_empty_store.py"
+  ]
+ },
+ {
+  "name": "the product's own .inspeximus folder is refused too",
+  "file": "inspeximus/_surface.py",
+  "old": "    if os.path.basename(parent) == \".inspeximus\" and os.path.isdir(os.path.dirname(parent)):\n        return None\n",
+  "new": "    if False:\n        return None\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "the refusal guesses without a near match",
+  "file": "inspeximus/_surface.py",
+  "old": "                                         n=1, cutoff=0.8)\n",
+  "new": "                                         n=1, cutoff=0.0)\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "an empty flush writes a store file",
+  "file": "inspeximus/core.py",
+  "old": "            if not self._items and not self.path.exists():\n                self._dirty = False\n                return\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "the first write does not create the store directory",
+  "file": "inspeximus/core.py",
+  "old": "            _make_store_dir(self.path.parent)\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "opening a store creates its directory again",
+  "file": "inspeximus/core.py",
+  "old": "        # THE DIRECTORY IS MADE BY THE FIRST WRITE, NOT BY OPENING (3.15.3, AUDIT-A A-11). The mkdir that\n",
+  "new": "        self.path is None or self.path.parent.mkdir(parents=True, exist_ok=True)\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "a refused store path crashes the MCP server",
+  "file": "inspeximus/mcp_server.py",
+  "old": "except StoreLocationError as _refused:\n",
+  "new": "except ZeroDivisionError as _refused:\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "no store yet reads as an empty memory",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    if not hits and _PATH and not os.path.exists(str(_PATH)):\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "the CLI prints a traceback for a refused store path",
+  "file": "inspeximus/cli.py",
+  "old": "    except StoreLocationError as e:\n        print(f\"inspeximus: {e}\", file=sys.stderr)\n",
+  "new": "    except ZeroDivisionError as e:\n        print(f\"inspeximus: {e}\", file=sys.stderr)\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "a hook read creates the store directory again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    # NO MKDIR HERE (3.15.3, AUDIT-A A-11). It made every hook READ create the store directory, and it\n",
+  "new": "    os.makedirs(_store_dir(cwd), exist_ok=True)\n",
+  "tests": [
+   "tests/test_a_missing_store_directory_is_refused_everywhere.py"
+  ]
+ },
+ {
+  "name": "the page's Git Bash venv line passes $HOME to Windows again",
+  "file": "docs/install/index.md",
+  "old": "python -m venv \"$USERPROFILE/.inspeximus/venv\"\n",
+  "new": "python -m venv \"$HOME/.inspeximus/venv\"\n",
+  "tests": [
+   "tests/test_install_page_survives_hermes_git_bash.py"
+  ]
+ },
+ {
+  "name": "the page runs a bare inspeximus again",
+  "file": "docs/install/index.md",
+  "old": "\"$USERPROFILE/.inspeximus/venv/Scripts/inspeximus.exe\" install --all",
+  "new": "inspeximus install --all",
+  "tests": [
+   "tests/test_install_page_survives_hermes_git_bash.py"
   ]
  }
 ]

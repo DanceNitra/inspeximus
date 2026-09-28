@@ -47,6 +47,69 @@ class StoreScopeError(ValueError):
     """`INSPEXIMUS_SCOPE` asked for a store location that could not be resolved."""
 
 
+class StoreLocationError(FileNotFoundError):
+    """A store path whose directory does not exist, outside the locations inspeximus creates itself."""
+
+
+def git_bash_misread(path):
+    """The intended path when `path` is a Git Bash `/c/...` path that Windows read as `C:\\c\\...`, or None.
+
+    Found on 2026-09-28 on a friend's machine: in a Git Bash that does not convert paths for native
+    programs, `python -m venv "$HOME/.inspeximus/venv"` got `/c/Users/<you>/...` and created
+    `C:\\c\\Users\\<you>\\.inspeximus\\venv`, silently and with exit 0; on our own machine the same class had
+    left eleven files from other sessions under `C:\\c\\Users\\...`. Recognised by a single-letter second
+    component whose drive holds the rest: `C:\\c\\Users\\x` when `C:\\Users` exists."""
+    if os.name != "nt" or not path:
+        return None
+    import re
+    p = os.path.abspath(os.path.expanduser(str(path)))
+    m = re.match(r"^([A-Za-z]):\\([A-Za-z])\\([^\\]+)(\\.*)?$", p)
+    if not m:
+        return None
+    real = f"{m.group(2).upper()}:\\{m.group(3)}"
+    return real + (m.group(4) or "") if os.path.isdir(real) else None
+
+
+def store_location_problem(path):
+    """Why a store at `path` must not be opened, or None.
+
+    A STORE IN A DIRECTORY THAT DOES NOT EXIST IS REFUSED (3.15.3, AUDIT-A A-11). Opening one used to create
+    the directory and serve an empty store: a typo in INSPEXIMUS_PATH, or a Git Bash path, gave the agent an
+    empty memory with `isError: false`, and a READ changed the filesystem. The one exception is a directory
+    inspeximus owns, `.inspeximus` under a folder that exists (`~/.inspeximus`, `<project>/.inspeximus`):
+    the first write creates it, and until then the store simply has no records yet."""
+    if not path:
+        return None
+    p = os.path.abspath(os.path.expanduser(str(path)))
+    real = git_bash_misread(p)
+    if real:
+        return (f"store path {path}: this is the Git Bash path /{real[0].lower()}{real[2:].replace(os.sep, '/')} "
+                f"read by Windows as a folder under {p[:3]}, which is a different, empty place. The intended "
+                f"path is {real}. Pass it in that form.")
+    parent = os.path.dirname(p)
+    if os.path.isdir(parent):
+        return None
+    if os.path.basename(parent) == ".inspeximus" and os.path.isdir(os.path.dirname(parent)):
+        return None
+    top = parent
+    while not os.path.isdir(os.path.dirname(top)) and os.path.dirname(top) != top:
+        top = os.path.dirname(top)
+    hint = ""
+    try:
+        import difflib
+        base = os.path.dirname(top)
+        near = difflib.get_close_matches(os.path.basename(top), [d for d in os.listdir(base)
+                                                                  if os.path.isdir(os.path.join(base, d))],
+                                         n=1, cutoff=0.8)
+        if near:
+            hint = f" Did you mean {os.path.join(base, near[0]) + p[len(top):]}?"
+    except OSError:
+        pass
+    return (f"store path {path}: no such directory {parent}; inspeximus does not create it, because a "
+            f"mistyped path would otherwise be a new, empty memory.{hint} Create the directory first, or correct "
+            f"the path.")
+
+
 def find_project_root(cwd=None):
     """The nearest enclosing git repository root, or None. Zero dependencies: walks up looking for `.git`.
 
@@ -289,6 +352,12 @@ def open_store(path=None, *, receipts: bool = False, persist_vectors: bool = Fal
     from inspeximus import Inspeximus
 
     p = resolve_path(path) if resolve else path
+    # SURFACE PATHS ONLY: --path, INSPEXIMUS_PATH, the scopes and the hook store, where a typo is the user's
+    # and silence costs them their memory. An adapter's explicit path (resolve=False) is the program's own
+    # choice; for it the directory is still made by the first write, never by opening.
+    problem = store_location_problem(p) if resolve else None
+    if problem:
+        raise StoreLocationError(problem)
     # A store that ALREADY has a receipt chain keeps it. Detected from the sidecar rather than a flag,
     # because a user who enabled receipts in Python should not have to re-declare them at every call.
     if not receipts and p and os.path.exists(str(p) + ".receipts.json"):

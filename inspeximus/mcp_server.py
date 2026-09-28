@@ -75,7 +75,7 @@ from pathlib import Path
 # died with "'mcp' is not a package". The module is also named mcp_server.py rather than mcp.py so
 # it cannot collide with the SDK even if something else puts this directory on the path.
 from inspeximus import Inspeximus  # noqa: E402
-from inspeximus._surface import open_store, resolve_path  # noqa: E402   one surface posture; see _surface.py
+from inspeximus._surface import StoreLocationError, open_store, resolve_path  # noqa: E402   one surface posture; see _surface.py
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -401,9 +401,28 @@ _SIGNING = _receipt_signing(_PATH, _RECEIPTS or os.path.exists(str(_PATH) + ".re
 # (mcp-tools-review R3). INSPEXIMUS_TRUST_SEEDS is a comma-separated list of canonical source strings
 # and/or "key:<attested pubkey hex>" entries, the same form as the library's `trust_seeds`.
 _TRUST_SEEDS = {s.strip() for s in (os.environ.get("INSPEXIMUS_TRUST_SEEDS") or "").split(",") if s.strip()}
-_MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
-                  receipt_key=_SIGNING["key"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
-                  persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)
+class _RefusedStore:
+    """What `_MEM` is when the store path was refused (3.15.3, AUDIT-A A-11): every use raises the reason.
+
+    THE SERVER STILL STARTS. A host that cannot start a server shows only "failed", and the model cannot
+    tell the user why; a server that starts and answers every tool call with the path, the missing
+    directory and the fix gives the model something to say."""
+
+    def __init__(self, reason):
+        self._reason = reason
+
+    def __getattr__(self, name):
+        from inspeximus._surface import StoreLocationError
+        raise StoreLocationError(self.__dict__.get("_reason", "store path refused"))
+
+
+try:
+    _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
+                      receipt_key=_SIGNING["key"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
+                      persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)
+except StoreLocationError as _refused:
+    print(f"[inspeximus-mcp] {_refused}", file=sys.stderr)
+    _MEM = _RefusedStore(str(_refused))
 
 
 def _recover_from_concurrent_writes(store, methods=(
@@ -445,7 +464,8 @@ def _recover_from_concurrent_writes(store, methods=(
     return store
 
 
-_recover_from_concurrent_writes(_MEM)
+if not isinstance(_MEM, _RefusedStore):
+    _recover_from_concurrent_writes(_MEM)
 if _TRUST_SEEDS:
     _MEM.trust_seeds = set(_TRUST_SEEDS)
 
@@ -987,6 +1007,11 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
                        resolve_conflicts=resolve_conflicts, with_warrant=with_warrant,
                        project=None if all_projects else _PROJECT,
                        include_quarantined=include_quarantined) or []
+    if not hits and _PATH and not os.path.exists(str(_PATH)):
+        # NO STORE YET IS NOT AN EMPTY MEMORY (3.15.3). The store file does not exist, so nothing has ever
+        # been remembered here; a bare [] reads as "remembered, and nothing matched".
+        return [{"no_store_yet": True, "store_path": str(_PATH),
+                 "note": "no store yet: nothing has been remembered in this store; the first write creates it"}]
     if full:
         hits = _full_hits(hits)
     if all_projects:

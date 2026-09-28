@@ -366,22 +366,13 @@ def injection_enabled(cwd=None):
     return not (isinstance(c, dict) and c.get("enabled") is False)
 
 
-#: Written only into a store directory this hook CREATES. The store's lock file (`<store>.lock`, since
-#: A-10) exists only while a write holds it, and a commit made during that write must not pick it up.
-_STORE_DIR_GITIGNORE = ("# Written by inspeximus. A store's .lock file exists only while a write holds it.\n"
-                        "*.lock\n")
-
-
 def _store(cwd):
     from ._surface import open_store
-    d = _store_dir(cwd)
-    if not os.path.isdir(d):
-        os.makedirs(d, exist_ok=True)
-        try:
-            with io.open(os.path.join(d, ".gitignore"), "x", encoding="utf-8") as fh:
-                fh.write(_STORE_DIR_GITIGNORE)
-        except OSError:
-            pass                       # exists already, or unwritable: the store write reports that
+    # NO MKDIR HERE (3.15.3, AUDIT-A A-11). It made every hook READ create the store directory, and it
+    # made INSPEXIMUS_CODING_STORE pointing at a missing directory a silent new store. The first write
+    # creates `<project>/.inspeximus` (core._save), and it also writes A-10's .gitignore for the store's
+    # lock there, because only a directory inspeximus creates gets one. A missing directory named by the
+    # override is refused by open_store.
     emb_doc, emb_query, emb_id = _make_embedder(cwd)
     # Opened through the SHARED SURFACE opener (inspeximus/_surface.py). This hook set echo_guard=True by
     # hand and never applied the receipts-sidecar rule, so a hook write against a receipted coding store

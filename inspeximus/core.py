@@ -2160,6 +2160,31 @@ _LOCK_PRIMITIVE = _lock_primitive()
 LOCK_WAIT_S = 60.0
 
 
+#: Written only into a `.inspeximus` store directory this library CREATES. The store's lock file
+#: (`<store>.lock`, since A-10) exists only while a write holds it, and a commit made during that write
+#: must not pick it up. A directory that already existed is the user's, and gets nothing.
+_STORE_DIR_GITIGNORE = ("# Written by inspeximus. A store's .lock file exists only while a write holds it.\n"
+                        "*.lock\n")
+
+
+def _make_store_dir(d):
+    """Create a store's directory on its first write. Opening or reading never does (3.15.3, A-11).
+
+    `<project>/.inspeximus` and `~/.inspeximus` are the directories a surface may create without being asked,
+    and one that inspeximus creates gets A-10's .gitignore for the lock. Before 3.15.3 the Claude Code hook
+    wrote it, when a hook READ created the directory."""
+    d = Path(d)
+    if d.exists():
+        return
+    d.mkdir(parents=True, exist_ok=True)
+    if d.name == ".inspeximus":
+        try:
+            with open(d / ".gitignore", "x", encoding="utf-8") as fh:
+                fh.write(_STORE_DIR_GITIGNORE)
+        except OSError:
+            pass                       # exists already, or unwritable: the store write reports that
+
+
 class StoreLockUnavailable(OSError):
     """The lock file beside a store could not be created, so a write there cannot be protected.
 
@@ -2594,11 +2619,9 @@ class Inspeximus:
         # POSIX to a real one nobody meant. os.fspath raises TypeError on a genuinely bad type,
         # which is the honest outcome.
         self.path = Path(os.path.expanduser(os.fspath(path))) if path else None
-        if self.path is not None and self.path.parent and not self.path.parent.exists():
-            try:
-                self.path.parent.mkdir(parents=True, exist_ok=True)
-            except OSError:
-                pass                     # unwritable parent: _save records it and flush() raises
+        # THE DIRECTORY IS MADE BY THE FIRST WRITE, NOT BY OPENING (3.15.3, AUDIT-A A-11). The mkdir that
+        # lived here made a READ change the filesystem: an MCP `recall` against a mistyped INSPEXIMUS_PATH
+        # created its directory and answered []. `_save` creates it now, right before it writes.
         # ONE sentinel for "no embedder", because this class was reading two. The parameter defaults
         # to None, but `embed=False` is what the test suite and `audit_the_audits`'s own copy-opener
         # pass, and both are falsy -- so six sites read it truthily (`if self.embed:`, correct) while
@@ -17871,6 +17894,12 @@ class Inspeximus:
             # concurrent-writer-safe — last writer wins, never a torn JSON file).
             # ONE critical section for the check AND the write. Split apart, the window
             # between them is exactly the race the check exists to report.
+            # NOTHING TO PERSIST, NOTHING WRITTEN (3.15.3). A store with no file and no records is a store
+            # that was only read; a flush() after a recall must not create its directory and an empty file.
+            if not self._items and not self.path.exists():
+                self._dirty = False
+                return
+            _make_store_dir(self.path.parent)
             with _StoreLock(self.path):
                 if self._file_sig is not None and self._stat_sig() != self._file_sig:
                     # A ROW STORE CAN MERGE, SO IT DOES. The refusal below exists because a JSON save

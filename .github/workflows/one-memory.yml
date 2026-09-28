@@ -37,6 +37,13 @@ jobs:
           - {name: "page, this checkout, user answers no (must pass, no rules file)", flags: "--find-links dist --answers no", uv: false}
           - {name: "Hermes via its official installer, then the page (must pass, C6)", flags: "--find-links dist --with-hermes", uv: false}
           - {name: "control 3.9.5 (must fail)", flags: "--constraint inspeximus==3.9.5 --expect-fail", uv: false}
+        # The page's Git Bash block, on Windows only: once as Git Bash converts paths by default, and once
+        # the way Hermes Agent's Git Bash runs it, handing /c/Users/... to Windows unconverted (3.15.3).
+        include:
+          - os: windows-latest
+            case: {name: "Git Bash page, this checkout (must pass)", flags: "--find-links dist --shell gitbash", uv: false}
+          - os: windows-latest
+            case: {name: "Git Bash page without path conversion, as in Hermes (must pass)", flags: "--find-links dist --shell gitbash --no-pathconv", uv: false}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

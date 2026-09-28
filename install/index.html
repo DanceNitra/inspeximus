@@ -60,11 +60,27 @@ Without both answers, run nothing that changes the computer: ask, and wait. If y
 Then run the commands for your operating system. Replace `RULES_ANSWER` with `yes` or `no` from the answer
 to question 1, and `HERMES_ANSWER` with `yes` or `no` from the answer to question 2. Change nothing else.
 If a placeholder is left in, the installer stops with an error and changes nothing. The installer never
-asks a question of its own. When you finish, end your reply with the block the installer printed last,
-from the line that starts with `inspeximus` and contains `ARMED` through the `seal:` line. Copy it exactly,
-in a code block, without summarizing or reformatting it. If your chat shows Markdown images, put the seal
-above the block: `![inspeximus seal](https://dancenitra.github.io/inspeximus/docs/brand/inspeximus-seal-512.png)`.
+asks a question of its own.
+
+Run each command exactly as written, one line at a time. Every command names the Python and the
+`inspeximus` in `~/.inspeximus/venv` by its full path; never run a bare `pip` or `inspeximus` instead, and
+never wrap a whole line in an extra pair of quotes. A bare `inspeximus` can be an older copy inside another
+program's environment: the installer's first line says which one ran (`running &lt;path&gt;, inspeximus
+&lt;version&gt;`), and it refuses to run when it is older than a version your agents already use.
+
+When you finish, end your reply with the block the installer printed last, from the line that starts with
+`inspeximus` and contains `ARMED` through the `seal:` line. Copy it exactly, in a code block, without
+summarizing or reformatting it. Never write that block yourself: if the installer did not print one, say
+so. Then run `install --check` from the same `~/.inspeximus/venv` as a separate step, and show its output as
+it is. If your chat shows Markdown images, put the seal above the block:
+`![inspeximus seal](https://dancenitra.github.io/inspeximus/docs/brand/inspeximus-seal-512.png)`.
 Then tell the user to restart each app on the block's `restart:` line.
+
+Tell the user how to confirm it without relying on you. A real seal has two parts, an id and a 12-character
+hash, as in `seal: 4f2a9c81d0 7e1b03c95a44`; `seal: none (...)` says why there is none. The installer also
+writes the block, with the time, to `~/.inspeximus/ARMED.txt`, which the user can open. After the restart,
+the app itself shows one line that no agent writes: Hermes Agent shows `inspeximus memory active: ...` in its
+memory line, and Claude Code shows it as a system message when a session starts.
 
 If you are Hermes Agent, the installer changes your own memory provider. This session keeps working as it
 is; the shared memory takes effect after the user restarts Hermes.
@@ -99,25 +115,30 @@ If it prints `Python was not found` or nothing, `python` is the Microsoft Store 
 prints a version:
 
 - If you are an agent that runs in Python, as Hermes Agent does, create the virtual environment with your
-  own interpreter, the path in its `sys.executable`: `"&lt;that path&gt;" -m venv "$HOME\.inspeximus\venv"`.
+  own interpreter, the path in its `sys.executable`: `"&lt;that path&gt;" -m venv "$USERPROFILE\.inspeximus\venv"`.
 - Otherwise install Python for this user only, open a new terminal, and check again:
   `winget install -e --id Python.Python.3.12 --scope user`.
 
 After the first command, check that `~\.inspeximus\venv\Scripts\python.exe` exists before you run the
-next one. On a machine without Python, `py -3 -m venv` was measured to exit 0 and create nothing.
+next one.
 
 The block above is PowerShell. In bash on Windows (Git Bash, as in Hermes Agent), a line that starts with
 `&amp;` is a syntax error, so use these lines instead, with the Python that printed a version in place of
 `python`:
 
+&lt;!-- ci: gitbash --&gt;
 ```bash
-python -m venv "$HOME/.inspeximus/venv"
-"$HOME/.inspeximus/venv/Scripts/python.exe" -m pip install -U "inspeximus[mcp]"
-"$HOME/.inspeximus/venv/Scripts/inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
+python -m venv "$USERPROFILE/.inspeximus/venv"
+"$USERPROFILE/.inspeximus/venv/Scripts/python.exe" -m pip install -U "inspeximus[mcp]"
+"$USERPROFILE/.inspeximus/venv/Scripts/inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
-In bash, write the home folder as `~` or `$HOME`, never `%HOME%`: bash leaves `%HOME%` as it is, and
-the installer refuses to run from a folder named `%HOME%`.
+These lines use `$USERPROFILE`, not `$HOME`, on purpose. Some Git Bash sessions, Hermes Agent's among them,
+hand a path to a Windows program without converting it, and Windows reads `/c/Users/&lt;you&gt;/...` as
+`C:\c\Users\&lt;you&gt;\...`. Measured on a friend's machine: `py -3 -m venv` on 2026-09-27 and `python -m venv` on 2026-09-28,
+both given `"$HOME/.inspeximus/venv"`, exited 0 and created the environment under `C:\c\Users\&lt;you&gt;`, not in the home.
+`$USERPROFILE` is the Windows form, which both kinds of session pass through unchanged. Never write
+`%HOME%` in bash either: bash leaves it as it is, and the installer refuses to run from such a folder.
 
 The virtual environment lives in `~/.inspeximus/venv` on purpose. Every agent's configuration names the
 Python in it, so it must stay where it is. To update later, run the same commands again: every agent is pinned to the version that wrote its configuration.
