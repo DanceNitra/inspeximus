@@ -225,6 +225,15 @@ def test_origin_main_moving_after_the_push_stops_before_the_tag(root):
     assert fake.index("git tag") is None
 
 
+def test_origin_main_moving_right_after_the_push_stops_before_waiting_for_main_ci(root):
+    """Main CI can take an hour; a main that already moved is known at once, so the script does not wait."""
+    fake = Fake(**{"git ls-remote origin refs/heads/main": (0, OTHER + "\trefs/heads/main\n")})
+    rc, out = _run(root, fake)
+    assert rc == 1 and "moved to %s after the push" % OTHER[:12] in out, out
+    after = fake.calls[fake.index(MAIN_PUSH):]
+    assert not [c for c in after if c.startswith("gh run list") and "--workflow ci.yml" in c], after
+
+
 class _MainMovesAfterTheFirstLook(Fake):
     def __call__(self, args, cwd=None):
         if " ".join(args) == "git ls-remote origin refs/heads/main":
