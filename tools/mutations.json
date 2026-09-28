@@ -6404,5 +6404,32 @@
   "tests": [
    "tests/test_install_all_wires_every_agent_to_one_store.py"
   ]
+ },
+ {
+  "name": "A-41: the row save guard ignores the write generation",
+  "file": "inspeximus/core.py",
+  "old": "                    _changed = _g is not None and _g != self._file_gen",
+  "new": "                    _changed = False",
+  "tests": [
+   "tests/test_a41_a_stale_row_handle_does_not_split_a_key.py"
+  ]
+ },
+ {
+  "name": "A-41: a stale retirement overwrites the one the disk committed first",
+  "file": "inspeximus/core.py",
+  "old": "                        continue\n                    self._items[_i] = mine[_rid]",
+  "new": "                        pass\n                    self._items[_i] = mine[_rid]",
+  "tests": [
+   "tests/test_a41_a_stale_row_handle_does_not_split_a_key.py"
+  ]
+ },
+ {
+  "name": "A-41: a value demoted when a key is settled is not linked to the winner",
+  "file": "inspeximus/core.py",
+  "old": "                r[\"meta\"].setdefault(\"superseded_by_toggle\", rows[-1][\"id\"])\n",
+  "new": "",
+  "tests": [
+   "tests/test_a41_a_stale_row_handle_does_not_split_a_key.py"
+  ]
  }
 ]

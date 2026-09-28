@@ -10595,6 +10595,15 @@ class Inspeximus:
             for _i, _r in enumerate(self._items):
                 _rid = _r.get("id")
                 if _rid in _edited and _rid in mine and _rid not in buried:
+                    # BOTH SIDES RETIRED IT, TOWARD DIFFERENT SUCCESSORS (A-41). The disk's retirement
+                    # was committed first; this handle decided against a view that did not contain it.
+                    # Re-applying ours overwrote the peer's link, so the chain skipped the peer's value
+                    # and a revert landed two steps back. The disk's version stays; ours joins the chain
+                    # after it when the key is settled below.
+                    if (_r.get("status") == "superseded" and mine[_rid].get("status") == "superseded"
+                            and (_r.get("meta") or {}).get("superseded_by_toggle")
+                            != (mine[_rid].get("meta") or {}).get("superseded_by_toggle")):
+                        continue
                     self._items[_i] = mine[_rid]
                     self._touch(_rid)
                     _kept += 1
@@ -10666,6 +10675,10 @@ class Inspeximus:
                 r["status"] = "superseded"
                 self._touch(r)
                 r.setdefault("meta", {})["superseded_by_policy"] = policy
+                # LINKED TO THE VALUE THAT WON (A-41), the way remember() links a superseded value, so
+                # revert() finds the step back. Without it the demoted value was a dead end: revert went
+                # past it to the value before, two steps back.
+                r["meta"].setdefault("superseded_by_toggle", rows[-1]["id"])
                 self._declare_retired(r, reason)
                 demoted += 1
         return demoted
@@ -18282,6 +18295,16 @@ class Inspeximus:
                 if (not _changed and self._file_sig is not None and self._file_hash is not None
                         and self._row_snapshot is None):
                     _changed = self._disk_hash() != self._file_hash
+                # A ROW STORE: THE WRITE GENERATION, AS refresh() READS IT (A-41). A peer's commit in
+                # the same mtime tick leaves (mtime_ns, size) unchanged, because a row store is written
+                # in place and grows in whole pages. The save then skipped the merge, and a keyed write
+                # superseded a value it had never seen: measured, two active records for one key and
+                # recall serving the superseded one. A file with no generation (older than 3.15.4)
+                # keeps the stat signature alone, as before.
+                if (not _changed and self._file_sig is not None and self._row_snapshot is not None
+                        and self._file_gen is not None):
+                    _g = _rows.generation(self.path)
+                    _changed = _g is not None and _g != self._file_gen
                 if _changed:
                     # A ROW STORE CAN MERGE, SO IT DOES. The refusal below exists because a JSON save
                     # rewrites the whole file, so writing over a changed file replaces the other
