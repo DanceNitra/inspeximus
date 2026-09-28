@@ -366,7 +366,7 @@ _RESERVED_META = frozenset({
     # The read-path guards (3.5.0). A caller who could set `read_guards_v` would skip the assessment
     # of their own record; one who could set `quarantined` with a `released` block would walk an
     # instruction-shaped record past the guard. The guard writes these; nobody else does.
-    "quarantined", "stuffed", "read_guards_v",
+    "quarantined", "stuffed", "read_guards_v", "read_guards",
     # The always-loaded index line (see memory_index / set_index_line). Reserved for the same reason
     # as the rest of this set: a caller who could set another record's index line could make it
     # unfindable while the store still reports it present and correct.
@@ -764,6 +764,74 @@ def receipt_key_for(store_path, create: bool = True) -> str:
     with os.fdopen(_fd, "w", encoding="utf-8") as f:
         f.write(sk)
     return sk
+
+
+#: The meta fields the read guards own. A peer's copy of them is never ours (import_changeset strips them),
+#: and a caller's copy is refused (see _RESERVED_META).
+_GUARD_META = ("read_guards_v", "quarantined", "stuffed", "read_guards")
+#: The module globals the guard functions read, hashed by value into the guard set. The completeness test
+#: (tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py) fails when a guard reads one
+#: that is not named here.
+_GUARD_INPUTS = ("_INSTRUCTION_SHAPES", "_SHAPE_REQUIRES", "_RE_I_ASCII_FOLD", "_RE_I_FOLD_CHARS",
+                 "_STUFF_WORDS", "_STUFF_STOP")
+_GUARD_SET = None
+
+
+def _guard_canon(v) -> str:
+    """A canonical, order-independent text form of a guard input: patterns by (pattern, flags)."""
+    if isinstance(v, re.Pattern):
+        return f"re({v.pattern!r},{int(v.flags)})"
+    if isinstance(v, dict):
+        return "{" + ",".join(f"{_guard_canon(k)}:{_guard_canon(x)}"
+                             for k, x in sorted(v.items(), key=lambda kv: repr(kv[0]))) + "}"
+    if isinstance(v, (set, frozenset)):
+        return "set(" + ",".join(sorted(_guard_canon(x) for x in v)) + ")"
+    if isinstance(v, (list, tuple)):
+        return "[" + ",".join(_guard_canon(x) for x in v) + "]"
+    return repr(v)
+
+
+def _guard_set_hash() -> "str | None":
+    """What a stored verdict was computed with: the guards' source, their inputs by value, and the
+    Unicode database that IGNORECASE and \\w depend on. Any change re-assesses every record once.
+
+    Computed on first use, once per process, never at import. None when it cannot be computed (a
+    frozen install without sources), and then no stored verdict is trusted."""
+    global _GUARD_SET
+    if _GUARD_SET is None:
+        try:
+            import inspect
+            import unicodedata
+            h = hashlib.sha256()
+            for fn in (_instruction_shape, _stuffing, Inspeximus._assess_read_guards):
+                h.update(inspect.getsource(fn).encode("utf-8"))
+            g = globals()
+            for name in _GUARD_INPUTS:
+                h.update(f"{name}={_guard_canon(g[name])};".encode("utf-8", "surrogatepass"))
+            h.update(unicodedata.unidata_version.encode("ascii"))
+            _GUARD_SET = h.hexdigest()[:32]
+        except Exception:
+            _GUARD_SET = ""
+    return _GUARD_SET or None
+
+
+def _guard_mac(key: bytes, *parts) -> str:
+    import hmac
+    msg = "\x1f".join(str(p) for p in parts).encode("utf-8", "surrogatepass")
+    return hmac.new(key, msg, hashlib.sha256).hexdigest()
+
+
+def _guard_mac_ok(got, key: bytes, *parts) -> bool:
+    import hmac
+    return isinstance(got, str) and hmac.compare_digest(got, _guard_mac(key, *parts))
+
+
+def _guard_key_file(store_path) -> str:
+    """Where a store keeps its read-guard key: the key home, beside the receipt key, never the store."""
+    home = os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA") \
+        or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
+    return os.path.join(home, "inspeximus", "keys", f"{tag}.guards.key")
 
 
 def _int_or(x, default: int) -> int:
@@ -3657,7 +3725,8 @@ class Inspeximus:
         if not rec_asserts_change:
             rec["meta"]["asserts_change"] = False       # a restatement, not a correction (see extractor block)
         if self.read_guards:
-            self._assess_read_guards(rec)
+            self._guard_key(create=True)          # a write mints the key, so its clean verdict is stamped
+            self._assess_read_guards(rec, stamp=True)
         if _trunc_from is not None:
             rec["meta"]["truncated_from"] = _trunc_from
         # MEMORY HIERARCHY (user > agent > session): stamp the scope this memory belongs to. A memory with only
@@ -8976,23 +9045,110 @@ class Inspeximus:
         return [dict(o) for o in self._objections
                 if self.tenant is None or o.get("tenant") == self.tenant]
 
-    def _assess_read_guards(self, rec: dict) -> dict:
+    def _guard_key(self, create: bool = False) -> "bytes | None":
+        """This store's read-guard key, or None: without one no stored verdict or release is trusted.
+
+        Kept in the key home by the store's absolute path, like the receipt key, and refused inside
+        the store's own directory, so a store copied, cloned or committed travels without it. A store
+        without a path gets a key for this process only. Minted only when `create` is set, which the
+        write paths do; a read never creates a file."""
+        k = self.__dict__.get("_guard_key_bytes")
+        if k:
+            return k
+        if not self.path:
+            k = os.urandom(32)
+        else:
+            kf = _guard_key_file(self.path)
+            try:
+                _guard_key_location(os.path.dirname(kf), self.path)
+                with open(kf, encoding="utf-8") as fh:
+                    k = bytes.fromhex(fh.read().strip())
+            except FileNotFoundError:
+                if not create:
+                    return None
+                try:
+                    os.makedirs(os.path.dirname(kf), exist_ok=True)
+                    fd = os.open(kf, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                    with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                        fh.write(os.urandom(32).hex())
+                except FileExistsError:
+                    pass                                   # another writer minted it first
+                except OSError:
+                    return None
+                try:
+                    with open(kf, encoding="utf-8") as fh:
+                        k = bytes.fromhex(fh.read().strip())
+                except (OSError, ValueError):
+                    return None
+            except (OSError, ValueError):
+                return None                                 # unreadable, malformed, or beside the store
+        if len(k) < 16:
+            return None
+        self.__dict__["_guard_key_bytes"] = k
+        return k
+
+    def _assess_read_guards(self, rec: dict, stamp: bool = False) -> dict:
         """Stamp `meta.quarantined` and `meta.stuffed` on a record from its text, once per record per
         process. Records written before 3.5.0 are assessed the first time recall sees them; a flag
-        found then is stamped in memory and persists with the store's next save. Returns the meta."""
+        found then is stamped in memory and persists with the store's next save. Returns the meta.
+
+        A STORED VERDICT COUNTS ONLY WHEN THIS STORE'S KEY VOUCHES FOR IT (3.15.4, audit A-30). This
+        returned without assessing any record whose `read_guards_v` was 1, and honoured any
+        `quarantined.released` it found. The library writes both, but a record that did not pass
+        through remember() could carry its own: measured on 3.15.1, an instruction-shaped record
+        imported with `read_guards_v: 1` was served, and so was one with a forged release. Now:
+          * a CLEAN verdict is trusted, and the record not assessed again, only when `read_guards`
+            carries a MAC under this store's key (`_guard_key`) over the id, the text's sha256 and
+            the guard set (`_guard_set_hash`), so a guard change re-assesses every record once;
+          * every other record is assessed, and flags already on it are kept, because a flag only
+            withholds. Flagged records are few and are never stamped, so their release is checked
+            on every read;
+          * a release counts only with a MAC over the id and the text's sha256, written by
+            release_quarantine(); any other `released` is dropped, and an edited text needs a new one.
+        `read_guards_v` is still written on flagged records for readers before 3.15.4.
+
+        `stamp` is set by the write path (remember): only a write stamps a clean verdict, because a read
+        such as the prompt hook never saves, and a record without a stamp costs a read nothing beyond
+        the assessment it always had. The text hash and the guard set are computed only when a stamp or
+        a release is there to check."""
         meta = rec.setdefault("meta", {})
         rid = rec.get("id") or id(rec)
-        if rid in self._guard_seen or meta.get("read_guards_v") == 1:
+        if rid in self._guard_seen:
             return meta
         self._guard_seen.add(rid)
-        shapes = _instruction_shape(rec.get("text") or "")
-        stuffed = _stuffing(rec.get("text") or "")
-        if shapes:
-            meta["quarantined"] = {"reason": "instruction_shaped", "shapes": shapes, "released": None}
-        if stuffed:
+        text = rec.get("text") or ""
+        key = self._guard_key()
+        q = meta.get("quarantined") if isinstance(meta.get("quarantined"), dict) else None
+        held = meta.get("read_guards")
+        th = None
+        if key and q is None and not meta.get("stuffed") and isinstance(held, dict):
+            gset = _guard_set_hash()
+            if gset and held.get("set") == gset:
+                th = hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
+                if _guard_mac_ok(held.get("mac"), key, "clean", rid, th, gset):
+                    return meta
+        shapes = _instruction_shape(text)
+        stuffed = _stuffing(text)
+        if shapes or q is not None:
+            kept = [s for s in ((q or {}).get("shapes") or []) if isinstance(s, str)]
+            nq = {"reason": (q or {}).get("reason") or "instruction_shaped",
+                  "shapes": kept + [s for s in shapes if s not in kept], "released": None}
+            if q and q.get("released") and key:
+                th = th or hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
+                if _guard_mac_ok(q.get("release_mac"), key, "release", rid, th):
+                    nq["released"], nq["release_mac"] = q["released"], q["release_mac"]
+            meta["quarantined"] = nq
+        if stuffed and not meta.get("stuffed"):
             meta["stuffed"] = stuffed
-        if shapes or stuffed:
+        meta.pop("read_guards", None)
+        if meta.get("quarantined") or meta.get("stuffed"):
             meta["read_guards_v"] = 1
+            return meta
+        meta.pop("read_guards_v", None)
+        gset = _guard_set_hash() if (stamp and key) else None
+        if gset:
+            th = th or hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
+            meta["read_guards"] = {"set": gset, "mac": _guard_mac(key, "clean", rid, th, gset)}
         return meta
 
     @staticmethod
@@ -9067,7 +9223,17 @@ class Inspeximus:
                 q = (r.get("meta") or {}).get("quarantined")
                 if not q:
                     raise ValueError(f"{id} is not quarantined")
+                # BOUND TO THIS STORE'S KEY AND THIS TEXT (3.15.4, A-30): the read guard honours a release
+                # only with this MAC, so a `released` written by anything else is dropped, and a release
+                # does not survive an edit of the text or a copy of the store to another key home.
+                key = self._guard_key(create=True)
+                if not key:
+                    raise ValueError(f"cannot record a release of {id} that this store will honour: there is "
+                                     f"no read-guard key and none could be created under the key home "
+                                     f"({os.path.dirname(_guard_key_file(self.path)) if self.path else '-'})")
+                th = hashlib.sha256((r.get("text") or "").encode("utf-8", "surrogatepass")).hexdigest()
                 q["released"] = {"actor": actor, "ts": time.time(), "reason": (str(reason)[:500] if reason else None)}
+                q["release_mac"] = _guard_mac(key, "release", id, th)
                 self._touch(r)
                 # FORCED. A human decision is not access metadata: an unforced save within _save_min_s of
                 # the last one only marks the handle dirty, and nothing flushes at exit, so the release
@@ -10398,6 +10564,10 @@ class Inspeximus:
             if not rid or rid in have or rid in buried:
                 continue
             _r = {k: v for k, v in r.items() if k != "vec"}
+            # A PEER'S VERDICT IS NEVER OURS (3.15.4, A-30): its read-guard fields are dropped whatever
+            # they say, so the record is assessed here, and a release made there must be made here.
+            if isinstance(_r.get("meta"), dict) and any(k in _r["meta"] for k in _GUARD_META):
+                _r["meta"] = {k: v for k, v in _r["meta"].items() if k not in _GUARD_META}
             Inspeximus._normalise_loaded(_r)       # a peer's payload is a foreign writer too (3.12.1)
             self._items.append(self._track(_r))
             have.add(rid)

@@ -151,7 +151,7 @@ def _walk_for_placeholders(node, path="") -> list:
 # the signature working: the first read put 38 records in quarantine through the read guards, which
 # is a real change of state, so the next caller gets a fresh computation.
 _MEMOIZED = ("memory_report", "pii_report", "supersession_report")
-_READ_PATH_META = frozenset({"stuffed", "read_guards_v"})
+_READ_PATH_META = frozenset({"stuffed", "read_guards_v", "read_guards"})
 
 
 def _state_signature(store) -> str:

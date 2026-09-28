@@ -2464,8 +2464,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "release_quarantine records the actor but does not release",
-  "old": "                q[\"released\"] = {\"actor\": actor, \"ts\": time.time(), \"reason\": (str(reason)[:500] if reason else None)}\n                self._touch(r)",
-  "new": "                q[\"released_by\"] = {\"actor\": actor, \"ts\": time.time(), \"reason\": (str(reason)[:500] if reason else None)}\n                self._touch(r)",
+  "old": "                q[\"released\"] = {\"actor\": actor, \"ts\": time.time(), \"reason\": (str(reason)[:500] if reason else None)}\n                q[\"release_mac\"]",
+  "new": "                q[\"released_by\"] = {\"actor\": actor, \"ts\": time.time(), \"reason\": (str(reason)[:500] if reason else None)}\n                q[\"release_mac\"]",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
