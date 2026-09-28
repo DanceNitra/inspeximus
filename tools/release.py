@@ -1,8 +1,7 @@
 """The ONLY way to tag an inspeximus release: push HEAD to main, wait for CI on that exact commit, then tag.
 
     python tools/release.py X.Y.Z --dry-run         # the pre-flight only; nothing leaves this machine
-    python tools/release.py X.Y.Z                   # push, wait for CI, tag, follow the release run
-    python tools/release.py X.Y.Z --approve-pypi    # also approve the `pypi` environment (the owner's yes)
+    python tools/release.py X.Y.Z                   # push, wait for CI, tag, stop at the owner's gate
 
 WHY THIS EXISTS. On 2026-09-28 v3.15.0 was tagged by hand before CI had run on its commit. The release
 workflow's test gate then failed on a stale mutation target, and the tag cannot be deleted (repository
@@ -19,8 +18,14 @@ Pre-flight, before anything leaves this machine:
 Then HEAD is pushed to main, and before the tag:
   5. the `push` run of ci.yml for exactly HEAD finished with conclusion success, and its headSha is HEAD.
   6. origin/main is still HEAD, so the tag names the commit CI just cleared.
-Then the tag is created and pushed, the release run is followed, the `pypi` environment is approved only
-with --approve-pypi, and the script waits until PyPI serves X.Y.Z.
+Then the tag is created and pushed, and the script finds the release run and STOPS at its `pypi` gate.
+
+THE PYPI GATE IS THE OWNER'S, AND NOTHING HERE APPROVES IT. The `pypi` environment's required reviewer is
+the owner's account; a session that approves it through the API bypasses the one review CI cannot make.
+So the script prints the owner's step (Actions > the run > Review deployments > pypi > Approve), with the
+run's URL and the gates that passed, and exits 0 with the status "waiting for owner". No code path calls
+the deployments API; tests/test_the_release_script_refuses_before_each_step.py checks the source and
+every call the green path makes.
 
 Every external call goes through one `sh(args) -> (returncode, stdout)`, so the tests hand in a fake and
 watch each guard fire without a network or a repository (tests/test_the_release_script_refuses_before_each_step.py).
@@ -34,27 +39,15 @@ import re
 import subprocess
 import sys
 import time
-import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPO = "DanceNitra/inspeximus"
-#: The id of the repository's `pypi` deployment environment, whose approval is the owner's yes.
-PYPI_ENVIRONMENT_ID = "18463543886"
 
 
 def default_sh(args, cwd=None):
     r = subprocess.run(args, cwd=str(cwd or ROOT), capture_output=True, text=True, encoding="utf-8",
                        errors="replace")
     return r.returncode, (r.stdout or "") + (r.stderr or "")
-
-
-def pypi_version(version, timeout=30):
-    """The version PyPI serves at /pypi/inspeximus/<version>/json, or None."""
-    try:
-        with urllib.request.urlopen("https://pypi.org/pypi/inspeximus/%s/json" % version, timeout=timeout) as r:
-            return json.load(r)["info"]["version"]
-    except Exception:                                        # noqa: BLE001 - not there yet
-        return None
 
 
 class Stop(Exception):
@@ -95,11 +88,10 @@ def ci_run(head, sh, sleep, polls=180, every=30):
     raise Stop("no finished push run of ci.yml for %s" % head)
 
 
-def main(argv=None, sh=default_sh, sleep=time.sleep, pypi=pypi_version, out=print, root=ROOT):
+def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
     ap = argparse.ArgumentParser(prog="release.py", description="Push, wait for CI, then tag. The only way to tag.")
     ap.add_argument("version")
     ap.add_argument("--dry-run", action="store_true", help="run the pre-flight only")
-    ap.add_argument("--approve-pypi", action="store_true", help="approve the pypi environment (the owner's yes)")
     a = ap.parse_args(argv)
     v = a.version
     try:
@@ -141,25 +133,12 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, pypi=pypi_version, out=prin
             sleep(10)
         if release_id is None:
             raise Stop("no release run for v%s" % v)
-        out("release run %s" % release_id)
-        if a.approve_pypi:
-            for _ in range(120):
-                o = sh(["gh", "api", "repos/%s/actions/runs/%s/pending_deployments" % (REPO, release_id)])[1]
-                if o.strip().startswith("[") and json.loads(o):
-                    sh(["gh", "api", "-X", "POST", "repos/%s/actions/runs/%s/pending_deployments" % (REPO, release_id),
-                        "-F", "environment_ids[]=%s" % PYPI_ENVIRONMENT_ID, "-f", "state=approved",
-                        "-f", "comment=owner approved %s" % v])
-                    out("approved the pypi environment")
-                    break
-                sleep(30)
-        else:
-            out("waiting for the owner to approve the pypi environment of run %s" % release_id)
-        for _ in range(120):
-            if pypi(v) == v:
-                out("PyPI serves %s" % v)
-                return 0
-            sleep(30)
-        raise Stop("PyPI does not serve %s yet; check release run %s" % (v, release_id))
+        url = "https://github.com/%s/actions/runs/%s" % (REPO, release_id)
+        out("gates passed: release_check, pyproject %s, no existing tag, fast-forward, ci.yml run %s success "
+            "on %s, origin/main unchanged; tagged v%s" % (v, run.get("databaseId"), head[:12], v))
+        out("waiting for owner: approve the PyPI publish of v%s at %s" % (v, url))
+        out("  Actions > run %s > Review deployments > pypi > Approve" % release_id)
+        return 0
     except Stop as e:
         out("STOP: %s" % e)
         return 1

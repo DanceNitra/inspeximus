@@ -107,11 +107,13 @@ refuses before the step it protects and names itself:
 | 5 | CI not green on exactly HEAD: the `push` run of `ci.yml` must report `success` with `headSha` = HEAD | the tag |
 | 6 | `origin/main` moved after the push | the tag |
 
-After the tag it follows the release run and waits until PyPI serves X.Y.Z. It approves the `pypi`
-environment only with `--approve-pypi`, because that approval is the owner's yes; without the flag it
-waits for the owner to approve on GitHub. `tests/test_the_release_script_refuses_before_each_step.py`
-drives each guard with a fake shell and requires it to fire before its step; each guard also has a
-mutation in `tools/mutations.json`.
+After the tag it finds the release run and stops at its `pypi` gate. **The owner approves PyPI, and
+nothing else does**: that environment's required reviewer is his account, and approving it from a session
+through the API bypasses the one review CI cannot make. The script prints his step (Actions > the run >
+Review deployments > pypi > Approve) with the run's URL and the gates that passed, and exits 0 with the
+status `waiting for owner`. `tests/test_the_release_script_refuses_before_each_step.py` drives each guard
+with a fake shell and requires it to fire before its step, and checks that no code path calls the
+deployments API; each guard also has a mutation in `tools/mutations.json`.
 
 **`python tools/release_check.py` is the checklist above as code**, because a step only a human
 remembers is a step that gets skipped — which is the sentence this file has now had to write four
@@ -233,6 +235,7 @@ Two rules are enforced as code, so they are not a matter of taste:
 
 - Never anchor a test to a line number. The recorded mutation-survivor lines were stale within a day:
   what was `core.py:3662` became a comment.
+- Never approve the `pypi` environment from a session or a script. The owner approves it on GitHub.
 - Never create or push a release tag by hand. `tools/release.py` is the only way to tag, because a tag
   made before CI is green on its exact commit cannot be taken back (v3.15.0).
 - Never retag a published version to make a red CI run green. 1.68.0's tag stays red; the fix landed on

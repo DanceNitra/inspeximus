@@ -5,6 +5,8 @@ deleted. The script is now the only way to tag, and this file drives it with a f
 repository) through each refusal: a [FAIL] from release_check, a version mismatch, an existing tag here or
 on origin, a HEAD that is not a fast-forward, CI not green on the exact commit, and origin/main moving
 between the push and the tag. The control runs the green path and checks the order: push, CI, tag.
+The PyPI gate is the owner's: no code path may call the deployments API, and the green path ends by
+printing the owner's step with the status "waiting for owner".
 """
 from __future__ import annotations
 
@@ -72,8 +74,7 @@ def root(tmp_path):
 
 def _run(root, fake, *extra, version=V):
     lines = []
-    rc = _load().main([version, *extra], sh=fake, sleep=lambda s: None, pypi=lambda v: v, out=lines.append,
-                      root=root)
+    rc = _load().main([version, *extra], sh=fake, sleep=lambda s: None, out=lines.append, root=root)
     return rc, "\n".join(lines)
 
 
@@ -84,7 +85,8 @@ def test_the_green_path_pushes_then_waits_for_ci_then_tags(root):
     push, ci, tag, tag_push = (fake.index("git push origin %s:main" % HEAD), fake.index("gh run list -R"),
                                fake.index("git tag -a v" + V), fake.index("git push origin v" + V))
     assert None not in (push, ci, tag, tag_push) and push < ci < tag < tag_push, fake.calls
-    assert "PyPI serves " + V in out
+    assert "waiting for owner: approve the PyPI publish of v%s at https://github.com/" % V in out, out
+    assert "Actions > run 2 > Review deployments > pypi > Approve" in out, out
 
 
 @pytest.mark.parametrize("name, over, says", [
@@ -150,11 +152,14 @@ def test_a_dry_run_pushes_nothing(root):
     assert fake.index("git push") is None and fake.index("git tag") is None
 
 
-def test_the_pypi_environment_is_approved_only_when_asked(root):
-    pending = {"pending_deployments": (0, json.dumps([{"environment": {"id": 1}}]))}
-    fake = Fake(**pending)
-    _run(root, fake)
-    assert not any("state=approved" in c for c in fake.calls), "approved without --approve-pypi"
-    fake = Fake(**pending)
-    rc, out = _run(root, fake, "--approve-pypi")
-    assert rc == 0 and any("state=approved" in c for c in fake.calls), out
+def test_no_code_path_touches_the_owners_pypi_gate(root):
+    """The `pypi` environment's reviewer is the owner; approving it from a session bypasses his review."""
+    src = open(os.path.join(REPO, "tools", "release.py"), encoding="utf-8").read()
+    for word in ("pending_deployments", "environment_ids", "state=approved", "approve-pypi"):
+        assert word not in src, word
+    fake = Fake()
+    rc, out = _run(root, fake)
+    assert rc == 0, out
+    assert not [c for c in fake.calls if "deployment" in c or "gh api" in c], fake.calls
+    with pytest.raises(SystemExit):
+        _run(root, Fake(), "--approve-pypi")                    # the flag is gone, not ignored
