@@ -4,11 +4,22 @@ name: clean install
 # one process must reach the SessionStart hook and a fresh MCP recall in the next.
 # The control pins 3.9.5, which lost that decision between processes; it must FAIL, or the check
 # measured nothing. tools/clean_install_check.py holds the logic.
+# It installs from PyPI, so on a push to main it checks the RELEASED version on each platform, not the
+# pushed code; the Windows job in ci.yml and one-memory.yml test the pushed code.
 on:
   workflow_dispatch:
   push:
-    branches: [ci-clean-install]
-    paths: [".github/workflows/clean-install.yml", "tools/clean_install_check.py"]
+    branches: [main, ci-clean-install]
+    paths:
+      - ".github/workflows/clean-install.yml"
+      - "tools/clean_install_check.py"
+      - "inspeximus/install.py"
+      - "inspeximus/install_all.py"
+      - "inspeximus/claude_code.py"
+      - "inspeximus/_surface.py"
+      - "inspeximus/mcp_server.py"
+      - "inspeximus/integrations/hermes_agent.py"
+      - "docs/install/**"
 jobs:
   route:
     name: ${{ matrix.os }} / ${{ matrix.case.name }}
@@ -16,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         # `uv: true` puts uvx on PATH, so the installer writes its pinned uvx launch; without it the
         # installer falls back to the venv's python. The control runs without uv: with uv, 3.9.5's
         # unpinned `uvx --from inspeximus[mcp]` resolves the newest release and passes, which is the
@@ -33,7 +44,7 @@ jobs:
       - if: matrix.case.uv
         uses: astral-sh/setup-uv@v6
       - name: clean-install check
-        run: python tools/clean_install_check.py ${{ matrix.case.version }} "$RUNNER_TEMP/route" ${{ matrix.case.flag }}
+        run: python tools/clean_install_check.py ${{ matrix.case.version }} "${{ runner.temp }}/route" ${{ matrix.case.flag }}
       - name: keep the verdict
         if: always()
         uses: actions/upload-artifact@v4

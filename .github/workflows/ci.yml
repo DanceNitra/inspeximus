@@ -76,6 +76,30 @@ jobs:
   # `inspeximus demo`. Fails when the demo does not pass all three checks or when install plus demo take
   # more than 60 s (tools/time_to_demo.py). Measured locally on 2026-09-24: 9.95 s, of which 9.37 s is
   # pip, before the extra was added.
+  # WINDOWS, because every install defect found on 2026-09-27 was Windows-only: the Microsoft Store path
+  # of Claude Desktop's own Claude Code, the Store `python` alias, Git Bash lines on a PowerShell page,
+  # and copy2 over an existing .bak. The first users are on Windows, and every other job here is Linux.
+  # tests/test_claude_desktop_counts_as_claude_code.py carries the fixture for claude.exe under the
+  # MSIX LocalCache path.
+  install-and-hooks-windows:
+    name: install and hook tests (windows-latest)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-xdist cryptography pyyaml
+      - name: install and hook tests
+        shell: bash
+        run: >-
+          python -m pytest -q -rfE tests/test_install*.py tests/test_*claude_code*.py tests/test_the_hook*.py
+          tests/test_the_cli_opens_the_shared_store.py tests/test_claude_desktop_counts_as_claude_code.py
+          tests/test_the_install_ends_with_the_armed_block.py tests/test_the_installer_backs_up_every_file_it_changes.py
+
   time-to-first-success:
     name: time to first success (pip install + inspeximus demo, 60 s budget)
     runs-on: ubuntu-latest

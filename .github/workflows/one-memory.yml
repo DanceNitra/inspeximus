@@ -9,8 +9,20 @@ name: one memory
 # The control runs the same page against 3.9.5, which has no `install --all`, and must fail.
 on:
   workflow_dispatch:
+  # On main only when the install route changes: 15 jobs across Linux, macOS and Windows.
   push:
-    branches: [one-memory]
+    branches: [main, one-memory]
+    paths:
+      - ".github/workflows/one-memory.yml"
+      - "tools/run_install_page.py"
+      - "tools/one_memory_check.py"
+      - "inspeximus/install.py"
+      - "inspeximus/install_all.py"
+      - "inspeximus/claude_code.py"
+      - "inspeximus/_surface.py"
+      - "inspeximus/mcp_server.py"
+      - "inspeximus/integrations/hermes_agent.py"
+      - "docs/install/**"
 jobs:
   page:
     name: ${{ matrix.os }} / ${{ matrix.case.name }}
