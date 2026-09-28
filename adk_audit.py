@@ -266,4 +266,6 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+    __import__("_key_home").isolate("adk_audit")    # heads and keys out of the real key home
     raise SystemExit(main())

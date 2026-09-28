@@ -107,6 +107,50 @@ def _writer(home, rel: str, name: str) -> str:
         return " (store unreadable)"
 
 
+def _head_store(home, rel: str, name: str):
+    try:
+        with open(os.path.join(home, rel, name), encoding="utf-8") as fh:
+            return str(json.load(fh).get("path") or "") or None
+    except (OSError, ValueError, AttributeError):
+        return None
+
+
+def _inside(path: str, roots: list) -> bool:
+    p = os.path.normcase(os.path.realpath(path))
+    return any(p == r or p.startswith(r.rstrip(os.sep) + os.sep) for r in roots)
+
+
+def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
+    """(failing lines, information lines). A new chain head is attributed by the store it records: a
+    store inside the run's temporary directories (pytest's basetemp, the sandboxed homes and a tool's own
+    temp directories all live under the system temp dir) is a LEAK and fails the run; a store outside
+    them is a live session creating its first head beside the run, reported and not failed. A head that
+    cannot be read counts as a leak. Measured 2026-09-28: of 15 heads one run caught, 14 were temp
+    stores and one was ~/.inspeximus/mcp_memory_chain.json, a live MCP server."""
+    import tempfile
+    roots = [os.path.normcase(os.path.realpath(r)) for r in (temp_roots or [tempfile.gettempdir()])]
+    fail, info = [], []
+    heads = [r for r in FILE_SETS if r.endswith("heads")]
+    for rel in sorted(set(before) | set(after)):
+        b, a = before.get(rel), after.get(rel)
+        if b == a or rel not in heads:
+            continue
+        added, removed = sorted(set(a or []) - set(b or [])), sorted(set(b or []) - set(a or []))
+        stores = {n: _head_store(home, rel, n) for n in added}
+        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]
+        leaked = [n for n in added if n not in live]
+        if live:
+            info.append(f"{rel}: {len(live)} new head(s) for stores outside the temp dirs, a live session:")
+            info += [f"    new {n} (store {stores[n]})" for n in live[:20]]
+        if leaked or removed:
+            fail.append(f"{rel}: +{len(leaked)} -{len(removed)} (leaked heads of temp stores), "
+                        f"first +{leaked[:3]} -{removed[:3]}")
+            fail += [f"    new {n} (store {stores[n] or 'unreadable'})" for n in leaked[:20]]
+    fail = diff({k: v for k, v in before.items() if k not in heads},
+                {k: v for k, v in after.items() if k not in heads}, home) + fail
+    return fail, info
+
+
 def diff(before: dict, after: dict, home: str | None = None) -> list:
     """Human-readable lines, one per path whose guarded content changed; empty when nothing did. With
     `home`, each new chain head also names the store that wrote it."""

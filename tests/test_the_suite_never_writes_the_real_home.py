@@ -148,6 +148,42 @@ def test_a_new_chain_head_names_the_store_that_wrote_it(tmp_path):
     assert _home_guard.diff(before, _home_guard.snapshot(str(home))), "control: without home it still fails"
 
 
+def test_a_head_is_a_leak_only_when_its_store_is_a_temp_store(tmp_path):
+    """Session 1's rule for the false alarm: a new head whose store sits in the run's temp dirs fails the
+    run; one whose store sits elsewhere (a live session's first head) is information. Unreadable = leak."""
+    home = _fake_real_home(tmp_path)
+    heads = home / "AppData" / "Roaming" / "inspeximus" / "heads"
+    heads.mkdir(parents=True, exist_ok=True)
+    before = _home_guard.snapshot(str(home))
+    temp_root = str(tmp_path / "systemp")
+    (heads / "leak.json").write_text(json.dumps({"path": temp_root + "/gov_1_x/store.jsonl"}), encoding="utf-8")
+    (heads / "live.json").write_text(json.dumps({"path": str(home / ".inspeximus" / "mcp_memory_chain.json")}),
+                                     encoding="utf-8")
+    (heads / "garbled.json").write_text("not json", encoding="utf-8")
+    fail, info = _home_guard.classify(before, _home_guard.snapshot(str(home)), str(home), [temp_root])
+    assert any(": +2 -0" in ln for ln in fail), fail
+    assert any("leak.json" in ln for ln in fail) and any("garbled.json" in ln for ln in fail), fail
+    assert not any("live.json" in ln for ln in fail), fail
+    assert any("live.json" in ln and "mcp_memory_chain" in ln for ln in info), info
+
+
+def test_a_live_head_alone_does_not_fail_and_a_config_change_still_does(tmp_path):
+    """The control on both sides: a live session's first head alone gives no failing line, while a pin in
+    a host config beside it still fails, so classify did not drop the rest of the guard."""
+    home = _fake_real_home(tmp_path)
+    heads = home / "AppData" / "Roaming" / "inspeximus" / "heads"
+    heads.mkdir(parents=True, exist_ok=True)
+    before = _home_guard.snapshot(str(home))
+    (heads / "live.json").write_text(json.dumps({"path": str(home / "proj" / "store.json")}), encoding="utf-8")
+    fail, info = _home_guard.classify(before, _home_guard.snapshot(str(home)), str(home), [str(tmp_path / "t")])
+    assert fail == [] and info, (fail, info)
+    cfg = json.loads((home / ".claude.json").read_text(encoding="utf-8"))
+    cfg["mcpServers"]["inspeximus"]["args"][1] = "inspeximus[mcp]==3.14.2"
+    (home / ".claude.json").write_text(json.dumps(cfg), encoding="utf-8")
+    fail, _ = _home_guard.classify(before, _home_guard.snapshot(str(home)), str(home), [str(tmp_path / "t")])
+    assert any(ln.startswith(".claude.json") for ln in fail), fail
+
+
 def test_a_leak_into_the_real_home(_no_test_writes_the_real_home):
     """The inner half of the next test: skipped unless that test starts it, and then it writes where
     the run-end guard must see it. Never writes when run as part of the normal suite."""
@@ -159,8 +195,9 @@ def test_a_leak_into_the_real_home(_no_test_writes_the_real_home):
         fh.write("{}")
     heads = os.path.join(_no_test_writes_the_real_home["real"], "AppData", "Roaming", "inspeximus", "heads")
     os.makedirs(heads, exist_ok=True)
+    import tempfile
     with open(os.path.join(heads, "leaked-head.json"), "w", encoding="utf-8") as fh:
-        json.dump({"path": "C:/tmp/gov_0_selftest/store.jsonl"}, fh)
+        json.dump({"path": os.path.join(tempfile.gettempdir(), "gov_0_selftest", "store.jsonl")}, fh)
 
 
 def test_the_run_end_guard_fails_a_run_that_wrote_the_real_home(tmp_path):
@@ -176,4 +213,5 @@ def test_the_run_end_guard_fails_a_run_that_wrote_the_real_home(tmp_path):
         pytest.fail(f"control: the inner test did not write, so the guard had nothing to see: {r.stdout[-400:]}")
     assert r.returncode != 0, "a run that wrote the real home exited 0"
     assert "THIS RUN CHANGED THE REAL HOME" in r.stdout and "written-by-a-test.json" in r.stdout, r.stdout[-600:]
-    assert "(store C:/tmp/gov_0_selftest/store.jsonl)" in r.stdout, "the run-end line did not name the head's writer"
+    assert "gov_0_selftest" in r.stdout and "leaked heads of temp stores" in r.stdout, \
+        "the run-end line did not name the leaked head's writer"

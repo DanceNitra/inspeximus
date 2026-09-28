@@ -5926,5 +5926,203 @@
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
+ },
+ {
+  "name": "key home: claims_audit.py runs without isolating its key home",
+  "file": "claims_audit.py",
+  "old": "    __import__(\"_key_home\").isolate(\"claims_audit\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: governance_audit.py runs without isolating its key home",
+  "file": "governance_audit.py",
+  "old": "    __import__(\"_key_home\").isolate(\"governance_audit\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: store_audit.py runs without isolating its key home",
+  "file": "store_audit.py",
+  "old": "    __import__(\"_key_home\").isolate(\"store_audit\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: adk_audit.py runs without isolating its key home",
+  "file": "adk_audit.py",
+  "old": "    __import__(\"_key_home\").isolate(\"adk_audit\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: haystack_audit.py runs without isolating its key home",
+  "file": "haystack_audit.py",
+  "old": "    __import__(\"_key_home\").isolate(\"haystack_audit\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: checkpointer_conformance.py runs without isolating its key home",
+  "file": "checkpointer_conformance.py",
+  "old": "__import__(\"_key_home\").isolate(\"checkpointer_conformance\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/release_check.py runs without isolating its key home",
+  "file": "tools/release_check.py",
+  "old": "    __import__(\"_key_home\").isolate(\"release_check\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/mutation_check.py runs without isolating its key home",
+  "file": "tools/mutation_check.py",
+  "old": "    __import__(\"_key_home\").isolate(\"mutation_check\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/mutation_check_parallel.py runs without isolating its key home",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "    __import__(\"_key_home\").isolate(\"mutation_check_parallel\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/gen_coverage_table.py runs without isolating its key home",
+  "file": "tools/gen_coverage_table.py",
+  "old": "    __import__(\"_key_home\").isolate(\"gen_coverage_table\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/gen_robustness_evidence.py runs without isolating its key home",
+  "file": "tools/gen_robustness_evidence.py",
+  "old": "    __import__(\"_key_home\").isolate(\"gen_robustness_evidence\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/page_runs.py runs without isolating its key home",
+  "file": "tools/page_runs.py",
+  "old": "    __import__(\"_key_home\").isolate(\"page_runs\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/time_to_demo.py runs without isolating its key home",
+  "file": "tools/time_to_demo.py",
+  "old": "    __import__(\"_key_home\").isolate(\"time_to_demo\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/integration_conformance.py runs without isolating its key home",
+  "file": "tools/integration_conformance.py",
+  "old": "    __import__(\"_key_home\").isolate(\"integration_conformance\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/readme_blocks.py runs without isolating its key home",
+  "file": "tools/readme_blocks.py",
+  "old": "    __import__(\"_key_home\").isolate(\"readme_blocks\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: tools/suite_parallel.py runs without isolating its key home",
+  "file": "tools/suite_parallel.py",
+  "old": "    __import__(\"_key_home\").isolate(\"suite_parallel\")    # heads and keys out of the real key home\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: the isolated directory is left behind at exit",
+  "file": "tools/_key_home.py",
+  "old": "    atexit.register(shutil.rmtree, d, True)\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: isolate does not move INSPEXIMUS_KEY_HOME",
+  "file": "tools/_key_home.py",
+  "old": "    os.environ[\"INSPEXIMUS_KEY_HOME\"] = d\n",
+  "new": "",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "key home: INSPEXIMUS_TOOL_REAL_KEY_HOME is ignored",
+  "file": "tools/_key_home.py",
+  "old": "if os.environ.get(\"INSPEXIMUS_TOOL_REAL_KEY_HOME\") == \"1\":",
+  "new": "if os.environ.get(\"INSPEXIMUS_TOOL_REAL_KEY_HOME\") == \"never\":",
+  "tests": [
+   "tests/test_tools_keep_heads_out_of_the_real_key_home.py"
+  ]
+ },
+ {
+  "name": "home guard: a live session's first head fails the run again",
+  "file": "tests/_home_guard.py",
+  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
+  "new": "        live = []",
+  "tests": [
+   "tests/test_the_suite_never_writes_the_real_home.py"
+  ]
+ },
+ {
+  "name": "home guard: an unreadable head is not counted as a leak",
+  "file": "tests/_home_guard.py",
+  "old": "        leaked = [n for n in added if n not in live]",
+  "new": "        leaked = [n for n in added if n not in live and stores[n]]",
+  "tests": [
+   "tests/test_the_suite_never_writes_the_real_home.py"
+  ]
+ },
+ {
+  "name": "home guard: classify drops every change outside the heads directory",
+  "file": "tests/_home_guard.py",
+  "old": "    fail = diff({k: v for k, v in before.items() if k not in heads},",
+  "new": "    fail = [] and diff({k: v for k, v in before.items() if k not in heads},",
+  "tests": [
+   "tests/test_the_suite_never_writes_the_real_home.py"
+  ]
  }
 ]

@@ -200,4 +200,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    __import__("_key_home").isolate("suite_parallel")    # heads and keys out of the real key home
     raise SystemExit(main())

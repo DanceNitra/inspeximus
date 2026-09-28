@@ -118,4 +118,6 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    __import__("_key_home").isolate("gen_robustness_evidence")    # heads and keys out of the real key home
     raise SystemExit(main())

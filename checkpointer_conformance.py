@@ -5,6 +5,8 @@ is what store_audit.py does. The checkpointer side DOES have one, and the docs s
 before shipping. So it runs here before anything is published or listed.
 """
 import asyncio, pathlib, sys, tempfile
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "tools"))
+__import__("_key_home").isolate("checkpointer_conformance")    # heads and keys out of the real key home
 
 # LangGraph's report.py prints U+2705 per capability. On a non-UTF-8 console -- cp1250 is the default
 # on this project's Windows dev box -- that raises UnicodeEncodeError from inside the library, so this
