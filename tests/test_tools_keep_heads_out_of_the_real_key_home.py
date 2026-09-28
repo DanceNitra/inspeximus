@@ -96,7 +96,7 @@ def test_a_tool_process_writes_no_head_into_the_real_key_home(tmp_path, real):
     sandbox.mkdir()
     extra = {"INSPEXIMUS_TOOL_REAL_KEY_HOME": "1"} if real else {}
     r = subprocess.run([sys.executable, "-c", CHILD, ROOT], env=_env(sandbox, **extra), capture_output=True,
-                       text=True, timeout=300)
+                       text=True, encoding="utf-8", errors="replace", timeout=300)
     assert r.returncode == 0, r.stderr[-1500:]
     if real:
         assert _heads(sandbox), "control: with the real key home kept, the head lands in APPDATA"
@@ -112,10 +112,10 @@ def test_a_nested_tool_reuses_its_parents_key_home(tmp_path):
     code = ('import os, sys, subprocess; sys.path.insert(0, os.path.join(sys.argv[1], "tools")); '
             'd = __import__("_key_home").isolate("parent"); '
             'c = subprocess.run([sys.executable, "-c", "import os, sys; sys.path.insert(0, os.path.join(sys.argv[1], '
-            '\'tools\')); print(__import__(\'_key_home\').isolate(\'child\'))", sys.argv[1]], capture_output=True, text=True); '
+            '\'tools\')); print(__import__(\'_key_home\').isolate(\'child\'))", sys.argv[1]], capture_output=True, text=True, encoding="utf-8", errors="replace"); '
             'print(d == c.stdout.strip())')
     r = subprocess.run([sys.executable, "-c", code, ROOT], env=_env(sandbox), capture_output=True, text=True,
-                       timeout=120)
+                       encoding="utf-8", errors="replace", timeout=120)
     assert r.stdout.strip().endswith("True"), r.stdout + r.stderr
 
 
@@ -126,7 +126,8 @@ def test_governance_audit_end_to_end_leaves_the_real_heads_alone(tmp_path, real)
     sandbox.mkdir()
     extra = {"INSPEXIMUS_TOOL_REAL_KEY_HOME": "1"} if real else {}
     r = subprocess.run([sys.executable, "governance_audit.py", "--local", "--repeats", "1"], cwd=ROOT,
-                       env=_env(sandbox, **extra), capture_output=True, text=True, timeout=900)
+                       env=_env(sandbox, **extra), capture_output=True, text=True,
+                       encoding="utf-8", errors="replace", timeout=900)
     if real:
         assert _heads(sandbox), f"control: the audit wrote no head at all, so the test sees nothing: " \
                                 f"{r.stdout[-400:]}{r.stderr[-400:]}"

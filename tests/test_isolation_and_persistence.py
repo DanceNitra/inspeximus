@@ -13,7 +13,7 @@ import tempfile
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from inspeximus import AmbiguousSubject, Inspeximus
+from inspeximus import AmbiguousSubject, Inspeximus, ProofNotWritten
 from inspeximus.core import _TenantView
 
 
@@ -114,7 +114,10 @@ def test_verify_writes_reports_a_store_that_never_reached_disk():
     open(blocker, "w", encoding="utf-8").write("i am a file")
     p = os.path.join(blocker, "m.json")
     m = Inspeximus(path=p, receipts=True)
-    m.remember("fact 0")
+    # A receipted remember whose receipt cannot be written raises, and says the record was not saved
+    # either (A-34); the receipt stays in memory, so verify_writes still names the record.
+    with pytest.raises(ProofNotWritten, match="was not saved either"):
+        m.remember("fact 0")
     ok, problems = m.verify_writes()
     assert ok is False
     assert any("not persisted" in x for x in problems)
