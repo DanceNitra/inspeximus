@@ -114,7 +114,7 @@ def test_the_mcp_write_result_carries_persisted(tmp_path, monkeypatch, short_bus
     t = threading.Thread(target=_hold, args=(str(tmp_path / "mcp.json"), 1.5, started), daemon=True)
     t.start()
     started.wait(5)
-    # 3.15.1 (A-22): an unpersisted write reaches an MCP client as an error, not only as a field it may
+    # 3.15.2 (A-22): an unpersisted write reaches an MCP client as an error, not only as a field it may
     # never read. The message still carries the store's own reason.
     with pytest.raises(RuntimeError) as err:
         srv.remember("layer", key="crew::L", object="v1")

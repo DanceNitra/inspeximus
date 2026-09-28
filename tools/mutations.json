@@ -4100,7 +4100,7 @@
   ]
  },
  {
-  "name": "forget leaves a pre-3.15.1 digest that copies its target",
+  "name": "forget leaves a pre-3.15.2 digest that copies its target",
   "file": "inspeximus/core.py",
   "old": "copies = self._digest_copies_of(target) - target if target else set()",
   "new": "copies = set()",

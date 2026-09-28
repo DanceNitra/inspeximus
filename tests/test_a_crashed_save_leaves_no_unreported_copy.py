@@ -177,7 +177,7 @@ _HOLD_LEGACY = textwrap.dedent("""
 
 
 def test_an_older_writers_temp_is_left_alone(store, tmp_path):
-    """A version before 3.15.1 takes only the TEMP lock while its temp file exists."""
+    """A version before 3.15.2 takes only the TEMP lock while its temp file exists."""
     tmp = _fake_temp(store)
     ready = str(tmp_path / "ready")
     proc = subprocess.Popen([sys.executable, "-c", _HOLD_LEGACY.format(root=ROOT), store, ready])

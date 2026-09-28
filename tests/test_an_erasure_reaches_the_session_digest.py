@@ -6,7 +6,7 @@ words stayed in an active record that `recall` returned, while `forget`'s docstr
 blob could hold them. The existing check read `session_context`, which re-resolves ids, so it could
 not see the record itself.
 
-From 3.15.1 a digest stores ids, kinds and salience; every reader renders the entries from the live
+From 3.15.2 a digest stores ids, kinds and salience; every reader renders the entries from the live
 store. A digest written earlier still holds text, and its write receipt commits to that text, so it is
 erased together with the record it copies.
 """
@@ -116,9 +116,9 @@ def test_the_next_session_number_never_repeats_after_a_digest_is_erased(store):
     assert m.close_session("s4")["session_seq"] == 4
 
 
-# ── a digest written before 3.15.1 ───────────────────────────────────────────────────────────────────
+# ── a digest written before 3.15.2 ───────────────────────────────────────────────────────────────────
 def _legacy_digest(m, entries, seq=9):
-    """What close_session stored before 3.15.1: rendered text plus the entries' own text."""
+    """What close_session stored before 3.15.2: rendered text plus the entries' own text."""
     text = "SESSION DIGEST %d -- what changed in the last session (deterministic ledger diff, no LLM):\n" % seq
     text += "\n".join("  * " + e["text"] + (("  (was: %s)" % e["was"]) if e.get("was") else "") for e in entries)
     return m._stamp(text, key=Inspeximus.SESSION_DIGEST_KEY,

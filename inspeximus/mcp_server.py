@@ -791,7 +791,7 @@ def _write_verdict() -> dict:
         out["note"] = lw["note"]
     if lw.get("previous"):
         out["previous"] = lw["previous"]
-    # AN ERROR, NOT A FIELD (3.15.1, audit A-22). `persisted: false` sat inside a result whose
+    # AN ERROR, NOT A FIELD (3.15.2, audit A-22). `persisted: false` sat inside a result whose
     # isError was false, and a client that reads only the error flag -- most agent loops -- believed
     # the write had landed. The record stays in memory and the next save retries it, as before.
     if not out["persisted"]:

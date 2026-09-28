@@ -271,7 +271,7 @@ def main() -> int:
     # putting the stale entry in the pool -- i.e. if this control goes back to measuring nothing.
     s7 = _new_store()
     _replay(s7, plan, upto_session=7)
-    # A digest stores entry ids since 3.15.1 (audit A-04), so each entry is resolved to its record,
+    # A digest stores entry ids since 3.15.2 (audit A-04), so each entry is resolved to its record,
     # retired ones included: the stale decision is superseded, and that is the case under test.
     by_id = {r.get("id"): r for r in s7.items}
     in_window = any(("marker-p12" in (by_id.get(e.get("id"), {}).get("text") or ""))

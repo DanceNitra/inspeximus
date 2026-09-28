@@ -89,7 +89,7 @@ def test_a_store_of_pure_decisions_reports_undefined_not_zero():
     assert out["counts"]["NOT_BINDABLE"] == 5
     assert out["coverage"]["refetch_verification_coverage"] is None
     assert out["coverage"]["declared_observation_binding_coverage"] is None
-    # Not broken, and not verified either: since 3.15.1 (audit A-23) `ok` needs something checked, and
+    # Not broken, and not verified either: since 3.15.2 (audit A-23) `ok` needs something checked, and
     # `verdict` names the state so a decisions-only store does not read as a drifted one.
     assert out["ok"] is False and out["verdict"] == "NOT_CHECKED", out
     assert out["not_checked"] == {"NOT_BINDABLE": 5}, out["not_checked"]

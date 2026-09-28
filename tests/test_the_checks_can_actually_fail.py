@@ -91,7 +91,7 @@ def test_a_surface_already_unhappy_is_NOT_scored():
 
 def test_a_clean_boolean_over_an_unhappy_report_is_its_own_verdict():
     """SUMMARY_HIDES_DETAIL used to name `check_sources` here: a store whose sources were all stripped
-    returned ok=True beside "so this verified NOTHING". Since 3.15.1 (audit A-23) `ok` needs something
+    returned ok=True beside "so this verified NOTHING". Since 3.15.2 (audit A-23) `ok` needs something
     checked, so stripping every source is NOTICED and the boolean no longer hides the detail."""
     out = _store().audit_the_audits()
     hides = {h["probe"]: h for h in out["summary_hides_detail"]}
