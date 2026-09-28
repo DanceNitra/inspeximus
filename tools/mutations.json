@@ -6133,5 +6133,23 @@
   "tests": [
    "tests/test_audit_b_the_gate_counts_directory_listings.py"
   ]
+ },
+ {
+  "name": "perf gate: A-37's store hash reads are not counted",
+  "file": "perf/gate.py",
+  "old": "    \"store_hash_reads\": (core.Inspeximus, \"_disk_hash\"),\n",
+  "new": "",
+  "tests": [
+   "tests/test_perf_gate_can_fail.py"
+  ]
+ },
+ {
+  "name": "perf gate: the unstamped arm recalls under the store's own key home",
+  "file": "perf/gate.py",
+  "old": "        os.environ[\"INSPEXIMUS_KEY_HOME\"] = foreign\n",
+  "new": "",
+  "tests": [
+   "tests/test_perf_gate_can_fail.py"
+  ]
  }
 ]

@@ -581,3 +581,60 @@ def test_it_fails_when_the_package_imports_its_governance_modules_eagerly_again(
     fail, _ = gate.compare({"h": {"counters": good, "seconds_median": 0.1}},
                            {"h": {"counters": bad, "seconds_median": 0.1}})
     assert any("hook_imports_governance" in f for f in fail), f"the eager imports came back and the gate stayed green: {fail}"
+
+
+def test_the_unstamped_arm_sees_the_b05_regression_the_stamped_arm_cannot():
+    """Since A-30 the stamped arm (prompt_n2000) trusts the read-guard stamps, so it runs no regex search
+    whether or not B-05's word pre-check exists. The unstamped arm recalls under a key home that cannot
+    verify them. Reintroduce B-05 by emptying the pre-check: the unstamped arm's searches jump from 0,
+    and the stamped arm's stay at 0, which is why the gate carries both."""
+    def searches(build):
+        run = build(200)
+        with gate.Counters() as c:
+            run()
+        return c.as_dict()["guard_regex_searches"]
+    assert searches(gate.w_prompt_unstamped) == 0, "control: with the pre-check, no search"
+    real = core._SHAPE_REQUIRES
+    core._SHAPE_REQUIRES = {}
+    try:
+        unstamped, stamped = searches(gate.w_prompt_unstamped), searches(gate.w_prompt)
+    finally:
+        core._SHAPE_REQUIRES = real
+    assert unstamped >= 200 * 7, f"the unstamped arm did not see B-05: {unstamped} searches"
+    assert stamped == 0, f"control: the stamped arm is blind to B-05 by design ({stamped})"
+
+
+def test_a_json_save_reads_the_store_once_and_a_row_save_never():
+    """A-37's writer guard hashes the store file on a JSON save whose stat signature has not moved. The
+    counter pins that cost at one read per save (none for the first save, which has no file yet), and at
+    zero for the row store, whose guard is per row."""
+    def reads(backend):
+        with gate._backend(backend):
+            run = gate.w_write(50)
+            with gate.Counters() as c:
+                run()
+        return c.as_dict()["store_hash_reads"]
+    assert reads("json") == 49
+    assert reads("rows") == 0
+
+
+def test_it_fails_when_a_json_save_reads_the_store_twice(baseline):
+    """The counter is gated: a second read per save shows as growth against the recorded arm."""
+    base = copy.deepcopy(baseline)
+    with gate._backend("json"):
+        run = gate.w_write(50)
+        with gate.Counters() as c:
+            run()
+        good = c.as_dict()
+    with gate._backend("json"):
+        run = gate.w_write(50)
+        with gate.Counters() as c:
+            counted = core.Inspeximus._disk_hash          # the counter's wrapper: inject INSIDE it
+            core.Inspeximus._disk_hash = lambda self: (counted(self), counted(self))[1]
+            run()                                         # Counters.__exit__ puts the real method back
+        bad = c.as_dict()
+    assert bad["store_hash_reads"] == 2 * good["store_hash_reads"]
+    base["write_json_n1000"]["counters"] = {**base["write_json_n1000"]["counters"], **good}
+    now = {"write_json_n1000": {**base["write_json_n1000"], "counters": {**base["write_json_n1000"]["counters"], **bad}}}
+    fail, _ = gate.compare({"write_json_n1000": base["write_json_n1000"]}, now)
+    assert any("store_hash_reads" in f for f in fail), fail

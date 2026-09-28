@@ -35,6 +35,7 @@ from __future__ import annotations
 import contextlib
 import json
 import os
+import shutil
 import statistics
 import sys
 import tempfile
@@ -224,11 +225,16 @@ class Counters:
 #:   read_guard_assessments  one record checked by the read guards while a recall builds its pool.
 #:                    memory_report rebuilt the pool for each of its 400 sampled queries: 2,629,200
 #:                    assessments on a 10,934-record store, 400 per record (AUDIT-B B-07).
+#:   store_hash_reads  one read of the whole store file to hash it. A-37's writer guard (3.15.4) does
+#:                    it on every JSON or encrypted save whose stat signature has not moved, because a
+#:                    same-tick, same-size peer write leaves (mtime_ns, size) unchanged. One per save on
+#:                    a JSON arm is the expected cost; a row store never reads it (its guard is per row).
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
     "current_active_scans": (core.Inspeximus, "_current_active"),
     "row_serializations": (core._rows, "_doc"),
     "read_guard_assessments": (core.Inspeximus, "_assess_read_guards"),
+    "store_hash_reads": (core.Inspeximus, "_disk_hash"),
 }
 
 
@@ -501,9 +507,9 @@ def w_reports(k):
 def w_prompt(n):
     """What a UserPromptSubmit hook does: a FRESH handle opens a store of n records and recalls once.
 
-    A fresh process has assessed nothing, so the read guard runs over every record. None of these
-    texts holds a word any instruction shape requires, so `guard_regex_searches` is 0 (AUDIT-B B-05);
-    it was 7 per record."""
+    THE STAMPED PATH. Since A-30 (3.15.4) remember() stamps a read-guard verdict under the store's key,
+    and a fresh handle with that key trusts it, so this arm measures what a user's own hook pays. It
+    no longer exercises the guard's regex path at all; `prompt_unstamped_n2000` does."""
     p = _store_path()
     m = Inspeximus(p)
     for i in range(n):
@@ -512,6 +518,30 @@ def w_prompt(n):
 
     def run():
         Inspeximus(p).recall("which make target builds the docs", k=6)
+    return run
+
+
+def w_prompt_unstamped(n):
+    """w_prompt's store and recall, run as a process that CANNOT verify the stamps: a key home that did
+    not write them (another user, another machine, a store copied in). The read guard then assesses every
+    record, which is the path B-05's word pre-check protects: none of these texts holds a word an
+    instruction shape requires, so `guard_regex_searches` stays 0; without the pre-check it was 7 per
+    record. Added when A-30 made w_prompt's recall trust the stamps and the gate stopped seeing B-05
+    (AUDIT-A, bisected to 812a0eab)."""
+    build = w_prompt(n)
+
+    def run():
+        prev = os.environ.get("INSPEXIMUS_KEY_HOME")
+        foreign = tempfile.mkdtemp(prefix="foreign-key-home-")
+        os.environ["INSPEXIMUS_KEY_HOME"] = foreign
+        try:
+            build()
+        finally:
+            if prev is None:
+                os.environ.pop("INSPEXIMUS_KEY_HOME", None)
+            else:
+                os.environ["INSPEXIMUS_KEY_HOME"] = prev
+            shutil.rmtree(foreign, ignore_errors=True)
     return run
 
 
@@ -681,6 +711,8 @@ WORKLOADS = {
     "hook_n2000":         (lambda: w_hook(2000),         "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store", "rows"),
     "reports_k300":       (lambda: w_reports(300),       "supersession_report + 5 suppressing recalls over 300 keys", "rows"),
     "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once", "rows"),
+    "prompt_unstamped_n2000": (lambda: w_prompt_unstamped(2000),
+                           "prompt_n2000 under a key home that cannot verify the read-guard stamps", "rows"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
     "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),
