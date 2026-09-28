@@ -5381,5 +5381,45 @@
   "tests": [
    "tests/test_a_state_toggle_never_ends_another_key.py"
   ]
+ },
+ {
+  "name": "the corroboration guard never refuses an overturn",
+  "file": "inspeximus/core.py",
+  "old": "        if self.supersede_requires_corroboration and not self._graduation_corroborated(newer, by_id):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_blocked_overturn_properties.py",
+   "tests/test_supersede_corroboration_bar.py"
+  ]
+ },
+ {
+  "name": "the persistence guard never refuses an overturn",
+  "file": "inspeximus/core.py",
+  "old": "        if self.supersede_persistence > 1:\n            nvec = self._qvec(newer[\"text\"])",
+  "new": "        if False:\n            nvec = self._qvec(newer[\"text\"])",
+  "tests": [
+   "tests/test_blocked_overturn_properties.py",
+   "tests/test_supersede_corroboration_bar.py"
+  ]
+ },
+ {
+  "name": "an overturn refused for lack of corroboration is not flagged",
+  "file": "inspeximus/core.py",
+  "old": "                self._flag_contested(_r, \"uncorroborated_contradiction\",",
+  "new": "                (lambda *a, **k: None)(_r, \"uncorroborated_contradiction\",",
+  "tests": [
+   "tests/test_blocked_overturn_properties.py",
+   "tests/test_supersede_corroboration_bar.py"
+  ]
+ },
+ {
+  "name": "an overturn refused for insufficient persistence is not flagged",
+  "file": "inspeximus/core.py",
+  "old": "                    self._flag_contested(_r, \"insufficient_persistence\", _o.get(\"object\"),",
+  "new": "                    (lambda *a, **k: None)(_r, \"insufficient_persistence\", _o.get(\"object\"),",
+  "tests": [
+   "tests/test_blocked_overturn_properties.py",
+   "tests/test_supersede_corroboration_bar.py"
+  ]
  }
 ]
