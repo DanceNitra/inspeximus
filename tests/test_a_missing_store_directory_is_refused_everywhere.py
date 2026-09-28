@@ -44,6 +44,37 @@ def test_the_directory_is_made_by_the_first_write_not_by_opening(tmp_path):
     assert store.exists(), "control: the first write creates the directory and the file"
 
 
+@pytest.mark.parametrize("receipts", [False, True])
+@pytest.mark.parametrize("fmt", ["rows", "json"])
+def test_opening_and_reading_an_unwritten_store_writes_nothing(tmp_path, monkeypatch, fmt, receipts):
+    """The invariant the removed empty-flush guard stood for, pinned on both formats, receipts on and off:
+    opening, reading and flushing a store that has no file create neither its folder nor any file."""
+    from inspeximus import Inspeximus
+    from inspeximus import sqlite_store as _rows
+    if fmt == "json":
+        monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    else:
+        monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
+    missing = tmp_path / "missing" / "memory.json"
+    present = tmp_path / "present" / "memory.json"
+    present.parent.mkdir()
+    for store in (missing, present):
+        m = Inspeximus(path=str(store), receipts=receipts)
+        m.recall("anything", k=3)
+        m.memory_report()
+        m.verify_writes()
+        m.state_digest()
+        m.flush()
+        del m
+    assert not missing.parent.exists(), "a read created the store's folder"
+    assert list(present.parent.iterdir()) == [], "a read wrote into an existing folder"
+    m = Inspeximus(path=str(present), receipts=receipts)                   # control: a write lands, in this format
+    m.remember("the first fact")
+    m.flush()
+    assert present.exists() and _rows.looks_like_sqlite(present) == (fmt == "rows")
+    assert (present.parent / "memory.json.receipts.json").exists() == receipts
+
+
 def test_the_refusal_suggests_a_near_match(tmp_path):
     from inspeximus._surface import store_location_problem
     (tmp_path / "project").mkdir()
