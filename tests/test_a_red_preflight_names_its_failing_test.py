@@ -25,7 +25,15 @@ pytestmark = pytest.mark.mutation
 TARGET = {"file": "inspeximus/core.py", "old": 'policy: str = "safe"', "new": 'policy: str = "trusting"'}
 
 
+def _own_root(tmp_path):
+    """A pytest.ini makes the fixture directory its own rootdir. Without it pytest collected from the
+    temp directory above and met another run's temporary home vanishing mid-scan: a red pre-flight that
+    had nothing to do with the test, found by the very output this file makes the gate keep."""
+    (tmp_path / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
+
+
 def _red_test(tmp_path):
+    _own_root(tmp_path)
     t = tmp_path / "test_red_on_purpose.py"
     t.write_text("def test_red_on_purpose():\n    assert 'the reason is kept' == 'it was lost'\n",
                  encoding="utf-8")
@@ -51,6 +59,7 @@ def test_a_green_preflight_writes_no_output_file(tmp_path, monkeypatch):
     """The control: the file is written because the pre-flight was red, not on every run."""
     logs = tmp_path / "preflight"
     monkeypatch.setenv("MUTATION_PREFLIGHT_DIR", str(logs))
+    _own_root(tmp_path)
     green = tmp_path / "test_green.py"
     green.write_text("def test_green():\n    assert True\n", encoding="utf-8")
     mutation_check.run([{**TARGET, "name": "green pre-flight", "tests": [str(green)]}], verbose=False)
