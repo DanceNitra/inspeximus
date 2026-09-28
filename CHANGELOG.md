@@ -1,3 +1,63 @@
+## 3.15.3 - UPGRADE NOTE if INSPEXIMUS_PATH or --path points into a folder that does not exist: create it first; inspeximus no longer creates it silently (test: `tests/test_first_run_and_scoped_certificate.py::test_the_cli_refuses_a_nested_path_until_its_folder_exists`). UPGRADE IF you install or upgrade through an agent, on Windows, or over an earlier install: the upgrade path now moves your hooks to the new version, never switches your store without saying so, and cannot be run by an older copy by mistake.
+
+Found on 2026-09-28, when our own machine moved to 3.15.1 and a friend-flow re-test ran on a second machine,
+where Hermes Agent on a 9B local model upgraded an earlier install through Git Bash.
+
+- **A store path in a missing folder is refused.** A mistyped INSPEXIMUS_PATH or `--path` used to open
+  a new, empty store: an MCP `recall` answered nothing with no error, and that read created the folder.
+  Now the MCP server starts and answers every tool call with an error that names the path, says the
+  folder does not exist, and suggests the intended path when there is a near match. The CLI exits with
+  2 and the same message. A Claude Code hook never blocks a prompt: it exits 0 with nothing on stdout
+  and the reason on stderr. Opening or reading a store never creates a folder; the first write does,
+  and only `~/.inspeximus` and `<project>/.inspeximus` are created without being asked; such a folder
+  still gets 3.15.2's `.gitignore` for the store's lock file. `install --all`
+  creates the folder of the store it names, since that is where you chose it. A path whose folder is
+  a file is refused too, with the `NOT PERSISTED` marker. An MCP `recall`
+  on a store that has no file yet returns a `no_store_yet` entry instead of an empty list. Library code
+  that passes a path to an adapter, and the Hermes provider's configured path, keep their old
+  behaviour, except that the folder appears with the first write rather than when the store is opened.
+- **A Git Bash path read by Windows is refused.** In a Git Bash that hands paths to Windows programs
+  unconverted, as Hermes Agent's does, `/c/Users/<you>/...` becomes `C:\c\Users\<you>\...`. On the
+  friend's machine `py -3 -m venv "$HOME/.inspeximus/venv"` and later `python -m venv "$HOME/..."`
+  exited 0 and created the environment under `C:\c\Users\<you>`, and Hermes fell back to its own
+  Python. A store path, or the installer's own interpreter, in that form is refused with the intended
+  path, and `install --check` warns when such a copy of your home exists.
+- **The install page's Git Bash lines work in an agent's shell.** They pass `$USERPROFILE`, the Windows
+  form, instead of `$HOME`, which a Git Bash that does not convert paths hands to Windows as `C:\c\...`.
+  The page now also tells the agent never to run a bare `pip` or `inspeximus` and never to wrap a line
+  in extra quotes: the friend's Hermes did both, and a bare `inspeximus` ran a 3.14.3 inside its own
+  venv. CI runs the Git Bash lines on Windows both ways.
+- **The installer says which one is running, and refuses to go back.** Its first line is
+  `running <interpreter>, inspeximus <version> from <folder>`, also when it refuses. It refuses, and changes nothing, when it is
+  older than the version `~/.inspeximus/shared.json` records or than any agent's pin; `--allow-older`
+  goes back on purpose.
+- **An upgrade moves the hooks too.** The installer used to keep any existing inspeximus hook as "the
+  user's own", so an upgrade moved the MCP server and left the hooks on the old pin and the old
+  PostToolUse matcher. It now updates the hook lines it wrote itself, with this release's matcher: an
+  absolute `uvx --from inspeximus`, and an absolute interpreter in an `inspeximus` or `.inspeximus`
+  folder or the one this run uses. It keeps any other line, such as `/opt/py/bin/python -m
+  inspeximus.claude_code`, and says which is which in the notes.
+- **`--only` never switches the store.** `install --all --only <agents>` on a machine without
+  `~/.inspeximus/shared.json` used to create it, which moved every project's hook store onto the shared
+  one. Now only `install --all` without `--only`, or `--shared-store`, records it, and the run says so
+  before it writes anything.
+- **The seal is signed where the store is signed.** The setup decision used to be written without the
+  writer key into a store whose MCP writes are signed. A store without signed records gets it as before;
+  a signed store gets it signed when a writer key is available (INSPEXIMUS_WRITER_KEY_FILE, or the key
+  file an agent's entry names); otherwise it is not written, and the block says
+  `seal: none (signed store, no writer key)`.
+- **Proof the agent cannot write.** On the friend's machine Hermes printed an ARMED block the installer
+  never wrote, with a decision id as its seal. The installer now also writes its block, with the time,
+  to `~/.inspeximus/ARMED.txt`. The page tells the agent to run `install --check` as a separate step,
+  and tells the user that a real seal has two parts and that the proof after the restart is the line the
+  app itself shows.
+
+Measured against 3.15.2 with this release's tests: `tests/test_install_upgrade_path.py` fails 17 of 20
+(the 3 that pass check behaviour that did not change), `tests/test_a_missing_store_directory_is_refused_everywhere.py`
+12 of 12, AUDIT-A's reproducer `tests/test_audit_a_a_wrong_path_is_not_a_silent_empty_store.py` 3 of 3, and
+`tests/test_install_page_survives_hermes_git_bash.py`, built from Hermes' own Git Bash calls, 3 of 6 on
+3.15.2's page (the other 3 reproduce the shell's behaviour and pass on both).
+
 ## 3.15.2 - UPGRADE IF you erase memories, run more than one writer on a store, or use the Codex or Claude Code hooks: an erasure now reaches the session digest, save temps and copies beside the store, and every hook prints exactly one JSON object
 
 Found in a correctness and security audit on 2026-09-27 and 2026-09-28. Every item below has a test
