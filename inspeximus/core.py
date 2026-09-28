@@ -7164,6 +7164,11 @@ class Inspeximus:
         `context_strict` (default True, a BEHAVIOUR CHANGE in 3.16.0) fails on UNSCOPED records, whose
         receipts predate the binding of whose a record is or which partition it is in (see
         `context_unbound()`). Pass False to accept that gap explicitly."""
+        # AN ARCHIVE SEGMENT VERIFIES ITSELF (AUDIT-B B-25): its signed manifest, its receipt copies and
+        # each row against its receipt. Its chain positions are checked from the hot store.
+        from . import archive as _archive
+        if self.path and _archive.is_segment(self.path):
+            return _archive.verify_segment(self.path, expected_pubkey)
         problems: list[str] = []
         legacy_flagged: set = set()
         # IN-MEMORY STATE THAT NEVER REACHED DISK IS AN INTEGRITY PROBLEM, and on a row store it is
@@ -7321,6 +7326,8 @@ class Inspeximus:
         if _CHAIN_INDEX and all(isinstance(t, dict) for t in self._tombstones):
             _tomb_mids = {t.get("memory_id") for t in self._tombstones
                           if type(t.get("memory_id")) is str}
+        _arch_lookup = _archive.receipt_lookup(self) if _archive.active(self) else None
+        _arch_gaps: dict = {}
         for i, r in enumerate(self._receipts):
             # ONE definition, shared with anchor() and the offline bundle verifier -- see _chain_core.
             # `amends` must be inside the hash: it decides which fields a later receipt forgives, so an
@@ -7348,11 +7355,21 @@ class Inspeximus:
             elif expected_pubkey:
                 problems.append(f"receipt {i}: unsigned, but a signature was required")
             cur = by_id.get(r["memory_id"])
+            _arch_gap = None
+            if cur is None and _arch_lookup is not None:
+                # ARCHIVED, NOT MISSING (AUDIT-B B-25): the record is checked where the log says it went.
+                # A segment that is missing or altered is a named gap, reported after this loop, and `ok`
+                # is not true while it exists: `ok` means verified.
+                cur, _arch_gap = _arch_lookup(r["memory_id"])
+                if _arch_gap is not None:
+                    _arch_gaps[_arch_gap] = _arch_gaps.get(_arch_gap, 0) + 1
             if cur is None:
                 # a missing record is only a PROBLEM if it was NOT deliberately erased. A deletion tombstone
                 # (forget_subject) makes the erasure accounted-for: the write-chain stays intact and the record
                 # is provably erased, not silently tampered away. No tombstone -> still flag as out-of-band.
-                if _tomb_mids is not None and type(r["memory_id"]) is str:
+                if _arch_gap is not None:
+                    _erased = True                  # archived; the gap is named after the loop
+                elif _tomb_mids is not None and type(r["memory_id"]) is str:
                     _erased = r["memory_id"] in _tomb_mids
                 else:
                     _erased = any(t.get("memory_id") == r["memory_id"] for t in self._tombstones)
@@ -7472,6 +7489,9 @@ class Inspeximus:
                         f"(edited after write)")
             prev = r.get("hash")
         # verify the DELETION-TOMBSTONE chain too — else a forged tombstone could hide a real out-of-band delete
+        for (_seg, _state), _n in sorted(_arch_gaps.items()):
+            problems.append(f"{_n} receipted record(s) are archived in {_seg}, which is {_state}: they "
+                            f"were not verified")
         tprev = _GENESIS
         for j, t in enumerate(self._tombstones):
             core = Inspeximus._tombstone_core(t)

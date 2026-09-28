@@ -684,6 +684,29 @@ knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 Verified with the Claude Code CLI on a clean profile, both routes, across two sessions. The Code tab
 of the Claude desktop app is not verified.
 
+### When the project store grows
+
+The hook records every command it captures, so a project store grows by thousands of rows a week, and
+every prompt reads all of them. `--archive` moves the old command captures out of the store into one
+file per month beside it. Nothing is deleted.
+
+```bash
+python -m inspeximus.claude_code --archive --older-than 7            # what would move; writes nothing
+python -m inspeximus.claude_code --archive --older-than 7 --apply    # move it
+```
+
+- Recall reads the store alone by default. `recall(..., include_archive=True)` searches the archive
+  files too, and the MCP `recall` tool takes `include_archive`.
+- An erasure reaches every month. `forget`, `forget_subject`, `forget_pii` and `--scrub-secrets` erase
+  in the archive files as well, or refuse and name the files they could not check. The erasure
+  certificate lists each file and whether the erased records were checked absent in it.
+- The files are small enough for a git repository, but an erasure cannot reach git history. A store
+  inside a git work tree is refused unless you pass `--allow-git-tracked`. Run `--scrub-secrets`
+  before you commit an archive file anywhere.
+- A limit of this version: an encrypted store and a store pinned to JSON are refused, because an
+  archive file is a plain row store. An encrypted store stays whole. To archive a JSON-pinned store,
+  unset `INSPEXIMUS_STORE_FORMAT` and open it once, which converts it to a row store.
+
 ---
 
 ## What you get

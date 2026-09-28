@@ -7184,5 +7184,86 @@
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py"
   ]
+ },
+ {
+  "name": "B-25: verify_writes does not look for archived records in their segments",
+  "file": "inspeximus/core.py",
+  "old": "        _arch_lookup = _archive.receipt_lookup(self) if _archive.active(self) else None",
+  "new": "        _arch_lookup = None",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: an archived record in a missing segment is not reported",
+  "file": "inspeximus/core.py",
+  "old": "        for (_seg, _state), _n in sorted(_arch_gaps.items()):",
+  "new": "        for (_seg, _state), _n in []:",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: a segment is verified as an ordinary store",
+  "file": "inspeximus/core.py",
+  "old": "        if self.path and _archive.is_segment(self.path):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: a segment's row count is not checked against its manifest",
+  "file": "inspeximus/archive.py",
+  "old": "    if man.get(\"count\") != len(ids) or man.get(\"ids_sha256\") != hashlib.sha256(\"\\n\".join(ids).encode(\"utf-8\")).hexdigest():",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: the archive log's signatures are not checked",
+  "file": "inspeximus/archive.py",
+  "old": "        why = _sig_problem(e, f\"entry {i}\", expected_pubkey)",
+  "new": "        why = None",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: an encrypted store is archived into plain segments",
+  "file": "inspeximus/archive.py",
+  "old": "    if getattr(m, \"_encrypted\", False):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: plan does not refuse what apply refuses",
+  "file": "inspeximus/archive.py",
+  "old": "    _refuse_unsupported(m)\r\n    unknown = [c for c in classes if c not in CLASSES]",
+  "new": "    unknown = [c for c in classes if c not in CLASSES]",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: move entries are not signed",
+  "file": "inspeximus/archive.py",
+  "old": "            entry.update(_sign_fields(m, entry[\"hash\"]))",
+  "new": "            pass",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
+ },
+ {
+  "name": "B-25: segments carry no receipt copies",
+  "file": "inspeximus/archive.py",
+  "old": "        if receipts:\r\n            con.execute(\"INSERT OR REPLACE INTO meta(k, v) VALUES('archive_receipts', ?)\",",
+  "new": "        if False:\r\n            con.execute(\"INSERT OR REPLACE INTO meta(k, v) VALUES('archive_receipts', ?)\",",
+  "tests": [
+   "tests/test_audit_b_archive_receipted_and_refused_stores.py"
+  ]
  }
 ]

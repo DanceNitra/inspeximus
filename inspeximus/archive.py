@@ -105,8 +105,9 @@ def read_log(store_path) -> list:
     return doc["entries"]
 
 
-def verify_log(entries: list) -> tuple:
-    """Recompute every hash and link. Returns (ok, problems)."""
+def verify_log(entries: list, expected_pubkey: str | None = None) -> tuple:
+    """Recompute every hash and link, and check every signature an entry carries. With
+    `expected_pubkey`, an unsigned entry is a problem too. Returns (ok, problems)."""
     problems = []
     prev = GENESIS
     for i, e in enumerate(entries):
@@ -114,8 +115,61 @@ def verify_log(entries: list) -> tuple:
             problems.append(f"entry {i}: broken link (an earlier entry was altered or removed)")
         if e.get("hash") != _entry_hash(e):
             problems.append(f"entry {i}: hash does not match its content")
+        why = _sig_problem(e, f"entry {i}", expected_pubkey)
+        if why:
+            problems.append(why)
         prev = e.get("hash")
     return not problems, problems
+
+
+def _store_of(target):
+    """The store handle behind `target` when it is one (it can sign), else None (a bare path)."""
+    return target if hasattr(target, "_receipts") else None
+
+
+def _path_of(target):
+    return getattr(target, "path", None) or target
+
+
+def _sign_fields(target, hash_hex: str) -> dict:
+    """{sig, pubkey} over `hash_hex` with the store's receipt key, exactly as receipts and tombstones are
+    signed: the configured signer, else the Ed25519 receipt key. {} when the store has neither, or when
+    `target` is a bare path. Fails closed, as the write path does, when a signer returns nothing."""
+    m = _store_of(target)
+    if m is None:
+        return {}
+    signer = getattr(m, "_receipt_signer", None)
+    if signer is not None:
+        sig = signer(hash_hex)
+        if not sig:
+            raise RuntimeError("receipt signer returned no signature; refusing to write an unsigned archive "
+                               "entry while a signer is configured")
+        out = {"sig": sig}
+        if getattr(m, "receipt_pubkey", None):
+            out["pubkey"] = m.receipt_pubkey
+        return out
+    from . import core as _core
+    sk = getattr(m, "_receipt_sk", None)
+    if sk and _core._HAVE_ED:
+        k = _core._Ed25519SK.from_private_bytes(bytes.fromhex(sk))
+        return {"sig": k.sign(bytes.fromhex(hash_hex)).hex(), "pubkey": m.receipt_pubkey}
+    return {}
+
+
+def _sig_problem(obj: dict, what: str, expected_pubkey: str | None = None) -> str | None:
+    if "sig" not in obj:
+        return f"{what}: unsigned, but a signature was required" if expected_pubkey else None
+    from . import core as _core
+    if not _core._HAVE_ED:
+        return f"{what}: signed, but cryptography is not installed to check it"
+    try:
+        _core._Ed25519PK.from_public_bytes(bytes.fromhex(obj.get("pubkey") or expected_pubkey or "")).verify(
+            bytes.fromhex(obj["sig"]), bytes.fromhex(obj["hash"]))
+    except Exception:                                                # noqa: BLE001
+        return f"{what}: invalid signature"
+    if expected_pubkey and obj.get("pubkey") and obj["pubkey"] != expected_pubkey:
+        return f"{what}: signed by an unexpected key"
+    return None
 
 
 def _write_log(store_path, entries: list) -> None:
@@ -142,10 +196,14 @@ def listed_segments(store_path) -> dict:
     return out
 
 
-def _append(store_path, entry: dict) -> dict:
+def _append(target, entry: dict) -> dict:
+    """Append one entry to the log, hash-chained, and signed with the store's receipt key when `target`
+    is a store that has one."""
+    store_path = _path_of(target)
     entries = read_log(store_path)
     entry["prev"] = entries[-1]["hash"] if entries else GENESIS
     entry["hash"] = _entry_hash(entry)
+    entry.update(_sign_fields(target, entry["hash"]))
     entries.append(entry)
     _write_log(store_path, entries)
     return entry
@@ -222,15 +280,16 @@ def recover(store_path) -> list:
     intent's sha256 is committed. Anything else is left for `check_segments` to report. Returns what it
     did, as [(segment, action)]."""
     from .core import _StoreLock
+    target, store_path = store_path, _path_of(store_path)
     done = []
     if not log_path(store_path).exists():
         return done
     with _StoreLock(store_path):
-        _recover_locked(store_path, done)
+        _recover_locked(target, store_path, done)
     return done
 
 
-def _recover_locked(store_path, done: list) -> None:
+def _recover_locked(target, store_path, done: list) -> None:
     for it in _pending_intents(read_log(store_path)):
         sp = Path(store_path).with_name(it["segment"])
         tmp = Path(store_path).with_name(it["temp"])
@@ -240,8 +299,8 @@ def _recover_locked(store_path, done: list) -> None:
             cur = it["new_sha256"]
             done.append((it["segment"], "replaced"))
         if cur == it["new_sha256"]:
-            _append(store_path, {"v": 1, "kind": "amend", "ts": time.time(), "segment": it["segment"],
-                                 "new_sha256": it["new_sha256"], "ids": it["ids"], "intent": it["hash"]})
+            _append(target, {"v": 1, "kind": "amend", "ts": time.time(), "segment": it["segment"],
+                             "new_sha256": it["new_sha256"], "ids": it["ids"], "intent": it["hash"]})
             done.append((it["segment"], "committed"))
 
 
@@ -286,7 +345,7 @@ def erasure_pool(store):
         yield
         return
     m = _base(store)
-    recover(m.path)
+    recover(m)
     sweep_temps(m.path)
     problems = check_segments(m.path)
     if problems:
@@ -305,7 +364,7 @@ def locate(store, ids) -> dict:
     want = set(ids or ())
     if not want or not present(m.path):
         return {}
-    recover(m.path)
+    recover(m)
     sweep_temps(m.path)
     files = segment_files(m.path)
     names = [n for n, seg in files["listed"].items() if want & set(seg["ids"])]
@@ -356,11 +415,12 @@ def _prepare_locked(m, by_segment: dict, prepared: list, _rows) -> None:
         manifest = {"kind": SEGMENT_KIND, "hot_store": Path(m.path).name, "segment": name,
                     "month": name.split(".archive-")[1][:7], "count": len(keep_ids),
                     "ids_sha256": hashlib.sha256("\n".join(keep_ids).encode("utf-8")).hexdigest()}
-        new_sha = _write_segment_file(tmp, keep, manifest)
+        new_sha = _write_segment_file(tmp, keep, _signed_manifest(m, manifest),
+                                      _receipt_copies(m, set(keep_ids), _segment_receipts(sp)))
         # Logged for an unlisted segment too, so a concurrent sweep keeps the temp (it keeps whatever a
         # pending intent names) and a crash before the commit is finished by `recover`.
         old_sha = listed[name]["sha256"] if name in listed else _segment_sha256(sp)
-        entry = _append(m.path, {"v": 1, "kind": "amend-intent", "ts": time.time(), "segment": name,
+        entry = _append(m, {"v": 1, "kind": "amend-intent", "ts": time.time(), "segment": name,
                                  "ids": sorted(drop), "old_sha256": old_sha,
                                  "new_sha256": new_sha, "temp": tmp.name})
         prepared.append({"segment": name, "ids": sorted(drop), "temp": tmp.name, "intent": entry,
@@ -383,7 +443,7 @@ def _commit_locked(m, prepared: list, states: list) -> None:
     for p in prepared:
         sp = Path(m.path).with_name(p["segment"])
         os.replace(Path(m.path).with_name(p["temp"]), sp)
-        _append(m.path, {"v": 1, "kind": "amend", "ts": time.time(), "segment": p["segment"],
+        _append(m, {"v": 1, "kind": "amend", "ts": time.time(), "segment": p["segment"],
                          "new_sha256": p["intent"]["new_sha256"], "ids": p["ids"],
                          "intent": p["intent"]["hash"]})
         states.append({"segment": p["segment"], "state": "rewritten", "erased": len(p["ids"])})
@@ -498,22 +558,26 @@ def _base(store):
 
 
 def _refuse_unsupported(m) -> None:
+    """Refuse, before anything is read or written, the stores a plain row-store segment cannot serve.
+
+    A LIMIT OF 3.16.1, NOT A GAP: the owner asked to keep everything, and a refusal keeps everything,
+    only without the speedup. Plain segments from an encrypted store would write its text in the clear."""
     if not getattr(m, "path", None):
         raise ArchiveRefused("this store has no file; there is nothing to archive beside")
     if getattr(m, "_encrypted", False):
-        raise ArchiveRefused("the store is encrypted at rest; a segment would be written in plain text")
+        raise ArchiveRefused("the store is encrypted at rest, and archive segments are plain row stores, so "
+                             "archiving would write its text in the clear. An encrypted store stays hot")
     if not m._rows_available():
-        raise ArchiveRefused("the store is not a row store (INSPEXIMUS_STORE_FORMAT=json pins JSON); "
-                             "segments are row stores")
-    if getattr(m, "receipts_enabled", False):
-        raise ArchiveRefused("the store keeps write receipts, and verify_writes does not yet account for "
-                             "archived records; archiving a receipted store ships with the erasure step")
+        raise ArchiveRefused("the store is pinned to JSON (INSPEXIMUS_STORE_FORMAT=json), and archive segments "
+                             "are row stores. Convert it first: unset INSPEXIMUS_STORE_FORMAT and open the "
+                             "store once, which converts it to a row store")
 
 
 def plan(store, older_than_days: float, classes=("cmd",), now: float | None = None,
          cap_bytes: int = SEGMENT_CAP_BYTES) -> dict:
     """What `apply` would do, and nothing else: no file is written or read beyond the store and its log."""
     m = _base(store)
+    _refuse_unsupported(m)
     unknown = [c for c in classes if c not in CLASSES]
     if unknown:
         raise ValueError(f"unknown class(es) {unknown}; known: {sorted(CLASSES)}")
@@ -553,8 +617,39 @@ def _segment_sha256(path) -> str:
     return h.hexdigest()
 
 
-def _write_segment_file(path: Path, records: list, manifest: dict) -> str:
-    """Write a new row store at `path` holding `records` verbatim, then the manifest; return its sha256."""
+def _signed_manifest(m, manifest: dict) -> dict:
+    """The manifest with its hash and, when the store has a receipt key, its signature. Deleting a record
+    and its receipt copy from a segment changes the id count and sha256 the signature covers."""
+    manifest = dict(manifest)
+    manifest["hash"] = _entry_hash(manifest)
+    manifest.update(_sign_fields(m, manifest["hash"]))
+    return manifest
+
+
+def _receipt_copies(m, ids: set, prior=None) -> list:
+    """Every write receipt of the given ids: from the hot store's chain, or from a segment's own copies."""
+    src = prior if prior is not None else list(getattr(m, "_receipts", None) or [])
+    return [copy.deepcopy(r) for r in src if isinstance(r, dict) and r.get("memory_id") in ids]
+
+
+def _meta(path, key):
+    from . import sqlite_store as _rows
+    con = _rows._connect(path)
+    try:
+        row = con.execute("SELECT v FROM meta WHERE k=?", (key,)).fetchone()
+    finally:
+        con.close()
+    return json.loads(row[0]) if row else None
+
+
+def _segment_receipts(path) -> list:
+    return _meta(path, "archive_receipts") or []
+
+
+def _write_segment_file(path: Path, records: list, manifest: dict, receipts=None) -> str:
+    """Write a new row store at `path` holding `records` verbatim, the manifest, and the write receipts of
+    those records (the hot chain's copies, as a list: chain positions live in the hot store); return
+    its sha256."""
     from . import sqlite_store as _rows
     from .core import Inspeximus
     seg = Inspeximus(path=str(path), receipts=False)
@@ -565,6 +660,9 @@ def _write_segment_file(path: Path, records: list, manifest: dict) -> str:
     try:
         con.execute("INSERT OR REPLACE INTO meta(k, v) VALUES('archive_manifest', ?)",
                     (json.dumps(manifest, sort_keys=True),))
+        if receipts:
+            con.execute("INSERT OR REPLACE INTO meta(k, v) VALUES('archive_receipts', ?)",
+                        (json.dumps(receipts, sort_keys=True),))
         con.commit()
     finally:
         con.close()
@@ -572,7 +670,7 @@ def _write_segment_file(path: Path, records: list, manifest: dict) -> str:
     return _segment_sha256(path)
 
 
-def _write_segment(seg_path: Path, records: list, manifest: dict, hot_ids=frozenset()) -> str:
+def _write_segment(seg_path: Path, records: list, manifest: dict, hot_ids=frozenset(), receipts=None) -> str:
     """Write one segment holding `records` verbatim, then its manifest. Returns its sha256.
 
     A segment the log does not name is left by a run that stopped before its log entry. It is reused
@@ -591,7 +689,7 @@ def _write_segment(seg_path: Path, records: list, manifest: dict, hot_ids=frozen
     tmp = seg_path.with_name(seg_path.name + ".tmp.%d" % os.getpid())
     if tmp.exists():
         tmp.unlink()
-    _write_segment_file(tmp, records, manifest)
+    _write_segment_file(tmp, records, manifest, receipts)
     os.replace(tmp, seg_path)
     return _segment_sha256(seg_path)
 
@@ -604,7 +702,7 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
     from .core import _StoreLock
     m = _base(store)
     _refuse_unsupported(m)
-    recover(m.path)
+    recover(m)
     sweep_temps(m.path)
     ok, problems = verify_log(read_log(m.path))
     if not ok:
@@ -642,12 +740,14 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
             ids_sha = hashlib.sha256("\n".join(ids).encode("utf-8")).hexdigest()
             manifest = {"kind": SEGMENT_KIND, "hot_store": Path(m.path).name, "segment": name,
                         "month": name.split(".archive-")[1][:7], "count": len(ids), "ids_sha256": ids_sha}
-            sha = _write_segment(seg_path, recs, manifest, {r["id"] for r in m._items})
+            sha = _write_segment(seg_path, recs, _signed_manifest(m, manifest), {r["id"] for r in m._items},
+                                 _receipt_copies(m, set(ids)))
             entry = {"v": 1, "kind": "move", "ts": now, "classes": list(classes),
                      "cutoff_ts": cutoff, "segment": name, "segment_sha256": sha,
                      "count": len(ids), "ids": ids, "ids_sha256": ids_sha,
                      "prev": entries[-1]["hash"] if entries else GENESIS}
             entry["hash"] = _entry_hash(entry)
+            entry.update(_sign_fields(m, entry["hash"]))
             entries.append(entry)
             written.append({"file": name, "records": len(ids), "sha256": sha, "entry_hash": entry["hash"]})
             moved_ids.update(ids)
@@ -827,3 +927,102 @@ def verify_certificate_block(cert: dict, store_path, erased: set) -> tuple:
         if leaked:
             problems.append(f"{len(leaked)} erased id(s) STILL PRESENT in segment {seg['segment']}: {leaked[:5]}")
     return levels, problems
+
+
+# ── verification ─────────────────────────────────────────────────────────────────────────────────────
+
+def is_segment(path) -> bool:
+    """Whether `path` is an archive segment: a row store with an archive manifest."""
+    from . import sqlite_store as _rows
+    try:
+        return bool(path) and _rows.looks_like_sqlite(path) and _meta(path, "archive_manifest") is not None
+    except Exception:                                                # noqa: BLE001
+        return False
+
+
+def verify_segment(path, expected_pubkey: str | None = None) -> tuple:
+    """Verify one segment on its own. Returns (ok, problems).
+
+    The manifest's hash and signature, its id count and id sha256 against the rows, each receipt copy's
+    hash and signature, and each row against its latest receipt (the committed fields). A segment of a
+    store without receipts verifies its manifest only and says so: that is accounting, not tamper
+    evidence. Chain positions are checked against the hot store by its own verify_writes."""
+    from . import core as _core
+    from . import sqlite_store as _rows
+    problems = []
+    man = _meta(path, "archive_manifest")
+    if not isinstance(man, dict):
+        return False, [f"{Path(path).name} carries no archive manifest"]
+    if man.get("hash") != _entry_hash(man):
+        problems.append("the segment manifest does not match its hash")
+    why = _sig_problem(man, "the segment manifest", expected_pubkey)
+    if why:
+        problems.append(why)
+    rows = [r for r in _rows.load(path) if isinstance(r, dict) and r.get("id")]
+    ids = sorted(r["id"] for r in rows)
+    if man.get("count") != len(ids) or man.get("ids_sha256") != hashlib.sha256("\n".join(ids).encode("utf-8")).hexdigest():
+        problems.append(f"the segment holds {len(ids)} record(s) and they do not match its manifest "
+                        f"({man.get('count')}): a row was added or removed after it was written")
+    receipts = _meta(path, "archive_receipts") or []
+    latest: dict = {}
+    for i, r in enumerate(receipts):
+        if r.get("hash") != _core._sha256_hex(_core._canon(_core.Inspeximus._chain_core(r, "write"))):
+            problems.append(f"receipt copy {i}: hash does not match its content")
+        why = _sig_problem(r, f"receipt copy {i}", expected_pubkey)
+        if why:
+            problems.append(why)
+        mid = r.get("memory_id")
+        if mid not in latest or r.get("seq", 0) >= latest[mid].get("seq", 0):
+            latest[mid] = r
+    if receipts:
+        for rec in rows:
+            _core.Inspeximus._normalise_loaded(rec)
+            rc = (latest.get(rec["id"]) or {}).get("commit") or {}
+            if not rc:
+                problems.append(f"memory {rec['id']}: no receipt copy in the segment")
+                continue
+            cc = _core.Inspeximus._recompute_commit(rec)
+            bad = [k for k in _core._COMMIT_BINDING_FIELDS if k in rc and rc.get(k) != cc.get(k)]
+            if bad:
+                problems.append(f"memory {rec['id']}: differs from its receipt in {', '.join(bad)}")
+    else:
+        # As the hot store's verify_writes does for a store without receipts: nothing here is verified.
+        problems.append("the segment carries no write receipts (its store keeps none): its manifest gives "
+                        "accounting, not tamper evidence")
+    return not problems, problems
+
+
+def receipt_lookup(store):
+    """For verify_writes: a function memory_id -> (row, gap). The row of an archived record, read from its
+    segment when the segment is present and matches the log; or a gap (segment, state) when it is not.
+    (None, None) for an id the log does not list."""
+    from . import core as _core
+    from . import sqlite_store as _rows
+    m = _base(store)
+    listed = listed_segments(m.path)
+    where = {i: n for n, seg in listed.items() for i in seg["ids"]}
+    cache: dict = {}
+
+    def get(mid):
+        n = where.get(mid)
+        if n is None:
+            return None, None
+        if n not in cache:
+            sp = Path(m.path).with_name(n)
+            if not sp.exists():
+                cache[n] = ("gap", "missing")
+            elif _segment_sha256(sp) != listed[n]["sha256"]:
+                cache[n] = ("gap", "altered")
+            else:
+                rows = {}
+                for r in _rows.load(sp):
+                    if isinstance(r, dict) and r.get("id"):
+                        _core.Inspeximus._normalise_loaded(r)
+                        rows[r["id"]] = r
+                cache[n] = ("rows", rows)
+        kind, val = cache[n]
+        if kind == "gap":
+            return None, (n, val)
+        return val.get(mid), None
+    return get
+

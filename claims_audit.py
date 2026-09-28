@@ -1431,7 +1431,7 @@ NON_CLAIM_TOKENS = {
         "183": (1, "the --policy-days example in the rotation paragraph: the six-month floor in days, an argument"),
         "27": (1, "EU AI Act ARTICLE number (fundamental rights impact assessment) in the documents paragraph"),
         "35": (1, "GDPR ARTICLE number (data protection impact assessment) in the documents paragraph"),
-        "7": (1, "the paragraph digit in GDPR Art. 35(7), not a quantity"),
+        "7": (3, "the paragraph digit in GDPR Art. 35(7), not a quantity; and twice the example window in `--archive --older-than 7`, a command argument, not a measurement"),
         "4": (1, "refers_to=[3, 4] in the incident example: a ledger seq number in a code snippet"),
         "134,": (1, "the MCP tool count followed by a comma in prose; the claim itself is '73'. "
                 "Was '68,' until 2026-08-25, when three places still said 68 or 71 while the server "

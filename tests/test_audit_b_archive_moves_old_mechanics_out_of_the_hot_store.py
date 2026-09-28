@@ -12,7 +12,7 @@ What is required here:
     pooled read can never write an archived row back into the hot file;
   * the hook's stdout is byte-identical before and after, for UserPromptSubmit and SessionStart;
   * an interrupted run is finished, never duplicated; segments in a git work tree need the flag;
-  * stores this step cannot yet account for (receipts, encryption, the JSON pin) are refused.
+  * a store pinned to JSON is refused (encrypted stores and receipts: see the receipted-stores test).
 """
 import hashlib
 import json
@@ -228,13 +228,9 @@ def test_segments_inside_a_git_work_tree_need_the_flag(tmp_path, monkeypatch):
     assert r2["applied"] and r2["git_warning"] is None, "the control: no repository, no flag needed"
 
 
-def test_stores_this_step_cannot_account_for_are_refused(tmp_path, monkeypatch):
-    p = tmp_path / "receipted.json"
-    m = Inspeximus(str(p), receipts=True)
-    m.remember("ran: ls", key="cmd:abc", tags=["bash"])
-    m.flush()
-    with pytest.raises(archive.ArchiveRefused, match="receipts"):
-        archive.apply(Inspeximus(str(p), receipts=True), 0, now=T0 + DAY)
+def test_a_json_pinned_store_is_refused(tmp_path, monkeypatch):
+    """Receipted stores are archived since step 2 (tests/test_audit_b_archive_receipted_and_refused_stores.py,
+    which also covers encrypted stores and the CLI)."""
     monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
     q = tmp_path / "pinned.json"
     m = Inspeximus(str(q))
