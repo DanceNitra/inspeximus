@@ -6431,5 +6431,122 @@
   "tests": [
    "tests/test_a41_a_stale_row_handle_does_not_split_a_key.py"
   ]
+ },
+ {
+  "name": "A-42/43: remember (keyed) decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=False)\n    def remember(self, text: str, tags=None, value: float = 1.0",
+  "new": "    def remember(self, text: str, tags=None, value: float = 1.0",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: forget decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def forget(self, ids=None, where=None",
+  "new": "    def forget(self, ids=None, where=None",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: forget_subject decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def forget_subject(self, subject: str, request_id",
+  "new": "    def forget_subject(self, subject: str, request_id",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: forget_pii decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def forget_pii(self, types=None, subject",
+  "new": "    def forget_pii(self, types=None, subject",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: credit decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def credit(self, ids, outcome",
+  "new": "    def credit(self, ids, outcome",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: retire decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def retire(self, key: str, reason: str",
+  "new": "    def retire(self, key: str, reason: str",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: revert decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def revert(self, key: str, capability",
+  "new": "    def revert(self, key: str, capability",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: submit_revert decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def submit_revert(self, intent: str",
+  "new": "    def submit_revert(self, intent: str",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: object_processing decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def object_processing(self, subject: str, actor: str, ground: str",
+  "new": "    def object_processing(self, subject: str, actor: str, ground: str",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: resolve_objection decides from the rows it loaded",
+  "file": "inspeximus/core.py",
+  "old": "    @_decides(save=True)\n    def resolve_objection(self, subject: str, actor: str, outcome: str",
+  "new": "    def resolve_objection(self, subject: str, actor: str, outcome: str",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: the decision sync does not re-read the sidecars",
+  "file": "inspeximus/core.py",
+  "old": "        self._refresh_sidecars()\n        if self._file_sig is None:",
+  "new": "        if self._file_sig is None:",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42/43: the decision sync ignores a row store's write generation",
+  "file": "inspeximus/core.py",
+  "old": "            changed = g is not None and g != self._file_gen\n",
+  "new": "            changed = False\n",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "A-42: an erasure that left a record of the subject reports clean",
+  "file": "inspeximus/core.py",
+  "old": "            if left:\n                rs = dict(out.get(\"residue_in_store\") or {})",
+  "new": "            if False:\n                rs = dict(out.get(\"residue_in_store\") or {})",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
  }
 ]

@@ -61,6 +61,10 @@ def _two_handles_and_a_stale_one():
     other._save_min_s = 0
     other.remember("a second writer's record", key="b")
     other.flush()                       # the store has moved under `stale`, so its next save merges
+    # PINNED, so the test does not depend on the clock (A-41, AUDIT-A). The stale handle is told the file
+    # is as it last saw it; only the row store's write generation still says it moved. Before A-41 the
+    # save guard read the stat signature alone, the merge never ran, and this failed 20 of 20.
+    stale._file_sig = stale._stat_sig()
     return stale, p
 
 
@@ -84,7 +88,7 @@ def test_a_row_committed_mid_save_survives():
     stale, path = _two_handles_and_a_stale_one()
     _inject_during_the_merge(stale, path, "foreign001", also_refresh_baseline=False)
 
-    stale.remember("this handle's own record", key="c")
+    stale.remember("this handle's own record")     # unkeyed: the merge under test is the save's
     stale.flush()
 
     assert "foreign001" in _ids(path), (
@@ -97,7 +101,7 @@ def test_the_second_read_really_does_delete_it():
     stale, path = _two_handles_and_a_stale_one()
     _inject_during_the_merge(stale, path, "foreign002", also_refresh_baseline=True)
 
-    stale.remember("this handle's own record", key="c")
+    stale.remember("this handle's own record")     # unkeyed: the merge under test is the save's
     stale.flush()
 
     assert "foreign002" not in _ids(path), (
@@ -112,7 +116,7 @@ def test_nothing_else_was_lost_in_either_arm():
     assert len(before) == 2, "the fixture does not hold both writers' records: %r" % (before,)
 
     _inject_during_the_merge(stale, path, "foreign003", also_refresh_baseline=False)
-    stale.remember("this handle's own record", key="c")
+    stale.remember("this handle's own record")     # unkeyed: the merge under test is the save's
     stale.flush()
 
     after = _ids(path)

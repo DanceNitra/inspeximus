@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import calendar
 import contextlib
+import functools
 import collections as _collections
 import hashlib
 import hmac
@@ -2682,6 +2683,34 @@ class UnresolvedLineage(ValueError):
         )
 
 
+
+def _decides(save: bool = True):
+    """Run an operation that DECIDES FROM THE ROWS under one hold of the store lock, after merging what
+    other writers committed (A-41, A-42, A-43; session 1's design).
+
+    Measured 2026-09-28 with two handles on one store: forget_subject selected the subject's records from
+    its own stale rows and reported success while a peer's newer record of that subject stayed on disk;
+    credit lost one of two concurrent increments; a keyed write superseded a value it had never seen. Each
+    decided from the rows the handle loaded, and nothing re-decided after the save merged the peer's rows.
+    So every such operation now takes the lock, merges from disk when the store moved (stat signature,
+    row generation or content hash, the checks the save guard makes), decides, and with `save=True`
+    writes before letting go.
+
+    `remember` goes through it only with a `key`: an unkeyed write decides nothing from the other rows.
+    It keeps its throttled save (at most one per `_save_min_s`) rather than forcing one per call, so the
+    decision is made on fresh rows and the write can come later; the merge at that save settles any key a
+    later peer moved again (A-41)."""
+    def wrap(fn):
+        @functools.wraps(fn)
+        def run(self, *a, **k):
+            if fn.__name__ == "remember" and k.get("key") is None:
+                return fn(self, *a, **k)
+            with self._deciding(save=save):
+                return fn(self, *a, **k)
+        return run
+    return wrap
+
+
 class Inspeximus:
     def __init__(self, path: str | None = None, embed=None, receipts: bool = False,
                  receipt_key: str | None = None, receipt_pubkey: str | None = None,
@@ -2893,6 +2922,7 @@ class Inspeximus:
         self._file_sig = None       # (mtime_ns, size) of the file we loaded; guards against clobbering a peer
         self._file_hash = None      # sha256 of the bytes this handle last read or wrote (JSON and encrypted; A-37)
         self._file_gen = None       # a row store's write generation when this handle last read or wrote it (A-37)
+        self._decide_depth = 0      # > 0 while this store's lock is held by a deciding operation (_decides)
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -3473,6 +3503,7 @@ class Inspeximus:
         finally:
             self._priv.n -= 1
 
+    @_decides(save=False)
     def remember(self, text: str, tags=None, value: float = 1.0, meta: dict | None = None,
                  mtype: str | None = None, valid_from: float | None = None,
                  source: dict | None = None, key: str | None = None,
@@ -8676,6 +8707,7 @@ class Inspeximus:
                                  basis=f"out_of_band: {str(reason).strip()[:300]}", authorized_by=str(actor).strip())
         return {"memory_id": mid, "declared": True, "tombstone_seq": t["seq"], "signed": "sig" in t}
 
+    @_decides(save=True)
     def forget(self, ids=None, where=None, redact_links: bool = True,
                request_id: str | None = None, basis: str | None = None,
                authorized_by: str | None = None, authorization: str | None = None,
@@ -9068,6 +9100,7 @@ class Inspeximus:
             out.update(ids)
         return out
 
+    @_decides(save=True)
     def object_processing(self, subject: str, actor: str, ground: str, scope: str = "all",
                           request_id: str | None = None, allow_ambiguous: bool = False) -> dict:
         """Record a data subject's objection (GDPR Art. 21) and stop serving their records: from this call
@@ -9102,6 +9135,7 @@ class Inspeximus:
             raise
         return dict(row)
 
+    @_decides(save=True)
     def resolve_objection(self, subject: str, actor: str, outcome: str, grounds: str | None = None,
                           request_id: str | None = None) -> dict:
         """Close the standing objection by `subject`. `outcome` is `upheld` (the objection stands as the
@@ -9376,6 +9410,7 @@ class Inspeximus:
         self._erasure_targets.append(target)
         return self
 
+    @_decides(save=True)
     def forget_subject(self, subject: str, request_id: str | None = None, basis: str | None = None,
                        authorized_by: str | None = None, authorization: str | None = None,
                        values=None, dry_run: bool = False, allow_ambiguous: bool = False,
@@ -9506,6 +9541,26 @@ class Inspeximus:
             out["manifest"] = self._erasure_manifest(subject, values or [], targets, request_id,
                                                      basis, authorized_by, already_erased=res["forgotten"])
         out["coverage"] = self._erasure_coverage(out.get("manifest"), len(targets))
+        # RE-SELECTED ON DISK, AFTER THE SAVE (A-42). The residue check searches the erased records' own
+        # values, so it cannot see a record of the subject the selection never had: measured on 3.15.3, a
+        # stale handle erased one of two records, reported success, and erasure_certificate() verified
+        # while the peer's record stayed. The subject is now resolved again from the file as written, by
+        # a fresh handle, the same way this call resolved it; anything still there fails the residue check
+        # and is named. `__wrapped__`: the fresh handle must not take the store lock this call holds.
+        if self.path:
+            fresh = Inspeximus(path=str(self.path))
+            if self.tenant is not None:
+                fresh = fresh.for_tenant(self.tenant)
+            left = Inspeximus.forget_subject.__wrapped__(fresh, subject, dry_run=True, allow_ambiguous=allow_ambiguous,
+                                                         exact=exact).get("ids") or []
+            if left:
+                rs = dict(out.get("residue_in_store") or {})
+                rs["ok"] = False
+                rs["findings"] = list(rs.get("findings") or []) + [
+                    {"record": i, "where": "store", "why": "a record of the subject is still in the store after the erasure"}
+                    for i in left]
+                out["residue_in_store"] = rs
+            out["subject_left_on_disk"] = sorted(left)
         return out
 
     @staticmethod
@@ -9769,6 +9824,61 @@ class Inspeximus:
             man.register(t)
         return man.execute(subject, values, request_id=request_id, basis=basis,
                            authorized_by=authorized_by)
+
+    @contextlib.contextmanager
+    def _deciding(self, save: bool = True):
+        """The store lock, held across a decision and (with `save`) its write. Re-entrant per store: an
+        operation that calls another deciding operation keeps the one hold, because `_StoreLock` itself
+        is not re-entrant (a second lock on the same path would wait on the first)."""
+        if not self.path or self._decide_depth:
+            self._decide_depth += 1 if self.path else 0
+            try:
+                yield
+            finally:
+                if self.path:
+                    self._decide_depth -= 1
+            return
+        _make_store_dir(self.path.parent)
+        try:
+            lock = _StoreLock(self.path)
+            lock.__enter__()
+        except StoreLockUnavailable:
+            yield                                        # a directory we cannot lock: as before
+            return
+        self._decide_depth = 1
+        try:
+            self._sync_before_decision()
+            yield
+            if save and self._dirty:
+                self._save(force=True)
+        finally:
+            self._decide_depth = 0
+            lock.__exit__(None, None, None)
+
+    def _sync_before_decision(self) -> bool:
+        """Merge what other writers committed since this handle last read, when the store moved. The same
+        three checks the save guard makes: the stat signature, a row store's write generation, and a JSON
+        or encrypted store's content hash. The sidecars a peer writes without touching the store file
+        (objections, the irreversible budget) are re-read first: an objection recorded by a stale handle
+        rewrote the objections file from its own list and dropped the peer's (measured 2026-09-28).
+        Returns whether it merged the store."""
+        if not self.path:
+            return False
+        self._refresh_sidecars()
+        if self._file_sig is None:
+            return False
+        changed = self._stat_sig() != self._file_sig
+        if not changed and self._row_snapshot is not None and self._file_gen is not None:
+            g = _rows.generation(self.path)
+            changed = g is not None and g != self._file_gen
+        elif not changed and self._row_snapshot is None and self._file_hash is not None:
+            changed = self._disk_hash() != self._file_hash
+        if not changed:
+            return False
+        if self._rows_available():
+            return self._merge_rows_from_disk()
+        self._merge_with_disk()
+        return True
 
     def _merge_rows_from_disk(self) -> bool:
         """Union this handle's records with what is on disk now. Returns False if it cannot.
@@ -10884,6 +10994,7 @@ class Inspeximus:
         return {"records_with_pii": n, "superseded_with_pii": n_superseded, "by_type": by_type, "ids": ids,
                 "coverage": coverage}
 
+    @_decides(save=True)
     def forget_pii(self, types=None, subject: str | None = None, request_id: str | None = None,
                    basis: str | None = None, allow_ambiguous: bool = False) -> dict:
         """DATA-MINIMIZATION SWEEP: hard-delete (+ tombstone) every record carrying a PII tag, optionally
@@ -12644,6 +12755,7 @@ class Inspeximus:
                          "different-size heads: run verify_consistency against a replica to settle append-only"
                          if undetermined else "")}
 
+    @_decides(save=True)
     def retire(self, key: str, reason: str, source=None) -> dict:
         """End `key` with NO replacement: every active record for it in this handle's scope becomes
         `superseded`, with the reason on the record and declared in the receipt chain, and nothing
@@ -12869,6 +12981,7 @@ class Inspeximus:
                 return False
         return hmac.compare_digest(self.revert_capability(key), capability)
 
+    @_decides(save=True)
     def revert(self, key: str, capability: str | None = None, reason: str | None = None,
                agent_id: str | None = None, project: str | None = None) -> dict:
         """CONTROL-PLANE revert: restore the value that the current active record for `key` superseded.
@@ -13003,6 +13116,7 @@ class Inspeximus:
         # landed intents persist their nonce in the ledgered record, so single-use survives a reload
         return any((r.get("meta") or {}).get("revert_nonce") == nonce for r in self.items)
 
+    @_decides(save=True)
     def submit_revert(self, intent: str, capability: str | None = None) -> dict:
         """Evaluate a signed revert INTENT at this position in the write stream. Outcomes are first-class:
         {"ok": True, ...} landed · {"ok": False, "reason": "conflict"} the relative base moved (definitive,
@@ -15562,6 +15676,7 @@ class Inspeximus:
                          f"{', '.join(Inspeximus._OUTCOME_GOOD_WORDS)} (good) / "
                          f"{', '.join(Inspeximus._OUTCOME_BAD_WORDS)} (bad)")
 
+    @_decides(save=True)
     def credit(self, ids, outcome, weight: float = 1.0, warrant=None) -> dict:
         """Close the accuracy loop onto the substrate. When the work a set of memories was recalled into
         gets a real verdict (a forecast resolves, a replication is ruled REPRODUCED/FAILED, a hypothesis is
@@ -16168,6 +16283,7 @@ class Inspeximus:
                 raise ProofNotWritten(f"the irreversible-budget spend could not be written, so it was not "
                                       f"allowed: {self._sidecar_errors['irrev']}") from e
 
+    @_decides(save=True)
     def spend_irreversible(self, ids, amount: float = 1.0, budget: float = 1.0,
                            allow_ambiguous: bool = False,
                            provenance_lo: float | None = None, require_earned: bool = False,
@@ -18282,7 +18398,7 @@ class Inspeximus:
             # ONE critical section for the check AND the write. Split apart, the window
             # between them is exactly the race the check exists to report.
             _make_store_dir(self.path.parent)
-            with _StoreLock(self.path):
+            with (contextlib.nullcontext() if self._decide_depth else _StoreLock(self.path)):
                 # THE CONTENT, WHEN THE STAT SIGNATURE HAS NOT MOVED (A-37). (mtime_ns, size) is all
                 # the guard compared, and a peer's write in the same clock tick that leaves the size
                 # unchanged moves neither: measured on 3.15.2 with a fixed clock, a JSON or encrypted
