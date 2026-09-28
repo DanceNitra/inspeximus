@@ -9028,9 +9028,6 @@ class Inspeximus:
                     v = r.get(field)
                     if isinstance(v, str) and v.strip():
                         _residue_values.append(v)
-        _arch_prepared = _archive.prepare_erasure(self, _arch_ids) if _arch_ids else []
-        for _p in _arch_prepared:
-            _residue_values.extend(_p["values"])
         # PROOF FIRST (A-34). The tombstones are written before anything is removed, and a chain that
         # cannot be written stops the erasure with nothing changed: before 3.15.4 a failed write was
         # recorded in `_sidecar_errors`, the rows were deleted anyway, and the call answered
@@ -9054,6 +9051,13 @@ class Inspeximus:
             self._sidecar_errors.pop("tombstones", None)     # nothing unwritten is left: the call raised
             raise
         self._drop_pre_rows_backup()
+        # The segment rewrite is prepared, and its intent logged, only AFTER the tombstones are on disk
+        # (B25-R1): an intent logged first could be finished by a later erasure's recover() for an
+        # erasure that stopped before its proof existed. recover() and commit_erasure() check the
+        # tombstones on disk as well, so the rule holds even if this order changes.
+        _arch_prepared = _archive.prepare_erasure(self, _arch_ids) if _arch_ids else []
+        for _p in _arch_prepared:
+            _residue_values.extend(_p["values"])
         self._touched.update(target)
         self._items = [r for r in self._items if r["id"] not in target]
         scrubbed = 0

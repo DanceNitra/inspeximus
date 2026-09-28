@@ -314,9 +314,33 @@ def _append(target, entry: dict) -> dict:
 
 
 def _pending_intents(entries: list) -> list:
-    """`amend-intent` entries with no `amend` that commits them."""
-    done = {e.get("intent") for e in entries if e.get("kind") == "amend"}
+    """`amend-intent` entries with no `amend` that commits them and no `amend-abort` that withdraws them."""
+    done = {e.get("intent") for e in entries if e.get("kind") in ("amend", "amend-abort")}
     return [e for e in entries if e.get("kind") == "amend-intent" and e["hash"] not in done]
+
+
+def _tombstoned_on_disk(store_path) -> set:
+    """The ids the hot store's tombstone chain holds ON DISK (`<store>.tombstones.json`), read at the
+    moment a segment is about to lose rows. An unreadable chain counts as empty, so the step that needs
+    it refuses instead of proceeding."""
+    tp = Path(store_path).with_name(Path(store_path).name + ".tombstones.json")
+    try:
+        chain = json.loads(tp.read_text(encoding="utf-8")) if tp.exists() else []
+    except (OSError, ValueError):
+        return set()
+    return {t.get("memory_id") for t in chain if isinstance(t, dict)} if isinstance(chain, list) else set()
+
+
+def _abort(target, intent: dict, why: str) -> None:
+    """Withdraw an `amend-intent`: remove its temp and log an `amend-abort`. The segment is not touched."""
+    tmp = Path(_path_of(target)).with_name(intent["temp"])
+    try:
+        if tmp.exists():
+            tmp.unlink()
+    except OSError:
+        pass
+    _append(target, {"v": 1, "kind": "amend-abort", "ts": time.time(), "segment": intent["segment"],
+                     "ids": intent["ids"], "intent": intent["hash"], "reason": why})
 
 
 def _segment_rx(store_path):
@@ -380,10 +404,16 @@ def check_segments(store_path, names=None) -> list:
 
 
 def recover(store_path) -> list:
-    """Finish an erasure that stopped between its `amend-intent` and its `amend`. A segment still at its
-    logged sha256 with the prepared temp beside it is replaced by the temp; a segment already at the
-    intent's sha256 is committed. Anything else is left for `check_segments` to report. Returns what it
-    did, as [(segment, action)]."""
+    """Finish an erasure that stopped between its `amend-intent` and its `amend`, or withdraw it.
+
+    THE PRECONDITION IS ON DISK OR NOTHING IS DESTROYED (B25-R1, AUDIT-A). Rows may leave a segment only
+    when every id the intent names has a tombstone in the hot store's chain on disk. Without that, an
+    erasure that stopped after its intent and before its tombstones was completed here by the NEXT
+    erasure: archived rows left their segment with no proof, for an erasure its caller saw fail. So an
+    intent whose tombstones are not on disk is aborted (its temp removed, an `amend-abort` logged, the
+    segment unchanged). One whose tombstones are there is finished: the temp replaces a segment still at
+    its logged sha256, a segment already at the new sha256 is committed, and a temp that is gone is
+    rebuilt from the segment when `store_path` is a store. Returns [(segment, action)]."""
     from .core import _StoreLock
     target, store_path = store_path, _path_of(store_path)
     done = []
@@ -395,17 +425,31 @@ def recover(store_path) -> list:
 
 
 def _recover_locked(target, store_path, done: list) -> None:
+    tombs = _tombstoned_on_disk(store_path)
     for it in _pending_intents(read_log(store_path)):
         sp = Path(store_path).with_name(it["segment"])
         tmp = Path(store_path).with_name(it["temp"])
         cur = _segment_sha256(sp) if sp.exists() else None
-        if cur == it["old_sha256"] and tmp.exists() and _segment_sha256(tmp) == it["new_sha256"]:
-            os.replace(tmp, sp)
-            cur = it["new_sha256"]
-            done.append((it["segment"], "replaced"))
-        if cur == it["new_sha256"]:
+        new_sha = it["new_sha256"]
+        if not set(it["ids"]) <= tombs:
+            if cur == new_sha:
+                # The rows are already gone and their proof is not: nothing here can undo that, so the
+                # intent stays pending and the certificate keeps reporting it.
+                done.append((it["segment"], "left pending: rows removed without their tombstones on disk"))
+                continue
+            _abort(target, it, "its tombstones are not on disk")
+            done.append((it["segment"], "aborted"))
+            continue
+        if cur == it["old_sha256"]:
+            if not (tmp.exists() and _segment_sha256(tmp) == new_sha) and _store_of(target) is not None:
+                tmp, new_sha = _write_erasure_temp(_base(target), it["segment"], set(it["ids"]))[:2]
+            if tmp.exists() and _segment_sha256(tmp) == new_sha:
+                os.replace(tmp, sp)
+                cur = new_sha
+                done.append((it["segment"], "replaced"))
+        if cur == new_sha:
             _append(target, {"v": 1, "kind": "amend", "ts": time.time(), "segment": it["segment"],
-                             "new_sha256": it["new_sha256"], "ids": it["ids"], "intent": it["hash"]})
+                             "new_sha256": new_sha, "ids": it["ids"], "intent": it["hash"]})
             done.append((it["segment"], "committed"))
 
 
@@ -506,29 +550,41 @@ def prepare_erasure(store, by_segment: dict) -> list:
     return prepared
 
 
-def _prepare_locked(m, by_segment: dict, prepared: list, _rows) -> None:
+def _write_erasure_temp(m, name: str, drop: set) -> tuple:
+    """Write `name` without the rows in `drop` as a temp beside it, from the segment as it is NOW.
+    Returns (temp path, its sha256, the erased rows)."""
+    from . import sqlite_store as _rows
+    sp = Path(m.path).with_name(name)
+    rows = [r for r in _rows.load(sp) if isinstance(r, dict) and r.get("id")]
+    erased = [r for r in rows if r["id"] in drop]
+    keep = [r for r in rows if r["id"] not in drop]
+    tmp = sp.with_name(sp.name + ".tmp.%d" % os.getpid())
+    if tmp.exists():
+        tmp.unlink()
+    keep_ids = sorted(r["id"] for r in keep)
+    manifest = {"kind": SEGMENT_KIND, "hot_store": Path(m.path).name, "segment": name,
+                "month": name.split(".archive-")[1][:7], "count": len(keep_ids),
+                "ids_sha256": hashlib.sha256("\n".join(keep_ids).encode("utf-8")).hexdigest()}
+    new_sha = _write_segment_file(tmp, keep, _signed_manifest(m, manifest),
+                                  _receipt_copies(m, set(keep_ids), _segment_receipts(sp)))
+    return tmp, new_sha, erased
+
+
+def _log_intent(m, name: str, drop: set, tmp: Path, new_sha: str) -> dict:
+    # Logged for an unlisted segment too, so a concurrent sweep keeps the temp (it keeps whatever a
+    # pending intent names) and a crash before the commit is finished, or withdrawn, by `recover`.
     listed = listed_segments(m.path)
+    sp = Path(m.path).with_name(name)
+    old_sha = listed[name]["sha256"] if name in listed else _segment_sha256(sp)
+    return _append(m, {"v": 1, "kind": "amend-intent", "ts": time.time(), "segment": name,
+                       "ids": sorted(drop), "old_sha256": old_sha, "new_sha256": new_sha, "temp": tmp.name})
+
+
+def _prepare_locked(m, by_segment: dict, prepared: list, _rows) -> None:
     for name, ids in sorted(by_segment.items()):
-        sp = Path(m.path).with_name(name)
-        rows = [r for r in _rows.load(sp) if isinstance(r, dict) and r.get("id")]
         drop = set(ids)
-        erased = [r for r in rows if r["id"] in drop]
-        keep = [r for r in rows if r["id"] not in drop]
-        tmp = sp.with_name(sp.name + ".tmp.%d" % os.getpid())
-        if tmp.exists():
-            tmp.unlink()
-        keep_ids = sorted(r["id"] for r in keep)
-        manifest = {"kind": SEGMENT_KIND, "hot_store": Path(m.path).name, "segment": name,
-                    "month": name.split(".archive-")[1][:7], "count": len(keep_ids),
-                    "ids_sha256": hashlib.sha256("\n".join(keep_ids).encode("utf-8")).hexdigest()}
-        new_sha = _write_segment_file(tmp, keep, _signed_manifest(m, manifest),
-                                      _receipt_copies(m, set(keep_ids), _segment_receipts(sp)))
-        # Logged for an unlisted segment too, so a concurrent sweep keeps the temp (it keeps whatever a
-        # pending intent names) and a crash before the commit is finished by `recover`.
-        old_sha = listed[name]["sha256"] if name in listed else _segment_sha256(sp)
-        entry = _append(m, {"v": 1, "kind": "amend-intent", "ts": time.time(), "segment": name,
-                                 "ids": sorted(drop), "old_sha256": old_sha,
-                                 "new_sha256": new_sha, "temp": tmp.name})
+        tmp, new_sha, erased = _write_erasure_temp(m, name, drop)
+        entry = _log_intent(m, name, drop, tmp, new_sha)
         prepared.append({"segment": name, "ids": sorted(drop), "temp": tmp.name, "intent": entry,
                          "values": [v for r in erased for v in (r.get("text"), r.get("object"))
                                     if isinstance(v, str) and v.strip()]})
@@ -546,12 +602,33 @@ def commit_erasure(store, prepared: list) -> list:
 
 
 def _commit_locked(m, prepared: list, states: list) -> None:
+    """Two preconditions, both read from disk under the lock, because both were once assumed:
+    - every erased id has its tombstone on disk (B25-R1). A tombstone write that failed is recorded in
+      `_sidecar_errors` and does not raise, so the erasure reaches this point without its proof.
+    - the segment is still what the temp was built from. Two erasures of one segment used to prepare
+      from the same content, and the second commit then put back the rows the first had removed. A
+      segment that changed is rebuilt from its current content and re-intended before it is replaced."""
+    tombs = _tombstoned_on_disk(m.path)
     for p in prepared:
+        it = p["intent"]
         sp = Path(m.path).with_name(p["segment"])
-        os.replace(Path(m.path).with_name(p["temp"]), sp)
+        if not set(p["ids"]) <= tombs:
+            _abort(m, it, "its tombstones are not on disk")
+            states.append({"segment": p["segment"], "state": "not rewritten: the tombstones are not on disk",
+                           "erased": 0})
+            continue
+        tmp = Path(m.path).with_name(p["temp"])
+        cur = _segment_sha256(sp) if sp.exists() else None
+        if cur != it["old_sha256"] or not tmp.exists() or _segment_sha256(tmp) != it["new_sha256"]:
+            _abort(m, it, "the segment or its temp changed after the intent")
+            if cur is None:
+                states.append({"segment": p["segment"], "state": "missing", "erased": 0})
+                continue
+            tmp, new_sha, _ = _write_erasure_temp(m, p["segment"], set(p["ids"]))
+            it = _log_intent(m, p["segment"], set(p["ids"]), tmp, new_sha)
+        os.replace(tmp, sp)
         _append(m, {"v": 1, "kind": "amend", "ts": time.time(), "segment": p["segment"],
-                         "new_sha256": p["intent"]["new_sha256"], "ids": p["ids"],
-                         "intent": p["intent"]["hash"]})
+                    "new_sha256": it["new_sha256"], "ids": p["ids"], "intent": it["hash"]})
         states.append({"segment": p["segment"], "state": "rewritten", "erased": len(p["ids"])})
 
 
