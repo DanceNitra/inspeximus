@@ -1,3 +1,61 @@
+## 3.15.2 - UPGRADE IF you erase memories, run more than one writer on a store, or use the Codex or Claude Code hooks: an erasure now reaches the session digest, save temps and copies beside the store, and every hook prints exactly one JSON object
+
+Found in a correctness and security audit on 2026-09-27 and 2026-09-28. Every item below has a test
+that fails on 3.15.1 and passes here, and a mutation entry that the gate kills.
+
+- **An erasure reaches the session digest.** Before this version, an erased record's text could stay
+  in a session digest. A session digest now stores record ids and renders their text from the live
+  store, so `forget` leaves no copy of an erased record inside a digest. A digest written by an earlier
+  version holds text; `forget` erases it as a derived copy and names it in its result.
+- **An erasure reaches every copy beside the store.** Before this version, an erased record's text
+  could stay in the temp file of an interrupted save or in a merge backup beside the store, and the
+  erasure certificate still reported the erasure verified. The store now removes an interrupted save's
+  temp file when it opens, and `forget` reports one it could not remove, so the certificate does not
+  verify while a copy remains. `forget` also erases the merge tools' backups, and the certificate names
+  every other copy beside the store that it cannot vouch for.
+- **If you erased before 3.15.2, clean up once.** `inspeximus erase-past-copies` lists what those
+  erasures left behind (old session digests, save temps, merge and conversion backups),
+  `inspeximus erase-past-copies --apply` removes it, and `inspeximus erasure-certificate` checks the
+  result. Add `--path` for a store other than the default. Files beside the store that nothing here
+  accounts for are listed and never touched.
+- **Writers with different TEMP directories exclude each other.** Before this version, two writers of a
+  JSON store (which includes every encrypted store) whose TEMP directories differed could both write at
+  once, and one save could drop the other's records while both reported success. Row stores were not
+  affected. The store lock now sits beside the store, not in TEMP. An earlier version's TEMP lock is
+  still taken, so a 3.15.1 writer and a 3.15.2 writer on one store do not overlap. The hook writes a
+  `.gitignore` for the lock file into a store directory it creates.
+- **Every door that injects memory withholds what recall withholds.** The session digest and the list of
+  decisions in force apply the same read guards as `recall`: objected and quarantined records stay out
+  of the prompt.
+- **The prompt hook does not suggest a destructive command again.** A captured command that deletes
+  recursively, stops processes by name, or discards git work (`reset --hard`, `clean -f`, a force push,
+  `checkout --force`, `branch -D`, `stash drop` or `clear`, `worktree remove` or `prune`) is not
+  replayed as a "recent mechanic".
+- **A write that is not valid Unicode is refused.** A lone surrogate in any field of `remember` raises
+  `ValueError` before the record exists. It used to be accepted and then made every later save fail.
+- **An MCP write the store could not persist is an error.** The client sees an error with the store's
+  reason, not only `persisted: false` inside a normal result.
+- **`check_sources` does not report ok when it checked nothing.** It returns a verdict of CLEAN, DRIFTED
+  or NOT_CHECKED, and names what it could not check.
+  UPGRADE NOTE: `ok` is now false with `verdict: NOT_CHECKED` when nothing could be checked. A caller
+  that reads only `ok` sees false where it used to see true.
+- **A malformed statement gets a verdict.** The SCITT and transparency verifiers return `ok: false` with
+  the problem named for bytes that are not well-formed CBOR or COSE. `cose.decode` raises one type,
+  `CoseDecodeError`, a subclass of `ValueError`.
+- **Every hook run prints one JSON object or nothing.** The one-time star ask printed text after the
+  hook's JSON envelope. Codex rejects that output and dropped the recall block for that prompt. The ask
+  now travels inside the envelope as `systemMessage`.
+- **One "DECISION:" prefix.** A decision written through `remember_decision` or captured from a commit
+  message carries the prefix once, whoever wrote it first.
+- **The release gate evaluates every mutation.** An entry whose tests carry the `mutation` marker runs
+  them, an entry whose tests collect nothing is named as broken, and a mutant whose catching test was
+  skipped is reported as not evaluated rather than as a survivor.
+
+Release record: on this release's tree the full suite passes 5,549 tests, and the 31 that fail or error
+are the same 31 that fail or error on 3.15.1 in the same environment (tests that need optional
+packages or a real user profile). The mutation-marked tests pass, and the mutation gate kills 96 of
+the 96 entries this release adds or changes.
+
 ## 3.15.1 - UPGRADE IF your Claude Code hooks or memory_report feel slow on a large store: a Read, Grep or Glob no longer opens the store, and opening, recalling, reporting and erasing do less work per record
 
 Found in a speed audit on 2026-09-27 and measured on copies of two real stores (67,165 and 10,934
