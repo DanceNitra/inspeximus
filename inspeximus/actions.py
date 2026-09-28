@@ -1024,12 +1024,21 @@ class ActionLedger:
         pending) and is carried by reference: its name, version and content hash, never its text.
 
         With `actor`, the report is ALSO appended to the ledger as a signed `monitoring` entry, so
-        the fact that monitoring happened is itself evidence; without an actor it is read-only."""
-        until = time.time() if until is None else float(until)
+        the fact that monitoring happened is itself evidence; without an actor it is read-only.
+
+        THE PERIOD. An explicit `until` is half-open, `since <= ts < until`, so consecutive reports
+        cover every entry exactly once. `until=None` means "up to this call" and includes every entry
+        from `since` on: it used to become `time.time()` under the same strict `<`, which dropped every
+        entry written in the tick of the call from every section (A-36, PC2: oversight, breaches,
+        attestations, objections and QMS procedures, each in some runs). `period.open_ended` says
+        which of the two a report used."""
+        open_ended = until is None
+        until = time.time() if open_ended else float(until)
         since = float(since)
         if until <= since:
             raise ValueError("until must be after since")
-        inside = [e for e in self._entries if since <= float(e.get("ts") or 0) < until]
+        inside = [e for e in self._entries
+                  if since <= float(e.get("ts") or 0) and (open_ended or float(e.get("ts") or 0) < until)]
 
         def kind(k):
             return [e for e in inside if e.get("kind", "action") == k]
@@ -1044,7 +1053,7 @@ class ActionLedger:
         risks = kind("risk")
         rights = kind("rights")
         report = {
-            "kind": "inspeximus.post_market_report/1", "period": {"since": since, "until": until},
+            "kind": "inspeximus.post_market_report/1", "period": {"since": since, "until": until, "open_ended": open_ended},
             "actions": {"total": len(actions),
                         "error": sum(1 for e in actions if e.get("status") not in (None, "ok")),
                         "by_action": _count_by(actions, "action")},
