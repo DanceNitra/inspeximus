@@ -85,7 +85,7 @@ python tools/release_check.py             # THE GATE. Must exit 0. Nothing below
 python tools/release_notes.py --out NOTES.md          # the GitHub release body, from the changelog
 git commit                                # the release commit, on a branch based on origin/main
 python tools/release.py X.Y.Z --dry-run   # the pre-flight; nothing leaves the machine
-python tools/release.py X.Y.Z             # THE ONLY WAY TO TAG: push, CI green on that commit, then the tag
+python tools/release.py X.Y.Z             # THE ONLY WAY TO TAG: branch CI green, then main, main CI, the tag
 ```
 
 ## Tagging: `tools/release.py`, and nothing else
@@ -95,17 +95,22 @@ its commit. The release workflow's test gate then failed on a stale mutation tar
 be deleted (repository rule GH013), so 3.15.0 is a version that will never exist; 3.15.1 shipped the
 fixed tree. The guard that would have stopped it lived in one session's scratch script.
 
-`python tools/release.py X.Y.Z` pushes HEAD to `main` and tags only when every guard passes. Each guard
-refuses before the step it protects and names itself:
+`python tools/release.py X.Y.Z` pushes HEAD to `release/X.Y.Z`, runs CI there, and moves `main` and tags
+only when every guard passes. **Main never carries a commit CI has not cleared**: on 2026-09-28 the first
+version pushed `main` and then waited, and 3.15.2's release commit sat on `main` red. `ci.yml` runs on
+the branch by `workflow_dispatch`, and so do `one-memory.yml` and `clean-install.yml` when HEAD changes a
+path their own `push: paths:` list names. The branch stays on origin. Each guard refuses before the step
+it protects and names itself:
 
 | guard | refuses | before |
 |---|---|---|
-| 1 | a `[FAIL]` from `tools/release_check.py --skip-tests` (`ci on HEAD` is exempt; guard 5 checks it) | the push |
+| 1 | a `[FAIL]` from `tools/release_check.py --skip-tests` (`ci on HEAD` is exempt; guards 5 and 7 check it) | the push |
 | 2 | `pyproject.toml` not at X.Y.Z | the push |
 | 3 | `vX.Y.Z` already existing here or on origin | the push |
 | 4 | HEAD that is not a fast-forward of `origin/main` | the push |
-| 5 | CI not green on exactly HEAD: the `push` run of `ci.yml` must report `success` with `headSha` = HEAD | the tag |
-| 6 | `origin/main` moved after the push | the tag |
+| 5 | a branch run not green on exactly HEAD: every `workflow_dispatch` run on `release/X.Y.Z` must report `success` with `headSha` = HEAD | the push to `main` |
+| 6 | `origin/main` not at HEAD right after the push, or when main CI ends | waiting for main CI, and the tag |
+| 7 | main CI not green on exactly HEAD: the `push` run of `ci.yml` must report `success` with `headSha` = HEAD | the tag |
 
 After the tag it finds the release run and stops at its `pypi` gate. **The owner approves PyPI, and
 nothing else does**: that environment's required reviewer is his account, and approving it from a session
