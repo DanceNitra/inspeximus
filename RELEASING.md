@@ -83,8 +83,35 @@ python packages/_pin_server_json.py       # server.json, .claude-plugin/{plugin,
 python tools/mutation_check.py tools/mutations.json    # must exit 0: 0 survived AND 0 skipped
 python tools/release_check.py             # THE GATE. Must exit 0. Nothing below runs until it does.
 python tools/release_notes.py --out NOTES.md          # the GitHub release body, from the changelog
-git commit && git tag vX.Y.Z && git push origin main && git push origin vX.Y.Z
+git commit                                # the release commit, on a branch based on origin/main
+python tools/release.py X.Y.Z --dry-run   # the pre-flight; nothing leaves the machine
+python tools/release.py X.Y.Z             # THE ONLY WAY TO TAG: push, CI green on that commit, then the tag
 ```
+
+## Tagging: `tools/release.py`, and nothing else
+
+**Never create or push a `vX.Y.Z` tag by hand.** On 2026-09-28 v3.15.0 was tagged before CI had run on
+its commit. The release workflow's test gate then failed on a stale mutation target, and the tag cannot
+be deleted (repository rule GH013), so 3.15.0 is a version that will never exist; 3.15.1 shipped the
+fixed tree. The guard that would have stopped it lived in one session's scratch script.
+
+`python tools/release.py X.Y.Z` pushes HEAD to `main` and tags only when every guard passes. Each guard
+refuses before the step it protects and names itself:
+
+| guard | refuses | before |
+|---|---|---|
+| 1 | a `[FAIL]` from `tools/release_check.py --skip-tests` (`ci on HEAD` is exempt; guard 5 checks it) | the push |
+| 2 | `pyproject.toml` not at X.Y.Z | the push |
+| 3 | `vX.Y.Z` already existing here or on origin | the push |
+| 4 | HEAD that is not a fast-forward of `origin/main` | the push |
+| 5 | CI not green on exactly HEAD: the `push` run of `ci.yml` must report `success` with `headSha` = HEAD | the tag |
+| 6 | `origin/main` moved after the push | the tag |
+
+After the tag it follows the release run and waits until PyPI serves X.Y.Z. It approves the `pypi`
+environment only with `--approve-pypi`, because that approval is the owner's yes; without the flag it
+waits for the owner to approve on GitHub. `tests/test_the_release_script_refuses_before_each_step.py`
+drives each guard with a fake shell and requires it to fire before its step; each guard also has a
+mutation in `tools/mutations.json`.
 
 **`python tools/release_check.py` is the checklist above as code**, because a step only a human
 remembers is a step that gets skipped — which is the sentence this file has now had to write four
@@ -206,6 +233,8 @@ Two rules are enforced as code, so they are not a matter of taste:
 
 - Never anchor a test to a line number. The recorded mutation-survivor lines were stale within a day:
   what was `core.py:3662` became a comment.
+- Never create or push a release tag by hand. `tools/release.py` is the only way to tag, because a tag
+  made before CI is green on its exact commit cannot be taken back (v3.15.0).
 - Never retag a published version to make a red CI run green. 1.68.0's tag stays red; the fix landed on
   `main` and proved itself on the next release.
 - Never `git checkout --` / anything that rewrites the working tree with an uncommitted fix in it. That

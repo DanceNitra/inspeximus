@@ -3899,5 +3899,104 @@
   "tests": [
    "tests/test_the_installer_backs_up_every_file_it_changes.py"
   ]
+ },
+ {
+  "name": "the release script ignores a [FAIL] from release_check",
+  "file": "tools/release.py",
+  "old": "    if fails:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script tags a version pyproject.toml does not carry",
+  "file": "tools/release.py",
+  "old": "    if not m or m.group(1) != version:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script retags a version that exists here",
+  "file": "tools/release.py",
+  "old": "    if sh([\"git\", \"rev-parse\", \"-q\", \"--verify\", \"refs/tags/v%s\" % version])[0] == 0:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script retags a version that exists on origin",
+  "file": "tools/release.py",
+  "old": "    if sh([\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/v%s\" % version])[1].strip():\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script pushes a HEAD that is not a fast-forward",
+  "file": "tools/release.py",
+  "old": "    if sh([\"git\", \"merge-base\", \"--is-ancestor\", \"origin/main\", \"HEAD\"])[0] != 0:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script tags after a red CI run",
+  "file": "tools/release.py",
+  "old": "        if run.get(\"conclusion\") != \"success\" or run.get(\"headSha\") != head:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script accepts another commit's CI run",
+  "file": "tools/release.py",
+  "old": "                if r.get(\"event\") == \"push\" and r.get(\"headSha\") == head]",
+  "new": "                if r.get(\"event\") == \"push\"]",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script tags after origin/main moved",
+  "file": "tools/release.py",
+  "old": "        if not now or now[0] != head:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script stops on the ci-on-HEAD line it must exempt",
+  "file": "tools/release.py",
+  "old": "\"[FAIL]\" in ln and \"ci on HEAD\" not in ln",
+  "new": "\"[FAIL]\" in ln",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "the release script approves PyPI without being asked",
+  "file": "tools/release.py",
+  "old": "        if a.approve_pypi:\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "a dry run of the release script pushes",
+  "file": "tools/release.py",
+  "old": "        if a.dry_run:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
  }
 ]
