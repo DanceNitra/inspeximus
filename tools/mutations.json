@@ -832,8 +832,8 @@
  {
   "name": "forget_pii re-matches on the coarse candidate set, bypassing the resolver",
   "file": "inspeximus/core.py",
-  "old": "            if sel_ids is not None and r[\"id\"] not in sel_ids:\n                continue",
-  "new": "            if False:\n                continue",
+  "old": "                if sel_ids is not None and r[\"id\"] not in sel_ids:\n                    continue",
+  "new": "                if False:\n                    continue",
   "tests": [
    "tests/test_isolation_and_persistence.py"
   ]
@@ -1129,7 +1129,7 @@
  {
   "name": "the erasure stops checking its own store for residue",
   "file": "inspeximus/core.py",
-  "old": "        out[\"residue_in_store\"] = scan_records(self.items, _residue_values)",
+  "old": "        out[\"residue_in_store\"] = scan_records(list(self.items) + (_archive.segment_rows(self) if _arch_ids\n                                               or _archive.active(self) else []), _residue_values)",
   "new": "        out[\"residue_in_store\"] = {\"ok\": True, \"findings\": [], \"problems\": [], \"checked_records\": 0, \"searched_values\": 0, \"method\": \"\"}",
   "tests": [
    "tests/test_instore_residue.py"
@@ -1174,8 +1174,8 @@
  {
   "name": "forget_subject stops carrying the residue report",
   "file": "inspeximus/core.py",
-  "old": "               \"residue_in_store\": res.get(\"residue_in_store\")}\n        if targets:",
-  "new": "               \"residue_in_store\": None}\n        if targets:",
+  "old": "               # its absence reads as \"nothing to report\" rather than \"nobody looked\".\n               \"residue_in_store\": res.get(\"residue_in_store\")}",
+  "new": "               # its absence reads as \"nothing to report\" rather than \"nobody looked\".\n               \"residue_in_store\": None}",
   "tests": [
    "tests/test_instore_residue.py"
   ]
@@ -1183,8 +1183,8 @@
  {
   "name": "forget_pii stops carrying the residue report",
   "file": "inspeximus/core.py",
-  "old": "                \"coverage\": res.get(\"coverage\", cov),\n                \"unswept_matches\": unswept_block,\n                \"residue_in_store\": res.get(\"residue_in_store\")}",
-  "new": "                \"coverage\": res.get(\"coverage\", cov),\n                \"unswept_matches\": unswept_block,\n                \"residue_in_store\": None}",
+  "old": "               \"unswept_matches\": unswept_block,\n               \"residue_in_store\": res.get(\"residue_in_store\")}",
+  "new": "               \"unswept_matches\": unswept_block,\n               \"residue_in_store\": None}",
   "tests": [
    "tests/test_instore_residue.py"
   ]
@@ -4276,8 +4276,8 @@
  {
   "name": "the action ledger is taken for a copy of the store",
   "file": "inspeximus/core.py",
-  "old": "(receipts|tombstones|objections|irrev|cusum|partitions|actions)",
-  "new": "(receipts|tombstones|objections|irrev|cusum|partitions)",
+  "old": "(receipts|tombstones|objections|irrev|cusum|partitions|actions|archive)",
+  "new": "(receipts|tombstones|objections|irrev|cusum|partitions|archive)",
   "tests": [
    "tests/test_an_erasure_reaches_every_copy_beside_the_store.py"
   ]
@@ -7089,8 +7089,8 @@
  {
   "name": "B-25: a subject erasure runs with a missing or altered segment",
   "file": "inspeximus/archive.py",
-  "old": "    problems = check_segments(m.path)\r\n    if problems:\r\n        raise SegmentsUnreachable(problems)\r\n    with pooled(store):",
-  "new": "    problems = []\r\n    if problems:\r\n        raise SegmentsUnreachable(problems)\r\n    with pooled(store):",
+  "old": "    problems = check_segments(m.path) + [{\"segment\": \"archive log\", \"state\": x}",
+  "new": "    problems = [] + [{\"segment\": \"archive log\", \"state\": x}",
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py"
   ]
@@ -7170,8 +7170,8 @@
  {
   "name": "B-25: erasure_audit reads only the hot store",
   "file": "inspeximus/core.py",
-  "old": "        if _archive.active(self):\r\n            with _archive.pooled(self):\r\n                return self.erasure_audit(subject, values)",
-  "new": "        if False:\r\n            with _archive.pooled(self):\r\n                return self.erasure_audit(subject, values)",
+  "old": "        if _archive.active(self):\n            with _archive.pooled(self):\n                _out = self.erasure_audit(subject, values)",
+  "new": "        if False:\n            with _archive.pooled(self):\n                _out = self.erasure_audit(subject, values)",
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py"
   ]
@@ -7179,8 +7179,8 @@
  {
   "name": "B-25: an erasure's rewrite of a segment is not committed in the log",
   "file": "inspeximus/archive.py",
-  "old": "        _append(m.path, {\"v\": 1, \"kind\": \"amend\", \"ts\": time.time(), \"segment\": p[\"segment\"],",
-  "new": "        _append(m.path, {\"v\": 1, \"kind\": \"amend-lost\", \"ts\": time.time(), \"segment\": p[\"segment\"],",
+  "old": "        _append(m, {\"v\": 1, \"kind\": \"amend\", \"ts\": time.time(), \"segment\": p[\"segment\"],",
+  "new": "        _append(m, {\"v\": 1, \"kind\": \"amend-lost\", \"ts\": time.time(), \"segment\": p[\"segment\"],",
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py"
   ]
