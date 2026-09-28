@@ -420,7 +420,14 @@ def pytest_sessionfinish(session):
     before = getattr(config, "_real_home_before", None)
     if before is not None:
         import _home_guard
-        changed, live = _home_guard.classify(before, _home_guard.snapshot(config._real_home), config._real_home)
+        # A GUARD THAT RAISES HERE ERASES THE RUN'S OWN REPORT: an exception in this hook stops pytest
+        # before it prints the summary, so no failing test is named anywhere. Measured 2026-09-28 by
+        # the mutation gate, whose mutant of this call survived the full suite for exactly that
+        # reason. A crash of the guard is reported as a guard failure and fails the run instead.
+        try:
+            changed, live = _home_guard.classify(before, _home_guard.snapshot(config._real_home), config._real_home)
+        except Exception as exc:                            # noqa: BLE001
+            changed, live = ["the run-end guard itself failed: %r" % (exc,)], []
         tr = config.pluginmanager.get_plugin("terminalreporter")
         for ln in (["The real home changed beside this run, not by it (information, not a failure):"]
                    + ["  " + c for c in live] if live else []):
