@@ -52,7 +52,7 @@ def _marked_mutation(tests: list[str]) -> bool:
     return False
 
 
-def _pytest(tests: list[str], env: dict) -> subprocess.CompletedProcess:
+def _pytest(tests: list[str], env: dict, tb: str = "no") -> subprocess.CompletedProcess:
     # No `-x`: a mutant may break several tests, and stopping early hides which. `-rfE` reports BOTH
     # failures and errors -- an error is a kill, not a crash to be discounted.
     #
@@ -63,8 +63,11 @@ def _pytest(tests: list[str], env: dict) -> subprocess.CompletedProcess:
     # could ever exit 0. For such an entry the marker filter is lifted for its own tests, and they run
     # serially, as their CI step runs them, because they edit files the other workers would import.
     extra = ["-n", "0", "-m", ""] if _marked_mutation(tests) else []
+    # The PRE-FLIGHT keeps its tracebacks (tb="short"): when it is red, they are the only record of why,
+    # and a re-run is exactly what failed to reproduce PC2's two red pre-flights. The mutant run keeps
+    # `--tb=no`; only its summary lines are read.
     return subprocess.run(
-        [sys.executable, "-m", "pytest", *tests, "-q", "--no-header", "--tb=no", "-rfEs", "-p", "no:randomly",
+        [sys.executable, "-m", "pytest", *tests, "-q", "--no-header", f"--tb={tb}", "-rfEs", "-p", "no:randomly",
          *extra],
         cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
 
@@ -244,7 +247,7 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             continue
 
         # Pre-flight: tests that are already red would make every mutant look killed.
-        pre = _pytest(tests, env)
+        pre = _pytest(tests, env, tb="short")
         if pre.returncode == 5:
             # Exit 5 is "no tests collected". That is a broken entry, not a red test, and reading it
             # as "not green" is how nine entries hid for as long as they did.
