@@ -327,3 +327,73 @@ def test_the_pair_loop_scores_only_pairs_that_can_pass(stores, tmp_path, monkeyp
     assert new["pairs"] * 4 <= ref["pairs"], (
         f"the pair loop scored {new['pairs']} pairs; 3.15.1 scored {ref['pairs']}, and the prefix filter "
         "leaves only pairs sharing a rare token")
+
+
+# ── part 3: the contradiction checks read each text's features once ──────────────────────────────────
+
+class _RegexCalls:
+    """Count calls into a compiled pattern's `search`, `findall` and `sub`, through sys.setprofile, which
+    reports every call into a C method."""
+
+    NAMES = ("search", "findall", "sub")
+
+    def __enter__(self):
+        self.n = 0
+
+        def prof(frame, event, arg):
+            if event == "c_call" and getattr(arg, "__name__", "") in self.NAMES \
+                    and isinstance(getattr(arg, "__self__", None), core.re.Pattern):
+                self.n += 1
+
+        sys.setprofile(prof)
+        return self
+
+    def __exit__(self, *exc):
+        sys.setprofile(None)
+        return False
+
+
+def _pair_loop_regex_calls(src, tmp_path, monkeypatch):
+    p = str(tmp_path / "rx.json")
+    shutil.copy(src, p)
+    with monkeypatch.context() as mp:
+        mp.setattr(core.time, "time", lambda: FROZEN_NOW)
+        m = Inspeximus(p)
+        m._cluster_active(0.5)                  # tokenizes every record, so the count below is the clash checks
+        with _RegexCalls() as rx:
+            report = m.sleep()["consolidated_clusters"]
+    return rx.n, report, len(m._items)
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError,
+                   reason="B-16 part 3: the clash checks re-read both texts for every matched pair")
+def test_the_contradiction_checks_read_each_text_once(stores, tmp_path, monkeypatch):
+    n, report, records = _pair_loop_regex_calls(stores["topics"], tmp_path, monkeypatch)
+    assert report["linked_pairs"] + report["toggled"] > records, "the fixture must match more pairs than texts"
+    assert n <= 4 * records, (
+        f"{n} regex calls for {report['linked_pairs'] + report['toggled']} matched pairs over {records} "
+        "records: the negation flag, the numbers and the text without them are per-text features")
+
+
+def test_a_replaced_clash_check_is_still_called(stores, tmp_path, monkeypatch):
+    """`_negation_clash` invites an LLM judge in its place. A pass that memoises the default features must
+    call a replacement for every matched pair, as 3.15.1 did."""
+    seen = {"neg": 0, "val": 0}
+
+    def neg(a, b):
+        seen["neg"] += 1
+        return False
+
+    def val(a, b):
+        seen["val"] += 1
+        return False
+
+    p = str(tmp_path / "judge.json")
+    shutil.copy(stores["topics"], p)
+    with monkeypatch.context() as mp:
+        mp.setattr(core.time, "time", lambda: FROZEN_NOW)
+        mp.setattr(core, "_negation_clash", neg)
+        mp.setattr(core, "_value_clash", val)
+        report = Inspeximus(p).sleep()["consolidated_clusters"]
+    assert report["toggled"] == 0, "the replacement said no pair clashes"
+    assert seen["neg"] == seen["val"] == report["linked_pairs"] > 0
