@@ -274,6 +274,23 @@ def test_the_block_is_saved_with_the_time(home):
     assert any(str(f) in ln for ln in lines), "the run says where the copy is"
 
 
+def test_an_identical_rerun_keeps_armed_txt(home, monkeypatch):
+    """A second identical install changes nothing, ARMED.txt included; the time is when the block changed."""
+    import time as real_time
+    import types
+    clock = iter(["2026-09-28 10:00:00 +0200", "2026-09-28 10:00:07 +0200", "2026-09-28 10:00:09 +0200"])
+    monkeypatch.setattr(A, "time", types.SimpleNamespace(
+        strftime=lambda fmt, *a: real_time.strftime(fmt, *a) if fmt == "%Y-%m-%d" else next(clock)))
+    f = home / ".inspeximus" / "ARMED.txt"
+    _run(rules="no", store=str(home / "chain.json"))
+    first = f.read_bytes()
+    _run(rules="no", store=str(home / "chain.json"))
+    assert f.read_bytes() == first, "an identical re-run rewrote ARMED.txt"
+    (home / "fakebin" / "gemini").write_text("", encoding="utf-8")
+    _run(rules="no", store=str(home / "chain.json"))
+    assert b"Gemini CLI" in f.read_bytes() and b"10:00:07" in f.read_bytes()   # control: a new block, a new time
+
+
 def test_a_dry_run_and_a_check_write_no_copy(home):
     _run(rules="no", dry_run=True)
     A.check(out=lambda s: None, only="claude")

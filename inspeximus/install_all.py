@@ -867,10 +867,17 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
                         dry_run=dry_run, seal_reason=seal_reason)
     if not dry_run:
         # THE BLOCK IN A FILE THE USER CAN OPEN (3.15.3). An agent on a 9B model printed an ARMED block the
-        # installer never wrote; the file is the installer's own copy, with the time it was written.
-        _i.write_text_keeping_newlines(
-            armed_file(), "written %s by %s\n%s\n" % (time.strftime("%Y-%m-%d %H:%M:%S %z"), running_line(),
-                                                     "\n".join(block)), backup=False)
+        # installer never wrote; the file is the installer's own copy, with the time it was written. An
+        # identical re-run keeps the file as it is, because a second run of the same install changes nothing.
+        rest = " by %s\n%s\n" % (running_line(), "\n".join(block))
+        try:
+            with open(armed_file(), encoding="utf-8", newline="") as fh:
+                old = fh.read().replace("\r\n", "\n")
+        except OSError:
+            old = ""
+        if not (old.startswith("written ") and old.endswith(rest) and "\n" not in old[:-len(rest)]):
+            _i.write_text_keeping_newlines(
+                armed_file(), "written %s%s" % (time.strftime("%Y-%m-%d %H:%M:%S %z"), rest), backup=False)
         out(f"The block below is also saved, with the time, in {armed_file()}.")
     out("")
     for line in block:
