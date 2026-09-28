@@ -4746,5 +4746,23 @@
   "tests": [
    "tests/test_a_skipped_test_is_not_a_survivor.py"
   ]
+ },
+ {
+  "name": "the suite stops repairing a venv child's base interpreter",
+  "file": "tests/probe_shadow/sitecustomize.py",
+  "old": "_venv_base()\n_install()\n",
+  "new": "_install()\n",
+  "tests": [
+   "tests/test_a_child_pool_starts_under_the_test_home.py"
+  ]
+ },
+ {
+  "name": "the repaired base is the venv's own launcher again",
+  "file": "tests/probe_shadow/sitecustomize.py",
+  "old": "        sys._base_executable = base\n",
+  "new": "        sys._base_executable = sys.executable\n",
+  "tests": [
+   "tests/test_a_child_pool_starts_under_the_test_home.py"
+  ]
  }
 ]

@@ -92,4 +92,51 @@ def _install():
     os.rename = guarded_move(real_rename)
 
 
+def _venv_base():
+    """A venv child under the suite's temporary home can still start a process pool (A-25, 2026-09-28).
+
+    This module is the suite's one startup hook, so the second job it has lives here too. On Windows,
+    multiprocessing launches a venv's workers through sys._base_executable, because a worker started
+    through the venv's own python.exe (a launcher) never receives its pipe (bpo-35797). In a venv built
+    on the Microsoft Store Python, a process started with USERPROFILE redirected to the suite's home
+    computes _base_executable as that launcher: claims_audit.py's pool broke or hung in the release
+    venv, and under xdist its orphaned workers held a test's pipe for 900 s. No layout of the home
+    avoids it. With an AppData\\Local in it the Store Python does not start (FileNotFoundError, or
+    WinError 1920 through a junction); without one the venv falls back to the launcher. So this puts
+    back the base interpreter the venv names in its own pyvenv.cfg, and only when the value has
+    collapsed to the launcher. Anywhere else it changes nothing.
+
+    A venv can be built from another venv's python.exe, so the named interpreter is followed until it
+    is not a venv launcher itself: measured, a test venv made inside the release venv named the
+    release venv's launcher, and its pool hung the same way."""
+    exe = getattr(sys, "_base_executable", "")
+    if os.name != "nt" or sys.prefix == sys.base_prefix or \
+            os.path.normcase(exe) != os.path.normcase(sys.executable):
+        return
+    base = real_interpreter(sys.executable)
+    if base and os.path.isfile(base):
+        sys._base_executable = base
+
+
+def real_interpreter(exe, hops=4):
+    """The interpreter behind a venv launcher: each venv's pyvenv.cfg, followed until the path is not
+    <venv>\\Scripts\\python.exe. None if the chain does not end within `hops` or cannot be read."""
+    for _ in range(hops):
+        cfg_path = os.path.join(os.path.dirname(os.path.dirname(exe)), "pyvenv.cfg")
+        if not os.path.isfile(cfg_path):
+            return exe
+        try:
+            with open(cfg_path, encoding="utf-8") as fh:
+                cfg = {k.strip(): v.strip() for k, v in
+                       (ln.split("=", 1) for ln in fh.read().splitlines() if "=" in ln)}
+        except OSError:
+            return None
+        nxt = cfg.get("executable") or os.path.join(cfg.get("home", ""), "python.exe")
+        if not nxt or os.path.normcase(nxt) == os.path.normcase(exe):
+            return None
+        exe = nxt
+    return None
+
+
+_venv_base()
 _install()
