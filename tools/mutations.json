@@ -3872,7 +3872,8 @@
   "old": "    text = (f\"every AI agent on this machine shares one inspeximus memory: {labels}. \"\n",
   "new": "    text = (f\"DECISION: every AI agent on this machine shares one inspeximus memory: {labels}. \"\n",
   "tests": [
-   "tests/test_the_installer_backs_up_every_file_it_changes.py"
+   "tests/test_the_installer_backs_up_every_file_it_changes.py",
+   "tests/test_the_install_ends_with_the_armed_block.py"
   ]
  },
  {
@@ -6128,8 +6129,8 @@
  {
   "name": "A->B-2: the merge-backup removal runs once per tombstone again (2k + 3 directory listings)",
   "file": "inspeximus/core.py",
-  "old": "        if not defer:\r\n            self._drop_pre_rows_backup()\r\n            self._flush_tombstones()",
-  "new": "        self._drop_pre_rows_backup()\r\n        if not defer:\r\n            self._flush_tombstones()",
+  "old": "        if not defer:\n            try:\n                self._flush_tombstones()\n",
+  "new": "        self._drop_pre_rows_backup()\n        if not defer:\n            try:\n                self._flush_tombstones()\n",
   "tests": [
    "tests/test_audit_b_the_gate_counts_directory_listings.py"
   ]
