@@ -35,6 +35,11 @@ on one machine and move with its load; the counters do not. The memory_report ti
   and session workloads are back. A standalone `python perf/gate.py` run no longer writes receipt chain
   heads into your `%APPDATA%`.
 
+Release record: v3.15.0 was first tagged at 57ffc469. Its release run failed in the test gate before
+the build, because a mutation test named a line this release moved, so nothing was published. The fix
+is 0de4253b, and 5ae94399 makes release_check read that test's targets. The tag moved to the commit
+that carries this line after main CI passed on it.
+
 ## 3.14.4 - UPGRADE IF you use Claude Desktop without the `claude` command, or install through an agent: `install --all` now wires Claude Desktop's Code tab, and it ends with a short ARMED block and a seal that an agent can copy to you.
 
 Found on 2026-09-27 on a second machine, where Hermes Agent on a 9B local model ran the install page.
