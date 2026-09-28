@@ -7313,5 +7313,87 @@
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py"
   ]
+ },
+ {
+  "name": "B25-R1: recover() commits an intent whose tombstones are not on disk",
+  "file": "inspeximus/archive.py",
+  "old": "        if not set(it[\"ids\"]) <= tombs:\n            if cur == new_sha:",
+  "new": "        if False:\n            if cur == new_sha:",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py",
+   "tests/test_review_b25_crash_windows.py"
+  ]
+ },
+ {
+  "name": "B25-R1: commit_erasure replaces a segment without its tombstones on disk",
+  "file": "inspeximus/archive.py",
+  "old": "        if not set(p[\"ids\"]) <= tombs:\n            _abort(m, it, \"its tombstones are not on disk\")",
+  "new": "        if False:\n            _abort(m, it, \"its tombstones are not on disk\")",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
+ },
+ {
+  "name": "B25-R1: commit_erasure replaces a segment that changed after its intent",
+  "file": "inspeximus/archive.py",
+  "old": "        if cur != it[\"old_sha256\"] or not tmp.exists() or _segment_sha256(tmp) != it[\"new_sha256\"]:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
+ },
+ {
+  "name": "B25-R1: an aborted intent still counts as pending",
+  "file": "inspeximus/archive.py",
+  "old": "if e.get(\"kind\") in (\"amend\", \"amend-abort\")}",
+  "new": "if e.get(\"kind\") in (\"amend\",)}",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
+ },
+ {
+  "name": "B25-R1: recover() does not rebuild a missing temp when the tombstones are on disk",
+  "file": "inspeximus/archive.py",
+  "old": "            if not (tmp.exists() and _segment_sha256(tmp) == new_sha) and _store_of(target) is not None:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
+ },
+ {
+  "name": "B25-R1: apply drops the hot rows without writing their move entries",
+  "file": "inspeximus/archive.py",
+  "old": "        _write_log(m, entries)\n        m._items = [r for r in m._items if r[\"id\"] not in moved_ids]",
+  "new": "        m._items = [r for r in m._items if r[\"id\"] not in moved_ids]",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
+ },
+ {
+  "name": "B25-R1: apply finishes stranded rows into a segment that no longer matches the log",
+  "file": "inspeximus/archive.py",
+  "old": "                if not sp.exists() or _segment_sha256(sp) != seg[\"sha256\"]:\n                    raise ArchiveRefused(f\"{name} holds rows the hot store still has",
+  "new": "                if False:\n                    raise ArchiveRefused(f\"{name} holds rows the hot store still has",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
+ },
+ {
+  "name": "B25-R1: the temp sweep removes a temp a pending intent names",
+  "file": "inspeximus/archive.py",
+  "old": "            if name in keep:\n                continue\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
+ },
+ {
+  "name": "B25-R1: the log head is written before the log",
+  "file": "inspeximus/archive.py",
+  "old": "    tmp.write_text(json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\",\n                   encoding=\"utf-8\")\n    os.replace(tmp, p)\n",
+  "new": "    _write_head(store_path, entries)\n    tmp.write_text(json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\",\n                   encoding=\"utf-8\")\n    os.replace(tmp, p)\n",
+  "tests": [
+   "tests/test_audit_b_archive_kill_points.py"
+  ]
  }
 ]
