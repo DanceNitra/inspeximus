@@ -607,7 +607,13 @@ def _latest_written(cands: list):
     tie on both, and `max` returns the FIRST of a tie, which is the older value: three same-tick writes
     of one, two, three answered `as_of(key, now)` with one while the current value was three. The tie is
     broken by position in the store, which is write order (the row store loads `ORDER BY ord`, a JSON
-    store keeps list order)."""
+    store keeps list order).
+
+    THE ONE TIEBREAK RULE (session 1, 2026-09-28). Every "which record for this key is current / latest"
+    choice goes through here: as_of, believed_at, _current_active_id, revert, restore_intent and
+    submit_revert. They used to take `max` over `valid_from` alone, and `max` returns the first of a
+    tie; keyed supersession usually leaves one candidate there, but a merge from two writers can leave
+    two, and then the oldest record answered."""
     best = None
     for pos, r in enumerate(cands):
         k = (r.get("valid_from", r["ts"]), r["ts"], pos)
@@ -12785,7 +12791,7 @@ class Inspeximus:
         act = [r for r in self.items if r.get("key") == key and r.get("status") == "active"]
         if not act:
             return ""
-        return max(act, key=lambda r: r.get("valid_from", r["ts"]))["id"]
+        return _latest_written(act)["id"]
 
     def revert_challenge(self, key: str) -> str:
         """The exact message a revert authorization must be issued over: "revert:{key}:{current_active_id}".
@@ -12865,7 +12871,7 @@ class Inspeximus:
         active = [r for r in same_key if r.get("status") == "active"]
         if not active:
             return {"ok": False, "reason": "no active record for key"}
-        cur = max(active, key=lambda r: r.get("valid_from", r["ts"]))
+        cur = _latest_written(active)
         prev = [r for r in same_key
                 if r.get("status") == "superseded"
                 and (r.get("meta") or {}).get("superseded_by_toggle") == cur["id"]
@@ -12873,7 +12879,7 @@ class Inspeximus:
                 and not (r.get("meta") or {}).get("objectless_blocked")]
         if not prev:
             return {"ok": False, "reason": "no superseded predecessor for key"}
-        tgt = max(prev, key=lambda r: r.get("valid_from", r["ts"]))
+        tgt = _latest_written(prev)
         # THE STORE DECLARES ITS OWN DERIVATION. A revert rebuilds a record's text from a specific prior
         # record, so the edge is not a guess -- it is already written two lines down as meta['revert_of'].
         # Until 1.51.0 it lived ONLY there, and meta is not a field provenance() or erasure_audit() walk, so
@@ -12932,7 +12938,7 @@ class Inspeximus:
                 if r.get("key") == key and r.get("object") == str(target)
                 and not (r.get("meta") or {}).get("echo_blocked")
                 and not (r.get("meta") or {}).get("objectless_blocked")]
-        tid = max(held, key=lambda r: r.get("valid_from", r["ts"]))["id"] if held else ""
+        tid = _latest_written(held)["id"] if held else ""
         return "restore:" + key + "=" + str(target) + "@" + tid + "#" + nonce
 
     def _intent_authorized(self, intent: str, capability: str | None) -> bool:
@@ -12986,7 +12992,7 @@ class Inspeximus:
             active = [r for r in same_key if r.get("status") == "active"]
             if not active:
                 return {"ok": False, "reason": "no active record for key"}
-            cur = max(active, key=lambda r: r.get("valid_from", r["ts"]))
+            cur = _latest_written(active)
             prev = [r for r in same_key
                     if r.get("status") == "superseded"
                     and (r.get("meta") or {}).get("superseded_by_toggle") == cur["id"]
@@ -12994,7 +13000,7 @@ class Inspeximus:
                     and not (r.get("meta") or {}).get("objectless_blocked")]
             if not prev:
                 return {"ok": False, "reason": "no superseded predecessor for key"}
-            tgt = max(prev, key=lambda r: r.get("valid_from", r["ts"]))
+            tgt = _latest_written(prev)
             rid = self._stamp(tgt["text"], tags=tgt.get("tags"), value=tgt.get("value", 1.0),
                                 mtype=tgt.get("mtype"), key=key, object=tgt.get("object"),
                                 reaffirm=True, capability=_SANCTIONED, derived_from=[tgt["id"]],

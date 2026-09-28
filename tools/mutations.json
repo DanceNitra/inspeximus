@@ -5737,5 +5737,59 @@
   "tests": [
    "tests/test_audit_b_same_tick_boundaries.py"
   ]
+ },
+ {
+  "name": "one tiebreak rule: _current_active_id takes the first of a tie again",
+  "file": "inspeximus/core.py",
+  "old": "\n        return _latest_written(act)[\"id\"]",
+  "new": "\n        return max(act, key=lambda r: r.get(\"valid_from\", r[\"ts\"]))[\"id\"]",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "one tiebreak rule: revert, the current record takes the first of a tie again",
+  "file": "inspeximus/core.py",
+  "old": "\n        cur = _latest_written(active)",
+  "new": "\n        cur = max(active, key=lambda r: r.get(\"valid_from\", r[\"ts\"]))",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "one tiebreak rule: revert, the predecessor takes the first of a tie again",
+  "file": "inspeximus/core.py",
+  "old": "\n        tgt = _latest_written(prev)",
+  "new": "\n        tgt = max(prev, key=lambda r: r.get(\"valid_from\", r[\"ts\"]))",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "one tiebreak rule: restore_intent, the bound record takes the first of a tie again",
+  "file": "inspeximus/core.py",
+  "old": "\n        tid = _latest_written(held)[\"id\"] if held else \"\"",
+  "new": "\n        tid = max(held, key=lambda r: r.get(\"valid_from\", r[\"ts\"]))[\"id\"] if held else \"\"",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "one tiebreak rule: submit_revert, the current record takes the first of a tie again",
+  "file": "inspeximus/core.py",
+  "old": "\n            cur = _latest_written(active)",
+  "new": "\n            cur = max(active, key=lambda r: r.get(\"valid_from\", r[\"ts\"]))",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
+ },
+ {
+  "name": "one tiebreak rule: submit_revert, the predecessor takes the first of a tie again",
+  "file": "inspeximus/core.py",
+  "old": "\n            tgt = _latest_written(prev)",
+  "new": "\n            tgt = max(prev, key=lambda r: r.get(\"valid_from\", r[\"ts\"]))",
+  "tests": [
+   "tests/test_audit_b_same_tick_boundaries.py"
+  ]
  }
 ]

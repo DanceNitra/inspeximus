@@ -175,3 +175,81 @@ def test_a_positive_window_and_an_explicit_cutoff_stay_strict(tmp_path, monkeypa
     kw = {"keep_days": 1} if how == "keep_days" else {"before_ts": T}
     out = led.archive(now=T + 86400 if how == "keep_days" else T, **kw)
     assert out["archived"] == 0, out
+
+
+# ── the one tiebreak rule: the revert paths ──────────────────────────────────────────────────────────
+# Keyed supersession leaves one active record per key and one predecessor per toggle, so these sites see a
+# tie only when two writers' rows meet (a merge). The tie is built directly: a crafted row with the same
+# valid_from, appended after the real ones, the way a merged store would hold it.
+
+def _keyed_pair(tmp_path, monkeypatch):
+    monkeypatch.setattr(time, "time", lambda: T)
+    m = Inspeximus(str(tmp_path / "mem.json"))
+    a = m.remember("the colour is a", key="colour", object="a")
+    b = m.remember("the colour is b", key="colour", object="b")
+    assert [r["id"] for r in m.items if r.get("key") == "colour" and r.get("status") == "active"] == [b]
+    return m, a, b
+
+
+def _craft(m, like, **changes):
+    import copy
+    r = copy.deepcopy(next(x for x in m._items if x["id"] == like))
+    r["id"] = os.urandom(5).hex()
+    r["meta"] = dict(r.get("meta") or {})
+    for k, v in changes.items():
+        if k == "toggle":
+            r["meta"]["superseded_by_toggle"] = v
+        else:
+            r[k] = v
+    r["text"] = "the colour is " + str(r.get("object"))
+    m._items.append(r)
+    return r["id"]
+
+
+def _two_active(m, a, b):
+    """A second active record for the key, tied with b, and a predecessor that belongs to it."""
+    c = _craft(m, b, object="c", status="active")
+    _craft(m, a, object="p", status="superseded", toggle=c)
+    return c
+
+
+def _two_predecessors(m, a, b):
+    """Two predecessors of b, tied."""
+    _craft(m, a, object="a2", status="superseded", toggle=b)
+
+
+def test_the_current_id_is_the_last_written_of_a_tie(tmp_path, monkeypatch):
+    m, a, b = _keyed_pair(tmp_path, monkeypatch)
+    c = _two_active(m, a, b)
+    assert m._current_active_id("colour") == c
+    assert "@" + c + "#" in m.revert_intent("colour")
+
+
+@pytest.mark.parametrize("path", ["revert", "submit_revert"])
+def test_a_revert_reverts_the_last_written_current_value(tmp_path, monkeypatch, path):
+    m, a, b = _keyed_pair(tmp_path, monkeypatch)
+    _two_active(m, a, b)
+    out = m.revert("colour") if path == "revert" else m.submit_revert(m.revert_intent("colour"))
+    assert out["ok"] and out["reverted_to_object"] == "p", out
+
+
+@pytest.mark.parametrize("path", ["revert", "submit_revert"])
+def test_a_revert_restores_the_last_written_predecessor(tmp_path, monkeypatch, path):
+    m, a, b = _keyed_pair(tmp_path, monkeypatch)
+    _two_predecessors(m, a, b)
+    out = m.revert("colour") if path == "revert" else m.submit_revert(m.revert_intent("colour"))
+    assert out["ok"] and out["reverted_to_object"] == "a2", out
+
+
+def test_a_restore_intent_binds_the_last_written_holder_of_the_value(tmp_path, monkeypatch):
+    m, a, b = _keyed_pair(tmp_path, monkeypatch)
+    x = _craft(m, a, object="a", status="superseded", toggle=b)
+    assert m.restore_intent("colour", "a").split("@")[1].split("#")[0] == x
+
+
+def test_without_a_tie_the_revert_paths_answer_as_before(tmp_path, monkeypatch):
+    """The control: no crafted rows, so every site has one candidate and nothing changes."""
+    m, a, b = _keyed_pair(tmp_path, monkeypatch)
+    assert m._current_active_id("colour") == b
+    assert m.restore_intent("colour", "a").split("@")[1].split("#")[0] == a
+    assert m.revert("colour")["reverted_to_object"] == "a"
