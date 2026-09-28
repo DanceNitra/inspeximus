@@ -86,27 +86,40 @@ def test_a_sidecar_that_never_reached_disk_is_reported(sidecar, act):
     if os.path.exists(side):
         os.remove(side)
     os.makedirs(side)                                   # a directory cannot be overwritten by a file write
-    act(m)
+    # A-34 (3.15.4): the operation no longer reports success over a proof it could not write.
+    from inspeximus import ProofNotWritten
+    with pytest.raises(ProofNotWritten):
+        act(m)
 
     ok, problems = m.verify_writes()
-    assert ok is False
-    assert any(f"{sidecar} chain was NOT persisted" in x for x in problems)
-    with pytest.raises(OSError):
+    if sidecar == "receipts":
+        # the record is saved and cannot be withdrawn: its receipt is pending, and every surface says so
+        assert ok is False
+        assert any(f"{sidecar} chain was NOT persisted" in x for x in problems)
+        with pytest.raises(OSError):
+            m.flush()
+    else:
+        # the erasure was refused whole: nothing is erased, nothing is pending, nothing is reported lost
+        assert ok, problems
+        assert any(r.get("source", {}).get("doc") == "dave" for r in m._items)
         m.flush()
 
 
 def test_a_successful_store_save_does_not_erase_a_sidecar_failure():
     """The first version of this fix put both in one slot, so the next successful _save() wiped the record
-    that the tombstone chain had never been written."""
+    that the tombstone chain had never been written. Since A-34 (3.15.4) an erasure whose tombstones cannot
+    be written is refused whole, so the pending proof that must survive a later save is a receipt."""
+    from inspeximus import ProofNotWritten
     p = _path()
     m = Inspeximus(path=p, receipts=True)
     m.remember("a", source={"doc": "dave"})
-    side = p + ".tombstones.json"
+    side = p + ".receipts.json"
     if os.path.exists(side):
         os.remove(side)
     os.makedirs(side)
-    m.forget_subject("dave", request_id="R", basis="b")
-    m.remember("a later write that saves fine")
+    with pytest.raises(ProofNotWritten):
+        m.remember("a write whose receipt cannot be written")
+    m._save(force=True)                                   # a store save that succeeds
 
     assert m.verify_writes()[0] is False
 

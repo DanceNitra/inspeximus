@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING as _TYPE_CHECKING
 from .core import (
     AmbiguousSubject,  # noqa: F401
     WriteBlocked,  # noqa: F401
+    ProofNotWritten,  # noqa: F401
     Inspeximus,
     new_receipt_keypair,
     receipt_key_for,
@@ -147,6 +148,7 @@ __all__ = [
     "Partitions",
     "AmbiguousSubject",
     "WriteBlocked",
+    "ProofNotWritten",
     "new_receipt_keypair",
     "receipt_key_for",
     "new_source_keypair",

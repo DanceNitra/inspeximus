@@ -26,6 +26,29 @@ off write-time supersession; it now uses unkeyed records, which reach the same g
 controls, each run through `consolidate()` and `sleep()`). Each of the 5 new mutations in
 `tools/mutations.json` fails a test.
 
+## Unreleased (A-34) - UPGRADE IF you erase memories, record objections, spend an irreversible budget, or keep write receipts: an operation whose written proof cannot be stored no longer reports success
+
+Before this version a failed write of an erasure's tombstones, an objection, a spend against the
+irreversible budget, or a write receipt was recorded in `_sidecar_errors`, and the operation carried on.
+`forget()` deleted the rows and returned `tombstones: 1` while the disk held none; after a reload,
+`verify_writes()` reported the deliberate erasure as "deleted out-of-band". The new exception
+`ProofNotWritten` (a subclass of `OSError`) is raised instead:
+
+- **An erasure writes its tombstones first.** If they cannot be written, nothing is erased: `forget`,
+  `forget_subject`, `forget_pii` and `declare_out_of_band_deletion` raise and leave the store and the
+  handle unchanged.
+- **An objection, its resolution and an irreversible spend are refused** when they cannot be written, and
+  the handle is put back as it was, so it does not act on a decision the disk does not hold.
+- **`enable_receipts` leaves receipts off** when the chain cannot be written.
+- **A receipted `remember` raises.** Its record is written before its receipt, so it cannot be withdrawn:
+  the message names the record and says whether it was saved; the receipt stays in memory and is written
+  with the next receipt, and `verify_writes()` names the record until then.
+- **`monitor` still returns**, because its statistic is a convenience, and its result carries
+  `not_persisted` when the statistic could not be written.
+
+`tests/test_a34_nothing_changes_without_its_written_proof.py` fails on 3.15.2 (10 of 10), and each of the
+11 new mutations in `tools/mutations.json` fails a test.
+
 ## Unreleased (A-33) - UPGRADE IF you erase with `forget_pii`, `forget(where=)`, `erase_past_copies` or `scrub_secrets`: a wrongly typed or unknown argument is refused instead of reported as erased 0
 
 `forget_pii("email")` iterated the string as the types "e", "m", "a", "i", "l", matched nothing, and

@@ -2255,6 +2255,19 @@ def _make_store_dir(d, ignore_lock=None):
             pass                       # exists already, or unwritable: the store write reports that
 
 
+class ProofNotWritten(OSError):
+    """The written proof of an operation could not be stored, so the operation did not go ahead (A-34).
+
+    An erasure's tombstones, an objection, a spend against the irreversible budget, and a receipted
+    write's receipt are what the operation is FOR on a store that keeps them. Before 3.15.4 a failed write
+    of any of them was recorded in `_sidecar_errors` and the operation carried on and reported success:
+    forget() deleted the rows and answered `tombstones: 1` with no tombstone on disk. Raised instead, after
+    the in-memory state is put back, so nothing is left changed that its proof does not cover. The one
+    exception is `remember`: its record is saved before its receipt, so it cannot be withdrawn; the
+    message names the record, the receipt stays in memory and is written with the next receipt, and
+    verify_writes() names the record until then."""
+
+
 class StoreLockUnavailable(OSError):
     """The lock file beside a store could not be created, so a write there cannot be protected.
 
@@ -3996,7 +4009,7 @@ class Inspeximus:
             self._evict_to_capacity(protect_id=mid)          # bounded working set (opt-in) BEFORE persisting
         self._save(force=True)        # a new memory is real content - persist immediately, not throttled
         if self.receipts_enabled:
-            self._emit_write_receipt(rec, retires=_retired)
+            self._emit_write_receipt(rec, retires=_retired, strict=True)
         # After the save and the receipt, so the record the exception names is on disk and verifiable.
         if raise_on_block and key is not None and (self.last_write or {}).get("blocked"):
             raise WriteBlocked(self.last_write)
@@ -4388,7 +4401,7 @@ class Inspeximus:
         return r
 
     def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "",
-                            retires=()) -> dict:
+                            retires=(), strict: bool = False) -> dict:
         """`amends` names the committed fields this receipt legitimately rewrites (slash/restore -> mtype).
         It is DECLARED, not inferred, and verification forgives an earlier receipt for exactly the declared
         fields and nothing else. Inferring it — "the latest receipt wins" — is what let a public slash()
@@ -4434,6 +4447,16 @@ class Inspeximus:
                 # measured, 4 receipts in memory, verify_writes() -> (True, []), and ZERO on reload — the
                 # store certified an integrity it could no longer demonstrate.
                 self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
+                if strict:
+                    # A-34: a receipted write does not report success without its receipt. The record is
+                    # already saved and cannot be withdrawn; the receipt stays in the chain in memory and
+                    # is written with the next receipt that is.
+                    _saved = ("was saved" if not self._persist_error else
+                              f"was not saved either ({self._persist_error['error']})")
+                    raise ProofNotWritten(
+                        f"record {rec.get('id')} {_saved}, and its write receipt could not be written "
+                        f"({self._sidecar_errors['receipts']}); the receipt is kept in memory and written "
+                        f"with the next receipt, and verify_writes() names the record until then") from e
             self._record_head()
         return r
 
@@ -4727,9 +4750,20 @@ class Inspeximus:
                "genesis_root": None,
                "chain_tip": self._receipts[-1]["hash"] if self._receipts else None,
                "signed": bool(self._receipt_signer is not None or (self._receipt_sk and _HAVE_ED))}
+        # A-34: receipts that cannot be written leave this store as it was, receipts off if they were off.
+        _prev_chain = list(self._receipts)
+
+        def _persist_or_undo():
+            try:
+                self._persist_receipts()
+            except ProofNotWritten:
+                self._receipts = _prev_chain
+                self.receipts_enabled = was_enabled
+                self._sidecar_errors.pop("receipts", None)
+                raise
         if not backfill_genesis or not uncovered:
             if self._receipts_path and not self._receipts_path.exists():
-                self._persist_receipts()
+                _persist_or_undo()
             return out
         uncovered.sort(key=lambda r: (r.get("ts") or 0, r["id"]))
         commits = [self._write_commit(r) for r in uncovered]
@@ -4757,7 +4791,7 @@ class Inspeximus:
                                   "amends": ["status_sha256"],
                                   "amend_reason": "retired while receipts were off; declared at backfill",
                                   "backfill": marker})
-        self._persist_receipts()
+        _persist_or_undo()
         out.update({"anchored_records": len(uncovered), "retirements_declared": len(declared),
                     "genesis_root": root, "chain_tip": self._receipts[-1]["hash"]})
         return out
@@ -4774,6 +4808,8 @@ class Inspeximus:
             self._sidecar_errors.pop("receipts", None)
         except Exception as e:
             self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
+            raise ProofNotWritten(f"the receipt chain could not be written: "
+                                  f"{self._sidecar_errors['receipts']}") from e
         self._record_head()
 
     # ------------------------------------------------------------------ chain head outside the store
@@ -8705,6 +8741,29 @@ class Inspeximus:
                     v = r.get(field)
                     if isinstance(v, str) and v.strip():
                         _residue_values.append(v)
+        # PROOF FIRST (A-34). The tombstones are written before anything is removed, and a chain that
+        # cannot be written stops the erasure with nothing changed: before 3.15.4 a failed write was
+        # recorded in `_sidecar_errors`, the rows were deleted anyway, and the call answered
+        # `tombstones: N` while the disk held none. The emitted tombstones are withdrawn by hash, because
+        # the flush reconciles the chain with the disk and may hand back other objects.
+        now = time.time()
+        _emitted = [self._emit_tombstone(tid, now, request_id, basis=basis or "forget",
+                                         authorized_by=authorized_by, authorization=authorization, defer=True)
+                    for tid in sorted(target)]              # deterministic order -> reproducible chain
+        # ONE sidecar write for the whole batch. Each _emit_tombstone used to rewrite the ENTIRE chain, so
+        # erasing k records cost k rewrites of a chain growing to k -- O(k^2) serialization plus k atomic
+        # replaces. Deferring is also strictly SAFER on a crash: the old order left j-of-k tombstones on
+        # disk claiming erasures the store save had not yet performed, i.e. a deletion proof for records
+        # still present. Now it is all-or-nothing, and still written BEFORE _save, so a crash can only lose
+        # the proof of a deletion that did not happen -- never the reverse.
+        try:
+            self._flush_tombstones()
+        except ProofNotWritten:
+            _h = {t.get("hash") for t in _emitted}
+            self._tombstones = [t for t in self._tombstones if t.get("hash") not in _h]
+            self._sidecar_errors.pop("tombstones", None)     # nothing unwritten is left: the call raised
+            raise
+        self._drop_pre_rows_backup()
         self._touched.update(target)
         self._items = [r for r in self._items if r["id"] not in target]
         scrubbed = 0
@@ -8726,19 +8785,6 @@ class Inspeximus:
                     # and scrubbing them would delete the evidence and make the audit read clean.
                     meta.pop("rederived_to", None)
         self._prune_derived_caches()
-        now = time.time()
-        for tid in sorted(target):                           # deterministic order -> reproducible chain
-            self._emit_tombstone(tid, now, request_id, basis=basis or "forget",
-                                 authorized_by=authorized_by, authorization=authorization, defer=True)
-        # ONE sidecar write for the whole batch. Each _emit_tombstone used to rewrite the ENTIRE chain, so
-        # erasing k records cost k rewrites of a chain growing to k -- O(k^2) serialization plus k atomic
-        # replaces. Deferring is also strictly SAFER on a crash: the old order left j-of-k tombstones on
-        # disk claiming erasures the store save had not yet performed, i.e. a deletion proof for records
-        # still present. Now it is all-or-nothing, and still written BEFORE _save, so a crash can only lose
-        # the proof of a deletion that did not happen -- never the reverse.
-        if target:
-            self._drop_pre_rows_backup()
-            self._flush_tombstones()
         self._mat = None; self._mat_built_n = -1             # force vec-matrix rebuild (drops forgotten rows)
         self._save(force=True)                               # a deletion is real content change — persist now
         out = {"forgotten": len(target), "ids": sorted(target), "scrubbed_links": scrubbed,
@@ -8848,8 +8894,13 @@ class Inspeximus:
         # forget(): since A-12 their removal lists the store's directory twice, and once per tombstone
         # that was two listings for every erased record.
         if not defer:
+            try:
+                self._flush_tombstones()
+            except ProofNotWritten:
+                self._tombstones = [x for x in self._tombstones if x.get("hash") != t.get("hash")]
+                self._sidecar_errors.pop("tombstones", None)
+                raise
             self._drop_pre_rows_backup()
-            self._flush_tombstones()
         return t
 
     def _seal_tombstone(self, t: dict, rechained_from: str | None = None) -> dict:
@@ -8955,6 +9006,8 @@ class Inspeximus:
             # returned tombstones:1 and erasure_certificate said verified, while a reload showed
             # erasures_total: 0 — the deletion record a DSAR response rests on, gone without a word.
             self._sidecar_errors["tombstones"] = f"{self._tombstones_path}: {type(e).__name__}: {e}"
+            raise ProofNotWritten(f"the erasure's tombstones could not be written, so nothing was erased: "
+                                  f"{self._sidecar_errors['tombstones']}") from e
 
     def _flush_objections(self) -> None:
         if not self._objections_path:
@@ -8965,6 +9018,8 @@ class Inspeximus:
             self._objections_sig = Inspeximus._sidecar_sig(self._objections_path)
         except Exception as e:
             self._sidecar_errors["objections"] = f"{self._objections_path}: {type(e).__name__}: {e}"
+            raise ProofNotWritten(f"the objection could not be written, so it was not recorded: "
+                                  f"{self._sidecar_errors['objections']}") from e
 
     def _withheld_ids(self) -> set:
         """The ids of every record a STANDING objection withholds, resolved NOW so a record written after
@@ -9012,7 +9067,12 @@ class Inspeximus:
                "ts": time.time(), "request_id": request_id, "tenant": self.tenant, "status": "standing",
                "allow_ambiguous": bool(allow_ambiguous), "withheld_at_objection": len(ids), "resolved": None}
         self._objections.append(row)
-        self._flush_objections()
+        try:
+            self._flush_objections()
+        except ProofNotWritten:
+            self._objections.remove(row)
+            self._sidecar_errors.pop("objections", None)
+            raise
         return dict(row)
 
     def resolve_objection(self, subject: str, actor: str, outcome: str, grounds: str | None = None,
@@ -9038,10 +9098,16 @@ class Inspeximus:
                 raise ValueError("an objection to direct marketing (Art. 21(2)) cannot be overridden")
             if not grounds:
                 raise ValueError("overriding an objection needs the compelling legitimate grounds (Art. 21(1))")
+        _before = (row["status"], row["resolved"])
         row["status"] = outcome
         row["resolved"] = {"actor": actor, "ts": time.time(), "grounds": (str(grounds)[:2000] if grounds else None),
                            "request_id": request_id}
-        self._flush_objections()
+        try:
+            self._flush_objections()
+        except ProofNotWritten:
+            row["status"], row["resolved"] = _before
+            self._sidecar_errors.pop("objections", None)
+            raise
         return dict(row)
 
     def objections(self) -> list:
@@ -15877,6 +15943,7 @@ class Inspeximus:
             try:
                 (self.path.with_name(self.path.name + ".cusum.json")).write_text(
                     json.dumps(self._cusum, ensure_ascii=False), encoding="utf-8")
+                self._sidecar_errors.pop('cusum', None)
             except Exception as e:
                 self._sidecar_errors['cusum'] = f"{type(e).__name__}: {e}"
 
@@ -15958,7 +16025,12 @@ class Inspeximus:
                     slashed[s] = self.slash([rep], scope="source")["slashed"]
                 S[s] = 0.0                                    # reset the breached statistic after firing
         self._save_cusum()
-        return {"alarms": alarms, "slashed": slashed, "cusum": {k2: round(v, 3) for k2, v in S.items()}}
+        out = {"alarms": alarms, "slashed": slashed, "cusum": {k2: round(v, 3) for k2, v in S.items()}}
+        # A-34: the CUSUM statistic is a convenience, so a failed write does not stop the check; the result
+        # says so, because the next process starts from the statistic on disk, not this one.
+        if (self._sidecar_errors or {}).get("cusum"):
+            out["not_persisted"] = self._sidecar_errors["cusum"]
+        return out
 
     def _budget_state(self) -> dict:
         """Per-source CUMULATIVE irreversible-influence spend, lazily loaded from a side file (like the CUSUM
@@ -16001,6 +16073,8 @@ class Inspeximus:
                 self._irrev_sig = Inspeximus._sidecar_sig(_bp)
             except Exception as e:
                 self._sidecar_errors['irrev'] = f"{type(e).__name__}: {e}"
+                raise ProofNotWritten(f"the irreversible-budget spend could not be written, so it was not "
+                                      f"allowed: {self._sidecar_errors['irrev']}") from e
 
     def spend_irreversible(self, ids, amount: float = 1.0, budget: float = 1.0,
                            allow_ambiguous: bool = False,
@@ -16103,9 +16177,16 @@ class Inspeximus:
         exhausted = [s for s in srcs if float(B.get(s, 0.0)) + float(amount) > _cap(s)]
         allowed = not exhausted
         if allowed:
+            _before = json.loads(json.dumps(self._irrev))
             for s in srcs:
                 B[s] = float(B.get(s, 0.0)) + float(amount)   # monotonic; never decremented
-            self._save_budget()
+            try:
+                self._save_budget()
+            except ProofNotWritten:
+                self._irrev.clear()
+                self._irrev.update(_before)
+                self._sidecar_errors.pop("irrev", None)
+                raise
         return {"allowed": allowed, "exhausted": exhausted, "sources": srcs,
                 "spent": {s: round(float(B.get(s, 0.0)), 4) for s in srcs}}
 

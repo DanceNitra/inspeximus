@@ -144,9 +144,13 @@ def test_a_failing_sidecar_write_is_still_reported_after_a_batch(tmp_path, froze
         return None
 
     monkeypatch.setattr(Inspeximus, "_atomic_write", staticmethod(boom))
-    m.forget_subject("hr/alice")                          # must not raise
-    assert "tombstones" in m._sidecar_errors, m._sidecar_errors
-    assert "disk full" in m._sidecar_errors["tombstones"]
+    # A-34 (3.15.4): the failure is no longer recorded and carried past; the erasure is refused whole,
+    # and the refusal names the write that failed.
+    from inspeximus import ProofNotWritten
+    with pytest.raises(ProofNotWritten, match="disk full"):
+        m.forget_subject("hr/alice")
+    assert any((r.get("source") or {}).get("doc") == "hr/alice" for r in m._items), "rows went without proof"
+    assert not m._tombstones
 
 
 def test_a_pathless_store_does_not_try_to_flush(frozen_time):

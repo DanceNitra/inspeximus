@@ -65,7 +65,9 @@ def test_an_unwritable_parent_is_still_reported():
     open(blocker, "w", encoding="utf-8").write("i am a file")
 
     m = Inspeximus(path=os.path.join(blocker, "m.json"), receipts=True)
-    m.remember("fact")
+    from inspeximus import ProofNotWritten
+    with pytest.raises(ProofNotWritten, match="was not saved either"):   # A-34: the write says so
+        m.remember("fact")
     assert m.verify_writes()[0] is False
     with pytest.raises(OSError):
         m.flush()

@@ -2311,8 +2311,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "the objection is not persisted",
-  "old": "        self._objections.append(row)\n        self._flush_objections()\n        return dict(row)",
-  "new": "        self._objections.append(row)\n        return dict(row)",
+  "old": "        self._objections.append(row)\n        try:\n            self._flush_objections()\n",
+  "new": "        self._objections.append(row)\n        try:\n            pass\n",
   "tests": [
    "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
   ]
@@ -4858,8 +4858,8 @@
  {
   "name": "a batch erasure removes the backups once per erased record again",
   "file": "inspeximus/core.py",
-  "old": "        if not defer:\n            self._drop_pre_rows_backup()\n            self._flush_tombstones()\n",
-  "new": "        self._drop_pre_rows_backup()\n        if not defer:\n            self._flush_tombstones()\n",
+  "old": "        if not defer:\n            try:\n                self._flush_tombstones()\n",
+  "new": "        self._drop_pre_rows_backup()\n        if not defer:\n            try:\n                self._flush_tombstones()\n",
   "tests": [
    "tests/test_an_erasure_lists_the_store_directory_a_fixed_number_of_times.py"
   ]
@@ -4867,8 +4867,8 @@
  {
   "name": "a batch erasure leaves the backups",
   "file": "inspeximus/core.py",
-  "old": "        if target:\n            self._drop_pre_rows_backup()\n            self._flush_tombstones()\n",
-  "new": "        if target:\n            self._flush_tombstones()\n",
+  "old": "        self._drop_pre_rows_backup()\n        self._touched.update(target)\n",
+  "new": "        self._touched.update(target)\n",
   "tests": [
    "tests/test_an_erasure_reaches_every_copy_beside_the_store.py",
    "tests/test_an_erasure_reaches_every_copy_the_library_made.py"
@@ -5492,6 +5492,105 @@
   "new": "    if False:                     # A-33",
   "tests": [
    "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
+  ]
+ },
+ {
+  "name": "the tombstone chain's failed write is swallowed again",
+  "file": "inspeximus/core.py",
+  "old": "            raise ProofNotWritten(f\"the erasure's tombstones could not be written, so nothing was erased: \"\n                                  f\"{self._sidecar_errors['tombstones']}\") from e\n",
+  "new": "            return\n",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "forget deletes after its tombstones failed to write",
+  "file": "inspeximus/core.py",
+  "old": "            self._sidecar_errors.pop(\"tombstones\", None)     # nothing unwritten is left: the call raised\n            raise\n",
+  "new": "            self._sidecar_errors.pop(\"tombstones\", None)     # nothing unwritten is left: the call raised\n",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "a single tombstone that failed to write stays in the handle",
+  "file": "inspeximus/core.py",
+  "old": "                self._tombstones = [x for x in self._tombstones if x.get(\"hash\") != t.get(\"hash\")]\n",
+  "new": "",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "an objection's failed write is swallowed again",
+  "file": "inspeximus/core.py",
+  "old": "            raise ProofNotWritten(f\"the objection could not be written, so it was not recorded: \"\n                                  f\"{self._sidecar_errors['objections']}\") from e\n",
+  "new": "            return\n",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "a resolution that failed to write stays in the handle",
+  "file": "inspeximus/core.py",
+  "old": "            row[\"status\"], row[\"resolved\"] = _before\n",
+  "new": "",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "an irreversible spend's failed write is swallowed again",
+  "file": "inspeximus/core.py",
+  "old": "                raise ProofNotWritten(f\"the irreversible-budget spend could not be written, so it was not \"\n                                      f\"allowed: {self._sidecar_errors['irrev']}\") from e\n",
+  "new": "                return\n",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "a spend that failed to write is still counted in memory",
+  "file": "inspeximus/core.py",
+  "old": "                self._irrev.clear()\n                self._irrev.update(_before)\n",
+  "new": "",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "remember reports success without its receipt",
+  "file": "inspeximus/core.py",
+  "old": "            self._emit_write_receipt(rec, retires=_retired, strict=True)",
+  "new": "            self._emit_write_receipt(rec, retires=_retired, strict=False)",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "the receipt chain's failed batch write is swallowed again",
+  "file": "inspeximus/core.py",
+  "old": "            raise ProofNotWritten(f\"the receipt chain could not be written: \"\n                                  f\"{self._sidecar_errors['receipts']}\") from e\n",
+  "new": "            return\n",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "enable_receipts leaves receipts on after its chain failed to write",
+  "file": "inspeximus/core.py",
+  "old": "                self.receipts_enabled = was_enabled\n",
+  "new": "",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
+  ]
+ },
+ {
+  "name": "monitor hides a statistic it could not write",
+  "file": "inspeximus/core.py",
+  "old": "        if (self._sidecar_errors or {}).get(\"cusum\"):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_a34_nothing_changes_without_its_written_proof.py"
   ]
  }
 ]
