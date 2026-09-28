@@ -106,7 +106,7 @@ def _run(**kw):
 
 
 def test_the_setup_decision_says_decision_once(home):
-    rc, lines = _run(rules="no", only="claude,codex")
+    rc, lines = _run(rules="no", only="claude,codex", shared_store=True)
     assert rc == 0, lines
     store = json.loads((home / ".inspeximus" / "shared.json").read_text(encoding="utf-8"))["store"]
     from inspeximus._surface import open_store

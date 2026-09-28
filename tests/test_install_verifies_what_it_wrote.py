@@ -90,7 +90,7 @@ def test_check_flags_an_entry_that_was_put_back_after_the_install(home):
 
 
 def test_check_flags_an_entry_that_points_at_another_store(home):
-    _run(A.run, rules="no", only="claude,codex")
+    _run(A.run, rules="no", only="claude,codex", shared_store=True)
     cfg = home / ".claude.json"
     data = json.loads(cfg.read_text(encoding="utf-8"))
     data["mcpServers"]["inspeximus"]["env"]["INSPEXIMUS_PATH"] = str(home / "somewhere-else.json")
