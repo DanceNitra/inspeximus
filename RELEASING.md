@@ -135,7 +135,7 @@ Its exit code is the contract, and an unrun check is not a passing one:
 |---|---|
 | **0** | every check ran and passed — the only state that clears a release |
 | **1** | at least one check FAILED |
-| **2** | nothing failed, but something was SKIPPED (a missing `mcp` extra, or `--skip-tests`) |
+| **2** | nothing failed, but something was SKIPPED (a missing `mcp` extra, `--skip-tests`, or `--skip-work-counters-not-for-a-release`) |
 
 **It calls the audits rather than growing a second copy of them.** `claims_audit.py` and
 `governance_audit.py` already own "is every published claim still true?", including the counts quoted
@@ -153,6 +153,15 @@ probe receipt as **bytes** at the start of the run and restores whatever changed
 rather than repairing them silently. (Bytes because that receipt is not valid UTF-8 — 0x97 at offset
 2321 — and because text mode on Windows rewrites LF as CRLF, which is the permanently-dirty-file bug
 `tools/mutation_check.py` documents.)
+
+**It runs the work counters, even under `--skip-tests`.** `perf/gate.py check` is the CI job "work
+counters must not grow". 3.15.2's release head passed every other leg here, and CI failed on that job
+alone (`erase_items_reads` 7 -> 9). The counters are exact integers, so a local run gives the verdict
+CI gives, except for a counter that moves on one platform only; CI runs Linux. `tools/release.py` runs
+this checklist with `--skip-tests` and treats a SKIP as passing, so `--skip-tests` does not skip this
+leg. Only `--skip-work-counters-not-for-a-release` does, and a release must not pass it. The leg takes
+a few minutes, most of them building fixtures; `tests/test_release_check_runs_the_work_counters.py`
+pins the wiring.
 
 `tests/test_release_check_has_teeth.py` exercises each check in **both** directions on a copied tree:
 it passes on a consistent copy and fails on a copy with exactly one thing wrong. A check verified only

@@ -5421,5 +5421,32 @@
    "tests/test_blocked_overturn_properties.py",
    "tests/test_supersede_corroboration_bar.py"
   ]
+ },
+ {
+  "name": "release_check stops running the work counters",
+  "file": "tools/release_check.py",
+  "old": "        check_work_counters(rep, root, skip=skip_work_counters)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_release_check_runs_the_work_counters.py"
+  ]
+ },
+ {
+  "name": "--skip-tests also skips the work counters",
+  "file": "tools/release_check.py",
+  "old": "check_work_counters(rep, root, skip=skip_work_counters)",
+  "new": "check_work_counters(rep, root, skip=skip_work_counters or skip_tests)",
+  "tests": [
+   "tests/test_release_check_runs_the_work_counters.py"
+  ]
+ },
+ {
+  "name": "a counter that grew passes the work-counter leg",
+  "file": "tools/release_check.py",
+  "old": "    if r.returncode == 0:\n        rep.add(\"work counters\", PASS",
+  "new": "    if True:\n        rep.add(\"work counters\", PASS",
+  "tests": [
+   "tests/test_release_check_runs_the_work_counters.py"
+  ]
  }
 ]

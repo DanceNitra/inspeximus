@@ -635,6 +635,44 @@ def restore_probe_snapshot(snapshot):
 
 # --------------------------------------------------------------------------- the suite
 
+#: The one way to switch the work-counter leg off. The name says what the run then cannot do, because
+#: tools/release.py treats a SKIP as passing: this flag must never appear in a release's pre-flight.
+SKIP_COUNTERS_FLAG = "--skip-work-counters-not-for-a-release"
+
+
+def check_work_counters(rep, root=ROOT, skip=False):
+    """The CI job "work counters must not grow" (`perf/gate.py check`), run on this tree.
+
+    MEASURED 2026-09-28: 3.15.2's release head passed every leg of this checklist, was pushed, and CI
+    failed on this job alone (`erase_items_reads` 7 -> 9). The counters are exact integers, so this
+    run gives the verdict CI gives, except for a counter that moves on one platform only; CI is Linux.
+
+    It runs under --skip-tests too. tools/release.py's pre-flight passes --skip-tests and treats a
+    SKIP as passing, so a leg that --skip-tests switched off would clear a release it never measured.
+    It takes minutes, most of them building the fixtures, and the suite takes half an hour.
+    """
+    if skip:
+        rep.add("work counters", SKIP, "%s was passed; this run does NOT clear a release" % SKIP_COUNTERS_FLAG)
+        return
+    gate = pathlib.Path(root) / "perf" / "gate.py"
+    if not gate.is_file():
+        rep.add("work counters", FAIL, "perf/gate.py is missing, so no counter was measured")
+        return
+    try:
+        r = subprocess.run([sys.executable, str(gate), "check"], cwd=str(root), capture_output=True,
+                           text=True, encoding="utf-8", errors="replace", timeout=3600,
+                           env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    except subprocess.TimeoutExpired:
+        rep.add("work counters", FAIL, "perf/gate.py check did not finish within 3600 s")
+        return
+    if r.returncode == 0:
+        rep.add("work counters", PASS, "perf/gate.py check: no counter above its baseline")
+        return
+    grew = [ln.strip() for ln in r.stdout.splitlines() if "->" in ln]
+    rep.add("work counters", FAIL, "perf/gate.py check exited %d: %s"
+            % (r.returncode, "; ".join(grew[:6]) or (r.stdout + r.stderr).strip()[-400:]))
+
+
 def check_core_map(rep, root=ROOT):
     """docs/CORE_MAP.md must describe the core.py that is about to ship.
 
@@ -962,7 +1000,7 @@ def ci_verdict(runs, head, required=(), dirty=()):
                   % (len(done), head[:7], ", ".join(sorted({r["name"] for r in done}))))
 
 
-def run(root=ROOT, skip_tests=False, full_local=False):
+def run(root=ROOT, skip_tests=False, full_local=False, skip_work_counters=False):
     print("pre-release checklist for inspeximus %s" % pyproject_version(root))
     print("  tree: %s\n" % root)
     rep = Report()
@@ -980,8 +1018,9 @@ def run(root=ROOT, skip_tests=False, full_local=False):
         check_core_map(rep, root)
         check_release_notes(rep, root)
         check_mutation_targets(rep, root)
-        # FAST FIRST. Every check above takes seconds; if one failed, or the fast tests fail, the
-        # half-hour suite would only confirm what is already known.
+        check_work_counters(rep, root, skip=skip_work_counters)
+        # FAST FIRST. Every check above takes seconds, the work counters a few minutes; if one failed,
+        # or the fast tests fail, the half-hour suite would only confirm what is already known.
         if skip_tests:
             check_tests(rep, root, skip=True)
         elif rep.exit_code() == 1:
@@ -1036,10 +1075,13 @@ def main(argv=None):
     ap.add_argument("--full-local", action="store_true",
                     help="also run the whole suite on this machine (28 to 41 min). By default the suite "
                          "is CI's: the 'tests' workflow must have finished green on HEAD")
+    ap.add_argument(SKIP_COUNTERS_FLAG, dest="skip_work_counters", action="store_true",
+                    help="do not run perf/gate.py check. The run then cannot clear a release, and "
+                         "tools/release.py must never pass this flag")
     ap.add_argument("--root", default=str(ROOT), help="tree to check (default: this repository)")
     args = ap.parse_args(argv)
     return run(pathlib.Path(args.root).resolve(), skip_tests=args.skip_tests,
-               full_local=args.full_local)
+               full_local=args.full_local, skip_work_counters=args.skip_work_counters)
 
 
 if __name__ == "__main__":
