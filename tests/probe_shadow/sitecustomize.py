@@ -131,8 +131,14 @@ def real_interpreter(exe, hops=4):
                        (ln.split("=", 1) for ln in fh.read().splitlines() if "=" in ln)}
         except OSError:
             return None
-        nxt = cfg.get("executable") or os.path.join(cfg.get("home", ""), "python.exe")
-        if not nxt or os.path.normcase(nxt) == os.path.normcase(exe):
+        nxt = cfg.get("executable")
+        if not nxt:
+            # `uv` writes only `home`. The name under it is the platform's: python.exe on Windows, and
+            # python3 or python elsewhere. A name that does not exist there is not an answer.
+            home = cfg.get("home", "")
+            names = ("python.exe",) if os.name == "nt" else ("python3", "python")
+            nxt = next((os.path.join(home, n) for n in names if os.path.isfile(os.path.join(home, n))), None)
+        if not nxt or not os.path.isfile(nxt) or os.path.normcase(nxt) == os.path.normcase(exe):
             return None
         exe = nxt
     return None
