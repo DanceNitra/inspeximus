@@ -26,6 +26,7 @@ Exits non-zero if any mutation survives, so it can gate CI.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import os
@@ -92,6 +93,36 @@ def _ran(stdout: str) -> tuple[int, list[str]]:
         if m and " in " in line:
             passed = int(m.group(1))
     return passed, reasons
+
+
+def _preflight_red(name: str, pre: subprocess.CompletedProcess) -> str:
+    """Why a pre-flight was red, on ONE line, with the full output kept in a file.
+
+    A red pre-flight used to be reported as "tests are not green before mutating" and nothing else: the
+    pytest output was discarded, so the failing test and its reason were gone the moment the run ended.
+    PC2's full audit of 515a7439 hit two of these, neither reproduced in three re-runs, and there was
+    nothing left to diagnose them with. So the reason now names the failing test ids, the exit code and
+    pytest's last line, and the whole output goes to a file under MUTATION_PREFLIGHT_DIR (the parallel
+    runner points it outside the worker's worktree, which it deletes), else `.mutwt/preflight`.
+    One line, because tools/mutation_check_parallel.py reads the reason from a single `skipped:` line.
+    """
+    ids = sorted({ln.split()[1] for ln in pre.stdout.splitlines()
+                  if ln.startswith(("FAILED ", "ERROR ")) and len(ln.split()) > 1})
+    lines = [ln.strip() for ln in f"{pre.stderr or ''}\n{pre.stdout or ''}".splitlines() if ln.strip()]
+    last = lines[-1] if lines else "no output"
+    log = os.environ.get("MUTATION_PREFLIGHT_DIR") or os.path.join(ROOT, ".mutwt", "preflight")
+    slug = re.sub(r"[^\w.-]+", "_", name)[:60].strip("_")
+    path = os.path.join(log, f"{slug}.{hashlib.sha1(name.encode('utf-8')).hexdigest()[:8]}.log")
+    try:
+        os.makedirs(log, exist_ok=True)
+        with io.open(path, "w", encoding="utf-8") as fh:
+            fh.write(f"mutation: {name}\nexit: {pre.returncode}\ncommand: {' '.join(map(str, pre.args))}\n"
+                     f"\n--- stdout ---\n{pre.stdout}\n--- stderr ---\n{pre.stderr}\n")
+    except OSError as e:
+        path = f"not written ({type(e).__name__})"
+    return (f"tests are not green before mutating (exit {pre.returncode}; "
+            f"failed: {', '.join(ids) if ids else 'no FAILED or ERROR line'}; last line: {last[:200]}; "
+            f"full output: {path})")
 
 
 def _dirty_tracked() -> set:
@@ -222,9 +253,11 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
                 print(f"  {name[:58]:58s} -> SKIPPED (listed tests collect nothing)")
             continue
         if pre.returncode != 0:
-            skipped.append(f"{name}: tests are not green before mutating")
+            why = _preflight_red(name, pre)
+            skipped.append(f"{name}: {why}")
             if verbose:
                 print(f"  {name[:58]:58s} -> SKIPPED (not green before mutating)")
+                print(f"      {why}")
             continue
         ran, why = _ran(pre.stdout)
         if not ran:

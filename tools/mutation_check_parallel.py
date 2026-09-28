@@ -109,6 +109,8 @@ def _run_worker(idx: int, mutations: list[dict], base: str, keep: bool) -> dict:
 
     env = {**os.environ,
            "HOME": home, "USERPROFILE": home,
+           # A red pre-flight's full output must outlive the worktree, which is removed below.
+           "MUTATION_PREFLIGHT_DIR": os.path.join(base, "preflight"),
            "PYTHONPATH": wt + os.pathsep + os.environ.get("PYTHONPATH", ""),
            "PYTHONIOENCODING": "utf-8", "PYTHONUNBUFFERED": "1"}
     t0 = time.time()
@@ -116,7 +118,16 @@ def _run_worker(idx: int, mutations: list[dict], base: str, keep: bool) -> dict:
                         os.path.join("tools", "_mut_shard.json")],
                        cwd=wt, capture_output=True, text=True, env=env, timeout=7200)
     out = _parse(p.stdout)
-    out.update({"idx": idx, "rc": p.returncode, "secs": round(time.time() - t0, 1),
+    # KEEP THE WORKER'S OUTPUT. It lived only in this dict and was never written or printed, so a
+    # pre-flight that went red once and not again could not be diagnosed after the run (PC2, 515a7439).
+    log = os.path.join(base, f"worker{idx}.log")
+    try:
+        with open(log, "w", encoding="utf-8") as fh:
+            fh.write(f"--- stdout ---\n{p.stdout}\n--- stderr ---\n{p.stderr}\n")
+    except OSError:
+        log = None
+    out.update({"idx": idx, "rc": p.returncode, "secs": round(time.time() - t0, 1), "log": log,
+                "preflight_red": [s for s in out["skipped"] if "not green before mutating" in s],
                 "expected": [m["name"] for m in mutations],
                 "stderr_tail": p.stderr.strip()[-400:], "stdout": p.stdout})
     if not keep:
@@ -216,6 +227,8 @@ def main() -> int:
           f"{len(survived)} survived, {len(skipped)} skipped, {len(lost)} UNACCOUNTED")
     for s in skipped:
         print(f"  skipped: {s}")
+    if any(r.get("preflight_red") for r in results):
+        print(f"  red pre-flight output: {os.path.join(base, 'preflight')}; worker logs: {base}")
     for s in survived:
         print(f"  SURVIVED: {s}")
     for s in sorted(set(lost))[:40]:
