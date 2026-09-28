@@ -1,0 +1,19 @@
+{
+  "audit_path": [
+    "c7161945f283ba8b8b4178fd0efe9966e04d8b0ee39570c0b7f28b9b0a1e3f7a",
+    "9e5ff1aa862eb68ea924919f390fc06a505ed3220ef48a0b89053fc6d3749a23",
+    "a79bf90b6314257a9a1d43e4dd86db4d062847550613ac8e3fbef603ed1d2429",
+    "a4287f84ed4c1bec41c3fa85f63dce480ea7a51f1aff6a47998827ca328d11e7",
+    "eb12f7f74aabee367e86597a784132d87d1c764f083775ff1c9c265239e1ee1a",
+    "d1254e170c927f0707ef3a1f58025a538bafbe210e408feeeb638328ec3ca98e",
+    "5438719127e73727734bb67939320ebe1ce6c380661a57ce4a0c9e0cdfb54c6e"
+  ],
+  "how": "Hash the leaf file with SHA-256(0x00 || bytes), then fold the audit path in order with SHA-256(0x01 || left || right), RFC 6962. The result must equal `root`, which is the value the signed checkpoint carries.",
+  "index": 285,
+  "kind": "inspeximus.inclusion-proof/1",
+  "leaf": "entries/285.leaf.json",
+  "leaf_hash": "2454f3cb417b12ae8c7dded5ec06c5220827ffb722d38d5a6ff8a1835ef3bba8",
+  "root": "9e828edb388caa768e8123b6f62458c2ea02277f9a43611ed8846d7b95697350",
+  "scope": "Proves this entry is in the tree whose root is named here. It does not prove the entry is true, and it cannot see a history shown to somebody else: that is what the witness is for.",
+  "tree_size": 289
+}
