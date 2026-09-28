@@ -162,3 +162,50 @@ def test_an_unlocked_write_right_after_the_replace_is_still_seen(tmp_path, monke
     with pytest.raises(StoreChangedOnDisk):
         m.remember("the handle writes again", key="mine2", object="m2")
         m.flush()
+
+
+# ── the read side: refresh() sees a peer's same-tick write ───────────────────────────────────────────
+def test_refresh_sees_a_same_tick_peer_write_on_a_row_store(tmp_path, monkeypatch):
+    """A row store's size stays page-aligned, so ANY same-tick write, of any length, left the signature."""
+    monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
+    p, x = _seeded(tmp_path, False)
+    reader, peer = Inspeximus(p), Inspeximus(p)
+    assert reader.current("deploy")["object"] == "staging"
+    st = os.stat(p)
+    peer.remember("the deploy target is production now", key="deploy", object="production")
+    peer.flush()
+    _same_tick(p, st)
+    if (os.stat(p).st_mtime_ns, os.stat(p).st_size) != (st.st_mtime_ns, st.st_size):
+        pytest.fail("control: the peer's write moved the stat signature, so the case did not arise")
+    assert reader.refresh()["changed"], "refresh() did not see the peer's write"
+    assert reader.current("deploy")["object"] == "production"
+
+
+@pytest.mark.parametrize("encrypted", [False, True], ids=["json", "encrypted"])
+def test_refresh_sees_a_same_tick_same_size_peer_write_on_a_whole_file_store(tmp_path, encrypted):
+    p, x = _seeded(tmp_path, encrypted)
+    reader, peer = _open(p, encrypted), _open(p, encrypted)
+    st = os.stat(p)
+    peer.credit([x], outcome=1.0)                    # good 1.0 -> 2.0: same length
+    peer.flush()
+    _same_tick(p, st)
+    if (os.stat(p).st_mtime_ns, os.stat(p).st_size) != (st.st_mtime_ns, st.st_size):
+        pytest.fail("control: the peer's write moved the stat signature, so the case did not arise")
+    assert reader.refresh()["changed"], "refresh() did not see the peer's write"
+    assert next(r for r in reader._items if r["id"] == x).get("good") == 2.0
+
+
+def test_a_row_store_without_a_generation_falls_back_to_the_stat_signature(tmp_path, monkeypatch):
+    """A file written before 3.15.4 has no generation: never read as 'unchanged' on that ground alone."""
+    import sqlite3
+    monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
+    p, x = _seeded(tmp_path, False)
+    con = sqlite3.connect(p)
+    con.execute("DELETE FROM meta WHERE k='generation'")
+    con.commit()
+    con.close()
+    m = Inspeximus(p)
+    assert m._file_gen is None
+    assert m.refresh()["changed"] is False            # nothing moved: the stat check answers
+    Inspeximus(p).remember("a later write", key="later", object="l")   # a 3.15.4 writer adds the counter
+    assert m.refresh()["changed"]

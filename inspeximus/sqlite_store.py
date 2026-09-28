@@ -77,6 +77,31 @@ DOC_FORMAT = 2
 MAGIC = b"SQLite format 3\x00"
 
 
+def _bump_generation(con) -> int:
+    """Increment the store's write generation inside the caller's transaction and return it (A-37).
+
+    A row store is written in place and its size stays page-aligned, so (mtime_ns, size) did not move
+    for a peer's write in the same clock tick, of any length, and a reader's refresh served the value
+    it already had. The generation moves with every committed write, and only with one."""
+    con.execute("INSERT INTO meta(k, v) VALUES('generation', '1') "
+                "ON CONFLICT(k) DO UPDATE SET v=CAST(CAST(v AS INTEGER) + 1 AS TEXT)")
+    return int(con.execute("SELECT v FROM meta WHERE k='generation'").fetchone()[0])
+
+
+def generation(path):
+    """The store's write generation, or None when the file has none (written before 3.15.4) or cannot
+    be read. None is never equal to a recorded generation; callers fall back to the stat signature."""
+    try:
+        con = _connect(path)
+        try:
+            row = con.execute("SELECT v FROM meta WHERE k='generation'").fetchone()
+        finally:
+            con.close()
+        return int(row[0]) if row and row[0] is not None else None
+    except Exception:                                       # noqa: BLE001
+        return None
+
+
 def looks_like_sqlite(path) -> bool:
     """Read the file header rather than trust the extension.
 
@@ -445,6 +470,7 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
                     if not rewrite_all or not _same(now[k], before.get(k))]
             _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
         seqs = _insert_events(con, _ev) if _ev else []
+        gen = _bump_generation(con)                  # in this transaction: it commits or rolls back with it
         con.execute("COMMIT")
     except Exception:
         try:
@@ -455,7 +481,7 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
         raise
     con.close()
     return {"snapshot": now, "added": len(added), "changed": len(changed),
-            "removed": len(removed), "event_seqs": seqs}
+            "removed": len(removed), "event_seqs": seqs, "generation": gen}
 
 
 def _parse(doc):
@@ -527,6 +553,7 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True,
                             "ON CONFLICT(id) DO UPDATE SET ord=excluded.ord, doc=excluded.doc",
                             touched)
         seqs = _insert_events(con, _ev) if _ev else []
+        gen = _bump_generation(con)                  # in this transaction: it commits or rolls back with it
         con.execute("COMMIT")
     except Exception:
         try:
@@ -538,4 +565,4 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True,
     con.close()
     return {"snapshot": now, "added": len([t for t in touched if t[0] not in before]),
             "changed": len([t for t in touched if t[0] in before]), "removed": len(removed),
-            "event_seqs": seqs}
+            "event_seqs": seqs, "generation": gen}

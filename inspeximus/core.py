@@ -2867,6 +2867,7 @@ class Inspeximus:
         self._items: list[dict] = []
         self._file_sig = None       # (mtime_ns, size) of the file we loaded; guards against clobbering a peer
         self._file_hash = None      # sha256 of the bytes this handle last read or wrote (JSON and encrypted; A-37)
+        self._file_gen = None       # a row store's write generation when this handle last read or wrote it (A-37)
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -10100,6 +10101,9 @@ class Inspeximus:
         # handle may never have seen. The three steps (stat, header, bytes) are retried as a unit
         # across a peer's replace; see `_open_store_bytes`.
         sig_before_read, is_rows, raw = self._open_store_bytes()
+        # Read BEFORE the rows, like the signature, so a write landing in between can only make the
+        # recorded generation older than the rows, which reads as a change (A-37).
+        _gen_before_read = _rows.generation(self.path) if is_rows else None
         if is_rows:
             # A ROW STORE, detected by its 16-byte header rather than its name, because a store
             # migrated in place keeps whatever filename it had.
@@ -10153,6 +10157,7 @@ class Inspeximus:
             self._touched = set()
             self._file_sig = sig_before_read
             self._file_hash = None                    # a row store merges; it has no whole-file overwrite
+            self._file_gen = _gen_before_read
             return
         if raw is not None:
             if raw[:5] == _INSPEXIMUS_ENC_MAGIC:                           # encrypted store -> decrypt or FAIL LOUD
@@ -10418,7 +10423,19 @@ class Inspeximus:
         if self._file_sig is None:
             return {"changed": False, **({"sidecars": sidecars} if sidecars else {})}
         sig = self._stat_sig()
-        if sig == self._file_sig or sig is Inspeximus._ABSENT:
+        # A ROW STORE'S SIGNATURE DOES NOT SEE A SAME-TICK WRITE (A-37): it is written in place and its
+        # size stays page-aligned, so (mtime_ns, size) is effectively the mtime alone. Its write
+        # generation moves with every commit. A file without one (written before 3.15.4) falls back to
+        # the stat signature, which is what every earlier version relied on.
+        _unmoved = sig == self._file_sig
+        if _unmoved and self._row_snapshot is not None and self._file_gen is not None:
+            _gen = _rows.generation(self.path)
+            _unmoved = _gen is None or _gen == self._file_gen
+        elif _unmoved and self._row_snapshot is None and self._file_hash is not None:
+            # A JSON or encrypted store: the same content hash the writer guard uses. One read of the
+            # file, and only when the signature has not moved; the L1 path calls this once a second.
+            _unmoved = self._disk_hash() == self._file_hash
+        if _unmoved or sig is Inspeximus._ABSENT:
             return {"changed": False, **({"sidecars": sidecars} if sidecars else {})}
         out = self._merge_with_disk(adopt_disk_loss=True)
         out["changed"] = True
@@ -18303,6 +18320,7 @@ class Inspeximus:
                     self._pending_events = []          # committed with the rows, or rolled back with them
                     self._file_sig = self._stat_sig()
                     self._file_hash = None
+                    self._file_gen = _res.get("generation")   # from the transaction, not a re-read
                     _wrote_rows = True
                     _committed_events = _res.get("event_seqs") or []
                 else:

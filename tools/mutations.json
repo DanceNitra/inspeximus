@@ -5638,5 +5638,41 @@
   "tests": [
    "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
   ]
+ },
+ {
+  "name": "refresh ignores a row store's write generation",
+  "file": "inspeximus/core.py",
+  "old": "        if _unmoved and self._row_snapshot is not None and self._file_gen is not None:",
+  "new": "        if False and self._row_snapshot is not None and self._file_gen is not None:",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
+ },
+ {
+  "name": "refresh ignores a whole-file store's content hash",
+  "file": "inspeximus/core.py",
+  "old": "        elif _unmoved and self._row_snapshot is None and self._file_hash is not None:",
+  "new": "        elif False and self._row_snapshot is None and self._file_hash is not None:",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
+ },
+ {
+  "name": "a row write does not advance the generation",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    con.execute(\"INSERT INTO meta(k, v) VALUES('generation', '1') \"\n                \"ON CONFLICT(k) DO UPDATE SET v=CAST(CAST(v AS INTEGER) + 1 AS TEXT)\")",
+  "new": "    con.execute(\"INSERT OR IGNORE INTO meta(k, v) VALUES('generation', '1')\")",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
+ },
+ {
+  "name": "a row store load records no generation",
+  "file": "inspeximus/core.py",
+  "old": "        _gen_before_read = _rows.generation(self.path) if is_rows else None",
+  "new": "        _gen_before_read = None",
+  "tests": [
+   "tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py"
+  ]
  }
 ]

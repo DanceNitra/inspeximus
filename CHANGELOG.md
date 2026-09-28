@@ -43,9 +43,15 @@ whole file, and were not affected.
   in TEMP only, or a tool that writes the file directly) can still change the file between the check
   and the replace.
 - **Cost.** One extra read of the store file per save, on JSON and encrypted stores only.
+- **Reads see it too.** `refresh()` (which the MCP server runs before every read, and the L1 cache once a
+  second) missed the same writes and served the old value. A row store's file size stays page-aligned, so
+  there it missed a same-tick write of any length. A row store now keeps a write generation that every
+  write advances in its own transaction, and `refresh()` compares it; a JSON or encrypted store compares
+  the content hash. A row store written by an earlier version has no generation until its first write
+  from 3.15.4, and until then `refresh()` relies on the modification time and size, as before.
 
 `tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` pins the clock with `os.utime`, so it
-fails on 3.15.2 on every OS (5 of 7; the other 2 are controls), and each of the 5 new mutations in
+fails on 3.15.2 on every OS (9 of 11; the other 2 are controls), and each of the 9 new mutations in
 `tools/mutations.json` fails a test.
 
 ## Unreleased (A-34) - UPGRADE IF you erase memories, record objections, spend an irreversible budget, or keep write receipts: an operation whose written proof cannot be stored no longer reports success
