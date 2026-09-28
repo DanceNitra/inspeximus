@@ -599,6 +599,22 @@ def new_ed25519_keypair() -> tuple[str, str]:
 #: "what the signature covers" and "what the reader consumes" is exactly where this scheme leaked: a witness
 #: signature covers only the `sth_hash` STRING, while every consumer reads these FIELDS --
 #: verify_consistency() pins a store to `writes_tip`/`n_writes`, detect_split_view() compares them.
+
+def _latest_written(cands: list):
+    """The candidate that was valid LAST, and among ties the one WRITTEN last (AUDIT-B, same-tick class).
+
+    `as_of` and `believed_at` took `max` over (valid_from, ts). Two writes to one key in one clock tick
+    tie on both, and `max` returns the FIRST of a tie, which is the older value: three same-tick writes
+    of one, two, three answered `as_of(key, now)` with one while the current value was three. The tie is
+    broken by position in the store, which is write order (the row store loads `ORDER BY ord`, a JSON
+    store keeps list order)."""
+    best = None
+    for pos, r in enumerate(cands):
+        k = (r.get("valid_from", r["ts"]), r["ts"], pos)
+        if best is None or k > best[0]:
+            best = (k, r)
+    return best[1] if best else None
+
 _STH_FIELDS = ("n_writes", "writes_tip", "n_tombstones", "tombstones_tip")
 
 
@@ -13442,7 +13458,7 @@ class Inspeximus:
             # simply no longer load-bearing, which is the point: a tampered cache changes no answer.
             _rows = [r for r in self._tenant_rows() if r.get("key") == key]
             cands = [r for r in _rows if r.get("valid_from", r["ts"]) <= when]
-            best = max(cands, key=lambda r: (r.get("valid_from", r["ts"]), r["ts"]), default=None)
+            best = _latest_written(cands)
             if best is not None:
                 _bvf = best.get("valid_from", best["ts"])
                 _nxt = [r.get("valid_from", r["ts"]) for r in _rows
@@ -13454,7 +13470,7 @@ class Inspeximus:
             # (a record is superseded only by a LATER-valid_from record that was itself already recorded by then).
             cands = [r for r in self._tenant_rows() if r.get("key") == key
                      and r.get("valid_from", r["ts"]) <= when and r["ts"] <= as_recorded]
-            best = max(cands, key=lambda r: (r.get("valid_from", r["ts"]), r["ts"]), default=None)
+            best = _latest_written(cands)
         if best is None:
             return None
         out = {"object": best.get("object"), "text": best.get("text"),
@@ -13486,7 +13502,7 @@ class Inspeximus:
         'what did the agent believe when it acted at time T', for replay and audit. Returns
         {object, text, valid_from, id, as_recorded} or None."""
         cands = [r for r in self.items if r.get("key") == key and r["ts"] <= as_recorded]
-        best = max(cands, key=lambda r: (r.get("valid_from", r["ts"]), r["ts"]), default=None)
+        best = _latest_written(cands)
         if best is None:
             return None
         return {"object": best.get("object"), "text": best.get("text"),
