@@ -570,6 +570,46 @@ def w_prompt_unstamped(n):
     return run
 
 
+def w_prompt_archived(n):
+    """The prompt hook's read after `--archive`: a FRESH handle opens a store of n captures, 80 % of them
+    older than 7 days and moved to segments, and recalls once. The hook pays for the rows it loads, so
+    `prompt_rows_loaded` is the hot rows only (n / 5), and `archive_segments_read` is 0: a default read
+    opens no segment (AUDIT-B B-25). Timestamps are pinned, so the fixture is the same on every run."""
+    from inspeximus import archive as _arch
+    t0 = 1790000000.0
+    p = _store_path()
+    real_time = core.time.time
+    try:
+        m = Inspeximus(p)
+        for i in range(n):
+            age = 40 if i % 5 else 1
+            core.time.time = (lambda age=age, i=i: t0 - age * 86400.0 + i)
+            m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+        m.flush()
+        core.time.time = lambda: t0
+        _arch.apply(Inspeximus(p), 7, now=t0)
+    finally:
+        core.time.time = real_time
+
+    def run():
+        opened = {"n": 0}
+        real_read = _arch._segment_records
+
+        def read(*a, **k):
+            opened["n"] += 1
+            return real_read(*a, **k)
+
+        _arch._segment_records = read
+        try:
+            with Counters() as c:
+                h = Inspeximus(p)
+                h.recall("which make target builds the docs", k=6)
+        finally:
+            _arch._segment_records = real_read
+        run.inner = {**c.as_dict(), "prompt_rows_loaded": len(h._items), "archive_segments_read": opened["n"]}
+    return run
+
+
 class _CountedId(str):
     """A record id that counts its own `__eq__` calls. A set or dict lookup finds the identical object
     without calling it; a list membership test calls it once per element it passes."""
@@ -765,6 +805,7 @@ WORKLOADS = {
     "recommit_n2000":     (lambda: w_recommit(2000),     "recommit 2,000 unbound records: the receipt sidecar is written once", "rows"),
     "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store", "rows"),
     "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records", "none"),
+    "prompt_archived_n2000": (lambda: w_prompt_archived(2000), "fresh handle recalls once after --archive moved 80 % of 2,000 captures", "rows"),
 }
 
 

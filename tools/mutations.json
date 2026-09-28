@@ -7031,5 +7031,59 @@
   "tests": [
    "tests/test_recommit_writes_the_receipt_chain_once.py"
   ]
+ },
+ {
+  "name": "B-25: the archive moves a class nobody named",
+  "file": "inspeximus/archive.py",
+  "old": "            lambda r: str(r.get(\"key\") or \"\").startswith(\"cmd:\")),",
+  "new": "            lambda r: True),",
+  "tests": [
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
+ },
+ {
+  "name": "B-25: the archive moves a capture that a kept record refers to",
+  "file": "inspeximus/archive.py",
+  "old": "                    if isinstance(ref, str) and ref in cand:",
+  "new": "                    if False:",
+  "tests": [
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
+ },
+ {
+  "name": "B-25: a save during a pooled read writes archived rows into the hot file",
+  "file": "inspeximus/core.py",
+  "old": "        if getattr(self, \"_archive_pooled\", False):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
+ },
+ {
+  "name": "B-25: segments land in a git work tree without the flag",
+  "file": "inspeximus/archive.py",
+  "old": "    if repo and not allow_git_tracked:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
+ },
+ {
+  "name": "B-25: an interrupted run leaves its logged rows in the hot store",
+  "file": "inspeximus/archive.py",
+  "old": "        moved_ids: set = set(stranded)",
+  "new": "        moved_ids: set = set()",
+  "tests": [
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
+ },
+ {
+  "name": "B-25: rows the log already gives to a segment are selected again",
+  "file": "inspeximus/archive.py",
+  "old": "            if r[\"id\"] not in logged and isinstance(r.get(\"ts\"), (int, float)) and r[\"ts\"] < cutoff",
+  "new": "            if isinstance(r.get(\"ts\"), (int, float)) and r[\"ts\"] < cutoff",
+  "tests": [
+   "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
+  ]
  }
 ]

@@ -14491,7 +14491,8 @@ class Inspeximus:
                user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
                rerank_by: str | None = None, resolve_conflicts: bool = False,
                suppress_stale_values: bool = False, project: str | None = None,
-               observe: bool = True, include_quarantined: bool = False) -> list[dict]:
+               observe: bool = True, include_quarantined: bool = False,
+               include_archive: bool = False) -> list[dict]:
         """Top-k memories by RELEVANCE × VALUE — high-value memories outrank merely-similar ones.
         Memories the dream pass flagged as hubs (universal matchers) are skipped unless include_hubs.
 
@@ -14589,6 +14590,17 @@ class Inspeximus:
         the fairness check; (b) adversarial hole: an ECHO of the stale value re-stated AFTER the correction
         would be promoted — tie_recent trusts recency inside the band, so do not use it on hostile
         ingestion without provenance gating (combine with influence_only). Reversible: None = legacy."""
+        # include_archive: the same recall over the hot rows plus every archive segment the log lists
+        # (inspeximus/archive.py, AUDIT-B B-25), run on this instance so its configuration decides. One
+        # pool, so the ranking is the one the store gave before the rows moved, except among rows whose
+        # scores tie AND whose `ts` is identical (see archive.pooled).
+        if include_archive:
+            _args = dict(locals())
+            _args.pop("self")
+            _args["include_archive"] = False
+            from .archive import pooled as _pooled
+            with _pooled(self):
+                return self.recall(**_args)
         # Normalize `prefer` into a list of (cond_dict, clamped_trust) specs. Back-compat: a plain dict uses
         # the scalar prefer_trust (the legacy one-dimension path, byte-identical scoring); a list composes.
         _prefer_specs: list = []
@@ -18554,6 +18566,8 @@ class Inspeximus:
     def _save(self, force: bool = False):
         if not self.path:
             return
+        if getattr(self, "_archive_pooled", False):
+            return                     # archive rows are pooled in for a read; they must never reach this file
         # Throttle: coalesce frequent writes (e.g. one per recall) so a large store isn't re-serialized
         # on the hot path. force=True (or flush()) bypasses it for shutdown/critical persistence.
         now = time.time()

@@ -961,10 +961,12 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
            user_id: str | None = None, agent_id: str | None = None, session_id: str | None = None,
            rerank_by: str | None = None, resolve_conflicts: bool | None = None,
            all_projects: bool = False, with_warrant: bool = False,
-           include_quarantined: bool = False) -> list[dict]:
+           include_quarantined: bool = False, include_archive: bool = False) -> list[dict]:
     """Retrieve the top-k memories by RELEVANCE × accrued VALUE (not recency). Use this to load relevant prior
     knowledge before reasoning. Records the read-path guards quarantined (instruction-shaped text, 3.5.0)
     are left out unless `include_quarantined` is set; keyword-stuffed records never outrank clean ones.
+    `include_archive` also searches the archive segments beside the store (old captured mechanics moved
+    out by `--archive`); it opens every segment, so it is slower and off by default.
 
     Compact by default: each hit is a small projection — {id, text, score, value, tags} — dropping internal
     bookkeeping fields the model doesn't reason over, which keeps recall cheap to drop into a prompt. FULL TEXT IS
@@ -1006,7 +1008,7 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
                        user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by,
                        resolve_conflicts=resolve_conflicts, with_warrant=with_warrant,
                        project=None if all_projects else _PROJECT,
-                       include_quarantined=include_quarantined) or []
+                       include_quarantined=include_quarantined, include_archive=include_archive) or []
     if not hits and _PATH and not os.path.exists(str(_PATH)):
         # NO STORE YET IS NOT AN EMPTY MEMORY (3.15.3). The store file does not exist, so nothing has ever
         # been remembered here; a bare [] reads as "remembered, and nothing matched".

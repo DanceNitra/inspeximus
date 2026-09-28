@@ -509,6 +509,28 @@ def scrub_secrets(cwd=None, apply=False) -> dict:
     return report
 
 
+def archive_store(cwd=None, older_than=None, classes=("cmd",), apply=False, allow_git_tracked=False) -> dict:
+    """Move captured mechanics older than `older_than` days out of this project's store into monthly
+    segments beside it (inspeximus/archive.py, AUDIT-B B-25). DRY BY DEFAULT: without `apply` it reports
+    what would move, per class and per segment, and the store's size before and after, and writes nothing.
+
+    Nothing is deleted: recall with include_archive reads the segments. Segments inside a git work tree
+    are refused unless `allow_git_tracked`, because an erasure can rewrite the files but not git history.
+    Run --scrub-secrets before committing a segment anywhere."""
+    from . import archive as _arch
+    if older_than is None:
+        raise ValueError("--archive needs --older-than DAYS")
+    m = _store(cwd)
+    if not apply:
+        r = _arch.plan(m, float(older_than), tuple(classes))
+        r["applied"] = False
+        if r.get("git_work_tree"):
+            r["git_note"] = ("these segments would land inside the git work tree %s; --apply refuses without "
+                             "--allow-git-tracked. %s" % (r["git_work_tree"], _arch.GIT_WARNING))
+        return r
+    return _arch.apply(m, float(older_than), tuple(classes), allow_git_tracked=allow_git_tracked)
+
+
 #: Bump when the scan changes enough that a store already scanned should be scanned again.
 _SECRETS_NOTICE_REV = 1
 
@@ -1580,6 +1602,24 @@ def main():
         if not r["applied"] and r["new"]:
             print("Dry run. Add --apply to write %d new record(s) into %s (backed up first)."
                   % (r["new"], r["destination"]))
+        return
+    if "--archive" in sys.argv:
+        from .archive import ArchiveRefused
+        argv = sys.argv
+        older = argv[argv.index("--older-than") + 1] if "--older-than" in argv[:-1] else None
+        classes = tuple(argv[i + 1] for i, a in enumerate(argv[:-1]) if a == "--class") or ("cmd",)
+        try:
+            r = archive_store(older_than=older, classes=classes, apply="--apply" in argv,
+                              allow_git_tracked="--allow-git-tracked" in argv)
+        except (ArchiveRefused, ValueError) as exc:
+            print("inspeximus: archive refused: %s" % exc)
+            sys.exit(2)
+        if r.get("git_warning"):
+            print("inspeximus: %s" % r["git_warning"])
+        print(json.dumps(r, indent=2, default=str))
+        if not r["applied"] and r.get("moving"):
+            print("\nDry run. Add --apply to move %d record(s) into %d segment(s); nothing is deleted."
+                  % (r["moving"], len(r.get("segments") or [])))
         return
     if "--scrub-secrets" in sys.argv:
         r = scrub_secrets(apply="--apply" in sys.argv)
