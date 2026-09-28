@@ -4004,7 +4004,7 @@
   "name": "the store lock goes back to TEMP",
   "file": "inspeximus/core.py",
   "old": "self._path = os.path.normcase(os.path.realpath(os.path.abspath(str(path)))) + \".lock\"",
-  "new": "self._path = os.path.join(tempfile.gettempdir(), \"inspeximus-%s.lock\" % hashlib.sha256(str(path).encode()).hexdigest()[:16])",
+  "new": "self._path = os.path.join(tempfile.gettempdir(), \"inspeximus-store-%s.lock\" % hashlib.sha256(str(path).encode()).hexdigest()[:16])",
   "tests": [
    "tests/test_the_store_lock_does_not_depend_on_temp.py"
   ]
