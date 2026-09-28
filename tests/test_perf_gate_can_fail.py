@@ -244,14 +244,26 @@ def test_it_fails_when_the_value_reports_scan_the_store_once_per_key():
     assert any("current_active_scans" in f for f in fail), f"the scans grew and the gate stayed green: {fail}"
 
 
-def test_it_fails_when_the_read_guard_searches_text_that_cannot_match():
+def test_it_fails_when_the_read_guard_searches_text_that_cannot_match(tmp_path, monkeypatch):
     """AUDIT-B B-05. The read guard ran seven regex searches over every clean record in every new
     process: 8.1 s of a 12.0 s hook recall at 67,165 records.
 
     Reintroduced by emptying the word pre-check, which is exactly the old behaviour (every pattern
     searched), and measured through the counter the gate reads.
+
+    UNDER A KEY HOME THAT CANNOT VERIFY THE STAMPS. Since A-30 a record carries a read-guard verdict
+    stamped under the store's key, and a fresh handle with that key trusts it, so the recall searched
+    nothing whatever the pre-check did and this test could not fail. The recall below runs as a fresh
+    process meets a store it cannot vouch for, which is the path the pre-check protects.
     """
-    run = gate.w_prompt(200)
+    def unstamped(run):
+        def go():
+            with monkeypatch.context() as mp:
+                mp.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / f"foreign-{len(os.listdir(tmp_path))}"))
+                run()
+        return go
+
+    run = unstamped(gate.w_prompt(200))
     with gate.Counters() as c:
         run()
     good = c.as_dict()
@@ -261,7 +273,7 @@ def test_it_fails_when_the_read_guard_searches_text_that_cannot_match():
     real = core._SHAPE_REQUIRES
     core._SHAPE_REQUIRES = {}
     try:
-        run = gate.w_prompt(200)
+        run = unstamped(gate.w_prompt(200))
         with gate.Counters() as c:
             run()
         bad = c.as_dict()
