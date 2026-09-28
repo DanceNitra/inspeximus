@@ -2167,17 +2167,19 @@ _STORE_DIR_GITIGNORE = ("# Written by inspeximus. A store's .lock file exists on
                         "*.lock\n")
 
 
-def _make_store_dir(d):
+def _make_store_dir(d, ignore_lock=None):
     """Create a store's directory on its first write. Opening or reading never does (3.15.3, A-11).
 
-    `<project>/.inspeximus` and `~/.inspeximus` are the directories a surface may create without being asked,
-    and one that inspeximus creates gets A-10's .gitignore for the lock. Before 3.15.3 the Claude Code hook
-    wrote it, when a hook READ created the directory."""
+    A-10's .gitignore for the lock goes into every store directory inspeximus creates for an agent: a
+    `.inspeximus` directory the first write creates (`<project>/.inspeximus`, `~/.inspeximus`, the only ones a
+    surface may create without being asked), and the folder `install --all` creates for the store it names
+    (`ignore_lock=True`). Before 3.15.3 the Claude Code hook wrote it, when a hook READ created the
+    directory. A library caller's own path gets none, as before."""
     d = Path(d)
     if d.exists():
         return
     d.mkdir(parents=True, exist_ok=True)
-    if d.name == ".inspeximus":
+    if ignore_lock or (ignore_lock is None and d.name == ".inspeximus"):
         try:
             with open(d / ".gitignore", "x", encoding="utf-8") as fh:
                 fh.write(_STORE_DIR_GITIGNORE)
