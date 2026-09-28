@@ -62,7 +62,12 @@ def _pytest(tests: list[str], env: dict, tb: str = "no") -> subprocess.Completed
     # green before mutating". Nine entries could never be evaluated on any machine, so no full run
     # could ever exit 0. For such an entry the marker filter is lifted for its own tests, and they run
     # serially, as their CI step runs them, because they edit files the other workers would import.
-    extra = ["-n", "0", "-m", ""] if _marked_mutation(tests) else []
+    #
+    # ONE PROCESS PER WORKER (session 1, 2026-09-28). pytest.ini's addopts carries `-n auto`, so every
+    # pre-flight and every mutant run started its own xdist pool, and mutation_check_parallel with 10
+    # workers could start 10 pools of up to 24 processes. Parallelism lives only at the outer level
+    # (mutation_check_parallel --workers); inside a worker every pytest run is `-n 0`.
+    extra = ["-n", "0"] + (["-m", ""] if _marked_mutation(tests) else [])
     # The PRE-FLIGHT keeps its tracebacks (tb="short"): when it is red, they are the only record of why,
     # and a re-run is exactly what failed to reproduce PC2's two red pre-flights. The mutant run keeps
     # `--tb=no`; only its summary lines are read.

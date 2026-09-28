@@ -4697,8 +4697,8 @@
  {
   "name": "the gate stops lifting the marker filter for a mutation-marked entry",
   "file": "tools/mutation_check.py",
-  "old": "    extra = [\"-n\", \"0\", \"-m\", \"\"] if _marked_mutation(tests) else []\n",
-  "new": "    extra = []\n",
+  "old": "    extra = [\"-n\", \"0\"] + ([\"-m\", \"\"] if _marked_mutation(tests) else [])\n",
+  "new": "    extra = [\"-n\", \"0\"]\n",
   "tests": [
    "tests/test_every_mutation_entry_runs_its_tests.py"
   ]
@@ -5833,6 +5833,15 @@
   "file": "tools/mutation_check_parallel.py",
   "old": "fh.write(f\"--- stdout ---\\n{p.stdout}\\n--- stderr ---\\n{p.stderr}\\n\")",
   "new": "fh.write(\"\")",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
+ },
+ {
+  "name": "a worker's pytest runs start their own xdist pool again",
+  "file": "tools/mutation_check.py",
+  "old": "    extra = [\"-n\", \"0\"] + ([\"-m\", \"\"] if _marked_mutation(tests) else [])\n",
+  "new": "    extra = [\"-m\", \"\"] if _marked_mutation(tests) else []\n",
   "tests": [
    "tests/test_a_red_preflight_names_its_failing_test.py"
   ]

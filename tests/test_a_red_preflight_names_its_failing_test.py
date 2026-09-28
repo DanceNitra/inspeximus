@@ -86,3 +86,29 @@ def test_the_parallel_runner_reports_the_failing_test_and_keeps_worker_output(tm
     assert "the reason is kept" in open(path, encoding="utf-8").read()
     worker_log = os.path.join(ROOT, ".mutwt", "worker0.log")
     assert "forced red pre-flight (parallel)" in open(worker_log, encoding="utf-8").read()
+
+
+def test_every_pytest_run_inside_a_worker_is_serial(tmp_path, monkeypatch):
+    """Session 1's rule: parallelism lives only in mutation_check_parallel's --workers. The pre-flight and
+    the mutant run both carry `-n 0`, which overrides pytest.ini's `-n auto`. An unmarked test file is
+    used, because a `mutation`-marked one got `-n 0` before this rule existed (the control)."""
+    target = tmp_path / "target.py"
+    target.write_text("VALUE = 1\n", encoding="utf-8")
+    calls = []
+    real = mutation_check.subprocess.run
+
+    def run(cmd, *a, **k):
+        if "pytest" in cmd:
+            calls.append(list(cmd))
+            return subprocess.CompletedProcess(cmd, 0, stdout="1 passed in 0.01s\n", stderr="")
+        return real(cmd, *a, **k)
+    monkeypatch.setattr(mutation_check.subprocess, "run", run)
+    tests = ["tests/test_every_mutation_entry_runs_its_tests.py"]
+    assert not mutation_check._marked_mutation(tests), "control: the listed test file is not marked"
+    mutation_check.run([{"name": "serial worker", "file": str(target), "old": "VALUE = 1",
+                         "new": "VALUE = 2", "tests": tests}], verbose=False)
+    assert len(calls) == 2, "control: a pre-flight and a mutant run"
+    for cmd in calls:
+        i = cmd.index("-n")
+        assert cmd[i + 1] == "0", cmd
+    assert target.read_text(encoding="utf-8") == "VALUE = 1\n"
