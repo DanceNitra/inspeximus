@@ -34,9 +34,13 @@
 
 Tests: `tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py` (45 of 49 fail on 3.15.3;
 the 4 that pass cover the irreversible budget, which was already right) and
-`tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py` (6 of 6 fail or hang without the re-entrant lock; one of them is a decision whose merge migrates a JSON store). Three tests in
-`tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` write unkeyed records, because a
-keyed write now decides and merges first instead of being refused. `perf/gate.py` counts
+`tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py` (7 of 7 fail or hang without
+this change; one of them is a decision whose merge migrates a JSON store, another is a second thread on
+the same handle). Tests that expected a keyed write or an erasure to be refused on a JSON store follow
+the change above: three in `tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` and one in
+`tests/test_a_peers_receipt_survives_this_handles_next_write.py` write unkeyed records, which reach the
+same refusal, and the JSON arms of two tests in `tests/test_audit_round_four.py` assert the same final
+store as the row arms. `perf/gate.py` counts
 `decision_syncs`: 0 on a write, a recall or a prompt, 1 per erasure.
 
 ## 3.15.6 - UPGRADE IF you install through an agent on Windows, or use Hermes Agent: every install line on the page now names the version it installs, so an agent that leaves out `-U` still gets this release; and an upgrade of the Hermes provider that cannot load puts the previous version back instead of leaving Hermes without one.

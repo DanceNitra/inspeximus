@@ -70,8 +70,10 @@ def test_a_refused_json_write_gets_its_receipt_when_reload_re_adds_it(tmp_path, 
     a = Inspeximus(path=p, receipts=True)
     a.remember("a one", key="a1", object="1")
     Inspeximus(path=p, receipts=True).remember("b one", key="b1", object="1")
+    # UNKEYED ON PURPOSE (3.15.6): a keyed write decides from the rows, so it merges first and lands
+    # instead of being refused. An unkeyed write still meets the refusal this test re-adds after.
     with pytest.raises(StoreChangedOnDisk):
-        a.remember("a two", key="a2", object="2")
+        a.remember("a two")
     out = a.reload()
     assert out["readded"] == 1, "the fixture did not re-add anything; nothing below measures"
     rc = _sidecar(p)

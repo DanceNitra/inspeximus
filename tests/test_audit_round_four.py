@@ -69,8 +69,9 @@ def test_a_concurrent_supersession_leaves_one_active_record_under_the_key(fmt, m
     `StoreChangedOnDisk` and then call `reload()`. A row store merges instead of refusing, because a
     row write only touches the ids it names, so the exception is now the JSON path's answer and the
     merge is the row path's. Both must end with the same store, and this asserts that rather than the
-    mechanism that got there. The JSON arm keeps the refusal, which is still the right answer for a
-    format whose save rewrites the whole file.
+    mechanism that got there. Since 3.15.6 a keyed write DECIDES from the rows, so on the JSON format too
+    it merges what the peer committed before it supersedes, and lands instead of being refused; both
+    arms now take one path and must end with the same store.
     """
     if fmt == "json":
         monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
@@ -84,16 +85,8 @@ def test_a_concurrent_supersession_leaves_one_active_record_under_the_key(fmt, m
     b.remember("city is Rome", key="city")
     b.flush()
 
-    if fmt == "json":
-        with pytest.raises(StoreChangedOnDisk):
-            a.remember("salary is 200", key="pay")
-        # Since 3.5.1 the merge keeps the rows this handle edited, so the record `a` superseded in
-        # memory comes through the reload already superseded and the LWW pass has nothing to demote.
-        # Before, disk's active copy won and the pass demoted it (1). The store below is the same.
-        assert a.reload()["demoted"] == 0
-    else:
-        a.remember("salary is 200", key="pay")
-        a.flush()
+    a.remember("salary is 200", key="pay")
+    a.flush()
 
     rows = load_store(p)
     active_pay = [r["text"] for r in rows if r.get("key") == "pay" and r["status"] == "active"]
@@ -108,7 +101,8 @@ def test_a_concurrent_erasure_does_not_leave_the_record_behind(fmt, monkeypatch)
 
     Parametrised for the same reason as the test above: the row store merges where the JSON store
     refuses, and an erased record must be gone either way. This is the arm that would catch a merge
-    written without the tombstone filter, which is what the first row-store merge was.
+    written without the tombstone filter, which is what the first row-store merge was. Since 3.15.6 an
+    erasure merges what the peer committed before it selects, on both formats, so neither arm refuses.
     """
     if fmt == "json":
         monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
@@ -122,13 +116,8 @@ def test_a_concurrent_erasure_does_not_leave_the_record_behind(fmt, monkeypatch)
     b.remember("unrelated", source={"doc": "other"})
     b.flush()
 
-    if fmt == "json":
-        with pytest.raises(StoreChangedOnDisk):      # the erasure runs in memory, the save conflicts
-            a.forget_subject("alice", request_id="DSAR-1", basis="gdpr-art17")
-        a.reload()
-    else:
-        a.forget_subject("alice", request_id="DSAR-1", basis="gdpr-art17")
-        a.flush()
+    a.forget_subject("alice", request_id="DSAR-1", basis="gdpr-art17")
+    a.flush()
 
     rows = load_store(p)
     assert not any("alice ssn" in r["text"] for r in rows), rows
