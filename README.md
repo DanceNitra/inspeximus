@@ -301,6 +301,9 @@ the rows, so another process tails the table by `seq` and sees a commit on its n
 no reload and no broker. `current(key)` answers repeat reads from an L1 keyed by (tenant, agent,
 key), so a hit primed by one agent is never served to another.
 
+An erasure removes a record's `key` from its journal rows, in the same transaction as the delete
+(the rows stay, marked `key_redacted`), so a key that names a person does not outlive the erasure.
+
 ```python
 from inspeximus import Inspeximus
 

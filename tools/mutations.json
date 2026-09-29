@@ -6685,5 +6685,41 @@
   "tests": [
    "tests/test_valid_alone_does_not_name_the_issuer.py"
   ]
+ },
+ {
+  "name": "journal key: the payload's key is left in place",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "            if isinstance(pl, dict) and \"key\" in pl:\n",
+  "new": "            if isinstance(pl, dict) and \"key\" in pl and False:\n",
+  "tests": [
+   "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
+  ]
+ },
+ {
+  "name": "journal key: only the first 500 removed ids are redacted",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    for at in range(0, len(ids), 500):\n",
+  "new": "    for at in range(0, min(len(ids), 500), 500):\n",
+  "tests": [
+   "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
+  ]
+ },
+ {
+  "name": "journal key: the full-diff writer does not redact a removed record's rows",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "for k in removed]\n        seqs = _insert_events(con, _ev) if _ev else []\n        if removed:\n            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off\n",
+  "new": "for k in removed]\n        seqs = _insert_events(con, _ev) if _ev else []\n",
+  "tests": [
+   "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
+  ]
+ },
+ {
+  "name": "journal key: the declared-ids writer does not redact a removed record's rows",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "                            touched)\n        seqs = _insert_events(con, _ev) if _ev else []\n        if removed:\n            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off\n",
+  "new": "                            touched)\n        seqs = _insert_events(con, _ev) if _ev else []\n",
+  "tests": [
+   "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
+  ]
  }
 ]

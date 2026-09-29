@@ -347,6 +347,41 @@ def _event_row(kind, rec, ts):
             json.dumps(payload, ensure_ascii=False, sort_keys=True))
 
 
+#: What replaces a record's key in the journal once the record is gone.
+_KEY_REDACTED = "key_redacted"
+
+
+def _redact_removed_keys(con, ids) -> int:
+    """Take the KEY out of every journal row of a record that was removed, in the caller's transaction.
+
+    A key is a label the caller chose, and a caller can put a person in it ("jane-invoice-email"). The
+    record's row is deleted and its tombstone is content-free, but the journal kept `key` in the payload
+    of the record's `record.added`, `record.changed` and `record.removed` rows: measured on 3.15.4, after
+    `forget_subject("jane.example")` the file no longer held the address or the domain, and still held the
+    key five times, all in `memory_events`. The rows stay, with the id, the type and the status, so a
+    reader tailing by `seq` sees no gap; only the label goes, and `key_redacted` says it did. With
+    `secure_delete` on, the old bytes are zeroed by this UPDATE, not left in a free page.
+    """
+    ids = [i for i in ids if i]
+    n = 0
+    for at in range(0, len(ids), 500):
+        chunk = ids[at:at + 500]
+        marks = ",".join("?" * len(chunk))
+        rows = con.execute("SELECT seq, payload FROM memory_events WHERE memory_id IN (%s)" % marks,
+                           chunk).fetchall()
+        upd = []
+        for seq, payload in rows:
+            pl = _parse(payload)
+            if isinstance(pl, dict) and "key" in pl:
+                pl.pop("key")
+                pl[_KEY_REDACTED] = True
+                upd.append((json.dumps(pl, ensure_ascii=False, sort_keys=True), seq))
+        if upd:
+            con.executemany("UPDATE memory_events SET payload=? WHERE seq=?", upd)
+            n += len(upd)
+    return n
+
+
 def _insert_events(con, rows) -> list:
     """INSERT the event rows inside the caller's open transaction and return their seqs."""
     seqs = []
@@ -470,6 +505,8 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
                     if not rewrite_all or not _same(now[k], before.get(k))]
             _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
         seqs = _insert_events(con, _ev) if _ev else []
+        if removed:
+            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off
         gen = _bump_generation(con)                  # in this transaction: it commits or rolls back with it
         con.execute("COMMIT")
     except Exception:
@@ -553,6 +590,8 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True,
                             "ON CONFLICT(id) DO UPDATE SET ord=excluded.ord, doc=excluded.doc",
                             touched)
         seqs = _insert_events(con, _ev) if _ev else []
+        if removed:
+            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off
         gen = _bump_generation(con)                  # in this transaction: it commits or rolls back with it
         con.execute("COMMIT")
     except Exception:

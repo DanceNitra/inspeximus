@@ -1,3 +1,21 @@
+## Unreleased - UPGRADE IF you erase memories whose keys name a person or a customer: the key no longer stays in the event journal after the erasure
+
+### An erasure takes the record's key out of `memory_events`
+
+A record key is a label you choose, and it can hold a person ("jane-invoice-email"). Until now the row and its
+text went on `forget_subject()` or `forget()`, and the key stayed in the journal: the file no longer held the
+person's address or domain, and still held the key five times, in the payloads of the record's
+`record.added`, `record.changed` and `record.removed` rows.
+
+- Every removal now takes the `key` out of that record's journal rows in the same transaction as the delete,
+  and marks them `"key_redacted": true`. The rows stay, with id, type, status and mtype, so a reader that tails
+  by `seq` sees no gap. The fix is in the row writer, so `forget`, `forget_subject`, `forget_pii` and any other
+  removal get it, and a handle opened with `events=False` redacts a journal that another handle wrote.
+- A record that survives keeps its key in the journal.
+- A journal row that was already read by a tailing process, or copied into a backup, is outside this store.
+
+`tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py` fails on 3.15.3 and 3.15.4 (8 of 8), with a
+control that uses a key holding no personal data. Four mutation entries cover it.
 ## 3.15.7 - UPGRADE IF two handles or processes write one store, for example the MCP server beside a hook: an erasure, a credit, a retirement, a revert or an objection now decides from the store's latest state. WHAT CHANGES FOR CALLERS: see the three lines under that heading.
 
 - Erasure: a forget_subject run from a handle that had not seen another process's newer record of the subject could report success while that record stayed in the store, and erasure_certificate() verified. Measured on 3.15.3 and 3.15.4 with two handles on one store, for example the MCP server beside a hook. An erasure now reads the store's latest state under its lock before it selects, and forget_subject checks the store again after it saves: a record of the subject still there fails residue_in_store and is listed in subject_left_on_disk.
