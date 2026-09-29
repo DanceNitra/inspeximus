@@ -1,32 +1,43 @@
-## Unreleased (state toggle) - UPGRADE IF you run `sleep()` or `consolidate()` on a store with keyed records that share a template: a state toggle no longer retires a keyed record because of a record with another key. CONSOLIDATION BEHAVIOUR CHANGES: such pairs are linked, not toggled, and both reports gain `distinct_keys`.
+## 3.15.4 - UPGRADE IF you import or merge stores, erase memories, call `erase_past_copies` or `scrub_secrets` from Python with `apply` given as a string, keep a JSON or encrypted store open in more than one process, or run `sleep()` on keyed records: a read-guard verdict is trusted only under your store's key, an erasure never reports success without its written proof, `apply="false"` no longer applies, a stale save refuses instead of overwriting a peer's same-tick write, and a state toggle no longer retires a record with another key
 
-Found on 2026-09-28 on the Crew OS store. The crew daemon calls `sleep(cluster_threshold=15)`
-every tenth tick. The first sleep that completed after a restart on 2026-09-27 retired 426 records
-with `superseded_by_policy: "state_toggle"`. Every one of them was keyed and was retired by a record
-with another key: 389 were persona layers `crew-os::persona::<agent>::<layer>` of 23 agents, written
-from one template. `current()` answered None for those keys afterwards. Replayed on a copy of the
-store with the retirements undone, 3.15.1 retired 446 keyed records the same way; with this change
-it retires none.
+Found in the correctness and security audit (AUDIT-A), the speed and efficiency audit (AUDIT-B) and a
+mutation audit on a second machine, 2026-09-28. Every item below has a test file that fails on 3.15.3,
+counted per section as measured on a clean v3.15.3 checkout, and mutation entries that the gate kills.
 
-- **Distinct keys are distinct facts.** `_resolve_state_toggle`, the one resolution `consolidate()`
-  and `consolidate_clusters()` share, retires the older record of a clashing pair only when the older
-  record has no key, or when the newer record has the same key in the same tenant. Otherwise the pair
-  is linked like any near duplicate, and no record is flagged as contested. An unkeyed record still
-  toggles as before, a keyed record still replaces an older unkeyed note it contradicts, and two
-  active values of one key (two agent-bound handles) still toggle.
-- **The reports count it.** `consolidate()` and `consolidate_clusters()` (and so `sleep()`) return
-  `distinct_keys`: clashing pairs left standing because the keys differ. `linked_pairs` includes them.
+### A read-guard verdict or a quarantine release counts only under this store's key
 
-Measured on the copy: the first pass after the change links about 24,600 more pairs (the persona
-layers are near duplicates of each other and none is retired any more) and grows the store by about
-1 %; the next pass links 0. `tests/test_supersede_corroboration_bar.py` used two keys only to stay
-off write-time supersession; it now uses unkeyed records, which reach the same guard.
+Before this version the read guard skipped any record that said it had already been assessed, and it
+honoured any quarantine release it found on a record, whoever had written it. A record that did not pass
+through `remember()`, for example one brought in by `import_changeset` or `--merge-store`, could carry
+its own verdict or release, and an instruction-shaped record was then served by `recall` and into hook
+prompts.
 
-`tests/test_a_state_toggle_never_ends_another_key.py` fails on 3.15.1 (8 of 14; the other 6 are
-controls, each run through `consolidate()` and `sleep()`). Each of the 5 new mutations in
-`tools/mutations.json` fails a test.
+- A clean verdict is trusted only when it carries a MAC under this store's read-guard key over the
+  record's id, the sha256 of its text and the set of guards that assessed it. A change to the guards
+  re-assesses every record once.
+- A release counts only with a MAC written by `release_quarantine()`. Any other release is dropped, and an
+  edited text needs a new release.
+- `import_changeset` (and so `--merge-store`) drops the verdicts, releases and quarantine marks a peer's
+  records carry.
+- The key is created on the first write, in the key home, and never inside the store's own directory. A
+  store copied to another machine or cloned from a repository has no matching key: its records are
+  assessed again, and its releases must be made again.
 
-## Unreleased (A-37) - UPGRADE IF you keep a JSON or encrypted store open in more than one process: a peer's write in the same clock tick is no longer overwritten
+`tests/test_a_read_guard_verdict_is_trusted_only_with_this_stores_key.py` fails on 3.15.3 (15 of 24).
+
+### Among writes made in the same clock tick, the last one written wins
+
+`as_of()` and `believed_at()` answered with the OLDEST of several writes made in one clock tick: three
+writes of one, two and three to one key returned one. Every "which record is latest" choice (`as_of`,
+`believed_at`, `revert`, `restore_intent`, `submit_revert`, the current active record) now takes the last
+one written. `post_market_report()` and its sibling reports, called without `until`, include entries
+written in the same tick as the call; an explicit `until` stays exclusive. Two residue certificates issued
+in the same tick compare the same way in either order and say the order is unknown.
+`rotate(keep_days=0)` archives everything up to the call.
+
+`tests/test_audit_b_same_tick_boundaries.py` fails on 3.15.3 (13 of 19).
+
+### A stale save refuses instead of overwriting a peer's same-tick write
 
 Before this version the single-writer guard compared only the store file's modification time and
 size. A peer's write in the same clock tick (1 to 16 ms on Windows) that left the size unchanged moved
@@ -51,10 +62,10 @@ whole file, and were not affected.
   from 3.15.4, and until then `refresh()` relies on the modification time and size, as before.
 
 `tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` pins the clock with `os.utime`, so it
-fails on 3.15.2 on every OS (9 of 11; the other 2 are controls), and each of the 9 new mutations in
+fails on 3.15.3 on every OS (9 of 11; the other 2 are controls), and each of the 9 new mutations in
 `tools/mutations.json` fails a test.
 
-## Unreleased (A-34) - UPGRADE IF you erase memories, record objections, spend an irreversible budget, or keep write receipts: an operation whose written proof cannot be stored no longer reports success
+### An operation whose written proof cannot be stored changes nothing
 
 Before this version a failed write of an erasure's tombstones, an objection, a spend against the
 irreversible budget, or a write receipt was recorded in `_sidecar_errors`, and the operation carried on.
@@ -74,15 +85,18 @@ irreversible budget, or a write receipt was recorded in `_sidecar_errors`, and t
 - **`monitor` still returns**, because its statistic is a convenience, and its result carries
   `not_persisted` when the statistic could not be written.
 
-`tests/test_a34_nothing_changes_without_its_written_proof.py` fails on 3.15.2 (10 of 10), and each of the
+`tests/test_a34_nothing_changes_without_its_written_proof.py` fails on 3.15.3 (10 of 10), and each of the
 11 new mutations in `tools/mutations.json` fails a test.
 
-## Unreleased (A-33) - UPGRADE IF you erase with `forget_pii`, `forget(where=)`, `erase_past_copies` or `scrub_secrets`: a wrongly typed or unknown argument is refused instead of reported as erased 0
+### A wrong or unknown argument is refused
 
 `forget_pii("email")` iterated the string as the types "e", "m", "a", "i", "l", matched nothing, and
 returned erased 0. A caller running an erasure request reads that as "nothing to erase". One rule now
 holds for every erasure entry point:
 
+- **`apply="false"` no longer applies.** `erase_past_copies(apply=...)` and `scrub_secrets(apply=...)`
+  took any truthy value as True, so `apply="false"` erased; they now raise TypeError for anything that is
+  not True or False.
 - **A bare string where a list is expected is one item.** `forget_pii("email")` erases the email records,
   as `forget(ids="<id>")` always erased that one record.
 - **An unknown name is refused.** `forget_pii` raises ValueError for a PII type that the detector does
@@ -93,8 +107,63 @@ holds for every erasure entry point:
 
 Already right, and now pinned by the same test: `forget(ids=)`, `forget_subject` (a list raises
 TypeError), and the MCP tools, whose argument validation refuses a string for a list.
-`tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py` fails on 3.15.2 (5 of 8; the
+`tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py` fails on 3.15.3 (5 of 8; the
 other 3 are controls), and each of the 5 new mutations in `tools/mutations.json` fails a test.
+
+### A state toggle no longer retires a keyed record because of a record with another key
+
+CONSOLIDATION BEHAVIOUR CHANGES: such pairs are linked, not toggled, and both reports gain
+`distinct_keys`.
+
+Found on 2026-09-28 on the Crew OS store. The crew daemon calls `sleep(cluster_threshold=15)`
+every tenth tick. The first sleep that completed after a restart on 2026-09-27 retired 426 records
+with `superseded_by_policy: "state_toggle"`. Every one of them was keyed and was retired by a record
+with another key: 389 were persona layers `crew-os::persona::<agent>::<layer>` of 23 agents, written
+from one template. `current()` answered None for those keys afterwards. Replayed on a copy of the
+store with the retirements undone, 3.15.1 retired 446 keyed records the same way; with this change
+it retires none.
+
+- **Distinct keys are distinct facts.** `_resolve_state_toggle`, the one resolution `consolidate()`
+  and `consolidate_clusters()` share, retires the older record of a clashing pair only when the older
+  record has no key, or when the newer record has the same key in the same tenant. Otherwise the pair
+  is linked like any near duplicate, and no record is flagged as contested. An unkeyed record still
+  toggles as before, a keyed record still replaces an older unkeyed note it contradicts, and two
+  active values of one key (two agent-bound handles) still toggle.
+- **The reports count it.** `consolidate()` and `consolidate_clusters()` (and so `sleep()`) return
+  `distinct_keys`: clashing pairs left standing because the keys differ. `linked_pairs` includes them.
+
+Measured on the copy: the first pass after the change links about 24,600 more pairs (the persona
+layers are near duplicates of each other and none is retired any more) and grows the store by about
+1 %; the next pass links 0. `tests/test_supersede_corroboration_bar.py` used two keys only to stay
+off write-time supersession; it now uses unkeyed records, which reach the same guard.
+
+`tests/test_a_state_toggle_never_ends_another_key.py` fails on 3.15.3 (8 of 14; the other 6 are
+controls, each run through `consolidate()` and `sleep()`). Each of the 5 new mutations in
+`tools/mutations.json` fails a test.
+
+### New
+
+**Actions: a declared mandate, checked when each action is written.** `ActionLedger.mandate()` records
+what an agent may do: action and target patterns, per actor or for everyone. Every later action entry
+carries a `mandate_check`, computed and signed when the entry is written. An entry outside the mandate
+calls `on_mandate_breach` at once, and `mandate_breaches()` lists such entries together with how many
+actions ran without a mandate. The check flags; it does not block. A later mandate does not re-judge
+earlier actions, and `archive()` keeps the mandate in force in the live ledger. One new MCP tool,
+`mandate_breaches`, brings the total to 134. A mandate is declared only through
+`ActionLedger.mandate()`, never over MCP, so the agent it governs cannot widen it.
+
+### No behaviour change (tests and tooling)
+
+- The legacy TEMP lock that excludes writers of 3.15.1 and older is now pinned by a test to the exact key
+  3.15.1 computes (tests only).
+- A mutation entry for the installer's setup decision now lists the test that can see its failure (the
+  mutation registry only).
+- The release and audit tools keep the stores they create out of the user's key home (tooling only).
+
+Release record: on this release's tree the full suite passes 5769 tests, and the 31 that fail or error
+are the same 31 that fail or error on 3.15.3 in the same environment (tests that need optional
+packages or a real user profile). The mutation-marked tests pass, and the mutation gate kills 122 of
+the 122 entries this release adds or changes.
 
 ## 3.15.3 - UPGRADE NOTE if INSPEXIMUS_PATH or --path points into a folder that does not exist: create it first; inspeximus no longer creates it silently (test: `tests/test_first_run_and_scoped_certificate.py::test_the_cli_refuses_a_nested_path_until_its_folder_exists`). UPGRADE IF you install or upgrade through an agent, on Windows, or over an earlier install: the upgrade path now moves your hooks to the new version, never switches your store without saying so, and cannot be run by an older copy by mistake.
 
