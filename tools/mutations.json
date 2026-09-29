@@ -6649,5 +6649,41 @@
   "tests": [
    "tests/test_a_mutation_entry_can_name_its_platform.py"
   ]
+ },
+ {
+  "name": "require_signed is accepted and ignored: an unsigned certificate verifies anyway",
+  "file": "inspeximus/core.py",
+  "old": "             and (bool(signed) or not require_signed)\n",
+  "new": "",
+  "tests": [
+   "tests/test_valid_alone_does_not_name_the_issuer.py"
+  ]
+ },
+ {
+  "name": "a signed certificate that nobody pinned says nothing about whose key it is",
+  "file": "inspeximus/core.py",
+  "old": "    if signed and not expected_pubkey:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_valid_alone_does_not_name_the_issuer.py"
+  ]
+ },
+ {
+  "name": "the library stops stating an unwitnessed anchor and leaves it to the CLI",
+  "file": "inspeximus/core.py",
+  "old": "    if expected_anchor is None:\n        limits.append(\"NOT WITNESSED",
+  "new": "    if False:\n        limits.append(\"NOT WITNESSED",
+  "tests": [
+   "tests/test_valid_alone_does_not_name_the_issuer.py"
+  ]
+ },
+ {
+  "name": "erasure-verify --require-signed is parsed and never passed on",
+  "file": "inspeximus/cli.py",
+  "old": "                                         require_signed=a.require_signed)",
+  "new": "                                         require_signed=False)",
+  "tests": [
+   "tests/test_valid_alone_does_not_name_the_issuer.py"
+  ]
  }
 ]

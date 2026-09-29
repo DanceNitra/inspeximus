@@ -1318,6 +1318,11 @@ async function verifyCertificate(cert) {
       sigsOk = false;
       checks.signatures_valid = false;
     }
+    // Same note as core.py: this page takes no expected key, so a signature here shows that the issuer
+    // held a key, not whose.
+    limits.push("UNPINNED: the signatures verify against the `pubkey` this certificate carries, which shows " +
+                "that the issuer held a key, not whose. Anyone who holds a key can issue a certificate that " +
+                "verifies this way. `inspeximus erasure-verify --expected-pubkey` pins the issuer's key.");
   }
 
   const anc = pyOr(get(cert, "anchor"), new PyDict());

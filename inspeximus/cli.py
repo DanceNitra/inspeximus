@@ -728,6 +728,10 @@ def main(argv=None):
                          "trimmed after it was witnessed fails whoever holds the key.")
     ev.add_argument("--expected-pubkey-file", default=None,
                     help="read that public key from a file instead")
+    ev.add_argument("--require-signed", action="store_true",
+                    help="fail a certificate that carries no signature. Without it an unsigned certificate "
+                         "can PASS with an UNSIGNED note, because its chain proves integrity; it cannot "
+                         "show who issued it")
 
     pv = sub.add_parser("provenance", help="where a fact came from: source, lineage, trust grade, what it "
                                            "superseded, and whether it still matches its write receipt")
@@ -1457,16 +1461,12 @@ def main(argv=None):
             with open(a.expected_anchor, encoding="utf-8-sig") as f:
                 anchor = json.load(f)
         res = verify_erasure_certificate(cert, store_items=items, expected_pubkey=pub,
-                                         expected_anchor=anchor, store_receipts=receipts)
+                                         expected_anchor=anchor, store_receipts=receipts,
+                                         require_signed=a.require_signed)
         if a.store and receipts is None:
             res.setdefault("limits", []).append(
                 "NOT BOUND: the store at --store has no receipt chain, so the certificate could not be "
                 "tied to it; the absence check ran against the file named, whatever its origin")
-        if anchor is None:
-            res.setdefault("limits", []).append(
-                "NOT WITNESSED: no --expected-anchor, so the anchor was checked against itself only; "
-                "a chain trimmed at its tail and re-anchored passes, and that needs no key. Pin an anchor "
-                "you obtained outside the operator's control.")
         if a.json:
             _out(res, True)
         else:

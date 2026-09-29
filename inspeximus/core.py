@@ -1202,9 +1202,14 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
                                store_items: list | None = None,
                                expected_pubkey: str | None = None,
                                expected_anchor: dict | None = None,
-                               store_receipts: list | None = None) -> dict:
-    """Independently verify a inspeximus erasure certificate (from Inspeximus.erasure_certificate()). The AUDITOR's check:
-    needs NO private key and does NOT trust the operator. Confirms, in order:
+                               store_receipts: list | None = None,
+                               require_signed: bool = False) -> dict:
+    """Verify a inspeximus erasure certificate (from Inspeximus.erasure_certificate()). The AUDITOR's check needs NO
+    private key. It trusts the operator only as far as its inputs let it: with no `expected_pubkey` the signatures
+    are checked against the key the certificate itself carries, so they show that the issuer held A key, not
+    WHICH key, and anyone who holds a key can issue a certificate that verifies. For authorship, pin the
+    issuer's key with `expected_pubkey`, witness the anchor with `expected_anchor`, and pass
+    `require_signed=True` so an unsigned certificate cannot come back `valid`. Confirms, in order:
       1. tombstone hash-chain re-derives from genesis (append-only, untampered);
       2. every tombstone Ed25519 signature verifies against the certificate's pubkey (pinned to
          expected_pubkey if you pass one);
@@ -1240,7 +1245,15 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
          certificate's `anchor.writes_tip` must be a hash IN that chain, so "absent from the store"
          is said of the store the certificate was issued from, not of whichever file was named.
     Each of the three is None when its input was not given, and `valid` treats None as "not
-    performed", never as passed, the way `store_absent` already did."""
+    performed", never as passed, the way `store_absent` already did.
+
+    `VALID` ALONE SAID NOTHING ABOUT WHO ISSUED THE CERTIFICATE. An unsigned certificate returned
+    `valid: true` with its UNSIGNED note in `limits`, and a signed one returned `valid: true` whether or
+    not the key was pinned, so a caller that read only `valid` could not tell a certificate from its
+    issuer from one anybody could mint. `require_signed=True` makes an unsigned certificate invalid, and
+    `limits` now names every input that was not given: UNSIGNED, UNPINNED (no `expected_pubkey`) and NOT
+    WITNESSED (no `expected_anchor`). The NOT WITNESSED note used to be added by `erasure-verify` only,
+    so a library caller never saw it."""
     problems: list = []
     checks: dict = {}
     toms = cert.get("tombstones") or []
@@ -1309,6 +1322,9 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
         checks["signed"] = False
         limits.append("UNSIGNED: no tombstone carries a signature, so nothing was verified against "
                       "`pubkey` — the chain proves integrity, not authorship. Set receipt_key to sign.")
+        if require_signed:
+            problems.append("UNSIGNED, and require_signed=True: no tombstone carries a signature, so this "
+                            "certificate cannot show who issued it")
     else:
         checks["signatures_valid"] = sigs_ok
         checks["signed"] = bool(signed)
@@ -1324,6 +1340,16 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
                             f"and an unsigned tombstone can be appended without the key")
             sigs_ok = False
             checks["signatures_valid"] = False
+
+    if signed and not expected_pubkey:
+        limits.append("UNPINNED: the signatures verify against the `pubkey` this certificate carries, which "
+                      "shows that the issuer held a key, not whose. Anyone who holds a key can issue a "
+                      "certificate that verifies this way. Pin the issuer's key with expected_pubkey "
+                      "(erasure-verify --expected-pubkey).")
+    if expected_anchor is None:
+        limits.append("NOT WITNESSED: no expected_anchor (erasure-verify --expected-anchor), so the anchor "
+                      "was checked against itself only; a chain trimmed at its tail and re-anchored passes, "
+                      "and that needs no key. Pin an anchor you obtained outside the operator's control.")
 
     anc = cert.get("anchor") or {}
     tip = toms[-1]["hash"] if toms else _GENESIS
@@ -1544,6 +1570,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
              and checks["anchor_witnessed"] is not False and checks["store_bound"] is not False
              and checks["summary_derivable"] and checks["scope_intact"] is not False
              and checks["attests_an_erasure"]
+             and (bool(signed) or not require_signed)
              and (checks["store_absent"] is True or not store_requested))
     # `limits` is separate from `problems` on purpose, the way verify_bundle already does it: a thing
     # that was NOT CHECKED is not a thing that FAILED, and collapsing the two either invalidates honest

@@ -70,7 +70,12 @@ def test_a_signed_certificate_still_reports_signature_validity():
     res = verify_erasure_certificate(cert, store_items=items)
     assert res["checks"]["signatures_valid"] is True
     assert res["checks"]["signed"] is True
-    assert res["limits"] == []
+    assert not any("UNSIGNED" in x for x in res["limits"]), res["limits"]
+    # An unpinned key and an unwitnessed anchor are stated as limits; pinned and witnessed, none is left.
+    pinned = verify_erasure_certificate(cert, store_items=items, expected_pubkey=cert["pubkey"],
+                                        expected_anchor=cert["anchor"])
+    assert pinned["valid"] is True, pinned["problems"]
+    assert pinned["limits"] == [], pinned["limits"]
 
 
 def test_swapping_the_pubkey_is_refused_on_a_signed_certificate():
