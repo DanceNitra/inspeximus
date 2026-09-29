@@ -434,6 +434,10 @@ _PRIVATE_UNREBOUND_BY_DECISION = {
     "_save",
     "_merge_with_disk",
     "_merge_rows_from_disk",
+    # The lock and the merge that every deciding operation runs first (3.15.6): about the file, for
+    # the reason above. The operation inside the hold is the rebound, tenant-bound one.
+    "_deciding",
+    "_sync_before_decision",
     # Handed the record it is to flag, by a caller that already scoped it -- the same reasoning as
     # `_resolve_subject` above.
     "_do_reopen",

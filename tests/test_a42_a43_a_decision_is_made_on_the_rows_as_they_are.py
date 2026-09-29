@@ -113,11 +113,13 @@ def test_the_lock_is_held_once_and_released(tmp_path):
     so a second handle can decide at once (a stuck lock would block it)."""
     p, ids = _store(tmp_path, lambda m: {"r": m.remember("a useful fact", key="fact", object="x")})
     m = Inspeximus(p)
+    import threading
+    me = threading.get_ident()
     with m._deciding():
-        assert m._decide_depth == 1
+        assert m._decide_depths[me] == 1
         m.credit(ids["r"], 1.0)
-        assert m._decide_depth == 1
-    assert m._decide_depth == 0
+        assert m._decide_depths[me] == 1
+    assert me not in m._decide_depths
     Inspeximus(p).credit(ids["r"], 1.0)
 
 
@@ -199,3 +201,21 @@ def test_an_objection_a_peer_recorded_can_be_resolved_by_another_handle(tmp_path
     f, out = _race(p, lambda a: a.object_processing("crm/alice", "dpo", "own_situation"),
                    lambda b: b.resolve_objection("crm/alice", "dpo", "upheld"), pin)
     assert [o["status"] for o in f._objections] == ["upheld"], f._objections
+
+
+def test_an_erasure_on_an_encrypted_store_checks_the_store_again_with_the_callers_key(tmp_path):
+    """The post-save check reads the store with a fresh handle. Opened from the path alone it could not
+    decrypt, so forget_subject raised on every encrypted store (probes/erasure_edgecases_probe.py). The
+    check must read with the caller's key and still find a record of the subject left on disk."""
+    pytest.importorskip("cryptography")
+    from inspeximus import new_encryption_key
+    key = new_encryption_key()
+    p = str(tmp_path / "enc.json")
+    a = Inspeximus(p, encrypt_key=key)
+    a.remember("alice lives in Rome", source={"doc": "alice"})
+    a.flush()
+    out = a.forget_subject("alice", request_id="enc-1")
+    assert out["erased"] == 1, out
+    assert out["subject_left_on_disk"] == []
+    assert out["residue_in_store"]["ok"] is True, out["residue_in_store"]
+    assert not any("alice" in r.get("text", "") for r in Inspeximus(p, encrypt_key=key).items)

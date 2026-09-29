@@ -267,8 +267,15 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
                 with open(path, "rb") as fh:
                     blob = fh.read()
             except OSError as e:
-                skipped.append({"path": rel, "why": f"{type(e).__name__}"})
-                continue
+                if size == 0:
+                    # AN EMPTY FILE HOLDS NO RESIDUE, read or not. The store's own lock file is empty and,
+                    # on Windows, unreadable while held -- and an erasure now scans while it holds that
+                    # lock (3.15.6), so it failed its own clean verdict on a file with nothing in it.
+                    # Size 0 is the whole content; anything larger that cannot be read stays `skipped`.
+                    blob = b""
+                else:
+                    skipped.append({"path": rel, "why": f"{type(e).__name__}"})
+                    continue
             checked += 1
             if manifest:
                 files.append({"path": rel.replace(os.sep, "/"), "sha256": hashlib.sha256(blob).hexdigest(),

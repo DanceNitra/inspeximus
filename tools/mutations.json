@@ -6593,5 +6593,41 @@
   "tests": [
    "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
   ]
+ },
+ {
+  "name": "3.15.6: a decision's hold is counted per handle, not per thread",
+  "file": "inspeximus/core.py",
+  "old": "        me = threading.get_ident()\n        depth = self._decide_depths.get(me, 0)\n",
+  "new": "        me = 0\n        depth = self._decide_depths.get(me, 0)\n",
+  "tests": [
+   "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
+  ]
+ },
+ {
+  "name": "3.15.6: the post-save re-select goes through the class attribute",
+  "file": "inspeximus/core.py",
+  "old": "            left = _UNDECIDED[\"forget_subject\"](fresh,",
+  "new": "            left = Inspeximus.forget_subject.__wrapped__(fresh,",
+  "tests": [
+   "tests/test_the_demo_can_fail_at_every_step.py"
+  ]
+ },
+ {
+  "name": "3.15.6: the post-save re-select opens the store without the caller's key",
+  "file": "inspeximus/core.py",
+  "old": "            fresh = Inspeximus(path=str(self.path), encrypt_key=getattr(self, \"_enc_rawkey\", None),\n                               encrypt_passphrase=getattr(self, \"_enc_passphrase\", None), events=False)\n",
+  "new": "            fresh = Inspeximus(path=str(self.path), events=False)\n",
+  "tests": [
+   "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
+  ]
+ },
+ {
+  "name": "3.15.6: a locked empty file is a skipped file in the residue scan",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "                if size == 0:\n",
+  "new": "                if False:\n",
+  "tests": [
+   "tests/test_erasure_residue.py"
+  ]
  }
 ]

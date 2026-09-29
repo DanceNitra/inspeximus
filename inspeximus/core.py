@@ -2728,6 +2728,13 @@ class UnresolvedLineage(ValueError):
 
 
 
+#: Each deciding operation's own body, without the lock and the sync, captured when the class is built.
+#: Read by name from here, never through `Inspeximus.<name>.__wrapped__`: a caller or a test that replaces
+#: the method on the class (the demo's controls do, on purpose) would otherwise break the operation it
+#: wrapped, and a replacement has no `__wrapped__` at all.
+_UNDECIDED: dict = {}
+
+
 def _decides(save: bool = True):
     """Run an operation that DECIDES FROM THE ROWS under one hold of the store lock, after merging what
     other writers committed (A-41, A-42, A-43; session 1's design).
@@ -2745,6 +2752,7 @@ def _decides(save: bool = True):
     decision is made on fresh rows and the write can come later; the merge at that save settles any key a
     later peer moved again (A-41)."""
     def wrap(fn):
+        _UNDECIDED[fn.__name__] = fn
         @functools.wraps(fn)
         def run(self, *a, **k):
             if fn.__name__ == "remember" and k.get("key") is None:
@@ -2966,7 +2974,11 @@ class Inspeximus:
         self._file_sig = None       # (mtime_ns, size) of the file we loaded; guards against clobbering a peer
         self._file_hash = None      # sha256 of the bytes this handle last read or wrote (JSON and encrypted; A-37)
         self._file_gen = None       # a row store's write generation when this handle last read or wrote it (A-37)
-        self._decide_depth = 0      # > 0 while this store's lock is held by a deciding operation (_decides)
+        # {thread ident: depth} while that thread holds this store's lock in a deciding operation (_decides).
+        # PER THREAD (3.15.6): one count per handle let a second thread on the same handle read the first
+        # thread's hold as its own, so it decided with no lock and no sync, and its save skipped the lock
+        # and raced the first thread's write (the LangGraph checkpointer's thread pool hit it).
+        self._decide_depths: dict = {}
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -9590,13 +9602,17 @@ class Inspeximus:
         # stale handle erased one of two records, reported success, and erasure_certificate() verified
         # while the peer's record stayed. The subject is now resolved again from the file as written, by
         # a fresh handle, the same way this call resolved it; anything still there fails the residue check
-        # and is named. `__wrapped__`: the fresh handle must not take the store lock this call holds.
+        # and is named. The body alone, from _UNDECIDED: a dry run needs neither the lock nor a save.
         if self.path:
-            fresh = Inspeximus(path=str(self.path))
+            # THE CALLER'S KEY, OR THE CHECK CANNOT READ WHAT IT CHECKS: on an encrypted store a handle
+            # opened from the path alone raised instead of reading (probes/erasure_edgecases_probe.py).
+            # Only what reading needs; the fresh handle writes nothing, so receipts and events stay off.
+            fresh = Inspeximus(path=str(self.path), encrypt_key=getattr(self, "_enc_rawkey", None),
+                               encrypt_passphrase=getattr(self, "_enc_passphrase", None), events=False)
             if self.tenant is not None:
                 fresh = fresh.for_tenant(self.tenant)
-            left = Inspeximus.forget_subject.__wrapped__(fresh, subject, dry_run=True, allow_ambiguous=allow_ambiguous,
-                                                         exact=exact).get("ids") or []
+            left = _UNDECIDED["forget_subject"](fresh, subject, dry_run=True, allow_ambiguous=allow_ambiguous,
+                                                exact=exact).get("ids") or []
             if left:
                 rs = dict(out.get("residue_in_store") or {})
                 rs["ok"] = False
@@ -9871,16 +9887,19 @@ class Inspeximus:
 
     @contextlib.contextmanager
     def _deciding(self, save: bool = True):
-        """The store lock, held across a decision and (with `save`) its write. Re-entrant per store: an
-        operation that calls another deciding operation keeps the one hold, because `_StoreLock` itself
-        is not re-entrant (a second lock on the same path would wait on the first)."""
-        if not self.path or self._decide_depth:
-            self._decide_depth += 1 if self.path else 0
+        """The store lock, held across a decision and (with `save`) its write. Nested per thread: an
+        operation that calls another deciding operation keeps the one hold and syncs once. The count is
+        per thread, so another thread on the same handle takes the lock itself and waits for this one."""
+        me = threading.get_ident()
+        depth = self._decide_depths.get(me, 0)
+        if not self.path or depth:
+            if self.path:
+                self._decide_depths[me] = depth + 1
             try:
                 yield
             finally:
                 if self.path:
-                    self._decide_depth -= 1
+                    self._decide_depths[me] = depth
             return
         _make_store_dir(self.path.parent)
         try:
@@ -9889,14 +9908,14 @@ class Inspeximus:
         except StoreLockUnavailable:
             yield                                        # a directory we cannot lock: as before
             return
-        self._decide_depth = 1
+        self._decide_depths[me] = 1
         try:
             self._sync_before_decision()
             yield
             if save and self._dirty:
                 self._save(force=True)
         finally:
-            self._decide_depth = 0
+            self._decide_depths.pop(me, None)
             lock.__exit__(None, None, None)
             if getattr(self, "_dispatch_pending", False):
                 self._dispatch_pending = False
@@ -18445,7 +18464,8 @@ class Inspeximus:
             # ONE critical section for the check AND the write. Split apart, the window
             # between them is exactly the race the check exists to report.
             _make_store_dir(self.path.parent)
-            with (contextlib.nullcontext() if self._decide_depth else _StoreLock(self.path)):
+            with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())
+                  else _StoreLock(self.path)):
                 # THE CONTENT, WHEN THE STAT SIGNATURE HAS NOT MOVED (A-37). (mtime_ns, size) is all
                 # the guard compared, and a peer's write in the same clock tick that leaves the size
                 # unchanged moves neither: measured on 3.15.2 with a fixed clock, a JSON or encrypted
@@ -18604,7 +18624,7 @@ class Inspeximus:
                 self.last_write["persisted"] = True
                 self.last_write.pop("persist_error", None)
             if _committed_events and self._subscribers:
-                if self._decide_depth:
+                if self._decide_depths.get(threading.get_ident()):
                     self._dispatch_pending = True           # run by _deciding once the hold is released
                 else:
                     self._dispatch_events(self._events_seen)   # AFTER the commit and OUTSIDE the lock

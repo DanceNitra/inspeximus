@@ -180,3 +180,34 @@ def test_a_decision_whose_merge_migrates_the_store_does_not_deadlock(tmp_path, m
     assert ss.looks_like_sqlite(p), "control: the merge did migrate the store to rows"
     active = [r.get("object") for r in Inspeximus(p).items if r.get("key") == "colour" and r.get("status") == "active"]
     assert active == ["v2"]
+
+
+def test_a_second_thread_on_the_same_handle_waits_for_the_first_decision(tmp_path):
+    """One handle, two threads. The hold used to be counted per handle, so a second thread read the first
+    thread's hold as its own: it decided with no lock and no sync, and its save skipped the lock and raced
+    the first thread's write (StoreChangedOnDisk from a LangGraph checkpointer's thread pool). The count is
+    per thread now: the second thread waits until the first releases."""
+    p, rid = _store(tmp_path)
+    m = Inspeximus(p)
+    inside, release, entered = threading.Event(), threading.Event(), threading.Event()
+
+    def first():
+        with m._deciding():
+            inside.set()
+            release.wait(30)
+
+    def second():
+        with m._deciding():
+            entered.set()
+    t1 = threading.Thread(target=first, daemon=True)
+    t1.start()
+    assert inside.wait(10), "control: the first thread holds the decision"
+    t2 = threading.Thread(target=second, daemon=True)
+    t2.start()
+    try:
+        assert not entered.wait(1.0), "the second thread entered while the first held the lock"
+    finally:
+        release.set()
+    t1.join(10)
+    t2.join(10)
+    assert entered.is_set(), "the second thread never got the lock after the first released it"
