@@ -1,8 +1,36 @@
-## 3.15.4 - UPGRADE IF you import or merge stores, erase memories, call `erase_past_copies` or `scrub_secrets` from Python with `apply` given as a string, keep a JSON or encrypted store open in more than one process, or run `sleep()` on keyed records: a read-guard verdict is trusted only under your store's key, an erasure never reports success without its written proof, `apply="false"` no longer applies, a stale save refuses instead of overwriting a peer's same-tick write, and a state toggle no longer retires a record with another key
+## 3.15.5 - UPGRADE IF you import or merge stores, erase memories, call `erase_past_copies` or `scrub_secrets` from Python with `apply` given as a string, keep a JSON or encrypted store open in more than one process, or run `sleep()` on keyed records: a read-guard verdict is trusted only under your store's key, an erasure never reports success without its written proof, `apply="false"` no longer applies, a stale save refuses instead of overwriting a peer's same-tick write, and a state toggle no longer retires a record with another key
+
+3.15.4 was tagged on 2026-09-29 and never published to PyPI. Its deployment was rejected after the hook
+measurement below. This release contains everything 3.15.4 was going to ship, and the fix for that
+slowdown, so nothing that follows was ever installed from PyPI as 3.15.4.
 
 Found in the correctness and security audit (AUDIT-A), the speed and efficiency audit (AUDIT-B) and a
 mutation audit on a second machine, 2026-09-28. Every item below has a test file that fails on 3.15.3,
 counted per section as measured on a clean v3.15.3 checkout, and mutation entries that the gate kills.
+
+### A read-guard key that is not there is looked up once per handle, not once per record
+
+The read guard trusts a stored verdict only under this store's key (below), and asks for the key once per
+record. Only a key that was found was remembered. With no key in the key home, every record repeated the
+lookup: the key file's path, the location checks and an open() that fails. That costs 972.5 us per call
+against 0.19 us with a key. Every existing store is in that state until its first write under a release
+with the read guard key mints one, and a reader that never writes, such as the UserPromptSubmit hook,
+stays in it.
+
+Measured on an unarchived copy of our own project store (71,772 records) with an empty home, one hook
+process per prompt: 65.4 s on the unpublished 3.15.4 build and 5.36 s with this fix, against 5.31 s on
+3.15.3. A handle now remembers that the key is missing, together with the store's stat signature. A write
+that mints the key always looks again, and so does a read after the store has moved, because a peer's write
+may have minted the key.
+
+`perf/gate.py` counts key lookups (`guard_key_lookups`, at most 1 per handle in the arm without a key).
+The arm that reads under a key home without a key had counters identical to the stamped arm's, so only
+the advisory clock showed 1.509 s against 0.099 s, and that was recorded as the baseline. It is
+re-recorded after this fix.
+
+`tests/test_a45_a_missing_read_guard_key_is_looked_up_once.py` fails on 3.15.4 (201 key lookups for one
+recall over 200 records) and 4 mutation entries in `tools/mutations.json` are killed by it and by the
+gate's own tests.
 
 ### A read-guard verdict or a quarantine release counts only under this store's key
 
@@ -160,10 +188,10 @@ earlier actions, and `archive()` keeps the mandate in force in the live ledger. 
   mutation registry only).
 - The release and audit tools keep the stores they create out of the user's key home (tooling only).
 
-Release record: on this release's tree the full suite passes 5769 tests, and the 31 that fail or error
+Release record: on this release's tree the full suite passes 5784 tests, and the 31 that fail or error
 are the same 31 that fail or error on 3.15.3 in the same environment (tests that need optional
-packages or a real user profile). The mutation-marked tests pass, and the mutation gate kills 122 of
-the 122 entries this release adds or changes.
+packages or a real user profile). The mutation-marked tests pass, and the mutation gate kills 129 of
+the 129 entries this release adds or changes.
 
 ## 3.15.3 - UPGRADE NOTE if INSPEXIMUS_PATH or --path points into a folder that does not exist: create it first; inspeximus no longer creates it silently (test: `tests/test_first_run_and_scoped_certificate.py::test_the_cli_refuses_a_nested_path_until_its_folder_exists`). UPGRADE IF you install or upgrade through an agent, on Windows, or over an earlier install: the upgrade path now moves your hooks to the new version, never switches your store without saying so, and cannot be run by an older copy by mistake.
 
