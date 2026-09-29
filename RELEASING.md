@@ -200,6 +200,21 @@ that they test anything.
 Then **verify from PyPI, not from the repo** — install the published wheel in a clean venv and exercise
 the fix. The repo passing proves the repo passes.
 
+### Two local failure groups that are the machine, not the release
+
+On the owner's Windows machine (PC1), a suite run with the home redirected to a temporary directory
+reports two groups that are not regressions. Both fail identically on the previous tag, and Linux CI
+reports neither. Before you diagnose either one, run the same files on the previous tag.
+
+| Group | Size (measured 2026-09-29) | Cause |
+|---|---|---|
+| `tests/test_the_openai_agents_example_ledgers_every_tool_call.py` | 19 errors | The installed `openai-agents` (0.20.0) has no `agents.testing` module. |
+| crewai: `test_crewai_backend.py`, `test_remaining_integrations.py`, `test_crewai_storage`, the `[crewai]` conformance cases, `test_crewai_reset_actually_erases_and_persists` | 8 errors, 4 failures | `appdirs` calls `SHGetFolderPath(CSIDL_LOCAL_APPDATA)`. The registry value is `%USERPROFILE%\AppData\Local`, the run points `USERPROFILE` at a temporary home, and that home has no `AppData\Local`: a temporary `AppData\Local` breaks the Microsoft Store Python's `sys.executable` in child processes. The call fails with `com_error -2147024894` (file not found) while crewai is imported. |
+
+The crewai import fails at collection, and a serial run (`-n 0`) stops at a collection error with exit
+2 before it runs any test. To run `-m mutation -n 0` on that machine, add
+`--continue-on-collection-errors`. Neither crewai file holds a mutation test.
+
 The release workflow publishes to PyPI (trusted, attested) and then checks the MCP registry lists the new
 version. If that last step fails, look at the *reader* before assuming the publish failed: 1.68.0 published
 correctly and the registry already marked it latest while our own check reported it missing.
