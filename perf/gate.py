@@ -238,6 +238,10 @@ class Counters:
 #:   read_guard_assessments  one record checked by the read guards while a recall builds its pool.
 #:                    memory_report rebuilt the pool for each of its 400 sampled queries: 2,629,200
 #:                    assessments on a 10,934-record store, 400 per record (AUDIT-B B-07).
+#:   decision_syncs  one check, under the store lock, of whether other writers committed before an
+#:                    operation decides from the rows (A-42, A-43, 3.15.5): erasure, credit, retire, revert,
+#:                    objections, the irreversible budget and a keyed remember. One per such call; a merge
+#:                    follows only when the store moved.
 #:   store_hash_reads  one read of the whole store file to hash it. A-37's writer guard (3.15.4) does
 #:                    it on every JSON or encrypted save whose stat signature has not moved, because a
 #:                    same-tick, same-size peer write leaves (mtime_ns, size) unchanged. One per save on
@@ -255,6 +259,7 @@ COUNTED_CALLS = {
     "read_guard_assessments": (core.Inspeximus, "_assess_read_guards"),
     "store_hash_reads": (core.Inspeximus, "_disk_hash"),
     "guard_key_lookups": (core, "_guard_key_file"),
+    "decision_syncs": (core.Inspeximus, "_sync_before_decision"),
 }
 
 
