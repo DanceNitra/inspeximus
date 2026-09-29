@@ -6628,7 +6628,8 @@
   "new": "                if False:\n",
   "tests": [
    "tests/test_erasure_residue.py"
-  ]
+  ],
+  "platform": "win32"
  },
  {
   "name": "3.15.6: POSIX flock blocks instead of polling against the deadline",
