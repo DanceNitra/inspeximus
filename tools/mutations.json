@@ -6629,5 +6629,24 @@
   "tests": [
    "tests/test_erasure_residue.py"
   ]
+ },
+ {
+  "name": "3.15.6: POSIX flock blocks instead of polling against the deadline",
+  "file": "inspeximus/core.py",
+  "old": "                    mod.flock(fh.fileno(), mod.LOCK_EX | mod.LOCK_NB)",
+  "new": "                    mod.flock(fh.fileno(), mod.LOCK_EX)",
+  "tests": [
+   "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.15.6: a platform entry runs on every platform",
+  "file": "tools/mutation_check.py",
+  "old": "        ok = (osname == \"posix\") if want == \"posix\" else plat.startswith(want)\n",
+  "new": "        ok = True\n",
+  "tests": [
+   "tests/test_a_mutation_entry_can_name_its_platform.py"
+  ]
  }
 ]

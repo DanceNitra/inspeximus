@@ -274,6 +274,39 @@ def _restore(paths) -> list:
     return restored
 
 
+#: The `platform` values an entry may carry. "posix" means any os.name == "posix"; the others match the
+#: start of sys.platform. An entry without the field runs everywhere.
+PLATFORMS = ("linux", "win32", "darwin", "posix")
+
+
+def split_by_platform(mutations: list[dict], plat: str | None = None, osname: str | None = None):
+    """(entries that run here, entries that name another platform).
+
+    A mutant on a line only one OS executes (POSIX `flock`, for example) survives on every other OS,
+    and a survivor fails this gate, so such an entry could not be registered at all and nothing ran it
+    (3.15.6). With `platform` it is registered, runs where its line runs, and is NAMED as not run
+    elsewhere rather than dropped. An unknown value is an error: a typo would otherwise send an entry
+    to a platform that does not exist, where it never runs."""
+    plat = plat or sys.platform
+    osname = osname or os.name
+    here, elsewhere = [], []
+    for m in mutations:
+        want = m.get("platform")
+        if want is None:
+            here.append(m)
+            continue
+        if want not in PLATFORMS:
+            raise ValueError(f"{m.get('name')!r}: platform {want!r} is not one of {PLATFORMS}")
+        ok = (osname == "posix") if want == "posix" else plat.startswith(want)
+        (here if ok else elsewhere).append(m)
+    return here, elsewhere
+
+
+def report_elsewhere(elsewhere: list[dict], plat: str | None = None) -> None:
+    for m in elsewhere:
+        print(f"  NOT RUN ON {plat or sys.platform}: {m['name']} (platform {m['platform']})")
+
+
 def run(mutations: list[dict], verbose: bool = True) -> int:
     env = {**os.environ, "PYTHONPATH": ROOT + os.pathsep + os.environ.get("PYTHONPATH", ""),
            "PYTHONIOENCODING": "utf-8"}
@@ -442,7 +475,13 @@ def main() -> int:
     if not mutations:
         print("the spec is empty: a run over zero mutations is a green result over nothing")
         return 1
-    print(f"{len(mutations)} mutations from {_shown(path)}\n")
+    mutations, elsewhere = split_by_platform(mutations)
+    print(f"{len(mutations)} mutations from {_shown(path)}"
+          + (f", {len(elsewhere)} more for another platform" if elsewhere else "") + "\n")
+    report_elsewhere(elsewhere)
+    if not mutations:
+        print("every entry names another platform: nothing runs here")
+        return 0
     return run(mutations)
 
 

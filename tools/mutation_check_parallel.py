@@ -186,6 +186,12 @@ def main() -> int:
             return 2
         print("   --allow-dirty given: proceeding against HEAD anyway.\n")
 
+    from mutation_check import report_elsewhere, split_by_platform
+    mutations, elsewhere = split_by_platform(mutations)
+    report_elsewhere(elsewhere)
+    if not mutations:
+        print("every entry names another platform: nothing runs here")
+        return 0
     n = args.workers or max(2, min(10, (os.cpu_count() or 4) - 4))
     n = min(n, len(mutations))
     shards = [mutations[i::n] for i in range(n)]                  # round-robin: balances uneven costs
