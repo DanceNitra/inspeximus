@@ -19,7 +19,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-xdist cryptography pyyaml
+          pip install pytest pytest-xdist pytest-timeout cryptography pyyaml
       # The BASE environment on purpose: the core is zero-dependency and this leg proves it stays that way.
       # It is not the whole suite -- see the `integrations` job.
       - name: Run tests
@@ -92,7 +92,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-xdist cryptography pyyaml
+          pip install pytest pytest-xdist pytest-timeout cryptography pyyaml
       - name: install and hook tests
         shell: bash
         run: >-
@@ -145,7 +145,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: the test runner, outside the venv under test
-        run: python -m pip install --upgrade pip && pip install pytest pytest-xdist
+        run: python -m pip install --upgrade pip && pip install pytest pytest-xdist pytest-timeout
       - name: a clean venv holding only what the reader installs
         run: |
           python -m venv "$RUNNER_TEMP/reader"
@@ -193,7 +193,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade pip && pip install pytest pytest-xdist
+      - run: python -m pip install --upgrade pip && pip install pytest pytest-xdist pytest-timeout
       - name: compare against the recorded baseline
         run: python perf/gate.py check
       - name: the gate must be able to go red
@@ -216,7 +216,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-xdist cryptography playwright
+          pip install pytest pytest-xdist pytest-timeout cryptography playwright
           python -m playwright install --with-deps chromium
       - name: run the page against the Python verifiers
         env:
@@ -263,7 +263,7 @@ jobs:
       - name: Install with every optional dependency
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-xdist cryptography numpy pyyaml
+          pip install pytest pytest-xdist pytest-timeout cryptography numpy pyyaml
           # The google-adk floor that keeps this resolvable lives in pyproject.toml, not here: a second
           # copy in each pip line is how release.yml kept the bug after this file was fixed.
           # haystack is an extra now (it was installed by hand here, and only here, while

@@ -82,7 +82,7 @@ jobs:
       - name: Install with the MCP extra
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-xdist cryptography pyyaml
+          pip install pytest pytest-xdist pytest-timeout cryptography pyyaml
           pip install -e ".[mcp]"
       - name: README + docs/AI_ACT.md guarantees, exercised through MCP and the CLI
         run: python -m pytest tests/test_surface_conformance.py -q -rs
@@ -135,7 +135,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade langgraph langgraph-checkpoint-conformance pytest pytest-xdist
+      - run: python -m pip install --upgrade langgraph langgraph-checkpoint-conformance pytest pytest-xdist pytest-timeout
       # "Drop-in BaseStore" is only true if a caller cannot tell the difference, so the same operation
       # scripts run against langgraph's InMemoryStore and against ours, and the results must match.
       - name: LangGraph's own checkpointer conformance suite (their docs say run it in CI)
@@ -158,7 +158,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade google-adk pytest pytest-xdist
+      - run: python -m pip install --upgrade google-adk pytest pytest-xdist pytest-timeout
       # ADK ships no conformance suite for BaseMemoryService, so the "drop-in" claim rests entirely on
       # this comparison against their own InMemoryMemoryService.
       - run: python adk_audit.py
@@ -178,7 +178,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade openai-agents pytest pytest-xdist
+      - run: python -m pip install --upgrade openai-agents pytest pytest-xdist pytest-timeout
       - run: python session_audit.py
       - run: python -m pytest tests/test_governance_mixin.py -q
       - name: parity check must fail when writes are swallowed
@@ -210,7 +210,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade haystack-ai pytest pytest-xdist
+      - run: python -m pip install --upgrade haystack-ai pytest pytest-xdist pytest-timeout
       - run: python haystack_audit.py
       # tests/test_haystack.py skips locally (haystack-ai is optional) and this job used to run only
       # test_governance_mixin.py — so all 9 haystack tests, including the one asserting a delete removes the
