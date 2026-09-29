@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/DanceNitra/inspeximus/main/assets_readme/hero_banner.png" alt="inspeximus — a glowing digital memory layer resting on a robust machined-steel base" width="800">
 
-# inspeximus — a Python agent-memory library with a zero-dependency core
+# inspeximus — a zero-dependency Python agent-memory library
 
 **Ask any memory where it came from — and check the answer.** `provenance(key)` returns the declared
 source, the lineage it inherited, the evidence grade, every value the fact has held and which policy
@@ -16,7 +16,7 @@ delete: we measured one that left the data recoverable in **five of six** places
 attests it unaltered. The self-correcting memory layer for AI agents.*
 
 *Correct a fact once and it stays corrected: the store serves the new value and refuses to let the old
-one creep back — deterministically, with no LLM on the write path, from a single zero-dependency core file.
+one creep back — deterministically, with no LLM on the write path, from a single zero-dependency file.
 `revert(key)` puts a correction back on command, which is the cheapest proof that what sits underneath is
 a real state model and not a log. Extracted from an autonomous research OS that has run it daily over a private ~10,000-note vault (our own deployment — you cannot re-run that one; every number you CAN re-run
 is listed in [docs/CLAIMS.md](CLAIMS.md) with its command).*

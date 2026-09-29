@@ -2,7 +2,9 @@
 
 <img alt="A dark archive hall of suspended glass record panels receding into haze. One panel is struck through by a line of amber light, which arcs forward to a later panel. A sealed paper receipt rests on the floor beneath it." src="https://raw.githubusercontent.com/DanceNitra/inspeximus/main/docs/assets/hero.jpg">
 
-**Tamper-evident long-term memory for AI agents. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted. The erasure proof covers this store only, not a vector index, prompt logs, or backups, and it is an integrity primitive, not a compliance certification. A zero-dependency Python core, plus an MCP server; signing needs the `crypto` extra.**
+**Tamper-evident long-term memory for AI agents. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted. One zero-dependency Python file, plus an MCP server.**
+
+The erasure proof covers this store only, not a vector index, prompt logs, or backups, and it is an integrity primitive, not a compliance certification.
 
 <p align="center">
   <a href="https://dancenitra.github.io/inspeximus/quickstart.html">Quickstart</a> ·
@@ -20,7 +22,7 @@
 [![CI](https://github.com/DanceNitra/inspeximus/actions/workflows/ci.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/ci.yml)
 [![Claims audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Python](https://img.shields.io/pypi/pyversions/inspeximus)](https://pypi.org/project/inspeximus/)
-[![Zero dependencies in the core](https://img.shields.io/badge/dependencies-0-2563eb)](https://pypi.org/project/inspeximus/)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-0-2563eb)](https://pypi.org/project/inspeximus/)
 [![Tests](https://img.shields.io/badge/tests-2600%2B-2563eb)](#how-this-is-tested)
 [![License](https://img.shields.io/pypi/l/inspeximus)](LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21708778.svg)](https://doi.org/10.5281/zenodo.21708778)
@@ -151,8 +153,8 @@ not the benchmark being kind to us.
 ## EU AI Act and GDPR evidence, built in
 
 Every write, correction, erasure and agent action leaves a signed, hash-chained record. A third
-party verifies it offline, with no API key. Signature checks need the `crypto` extra, and they show
-who signed only when the reader pins the operator's public key and witnesses the anchor. The
+party verifies it offline, with no API key. The signatures show who signed only when the reader pins
+the operator's public key and witnesses the anchor. The
 evidence is exportable today; the EU AI Act's high-risk duties apply from
 2 December 2027 (Annex III systems) and 2 August 2028 (systems embedded in regulated products),
 and GDPR Article 17 has applied since 25 May 2018.
@@ -731,7 +733,7 @@ tenant bound into the signed message so a record cannot be moved between tenants
 **An audit trail in formats an auditor already reads.** A hash chain proves your records were not
 edited. It does not tell a third party who wrote them, what they are about, or when, and those are the
 three things somebody checking your system actually asks. Four IETF standards answer them, and
-inspeximus emits all four. The encoders are in the zero-dependency core; signing needs the `crypto` extra:
+inspeximus emits all four with no dependencies:
 
 | you want to show | the artifact | the standard |
 |---|---|---|
@@ -768,11 +770,10 @@ delegated to `openssl ts -verify` rather than hand-rolled, because a partial CMS
 requires a signed ledger. It is evidentiary quality for a duty to demonstrate, and it is worded that
 way everywhere.
 
-**Zero dependencies in the core.** One file for the core: copy `inspeximus/core.py` anywhere and it
-imports and
+**Zero dependencies.** One file for the core: copy `inspeximus/core.py` anywhere and it imports and
 runs with nothing installed. Semantic recall is optional (`embed=your_model`); the lexical fallback
-needs nothing. The MCP server, encryption, signing and the framework adapters are opt-in extras.
-Signing needs `pip install "inspeximus[crypto]"`: without it, `new_receipt_keypair()` raises `RuntimeError`.
+needs nothing. The MCP server, encryption and the framework adapters are separate modules, all opt-in.
+Signing (Ed25519) needs `pip install "inspeximus[crypto]"`; the base package stays zero-dependency.
 
 ---
 

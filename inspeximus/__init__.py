@@ -1,4 +1,4 @@
-"""inspeximus — a memory layer with a zero-dependency core, and an MCP server, for AI agents.
+"""inspeximus — a zero-dependency memory layer and MCP server for AI agents.
 
 Public API (stable as of 1.0.0). Submodules for the governance/erasure tooling:
   - inspeximus.deletion_manifest : DeletionManifest, ErasureTarget   (cross-store erasure record)

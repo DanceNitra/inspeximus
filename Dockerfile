@@ -1,4 +1,4 @@
-# inspeximus MCP server: agent memory with a zero-dependency core, over stdio MCP.
+# inspeximus MCP server: zero-dependency agent memory over stdio MCP.
 # Build:  docker build -t inspeximus-mcp .
 # Run  :  docker run -i --rm inspeximus-mcp        # stdio transport; wire into any MCP client
 #

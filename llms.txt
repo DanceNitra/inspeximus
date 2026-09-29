@@ -1,6 +1,8 @@
 # inspeximus
 
-> Tamper-evident long-term memory for AI agents with a zero-dependency Python core, plus an MCP server; signing needs the crypto extra. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted. The erasure proof covers this store only, not a vector index, prompt logs, or backups, and it is an integrity primitive, not a compliance certification.
+> Tamper-evident long-term memory for AI agents in one zero-dependency Python file, plus an MCP server. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted.
+
+The erasure proof covers this store only, not a vector index, prompt logs, or backups, and it is an integrity primitive, not a compliance certification.
 
 ## Pages
 

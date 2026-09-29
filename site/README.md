@@ -1,7 +1,7 @@
 # inspeximus — launch site
 
-A single-page marketing site for [inspeximus](https://github.com/DanceNitra/inspeximus): a memory layer with a
-zero-dependency core, and an MCP server, for AI agents. Dark, precise, with a scroll-driven 3D "memory ledger" narrative.
+A single-page marketing site for [inspeximus](https://github.com/DanceNitra/inspeximus): a zero-dependency memory
+layer and MCP server for AI agents. Dark, precise, with a scroll-driven 3D "memory ledger" narrative.
 
 ## Stack
 - **Vite** + vanilla **TypeScript**

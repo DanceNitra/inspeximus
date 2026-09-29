@@ -17,6 +17,5 @@ pip install inspeximus
 python 01_basics.py
 ```
 
-Everything here runs on the zero-dependency core and needs no LLM or API key. The examples that sign
-(`06_gdpr_erasure_receipt.py`, `11_verifiable_erasure.py` and `trust_is_not_truth.py`) need the `crypto` extra. For semantic recall at production quality,
+Everything here is zero-dependency and needs no LLM or API key. For semantic recall at production quality,
 `pip install sentence-transformers` and pass its encoder as `embed=` (see `03_semantic_recall.py`).

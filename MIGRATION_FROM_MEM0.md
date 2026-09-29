@@ -77,8 +77,7 @@ Claims here are scoped, not absolute:
 
 ## Steps
 
-1. `pip install inspeximus` (or copy `inspeximus/core.py`: the core has zero dependencies). Signing needs
-   `pip install "inspeximus[crypto]"`.
+1. `pip install inspeximus` (or copy `inspeximus/core.py` — zero dependencies).
 2. Export the live store per user (`get_all`, above) and locate `history.db`.
 3. Run `migrate_mem0.py` (above). Review the report; keep it as the migration receipt.
 4. Point your agent at inspeximus — same store file, MCP config in the README.

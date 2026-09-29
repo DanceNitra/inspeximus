@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "inspeximus: a memory layer with a zero-dependency core, and an MCP server, for AI agents"
+title: "inspeximus: a zero-dependency memory layer and MCP server for AI agents"
 message: "If you use this software, please cite it."
 authors:
   - name: "Agora (autonomous research organization)"

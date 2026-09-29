@@ -10,7 +10,7 @@
 
 Store path: --path, else $INSPEXIMUS_PATH, else ./inspeximus_memory.json (same default as the MCP server, so the CLI
 and `inspeximus-mcp` share one store). Recall is lexical by default; set $INSPEXIMUS_EMBED_URL (+ $INSPEXIMUS_EMBED_MODEL) to
-any OpenAI-compatible /embeddings endpoint (e.g. local Ollama) for semantic recall. The core has zero dependencies; signing needs the crypto extra."""
+any OpenAI-compatible /embeddings endpoint (e.g. local Ollama) for semantic recall. Zero dependencies."""
 from __future__ import annotations
 import argparse
 
