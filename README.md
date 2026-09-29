@@ -2,7 +2,7 @@
 
 <img alt="A dark archive hall of suspended glass record panels receding into haze. One panel is struck through by a line of amber light, which arcs forward to a later panel. A sealed paper receipt rests on the floor beneath it." src="https://raw.githubusercontent.com/DanceNitra/inspeximus/main/docs/assets/hero.jpg">
 
-**Tamper-evident long-term memory for AI agents. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted. One zero-dependency Python file, plus an MCP server.**
+**Tamper-evident long-term memory for AI agents. Correct a fact once and the old value stays retired; erase a person and prove it; show an auditor what the agent knew when it acted. The erasure proof covers this store only, not a vector index, prompt logs, or backups, and it is an integrity primitive, not a compliance certification. A zero-dependency Python core, plus an MCP server; signing needs the `crypto` extra.**
 
 <p align="center">
   <a href="https://dancenitra.github.io/inspeximus/quickstart.html">Quickstart</a> ·
@@ -20,7 +20,7 @@
 [![CI](https://github.com/DanceNitra/inspeximus/actions/workflows/ci.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/ci.yml)
 [![Claims audit](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml/badge.svg)](https://github.com/DanceNitra/inspeximus/actions/workflows/audit.yml)
 [![Python](https://img.shields.io/pypi/pyversions/inspeximus)](https://pypi.org/project/inspeximus/)
-[![Zero dependencies](https://img.shields.io/badge/dependencies-0-2563eb)](https://pypi.org/project/inspeximus/)
+[![Zero dependencies in the core](https://img.shields.io/badge/dependencies-0-2563eb)](https://pypi.org/project/inspeximus/)
 [![Tests](https://img.shields.io/badge/tests-2600%2B-2563eb)](#how-this-is-tested)
 [![License](https://img.shields.io/pypi/l/inspeximus)](LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21708778.svg)](https://doi.org/10.5281/zenodo.21708778)
@@ -40,6 +40,9 @@ m.recall("which staging database")[0]["text"]   # 'The staging database is db-7.
 m.revert("staging-db")                            # and it is reversible, on purpose
 ```
 
+`memory.json` is a name, not a format: a new store is a SQLite file. Read it through `inspeximus` or the
+`sqlite3` module, never with `json.load` or `cat`.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/correction-dark.svg">
   <img alt="After you correct a fact, how often does the old value come back? inspeximus 0%, Graphiti 0.x 13.3%, mem0 2.0.11 46.7%, and inspeximus with its guard disabled 100% — n=30 per system, each on its own native configuration." src="docs/assets/correction-light.svg">
@@ -48,7 +51,7 @@ m.revert("staging-db")                            # and it is reversible, on pur
 | | What you get |
 |---|---|
 | **A correction that holds** | `remember(key=...)` retires the old value by key. Restating the stale text does not bring it back; `revert()` does, as a recorded decision. |
-| **Erasure you can prove** | `forget_subject()` removes every record about a person, leaves a signed content-free tombstone, and `erasure_certificate()` lets a third party check it with no key. |
+| **Erasure you can prove** | `forget_subject()` removes every record about a person, leaves a signed content-free tombstone, and `erasure_certificate()` lets a third party check it with no private key. For authorship, the third party pins your public key (`expected_pubkey`) and witnesses the anchor. It covers this store only. |
 | **What the agent knew when it acted** | A signed, hash-chained action ledger; `matches()` binds a retained transcript to its entry. |
 | **When it happened** | RFC 3161 timestamps, and a check whether the authority was on the EU trusted list on that date. |
 | **Evidence an auditor can read** | `inspeximus compliance` labels the evidence by article; export as a draft-sharif-agent-audit-trail-04 file. |
@@ -148,8 +151,9 @@ not the benchmark being kind to us.
 ## EU AI Act and GDPR evidence, built in
 
 Every write, correction, erasure and agent action leaves a signed, hash-chained record. A third
-party verifies it offline with the standard library, with no API key and no reason to trust the
-operator. The evidence is exportable today; the EU AI Act's high-risk duties apply from
+party verifies it offline, with no API key. Signature checks need the `crypto` extra, and they show
+who signed only when the reader pins the operator's public key and witnesses the anchor. The
+evidence is exportable today; the EU AI Act's high-risk duties apply from
 2 December 2027 (Annex III systems) and 2 August 2028 (systems embedded in regulated products),
 and GDPR Article 17 has applied since 25 May 2018.
 
@@ -157,7 +161,7 @@ and GDPR Article 17 has applied since 25 May 2018.
 |---|---|---|
 | EU AI Act Art. 12, automatic event logging | a signed action ledger recording what the memory store held when the agent acted; `matches()` binds a retained transcript to its entry | `inspeximus actions verify`, offline |
 | Art. 19, log retention | an append-only receipt chain whose head lives outside the store, so a tail cut is reported | `verify_writes()` |
-| GDPR Art. 17, right to erasure | `forget_subject()` removes every record attributable to a person, including summaries that inherited it, and leaves a signed content-free tombstone | `erasure_certificate()`, checkable with no private key |
+| GDPR Art. 17, right to erasure | `forget_subject()` removes every record in this store attributable to a person, including summaries that inherited it, and leaves a signed content-free tombstone | `erasure_certificate()`, checkable with no private key; pin `expected_pubkey` and witness the anchor for authorship |
 | GDPR Art. 15 and 16, access and rectification | `export_subject()`, `rectify()` with a receipt naming the actor and the reason | the export's manifest hash sits in the ledger |
 | Art. 26, deployer duties | `deployer_report`, counts by default, no personal data in the report | |
 | When it happened | RFC 3161 timestamps from a third party; `inspeximus timestamp qualified` says whether that authority was on the EU trusted list on that date (eIDAS Art. 41) | an offline cache of the trusted lists |
@@ -404,7 +408,8 @@ any partition.
 
 ### Where the store is written
 
-You do not pick a storage format. A new store is written as rows, and an existing JSON store is
+You do not pick a storage format. A new store is written as rows in a SQLite file, whatever its name
+says: `memory.json` is not JSON, and `json.load` cannot read it. An existing JSON store is
 converted the first time this version opens it: the conversion re-reads what it wrote and refuses
 unless the record count and the id order both survive, and it leaves the original beside the store as
 `memory.json.pre-rows.bak`. Encrypted stores stay a single encrypted blob, because at-rest encryption
@@ -454,8 +459,10 @@ whether the record still matches what its receipt committed to, and a `limits` f
 of it proves. Erasure works the same way. `forget_subject()` hard-deletes every memory attributable
 to a person, including the summaries that inherited it through lineage, and leaves a signed
 content-free tombstone, so a later reader can tell a deliberate erasure from tampering.
-`erasure_certificate()` makes that checkable by a third party with no private key and no reason to
-trust us.
+`erasure_certificate()` makes that checkable by a third party with no private key. The key that signs
+the certificate is the operator's, so for authorship the third party pins `expected_pubkey` and
+witnesses the anchor; `verify_erasure_certificate(..., require_signed=True)` refuses an unsigned one.
+It covers this store only, not a vector index, prompt logs, or backups.
 
 `inspeximus compliance` prints the same evidence labelled by article, with its own scope attached:
 the duties `inspeximus coverage` lists, and not a certification.
@@ -721,7 +728,7 @@ tenant bound into the signed message so a record cannot be moved between tenants
 **An audit trail in formats an auditor already reads.** A hash chain proves your records were not
 edited. It does not tell a third party who wrote them, what they are about, or when, and those are the
 three things somebody checking your system actually asks. Four IETF standards answer them, and
-inspeximus emits all four with no dependencies:
+inspeximus emits all four. The encoders are in the zero-dependency core; signing needs the `crypto` extra:
 
 | you want to show | the artifact | the standard |
 |---|---|---|
@@ -758,9 +765,11 @@ delegated to `openssl ts -verify` rather than hand-rolled, because a partial CMS
 requires a signed ledger. It is evidentiary quality for a duty to demonstrate, and it is worded that
 way everywhere.
 
-**Zero dependencies.** One file for the core: copy `inspeximus/core.py` anywhere and it imports and
+**Zero dependencies in the core.** One file for the core: copy `inspeximus/core.py` anywhere and it
+imports and
 runs with nothing installed. Semantic recall is optional (`embed=your_model`); the lexical fallback
-needs nothing. The MCP server, encryption and the framework adapters are separate modules, all opt-in.
+needs nothing. The MCP server, encryption, signing and the framework adapters are opt-in extras.
+Signing needs `pip install "inspeximus[crypto]"`: without it, `new_receipt_keypair()` raises `RuntimeError`.
 
 ---
 

@@ -5,8 +5,8 @@ Other coding-agent memories (Claude-Mem, agentmemory) auto-capture your session 
 LLM-summarize on the write path, which drops facts, leaks on erasure, and is non-reproducible. This does the
 same auto-capture with NO LLM: it writes tool events into a deterministic, keyed inspeximus store, so a corrected
 fact (a changed API signature, a renamed symbol, a moved file) SUPERSEDES the stale one and cannot be resurrected
-by an echo. Persistent across sessions, provably erasable, zero-dependency. The store is a local JSON file at
-<project>/.inspeximus/coding_memory.json.
+by an echo. Persistent across sessions, provably erasable, zero-dependency core. The store is a local SQLite file at
+<project>/.inspeximus/coding_memory.json; the name ends in .json, the format does not.
 
 Use it two ways:
   python -m inspeximus.claude_code --install     # write the hooks block into ./.claude/settings.json

@@ -21,7 +21,7 @@ toc: true
 
 ## Overview
 
-[Inspeximus](https://github.com/DanceNitra/inspeximus) is an MIT-licensed, zero-dependency agent-memory
+[Inspeximus](https://github.com/DanceNitra/inspeximus) is an MIT-licensed agent-memory
 library. `InspeximusDocumentStore` implements Haystack's `DocumentStore` protocol, so it slots into any
 Haystack pipeline the way `InMemoryDocumentStore` does — with two differences that matter for long-running
 or regulated systems:

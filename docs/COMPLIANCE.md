@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document maps the actual, shipped primitives of **inspeximus** — a zero-dependency Python agent-memory library whose differentiator is *deterministic memory integrity* — to recognized security and compliance control frameworks. It is written for an enterprise security reviewer, DPO, or GRC lead who needs to see, control-by-control, where inspeximus can supply technical evidence toward a control objective and where it cannot.
+This document maps the actual, shipped primitives of **inspeximus** — a Python agent-memory library, with a zero-dependency core, whose differentiator is *deterministic memory integrity* — to recognized security and compliance control frameworks. It is written for an enterprise security reviewer, DPO, or GRC lead who needs to see, control-by-control, where inspeximus can supply technical evidence toward a control objective and where it cannot.
 
 inspeximus is a **memory-layer library**: it stores, corrects, supersedes, attributes, and cryptographically proves the integrity of an agent's memory records over time, on a deterministic (no-LLM) path. Its integrity model is built on hash-linked write receipts, an RFC 6962-style signed append-only log (`anchor()` / `verify_consistency()`), Ed25519 attestation and capability-gated reversal, external witness co-signing with split-view detection, and portable erasure certificates.
 

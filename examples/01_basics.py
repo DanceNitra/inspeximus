@@ -4,7 +4,7 @@ inspeximus example 01 — the basics: remember, recall, correct, audit.
     pip install inspeximus
     python 01_basics.py
 
-The whole loop most agents need, in one zero-dependency file. No embedder required — recall falls back to a
+The whole loop most agents need, on the zero-dependency core. No embedder required — recall falls back to a
 forgiving lexical match, so this runs anywhere today.
 """
 from inspeximus import Inspeximus

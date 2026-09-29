@@ -185,7 +185,10 @@ that matters to you — this tool cannot tell you whether you did.
 
 ## What the auditor runs (and why they need not trust us)
 
-Verification takes no private key and does not trust the operator:
+Verification takes no private key. It does not have to trust the operator only when you pin the
+operator's public key (`--expected-pubkey-file`) and an anchor you witnessed (`--expected-anchor`).
+Without the pin, the signatures show that the issuer held a key, not whose; `--require-signed` fails a
+certificate that carries no signature at all:
 
 ```console
 $ inspeximus erasure-verify cert.json --store ./dsar/store.json --expected-pubkey-file receipt.key.pub

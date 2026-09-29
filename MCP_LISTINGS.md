@@ -7,7 +7,7 @@
 `inspeximus/mcp_server.py` and fails if this file disagrees. It said 30 until 2026-08-01, when it was
 26 short.)*
 
-**One-liner:** Zero-dependency memory layer for AI agents that can say where a fact came from and prove
+**One-liner:** Memory layer for AI agents, with a zero-dependency core, that can say where a fact came from and prove
 what it erased — one-call provenance, an auditable correction trail (supersession + echo-guard + revert),
 and offline-verifiable erasure receipts, all deterministic with no LLM on the write path.
 
