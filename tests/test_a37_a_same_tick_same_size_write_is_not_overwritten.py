@@ -66,6 +66,28 @@ def test_a_stale_handle_does_not_overwrite_a_same_tick_same_size_write(tmp_path,
 
 
 @pytest.mark.parametrize("encrypted", [False, True], ids=["json", "encrypted"])
+def test_a_keyed_write_after_a_same_tick_same_size_write_merges_and_keeps_it(tmp_path, encrypted):
+    """The keyed path of the case above (AUDIT-A's review of 3.15.6). A keyed write decides from the rows,
+    so it merges what the peer committed in the same tick and lands; it neither refuses nor overwrites.
+    On 3.15.3 this stale write overwrote the peer's credit (good stayed 1.0)."""
+    p, x = _seeded(tmp_path, encrypted)
+    stale, peer = _open(p, encrypted), _open(p, encrypted)
+    st = os.stat(p)
+    peer.credit([x], outcome=1.0)                    # good 1.0 -> 2.0: same length
+    peer.flush()
+    _same_tick(p, st)
+    if (os.stat(p).st_mtime_ns, os.stat(p).st_size) != (st.st_mtime_ns, st.st_size):
+        pytest.fail("control: the peer's write changed the stat signature, so the case did not arise")
+    stale.remember("the stale handle's note", key="note", object="n")
+    stale.flush()
+    rows = _open(p, encrypted)._items
+    good = next(r for r in rows if r["id"] == x).get("good")
+    assert good == 2.0, f"the peer's same-tick write was lost (good={good})"
+    assert any(r.get("key") == "note" and r.get("status", "active") == "active" for r in rows), (
+        "the stale handle's keyed write did not land")
+
+
+@pytest.mark.parametrize("encrypted", [False, True], ids=["json", "encrypted"])
 def test_a_handles_own_consecutive_saves_are_not_refused(tmp_path, encrypted):
     """The hash is re-synced from the bytes written; a stale hash would refuse the handle's own next save."""
     p, x = _seeded(tmp_path, encrypted)

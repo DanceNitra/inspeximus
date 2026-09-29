@@ -40,7 +40,9 @@ the same handle). Tests that expected a keyed write or an erasure to be refused 
 the change above: three in `tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` and one in
 `tests/test_a_peers_receipt_survives_this_handles_next_write.py` write unkeyed records, which reach the
 same refusal, and the JSON arms of two tests in `tests/test_audit_round_four.py` assert the same final
-store as the row arms. `perf/gate.py` counts
+store as the row arms. A keyed case beside the three A-37 tests pins the new path: after a peer's
+same-tick, same-size write, a stale keyed write merges and lands, and the peer's write stays (it was
+lost on 3.15.3). `perf/gate.py` counts
 `decision_syncs`: 0 on a write, a recall or a prompt, 1 per erasure.
 
 ## 3.15.6 - UPGRADE IF you install through an agent on Windows, or use Hermes Agent: every install line on the page now names the version it installs, so an agent that leaves out `-U` still gets this release; and an upgrade of the Hermes provider that cannot load puts the previous version back instead of leaving Hermes without one.
