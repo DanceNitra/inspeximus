@@ -604,6 +604,34 @@ def test_the_unstamped_arm_sees_the_b05_regression_the_stamped_arm_cannot():
     assert stamped == 0, f"control: the stamped arm is blind to B-05 by design ({stamped})"
 
 
+def _key_lookups(build):
+    run = build(200)
+    with gate.Counters() as c:
+        run()
+    return c.as_dict()["guard_key_lookups"]
+
+
+def test_the_unstamped_arm_looks_the_read_guard_key_up_once():
+    """A-45: under a key home with no key, a fresh handle looks the key up once, not once per record."""
+    assert _key_lookups(gate.w_prompt_unstamped) <= 1
+
+
+def test_it_fails_when_a_missing_key_is_looked_up_per_record_again(baseline, monkeypatch):
+    """Restore 3.15.4's lookup, which cached only a found key: the unstamped arm's lookups grow from one
+    to one per record, and `compare` names the counter."""
+    good = _key_lookups(gate.w_prompt_unstamped)
+    monkeypatch.setattr(core.Inspeximus, "_guard_key",
+                        lambda self, create=False: self.__dict__.get("_guard_key_bytes")
+                        or self._load_guard_key(create))
+    bad = _key_lookups(gate.w_prompt_unstamped)
+    assert bad >= 200, f"the regression did not reproduce: {bad} lookups"
+    arm = copy.deepcopy(baseline["prompt_unstamped_n2000"])
+    base = {"prompt_unstamped_n2000": {**arm, "counters": {**arm["counters"], "guard_key_lookups": good}}}
+    now = {"prompt_unstamped_n2000": {**arm, "counters": {**arm["counters"], "guard_key_lookups": bad}}}
+    fail, _ = gate.compare(base, now)
+    assert any("guard_key_lookups" in f for f in fail), fail
+
+
 def test_a_json_save_reads_the_store_once_and_a_row_save_never():
     """A-37's writer guard hashes the store file on a JSON save whose stat signature has not moved. The
     counter pins that cost at one read per save (none for the first save, which has no file yet), and at

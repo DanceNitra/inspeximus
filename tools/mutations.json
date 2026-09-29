@@ -6197,5 +6197,41 @@
   "tests": [
    "tests/test_mandate_check_flags_actions_outside_the_declared_scope.py"
   ]
+ },
+ {
+  "name": "A-45: a missing read-guard key is looked up once per record again",
+  "file": "inspeximus/core.py",
+  "old": "        if not create and self.__dict__.get(\"_guard_key_absent\", _NO_SIG) == self._file_sig:\n            return None\n",
+  "new": "",
+  "tests": [
+   "tests/test_a45_a_missing_read_guard_key_is_looked_up_once.py"
+  ]
+ },
+ {
+  "name": "A-45: a cached key absence outlives a store that moved",
+  "file": "inspeximus/core.py",
+  "old": "        if not create and self.__dict__.get(\"_guard_key_absent\", _NO_SIG) == self._file_sig:\n            return None\n",
+  "new": "        if not create and self.__dict__.get(\"_guard_key_absent\", _NO_SIG) is not _NO_SIG:\n            return None\n",
+  "tests": [
+   "tests/test_a45_a_missing_read_guard_key_is_looked_up_once.py"
+  ]
+ },
+ {
+  "name": "A-45: a write that must mint the key takes the cached absence",
+  "file": "inspeximus/core.py",
+  "old": "        if not create and self.__dict__.get(\"_guard_key_absent\", _NO_SIG) == self._file_sig:\n            return None\n",
+  "new": "        if self.__dict__.get(\"_guard_key_absent\", _NO_SIG) == self._file_sig:\n            return None\n",
+  "tests": [
+   "tests/test_a45_a_missing_read_guard_key_is_looked_up_once.py"
+  ]
+ },
+ {
+  "name": "perf gate: A-45's read-guard key lookups are not counted",
+  "file": "perf/gate.py",
+  "old": "    \"guard_key_lookups\": (core, \"_guard_key_file\"),\n",
+  "new": "",
+  "tests": [
+   "tests/test_perf_gate_can_fail.py"
+  ]
  }
 ]

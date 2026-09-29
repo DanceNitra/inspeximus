@@ -229,12 +229,19 @@ class Counters:
 #:                    it on every JSON or encrypted save whose stat signature has not moved, because a
 #:                    same-tick, same-size peer write leaves (mtime_ns, size) unchanged. One per save on
 #:                    a JSON arm is the expected cost; a row store never reads it (its guard is per row).
+#:   guard_key_lookups  one lookup of the read-guard key on disk (the key file's path, the location
+#:                    checks, an open). A-30 (3.15.4) cached only a key it found, so a store with no key
+#:                    in the key home paid one lookup per record on every read: 2,000 in
+#:                    prompt_unstamped_n2000, whose counters were otherwise identical to the stamped
+#:                    arm's, so only the advisory clock showed it (1.509 s against 0.099 s). One per
+#:                    handle is the expected cost (A-45, 3.15.5).
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
     "current_active_scans": (core.Inspeximus, "_current_active"),
     "row_serializations": (core._rows, "_doc"),
     "read_guard_assessments": (core.Inspeximus, "_assess_read_guards"),
     "store_hash_reads": (core.Inspeximus, "_disk_hash"),
+    "guard_key_lookups": (core, "_guard_key_file"),
 }
 
 

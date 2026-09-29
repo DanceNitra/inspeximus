@@ -848,6 +848,9 @@ def _guard_mac_ok(got, key: bytes, *parts) -> bool:
     return isinstance(got, str) and hmac.compare_digest(got, _guard_mac(key, *parts))
 
 
+_NO_SIG = object()      # never equal to a stat signature: no absence has been recorded
+
+
 def _guard_key_file(store_path) -> str:
     """Where a store keeps its read-guard key: the key home, beside the receipt key, never the store."""
     home = os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA") \
@@ -9145,10 +9148,32 @@ class Inspeximus:
         Kept in the key home by the store's absolute path, like the receipt key, and refused inside
         the store's own directory, so a store copied, cloned or committed travels without it. A store
         without a path gets a key for this process only. Minted only when `create` is set, which the
-        write paths do; a read never creates a file."""
+        write paths do; a read never creates a file.
+
+        A KEY THAT IS NOT THERE IS LOOKED UP ONCE PER HANDLE (3.15.5, A-45). Only a found key was
+        cached, and the read guard asks for the key once per record, so a store with no key in the key
+        home repeated the whole lookup, a path hash, the location checks and a failing open(), for every
+        record on every read. Measured on 3.15.4 with an empty key home: 972.5 us per call against
+        0.19 us with a key, and the UserPromptSubmit hook on a 71,772-record store took 65.4 s where a
+        keyed home took 5.93 s. The absence is now remembered with the store's stat signature at the
+        time. A write that mints the key (`create`) always looks again, and so does any read after the
+        store has moved, because a peer that wrote it may have minted the key."""
         k = self.__dict__.get("_guard_key_bytes")
         if k:
             return k
+        if not create and self.__dict__.get("_guard_key_absent", _NO_SIG) == self._file_sig:
+            return None
+        k = self._load_guard_key(create)
+        if k is None and not create:
+            # Every way the lookup can fail is remembered, not only a missing file: a key refused inside
+            # the store's directory, unreadable or too short costs the same repeated lookup.
+            self.__dict__["_guard_key_absent"] = self._file_sig
+        return k
+
+    def _load_guard_key(self, create: bool = False) -> "bytes | None":
+        """The disk half of `_guard_key`: find, or with `create` mint, this store's read-guard key. Every
+        call is one lookup; `perf/gate.py` counts them (`guard_key_lookups`)."""
+        k = None
         if not self.path:
             k = os.urandom(32)
         else:
