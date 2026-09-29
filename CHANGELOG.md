@@ -1,3 +1,44 @@
+## Unreleased (A-41, A-42, A-43, store lock) - UPGRADE IF two handles or processes write one store, for example the MCP server beside a hook: an erasure, a credit, a retirement, a revert or an objection now decides from the store's latest state. WHAT CHANGES FOR CALLERS: see the two lines under that heading.
+
+- Erasure: a forget_subject run from a handle that had not seen another process's newer record of the subject could report success while that record stayed in the store, and erasure_certificate() verified. Measured on 3.15.3 and 3.15.4 with two handles on one store, for example the MCP server beside a hook. An erasure now reads the store's latest state under its lock before it selects, and forget_subject checks the store again after it saves: a record of the subject still there fails residue_in_store and is listed in subject_left_on_disk.
+- **Every decision from the rows.** `forget_pii`, `forget(where=)`, `credit`, `retire`, `revert`,
+  `submit_revert`, a keyed `remember` (supersession and the echo guard), `object_processing`,
+  `resolve_objection` and `spend_irreversible` take the store lock, merge what other writers committed
+  (the store file, a row store's write generation, and the objections and irreversible-budget
+  sidecars), and only then decide. Before, a stale handle lost a peer's credit (A-43: two credits
+  counted as one), kept a peer's value active after a retirement, reverted over a peer's value, and
+  rewrote the objections sidecar from its own list, which dropped a peer's objection.
+- **A same-tick row commit (A-41).** A row store's save guard compares A-37's write generation, so a
+  peer commit in the same clock tick sends the save through the merge. The merge keeps the disk's
+  earlier retirement when both sides retired one record toward different successors, and settling a
+  key links each demoted value to the winner, so `revert()` steps back one value instead of two.
+- **The store lock is re-entrant per thread, and every wait for it ends.** A second handle on the same
+  store, in the thread that already holds its lock, goes through; another thread still waits. The
+  in-process wait and the OS wait share one deadline, `LOCK_WAIT_S` (60 s), on every OS: POSIX `flock`
+  is polled non-blocking like Windows `msvcrt.locking`. Subscriber callbacks run after the lock is
+  released. A decision whose merge migrates a JSON store to rows takes the lock again in the same thread,
+  and goes through.
+- **The test suite has a per-test timeout.** `pytest.ini` sets `timeout = 900` with the thread method,
+  and CI installs `pytest-timeout`, so a hang fails the run with every thread's stack.
+
+### What changes for callers
+
+- **A stale decision on a JSON store merges instead of raising.** On a JSON or encrypted store, an
+  operation listed earlier that runs from a handle behind the file now merges the other writer's
+  changes and succeeds. Before, it raised `StoreChangedOnDisk`. A write that decides nothing from other
+  rows (an unkeyed `remember`) is still refused over a changed file, as before.
+- **A lock wait past its deadline raises `StoreLockTimeout`.** When another thread or process holds the
+  store lock for more than `LOCK_WAIT_S`, the operation raises `StoreLockTimeout` (a `TimeoutError`)
+  and writes nothing. Before, it logged a degraded lock and wrote without protection, which is how
+  concurrent writers could lose records while each reported success.
+
+Tests: `tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py` (45 of 49 fail on 3.15.3;
+the 4 that pass cover the irreversible budget, which was already right) and
+`tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py` (6 of 6 fail or hang without the re-entrant lock; one of them is a decision whose merge migrates a JSON store). Three tests in
+`tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` write unkeyed records, because a
+keyed write now decides and merges first instead of being refused. `perf/gate.py` counts
+`decision_syncs`: 0 on a write, a recall or a prompt, 1 per erasure.
+
 ## 3.15.6 - UPGRADE IF you install through an agent on Windows, or use Hermes Agent: every install line on the page now names the version it installs, so an agent that leaves out `-U` still gets this release; and an upgrade of the Hermes provider that cannot load puts the previous version back instead of leaving Hermes without one.
 
 Found on 2026-09-28 in a friend-flow re-test on a second Windows machine, where Hermes Agent on a 9B local

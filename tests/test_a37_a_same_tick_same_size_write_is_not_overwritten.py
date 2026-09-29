@@ -57,7 +57,9 @@ def test_a_stale_handle_does_not_overwrite_a_same_tick_same_size_write(tmp_path,
     if (os.stat(p).st_mtime_ns, os.stat(p).st_size) != (st.st_mtime_ns, st.st_size):
         pytest.fail("control: the peer's write changed the stat signature, so the case did not arise")
     with pytest.raises(StoreChangedOnDisk):
-        stale.remember("the stale handle writes", key="note", object="n")
+        # UNKEYED: the save guard is under test. A keyed write decides under the lock and merges first
+        # (A-42/A-43, 3.15.6), which keeps the peer's write by merging rather than refusing.
+        stale.remember("the stale handle writes")
         stale.flush()
     good = next(r for r in _open(p, encrypted)._items if r["id"] == x).get("good")
     assert good == 2.0, f"the peer's write was overwritten (good={good})"
@@ -90,7 +92,9 @@ def test_after_its_own_save_a_handle_still_sees_a_same_tick_peer(tmp_path):
     if os.stat(p).st_size != st.st_size:
         pytest.fail("control: the peer changed the size")
     with pytest.raises(StoreChangedOnDisk):
-        a.remember("a writes again", key="a2", object="a2")
+        # UNKEYED: the save guard is under test. A keyed write decides under the lock and merges first
+        # (A-42/A-43, 3.15.6), which keeps the peer's write by merging rather than refusing.
+        a.remember("a writes again")
         a.flush()
 
 
@@ -160,7 +164,9 @@ def test_an_unlocked_write_right_after_the_replace_is_still_seen(tmp_path, monke
     if not hit:
         pytest.fail("control: the unlocked writer never ran")
     with pytest.raises(StoreChangedOnDisk):
-        m.remember("the handle writes again", key="mine2", object="m2")
+        # UNKEYED: this test is about the save guard. A keyed write decides under the lock and merges
+        # first (A-42/A-43, 3.15.6), which is the other half of the design and has its own tests.
+        m.remember("the handle writes again")
         m.flush()
 
 

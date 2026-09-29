@@ -6548,5 +6548,50 @@
   "tests": [
    "tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py"
   ]
+ },
+ {
+  "name": "3.15.6: the store lock is not re-entrant for its own thread",
+  "file": "inspeximus/core.py",
+  "old": "            if own is not None and own[0] == me:\n",
+  "new": "            if False and own is not None and own[0] == me:\n",
+  "tests": [
+   "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
+  ]
+ },
+ {
+  "name": "3.15.6: the in-process lock wait has no end",
+  "file": "inspeximus/core.py",
+  "old": "not self._tl.acquire(timeout=LOCK_WAIT_S)",
+  "new": "not self._tl.acquire()",
+  "tests": [
+   "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
+  ]
+ },
+ {
+  "name": "3.15.6: the OS lock deadline degrades to an unlocked write",
+  "file": "inspeximus/core.py",
+  "old": "                    self._tl.release()\n                    self._tl = None\n                    raise StoreLockTimeout(f\"another process held",
+  "new": "                    return False\n                    raise StoreLockTimeout(f\"another process held",
+  "tests": [
+   "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
+  ]
+ },
+ {
+  "name": "3.15.6: a re-entry does not lower the depth",
+  "file": "inspeximus/core.py",
+  "old": "                    own[1] -= 1\n",
+  "new": "                    pass\n",
+  "tests": [
+   "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
+  ]
+ },
+ {
+  "name": "3.15.6: the outermost release keeps the path owned",
+  "file": "inspeximus/core.py",
+  "old": "                _StoreLock._OWNER.pop(self._path, None)\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py"
+  ]
  }
 ]

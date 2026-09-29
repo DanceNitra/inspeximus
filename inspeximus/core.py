@@ -2294,6 +2294,14 @@ class ProofNotWritten(OSError):
     verify_writes() names the record until then."""
 
 
+class StoreLockTimeout(TimeoutError):
+    """Another thread or process held the store's lock for longer than LOCK_WAIT_S. Nothing was written.
+
+    Every wait for a store lock ends, on every platform: the in-process lock and the OS lock share one
+    deadline, and POSIX `flock` is polled non-blocking like Windows' `msvcrt.locking` rather than left to
+    block. A wait that used to have no end is how a suite sat at 98% for fifteen hours (2026-09-28)."""
+
+
 class StoreLockUnavailable(OSError):
     """The lock file beside a store could not be created, so a write there cannot be protected.
 
@@ -2338,7 +2346,13 @@ class _StoreLock:
     _CACHE: dict = {}
     _CACHE_GUARD = threading.Lock()
 
-    __slots__ = ("_path", "_fh", "_locker", "_tl", "_transient", "_legacy", "_try", "_busy")
+    __slots__ = ("_path", "_fh", "_locker", "_tl", "_transient", "_legacy", "_try", "_busy", "_reent")
+
+    #: Which thread holds each lock path in this process, and how deep. RE-ENTRANT PER THREAD (3.15.6):
+    #: a second handle on the same store, in the thread that already holds its lock, goes through
+    #: instead of waiting on itself. That is what deadlocked: an operation holding the lock reached code
+    #: that opened another handle on the same store and wrote through it. Another thread still waits.
+    _OWNER: dict = {}
 
     #: How long a writer retries OPENING the lock file before it gives up. Separate from LOCK_WAIT_S,
     #: the wait for a holder: an open that keeps failing is a directory this process cannot write, and
@@ -2386,6 +2400,7 @@ class _StoreLock:
         # stall every open behind a busy writer, and a degraded "hold" would delete a live writer's file.
         self._try = try_only
         self._busy = False
+        self._reent = False
 
     @property
     def held(self) -> bool:
@@ -2448,13 +2463,28 @@ class _StoreLock:
             if ent is None:
                 ent = (threading.Lock(), None)
                 _StoreLock._CACHE[self._path] = ent
+        me = threading.get_ident()
+        with _StoreLock._CACHE_GUARD:
+            own = _StoreLock._OWNER.get(self._path)
+            if own is not None and own[0] == me:
+                if self._try:
+                    self._busy = True        # a try-only cleanup never runs inside its own thread's hold
+                    return False
+                own[1] += 1
+                self._reent = True
+                self._fh = _StoreLock._CACHE[self._path][1]
+                return True
         self._tl = ent[0]
         if self._try and not self._tl.acquire(blocking=False):
             self._tl = None
             self._busy = True
             return False
+        if not self._try and not self._tl.acquire(timeout=LOCK_WAIT_S):
+            self._tl = None
+            raise StoreLockTimeout(f"another thread held the store lock {self._path} for more than "
+                                   f"{LOCK_WAIT_S:.0f}s; nothing was written")
         if not self._try:
-            self._tl.acquire()               # in-process first: one handle, so the OS lock cannot
+            pass                             # in-process first: one handle, so the OS lock cannot
         # THIS DEADLINE MUST OUTLAST THE LONGEST A HOLDER CAN LEGALLY HOLD THE LOCK, and it did not.
         # A writer inside the lock may wait out a busy database for `sqlite_store.BUSY_TIMEOUT_S`, so
         # a waiter that gives up sooner unlocks itself while the holder is still doing exactly what it
@@ -2492,7 +2522,8 @@ class _StoreLock:
                 _StoreLock._CACHE[self._path] = (self._tl, fh)
             try:
                 if kind == "fcntl":
-                    mod.flock(fh.fileno(), mod.LOCK_EX | (mod.LOCK_NB if self._try else 0))
+                    # NON-BLOCKING, polled against the deadline like msvcrt: a blocking flock has no end.
+                    mod.flock(fh.fileno(), mod.LOCK_EX | mod.LOCK_NB)
                     if self._transient and not _StoreLock._names(fh, self._path):
                         # The holder we waited on removed this name on release; our lock is on a
                         # file nobody else will open. Start again on the file the path names now.
@@ -2504,6 +2535,8 @@ class _StoreLock:
                     fh.seek(0)
                     mod.locking(fh.fileno(), mod.LK_NBLCK if self._try else mod.LK_LOCK, 1)
                 self._fh = fh
+                with _StoreLock._CACHE_GUARD:
+                    _StoreLock._OWNER[self._path] = [threading.get_ident(), 1]
                 return True
             except OSError:
                 _StoreLock._CACHE[self._path] = (self._tl, None)
@@ -2517,13 +2550,13 @@ class _StoreLock:
                     self._busy = True
                     return False
                 if time.time() >= deadline:
-                    # DEGRADING IS NO LONGER SILENT. Unlocked concurrent writes are how eight
-                    # writers lost 17, 6, 28 and 47 of 96 records while every one of them reported
-                    # success, and the only reason nobody could explain it for a day is that this
-                    # branch left no trace of having been taken.
-                    self._degraded("waited %.0fs for the store lock and gave up; this write is not "
-                                   "protected against another process" % LOCK_WAIT_S)
-                    return False             # degrade to unlocked rather than lose the write
+                    # NOT DEGRADED ANY MORE (3.15.6): an unlocked write after the wait is how eight writers
+                    # once lost 17 to 47 of 96 records while each reported success. The wait ends in a
+                    # named error instead, and the write is not made.
+                    self._tl.release()
+                    self._tl = None
+                    raise StoreLockTimeout(f"another process held the store lock {self._path} for more "
+                                           f"than {LOCK_WAIT_S:.0f}s; nothing was written")
                 time.sleep(0.05)
 
     @staticmethod
@@ -2545,6 +2578,17 @@ class _StoreLock:
 
     def _release(self):
         kind, mod = self._locker
+        if self._reent:
+            with _StoreLock._CACHE_GUARD:
+                own = _StoreLock._OWNER.get(self._path)
+                if own is not None:
+                    own[1] -= 1
+            self._reent = False
+            self._fh = None
+            return
+        if self._fh is not None:
+            with _StoreLock._CACHE_GUARD:
+                _StoreLock._OWNER.pop(self._path, None)
         try:
             if self._fh is not None:
                 if self._transient and kind == "fcntl":
@@ -9854,6 +9898,9 @@ class Inspeximus:
         finally:
             self._decide_depth = 0
             lock.__exit__(None, None, None)
+            if getattr(self, "_dispatch_pending", False):
+                self._dispatch_pending = False
+                self._dispatch_events(self._events_seen)
 
     def _sync_before_decision(self) -> bool:
         """Merge what other writers committed since this handle last read, when the store moved. The same
@@ -18557,7 +18604,10 @@ class Inspeximus:
                 self.last_write["persisted"] = True
                 self.last_write.pop("persist_error", None)
             if _committed_events and self._subscribers:
-                self._dispatch_events(self._events_seen)   # AFTER the commit and OUTSIDE the lock
+                if self._decide_depth:
+                    self._dispatch_pending = True           # run by _deciding once the hold is released
+                else:
+                    self._dispatch_events(self._events_seen)   # AFTER the commit and OUTSIDE the lock
         except StoreChangedOnDisk:
             raise                                    # the caller must see this one; it is not a disk failure
         except Exception as e:
