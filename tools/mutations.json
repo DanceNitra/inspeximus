@@ -6233,5 +6233,32 @@
   "tests": [
    "tests/test_perf_gate_can_fail.py"
   ]
+ },
+ {
+  "name": "twin arms: equal counted work with a >5x time gap is not an error",
+  "file": "perf/gate.py",
+  "old": "        if lo > 0 and hi > lo * TWIN_TIME_FACTOR:\n",
+  "new": "        if False and lo > 0 and hi > lo * TWIN_TIME_FACTOR:\n",
+  "tests": [
+   "tests/test_the_gate_fails_when_twin_arms_differ_only_in_time.py"
+  ]
+ },
+ {
+  "name": "twin arms: a setup counter counts as different work",
+  "file": "perf/gate.py",
+  "old": "        keys = (set(a[\"counters\"]) | set(b[\"counters\"])) - TWIN_SETUP_COUNTERS\n",
+  "new": "        keys = (set(a[\"counters\"]) | set(b[\"counters\"]))\n",
+  "tests": [
+   "tests/test_the_gate_fails_when_twin_arms_differ_only_in_time.py"
+  ]
+ },
+ {
+  "name": "twin arms: record does not check the twin gap",
+  "file": "perf/gate.py",
+  "old": "        twins = _twin_misses(now)\n        if twins:\n            print(\"refusing to record",
+  "new": "        twins = []\n        if twins:\n            print(\"refusing to record",
+  "tests": [
+   "tests/test_the_gate_fails_when_twin_arms_differ_only_in_time.py"
+  ]
  }
 ]

@@ -61,6 +61,19 @@ BYTES_BAND = 0.02
 #: machine was 15-40% on these workloads; 4x is comfortably outside that and still catches a 10x.
 TIME_ALARM_FACTOR = 4.0
 
+#: TWIN ARMS: one workload measured under two conditions, such as `prompt_unstamped_n2000`, which is
+#: `prompt_n2000` under a key home that cannot verify the stamps. An arm is the twin of the arm its `desc`
+#: starts with. Twins that do the same counted work must take about the same time: a gap past this factor
+#: is work no counter sees, and it is a gate error, in `check` and in `record`. Measured at 3.15.4: the
+#: two prompt arms had equal work counters and medians 0.099 s and 1.509 s (15x). The gap was an uncached
+#: missing-key lookup per record, it was recorded as the baseline, and the hook it measured took 48.6 s a
+#: prompt on a 71,772-row store against 5.3 s on 3.15.3 (AUDIT-B, 2026-09-29).
+TWIN_TIME_FACTOR = 5.0
+
+#: Counters of setting up a condition rather than of the workload, so twins may differ in them: the
+#: unstamped arm lists one more directory (the foreign key home) by construction.
+TWIN_SETUP_COUNTERS = frozenset({"dir_listings", "store_loads"})
+
 #: Timing repeats. Small on purpose -- the counters are the gate, the clock is a smoke alarm.
 REPEATS = 3
 
@@ -766,11 +779,40 @@ def _backend_misses(now):
             if "backend" in w and w["backend"]["observed"] != w["backend"]["declared"]]
 
 
+def _twins(now):
+    """{twin: arm} for every arm whose `desc` starts with another arm's name followed by a space."""
+    out = {}
+    for name, w in now.items():
+        desc = str(w.get("desc", ""))
+        for other in now:
+            if other != name and desc.startswith(other + " "):
+                out[name] = other
+    return out
+
+
+def _twin_misses(now):
+    """Twins with the same counted work whose medians are more than TWIN_TIME_FACTOR apart."""
+    misses = []
+    for twin, arm in sorted(_twins(now).items()):
+        a, b = now[arm], now[twin]
+        keys = (set(a["counters"]) | set(b["counters"])) - TWIN_SETUP_COUNTERS
+        if any(a["counters"].get(k) != b["counters"].get(k) for k in keys):
+            continue                                  # different counted work: the counters explain the time
+        ta, tb = a["seconds_median"], b["seconds_median"]
+        lo, hi = min(ta, tb), max(ta, tb)
+        if lo > 0 and hi > lo * TWIN_TIME_FACTOR:
+            misses.append(f"{twin} vs {arm}: the same counted work in {tb:.3f}s and {ta:.3f}s "
+                          f"({hi / lo:.1f}x, over {TWIN_TIME_FACTOR:g}x): work no counter sees. Count it "
+                          f"before recording a baseline.")
+    return misses
+
+
 # ── the gate ───────────────────────────────────────────────────────────────────────────────────────
 
 def compare(base, now):
-    """Counters are exact and gate the build. Time only alarms past TIME_ALARM_FACTOR."""
-    fail, warn = _backend_misses(now), []
+    """Counters are exact and gate the build. Time only alarms past TIME_ALARM_FACTOR, and twin arms with
+    the same counted work must stay within TWIN_TIME_FACTOR of each other."""
+    fail, warn = _backend_misses(now) + _twin_misses(now), []
     for name, b in base.items():
         n = now.get(name)
         if n is None:
@@ -812,6 +854,12 @@ def main(argv):
         if misses:
             print("refusing to record: an arm did not run on the backend it names", file=sys.stderr)
             for m in misses:
+                print(f"  {m}", file=sys.stderr)
+            return 1
+        twins = _twin_misses(now)
+        if twins:
+            print("refusing to record: twin arms differ in time but not in counted work", file=sys.stderr)
+            for m in twins:
                 print(f"  {m}", file=sys.stderr)
             return 1
         BASELINE.write_text(json.dumps(now, indent=1) + "\n", encoding="utf-8")
