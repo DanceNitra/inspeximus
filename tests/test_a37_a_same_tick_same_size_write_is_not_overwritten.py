@@ -89,15 +89,19 @@ def test_a_keyed_write_after_a_same_tick_same_size_write_merges_and_keeps_it(tmp
 
 @pytest.mark.parametrize("encrypted", [False, True], ids=["json", "encrypted"])
 def test_a_handles_own_consecutive_saves_are_not_refused(tmp_path, encrypted):
-    """The hash is re-synced from the bytes written; a stale hash would refuse the handle's own next save."""
+    """The hash is re-synced from the bytes written; a stale hash would refuse the handle's own next save.
+
+    UNKEYED WRITES ONLY (3.15.6, AUDIT-A's review): credit() and a keyed remember() decide from the rows,
+    so they merge under the lock first, and a merge absorbs a stale hash instead of refusing. Then this
+    test could not see the mutant that keeps the previous read's hash. An unkeyed write reaches the save
+    guard alone."""
     p, x = _seeded(tmp_path, encrypted)
     m = _open(p, encrypted)
-    for i in range(3):
-        m.credit([x], outcome=1.0)
+    before = len(_open(p, encrypted)._items)
+    for i in range(4):
+        m.remember(f"own write {i}")
         m.flush()
-    m.remember("and one more", key="more", object="m")
-    m.flush()
-    assert next(r for r in _open(p, encrypted)._items if r["id"] == x).get("good") == 4.0
+    assert len(_open(p, encrypted)._items) == before + 4
 
 
 def test_after_its_own_save_a_handle_still_sees_a_same_tick_peer(tmp_path):
