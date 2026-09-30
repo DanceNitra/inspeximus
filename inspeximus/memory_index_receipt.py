@@ -24,7 +24,6 @@ code points and disagrees by one per astral character, which is why the count be
 """
 from __future__ import annotations
 
-import io
 import os
 from pathlib import Path as _Path
 import re

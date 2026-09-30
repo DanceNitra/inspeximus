@@ -6,13 +6,13 @@ matching the code rather than quietly becoming fiction.
 
 ## Why one big file, and why the size is not the problem
 
-`inspeximus/core.py` is **1,349,610 bytes** across **19,705 lines**. Of that:
+`inspeximus/core.py` is **1,349,622 bytes** across **19,705 lines**. Of that:
 
 | | bytes | share |
 |---|---:|---:|
 | comments | 421,099 | 31% |
 | docstrings | 335,217 | 25% |
-| executable code | 593,294 | 44% |
+| executable code | 593,306 | 44% |
 
 **56% of the file is explanatory prose.** Nearly every guarantee
 carries the reason it exists and, usually, the failure that produced it. That is the audit
@@ -28,7 +28,7 @@ the file's own. Public methods are named, private ones counted; `*` marks a prop
 |---:|---|---:|---|
 | 1 | 2807–3577 | 69,500 | _1 private only_ |
 | 2 | 3578–4343 | 60,991 | `remember` _(+5 private)_ |
-| 3 | 4345–6343 | 123,497 | `current`, `l1_stats`, `l1_invalidate`, `l1_flush`, `publish_event`, `poll_events`, `events_tip`, +9 more _(+20 private)_ |
+| 3 | 4345–6343 | 123,503 | `current`, `l1_stats`, `l1_invalidate`, `l1_flush`, `publish_event`, `poll_events`, `events_tip`, +9 more _(+20 private)_ |
 | 4 | 6344–7639 | 93,982 | `identifier_contract`, `commitment_supports`, `check_sources`, `verify_attestations`, `verify_writes` _(+1 private)_ |
 | 5 | 7640–8527 | 62,047 | `context_unbound`, `recommit`, `verify_attribution`, `provisional`, `confirm`, `discard_provisional`, `candidates`, +5 more _(+10 private)_ |
 | 6 | 8528–9444 | 60,936 | `observe`, `reopened`, `resolve_reopened`, `remember_dedup`, `declare_out_of_band_deletion`, `forget`, `object_processing`, +2 more _(+18 private)_ |
