@@ -762,7 +762,7 @@ def _writer_key(hosts, store):
     for f in files:
         if f:
             try:
-                k = open(os.path.expanduser(f), encoding="utf-8").read().strip()
+                k = pathlib.Path(os.path.expanduser(f)).read_text(encoding="utf-8").strip()
                 if k:
                     return k
             except OSError:

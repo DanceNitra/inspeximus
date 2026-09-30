@@ -18,7 +18,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 #: (file, count) the Builder owns and has not fixed yet. Remove the entry when it is fixed.
-OWNED_BY_ANOTHER_SESSION = {"install_all.py": 1}
+OWNED_BY_ANOTHER_SESSION: dict = {}
 
 _OPENERS = ("io", "codecs", "gzip", "bz2", "lzma")
 
