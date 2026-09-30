@@ -6,12 +6,12 @@ matching the code rather than quietly becoming fiction.
 
 ## Why one big file, and why the size is not the problem
 
-`inspeximus/core.py` is **1,346,587 bytes** across **19,665 lines**. Of that:
+`inspeximus/core.py` is **1,346,651 bytes** across **19,665 lines**. Of that:
 
 | | bytes | share |
 |---|---:|---:|
 | comments | 421,099 | 31% |
-| docstrings | 333,482 | 25% |
+| docstrings | 333,546 | 25% |
 | executable code | 592,006 | 44% |
 
 **56% of the file is explanatory prose.** Nearly every guarantee

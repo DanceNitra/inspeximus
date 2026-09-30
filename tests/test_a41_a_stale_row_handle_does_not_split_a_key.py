@@ -9,6 +9,13 @@ no link to v3, so revert("colour") landed on v1, the value from before BOTH writ
 
 The same-tick arm pins the signature with os.utime, so it is deterministic on every OS. Both arms must end
 with the chain v1 -> v2 -> v3, one active record, recall serving v3 only, and revert landing on v2.
+
+TWO LAYERS (3.15.6). A keyed write now merges what a peer committed before it decides, under the store
+lock, and saves inside the same hold, so the race can no longer reach the save-time merge through the
+public API: the `sync_on` arm pins the end-to-end result. The save-time merge stays as the backstop for a
+writer that does not run the pre-decision merge (an older version sharing the file, a caller that
+bypasses the lock). The `sync_off` arm switches the pre-decision merge off and pins the backstop by itself,
+which is the layer the A-41 mutants target.
 """
 import os
 
@@ -23,7 +30,9 @@ def _no_env(monkeypatch):
         monkeypatch.delenv(k)
 
 
-def _race(tmp_path, pin_signature: bool):
+def _race(tmp_path, pin_signature: bool, monkeypatch, sync_off: bool = False):
+    if sync_off:
+        monkeypatch.setattr(Inspeximus, "_sync_before_decision", lambda self: False)
     p = str(tmp_path / "store.json")
     m = Inspeximus(p)
     for i in range(50):                                   # the file then grows by whole pages only
@@ -49,23 +58,26 @@ def _chain(p):
             for r in rows}
 
 
+@pytest.mark.parametrize("sync_off", [False, True], ids=["sync_on", "sync_off"])
 @pytest.mark.parametrize("pin", [True, False], ids=["same_tick", "signature_moved"])
-def test_a_stale_row_handle_leaves_one_current_value(tmp_path, pin):
-    p = _race(tmp_path, pin)
+def test_a_stale_row_handle_leaves_one_current_value(tmp_path, monkeypatch, pin, sync_off):
+    p = _race(tmp_path, pin, monkeypatch, sync_off)
     chain = _chain(p)
     assert [o for o, (s, _) in chain.items() if s == "active"] == ["v3"], chain
     hits = [h.get("text") for h in Inspeximus(p).recall("the colour is", k=5) if "colour" in (h.get("text") or "")]
     assert hits == ["the colour is v3"], hits
 
 
+@pytest.mark.parametrize("sync_off", [False, True], ids=["sync_on", "sync_off"])
 @pytest.mark.parametrize("pin", [True, False], ids=["same_tick", "signature_moved"])
-def test_the_supersession_chain_is_the_order_of_the_writes(tmp_path, pin):
-    p = _race(tmp_path, pin)
+def test_the_supersession_chain_is_the_order_of_the_writes(tmp_path, monkeypatch, pin, sync_off):
+    p = _race(tmp_path, pin, monkeypatch, sync_off)
     assert _chain(p) == {"v1": ("superseded", "v2"), "v2": ("superseded", "v3"), "v3": ("active", None)}
 
 
+@pytest.mark.parametrize("sync_off", [False, True], ids=["sync_on", "sync_off"])
 @pytest.mark.parametrize("pin", [True, False], ids=["same_tick", "signature_moved"])
-def test_a_revert_after_the_race_goes_back_one_step(tmp_path, pin):
-    p = _race(tmp_path, pin)
+def test_a_revert_after_the_race_goes_back_one_step(tmp_path, monkeypatch, pin, sync_off):
+    p = _race(tmp_path, pin, monkeypatch, sync_off)
     out = Inspeximus(p).revert("colour")
     assert out["ok"] and out["reverted_to_object"] == "v2", out

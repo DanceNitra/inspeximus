@@ -2748,9 +2748,9 @@ def _decides(save: bool = True):
     writes before letting go.
 
     `remember` goes through it only with a `key`: an unkeyed write decides nothing from the other rows.
-    It keeps its throttled save (at most one per `_save_min_s`) rather than forcing one per call, so the
-    decision is made on fresh rows and the write can come later; the merge at that save settles any key a
-    later peer moved again (A-41)."""
+    A keyed remember of a new memory saves at once (`_save(force=True)`), inside the same hold, so its
+    decision and its write are one step under the lock. The merge at save time (A-41) is then a backstop
+    for a writer that does not run the pre-decision merge, such as an older version sharing the file."""
     def wrap(fn):
         _UNDECIDED[fn.__name__] = fn
         @functools.wraps(fn)
