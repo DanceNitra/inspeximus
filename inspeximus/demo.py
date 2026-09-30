@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path as _Path
 import shutil
 import tempfile
 import time
@@ -136,8 +137,8 @@ def _step_tamper(root, tamper):
         shutil.copytree(src, c)
         p = os.path.join(c, "store.json")
         if edit:
-            raw = open(p, "rb").read()
-            open(p, "wb").write(raw.replace(f"is {NEW}".encode(), b"is oslo", 1))
+            raw = _Path(p).read_bytes()
+            _Path(p).write_bytes(raw.replace(f"is {NEW}".encode(), b"is oslo", 1))
         # Opened WITHOUT the key, as a verifier holds it, and pinned to the public half: an editor who
         # also rewrites the .receipts sidecar cannot re-sign it, and an unsigned chain is refused.
         ok, problems = Inspeximus(path=p, receipts=True).verify_writes(expected_pubkey=pub)

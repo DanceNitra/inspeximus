@@ -17,6 +17,7 @@ import argparse
 from . import install as _install
 import json
 import os
+from pathlib import Path as _Path
 import sys
 import time
 
@@ -216,7 +217,7 @@ def _ots_cmd(a) -> int:
 
     if a.ots_cmd == "upgrade":
         try:
-            out = upgrade(open(a.proof, "rb").read())
+            out = upgrade(_Path(a.proof).read_bytes())
         except Malformed as exc:
             print("could not read %s: %s" % (a.proof, exc))
             return 1
@@ -236,8 +237,8 @@ def _ots_cmd(a) -> int:
 
     proof_path = a.proof or (a.file + ".ots")
     try:
-        data = open(a.file, "rb").read()
-        ots = open(proof_path, "rb").read()
+        data = _Path(a.file).read_bytes()
+        ots = _Path(proof_path).read_bytes()
     except OSError as exc:
         print("could not read: %s" % exc)
         return 1
@@ -2694,7 +2695,7 @@ def main(argv=None):
         violations = []
         for path in a.paths:
             try:
-                code = open(path, encoding="utf-8", errors="replace").read()
+                code = _Path(path).read_text(encoding="utf-8", errors="replace")
             except OSError as e:
                 print(f"check-code: {e}", file=sys.stderr)
                 return 2
@@ -2718,7 +2719,7 @@ def main(argv=None):
     elif a.cmd == "distill":
         from inspeximus import default_distiller
         try:
-            text = open(a.file, encoding="utf-8").read() if a.file else sys.stdin.read()
+            text = _Path(a.file).read_text(encoding="utf-8") if a.file else sys.stdin.read()
         except OSError as e:                    # an unreadable --file deserves the same tidy exit as the
             print(f"distill: {e}", file=sys.stderr)   # missing-endpoint case below, not a raw traceback
             return 2

@@ -767,7 +767,7 @@ def receipt_key_for(store_path, create: bool = True) -> str:
             # it -- the exact docs/ERASURE.md footgun this helper's docstring names, still reachable
             # through the helper written to prevent it.
             _guard_key_location(os.path.dirname(os.path.abspath(env)), store_path)
-            return open(env, encoding="utf-8").read().strip()
+            return Path(env).read_text(encoding="utf-8").strip()
         raise ValueError(f"INSPEXIMUS_RECEIPT_KEY is set to {env!r}, which is neither a 64-hex key "
                          f"nor a path that exists. Refusing to guess and silently sign with a "
                          f"different key than you configured.")
@@ -778,7 +778,7 @@ def receipt_key_for(store_path, create: bool = True) -> str:
     _guard_key_location(kdir, store_path)
 
     if os.path.exists(kf):
-        return open(kf, encoding="utf-8").read().strip()
+        return Path(kf).read_text(encoding="utf-8").strip()
     if not create:
         return ""
     sk, _pk = new_ed25519_keypair()
@@ -5071,7 +5071,7 @@ class Inspeximus:
         if not hp or not os.path.exists(hp):
             return None
         try:
-            d = json.loads(open(hp, encoding="utf-8").read())
+            d = json.loads(Path(hp).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
         return d if d.get("path") == os.path.abspath(str(self.path)) else None
@@ -5600,7 +5600,7 @@ class Inspeximus:
                     # library writes -- reading it as JSON crashed with UnicodeDecodeError the moment
                     # new stores became row stores, and took every surface in this audit with it.
                     rows = (_rows.load(path) if _rows is not None and _rows.looks_like_sqlite(path)
-                            else _json.loads(open(path, encoding="utf-8").read()))
+                            else _json.loads(Path(path).read_text(encoding="utf-8")))
                     open_fn = lambda p, _s=shape: _open_copy(p, _s)         # noqa: E731
             # A PROBE THAT NEEDS AN INDEX NEEDS THE COPY TO CARRY ONE. Without this the precondition
             # passes on the caller's store and the surface is then handed a copy with no embedder,
@@ -6780,7 +6780,7 @@ class Inspeximus:
                 relative_locators += 1
             try:
                 blob = resolver(doc) if resolver else (
-                    open(doc, "rb").read() if os.path.exists(doc) else None)
+                    Path(doc).read_bytes() if os.path.exists(doc) else None)
             except Exception:
                 blob = None
             if blob is None:
@@ -12057,7 +12057,7 @@ class Inspeximus:
                 doc = (s or {}).get("doc")
                 try:
                     blob = resolver(doc) if resolver else (
-                        open(doc, "rb").read() if doc and os.path.exists(doc) else None)
+                        Path(doc).read_bytes() if doc and os.path.exists(doc) else None)
                 except Exception:
                     blob = None
                 if blob is None:

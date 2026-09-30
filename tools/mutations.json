@@ -6739,5 +6739,23 @@
   "tests": [
    "tests/test_valid_alone_does_not_name_the_issuer.py"
   ]
+ },
+ {
+  "name": "ResourceWarning sweep: the read-guard key file is read with a bare open again",
+  "file": "inspeximus/core.py",
+  "old": "return Path(kf).read_text(encoding=\"utf-8\").strip()",
+  "new": "return open(kf, encoding=\"utf-8\").read().strip()",
+  "tests": [
+   "tests/test_the_package_closes_every_file_it_opens.py"
+  ]
+ },
+ {
+  "name": "ResourceWarning sweep: a hook's config is loaded through a bare open again",
+  "file": "inspeximus/claude_code.py",
+  "old": "json.loads(_Path(_nudge_path(cwd)).read_text(encoding=\"utf-8\"))",
+  "new": "json.load(open(_nudge_path(cwd), encoding=\"utf-8\"))",
+  "tests": [
+   "tests/test_the_package_closes_every_file_it_opens.py"
+  ]
  }
 ]

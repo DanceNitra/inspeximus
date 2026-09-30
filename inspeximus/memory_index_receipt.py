@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import io
 import os
+from pathlib import Path as _Path
 import re
 import sys
 
@@ -97,7 +98,7 @@ def receipt_for(project_dir: str | None = None) -> str:
         path = index_path(project_dir)
         if not os.path.isfile(path):
             return ""
-        text = io.open(path, "rb").read().decode("utf-8")   # bytes, so CR is counted as the loader counts it
+        text = _Path(path).read_bytes().decode("utf-8")   # bytes, so CR is counted as the loader counts it
         return receipt(text)
     except Exception:                                       # noqa: BLE001
         return ""

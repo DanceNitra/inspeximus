@@ -15,6 +15,7 @@ context); the MCP stdio server prints to STDERR (stdout is the JSON-RPC channel 
 from __future__ import annotations
 import json
 import os
+from pathlib import Path as _Path
 import time
 import urllib.request
 
@@ -58,7 +59,7 @@ def check_for_update(current_version, cache_dir=None, timeout=1.5):
 
         # Throttle: only touch the network once per TTL. Between checks, stay quiet.
         try:
-            st = json.load(open(cache, encoding="utf-8"))
+            st = json.loads(_Path(cache).read_text(encoding="utf-8"))
         except Exception:
             st = {}
         if (time.time() - float(st.get("checked_at", 0))) < _TTL_S:
@@ -74,7 +75,7 @@ def check_for_update(current_version, cache_dir=None, timeout=1.5):
 
         # Stamp the attempt regardless, so a flaky network doesn't retry every call for a day.
         try:
-            json.dump({"checked_at": time.time(), "latest": latest}, open(cache, "w", encoding="utf-8"))
+            _Path(cache).write_text(json.dumps({"checked_at": time.time(), "latest": latest}), encoding="utf-8")
         except Exception:
             pass
 
@@ -98,7 +99,7 @@ def cached_notice(current_version, cache_dir=None):
     try:
         cache = os.path.join(cache_dir or os.path.join(os.path.expanduser("~"), ".inspeximus"),
                              ".update_check.json")
-        latest = json.load(open(cache, encoding="utf-8")).get("latest")
+        latest = json.loads(_Path(cache).read_text(encoding="utf-8")).get("latest")
         return _notice(latest, current_version) if latest and _is_newer(latest, current_version) else None
     except Exception:
         return None

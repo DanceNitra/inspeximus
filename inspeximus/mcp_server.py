@@ -252,7 +252,7 @@ def _writer_key_from_env():
     f = os.environ.get("INSPEXIMUS_WRITER_KEY_FILE", "").strip()
     if f:
         try:
-            return open(f, encoding="utf-8").read().strip() or None
+            return Path(f).read_text(encoding="utf-8").strip() or None
         except OSError:
             return None                       # absent/unreadable key file: run unattested, never crash
     return os.environ.get("INSPEXIMUS_WRITER_KEY", "").strip() or None

@@ -50,6 +50,7 @@ or a per-project .inspeximus/config.json: {"embed": {"url": "http://localhost:11
 index and fails open (a down endpoint silently degrades to lexical, never drops a capture).
 """
 import sys, os, re, json, hashlib, io, datetime
+from pathlib import Path as _Path
 
 
 def _cfg(cwd):
@@ -64,7 +65,7 @@ def _cfg(cwd):
         try:
             p = os.path.join(d, ".inspeximus", "config.json")
             if os.path.exists(p):
-                c = json.load(open(p, encoding="utf-8"))
+                c = json.loads(_Path(p).read_text(encoding="utf-8"))
                 return c if isinstance(c, dict) else {}
         except Exception:
             pass
@@ -593,7 +594,7 @@ def _nudge_path(cwd):
 
 def _nudge_state(cwd):
     try:
-        return json.load(open(_nudge_path(cwd), encoding="utf-8"))
+        return json.loads(_Path(_nudge_path(cwd)).read_text(encoding="utf-8"))
     except Exception:
         return {"writes": 0, "shown": False}
 
@@ -603,7 +604,7 @@ def _bump_writes(cwd):
     try:
         st = _nudge_state(cwd)
         st["writes"] = int(st.get("writes", 0)) + 1
-        json.dump(st, open(_nudge_path(cwd), "w", encoding="utf-8"))
+        _Path(_nudge_path(cwd)).write_text(json.dumps(st), encoding="utf-8")
     except Exception:
         pass
 
@@ -633,7 +634,7 @@ def _star_ask(cwd):
             "find it, and it would genuinely make my day. Thank you so much! https://github.com/DanceNitra/inspeximus\n"
             "(you'll only ever see this once; silence it anytime with INSPEXIMUS_NO_NUDGE=1)")
         st["shown"] = True
-        json.dump(st, open(_nudge_path(cwd), "w", encoding="utf-8"))
+        _Path(_nudge_path(cwd)).write_text(json.dumps(st), encoding="utf-8")
         return text
     except Exception:
         return None
@@ -1276,7 +1277,7 @@ def install(cwd=None):
     cfg = {}
     if os.path.exists(p):
         try:
-            cfg = json.load(open(p, encoding="utf-8"))
+            cfg = json.loads(_Path(p).read_text(encoding="utf-8"))
         except Exception as e:
             # REFUSE. The previous version fell back to `cfg = {}` and then WROTE it, so an unparseable
             # settings.json -- a trailing comma is the usual cause -- silently lost the user's model,
@@ -1307,7 +1308,7 @@ def uninstall(cwd=None):
     if not os.path.exists(p):
         return False
     try:
-        cfg = json.load(open(p, encoding="utf-8"))
+        cfg = json.loads(_Path(p).read_text(encoding="utf-8"))
     except Exception as e:
         # The bare json.load here RAISED on a malformed file, so a user whose settings.json had been
         # broken could not even undo the install.
