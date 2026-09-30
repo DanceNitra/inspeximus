@@ -1,4 +1,4 @@
-## Unreleased (A-41, A-42, A-43, store lock) - UPGRADE IF two handles or processes write one store, for example the MCP server beside a hook: an erasure, a credit, a retirement, a revert or an objection now decides from the store's latest state. WHAT CHANGES FOR CALLERS: see the two lines under that heading.
+## 3.15.7 - UPGRADE IF two handles or processes write one store, for example the MCP server beside a hook: an erasure, a credit, a retirement, a revert or an objection now decides from the store's latest state. WHAT CHANGES FOR CALLERS: see the three lines under that heading.
 
 - Erasure: a forget_subject run from a handle that had not seen another process's newer record of the subject could report success while that record stayed in the store, and erasure_certificate() verified. Measured on 3.15.3 and 3.15.4 with two handles on one store, for example the MCP server beside a hook. An erasure now reads the store's latest state under its lock before it selects, and forget_subject checks the store again after it saves: a record of the subject still there fails residue_in_store and is listed in subject_left_on_disk.
 - **Every decision from the rows.** `forget_pii`, `forget(where=)`, `credit`, `retire`, `revert`,
@@ -36,18 +36,36 @@
   read on a row store or a whole-file hash on a JSON store. Measured in `perf/gate.py`: 3 syncs for the 3
   captured events of `hook_n2000`, and none for an event the hook ignores.
 
-Tests: `tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py` (45 of 49 fail on 3.15.3;
-the 4 that pass cover the irreversible budget, which was already right) and
-`tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py` (7 of 7 fail or hang without
-this change; one of them is a decision whose merge migrates a JSON store, another is a second thread on
-the same handle). Tests that expected a keyed write or an erasure to be refused on a JSON store follow
-the change above: three in `tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` and one in
-`tests/test_a_peers_receipt_survives_this_handles_next_write.py` write unkeyed records, which reach the
-same refusal, and the JSON arms of two tests in `tests/test_audit_round_four.py` assert the same final
-store as the row arms. A keyed case beside the three A-37 tests pins the new path: after a peer's
-same-tick, same-size write, a stale keyed write merges and lands, and the peer's write stays (it was
-lost on 3.15.3). `perf/gate.py` counts
-`decision_syncs`: 0 on a write, a recall or a prompt, 1 per erasure.
+
+Tests: the nine test files this release adds or changes hold 172 tests. All 172 pass on this tree. On 3.15.6,
+83 do not: 76 fail, and the 7 tests of
+`tests/test_a_store_lock_is_reentrant_per_thread_and_never_waits_forever.py` cannot import `StoreLockTimeout`.
+Tests that expected a keyed write or an erasure to be refused on a JSON store follow the change above: three in
+`tests/test_a37_a_same_tick_same_size_write_is_not_overwritten.py` and one in
+`tests/test_a_peers_receipt_survives_this_handles_next_write.py` write unkeyed records, which reach the same
+refusal, and the JSON arms of two tests in `tests/test_audit_round_four.py` assert the same final store as the
+row arms. A keyed case beside the three A-37 tests pins the new path: after a peer's same-tick, same-size
+write, a stale keyed write merges and lands, and the peer's write stays (it was lost on 3.15.3). Each A-41
+test runs twice: `sync_on` checks the end-to-end result, and `sync_off` switches the pre-decision merge off,
+which pins the save-time merge alone, because a keyed `remember` now saves inside the lock hold and no
+public write reaches that merge otherwise. `perf/gate.py` counts `decision_syncs`: 0 on a write, a recall or
+a prompt, 1 per erasure.
+
+Release record, 2026-09-30, on the tree of this release:
+
+- Windows, full suite, 4 processes: 5,893 passed, 4 failed, 27 errors, 429 skipped. The 4 failures and 27 errors
+  are the crewai and openai-agents tests, which fail on this machine with a Windows COM error. No other test fails.
+- Linux (WSL, run as root), full suite, 4 processes: 5,412 passed, 1 failed, 686 skipped. The failure is
+  `three_reasons_a_hook_can_look_installed_and_never_run`: root can write a file made read-only, so the probe's
+  precondition never holds.
+- Mutations: 27 entries added. On Linux, 26 of 26 run and are killed, and the Windows-only entry
+  `a locked empty file is a skipped file in the residue scan` is named "NOT RUN ON linux". On Windows, those 27
+  and the 19 existing entries that list a changed test file give 45 that run and are killed, and the POSIX
+  `flock` entry is named "NOT RUN ON win32".
+- `perf/gate.py check`: no regression against the baseline re-recorded for this release. 14 counters of the erase
+  and JSON session arms grew, each justified in the baseline commit, and `decision_syncs` is new.
+- Prompt hook, 71,772-row store copy, empty home, 10 runs each, interleaved, on a machine under other load:
+  median 7.04 s on 3.15.6 and 7.24 s on this tree (+2.9%). The ranges overlap: 6.45 to 8.56 s and 6.56 to 8.14 s.
 
 ## 3.15.6 - UPGRADE IF you install through an agent on Windows, or use Hermes Agent: every install line on the page now names the version it installs, so an agent that leaves out `-U` still gets this release; and an upgrade of the Hermes provider that cannot load puts the previous version back instead of leaving Hermes without one.
 
