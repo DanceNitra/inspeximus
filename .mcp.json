@@ -2,7 +2,7 @@
   "mcpServers": {
     "inspeximus": {
       "command": "uvx",
-      "args": ["--from", "inspeximus[mcp]==3.15.8", "inspeximus-mcp"],
+      "args": ["--from", "inspeximus[mcp]==3.15.9", "inspeximus-mcp"],
       "env": {
         "INSPEXIMUS_SCOPE": "claude-code"
       }

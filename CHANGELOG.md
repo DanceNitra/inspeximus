@@ -1,3 +1,41 @@
+## 3.15.9 - UPGRADE IF you use the Claude Code hooks with a long memory index: the SessionStart receipt names at most 20 pointers instead of all of them
+
+### The memory-index receipt is bounded
+
+The SessionStart hook injects a receipt when the loader cuts `MEMORY.md`. It named every pointer the loader
+dropped, about 40 characters each: 2,344 characters at 250 index lines, 12,345 at 500, and 32,347 at 1,000.
+At 1,000 lines the receipt was larger than the 25,000-unit cap the loader applies to the whole index, and
+every session paid for it.
+
+- The receipt names the last 20 dropped pointers, which are the newest entries, states how many earlier
+  pointers it left out, and names the command that prints all of them:
+  `python -m inspeximus.memory_index_receipt`.
+- `INSPEXIMUS_RECEIPT_MAX_POINTERS` sets the number. A value that is not an integer falls back to 20.
+- The command line still prints every pointer, and the receipt head still counts every dropped pointer.
+
+`tests/test_a27_the_session_start_receipt_is_bounded.py` fails 5 of 7 on 3.15.8. Four mutation entries cover it.
+
+### No module opens a file without closing it
+
+`open(p).read()` and `json.load(open(p))` close the file when CPython drops the last reference, but each one
+emits a `ResourceWarning`. That broke a caller that runs with `-W error::ResourceWarning`. 25 sites in eight
+modules had the shape on 3.15.5 (`_update.py`, `claude_code.py`, `cli.py`, `core.py`, `demo.py`,
+`install_all.py`, `mcp_server.py`, `memory_index_receipt.py`).
+
+- They use `Path.read_text`, `Path.read_bytes` and `Path.write_text`, which close the file themselves.
+- A write builds the JSON text with `json.dumps` first, so a value that cannot be encoded no longer leaves a
+  half-written file, which `json.dump(x, open(p, "w"))` did.
+- `tests/test_the_package_closes_every_file_it_opens.py` finds the shape by syntax in every module of the
+  package, with a control that feeds it the shape, so a new site fails it in whichever module it lands.
+
+### Tests
+
+- `tests/test_a_child_pool_starts_under_the_test_home.py` has a test that needs the Windows venv shim
+  repair: a child started without the shim must be broken, and the repair must fix it. It skips where
+  there is nothing to repair.
+
+Release record: to be filled from the runs on this tree.
+
 ## 3.15.8 - UPGRADE IF you erase memories whose keys name a person or a customer: the key no longer stays in the event journal after the erasure
 
 ### An erasure takes the record's key out of `memory_events`
