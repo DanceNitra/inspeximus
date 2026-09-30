@@ -31,6 +31,10 @@
   store lock for more than `LOCK_WAIT_S`, the operation raises `StoreLockTimeout` (a `TimeoutError`)
   and writes nothing. Before, it logged a degraded lock and wrote without protection, which is how
   concurrent writers could lose records while each reported success.
+- **A hook syncs once per captured event.** Each captured event that writes a keyed record checks the store
+  before it decides: the stat signature first, then, when the signature has not moved, a write-generation
+  read on a row store or a whole-file hash on a JSON store. Measured in `perf/gate.py`: 3 syncs for the 3
+  captured events of `hook_n2000`, and none for an event the hook ignores.
 
 Tests: `tests/test_a42_a43_a_decision_is_made_on_the_rows_as_they_are.py` (45 of 49 fail on 3.15.3;
 the 4 that pass cover the irreversible budget, which was already right) and
