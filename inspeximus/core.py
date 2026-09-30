@@ -1253,7 +1253,14 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     issuer from one anybody could mint. `require_signed=True` makes an unsigned certificate invalid, and
     `limits` now names every input that was not given: UNSIGNED, UNPINNED (no `expected_pubkey`) and NOT
     WITNESSED (no `expected_anchor`). The NOT WITNESSED note used to be added by `erasure-verify` only,
-    so a library caller never saw it."""
+    so a library caller never saw it.
+
+    `require_signed=True` DOES NOT CHECK WHOSE SIGNATURE IT IS. A certificate that an attacker signed
+    with the attacker's own key, carrying that key as `pubkey`, passes it and comes back `valid: true`
+    (AUDIT-A, 2026-09-30). Only `expected_pubkey` rejects it. So the return carries `authorship`, one of
+    "pinned" (signed, and every signature verified against `expected_pubkey`), "self-asserted" (signed,
+    checked only against the key the certificate carries) or "unsigned"; a caller who needs to know who
+    issued the certificate reads that field, not `valid`."""
     problems: list = []
     checks: dict = {}
     toms = cert.get("tombstones") or []
@@ -1575,8 +1582,14 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
     # `limits` is separate from `problems` on purpose, the way verify_bundle already does it: a thing
     # that was NOT CHECKED is not a thing that FAILED, and collapsing the two either invalidates honest
     # unsigned certificates or hides that nothing was verified against `pubkey`.
+    if not signed:
+        authorship = "unsigned"
+    elif expected_pubkey and sigs_ok:
+        authorship = "pinned"
+    else:
+        authorship = "self-asserted"
     return {"valid": valid, "checks": checks, "problems": problems, "limits": limits,
-            "count": len(erased)}
+            "count": len(erased), "authorship": authorship}
 
 
 __version__ = "3.15.7"

@@ -144,3 +144,27 @@ def test_erasure_verify_require_signed_fails_an_unsigned_certificate(tmp_path):
     assert "require_signed=True" in strict.stdout
     # The NOT WITNESSED note now comes from the library; the command must print it exactly once.
     assert loose.stdout.count("NOT WITNESSED") == 1, loose.stdout
+
+
+# ---- AUDIT-A, 2026-09-30: require_signed does not check WHOSE signature it is --------------------------
+
+def test_require_signed_passes_a_certificate_the_attacker_signed_and_authorship_says_so():
+    """The trap: an attacker's own key satisfies require_signed. `authorship` is the field that tells."""
+    pytest.importorskip("cryptography")
+    cert, items, pk = _erased(signed=True)
+    forged = _resigned_by_another_key(cert)
+    res = verify_erasure_certificate(forged, store_items=items, require_signed=True)
+    assert res["valid"] is True, res["problems"]
+    assert res["authorship"] == "self-asserted"
+    pinned = verify_erasure_certificate(forged, store_items=items, require_signed=True, expected_pubkey=pk)
+    assert pinned["valid"] is False
+    assert pinned["authorship"] != "pinned"
+
+
+def test_authorship_names_each_of_the_three_cases():
+    pytest.importorskip("cryptography")
+    cert, items, pk = _erased(signed=True)
+    assert verify_erasure_certificate(cert, store_items=items, expected_pubkey=pk)["authorship"] == "pinned"
+    assert verify_erasure_certificate(cert, store_items=items)["authorship"] == "self-asserted"
+    unsigned, u_items, _ = _erased(signed=False)
+    assert verify_erasure_certificate(unsigned, store_items=u_items)["authorship"] == "unsigned"

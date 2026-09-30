@@ -731,7 +731,8 @@ def main(argv=None):
     ev.add_argument("--require-signed", action="store_true",
                     help="fail a certificate that carries no signature. Without it an unsigned certificate "
                          "can PASS with an UNSIGNED note, because its chain proves integrity; it cannot "
-                         "show who issued it")
+                         "show who issued it. It does not check WHOSE signature it is: a certificate "
+                         "signed with anybody's key passes it. Only --expected-pubkey checks the issuer")
 
     pv = sub.add_parser("provenance", help="where a fact came from: source, lineage, trust grade, what it "
                                            "superseded, and whether it still matches its write receipt")

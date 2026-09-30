@@ -6721,5 +6721,23 @@
   "tests": [
    "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
   ]
+ },
+ {
+  "name": "authorship reports a certificate nobody pinned as pinned",
+  "file": "inspeximus/core.py",
+  "old": "    elif expected_pubkey and sigs_ok:\n",
+  "new": "    elif sigs_ok:\n",
+  "tests": [
+   "tests/test_valid_alone_does_not_name_the_issuer.py"
+  ]
+ },
+ {
+  "name": "authorship calls an unsigned certificate self-asserted",
+  "file": "inspeximus/core.py",
+  "old": "        authorship = \"unsigned\"\n",
+  "new": "        authorship = \"self-asserted\"\n",
+  "tests": [
+   "tests/test_valid_alone_does_not_name_the_issuer.py"
+  ]
  }
 ]
