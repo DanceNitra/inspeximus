@@ -77,21 +77,40 @@ def omitted(text: str) -> tuple:
     return seen, len(lines), u16(win), u16(text), outside
 
 
-def receipt(text: str) -> str:
-    """The block to hand a session. Empty when nothing was cut."""
+#: How many dropped pointers the SessionStart hook names. The receipt is injected into every session, and
+#: it listed every pointer the loader dropped, about 40 characters each: 2,344 characters at 250 index
+#: lines, 12,345 at 500 and 32,347 at 1,000, which is more than the loader's own 25,000-unit cap on the
+#: whole index (A-27). The newest entries sit at the bottom, and they are the ones the loader drops first,
+#: so the hook names the last ones and counts the rest.
+DEFAULT_MAX_POINTERS = 20
+
+
+def receipt(text: str, max_pointers: "int | None" = None) -> str:
+    """The block to hand a session. Empty when nothing was cut.
+
+    `max_pointers` bounds how many dropped pointers are named: the last N in file order, then the count of
+    the earlier ones and the command that prints all of them. None names every pointer, which is what the
+    command line does."""
     seen, total, ukept, utotal, outside = omitted(text)
     if not outside and seen >= total:
         return ""
     head = ("[memory-index receipt] the loader kept %d of %d lines (%s of %s units); "
             "%d pointer(s) are on disk but NOT in this session's context:"
             % (seen, total, format(ukept, ","), format(utotal, ","), len(outside)))
-    body = "".join("\n  - " + p for p in outside)
+    shown, hidden = outside, 0
+    if max_pointers is not None and len(outside) > max(0, int(max_pointers)):
+        n = max(0, int(max_pointers))
+        shown, hidden = outside[len(outside) - n:], len(outside) - n
+    body = "".join("\n  - " + p for p in shown)
+    if hidden:
+        body += ("\n  ... and %d earlier pointer(s). `python -m inspeximus.memory_index_receipt` prints all %d."
+                 % (hidden, len(outside)))
     tail = ("\n  They are readable by path; a pointer you cannot see is not a pointer that does "
             "not exist. To stop losing them, move entries below the cut into an archive file.")
     return head + body + tail
 
 
-def receipt_for(project_dir: str | None = None) -> str:
+def receipt_for(project_dir: str | None = None, max_pointers: "int | None" = None) -> str:
     """The receipt for a project's index, or "" when there is no index or it cannot be read.
     Never raises: a receipt that can block a session is worse than the silence it replaces."""
     try:
@@ -99,7 +118,7 @@ def receipt_for(project_dir: str | None = None) -> str:
         if not os.path.isfile(path):
             return ""
         text = _Path(path).read_bytes().decode("utf-8")   # bytes, so CR is counted as the loader counts it
-        return receipt(text)
+        return receipt(text, max_pointers)
     except Exception:                                       # noqa: BLE001
         return ""
 

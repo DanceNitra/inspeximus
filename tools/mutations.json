@@ -6757,5 +6757,41 @@
   "tests": [
    "tests/test_the_package_closes_every_file_it_opens.py"
   ]
+ },
+ {
+  "name": "A-27: the receipt names every dropped pointer again",
+  "file": "inspeximus/memory_index_receipt.py",
+  "old": "    if max_pointers is not None and len(outside) > max(0, int(max_pointers)):\n",
+  "new": "    if False and max_pointers is not None and len(outside) > max(0, int(max_pointers)):\n",
+  "tests": [
+   "tests/test_a27_the_session_start_receipt_is_bounded.py"
+  ]
+ },
+ {
+  "name": "A-27: the receipt names the first dropped pointers, not the newest",
+  "file": "inspeximus/memory_index_receipt.py",
+  "old": "shown, hidden = outside[len(outside) - n:], len(outside) - n",
+  "new": "shown, hidden = outside[:n], len(outside) - n",
+  "tests": [
+   "tests/test_a27_the_session_start_receipt_is_bounded.py"
+  ]
+ },
+ {
+  "name": "A-27: the receipt does not say how many pointers it left out",
+  "file": "inspeximus/memory_index_receipt.py",
+  "old": "    if hidden:\n        body += (",
+  "new": "    if False:\n        body += (",
+  "tests": [
+   "tests/test_a27_the_session_start_receipt_is_bounded.py"
+  ]
+ },
+ {
+  "name": "A-27: the SessionStart hook asks for the whole receipt",
+  "file": "inspeximus/claude_code.py",
+  "old": "        note = receipt_for(cwd, max_pointers=cap)",
+  "new": "        note = receipt_for(cwd)",
+  "tests": [
+   "tests/test_a27_the_session_start_receipt_is_bounded.py"
+  ]
  }
 ]

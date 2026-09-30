@@ -1086,8 +1086,12 @@ def session_start(ev):
     # window nothing on a healthy index. Never raises (receipt_for swallows), so it cannot cost a
     # session its start.
     try:
-        from inspeximus.memory_index_receipt import receipt_for
-        note = receipt_for(cwd)
+        from inspeximus.memory_index_receipt import receipt_for, DEFAULT_MAX_POINTERS
+        try:
+            cap = int(os.environ.get("INSPEXIMUS_RECEIPT_MAX_POINTERS", DEFAULT_MAX_POINTERS))
+        except ValueError:
+            cap = DEFAULT_MAX_POINTERS
+        note = receipt_for(cwd, max_pointers=cap)
         if note:
             emit.append(note)
     except Exception:
