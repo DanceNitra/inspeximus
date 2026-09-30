@@ -53,7 +53,7 @@ Requires Python 3.9 or later.
 <!-- ci: posix -->
 ```bash
 python3 -m venv ~/.inspeximus/venv
-~/.inspeximus/venv/bin/python -m pip install -U "inspeximus[mcp]>=3.15.7"
+~/.inspeximus/venv/bin/python -m pip install -U "inspeximus[mcp]>=3.15.8"
 ~/.inspeximus/venv/bin/inspeximus install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
@@ -65,7 +65,7 @@ Requires Python 3.9 or later.
 <!-- ci: windows -->
 ```powershell
 python -m venv "$HOME\.inspeximus\venv"
-& "$HOME\.inspeximus\venv\Scripts\python.exe" -m pip install -U "inspeximus[mcp]>=3.15.7"
+& "$HOME\.inspeximus\venv\Scripts\python.exe" -m pip install -U "inspeximus[mcp]>=3.15.8"
 & "$HOME\.inspeximus\venv\Scripts\inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 
@@ -89,7 +89,7 @@ The block above is PowerShell. In bash on Windows (Git Bash, as in Hermes Agent)
 <!-- ci: gitbash -->
 ```bash
 python -m venv "$USERPROFILE/.inspeximus/venv"
-"$USERPROFILE/.inspeximus/venv/Scripts/python.exe" -m pip install -U "inspeximus[mcp]>=3.15.7"
+"$USERPROFILE/.inspeximus/venv/Scripts/python.exe" -m pip install -U "inspeximus[mcp]>=3.15.8"
 "$USERPROFILE/.inspeximus/venv/Scripts/inspeximus.exe" install --all --rules RULES_ANSWER --hermes-provider HERMES_ANSWER
 ```
 

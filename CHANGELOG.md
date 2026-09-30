@@ -1,4 +1,4 @@
-## Unreleased - UPGRADE IF you erase memories whose keys name a person or a customer: the key no longer stays in the event journal after the erasure
+## 3.15.8 - UPGRADE IF you erase memories whose keys name a person or a customer: the key no longer stays in the event journal after the erasure
 
 ### An erasure takes the record's key out of `memory_events`
 
@@ -16,6 +16,35 @@ person's address or domain, and still held the key five times, in the payloads o
 
 `tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py` fails on 3.15.3 and 3.15.4 (8 of 8), with a
 control that uses a key holding no personal data. Four mutation entries cover it.
+
+### An erasure certificate says who its signatures vouch for
+
+- `verify_erasure_certificate()` without `expected_pubkey` checks each signature against the key the
+  certificate carries, so a certificate re-signed with any other key verifies. `limits` now says so
+  (UNPINNED) and names an anchor nobody witnessed (NOT WITNESSED), which only `erasure-verify` printed
+  before.
+- `require_signed=True` (`erasure-verify --require-signed`) fails a certificate with no signature. It does
+  not check whose signature it is: a certificate signed with an attacker's own key passes it.
+- The return carries `authorship`: "pinned" (every signature verified against `expected_pubkey`),
+  "self-asserted" (checked only against the key the certificate carries) or "unsigned". To check who
+  issued a certificate, pin `expected_pubkey`, witness the anchor, and read `authorship`.
+
+### What an erasure keeps, stated where the claim is made
+
+- The README, the site and llms.txt state the erasure proof's scope: this store only, not a vector index,
+  prompt logs, or backups; an integrity primitive, not a compliance certification.
+- Two identifiers stay after `forget_subject()`, and the README and docs/ERASURE.md say so: a tenant or
+  agent id stays in the event journal, so use a pseudonymous one; and `<store>.objections.json` keeps the
+  objecting subject's id, because that entry keeps suppressing new records about them.
+
+### Documentation
+
+- The README says that a new store is a SQLite file whatever its name, so `memory.json` cannot be read
+  with `json.load`.
+- The README no longer says a third party verifies signatures with the standard library.
+- docs/API.md and MIGRATION_FROM_MEM0.md named `inspeximus/inspeximus.py`, which does not exist; they
+  name `inspeximus/core.py`.
+
 ## 3.15.7 - UPGRADE IF two handles or processes write one store, for example the MCP server beside a hook: an erasure, a credit, a retirement, a revert or an objection now decides from the store's latest state. WHAT CHANGES FOR CALLERS: see the three lines under that heading.
 
 - Erasure: a forget_subject run from a handle that had not seen another process's newer record of the subject could report success while that record stayed in the store, and erasure_certificate() verified. Measured on 3.15.3 and 3.15.4 with two handles on one store, for example the MCP server beside a hook. An erasure now reads the store's latest state under its lock before it selects, and forget_subject checks the store again after it saves: a record of the subject still there fails residue_in_store and is listed in subject_left_on_disk.
@@ -84,34 +113,6 @@ Release record, 2026-09-30, on the tree of this release:
   and JSON session arms grew, each justified in the baseline commit, and `decision_syncs` is new.
 - Prompt hook, 71,772-row store copy, empty home, 10 runs each, interleaved, on a machine under other load:
   median 7.04 s on 3.15.6 and 7.24 s on this tree (+2.9%). The ranges overlap: 6.45 to 8.56 s and 6.56 to 8.14 s.
-
-### An erasure certificate says who its signatures vouch for
-
-- `verify_erasure_certificate()` without `expected_pubkey` checks each signature against the key the
-  certificate carries, so a certificate re-signed with any other key verifies. `limits` now says so
-  (UNPINNED) and names an anchor nobody witnessed (NOT WITNESSED), which only `erasure-verify` printed
-  before.
-- `require_signed=True` (`erasure-verify --require-signed`) fails a certificate with no signature. It does
-  not check whose signature it is: a certificate signed with an attacker's own key passes it.
-- The return carries `authorship`: "pinned" (every signature verified against `expected_pubkey`),
-  "self-asserted" (checked only against the key the certificate carries) or "unsigned". To check who
-  issued a certificate, pin `expected_pubkey`, witness the anchor, and read `authorship`.
-
-### What an erasure keeps, stated where the claim is made
-
-- The README, the site and llms.txt state the erasure proof's scope: this store only, not a vector index,
-  prompt logs, or backups; an integrity primitive, not a compliance certification.
-- Two identifiers stay after `forget_subject()`, and the README and docs/ERASURE.md say so: a tenant or
-  agent id stays in the event journal, so use a pseudonymous one; and `<store>.objections.json` keeps the
-  objecting subject's id, because that entry keeps suppressing new records about them.
-
-### Documentation
-
-- The README says that a new store is a SQLite file whatever its name, so `memory.json` cannot be read
-  with `json.load`.
-- The README no longer says a third party verifies signatures with the standard library.
-- docs/API.md and MIGRATION_FROM_MEM0.md named `inspeximus/inspeximus.py`, which does not exist; they
-  name `inspeximus/core.py`.
 
 ## 3.15.6 - UPGRADE IF you install through an agent on Windows, or use Hermes Agent: every install line on the page now names the version it installs, so an agent that leaves out `-U` still gets this release; and an upgrade of the Hermes provider that cannot load puts the previous version back instead of leaving Hermes without one.
 
