@@ -1,3 +1,39 @@
+## 3.15.6 - UPGRADE IF you install through an agent on Windows, or use Hermes Agent: every install line on the page now names the version it installs, so an agent that leaves out `-U` still gets this release; and an upgrade of the Hermes provider that cannot load puts the previous version back instead of leaving Hermes without one.
+
+Found on 2026-09-28 in a friend-flow re-test on a second Windows machine, where Hermes Agent on a 9B local
+model upgraded an earlier install, and in the first run of the full test suite on Windows CI.
+
+- **Every install line names a version floor.** The page's `pip install` lines read
+  `"inspeximus[mcp]>=3.15.6"`. Without `-U`, pip keeps an installed older copy; with the floor it upgrades
+  either way. The floor is checked at every release, so it cannot lag behind the version released.
+- **The Hermes provider is never left missing.** When the new version installs but Hermes cannot load it,
+  and an earlier inspeximus was in Hermes' environment, that earlier version is installed again and the
+  run says so. When none was there, the new one is removed, as before.
+- **Every failed attempt is reported.** A failed provider install lists the error of each attempt, uv's
+  and pip's, not only the last. When uv answers from a cached package index that does not know the
+  version yet, the install refreshes the index once and tries again.
+- **The install warms the uvx pin.** When agents launch inspeximus through `uvx`, `install --all` runs
+  the new pin once. That fills uv's cache, so the first session starts faster, and it catches a stale
+  index: uv is asked to refresh once, and the run reports what it found. It never fails the install.
+- **A failed agent keeps its place.** An agent whose install failed stays in `~/.inspeximus/shared.json`,
+  listed under `failed` until a later run wires it, and the setup decision names it `<agent> (failed)`.
+  A failed install never removes an agent from the list.
+- **The seal line says signed or unsigned.** The ARMED block's `seal:` line ends in `signed` when the
+  setup decision carries the store's writer signature, and `unsigned` when it does not.
+- **A dry run counts the store.** `install --all --dry-run` reported 0 records for any store; it now
+  counts them (read only).
+- **A path on another drive is not a crash.** On Windows, a path on another drive than the one it is
+  compared with (a store on `D:`, a working directory on `C:`) made `os.path.relpath` raise. The
+  compliance evidence, the examples generator and the mutation tools now show such a path in full.
+- **The page on Windows.** It says never to give a Windows Python a path that starts with `/c/`, which
+  creates `C:\c\...`, and to use the PowerShell block when possible. It also says what to run when `uvx`
+  reports no matching version after an upgrade.
+
+Tests only: the suite's slow probes print their phase and elapsed time every 30 seconds, and seven of them
+have Windows time budgets, measured on Windows before they were set.
+
+Measured against 3.15.4: 21 of the 88 new and changed tests in these files fail there and pass here. They are the version floor (3), the Hermes provider and the uvx pin (5), a failed agent's place (2), the seal line (4), the dry-run count (1), a path on another drive (3), and the probe heartbeat (3).
+
 ## 3.15.5 - UPGRADE IF you import or merge stores, erase memories, call `erase_past_copies` or `scrub_secrets` from Python with `apply` given as a string, keep a JSON or encrypted store open in more than one process, or run `sleep()` on keyed records: a read-guard verdict is trusted only under your store's key, an erasure never reports success without its written proof, `apply="false"` no longer applies, a stale save refuses instead of overwriting a peer's same-tick write, and a state toggle no longer retires a record with another key
 
 3.15.4 was tagged on 2026-09-29 and never published to PyPI. Its deployment was rejected after the hook
