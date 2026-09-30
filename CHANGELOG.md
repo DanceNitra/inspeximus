@@ -32,7 +32,7 @@ model upgraded an earlier install, and in the first run of the full test suite o
 Tests only: the suite's slow probes print their phase and elapsed time every 30 seconds, and seven of them
 have Windows time budgets, measured on Windows before they were set.
 
-Measured against 3.15.4: 21 of the 88 new and changed tests in these files fail there and pass here. They are the version floor (3), the Hermes provider and the uvx pin (5), a failed agent's place (2), the seal line (4), the dry-run count (1), a path on another drive (3), and the probe heartbeat (3).
+Measured against 3.15.5: 21 of the 88 new and changed tests in these files fail there and pass here. They are the version floor (3), the Hermes provider and the uvx pin (5), a failed agent's place (2), the seal line (4), the dry-run count (1), a path on another drive (3), and the probe heartbeat (3).
 
 ## 3.15.5 - UPGRADE IF you import or merge stores, erase memories, call `erase_past_copies` or `scrub_secrets` from Python with `apply` given as a string, keep a JSON or encrypted store open in more than one process, or run `sleep()` on keyed records: a read-guard verdict is trusted only under your store's key, an erasure never reports success without its written proof, `apply="false"` no longer applies, a stale save refuses instead of overwriting a peer's same-tick write, and a state toggle no longer retires a record with another key
 
