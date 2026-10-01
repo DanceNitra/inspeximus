@@ -2365,8 +2365,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "the candidate bound is strict, so pairs exactly on the threshold are never scored",
-  "old": "                candidates = [ci for ci, n in shared.items()\n                              if n >= sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
-  "new": "                candidates = [ci for ci, n in shared.items()\n                              if n > sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
+  "old": "                    candidates = [ci for ci, n in shared.items()\n                                  if n >= sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
+  "new": "                    candidates = [ci for ci, n in shared.items()\n                                  if n > sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
   "tests": [
    "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py"
   ]
@@ -2392,8 +2392,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "consolidate_clusters re-tokenises the anchor per partner",
-  "old": "                avec = self._qvec(a[\"text\"])\n                atok = self._rec_tokens(a)\n                for b in members[i + 1:]:\n                    if b[\"status\"] != \"active\" or b[\"id\"] in a[\"links\"]:\n                        continue\n                    if self._similarity(a[\"text\"], b, avec, atok) >= dup_threshold:",
-  "new": "                avec = self._qvec(a[\"text\"])\n                atok = self._rec_tokens(a)\n                for b in members[i + 1:]:\n                    if b[\"status\"] != \"active\" or b[\"id\"] in a[\"links\"]:\n                        continue\n                    if self._similarity(a[\"text\"], b, avec, _tokens(a[\"text\"])) >= dup_threshold:",
+  "old": "                avec = self._qvec(a[\"text\"])\n                atok = self._rec_tokens(a)\n                for b in (members[i + 1:] if cands is None else [members[j] for j in cands[i]]):\n                    if b[\"status\"] != \"active\" or b[\"id\"] in a[\"links\"]:\n                        continue\n                    if self._similarity(a[\"text\"], b, avec, atok) >= dup_threshold:",
+  "new": "                avec = self._qvec(a[\"text\"])\n                atok = self._rec_tokens(a)\n                for b in (members[i + 1:] if cands is None else [members[j] for j in cands[i]]):\n                    if b[\"status\"] != \"active\" or b[\"id\"] in a[\"links\"]:\n                        continue\n                    if self._similarity(a[\"text\"], b, avec, _tokens(a[\"text\"])) >= dup_threshold:",
   "tests": [
    "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py"
   ]
