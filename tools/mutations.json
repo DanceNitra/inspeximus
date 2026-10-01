@@ -335,8 +335,8 @@
  {
   "name": "recommit stops appending a receipt",
   "file": "inspeximus/core.py",
-  "old": "            self._emit_write_receipt(rec)\n            done.append(rec[\"id\"])",
-  "new": "            done.append(rec[\"id\"])",
+  "old": "                self._emit_write_receipt(rec)\n                done.append(rec[\"id\"])",
+  "new": "                done.append(rec[\"id\"])",
   "tests": [
    "tests/test_value_is_committed.py"
   ]
