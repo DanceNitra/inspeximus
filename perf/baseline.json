@@ -24,9 +24,9 @@
    "guard_key_lookups": 1,
    "decision_syncs": 0
   },
-  "seconds_median": 13.4162,
-  "seconds_min": 12.8897,
-  "seconds_max": 13.8009
+  "seconds_median": 45.4468,
+  "seconds_min": 42.4721,
+  "seconds_max": 46.1274
  },
  "write_json_n1000": {
   "desc": "1,000 remembers + flush, JSON store",
@@ -39,7 +39,7 @@
    "replace_tombstones": 0,
    "replace_receipts": 0,
    "full_serializations": 1000,
-   "serialized_bytes": 244773814,
+   "serialized_bytes": 244743487,
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
@@ -53,9 +53,9 @@
    "guard_key_lookups": 1,
    "decision_syncs": 0
   },
-  "seconds_median": 15.1691,
-  "seconds_min": 14.788,
-  "seconds_max": 15.3262
+  "seconds_median": 33.0465,
+  "seconds_min": 31.9752,
+  "seconds_max": 33.2579
  },
  "recall_n2000_q100": {
   "desc": "100 lexical recalls over 2,000 records",
@@ -82,9 +82,9 @@
    "guard_key_lookups": 0,
    "decision_syncs": 0
   },
-  "seconds_median": 1.1499,
-  "seconds_min": 1.1222,
-  "seconds_max": 1.1958
+  "seconds_median": 1.4218,
+  "seconds_min": 1.3977,
+  "seconds_max": 1.4308
  },
  "erase_k200_n2000": {
   "desc": "erase 200 subject records among 2,000",
@@ -102,7 +102,7 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
-   "dir_listings": 6,
+   "dir_listings": 10,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
@@ -111,11 +111,11 @@
    "guard_key_lookups": 0,
    "decision_syncs": 1,
    "erase_items_reads": 11,
-   "erase_lower_calls": 6610
+   "erase_lower_calls": 6614
   },
-  "seconds_median": 0.1185,
-  "seconds_min": 0.118,
-  "seconds_max": 0.1256
+  "seconds_median": 0.2377,
+  "seconds_min": 0.1997,
+  "seconds_max": 0.295
  },
  "erase_k20_n2000": {
   "desc": "erase 20 subject records among 2,000: dir_listings equals k=200's",
@@ -133,7 +133,7 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
-   "dir_listings": 6,
+   "dir_listings": 10,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
@@ -142,11 +142,11 @@
    "guard_key_lookups": 0,
    "decision_syncs": 1,
    "erase_items_reads": 11,
-   "erase_lower_calls": 6070
+   "erase_lower_calls": 6074
   },
-  "seconds_median": 0.0766,
-  "seconds_min": 0.0763,
-  "seconds_max": 0.0866
+  "seconds_median": 0.2591,
+  "seconds_min": 0.1354,
+  "seconds_max": 0.2737
  },
  "erase_json_k50_n500": {
   "desc": "erase 50 subject records among 500, JSON store",
@@ -159,12 +159,12 @@
    "replace_tombstones": 1,
    "replace_receipts": 0,
    "full_serializations": 1,
-   "serialized_bytes": 234665,
+   "serialized_bytes": 234788,
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
-   "dir_listings": 6,
+   "dir_listings": 10,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,
@@ -173,11 +173,11 @@
    "guard_key_lookups": 0,
    "decision_syncs": 1,
    "erase_items_reads": 11,
-   "erase_lower_calls": 1660
+   "erase_lower_calls": 1664
   },
-  "seconds_median": 0.037,
-  "seconds_min": 0.0352,
-  "seconds_max": 0.0378
+  "seconds_median": 0.0564,
+  "seconds_min": 0.0459,
+  "seconds_max": 0.0603
  },
  "session_n500": {
   "desc": "mixed session: 500 writes, 100 recalls, 50 credits, 25 forgets",
@@ -195,7 +195,7 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
-   "dir_listings": 6,
+   "dir_listings": 8,
    "type_inferences": 500,
    "current_active_scans": 0,
    "row_serializations": 1099,
@@ -204,9 +204,9 @@
    "guard_key_lookups": 1,
    "decision_syncs": 51
   },
-  "seconds_median": 14.1017,
-  "seconds_min": 13.3327,
-  "seconds_max": 14.487
+  "seconds_median": 25.9765,
+  "seconds_min": 20.0033,
+  "seconds_max": 29.2733
  },
  "session_json_n500": {
   "desc": "mixed session as session_n500, JSON store",
@@ -219,12 +219,12 @@
    "replace_tombstones": 1,
    "replace_receipts": 500,
    "full_serializations": 551,
-   "serialized_bytes": 73719671,
+   "serialized_bytes": 73700057,
    "store_loads": 1,
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
-   "dir_listings": 6,
+   "dir_listings": 8,
    "type_inferences": 500,
    "current_active_scans": 0,
    "row_serializations": 0,
@@ -233,9 +233,9 @@
    "guard_key_lookups": 1,
    "decision_syncs": 51
   },
-  "seconds_median": 12.6579,
-  "seconds_min": 12.5639,
-  "seconds_max": 13.9274
+  "seconds_median": 18.2523,
+  "seconds_min": 16.4437,
+  "seconds_max": 18.9464
  },
  "hook_n2000": {
   "desc": "hook PostToolUse: 10 ignored + 3 captured events, 2,000-record store",
@@ -262,9 +262,9 @@
    "guard_key_lookups": 3,
    "decision_syncs": 3
   },
-  "seconds_median": 0.1521,
-  "seconds_min": 0.1319,
-  "seconds_max": 0.1614
+  "seconds_median": 0.2178,
+  "seconds_min": 0.1906,
+  "seconds_max": 0.2219
  },
  "reports_k300": {
   "desc": "supersession_report + 5 suppressing recalls over 300 keys",
@@ -291,9 +291,9 @@
    "guard_key_lookups": 0,
    "decision_syncs": 0
   },
-  "seconds_median": 0.1414,
-  "seconds_min": 0.1407,
-  "seconds_max": 0.1491
+  "seconds_median": 0.1647,
+  "seconds_min": 0.158,
+  "seconds_max": 0.1648
  },
  "prompt_n2000": {
   "desc": "fresh handle opens a 2,000-record store and recalls once",
@@ -320,9 +320,9 @@
    "guard_key_lookups": 1,
    "decision_syncs": 0
   },
-  "seconds_median": 0.0692,
-  "seconds_min": 0.0674,
-  "seconds_max": 0.0769
+  "seconds_median": 0.0919,
+  "seconds_min": 0.0882,
+  "seconds_max": 0.1118
  },
  "prompt_unstamped_n2000": {
   "desc": "prompt_n2000 under a key home that cannot verify the read-guard stamps",
@@ -349,9 +349,9 @@
    "guard_key_lookups": 1,
    "decision_syncs": 0
   },
-  "seconds_median": 0.0781,
-  "seconds_min": 0.0743,
-  "seconds_max": 0.0851
+  "seconds_median": 0.0928,
+  "seconds_min": 0.0925,
+  "seconds_max": 0.1047
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",
@@ -379,9 +379,9 @@
    "decision_syncs": 0,
    "row_id_comparisons": 0
   },
-  "seconds_median": 0.0985,
-  "seconds_min": 0.0984,
-  "seconds_max": 0.1067
+  "seconds_median": 0.1953,
+  "seconds_min": 0.1152,
+  "seconds_max": 0.5439
  },
  "hook_import": {
   "desc": "the hook process for a PreToolUse `ls`: does it import numpy",
@@ -393,9 +393,9 @@
    "hook_imports_numpy": 0,
    "hook_imports_governance": 0
   },
-  "seconds_median": 0.2565,
-  "seconds_min": 0.2564,
-  "seconds_max": 0.2601
+  "seconds_median": 0.2625,
+  "seconds_min": 0.261,
+  "seconds_max": 0.2846
  },
  "memreport_n1000": {
   "desc": "memory_report over 1,000 records: 400 sampled recalls",
@@ -422,9 +422,9 @@
    "guard_key_lookups": 0,
    "decision_syncs": 0
   },
-  "seconds_median": 1.5919,
-  "seconds_min": 1.5325,
-  "seconds_max": 1.6049
+  "seconds_median": 1.7193,
+  "seconds_min": 1.7159,
+  "seconds_max": 1.8168
  },
  "recommit_n2000": {
   "desc": "recommit 2,000 unbound records: the receipt sidecar is written once",
@@ -481,9 +481,9 @@
    "guard_key_lookups": 1,
    "decision_syncs": 2
   },
-  "seconds_median": 0.1528,
-  "seconds_min": 0.1446,
-  "seconds_max": 0.1545
+  "seconds_median": 0.1871,
+  "seconds_min": 0.1721,
+  "seconds_max": 0.193
  },
  "hook_install": {
   "desc": "--install into a temp project: is PostToolUse scoped to what capture records",
@@ -496,8 +496,39 @@
    "post_tool_use_matcher_tools": 4,
    "post_tool_use_extra_tools": 0
   },
-  "seconds_median": 0.0055,
-  "seconds_min": 0.0053,
-  "seconds_max": 0.0055
+  "seconds_median": 0.0123,
+  "seconds_min": 0.0071,
+  "seconds_max": 0.013
+ },
+ "prompt_archived_n2000": {
+  "desc": "fresh handle recalls once after --archive moved 80 % of 2,000 captures",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
+  "counters": {
+   "replace_store": 0,
+   "replace_tombstones": 0,
+   "replace_receipts": 0,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 1,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "dir_listings": 1,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 0,
+   "read_guard_assessments": 400,
+   "store_hash_reads": 0,
+   "guard_key_lookups": 1,
+   "decision_syncs": 0,
+   "prompt_rows_loaded": 400,
+   "archive_segments_read": 0
+  },
+  "seconds_median": 0.0175,
+  "seconds_min": 0.0173,
+  "seconds_max": 0.022
  }
 }
