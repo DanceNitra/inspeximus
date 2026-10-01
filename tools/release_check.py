@@ -708,6 +708,17 @@ def check_core_map(rep, root=ROOT):
             "and commit it. First lines: " + " | ".join(proc.stdout.strip().splitlines()[:3]))
 
 
+def release_workers(default):
+    """The xdist worker count for the suite legs. INSPEXIMUS_RELEASE_WORKERS overrides `default`, so a
+    shared machine can cap the pre-flight; a value below 2 becomes 2, and one that is not an integer is
+    ignored. No assertion changes and no test is skipped, because only the pool size moves."""
+    raw = os.environ.get("INSPEXIMUS_RELEASE_WORKERS", "").strip()
+    try:
+        return max(2, int(raw)) if raw else default
+    except ValueError:
+        return default
+
+
 def check_tests(rep, root=ROOT, skip=False):
     if skip:
         rep.add("test suite", SKIP, "--skip-tests was passed; this run does NOT clear a release")
@@ -740,7 +751,7 @@ def check_tests(rep, root=ROOT, skip=False):
     # This changes NO assertion and skips NO test. It runs the same suite with less contention, and
     # a real failure fails exactly as before. The cap is deliberately not `auto`: a bigger machine
     # would otherwise re-create the contention this exists to remove.
-    workers = max(2, min(8, (os.cpu_count() or 4) - 1))
+    workers = release_workers(max(2, min(8, (os.cpu_count() or 4) - 1)))
     proc = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-rfE",
                            "-n", str(workers)], cwd=str(root),
                           capture_output=True, text=True, errors="replace")
@@ -837,10 +848,11 @@ def fast_selection(root):
     return sorted(tests), tag, probes
 
 
-def check_fast_tests(rep, root=ROOT, workers=8):
+def check_fast_tests(rep, root=ROOT, workers=None):
     """Minutes, not half an hour: the tests that failed last time, then the tests nearest the change,
     each with -x so the first failure ends the run. The full suite runs only when this passes.
     Measured 2026-09-23: 3.8.1's first gate failed after 35 minutes on a test that takes three."""
+    workers = release_workers(8 if workers is None else workers)
     sel, tag, probes = fast_selection(root)
     lf = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-rfE", "-x", "--lf",
                          "--lfnf=none", "-n", str(workers)], cwd=str(root),

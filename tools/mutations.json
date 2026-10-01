@@ -7477,5 +7477,32 @@
   "tests": [
    "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
   ]
+ },
+ {
+  "name": "release_check ignores INSPEXIMUS_RELEASE_WORKERS in the full-suite leg",
+  "file": "tools/release_check.py",
+  "old": "    workers = release_workers(max(2, min(8, (os.cpu_count() or 4) - 1)))\n",
+  "new": "    workers = max(2, min(8, (os.cpu_count() or 4) - 1))\n",
+  "tests": [
+   "tests/test_release_check_worker_count_comes_from_the_environment.py"
+  ]
+ },
+ {
+  "name": "release_check lets INSPEXIMUS_RELEASE_WORKERS go below two workers",
+  "file": "tools/release_check.py",
+  "old": "        return max(2, int(raw)) if raw else default\n",
+  "new": "        return int(raw) if raw else default\n",
+  "tests": [
+   "tests/test_release_check_worker_count_comes_from_the_environment.py"
+  ]
+ },
+ {
+  "name": "release_check fast phase ignores INSPEXIMUS_RELEASE_WORKERS",
+  "file": "tools/release_check.py",
+  "old": "    workers = release_workers(8 if workers is None else workers)\n",
+  "new": "    workers = 8 if workers is None else workers\n",
+  "tests": [
+   "tests/test_release_check_worker_count_comes_from_the_environment.py"
+  ]
  }
 ]

@@ -25,11 +25,15 @@ Measured before the rebase onto 3.16.0, on copies with the clock frozen: on the 
 
 `sleep` and `consolidate_clusters` are not cheap to call often: each call clusters every active record. Their docstrings and the two MCP tool descriptions now say so.
 
+### Tooling: a cap on the pre-flight's test workers (no behaviour change)
+
+`tools/release_check.py` ran the suite with an explicit `-n` of up to 8 workers, and nothing could change it. The environment variable `INSPEXIMUS_RELEASE_WORKERS` now sets the worker count for the full-suite leg and the fast phase. A value below 2 becomes 2, and a value that is not an integer is ignored. No assertion changes and no test is skipped. The package is unchanged. `tests/test_release_check_worker_count_comes_from_the_environment.py` covers the argv, the fallback and the clamp, and its 3 mutations in `tools/mutations.json` are killed.
+
 Release record, 2026-10-02, on the tree of this release:
 
 - Windows, full suite, 4 processes: 6,049 passed, 19 failed, 27 errors, 446 skipped. 5 failures and all 27 errors are the crewai and openai-agents tests (a Windows COM error, and the installed openai-agents 0.20.0 has no `agents.testing`). The other 14 failures were `tests/test_release_check_has_teeth.py` and `tests/test_the_generated_map_is_current.py`, which ran before this CHANGELOG entry and the regenerated core map were in the tree. Those 2 files pass on this tree (57 passed).
 - Linux (WSL, run as root), full suite, 2 processes: 5,572 passed, 1 failed, 712 skipped. The failure is `three_reasons_a_hook_can_look_installed_and_never_run`: root can write a file made read-only, so the probe's precondition never holds.
-- Mutations: 59 entries added or changed since 3.16.0. All 59 run and are killed.
+- Mutations: 62 entries added or changed since 3.16.0. All 62 run and are killed (59 on the release head before the tooling commit, then the 3 for the worker setting).
 - `perf/gate.py check`: no regression against the baseline re-recorded for this release. 8 counters grew, each by a constant per erasure or session (the erase arms +4 `dir_listings` and +4 `erase_lower_calls`, the session arms +2 `dir_listings`), and the arms `prompt_archived_n2000` and `sleep_n2000` are new.
 - `tools/release_check.py --skip-tests`: every check passes except `work counters`, which my 580 s timeout stopped. The perf check above is the same check, run to the end.
 - Prompt hook, 71,772-row copy of our project store (2026-09-28), empty home, 20 runs per arm, interleaved: 6.39 s median on 3.15.9, 6.26 s on this tree before `--archive`, 1.82 s after `--archive --older-than 7`.
