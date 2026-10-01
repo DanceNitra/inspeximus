@@ -310,3 +310,47 @@ def test_a_proof_that_cannot_be_written_leaves_segments_log_and_hot_store_untouc
     assert len(archive.read_log(p)) == log_before and not archive._pending_intents(archive.read_log(p))
     assert target in _segment_rows(p) and target not in _tombstoned(p)
     assert sorted(r["id"] for r in Inspeximus(p)._items) == hot_before
+
+
+def test_an_erasure_stopped_on_its_second_segment_loses_no_row_without_a_tombstone(tmp_path, monkeypatch):
+    """AUDIT-A's gap on B25-R1: one erasure that touches two segments, stopped after the first intent is
+    logged and while the second segment's temp is written. The tombstones of both ids are on disk, so the
+    next erasure's recover() finishes the first segment; the second keeps its row (a tombstone with no
+    deletion is the shape A-34 accepts), nothing is left pending, and the certificate does not say the
+    second id is gone."""
+    p = str(tmp_path / "coding_memory.json")
+    m = Inspeximus(p)
+    ids = []
+    for month, base in (("old", 80), ("older", 40)):
+        for i in range(6):
+            monkeypatch.setattr(core.time, "time", lambda i=i, base=base: T0 - base * DAY + i)
+            ids.append(m.remember(f"ran: export {month} number {i} of the batch", key=f"cmd:{month}{i}",
+                                  tags=["bash"], mtype="episodic"))
+    m.flush()
+    monkeypatch.setattr(core.time, "time", lambda: T0)
+    assert archive.apply(Inspeximus(p), 7, now=T0)["applied"]
+    a, b = ids[1], ids[7]
+    segs = archive.locate(Inspeximus(p), [a, b])
+    assert len(segs) == 2, "control: the two ids sit in two segments"
+    calls = {"n": 0}
+    real = archive._write_erasure_temp
+
+    def second_raises(*args, **k):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise Stop()
+        return real(*args, **k)
+    with monkeypatch.context() as mp:
+        mp.setattr(archive, "_write_erasure_temp", second_raises)
+        with pytest.raises(Stop):
+            Inspeximus(p).forget(ids=[a, b], request_id="two-segments")
+    assert calls["n"] == 2 and len(archive._pending_intents(archive.read_log(p))) == 1, "control: one intent logged"
+    assert {a, b} <= _tombstoned(p), "control: both tombstones were written first"
+    Inspeximus(p).forget(ids=[ids[2]], request_id="later")              # runs recover() first
+    held = {a, b} & _segment_rows(p)
+    gone = {a, b} - held - {r["id"] for r in Inspeximus(p)._items}
+    assert gone <= _tombstoned(p) and a in gone, "the finished segment lost its row, with its tombstone"
+    assert b in held, "the stopped segment keeps its row"
+    assert not archive._pending_intents(archive.read_log(p))
+    cert = Inspeximus(p).erasure_certificate()
+    assert not cert["self_check"]["verified"], "certified while an erased id is still in a segment"
