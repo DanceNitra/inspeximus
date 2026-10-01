@@ -285,3 +285,28 @@ def test_a_withdrawn_erasure_is_listed_in_the_certificate_and_does_not_fail_it(t
     # The fixture store runs without write receipts, so self_check is never verified here; the archive
     # block is what an abort could fail, and it must report nothing.
     assert cert["archive"]["problems"] == [], cert["archive"]["problems"]
+
+
+def test_a_proof_that_cannot_be_written_leaves_segments_log_and_hot_store_untouched(tmp_path, monkeypatch):
+    """A-34 (3.15.4) and B25-R1 meet in forget(): the tombstones are written first and a failed write stops
+    the erasure, and the segment rewrite is prepared only after they are on disk. A write that fails must
+    therefore leave every segment byte-identical, the log without a new entry, and the archived row in
+    place. Before the rebase onto 3.15.9 nothing held the two rules together."""
+    from test_a34_nothing_changes_without_its_written_proof import _full_disk_for
+    from inspeximus import ProofNotWritten
+    p, ids, hot = _store(tmp_path, monkeypatch)
+    target = ids[1]
+    assert target in _segment_rows(p), "control: the target is archived"
+    d = os.path.dirname(p)
+    segs = {n: open(os.path.join(d, n), "rb").read() for n in os.listdir(d) if archive._segment_rx(p).match(n)}
+    log_before = len(archive.read_log(p))
+    hot_before = sorted(r["id"] for r in Inspeximus(p)._items)
+    with monkeypatch.context() as mp:
+        _full_disk_for(mp, ".tombstones.json")
+        with pytest.raises(ProofNotWritten, match="nothing was erased"):
+            Inspeximus(p).forget(ids=[target], request_id="no-proof")
+    assert {n: open(os.path.join(d, n), "rb").read() for n in segs} == segs, "a segment changed without its proof"
+    assert not [n for n in os.listdir(d) if ".tmp" in n and "archive" in n], "a temp was left behind"
+    assert len(archive.read_log(p)) == log_before and not archive._pending_intents(archive.read_log(p))
+    assert target in _segment_rows(p) and target not in _tombstoned(p)
+    assert sorted(r["id"] for r in Inspeximus(p)._items) == hot_before
