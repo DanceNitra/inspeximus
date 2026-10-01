@@ -4616,6 +4616,12 @@ class Inspeximus:
         # unreachable must not silently produce an UNSIGNED receipt that later verifies as "no
         # signature required"; the helper refuses the write instead.
         r = self._append_receipt(r)
+        # ONE WRITE PER BATCH, NOT PER RECEIPT. Each receipt rewrote the whole sidecar, so recommit() on a
+        # store with 13,142 records wrote ~10 MB 6,392 times and took 22.6 minutes (measured 2026-10-01 on
+        # a copy of our own MCP store). A caller that emits many receipts sets `_defer_receipt_flush` and
+        # calls `_persist_receipts()` once at the end, the batch writer backfill already uses.
+        if self._receipts_path and getattr(self, "_defer_receipt_flush", False):
+            return r
         if self._receipts_path:
             try:
                 Inspeximus._atomic_write(self._receipts_path,
@@ -7732,23 +7738,49 @@ class Inspeximus:
                     "problems": ["write receipts are disabled, so there is no chain to append to"]}
         wanted = set(ids) if ids is not None else None
         done, skipped = [], []
+        # The latest receipt per record, found in ONE pass. A scan of the whole chain per record made this
+        # quadratic: receipts x records, 9,407 x 8,101 on our own store.
+        latest_by_id: dict = {}
+        for r in self._receipts:
+            prev = latest_by_id.get(r["memory_id"])
+            if prev is None or r.get("seq", 0) >= prev.get("seq", 0):
+                latest_by_id[r["memory_id"]] = r
         # _tenant_rows(), not self.items: on a tenant view the latter is the SHARED store, so an unscoped
         # sweep would re-commit another tenant's records. The isolation guard refused to let this method
         # exist unclassified, which is exactly what that guard is for.
+        todo: list = []
         for rec in self._tenant_rows():
             if rec.get("status") != "active":
                 continue
             if wanted is not None and rec["id"] not in wanted:
                 continue
-            latest = max((r for r in self._receipts if r["memory_id"] == rec["id"]),
-                         key=lambda r: r.get("seq", 0), default=None)
+            latest = latest_by_id.get(rec["id"])
             _c = (latest.get("commit") or {}) if latest is not None else {}
             if latest is not None and all(f in _c for f in ("value_sha256", "context_sha256",
                                                                "partition_sha256")):
                 skipped.append(rec["id"])            # already covered; a no-op receipt is chain noise
                 continue
-            self._emit_write_receipt(rec)
-            done.append(rec["id"])
+            todo.append(rec)
+        # Emitted with the sidecar write deferred, then written ONCE by the batch writer. A chain that
+        # cannot be written is put back as it was, the way backfill() does it (A-34), so memory and disk
+        # never disagree about which records are bound.
+        _prev_chain = list(self._receipts)
+        self._defer_receipt_flush = True
+        try:
+            for rec in todo:
+                self._emit_write_receipt(rec)
+                done.append(rec["id"])
+        except BaseException:
+            self._receipts = _prev_chain
+            raise
+        finally:
+            self._defer_receipt_flush = False
+        if done:
+            try:
+                self._persist_receipts()
+            except ProofNotWritten:
+                self._receipts = _prev_chain
+                raise
         if done:
             self._save(force=True)
         return {"recommitted": done, "skipped": skipped, "problems": []}

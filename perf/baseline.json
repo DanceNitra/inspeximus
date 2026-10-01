@@ -426,6 +426,36 @@
   "seconds_min": 1.5325,
   "seconds_max": 1.6049
  },
+ "recommit_n2000": {
+  "desc": "recommit 2,000 unbound records: the receipt sidecar is written once",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
+  "counters": {
+   "replace_store": 1,
+   "replace_tombstones": 0,
+   "replace_receipts": 1,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 0,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "dir_listings": 1,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 0,
+   "read_guard_assessments": 0,
+   "store_hash_reads": 0,
+   "guard_key_lookups": 0,
+   "decision_syncs": 0,
+   "recommitted": 2000
+  },
+  "seconds_median": 0.3938,
+  "seconds_min": 0.3723,
+  "seconds_max": 0.4078
+ },
  "boundary_n2000": {
   "desc": "session boundary (open, write, close, flush) on a 2,000-record store",
   "backend": {

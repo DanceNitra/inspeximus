@@ -7004,5 +7004,32 @@
   "tests": [
    "tests/test_recommit_from_the_shell_needs_named_ids_or_all.py"
   ]
+ },
+ {
+  "name": "recommit writes the receipt sidecar once per receipt again",
+  "file": "inspeximus/core.py",
+  "old": "        if self._receipts_path and getattr(self, \"_defer_receipt_flush\", False):\n            return r\n",
+  "new": "",
+  "tests": [
+   "tests/test_recommit_writes_the_receipt_chain_once.py"
+  ]
+ },
+ {
+  "name": "recommit ignores each record's latest receipt and binds it again",
+  "file": "inspeximus/core.py",
+  "old": "            latest = latest_by_id.get(rec[\"id\"])\n",
+  "new": "            latest = None\n",
+  "tests": [
+   "tests/test_recommit_writes_the_receipt_chain_once.py"
+  ]
+ },
+ {
+  "name": "a recommit whose chain could not be written keeps the unwritten receipts in memory",
+  "file": "inspeximus/core.py",
+  "old": "            except ProofNotWritten:\n                self._receipts = _prev_chain\n                raise\n        if done:\n            self._save(force=True)",
+  "new": "            except ProofNotWritten:\n                raise\n        if done:\n            self._save(force=True)",
+  "tests": [
+   "tests/test_recommit_writes_the_receipt_chain_once.py"
+  ]
  }
 ]

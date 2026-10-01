@@ -600,6 +600,27 @@ def w_row_rewrite(n):
     return run
 
 
+def w_recommit(n):
+    """recommit() of n active records whose receipts do not bind them. The receipt sidecar is written once
+    (`replace_receipts` 1), not once per receipt: it was n, and on our own 13,142-record store the recommit
+    took 22.6 minutes (measured 2026-10-01). `recommitted` must stay n, so a run that skipped the work
+    cannot pass as a fast one."""
+    p = _store_path()
+    m0 = Inspeximus(p, receipts=False)
+    for i in range(n):
+        m0.remember(f"recommit fixture record {i}", source={"doc": f"d{i % 13}"})
+    m0.flush()
+    m = Inspeximus(p, receipts=True)
+
+    def run():
+        with Counters() as c:
+            t0 = time.perf_counter()
+            res = m.recommit()
+            run.elapsed = time.perf_counter() - t0
+        run.inner = {**c.as_dict(), "recommitted": len(res["recommitted"])}
+    return run
+
+
 def w_memreport(n):
     """memory_report over n records, which samples 400 of them as queries. The sampled recalls share one
     candidate pool, so `read_guard_assessments` is n, not 400 x n (AUDIT-B B-07)."""
@@ -741,6 +762,7 @@ WORKLOADS = {
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
     "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),
+    "recommit_n2000":     (lambda: w_recommit(2000),     "recommit 2,000 unbound records: the receipt sidecar is written once", "rows"),
     "boundary_n2000":     (lambda: w_boundary(2000),     "session boundary (open, write, close, flush) on a 2,000-record store", "rows"),
     "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records", "none"),
 }
