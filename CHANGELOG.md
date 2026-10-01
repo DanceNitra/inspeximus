@@ -34,7 +34,14 @@ modules had the shape on 3.15.5 (`_update.py`, `claude_code.py`, `cli.py`, `core
   repair: a child started without the shim must be broken, and the repair must fix it. It skips where
   there is nothing to repair.
 
-Release record: to be filled from the runs on this tree.
+Release record, 2026-10-01, on the tree of this release:
+
+- Windows, full suite, 4 processes: 5,928 passed, 4 failed, 27 errors, 433 skipped. The 4 failures and 27 errors
+  are the crewai and openai-agents tests, which fail on this machine with a Windows COM error. No other test fails.
+- Linux (WSL), full suite, 4 processes: 5,449 passed, 689 skipped. Nothing fails.
+- Mutations: 6 entries added (2 for the file-closing sweep, 4 for the receipt bound). All 6 run and are killed.
+- `tools/release_check.py --skip-tests`: 0 failures, including the work-counter check of `perf/gate.py` against
+  the unchanged baseline.
 
 ## 3.15.8 - UPGRADE IF you erase memories whose keys name a person or a customer: the key no longer stays in the event journal after the erasure
 
