@@ -190,6 +190,9 @@ def _run(src, tmp_path, name, reference, numpy_on, monkeypatch, embed=None):
         m = Inspeximus(p, embed=embed)
         clusters = [[r["id"] for r in c] for c in m._cluster_active(0.5)]
         report = m.sleep()
+        # 3.15.7 added `distinct_keys` to this report; the frozen 3.15.1 reference cannot carry it. The
+        # differential compares everything else, and the fixtures hold no record whose key differs.
+        assert report["consolidated_clusters"].pop("distinct_keys", 0) == 0
         state = sorted((r["id"], r.get("status"), sorted(r.get("links") or []),
                         json.dumps(r.get("meta") or {}, sort_keys=True, default=str)) for r in m._items)
     return clusters, report, state
