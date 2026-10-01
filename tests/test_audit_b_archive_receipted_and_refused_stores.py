@@ -167,7 +167,8 @@ def test_a_json_pinned_store_is_refused_by_plan_apply_and_the_cli(tmp_path, monk
                PYTHONPATH=ROOT, INSPEXIMUS_STORE_FORMAT="json")
     for extra in ([], ["--apply"]):
         run = subprocess.run([sys.executable, "-m", "inspeximus.claude_code", "--archive", "--older-than", "7",
-                              *extra], capture_output=True, text=True, cwd=str(proj), env=env, timeout=120)
+                              *extra], capture_output=True, text=True, encoding="utf-8", cwd=str(proj), env=env,
+                             timeout=120)
         assert run.returncode == 2 and "Convert it first" in run.stdout, run.stdout + run.stderr
     assert _files(st) == before, "nothing on disk changed"
     monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT")

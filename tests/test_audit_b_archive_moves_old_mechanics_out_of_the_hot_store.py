@@ -293,7 +293,8 @@ def test_the_cli_is_a_dry_run_until_apply(tmp_path):
     m.remember("ran: ls -la", key="cmd:0000000001", tags=["bash"])
     m.flush()
     run = lambda *a: subprocess.run([sys.executable, "-m", "inspeximus.claude_code", "--archive", *a],
-                                    capture_output=True, text=True, cwd=str(proj), env=env, timeout=120)
+                                    capture_output=True, text=True, encoding="utf-8", cwd=str(proj), env=env,
+                                    timeout=120)
     dry = run("--older-than", "0")
     assert dry.returncode == 0 and "Dry run" in dry.stdout
     assert not [f for f in os.listdir(st) if "archive" in f]

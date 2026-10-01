@@ -237,7 +237,8 @@ def _read_outside_head(store_path):
     if not hp or not os.path.exists(hp):
         return None
     try:
-        return json.loads(open(hp, encoding="utf-8").read())
+        with open(hp, encoding="utf-8") as fh:
+            return json.loads(fh.read())
     except (OSError, ValueError):
         return None
 
