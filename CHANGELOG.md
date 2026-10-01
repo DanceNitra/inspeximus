@@ -80,7 +80,17 @@ the 3 that were updated. The surfaces are covered by
 `tests/test_recommit_from_the_shell_needs_named_ids_or_all.py` and
 `tests/test_the_mcp_server_exposes_recommit.py`, and each of their 15 mutations fails a test.
 
-Release record: to be filled from the runs on this tree.
+Release record, 2026-10-01, on the tree of this release:
+
+- Windows, full suite, 4 processes: 5,961 passed, 4 failed, 27 errors, 437 skipped. The 4 failures and 27 errors
+  are the crewai tests, which fail on this machine with a Windows COM error, and the openai-agents tests, because
+  the installed openai-agents 0.20.0 has no `agents.testing`. No other test fails.
+- Linux (WSL), full suite, 4 processes: 5,480 passed, 693 skipped. Nothing fails.
+- Mutations: 30 entries added or changed since 3.15.9. All 30 run and are killed.
+- `perf/gate.py check`: no counter above its baseline. `recommit_n2000` is a new arm: 1 receipt-sidecar write for
+  2,000 receipts.
+- `tools/release_check.py --skip-tests`: 0 failures, 135 MCP tools registered.
+- The transparency log holds the 7 tool-count claims: 296 entries, `store_id` unchanged.
 
 ## 3.15.9 - UPGRADE IF you use the Claude Code hooks with a long memory index: the SessionStart receipt names at most 20 pointers instead of all of them
 
