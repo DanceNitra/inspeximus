@@ -674,7 +674,7 @@ Or from a shell, after `pip install inspeximus`:
 inspeximus install --ide claude     # also: cursor, windsurf, codex, cline
 ```
 
-Both wire an MCP server with **134 tools** and the same hooks. From the next session on, your agent starts
+Both wire an MCP server with **135 tools** and the same hooks. From the next session on, your agent starts
 knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 
 - **SessionStart** injects the decisions still in force

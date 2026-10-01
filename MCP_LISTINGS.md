@@ -1,6 +1,6 @@
 # inspeximus MCP — registry listing pack
 
-`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 134 tools). Registry manifest:
+`inspeximus` ships an MCP stdio server (`inspeximus-mcp`, 135 tools). Registry manifest:
 [`server.json`](server.json). Zero code — pure distribution.
 
 *(The tool count is checked, not typed: `python claims_audit.py --numbers` counts `@mcp.tool()` in
@@ -28,7 +28,7 @@ inspeximus-mcp            # stdio; persists to ./inspeximus_memory.json (set INS
 
 Or let the CLI write it: `inspeximus install --ide claude` (also cursor, windsurf, codex, cline).
 
-**Tools (134):** provenance and verification first, because that is what people ask for; the ordinary
+**Tools (135):** provenance and verification first, because that is what people ask for; the ordinary
 memory operations follow. The count and the names are both checked against `@mcp.tool()` in
 `inspeximus/mcp_server.py` (`python claims_audit.py --numbers`, plus `tests/test_readme_capabilities.py`),
 so this list cannot drift from the server again.
