@@ -4870,8 +4870,8 @@
  {
   "name": "a batch erasure leaves the backups",
   "file": "inspeximus/core.py",
-  "old": "        self._drop_pre_rows_backup()\n        self._touched.update(target)\n",
-  "new": "        self._touched.update(target)\n",
+  "old": "        self._drop_pre_rows_backup()\n        # The segment rewrite is prepared, and its intent logged, only AFTER the tombstones are on disk\n",
+  "new": "        # The segment rewrite is prepared, and its intent logged, only AFTER the tombstones are on disk\n",
   "tests": [
    "tests/test_an_erasure_reaches_every_copy_beside_the_store.py",
    "tests/test_an_erasure_reaches_every_copy_the_library_made.py"
@@ -5464,8 +5464,8 @@
  {
   "name": "forget_pii iterates a bare string type as characters again",
   "file": "inspeximus/core.py",
-  "old": "        if isinstance(types, str):\n            types = [types]\n        want = set(types)",
-  "new": "        want = set(types)",
+  "old": "            if isinstance(types, str):\n                types = [types]\n            want = set(types)",
+  "new": "            want = set(types)",
   "tests": [
    "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
   ]
@@ -5473,8 +5473,8 @@
  {
   "name": "forget_pii answers an unknown PII type with erased 0",
   "file": "inspeximus/core.py",
-  "old": "            if unknown:\n                raise ValueError(f\"forget_pii: unknown",
-  "new": "            if False:\n                raise ValueError(f\"forget_pii: unknown",
+  "old": "                if unknown:\n                    raise ValueError(f\"forget_pii: unknown",
+  "new": "                if False:\n                    raise ValueError(f\"forget_pii: unknown",
   "tests": [
    "tests/test_a33_an_erasure_never_answers_a_wrong_argument_with_zero.py"
   ]
@@ -7242,7 +7242,7 @@
  {
   "name": "B-25: plan does not refuse what apply refuses",
   "file": "inspeximus/archive.py",
-  "old": "    _refuse_unsupported(m)\r\n    unknown = [c for c in classes if c not in CLASSES]",
+  "old": "    _refuse_unsupported(m)\n    unknown = [c for c in classes if c not in CLASSES]",
   "new": "    unknown = [c for c in classes if c not in CLASSES]",
   "tests": [
    "tests/test_audit_b_archive_receipted_and_refused_stores.py"
@@ -7260,8 +7260,8 @@
  {
   "name": "B-25: segments carry no receipt copies",
   "file": "inspeximus/archive.py",
-  "old": "        if receipts:\r\n            con.execute(\"INSERT OR REPLACE INTO meta(k, v) VALUES('archive_receipts', ?)\",",
-  "new": "        if False:\r\n            con.execute(\"INSERT OR REPLACE INTO meta(k, v) VALUES('archive_receipts', ?)\",",
+  "old": "        if receipts:\n            con.execute(\"INSERT OR REPLACE INTO meta(k, v) VALUES('archive_receipts', ?)\",",
+  "new": "        if False:\n            con.execute(\"INSERT OR REPLACE INTO meta(k, v) VALUES('archive_receipts', ?)\",",
   "tests": [
    "tests/test_audit_b_archive_receipted_and_refused_stores.py"
   ]
@@ -7279,8 +7279,8 @@
  {
   "name": "B-25: the log's head is never recorded in the store",
   "file": "inspeximus/archive.py",
-  "old": "    _write_head(store_path, entries)\r\n    m = _store_of(target)",
-  "new": "    pass\r\n    m = _store_of(target)",
+  "old": "    _write_head(store_path, entries)\n    m = _store_of(target)",
+  "new": "    pass\n    m = _store_of(target)",
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py",
    "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
@@ -7289,8 +7289,8 @@
  {
   "name": "B-25: a handle reads its own head write as another writer's",
   "file": "inspeximus/archive.py",
-  "old": "        m._file_sig = m._stat_sig()\r\n\r\n\r\ndef _write_head",
-  "new": "        pass\r\n\r\n\r\ndef _write_head",
+  "old": "        m._file_sig = m._stat_sig()\n\n\ndef _write_head",
+  "new": "        pass\n\n\ndef _write_head",
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py",
    "tests/test_audit_b_archive_moves_old_mechanics_out_of_the_hot_store.py"
@@ -7308,8 +7308,8 @@
  {
   "name": "B-25: the log head outside the store is never written",
   "file": "inspeximus/archive.py",
-  "old": "        con.close()\r\n    _write_outside_head(store_path, entries)",
-  "new": "        con.close()\r\n    pass",
+  "old": "        con.close()\n    _write_outside_head(store_path, entries)",
+  "new": "        con.close()\n    pass",
   "tests": [
    "tests/test_audit_b_erasure_reaches_archive_segments.py"
   ]
