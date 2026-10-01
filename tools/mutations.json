@@ -2368,7 +2368,8 @@
   "old": "                    candidates = [ci for ci, n in shared.items()\n                                  if n >= sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
   "new": "                    candidates = [ci for ci, n in shared.items()\n                                  if n > sim_threshold * min(len(rtok), len(cents[ci][\"tok\"]))]",
   "tests": [
-   "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py"
+   "tests/test_the_cluster_pass_is_exact_and_no_longer_retokenises.py",
+   "tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py"
   ]
  },
  {
