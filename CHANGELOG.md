@@ -1,3 +1,30 @@
+## 3.16.1 - UPGRADE IF your Claude Code prompt hook is slow on a large project store, or you call `sleep()` on thousands of records: old captured commands can move to archive segments, and `sleep()` scores fewer pairs
+
+### Old captured mechanics can leave the hot store
+
+The prompt hook reads the whole project store on every prompt. On a copy of our own project store (71,772 records, 63 MB), with an empty home and one hook process per prompt, the median hook time was 6.39 s on 3.15.9. Most of those records are `cmd:` captures older than a week.
+
+`inspeximus --archive --older-than DAYS` moves those captures into monthly SQLite segments beside the store. It is a dry run until you add `--apply`, and nothing is deleted. After archiving at 7 days, the same copy answered a prompt in a median of 1.82 s (range 1.69 to 2.23 s, 20 runs per arm, one process at a time). Before you archive, the new code costs nothing: 6.26 s against 6.39 s on the unarchived copy.
+
+- **Recall stays opt-in.** `recall(include_archive=True)` on the MCP tool and in Python also searches the segments. It opens every segment, so it is off by default.
+- **An erasure reaches the segments.** `forget`, `forget_subject`, `forget_pii` and `--scrub-secrets` select over the hot rows and the archived rows as one store. Each segment that held a match is rewritten without it. If a segment is missing or does not match its log, the erasure refuses before it changes anything. The tombstones stay in the hot store's one chain and are written first (A-34); the segment rewrite is prepared only after they are on disk. `erasure_certificate()` names every segment and whether the erased ids were checked absent in it.
+- **Segments verify themselves.** Each segment carries a signed manifest and its receipt copies, and `verify_writes()` checks the rows against them. The store records the log's head, and a copy of the head lives outside the store, so a truncated log is a named gap.
+- **What it refuses.** Encrypted stores and stores pinned to the JSON format are refused. A store inside a git work tree is refused unless you pass `--allow-git-tracked`, because an erasure can rewrite the files but not git history.
+
+Tests: `tests/test_audit_b_archive_*.py`, `tests/test_audit_b_erasure_reaches_archive_segments.py`, `tests/test_review_b25_backup_handle_tenant.py`. The kill-point tests stop an erasure after each phase and require that no row leaves a segment without its tombstone, including an erasure stopped on its second segment.
+
+### `sleep()` scores fewer pairs
+
+`consolidate_clusters` compared every later member of a ripe cluster with every earlier one. On a copy of a 67k-record hook store that was 13,792,476 `_similarity` calls in one `sleep()`, and 342,181 of them passed. Three changes remove the rest without changing the result:
+
+- An exact prefix filter on the overlap coefficient visits only the members that can reach `dup_threshold`: 986,588 calls on the same copy.
+- Cluster token counts are taken in C (numpy when installed, `collections.Counter` otherwise).
+- The contradiction checks read each text once per pass: 6,080 regex calls instead of 29,120 on the `sleep_n2000` gate arm.
+
+Measured before the rebase onto 3.16.0, on copies with the clock frozen: on the 67k copy `sleep()` took 41.2 s instead of 165.5 s, and on a 6,573-record MCP store 6.2 s instead of 15.5 s. The clusters, the report and every record's status, links and meta are identical to 3.15.1 on stores built to reach the boundaries, with and without numpy and with an embedder (`tests/test_audit_b_sleep_scores_only_pairs_that_can_pass.py`).
+
+`sleep` and `consolidate_clusters` are not cheap to call often: each call clusters every active record. Their docstrings and the two MCP tool descriptions now say so.
+
 ## 3.16.0 - UPGRADE IF you use partitions, or your store holds receipts written before 3.11.0: a record moved into another partition no longer verifies, and records whose receipts cannot say whose they are fail `verify_writes()` as UNSCOPED. VERIFICATION BEHAVIOUR CHANGES: receipts commit a new field, and `context_strict` defaults to True.
 
 Found on 2026-09-27 while reproducing agmi issue #5 (T6, cross-context replay). Measured on 3.14.3,
