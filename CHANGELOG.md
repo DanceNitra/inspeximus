@@ -32,6 +32,12 @@ with receipts on and signed:
   would leave the chain signed in places. On a project-scoped MCP server, the tool recommits only
   that project's records and the unscoped ones. The rule is in one place, `_surface.recommit_named`.
   The MCP server has 135 tools.
+- **`recommit()` writes the receipt chain once.** Every emitted receipt rewrote the whole receipt
+  sidecar, and every record scanned the whole chain for its latest receipt. On a copy of our own MCP
+  store (13,169 records, 8,127 active), `recommit --all` took 1,357 s. It takes 2.2 s, and it writes the
+  same 6,392 receipts. A chain that cannot be written is put back as it was, and the call raises
+  `ProofNotWritten`. `perf/gate.py` counts the sidecar writes (`recommit_n2000`: 1 write for 2,000
+  receipts).
 
 Known limit: a partition tag removed from a record whose receipts predate this release is not
 reported. The record leaves its partition's reads and enters no other partition's.
@@ -41,11 +47,40 @@ To upgrade a store: check the records `context_unbound()` names against a copy y
 store, the CLI needs the key: `--receipt-key-file`. To accept the gap instead, pass
 `context_strict=False`.
 
+What you see after upgrading: `verify_writes()` returns `(False, [...])` on a store whose receipts
+predate 3.11.0, or that holds partitioned records, until you act. The first problem line reads
+"N record(s) are UNSCOPED" and names both ways out:
+
+- `recommit(ids=[...])`, `recommit(all=True)` over MCP, or `inspeximus recommit --all`. This binds each
+  record's state AS IT IS NOW. It does not check the past. Run it after you compare the records with a
+  copy you trust.
+- `verify_writes(context_strict=False)`, which accepts the gap and reports the rest.
+
+Measured on that copy: 4,047 records were UNSCOPED before `recommit --all` and 0 after.
+
+`recommit` does not clear every problem `verify_writes()` can report. On the same copy, two older
+classes remained: 57 records that left the active state with no recorded retirement, and 1,480 inactive
+records with no write receipt. Both were there before 3.16.0, and `context_strict=False` reports them
+too.
+
+Our own store gets a dated baseline. We recommit it once, after 3.16.0 is on PyPI, on a copy first, and
+we record the decision in the store itself. The record's wording:
+
+> On 2026-10-0X, inspeximus recommitted the write receipts of N active records in this store
+> (receipt sequence A to B). From that date on, a change to one of these records fails `verify_writes()`.
+> The recommit binds the state the records had on that date. It does not verify anything that happened
+> to them before it. M records that left the active state with no recorded retirement, and K inactive
+> records with no write receipt, are still listed by `verify_writes()`.
+
+N, A, B, M and K come from the live run, not from the rehearsal.
+
 `tests/test_a_record_replayed_into_another_scope_fails_verification.py` fails on 3.14.3 (7 of 9; the
 other 2 are controls). Each of the 8 new mutations in `tools/mutations.json` fails a test, and so do
 the 3 that were updated. The surfaces are covered by
 `tests/test_recommit_from_the_shell_needs_named_ids_or_all.py` and
 `tests/test_the_mcp_server_exposes_recommit.py`, and each of their 15 mutations fails a test.
+
+Release record: to be filled from the runs on this tree.
 
 ## 3.15.9 - UPGRADE IF you use the Claude Code hooks with a long memory index: the SessionStart receipt names at most 20 pointers instead of all of them
 
