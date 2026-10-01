@@ -31,7 +31,7 @@ with receipts on and signed:
   writing nothing, when the handle cannot sign the way the chain is signed, because the new receipts
   would leave the chain signed in places. On a project-scoped MCP server, the tool recommits only
   that project's records and the unscoped ones. The rule is in one place, `_surface.recommit_named`.
-  The MCP server has 134 tools.
+  The MCP server has 135 tools.
 
 Known limit: a partition tag removed from a record whose receipts predate this release is not
 reported. The record leaves its partition's reads and enters no other partition's.
