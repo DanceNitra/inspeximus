@@ -98,10 +98,16 @@ def read_log(store_path) -> list:
     p = log_path(store_path)
     if not p.exists():
         return []
-    with open(p, encoding="utf-8") as fh:
-        doc = json.load(fh)
-    if not isinstance(doc, dict) or doc.get("kind") != LOG_KIND or not isinstance(doc.get("entries"), list):
-        raise ValueError(f"{p} is not an inspeximus archive log")
+    # NAMED, NEVER RAW (AUDIT-A F-3, 3.16.2). Garbage bytes raised UnicodeDecodeError or JSONDecodeError out of
+    # every reader, including forget() of a record that was never archived. An erasure refuses on it as it
+    # refuses on a missing segment: SegmentsUnreachable is a ValueError, so callers that caught one still do.
+    try:
+        with open(p, encoding="utf-8") as fh:
+            doc = json.load(fh)
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise SegmentsUnreachable([{"segment": "archive log", "state": f"unreadable: {type(exc).__name__}"}])
+    if not isinstance(doc, dict) or doc.get("kind") != LOG_KIND or not isinstance(doc.get("entries"), list)             or not all(isinstance(e, dict) for e in doc["entries"]):
+        raise SegmentsUnreachable([{"segment": "archive log", "state": f"{p.name} is not an inspeximus archive log"}])
     return doc["entries"]
 
 

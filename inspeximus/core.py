@@ -1966,6 +1966,17 @@ class WriteBlocked(RuntimeError):
                             verdict.get("note") or ""))
 
 
+class SidecarMalformed(ValueError):
+    """A sidecar the store reads (`<store>.tombstones.json` or `<store>.receipts.json`) does not have the shape this
+    library writes: not JSON, not a list, or an entry that is not a record of its kind. Raised by an operation that
+    would extend or certify the chain (an erasure, an erasure certificate); nothing was changed. `problems` names
+    each defect. The verifiers report the same problems as (False, [...]) instead (AUDIT-A F-3, 3.16.2)."""
+
+    def __init__(self, problems: list):
+        self.problems = list(problems)
+        super().__init__("refused, nothing was changed: " + "; ".join(self.problems))
+
+
 class StoreChangedOnDisk(RuntimeError):
     """Another writer changed the store file since this handle loaded or last saved it.
 
@@ -3556,11 +3567,18 @@ class Inspeximus:
         # Crosby-Wallach/Certificate-Transparency tamper-evident logs.
         self._tombstones: list[dict] = []
         self._tombstones_path = (self.path.parent / (self.path.name + ".tombstones.json")) if self.path else None
+        self._tombstone_problems: list = []
         if self._tombstones_path and self._tombstones_path.exists():
+            # AN UNREADABLE CHAIN IS NOT AN EMPTY ONE (AUDIT-A F-3, 3.16.2). This read used to fall back to [] on
+            # any error, and the next erasure then wrote a fresh chain over the file it could not read. The
+            # defects are named in `_tombstone_problems`, only well-formed entries are held in memory, and every
+            # operation that would write or certify the chain refuses while any is named.
             try:
-                self._tombstones = json.loads(self._tombstones_path.read_text(encoding="utf-8"))
-            except Exception:
+                self._tombstones = self._clean_tombstones(
+                    json.loads(self._tombstones_path.read_text(encoding="utf-8")))
+            except Exception as exc:                                   # noqa: BLE001
                 self._tombstones = []
+                self._tombstone_problems = [f"{self._tombstones_path.name} cannot be read: {type(exc).__name__}"]
         self._tombstones_sig = self._tombstones_disk_sig()
         # GDPR Art. 21 objections: a sidecar like the tombstones, one row per objection with its status.
         # A standing objection withholds the subject's records from recall (see recall's pool filter);
@@ -7173,6 +7191,10 @@ class Inspeximus:
         from . import archive as _archive
         if self.path and _archive.is_segment(self.path):
             return _archive.verify_segment(self.path, expected_pubkey)
+        self._reconcile_tombstones_with_disk()
+        _malformed = self._sidecar_problems()
+        if _malformed:
+            return False, _malformed
         problems: list[str] = []
         legacy_flagged: set = set()
         # IN-MEMORY STATE THAT NEVER REACHED DISK IS AN INTEGRITY PROBLEM, and on a row store it is
@@ -7713,6 +7735,33 @@ class Inspeximus:
                                 f"the chain was rewritten past that point")
         return (len(problems) == 0, problems)
 
+    @staticmethod
+    def _receipt_shape_problem(r) -> "str | None":
+        """Why one entry of the receipt sidecar cannot be a receipt, or None when its shape is one.
+
+        AUDIT-A F-3 (3.16.2): nine malformed shapes turned verify_writes(), recommit() and context_unbound()
+        into AttributeError, TypeError or KeyError. A verifier that crashes reports nothing, and a caller
+        that catches broadly reads the crash as "not my problem". Shape only: the hashes are verify_writes'."""
+        if not isinstance(r, dict):
+            return f"is a {type(r).__name__}, not an object"
+        if not isinstance(r.get("memory_id"), str):
+            return "has no string memory_id"
+        if "commit" in r and r["commit"] is not None and not isinstance(r["commit"], dict):
+            return f"has a commit that is a {type(r['commit']).__name__}, not an object"
+        if "seq" in r and (isinstance(r["seq"], bool) or not isinstance(r["seq"], int)):
+            return f"has a seq that is {type(r['seq']).__name__ if r['seq'] is not None else 'null'}, not an integer"
+        return None
+
+    def _malformed_receipts(self) -> list:
+        """['receipt <position> <why>', ...] for every entry of the chain whose shape is not a receipt's."""
+        out = []
+        for i, r in enumerate(self._receipts or []):
+            why = self._receipt_shape_problem(r)
+            if why:
+                out.append(f"receipt at position {i} of {self._receipts_path or 'the receipt chain'} {why}: "
+                           f"the sidecar is malformed, so the chain cannot be checked")
+        return out
+
     def context_unbound(self) -> dict:
         """Active records whose receipts do not bind whose they are: UNSCOPED records.
 
@@ -7732,7 +7781,10 @@ class Inspeximus:
         the remedy, recommit(ids=[...]), which binds each record's CURRENT context and partition, and the
         opt-out. `verify_writes()` fails on the same set unless called with context_strict=False."""
         receipted, ctx_bound, part_bound = set(), set(), set()
+        malformed = self._malformed_receipts()
         for r in self._receipts:
+            if self._receipt_shape_problem(r):
+                continue                              # named in `problems`, never a crash (F-3)
             c = r.get("commit") or {}
             receipted.add(r["memory_id"])
             if "context_sha256" in c:
@@ -7752,7 +7804,10 @@ class Inspeximus:
                        f"them against a copy you trust, then recommit(ids=[...]) binds their current context, "
                        f"or pass context_strict=False to accept the gap. ({', '.join(ids[:5])}"
                        + (f", +{len(ids) - 5} more" if len(ids) > 5 else "") + ")")
-        return {"unbound": len(ids), "ids": ids, "warning": warning}
+        out = {"unbound": len(ids), "ids": ids, "warning": warning}
+        if malformed:
+            out["problems"] = malformed
+        return out
 
     def recommit(self, ids=None) -> dict:
         """Append a fresh write receipt for records whose receipts predate a commitment field.
@@ -7774,6 +7829,10 @@ class Inspeximus:
         if not self.receipts_enabled:
             return {"recommitted": [], "skipped": [],
                     "problems": ["write receipts are disabled, so there is no chain to append to"]}
+        malformed = self._malformed_receipts()
+        if malformed:
+            # Appending to a chain that cannot be read would bind new receipts behind entries nobody can check.
+            return {"recommitted": [], "skipped": [], "problems": malformed}
         wanted = set(ids) if ids is not None else None
         done, skipped = [], []
         # The latest receipt per record, found in ONE pass. A scan of the whole chain per record made this
@@ -8954,6 +9013,9 @@ class Inspeximus:
         before you commit it.
 
         Returns {forgotten, ids, scrubbed_links, tombstones} (or the dry_run preview above)."""
+        self._reconcile_tombstones_with_disk()
+        if getattr(self, "_tombstone_problems", None):
+            raise SidecarMalformed(self._tombstone_problems)       # an erasure cannot extend a chain it cannot read
         target = set()
         if ids is not None:
             target |= ({ids} if isinstance(ids, str) else set(ids))
@@ -9263,6 +9325,27 @@ class Inspeximus:
         except (AttributeError, OSError):
             return None
 
+    def _clean_tombstones(self, doc) -> list:
+        """The well-formed entries of a tombstone sidecar's content; each defect goes to `_tombstone_problems`."""
+        name = self._tombstones_path.name if self._tombstones_path else "the tombstone chain"
+        if not isinstance(doc, list):
+            self._tombstone_problems = [f"{name} is a {type(doc).__name__}, not a list of tombstones"]
+            return []
+        probs, clean = [], []
+        for i, t in enumerate(doc):
+            if not isinstance(t, dict):
+                probs.append(f"tombstone at position {i} of {name} is a {type(t).__name__}, not an object")
+            elif not isinstance(t.get("memory_id"), str):
+                probs.append(f"tombstone at position {i} of {name} has no string memory_id")
+            else:
+                clean.append(t)
+        self._tombstone_problems = probs
+        return clean
+
+    def _sidecar_problems(self) -> list:
+        """Every named defect of the tombstone and receipt sidecars (AUDIT-A F-3)."""
+        return list(getattr(self, "_tombstone_problems", None) or []) + self._malformed_receipts()
+
     def _reconcile_tombstones_with_disk(self) -> int:
         """Adopt tombstones a peer process wrote to the sidecar, and re-chain ours on top of them.
 
@@ -9285,10 +9368,12 @@ class Inspeximus:
             return 0
         try:
             disk = json.loads(self._tombstones_path.read_text(encoding="utf-8"))
-        except Exception:
+        except Exception as exc:                                       # noqa: BLE001
+            self._tombstone_problems = [f"{self._tombstones_path.name} cannot be read: {type(exc).__name__}"]
             return 0
-        if not isinstance(disk, list):
-            return 0
+        disk = self._clean_tombstones(disk)
+        if self._tombstone_problems:
+            return 0                                  # named; nothing is adopted from, or written over, it
         mine = self._tombstones
         n = 0
         while n < len(mine) and n < len(disk) and mine[n].get("hash") == disk[n].get("hash"):
@@ -10908,6 +10993,24 @@ class Inspeximus:
                 out.append("irrev")
         return out
 
+    def _archived_ids(self) -> set:
+        """The ids the archive log beside this store assigns to a segment; empty when there is no log.
+
+        Read only when `<store>.archive.json` exists, so a store that never archived pays one stat. A log
+        that cannot be read returns empty here rather than failing the save that asked: the archive's own
+        verifiers report an unreadable log by name, and a save must not depend on them."""
+        if not self.path:
+            return set()
+        lp = Path(str(self.path) + ".archive.json")
+        if not lp.exists():
+            return set()
+        try:
+            from . import archive as _arch
+            return {i for e in _arch.read_log(self.path) if isinstance(e, dict) and e.get("kind") == "move"
+                    for i in (e.get("ids") or ()) if isinstance(i, str)}
+        except Exception:                                        # noqa: BLE001
+            return set()
+
     def _merge_with_disk(self, receipts_for_readded: bool = False, adopt_disk_loss: bool = False) -> dict:
         """The union `reload()` performs, without the save. Both callers use THIS, and only this.
 
@@ -10950,7 +11053,16 @@ class Inspeximus:
         resurrected = [r["id"] for r in self._items if r["id"] in buried]
         self._items = [r for r in self._items if r["id"] not in buried]
         on_disk = {r["id"] for r in self._items}
+        # A ROW THE ARCHIVE MOVED IS NOT A ROW A PEER NEVER SAW (3.16.2, AUDIT-A F-5). A move leaves no
+        # tombstone, so a handle loaded before `archive apply` read every moved row as its own unsaved
+        # write and put it back: measured, 10 archived rows hot again after one peer.remember(), and a
+        # 20,000-row apply beside a writer that left all 20,000 hot. The ids the archive log gives to a
+        # segment are never re-added from memory, and an edit held to one is not re-applied over the disk.
+        # Rows still on disk are not dropped by this: finishing a move needs its segment verified, which
+        # is apply()'s recovery, not a merge's.
+        archived = self._archived_ids()
         readded = [r for rid, r in mine.items() if rid not in on_disk and rid not in buried
+                   and rid not in archived
                    and (persisted is None or rid not in persisted or rid in _edited)]
         self._items.extend(readded)
         if _receipts_before is not None:
@@ -10973,7 +11085,7 @@ class Inspeximus:
             _kept = 0
             for _i, _r in enumerate(self._items):
                 _rid = _r.get("id")
-                if _rid in _edited and _rid in mine and _rid not in buried:
+                if _rid in _edited and _rid in mine and _rid not in buried and _rid not in archived:
                     # BOTH SIDES RETIRED IT, TOWARD DIFFERENT SUCCESSORS (A-41). The disk's retirement
                     # was committed first; this handle decided against a view that did not contain it.
                     # Re-applying ours overwrote the peer's link, so the chain skipped the peer's value
@@ -11758,6 +11870,7 @@ class Inspeximus:
     def erasure_report(self) -> dict:
         """Audit view of deliberate erasures: total tombstones + each {memory_id, ts, request_id}. Read-only;
         carries NO erased content (by construction). The durable proof-of-deletion trail behind forget_subject."""
+        self._reconcile_tombstones_with_disk()
         toms, withheld = self._visible_tombstones()
         out = {"tombstoned_total": len(toms),
                "erasures": [{"memory_id": t["memory_id"], "ts": t.get("ts"),
@@ -12393,6 +12506,9 @@ class Inspeximus:
         # by jane.doe@globex.example, DOB 1984-03-02". Refusing LOUDLY beats narrowing quietly: a
         # certificate a third party cannot verify from genesis is not the artifact this docstring
         # promises, so silently degrading it would break the feature to close the leak.
+        self._reconcile_tombstones_with_disk()
+        if self._sidecar_problems():
+            raise SidecarMalformed(self._sidecar_problems())      # a certificate over a chain nobody can read
         if self.tenant is not None:
             raise AttributeError(
                 "erasure_certificate() is operator-only and is not available on a tenant-bound "
@@ -12531,6 +12647,12 @@ class Inspeximus:
         ok, problems = self.verify_writes(expected_pubkey)
         _cu = self.context_unbound()
         toms, _withheld = self._visible_tombstones()
+        if self._sidecar_problems():
+            # AUDIT-A F-3: the anchor below commits to the chains, and a malformed one has no tip to commit to.
+            return {"erasures_total": len(toms), "by_request": {},
+                    "proof": {"verified": False, "problems": self._sidecar_problems(),
+                              "context_unbound": _cu["unbound"], "anchor": None},
+                    "scope": "not issued: a sidecar of this store is malformed; repair it and run this again"}
         by_req: dict = {}
         for t in toms:
             # A MISSING REQUEST ID IS NAMED, NEVER LEFT AS None. A tombstone can be written without

@@ -7594,5 +7594,69 @@
   "tests": [
    "tests/test_archive_apply_on_a_stale_handle_moves_every_row.py"
   ]
+ },
+ {
+  "name": "a merge writes rows the archive log gives to a segment back into the hot store",
+  "file": "inspeximus/core.py",
+  "old": "                   and rid not in archived\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_a_f5_a_peer_does_not_resurrect_archived_rows.py"
+  ]
+ },
+ {
+  "name": "a receipt that is not an object passes the shape check",
+  "file": "inspeximus/core.py",
+  "old": "        if not isinstance(r, dict):\n            return f\"is a {type(r).__name__}, not an object\"",
+  "new": "        if False:\n            return \"\"",
+  "tests": [
+   "tests/test_audit_a_f3_malformed_sidecars_get_a_verdict.py"
+  ]
+ },
+ {
+  "name": "verify_writes reads a malformed sidecar instead of naming it",
+  "file": "inspeximus/core.py",
+  "old": "        _malformed = self._sidecar_problems()\n        if _malformed:\n            return False, _malformed",
+  "new": "        _malformed = []",
+  "tests": [
+   "tests/test_audit_a_f3_malformed_sidecars_get_a_verdict.py",
+   "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
+  ]
+ },
+ {
+  "name": "recommit appends to a receipt chain it cannot read",
+  "file": "inspeximus/core.py",
+  "old": "            return {\"recommitted\": [], \"skipped\": [], \"problems\": malformed}",
+  "new": "            pass",
+  "tests": [
+   "tests/test_audit_a_f3_malformed_sidecars_get_a_verdict.py"
+  ]
+ },
+ {
+  "name": "an erasure writes over a tombstone chain it cannot read",
+  "file": "inspeximus/core.py",
+  "old": "            raise SidecarMalformed(self._tombstone_problems)       # an erasure cannot extend a chain it cannot read",
+  "new": "            pass",
+  "tests": [
+   "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
+  ]
+ },
+ {
+  "name": "an unreadable tombstone sidecar is read as an empty chain again",
+  "file": "inspeximus/core.py",
+  "old": "                self._tombstones = []\n                self._tombstone_problems = [f\"{self._tombstones_path.name} cannot be read: {type(exc).__name__}\"]\n        self._tombstones_sig",
+  "new": "                self._tombstones = []\n        self._tombstones_sig",
+  "tests": [
+   "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
+  ]
+ },
+ {
+  "name": "an unreadable archive log raises a raw decode error",
+  "file": "inspeximus/archive.py",
+  "old": "    except (UnicodeDecodeError, ValueError) as exc:\n        raise SegmentsUnreachable(",
+  "new": "    except KeyError as exc:\n        raise SegmentsUnreachable(",
+  "tests": [
+   "tests/test_audit_a_f3_malformed_sidecars_get_a_verdict.py"
+  ]
  }
 ]

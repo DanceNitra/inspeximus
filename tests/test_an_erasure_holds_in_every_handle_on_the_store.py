@@ -164,7 +164,10 @@ def test_tenant_stamps_survive_the_merge_of_two_handles(tmp_path):
     Inspeximus(p).for_tenant("acme").forget(ids=[x])
     a.for_tenant("globex").forget(ids=[y])            # a never refreshed: its flush merges with disk
     side = json.loads(open(p + ".tombstones.json", encoding="utf-8").read())
-    assert {t["memory_id"]: t.get("tenant") for t in side} == {x: "acme", y: "globex"}
+    # Since 3.16.2 the stamp is the tenant's salted pseudonym, not the id (AUDIT-A F-1); still one per tenant.
+    from inspeximus import sqlite_store as _ss
+    assert {t["memory_id"]: t.get("tenant") for t in side} == {x: _ss.pseudonym(p, "acme"), y: _ss.pseudonym(p, "globex")}
+    assert all(t.get("tenant", "").startswith(_ss.PSEUDONYM_PREFIX) for t in side)
     fresh = Inspeximus(p)
     assert [e["memory_id"] for e in fresh.for_tenant("acme").erasure_report()["erasures"]] == [x]
     assert [e["memory_id"] for e in fresh.for_tenant("globex").erasure_report()["erasures"]] == [y]
