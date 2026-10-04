@@ -328,10 +328,6 @@ are not present in the files you pointed the scan at.
 - **model weights** that trained on the data, or text reconstructible from *retained embeddings*
   (Morris et al., "Text Embeddings Reveal (Almost) As Much As Text", EMNLP 2023). If a vector survives
   the row, treat the content as recoverable;
-- **a tenant or agent id that names a person.** The id you pass to `for_tenant()` or use as an agent
-  id stays in the store's event journal after `forget_subject()`: measured with
-  `for_tenant("jane-tenant-77")`, the id is still in the store file twice after the erasure, while the
-  record's text and source are gone. Use a pseudonymous id (`tenant-7f3a`, not a name);
 - **an objection on file.** `object_processing()` keeps the objecting subject's identifier in
   `<store>.objections.json` after the subject is erased, because that entry is what keeps suppressing
   new records about them. Measured: 2 occurrences of the subject in that file after `forget_subject()`,
