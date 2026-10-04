@@ -3576,9 +3576,13 @@ class Inspeximus:
             try:
                 self._tombstones = self._clean_tombstones(
                     json.loads(self._tombstones_path.read_text(encoding="utf-8")))
-            except Exception as exc:                                   # noqa: BLE001
+            except (ValueError, UnicodeDecodeError) as exc:            # content that is not a chain: named
                 self._tombstones = []
                 self._tombstone_problems = [f"{self._tombstones_path.name} cannot be read: {type(exc).__name__}"]
+            except OSError:
+                # The FILE cannot be read (a permission, a directory in its place): an I/O condition, not a
+                # malformed chain. The write that follows fails the same way and raises ProofNotWritten (A-34).
+                self._tombstones = []
         self._tombstones_sig = self._tombstones_disk_sig()
         # GDPR Art. 21 objections: a sidecar like the tombstones, one row per objection with its status.
         # A standing objection withholds the subject's records from recall (see recall's pool filter);
@@ -9368,9 +9372,11 @@ class Inspeximus:
             return 0
         try:
             disk = json.loads(self._tombstones_path.read_text(encoding="utf-8"))
-        except Exception as exc:                                       # noqa: BLE001
+        except (ValueError, UnicodeDecodeError) as exc:                # content that is not a chain: named
             self._tombstone_problems = [f"{self._tombstones_path.name} cannot be read: {type(exc).__name__}"]
             return 0
+        except OSError:
+            return 0                                  # an I/O condition; the write path reports it (A-34)
         disk = self._clean_tombstones(disk)
         if self._tombstone_problems:
             return 0                                  # named; nothing is adopted from, or written over, it

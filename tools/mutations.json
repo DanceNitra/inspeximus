@@ -7644,8 +7644,8 @@
  {
   "name": "an unreadable tombstone sidecar is read as an empty chain again",
   "file": "inspeximus/core.py",
-  "old": "                self._tombstones = []\n                self._tombstone_problems = [f\"{self._tombstones_path.name} cannot be read: {type(exc).__name__}\"]\n        self._tombstones_sig",
-  "new": "                self._tombstones = []\n        self._tombstones_sig",
+  "old": "            except (ValueError, UnicodeDecodeError) as exc:            # content that is not a chain: named\n                self._tombstones = []\n                self._tombstone_problems = [f\"{self._tombstones_path.name} cannot be read: {type(exc).__name__}\"]",
+  "new": "            except (ValueError, UnicodeDecodeError) as exc:            # content that is not a chain: named\n                self._tombstones = []",
   "tests": [
    "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
   ]
