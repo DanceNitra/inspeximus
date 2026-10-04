@@ -252,6 +252,15 @@ class Counters:
 #:                    prompt_unstamped_n2000, whose counters were otherwise identical to the stamped
 #:                    arm's, so only the advisory clock showed it (1.509 s against 0.099 s). One per
 #:                    handle is the expected cost (A-45, 3.15.5).
+#:   guard_shape_scans  one record put through the read guard's instruction-shape scan. A record whose
+#:                    stored verdict this store's key vouches for skips it, so this is the number of
+#:                    rows a read really assessed, where read_guard_assessments also counts the cheap
+#:                    skip. After `stamp_read_guards()` a fresh handle's recall scans 0 (AUDIT-B 3.16.3);
+#:                    9,596 of 12,176 active rows of our own project store were scanned on every prompt.
+#:   tracked_gets    one `get` on a record, which is a Python method (it wraps a nested container on first
+#:                    access). state_digest read six fields of every row through it, twice per MCP tool call
+#:                    under the action ledger: 155,379 calls and 0.095 s on a 13,359-record store. It reads the
+#:                    scalars with `dict.get` now, so a digest costs 0 of these (AUDIT-B 3.16.3).
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
     "current_active_scans": (core.Inspeximus, "_current_active"),
@@ -260,6 +269,8 @@ COUNTED_CALLS = {
     "store_hash_reads": (core.Inspeximus, "_disk_hash"),
     "guard_key_lookups": (core, "_guard_key_file"),
     "decision_syncs": (core.Inspeximus, "_sync_before_decision"),
+    "guard_shape_scans": (core, "_instruction_shape"),
+    "tracked_gets": (core._TrackedDict, "get"),
 }
 
 
@@ -543,6 +554,43 @@ def w_prompt(n):
 
     def run():
         Inspeximus(p).recall("which make target builds the docs", k=6)
+    return run
+
+
+def w_prompt_restamped(n):
+    """The prompt hook's read of a store whose rows carried no read-guard stamp (written before 3.15.4)
+    and were then stamped once by `stamp_read_guards()`: a FRESH handle recalls once and
+    `guard_shape_scans` is 0. The stripped stamps and the stamping pass are setup, not measured."""
+    p = _store_path()
+    m = Inspeximus(p)
+    for i in range(n):
+        m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+    m.flush()
+    m = Inspeximus(p)
+    for r in m._items:
+        (r.get("meta") or {}).pop("read_guards", None)
+        m._touched.add(r["id"])
+    m._save(force=True)
+    stamped = Inspeximus(p).stamp_read_guards()
+    assert stamped["stamped"] == n, stamped
+
+    def run():
+        Inspeximus(p).recall("which make target builds the docs", k=6)
+    return run
+
+
+def w_digest(n):
+    """`state_digest()` over n records: the digest the action ledger takes before and after every MCP tool
+    call. `tracked_gets` is 0: the scalar fields are read without the record's Python-level `get`."""
+    p = _store_path()
+    m = Inspeximus(p)
+    for i in range(n):
+        m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+    m.flush()
+    h = Inspeximus(p)
+
+    def run():
+        h.state_digest()
     return run
 
 
@@ -893,6 +941,9 @@ WORKLOADS = {
     "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once", "rows"),
     "prompt_unstamped_n2000": (lambda: w_prompt_unstamped(2000),
                            "prompt_n2000 under a key home that cannot verify the read-guard stamps", "rows"),
+    "prompt_restamped_n2000": (lambda: w_prompt_restamped(2000),
+                           "prompt_n2000 after stamp_read_guards() stamped rows that had no verdict", "rows"),
+    "digest_n2000":       (lambda: w_digest(2000),       "state_digest over 2,000 records (the action ledger takes it twice per tool call)", "rows"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
     "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),
