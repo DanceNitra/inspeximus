@@ -7758,5 +7758,14 @@
   "tests": [
    "tests/test_state_digest_reads_scalars_without_the_records_get.py"
   ]
+ },
+ {
+  "name": "stamp_read_guards on a tenant view stamps the shared store's rows",
+  "file": "inspeximus/core.py",
+  "old": "        rows = [r for r in self._tenant_rows() if r.get(\"status\") == \"active\"]    # a view stamps only its own rows\n",
+  "new": "        rows = [r for r in self._items if r.get(\"status\") == \"active\"]    # a view stamps only its own rows\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
  }
 ]

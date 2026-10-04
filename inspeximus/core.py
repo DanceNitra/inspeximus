@@ -9742,7 +9742,9 @@ class Inspeximus:
         the backlog only shrinks by aging out; this clears it once.
 
         WHAT IT STAMPS. Only a record the guards find clean. A flagged record is never stamped, and
-        its flags are kept, so its release is checked on every read as before. A record that already
+        its flags are kept, so its release is checked on every read as before. A flag found now that
+        no read had saved is saved too: this pass writes what the assessment finds, unlike a read.
+        A tenant view stamps its tenant's rows only. A record that already
         carries a valid stamp is not touched. Nothing is stamped when this store has no guard key:
         a stamp is a MAC, and a MAC without the key vouches for nothing.
 
@@ -9750,7 +9752,7 @@ class Inspeximus:
         `dry_run` nothing is assessed or written."""
         key = self._guard_key()
         gset = _guard_set_hash()
-        rows = [r for r in self._items if r.get("status") == "active"]
+        rows = [r for r in self._tenant_rows() if r.get("status") == "active"]    # a view stamps only its own rows
         todo = [r for r in rows if not self._guard_stamp_valid(r, key, gset)]
         out = {"active": len(rows), "valid_stamps": len(rows) - len(todo), "to_stamp": len(todo),
                "stamped": 0, "flagged": 0, "applied": False, "has_key": bool(key)}

@@ -148,3 +148,27 @@ def test_the_cli_is_a_dry_run_until_apply(tmp_path, tmp_path_factory):
     assert dry.returncode == 0 and "Dry run" in dry.stdout and '"to_stamp": 4' in dry.stdout, dry.stdout + dry.stderr
     done = run("--apply")
     assert '"stamped": 4' in done.stdout and '"applied": true' in done.stdout, done.stdout + done.stderr
+
+
+def test_a_tenant_view_counts_and_stamps_only_its_own_rows(tmp_path):
+    """AUDIT-A F-8: on a view `self._items` is the shared store, so the pass stamped another tenant's rows."""
+    p = str(tmp_path / "s.json")
+    root = Inspeximus(p)
+    acme, globex = root.for_tenant("acme"), root.for_tenant("globex")
+    for i in range(5):
+        acme.remember(f"acme fact {i} about the build", key=f"a:{i}")
+    for i in range(3):
+        globex.remember(f"globex fact {i} about the build", key=f"g:{i}")
+    root.flush()
+    m = Inspeximus(p)
+    for r in m._items:
+        (r.get("meta") or {}).pop("read_guards", None)
+        m._touched.add(r["id"])
+    m._save(force=True)
+    view = Inspeximus(p).for_tenant("globex")
+    out = view.stamp_read_guards()
+    assert out["active"] == 3 and out["stamped"] == 3, out
+    fresh = Inspeximus(p)
+    stamped = {r["id"] for r in fresh._items if (r.get("meta") or {}).get("read_guards")}
+    mine = {r["id"] for r in fresh._items if r.get("tenant") == "globex"}
+    assert stamped == mine, "the view stamped a row that is not its tenant's"
