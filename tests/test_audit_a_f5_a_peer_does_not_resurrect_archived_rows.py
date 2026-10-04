@@ -54,3 +54,17 @@ def test_control_a_second_apply_heals_rows_a_3_16_1_peer_wrote_back(env, monkeyp
     hot = {x["id"] for x in Inspeximus(p)._items}
     segs = sum(len(v["ids"]) for v in archive.listed_segments(p).values())
     assert r["applied"] and not (hot & set(ids)) and segs == 10, (r.get("applied"), len(hot & set(ids)), segs)
+
+
+def test_an_unreadable_archive_log_never_lets_a_moved_row_back_and_writes_go_on(env, monkeypatch):
+    """AUDIT-A F-5b: with the log unreadable, a stale peer's merge re-adds only rows it never saved or edited, so no
+    moved row comes back, and its own new write still lands: a damaged log does not stop the hook writes."""
+    p, ids = _build(env, monkeypatch)
+    writer = Inspeximus(p)                                # loaded before the move
+    archive.apply(Inspeximus(p), 7, now=T0)
+    open(p + ".archive.json", "wb").write(b"\x00\xff garbage")
+    writer.remember("a new note written by the long-lived peer", key="peer-1")
+    writer.flush()
+    hot = Inspeximus(p)._items
+    assert not ({x["id"] for x in hot} & set(ids)), "an archived row came back"
+    assert any(x.get("key") == "peer-1" for x in hot), "the peer's own write was lost"

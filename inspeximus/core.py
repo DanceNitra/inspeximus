@@ -1972,9 +1972,11 @@ class SidecarMalformed(ValueError):
     would extend or certify the chain (an erasure, an erasure certificate); nothing was changed. `problems` names
     each defect. The verifiers report the same problems as (False, [...]) instead (AUDIT-A F-3, 3.16.2)."""
 
-    def __init__(self, problems: list):
+    def __init__(self, problems: list, remedy: str | None = None):
         self.problems = list(problems)
-        super().__init__("refused, nothing was changed: " + "; ".join(self.problems))
+        self.remedy = remedy
+        super().__init__("refused, nothing was changed: " + "; ".join(self.problems)
+                         + (f". To go on: {remedy}" if remedy else ""))
 
 
 class StoreChangedOnDisk(RuntimeError):
@@ -2397,9 +2399,10 @@ class _StoreLock:
     the lock degrades to a no-op rather than failing the write, because a store that cannot save is a
     worse outcome than one that races.
 
-    NOT re-entrant. Windows byte-range locks are per-handle, so a second _StoreLock on the SAME path
-    inside the first would deadlock against itself. `_durable_replace` therefore does not lock; only
-    its two callers do, and they lock different files.
+    RE-ENTRANT PER THREAD since 3.15.6 (`_reent` below): a second _StoreLock on the same path in the thread
+    that already holds it goes through instead of waiting on itself, and another thread still waits. Until
+    3.15.6 it was not, because Windows byte-range locks are per-handle, so a nested lock on the same path
+    deadlocked against itself; `_durable_replace` still takes no lock of its own, and only its two callers do.
     """
 
     #: One cached (threading.Lock, open file handle) per lock path, for the life of the process.
@@ -9018,8 +9021,8 @@ class Inspeximus:
 
         Returns {forgotten, ids, scrubbed_links, tombstones} (or the dry_run preview above)."""
         self._reconcile_tombstones_with_disk()
-        if getattr(self, "_tombstone_problems", None):
-            raise SidecarMalformed(self._tombstone_problems)       # an erasure cannot extend a chain it cannot read
+        if getattr(self, "_tombstone_problems", None) and not dry_run:   # a dry run writes nothing, so it previews
+            raise SidecarMalformed(self._tombstone_problems, self._tombstone_remedy())  # cannot extend what it cannot read
         target = set()
         if ids is not None:
             target |= ({ids} if isinstance(ids, str) else set(ids))
@@ -9345,6 +9348,14 @@ class Inspeximus:
                 clean.append(t)
         self._tombstone_problems = probs
         return clean
+
+    def _tombstone_remedy(self) -> "str | None":
+        """What to do about a malformed tombstone chain, named in the refusal (AUDIT-A, 3.16.2)."""
+        if not getattr(self, "_tombstone_problems", None) or not self._tombstones_path:
+            return None
+        return (f"move {self._tombstones_path} aside, then run the erasure again; the new chain starts empty, so a "
+                f"certificate covers only the erasures recorded after the move, and the file you moved keeps the "
+                f"earlier ones")
 
     def _sidecar_problems(self) -> list:
         """Every named defect of the tombstone and receipt sidecars (AUDIT-A F-3)."""
@@ -11000,11 +11011,9 @@ class Inspeximus:
         return out
 
     def _archived_ids(self) -> set:
-        """The ids the archive log beside this store assigns to a segment; empty when there is no log.
-
-        Read only when `<store>.archive.json` exists, so a store that never archived pays one stat. A log
-        that cannot be read returns empty here rather than failing the save that asked: the archive's own
-        verifiers report an unreadable log by name, and a save must not depend on them."""
+        """The ids the archive log beside this store assigns to a segment; empty when there is no log, None
+        when there is one that cannot be read. Read only when `<store>.archive.json` exists, so a store that
+        never archived pays one stat."""
         if not self.path:
             return set()
         lp = Path(str(self.path) + ".archive.json")
@@ -11015,7 +11024,7 @@ class Inspeximus:
             return {i for e in _arch.read_log(self.path) if isinstance(e, dict) and e.get("kind") == "move"
                     for i in (e.get("ids") or ()) if isinstance(i, str)}
         except Exception:                                        # noqa: BLE001
-            return set()
+            return None                       # unreadable: the caller decides (see `_merge_with_disk`)
 
     def _merge_with_disk(self, receipts_for_readded: bool = False, adopt_disk_loss: bool = False) -> dict:
         """The union `reload()` performs, without the save. Both callers use THIS, and only this.
@@ -11040,7 +11049,8 @@ class Inspeximus:
         the receipt chain follows the disk the same way. The write-recovery path (`reload()`) is
         unchanged: there the records missing from disk are the ones whose save was refused.
         """
-        persisted = self._persisted_ids() if adopt_disk_loss else None
+        _persisted_before = self._persisted_ids()     # taken before the load below replaces the snapshot
+        persisted = _persisted_before if adopt_disk_loss else None
         mine = {r["id"]: r for r in self._items}
         # THE ROWS THIS HANDLE EDITED, captured before the load below clears the set (3.5.1).
         _edited = set(self._touched or ())
@@ -11067,6 +11077,15 @@ class Inspeximus:
         # Rows still on disk are not dropped by this: finishing a move needs its segment verified, which
         # is apply()'s recovery, not a merge's.
         archived = self._archived_ids()
+        if archived is None:
+            # AN UNREADABLE LOG CANNOT SAY WHICH ROWS IT MOVED (AUDIT-A F-5b on f4b0d4bf). Read as empty, every moved
+            # row looked like this handle's unsaved write again, which is F-5 reopened; a refusal instead would stop
+            # every hook write while the log is damaged. So the merge takes the conservative rule `refresh()` has:
+            # a row this handle already saved or read and no longer finds on disk was taken off the disk, and only
+            # rows it never saved, or edited, are re-added. A moved row was read by this handle, so it stays out.
+            if persisted is None:
+                persisted = _persisted_before if _persisted_before is not None else set(mine)
+            archived = set()
         readded = [r for rid, r in mine.items() if rid not in on_disk and rid not in buried
                    and rid not in archived
                    and (persisted is None or rid not in persisted or rid in _edited)]
@@ -12514,7 +12533,7 @@ class Inspeximus:
         # promises, so silently degrading it would break the feature to close the leak.
         self._reconcile_tombstones_with_disk()
         if self._sidecar_problems():
-            raise SidecarMalformed(self._sidecar_problems())      # a certificate over a chain nobody can read
+            raise SidecarMalformed(self._sidecar_problems(), self._tombstone_remedy())  # nobody can read the chain
         if self.tenant is not None:
             raise AttributeError(
                 "erasure_certificate() is operator-only and is not available on a tenant-bound "

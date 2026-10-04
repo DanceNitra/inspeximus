@@ -93,3 +93,28 @@ def test_a_repaired_sidecar_is_read_again(tmp_path):
     assert h.verify_writes()[0] is False
     open(p + ".tombstones.json", "wb").write(good)
     assert h.forget(ids=[keep])["forgotten"] == 1, "the same handle reads the repaired file and erases"
+
+
+def test_the_refusal_names_the_remedy_and_moving_the_file_aside_works(tmp_path):
+    """AUDIT-A: the refusal says what to do. Moving the file aside and erasing again starts a new chain."""
+    p, keep = _store(tmp_path)
+    _break(p, "an entry is null")
+    for call in (lambda h: h.forget(ids=[keep]), lambda h: h.erasure_certificate()):
+        with pytest.raises(SidecarMalformed) as err:
+            call(Inspeximus(p, receipts=True))
+        msg = str(err.value)
+        assert "move " in msg and "memory.json.tombstones.json aside, then run the erasure again" in msg, msg
+        assert "the new chain starts empty" in msg and err.value.remedy, msg
+    os.replace(p + ".tombstones.json", p + ".tombstones.json.malformed")
+    assert Inspeximus(p, receipts=True).forget(ids=[keep])["forgotten"] == 1
+    assert [t["memory_id"] for t in json.load(open(p + ".tombstones.json"))] == [keep], "a new chain, from empty"
+
+
+def test_a_dry_run_previews_over_a_malformed_chain_and_writes_nothing(tmp_path):
+    """A dry run writes nothing, so it has nothing to refuse (AUDIT-A)."""
+    p, keep = _store(tmp_path)
+    broken = _break(p, "the file is an object")
+    out = Inspeximus(p, receipts=True).forget(ids=[keep], dry_run=True)
+    assert out["dry_run"] is True and out["ids"] == [keep] and out["would_forget"] == 1, out
+    assert open(p + ".tombstones.json", "rb").read() == broken
+    assert keep in {r["id"] for r in Inspeximus(p)._items}

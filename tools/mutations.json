@@ -7635,7 +7635,7 @@
  {
   "name": "an erasure writes over a tombstone chain it cannot read",
   "file": "inspeximus/core.py",
-  "old": "            raise SidecarMalformed(self._tombstone_problems)       # an erasure cannot extend a chain it cannot read",
+  "old": "            raise SidecarMalformed(self._tombstone_problems, self._tombstone_remedy())  # cannot extend what it cannot read",
   "new": "            pass",
   "tests": [
    "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
@@ -7657,6 +7657,34 @@
   "new": "    except KeyError as exc:\n        raise SegmentsUnreachable(",
   "tests": [
    "tests/test_audit_a_f3_malformed_sidecars_get_a_verdict.py"
+  ]
+ },
+ {
+  "name": "an unreadable archive log lets a merge re-add every moved row",
+  "file": "inspeximus/core.py",
+  "old": "            if persisted is None:\n                persisted = _persisted_before if _persisted_before is not None else set(mine)\n            archived = set()\n",
+  "new": "            archived = set()\n",
+  "tests": [
+   "tests/test_audit_a_f5_a_peer_does_not_resurrect_archived_rows.py",
+   "tests/test_audit_a_f5b_an_unreadable_log_during_a_peer_save.py"
+  ]
+ },
+ {
+  "name": "the tombstone refusal drops its remedy",
+  "file": "inspeximus/core.py",
+  "old": "                         + (f\". To go on: {remedy}\" if remedy else \"\"))",
+  "new": "                         + \"\")",
+  "tests": [
+   "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
+  ]
+ },
+ {
+  "name": "a dry-run forget refuses over a malformed chain",
+  "file": "inspeximus/core.py",
+  "old": "        if getattr(self, \"_tombstone_problems\", None) and not dry_run:",
+  "new": "        if getattr(self, \"_tombstone_problems\", None):",
+  "tests": [
+   "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
   ]
  }
 ]
