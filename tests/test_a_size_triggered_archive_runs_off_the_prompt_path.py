@@ -197,3 +197,27 @@ def test_a_prompt_hook_that_runs_during_apply_answers_normally_and_loses_nothing
     everything, in_segments = _all_ids(p)
     assert everything == set(ids) and len(in_segments) == 600
     assert all(a == "" or a.lstrip().startswith("{") for a in answers), "a hook printed something that is not JSON"
+
+
+# ── an erasure reaches an archived `file:` row ──────────────────────────────────
+
+def test_an_erasure_reaches_file_rows_that_were_archived(tmp_path, monkeypatch):
+    proj, p, ids = _project(tmp_path, monkeypatch, n_cmd=0, n_file=0)
+    m = Inspeximus(p)
+    now = time.time()
+    real = core.time.time
+    try:
+        core.time.time = lambda: now - 40 * DAY
+        mine = m.remember("state of the payroll file", key="file:hr/payroll.py", tags=["file"], mtype="episodic",
+                          source={"doc": "hr/alice"})
+        other = m.remember("state of another file", key="file:src/other.py", tags=["file"], mtype="episodic")
+    finally:
+        core.time.time = real
+    m.flush()
+    monkeypatch.chdir(proj)
+    assert archive.apply(Inspeximus(p), 7, ("file",), allow_git_tracked=True)["applied"]
+    assert {mine, other} <= {i for s in archive.listed_segments(p).values() for i in s["ids"]}, "control: archived"
+    r = Inspeximus(p).forget_subject("hr/alice", request_id="dsar-file")
+    assert mine in r["ids"] and other not in r["ids"], r
+    left = {i for s in archive.listed_segments(p).values() for i in s["ids"]}
+    assert mine not in left and other in left, "the erased file row left the segment, the other stayed"
