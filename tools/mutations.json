@@ -7686,5 +7686,77 @@
   "tests": [
    "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
   ]
+ },
+ {
+  "name": "stamp_read_guards stamps in memory and never saves",
+  "file": "inspeximus/core.py",
+  "old": "        if out[\"stamped\"]:\n            self._save(force=True)\n            out[\"applied\"] = True\n",
+  "new": "        if False:\n            self._save(force=True)\n            out[\"applied\"] = True\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
+ },
+ {
+  "name": "stamp_read_guards stamps on a dry run",
+  "file": "inspeximus/core.py",
+  "old": "        if dry_run or not key or not gset or not todo:\n",
+  "new": "        if not key or not gset or not todo:\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
+ },
+ {
+  "name": "stamp_read_guards treats every row as already stamped",
+  "file": "inspeximus/core.py",
+  "old": "        todo = [r for r in rows if not self._guard_stamp_valid(r, key, gset)]\n",
+  "new": "        todo = [r for r in rows if False]\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
+ },
+ {
+  "name": "the archive policy runs when nobody switched it on",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not pol[\"auto\"]:\n            return \"off\"\n",
+  "new": "        if False:\n            return \"off\"\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "the archive policy ignores the size threshold",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if size < pol[\"trigger_mb\"] * 1024 * 1024:\n",
+  "new": "        if False and size < pol[\"trigger_mb\"] * 1024 * 1024:\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "the archive policy starts a run on every prompt",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if now - last < pol[\"min_interval_s\"]:\n",
+  "new": "        if False and now - last < pol[\"min_interval_s\"]:\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "the file class selects the cmd rows",
+  "file": "inspeximus/archive.py",
+  "old": "             lambda r: str(r.get(\"key\") or \"\").startswith(\"file:\")),\n",
+  "new": "             lambda r: str(r.get(\"key\") or \"\").startswith(\"cmd:\")),\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "state_digest reads rows through the record's Python get again",
+  "file": "inspeximus/core.py",
+  "old": "        _get = dict.get\n",
+  "new": "        _get = lambda r, k: r.get(k)\n",
+  "tests": [
+   "tests/test_state_digest_reads_scalars_without_the_records_get.py"
+  ]
  }
 ]
