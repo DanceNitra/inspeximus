@@ -7567,5 +7567,32 @@
   "tests": [
    "tests/test_archive_apply_on_a_stale_handle_moves_every_row.py"
   ]
+ },
+ {
+  "name": "an erasure stamps its tombstone with the tenant id in the clear",
+  "file": "inspeximus/core.py",
+  "old": "t[\"tenant\"] = _rows.pseudonym(self.path, self.tenant, create=True) if self.path and _rows else self.tenant",
+  "new": "t[\"tenant\"] = self.tenant",
+  "tests": [
+   "tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py"
+  ]
+ },
+ {
+  "name": "a tenant handle no longer finds its own pseudonymised tombstones",
+  "file": "inspeximus/core.py",
+  "old": "forms = {self.tenant, _rows.pseudonym(self.path, self.tenant) if self.path and _rows else None} - {None}",
+  "new": "forms = {self.tenant}",
+  "tests": [
+   "tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py"
+  ]
+ },
+ {
+  "name": "archive.apply reports the plan it made before the merge",
+  "file": "inspeximus/archive.py",
+  "old": "        p = plan(m, older_than_days, classes, now, cap_bytes)\n        entries = read_log(m.path)",
+  "new": "        entries = read_log(m.path)",
+  "tests": [
+   "tests/test_archive_apply_on_a_stale_handle_moves_every_row.py"
+  ]
  }
 ]

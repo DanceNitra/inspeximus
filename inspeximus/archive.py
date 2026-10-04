@@ -907,6 +907,9 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
         # through the save below, no peer can write between the selection and the save.
         if not m._merge_rows_from_disk():
             raise ArchiveRefused("the store could not be read again under its lock; nothing was moved")
+        # The counts it reports come from the rows as merged, not from the plan made before the lock: on a
+        # stale handle that plan counted a row a peer had erased (AUDIT-A F-2: moving 6, written 5).
+        p = plan(m, older_than_days, classes, now, cap_bytes)
         entries = read_log(m.path)
         listed = listed_segments(m.path)
         logged = _logged_ids(listed)

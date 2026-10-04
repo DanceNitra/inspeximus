@@ -9181,8 +9181,14 @@ class Inspeximus:
         # the chain on upgrade. So the stamp is a VIEW FILTER, not an audit claim -- it is not
         # tamper-evident, and nothing in this file may treat it as evidence of anything. Verified by
         # re-hashing live tombstones with the key added: identical, chain_intact preserved.
+        #
+        # THE STAMP IS A PSEUDONYM (3.16.2). The tenant id it carried in the clear was the erased record's
+        # tenant, left in `<store>.tombstones.json` and in every erasure certificate (AUDIT-A on 3.16.2
+        # b49d6775). It is now the same salted HMAC the journal gets (`sqlite_store.pseudonym`), which
+        # `_visible_tombstones` matches. Without a salt (the key home sits inside the store's directory) the
+        # stamp is None: the id goes, and the bound handle counts the tombstone as withheld.
         if self.tenant is not None:
-            t["tenant"] = self.tenant
+            t["tenant"] = _rows.pseudonym(self.path, self.tenant, create=True) if self.path and _rows else self.tenant
         t = self._seal_tombstone(t)
         # ERASURE HAS TO REACH THE COPY WE MADE OURSELVES. Converting a JSON store to rows leaves the
         # original beside it so the upgrade can be undone, and that backup is a full copy of the records
@@ -11744,8 +11750,10 @@ class Inspeximus:
         """
         if self.tenant is None:
             return tuple(self._tombstones), 0
-        mine = tuple(t for t in self._tombstones if t.get("tenant") == self.tenant)
-        return mine, sum(1 for t in self._tombstones if "tenant" not in t)
+        # Both forms: a stamp written before 3.16.2 holds the id, a later one its pseudonym.
+        forms = {self.tenant, _rows.pseudonym(self.path, self.tenant) if self.path and _rows else None} - {None}
+        mine = tuple(t for t in self._tombstones if t.get("tenant") in forms)
+        return mine, sum(1 for t in self._tombstones if t.get("tenant") is None)
 
     def erasure_report(self) -> dict:
         """Audit view of deliberate erasures: total tombstones + each {memory_id, ts, request_id}. Read-only;

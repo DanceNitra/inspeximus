@@ -111,3 +111,74 @@ def test_without_a_salt_home_the_columns_are_cleared(tmp_path, monkeypatch):
     assert before.count(TENANT.encode()) >= 2 and after.count(TENANT.encode()) == 0
     ev = [e for e in Inspeximus(str(path)).poll_events() if e.get("memory_id")]
     assert ev and all(e["tenant"] is None for e in ev), ev
+    assert [t.get("tenant") for t in Inspeximus(str(path))._tombstones] == [None]
+    mine, withheld = Inspeximus(str(path)).for_tenant(TENANT)._visible_tombstones()
+    assert (len(mine), withheld) == (0, 1), "an erasure the handle cannot attribute is counted, not hidden"
+
+
+# ── the class: every file beside the store and the certificate, for every field of the erased record ──
+#
+# AUDIT-A on b49d6775 (F-1): the journal was clean and the tenant id still sat in `<store>.tombstones.json`
+# and in `erasure_certificate()`, because the test above read one file. These scan the whole directory.
+
+FIELDS = {"tenant": b"zq-tenant-7741", "agent": b"zq-assistant-agent", "key": b"zq-invoice-email",
+          "text": b"zq@example.test", "source": b"zq.example"}
+
+
+def _beside(path):
+    d = os.path.dirname(str(path))
+    return {n: open(os.path.join(d, n), "rb").read() for n in os.listdir(d) if os.path.isfile(os.path.join(d, n))}
+
+
+def _held(path):
+    files = _beside(path)
+    return {f: sorted(n for n, b in files.items() if needle in b) for f, needle in FIELDS.items()
+            if any(needle in b for b in files.values())}
+
+
+def test_f1_the_tenant_id_leaves_the_tombstone_sidecar_and_the_certificate(tmp_path, monkeypatch):
+    """AUDIT-A's test as handed over: the whole directory and the certificate, after one erasure."""
+    import json
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
+    p = str(tmp_path / "memory.json")
+    t = "zq-tenant-7741"
+    view = Inspeximus(p).for_tenant(t)
+    view.remember("Zq prefers invoices to zq@example.test", key="invoice-email", source={"doc": "zq.example"})
+    assert sum(b.count(t.encode()) for b in _beside(p).values()) >= 2, "control: the id is in the store before"
+    assert view.forget_subject("zq.example")["erased"] == 1
+    held = {n: b.count(t.encode()) for n, b in _beside(p).items() if t.encode() in b}
+    assert not held, f"the tenant id of an erased record is still in: {held}"
+    assert t not in json.dumps(Inspeximus(p).erasure_certificate())
+
+
+def test_no_field_of_an_erased_record_is_left_in_any_file_or_the_certificate(tmp_path, monkeypatch):
+    """Receipts on, so the receipt sidecar exists beside the tombstones; a tenant, an agent, a personal key.
+    The key home is a SIBLING of the store's directory: inside it, no salt is minted and the ids are cleared,
+    which passes an absence check without exercising the pseudonym at all."""
+    import json
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
+    (tmp_path / "store").mkdir()
+    p = tmp_path / "store" / "memory.json"
+    view = Inspeximus(str(p), receipts=True).for_tenant("zq-tenant-7741").as_agent("zq-assistant-agent")
+    view.remember("Zq prefers invoices to zq@example.test", key="zq-invoice-email", source={"doc": "zq.example"})
+    # A record under ANOTHER tenant and agent keeps every sidecar non-empty after the erasure; one under the
+    # same tenant would carry its ids in the clear as live data and hide a leak of the erased record's.
+    Inspeximus(str(p), receipts=True).for_tenant("other-tenant").as_agent("other-agent").remember(
+        "the office opens at nine", key="hours")
+    before = _held(p)
+    assert set(before) == set(FIELDS), f"control: every field is in the store before the erasure: {before}"
+    assert view.forget_subject("zq.example")["erased"] == 1
+    after = _held(p)
+    assert not after, f"a field of the erased record is still in a file: {after}"
+    stamps = [t.get("tenant") for t in Inspeximus(str(p))._tombstones]
+    assert stamps == [rows.pseudonym(p, "zq-tenant-7741")] and stamps[0].startswith(rows.PSEUDONYM_PREFIX), stamps
+    assert sorted(os.listdir(p.parent)) == ["memory.json", "memory.json.receipts.json", "memory.json.tombstones.json"]
+    mine, withheld = Inspeximus(str(p)).for_tenant("zq-tenant-7741")._visible_tombstones()
+    assert len(mine) == 1 and withheld == 0, "the tenant handle still finds its own erasure"
+    cert = json.dumps(Inspeximus(str(p)).erasure_certificate())
+    leaked = [f for f, needle in FIELDS.items() if needle.decode() in cert]
+    assert not leaked, f"the certificate carries {leaked}"

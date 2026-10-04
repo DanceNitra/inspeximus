@@ -69,3 +69,24 @@ def test_a_save_that_cannot_remove_the_rows_is_reported_and_the_next_run_finishe
     again = archive.apply(Inspeximus(str(p)), 7)
     assert again["applied"] is True and not again.get("stranded"), again
     assert _hot_ids(p) == set() and len(_logged(p)) == 12
+
+
+def test_f2_a_stale_apply_reports_what_it_moved(tmp_path, monkeypatch):
+    """AUDIT-A's test as handed over: a peer erases one row after this handle loaded the store."""
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
+    T0 = 1790000000.0
+    p = str(tmp_path / "coding_memory.json")
+    m = Inspeximus(p)
+    ids = []
+    for i in range(6):
+        monkeypatch.setattr(core.time, "time", lambda i=i: T0 - 40 * DAY + i)
+        ids.append(m.remember(f"ran: export {i}", key=f"cmd:c{i}", tags=["bash"], mtype="episodic"))
+    monkeypatch.setattr(core.time, "time", lambda: T0)
+    stale = Inspeximus(p)
+    Inspeximus(p).forget(ids=[ids[2]], request_id="peer")
+    r = archive.apply(stale, 7, now=T0)
+    moved = sum(w["records"] for w in r["written"])
+    assert moved == 5, "control: the peer's erasure took one row out before the move"
+    assert r["moving"] == moved and r["hot_rows_before"] == moved, (r["moving"], r["hot_rows_before"], moved)

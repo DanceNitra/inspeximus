@@ -328,6 +328,13 @@ are not present in the files you pointed the scan at.
 - **model weights** that trained on the data, or text reconstructible from *retained embeddings*
   (Morris et al., "Text Embeddings Reveal (Almost) As Much As Text", EMNLP 2023). If a vector survives
   the row, treat the content as recoverable;
+- **that an erased record's tenant or agent id cannot be re-derived.** The erasure replaces the record's
+  tenant and agent ids in the event journal (`memory_events`), and the tenant stamp on its tombstone, with
+  a pseudonym: a salted HMAC of the id. The ids are pseudonymised, not removed. The salt is in the key home
+  (`INSPEXIMUS_KEY_HOME`, else the per-user config directory), so anyone who holds the key home can
+  re-derive the pseudonym from a known id and confirm it. One tenant's erased records share one pseudonym
+  in a store, so they stay linkable to each other. When the key home is inside the store's own directory,
+  no salt is written there, and these fields are cleared outright instead;
 - **an objection on file.** `object_processing()` keeps the objecting subject's identifier in
   `<store>.objections.json` after the subject is erased, because that entry is what keeps suppressing
   new records about them. Measured: 2 occurrences of the subject in that file after `forget_subject()`,
