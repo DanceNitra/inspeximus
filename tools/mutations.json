@@ -2031,7 +2031,7 @@
  {
   "file": "inspeximus/core.py",
   "name": "a tenant-bound view sees every tenant's events",
-  "old": "                if self.tenant is not None and ev.get(\"tenant\") != self.tenant:\n                    continue",
+  "old": "                if _tenants is not None and ev.get(\"tenant\") not in _tenants:\n                    continue",
   "new": "                if False:\n                    continue",
   "tests": [
    "tests/test_memory_events_land_in_the_same_transaction_as_the_rows.py"
@@ -6709,7 +6709,7 @@
  {
   "name": "journal key: the full-diff writer does not redact a removed record's rows",
   "file": "inspeximus/sqlite_store.py",
-  "old": "for k in removed]\n        seqs = _insert_events(con, _ev) if _ev else []\n        if removed:\n            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off\n",
+  "old": "for k in removed]\n        seqs = _insert_events(con, _ev) if _ev else []\n        if removed:\n            _redact_removed_keys(con, removed, path)       # whatever wrote the earlier rows, and even with events off\n",
   "new": "for k in removed]\n        seqs = _insert_events(con, _ev) if _ev else []\n",
   "tests": [
    "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
@@ -6718,7 +6718,7 @@
  {
   "name": "journal key: the declared-ids writer does not redact a removed record's rows",
   "file": "inspeximus/sqlite_store.py",
-  "old": "                            touched)\n        seqs = _insert_events(con, _ev) if _ev else []\n        if removed:\n            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off\n",
+  "old": "                            touched)\n        seqs = _insert_events(con, _ev) if _ev else []\n        if removed:\n            _redact_removed_keys(con, removed, path)       # whatever wrote the earlier rows, and even with events off\n",
   "new": "                            touched)\n        seqs = _insert_events(con, _ev) if _ev else []\n",
   "tests": [
    "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
