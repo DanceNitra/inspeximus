@@ -4813,6 +4813,10 @@ class Inspeximus:
         want = max(1, int(limit))
         out = []
         cursor = int(since_seq)
+        # A REMOVED RECORD'S ROWS CARRY A PSEUDONYM (3.16.2): its agent and tenant ids are replaced by an
+        # HMAC under the store's event salt when it is erased, so each filter accepts both forms.
+        _tenants = {self.tenant, _rows.pseudonym(self.path, self.tenant)} - {None} if self.tenant is not None else None
+        _agents = {agent_id, _rows.pseudonym(self.path, agent_id)} - {None} if agent_id is not None else None
         # Read in pages so a bound view that filters most events out still fills `limit`.
         for _ in range(50):
             page = _rows.events_since(self.path, cursor, max(want * 4, 100), event_type)
@@ -4820,9 +4824,9 @@ class Inspeximus:
                 break
             for ev in page:
                 cursor = ev["seq"]
-                if agent_id is not None and ev.get("agent") != agent_id:
+                if _agents is not None and ev.get("agent") not in _agents:
                     continue
-                if self.tenant is not None and ev.get("tenant") != self.tenant:
+                if _tenants is not None and ev.get("tenant") not in _tenants:
                     continue
                 agent = getattr(self, "agent", None)
                 if agent is not None:

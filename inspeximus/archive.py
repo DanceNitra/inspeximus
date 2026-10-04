@@ -900,6 +900,13 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
     cutoff = now - float(older_than_days) * 86400.0
     written = []
     with _StoreLock(m.path):
+        # THE ROWS ARE READ AGAIN UNDER THE LOCK (3.16.2). A peer that wrote after this handle loaded the
+        # store made its save merge the disk back in, and the merge cannot re-apply a removal that has no
+        # tombstone: measured on 3.16.1, a stale handle wrote every segment and the log, returned
+        # applied=True, and the hot store still held all 79,314 rows. Merged here, with the lock held
+        # through the save below, no peer can write between the selection and the save.
+        if not m._merge_rows_from_disk():
+            raise ArchiveRefused("the store could not be read again under its lock; nothing was moved")
         entries = read_log(m.path)
         listed = listed_segments(m.path)
         logged = _logged_ids(listed)
@@ -938,8 +945,15 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
         _write_log(m, entries)
         m._items = [r for r in m._items if r["id"] not in moved_ids]
         m._dirty = True
-    m._save(force=True)
-    m.flush()
+        m._save(force=True)                   # inside the lock (it is re-entrant per thread), see above
+        m.flush()
+        stranded = _still_hot(m.path, moved_ids)
+    if stranded:
+        # The segments and the log are written and the hot rows are not gone: the next apply() finishes
+        # this move without copying it twice. Reported, never returned as done.
+        return {**p, "applied": False, "written": written, "stranded": stranded,
+                "stranded_note": "the log gives these rows to a segment and the hot store still holds them; "
+                                 "run apply() again to finish the move"}
     vacuumed = _vacuum(m)
     ignored = None
     if repo:
@@ -947,6 +961,24 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
     return {**p, "applied": True, "written": written, "vacuumed": vacuumed,
             "hot_file_bytes_after": os.path.getsize(m.path),
             "git_warning": GIT_WARNING if repo else None, "gitignore_excludes_segments": ignored}
+
+
+def _still_hot(store_path, ids) -> list:
+    """The ids among `ids` that the hot store's file still holds, read from disk, sorted."""
+    from . import sqlite_store as _rows
+    ids = sorted(ids)
+    if not ids:
+        return []
+    con = _rows._connect(store_path)
+    try:
+        out = []
+        for at in range(0, len(ids), 500):
+            chunk = ids[at:at + 500]
+            out += [r[0] for r in con.execute("SELECT id FROM records WHERE id IN (%s)" % ",".join("?" * len(chunk)),
+                                              chunk)]
+    finally:
+        con.close()
+    return sorted(out)
 
 
 def _vacuum(m) -> bool:

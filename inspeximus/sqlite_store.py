@@ -24,6 +24,8 @@ THE WRITE IS A DIFF, WHICH IS THE ENTIRE POINT. `snapshot()` records what was on
 `save()` compares the current list against it and issues only what actually changed. A hook that
 appends one record performs one INSERT rather than serialising the whole store.
 """
+import hashlib
+import hmac
 import json
 import os
 import sqlite3
@@ -351,7 +353,72 @@ def _event_row(kind, rec, ts):
 _KEY_REDACTED = "key_redacted"
 
 
-def _redact_removed_keys(con, ids) -> int:
+#: What a journal row's `agent` or `tenant` column holds once the record it describes is gone: this prefix
+#: and an HMAC of the id under the store's event salt (`pseudonym`).
+PSEUDONYM_PREFIX = "pseud:"
+
+
+def _event_salt_path(path) -> str:
+    """Where the event salt for the store at `path` lives: the key home, as for the receipt key and the
+    chain head (`INSPEXIMUS_KEY_HOME`, else APPDATA, else XDG_CONFIG_HOME, else ~/.config), under
+    `inspeximus/salts/`, named by a hash of the store's absolute path."""
+    home = (os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA")
+            or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"))
+    tag = hashlib.sha256(os.path.abspath(str(path)).encode("utf-8", "replace")).hexdigest()[:16]
+    return os.path.join(home, "inspeximus", "salts", tag + ".salt")
+
+
+def _event_salt(path, create: bool) -> "bytes | None":
+    """The store's event salt, minted on first use when `create`. None when there is none and `create` is
+    False, or when the key home resolves inside the store's own directory: a salt kept beside the store
+    lets whoever holds the store test a guessed id against the pseudonym, which is what the salt is for.
+    """
+    sp = _event_salt_path(path)
+    try:
+        from .core import _guard_key_location
+        _guard_key_location(os.path.dirname(sp), path)
+    except ValueError:
+        return None
+    try:
+        with open(sp, "r", encoding="ascii") as fh:
+            return bytes.fromhex(fh.read().strip())
+    except FileNotFoundError:
+        if not create:
+            return None
+    except (OSError, ValueError):
+        return None
+    try:
+        os.makedirs(os.path.dirname(sp), exist_ok=True)
+        fd = os.open(sp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w", encoding="ascii") as fh:
+            fh.write(os.urandom(32).hex())
+    except FileExistsError:
+        pass                                   # another process minted it first: read theirs
+    except OSError:
+        return None
+    try:
+        with open(sp, "r", encoding="ascii") as fh:
+            return bytes.fromhex(fh.read().strip())
+    except (OSError, ValueError):
+        return None
+
+
+def pseudonym(path, value, create: bool = False) -> "str | None":
+    """The value that replaces `value` in the `agent` and `tenant` columns of a removed record's journal
+    rows. None when `value` is empty or the store has no salt (and `create` is False). A value that is
+    already a pseudonym is returned unchanged."""
+    if not value:
+        return None
+    value = str(value)
+    if value.startswith(PSEUDONYM_PREFIX):
+        return value
+    salt = _event_salt(path, create)
+    if salt is None:
+        return None
+    return PSEUDONYM_PREFIX + hmac.new(salt, value.encode("utf-8"), hashlib.sha256).hexdigest()[:32]
+
+
+def _redact_removed_keys(con, ids, path=None) -> int:
     """Take the KEY out of every journal row of a record that was removed, in the caller's transaction.
 
     A key is a label the caller chose, and a caller can put a person in it ("jane-invoice-email"). The
@@ -364,20 +431,38 @@ def _redact_removed_keys(con, ids) -> int:
     """
     ids = [i for i in ids if i]
     n = 0
+    memo = {}                                  # one salt read and one HMAC per distinct id, not per row
     for at in range(0, len(ids), 500):
         chunk = ids[at:at + 500]
         marks = ",".join("?" * len(chunk))
-        rows = con.execute("SELECT seq, payload FROM memory_events WHERE memory_id IN (%s)" % marks,
-                           chunk).fetchall()
+        rows = con.execute("SELECT seq, payload, agent, tenant FROM memory_events WHERE memory_id IN (%s)"
+                           % marks, chunk).fetchall()
         upd = []
-        for seq, payload in rows:
+        for seq, payload, agent, tenant in rows:
             pl = _parse(payload)
+            moved = False
             if isinstance(pl, dict) and "key" in pl:
                 pl.pop("key")
                 pl[_KEY_REDACTED] = True
-                upd.append((json.dumps(pl, ensure_ascii=False, sort_keys=True), seq))
+                moved = True
+            # THE AGENT AND TENANT IDS GO TOO (3.16.2). A caller names a tenant or an agent, and can put a
+            # person in it: measured by AUDIT-A on 3.15.8, `for_tenant("jane-tenant-77")` was still in the
+            # store file twice after `forget_subject`, in this record's `record.added` and `record.removed`
+            # rows. Each is replaced by an HMAC under a salt kept in the key home, so a tenant handle still
+            # finds its own events (`poll_events` compares both forms) and nobody holding only the store
+            # can recover or confirm the id. Without a salt (the key home sits inside the store's
+            # directory) the columns are cleared: the id goes, and only the tenant filter is lost.
+            new_agent, new_tenant = agent, tenant
+            if path is not None:
+                if agent and not str(agent).startswith(PSEUDONYM_PREFIX):
+                    new_agent = memo[agent] if agent in memo else memo.setdefault(agent, pseudonym(path, agent, True))
+                if tenant and not str(tenant).startswith(PSEUDONYM_PREFIX):
+                    new_tenant = memo[tenant] if tenant in memo else memo.setdefault(tenant, pseudonym(path, tenant, True))
+            if moved or (new_agent, new_tenant) != (agent, tenant):
+                upd.append((json.dumps(pl, ensure_ascii=False, sort_keys=True) if isinstance(pl, dict) else payload,
+                            new_agent, new_tenant, seq))
         if upd:
-            con.executemany("UPDATE memory_events SET payload=? WHERE seq=?", upd)
+            con.executemany("UPDATE memory_events SET payload=?, agent=?, tenant=? WHERE seq=?", upd)
             n += len(upd)
     return n
 
@@ -506,7 +591,7 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
             _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
         seqs = _insert_events(con, _ev) if _ev else []
         if removed:
-            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off
+            _redact_removed_keys(con, removed, path)       # whatever wrote the earlier rows, and even with events off
         gen = _bump_generation(con)                  # in this transaction: it commits or rolls back with it
         con.execute("COMMIT")
     except Exception:
@@ -591,7 +676,7 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True,
                             touched)
         seqs = _insert_events(con, _ev) if _ev else []
         if removed:
-            _redact_removed_keys(con, removed)       # whatever wrote the earlier rows, and even with events off
+            _redact_removed_keys(con, removed, path)       # whatever wrote the earlier rows, and even with events off
         gen = _bump_generation(con)                  # in this transaction: it commits or rolls back with it
         con.execute("COMMIT")
     except Exception:

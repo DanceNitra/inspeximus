@@ -7504,5 +7504,68 @@
   "tests": [
    "tests/test_release_check_worker_count_comes_from_the_environment.py"
   ]
+ },
+ {
+  "name": "an erasure leaves the tenant id in the clear in the journal",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "new_tenant = memo[tenant] if tenant in memo else memo.setdefault(tenant, pseudonym(path, tenant, True))",
+  "new": "new_tenant = tenant",
+  "tests": [
+   "tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py"
+  ]
+ },
+ {
+  "name": "an erasure leaves the agent id in the clear in the journal",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "new_agent = memo[agent] if agent in memo else memo.setdefault(agent, pseudonym(path, agent, True))",
+  "new": "new_agent = agent",
+  "tests": [
+   "tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py"
+  ]
+ },
+ {
+  "name": "a tenant handle no longer finds its erased records' events",
+  "file": "inspeximus/core.py",
+  "old": "_tenants = {self.tenant, _rows.pseudonym(self.path, self.tenant)} - {None} if self.tenant is not None else None",
+  "new": "_tenants = {self.tenant} if self.tenant is not None else None",
+  "tests": [
+   "tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py"
+  ]
+ },
+ {
+  "name": "the agent filter no longer finds an erased record's events",
+  "file": "inspeximus/core.py",
+  "old": "_agents = {agent_id, _rows.pseudonym(self.path, agent_id)} - {None} if agent_id is not None else None",
+  "new": "_agents = {agent_id} if agent_id is not None else None",
+  "tests": [
+   "tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py"
+  ]
+ },
+ {
+  "name": "the event salt is minted inside the store's own directory",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "        _guard_key_location(os.path.dirname(sp), path)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py"
+  ]
+ },
+ {
+  "name": "archive.apply selects from a stale handle without reading the store again",
+  "file": "inspeximus/archive.py",
+  "old": "        if not m._merge_rows_from_disk():",
+  "new": "        if False and not m._merge_rows_from_disk():",
+  "tests": [
+   "tests/test_archive_apply_on_a_stale_handle_moves_every_row.py"
+  ]
+ },
+ {
+  "name": "archive.apply reports done while moved rows are still hot",
+  "file": "inspeximus/archive.py",
+  "old": "        stranded = _still_hot(m.path, moved_ids)",
+  "new": "        stranded = []",
+  "tests": [
+   "tests/test_archive_apply_on_a_stale_handle_moves_every_row.py"
+  ]
  }
 ]
