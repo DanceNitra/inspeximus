@@ -202,10 +202,10 @@ def test_f11_key_and_timeout_come_from_the_users_config_only(tmp_path, monkeypat
     assert "USER-KEY" in str(captured.get("auth")) and captured["timeout"] == 3.0, captured
 
 
-@pytest.mark.parametrize("url", ["http://evil.example\@127.0.0.1/", "http://evil.example%5C@127.0.0.1/",
+@pytest.mark.parametrize("url", [r"http://evil.example\@127.0.0.1/", "http://evil.example%5C@127.0.0.1/",
                                  "http://127.0.0.1 /x", "http://127.0.0.1\t/x", "http://user@127.0.0.1/x"])
 def test_a_url_two_parsers_could_read_differently_is_not_loopback(url):
-    """AUDIT-A: urlsplit read 127.0.0.1 where urllib.request read evil.example\@127.0.0.1."""
+    r"""AUDIT-A: urlsplit read 127.0.0.1 where urllib.request read evil.example\@127.0.0.1."""
     assert cc._is_loopback(url) is False
 
 
