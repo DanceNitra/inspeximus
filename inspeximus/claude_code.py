@@ -582,11 +582,17 @@ def maybe_archive_in_background(cwd=None) -> str:
         return "failed"
 
 
-def stamp_guards(cwd=None, apply=False) -> dict:
+def stamp_guards(cwd=None, apply=False, store=None) -> dict:
     """Persist a read-guard verdict for the project store's active records that have none. DRY BY
     DEFAULT. A read never saves, so records written before 3.15.4 are assessed again on every prompt;
-    this stamps them once under the store's key. Counts only, never text."""
-    m = _store(cwd)
+    this stamps them once under the store's key. Counts only, never text. `store` names another store file,
+    for example the decision store `INSPEXIMUS_DECISION_STORE` points at: the hook reads it on every prompt
+    and cannot stamp it, so this is the one way its older rows stop being assessed."""
+    if store:
+        from ._surface import open_store
+        m = open_store(store, resolve=False)
+    else:
+        m = _store(cwd)
     r = m.stamp_read_guards(dry_run=not apply)
     r["applied"] = bool(r.get("applied"))
     return r
@@ -1035,6 +1041,38 @@ def _not_for_replay(rec) -> bool:
     return any(p.search(text) for p in _NO_REPLAY)
 
 
+#: The decision store is opened and queried by EVERY prompt, in a process of its own. Measured 2026-10-04: a
+#: 4 MB store of 619 decisions costs +0.59 s per prompt, and the 53 MB MCP chain store, pointed at by mistake,
+#: costs 5.29 s per prompt with nothing in the output to say why. Above this size the store is skipped.
+DECISION_STORE_MAX_MB = 16.0
+
+
+def _decision_store_too_big(path) -> bool:
+    """True when the decision store at `path` is over DECISION_STORE_MAX_MB, and says so ONCE per hook
+    process on stderr (never stdout: stdout joins the prompt). `INSPEXIMUS_DECISION_STORE_MAX_MB` sets the
+    limit; 0 turns the check off. A hook must not fail, so an unreadable size means "not too big".
+
+    Why skip and not warn and run: the owner of the setting asked for decisions, not for a delay on every
+    prompt, and a store this large is almost always the general store configured by mistake (it holds
+    mechanics and receipts, and the hook reads decisions only). Why stderr and not silence: a skipped
+    store with no message is the failure this guard exists to prevent, in the other direction."""
+    try:
+        raw = (os.environ.get("INSPEXIMUS_DECISION_STORE_MAX_MB") or "").strip()
+        limit = float(raw) if raw else DECISION_STORE_MAX_MB
+        if limit <= 0:
+            return False
+        size = os.stat(path).st_size
+        if size <= limit * 1024 * 1024:
+            return False
+        sys.stderr.write("[inspeximus] INSPEXIMUS_DECISION_STORE is %.1f MB, over the %.0f MB limit: its decisions are "
+                         "skipped, because the hook reads it on every prompt (about 0.1 s per MB). Point it at a "
+                         "decisions-only store, or raise INSPEXIMUS_DECISION_STORE_MAX_MB (0 = no limit).%s"
+                         % (size / 1048576.0, limit, chr(10)))
+        return True
+    except (OSError, ValueError):
+        return False
+
+
 def recall(ev):
     cwd = ev.get("cwd") or os.getcwd()
     if not injection_enabled(cwd):
@@ -1085,6 +1123,8 @@ def recall(ev):
     # out of this prompt and nothing here writes to it. Fail-open, like every other read on this path --
     # a hook that raises costs the user their turn.
     ext = (os.environ.get("INSPEXIMUS_DECISION_STORE") or "").strip()
+    if ext and decisions is not None and _decision_store_too_big(ext):
+        ext = ""
     if ext and decisions is not None:
         try:
             if os.path.abspath(ext) != os.path.abspath(getattr(m, "path", "") or ""):
@@ -1743,7 +1783,9 @@ def main():
                                         allow_git_tracked="--allow-git-tracked" in argv), indent=2, default=str))
         return
     if "--stamp-guards" in sys.argv:
-        r = stamp_guards(apply="--apply" in sys.argv)
+        argv = sys.argv
+        r = stamp_guards(apply="--apply" in argv,
+                         store=argv[argv.index("--store") + 1] if "--store" in argv[:-1] else None)
         print(json.dumps(r, indent=2, default=str))
         if not r["applied"] and r.get("to_stamp") and r.get("has_key"):
             print(chr(10) + "Dry run. Add --apply to stamp %d record(s); the store is saved once." % r["to_stamp"])

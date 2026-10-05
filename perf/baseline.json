@@ -661,5 +661,37 @@
   "seconds_median": 0.3346,
   "seconds_min": 0.2164,
   "seconds_max": 0.4914
+ },
+ "prompt_decisions_n600": {
+  "desc": "UserPromptSubmit with a 600-decision store (INSPEXIMUS_DECISION_STORE) beside a 600-capture project store",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
+  "counters": {
+   "replace_store": 0,
+   "replace_tombstones": 0,
+   "replace_receipts": 0,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 2,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "dir_listings": 2,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 0,
+   "read_guard_assessments": 1204,
+   "store_hash_reads": 0,
+   "guard_key_lookups": 2,
+   "decision_syncs": 0,
+   "guard_shape_scans": 0,
+   "tracked_gets": 36288,
+   "token_builds": 1202
+  },
+  "seconds_median": 0.0888,
+  "seconds_min": 0.0689,
+  "seconds_max": 0.1013
  }
 }

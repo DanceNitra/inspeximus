@@ -597,6 +597,60 @@ def w_digest(n):
     return run
 
 
+def w_prompt_decisions(n):
+    """The prompt hook with a DECISION STORE (`INSPEXIMUS_DECISION_STORE`), the form our own machine runs: a
+    project store of n captures and a second store of n decisions, both stamped, and one UserPromptSubmit.
+    The hook opens the second store and runs decisions_in_force plus a recall over it on every prompt:
+    measured 2026-10-04, +0.59 s on a 4 MB store of 619 decisions. `token_builds` is the number of record
+    token sets built from text (the in-process cache is empty in a fresh hook process), and
+    `store_loads` counts both stores' opens."""
+    import contextlib as _cl
+    import io
+    import inspeximus.claude_code as cc
+    proj = tempfile.mkdtemp()
+    os.makedirs(os.path.join(proj, ".git"))
+    dpath = os.path.join(tempfile.mkdtemp(), "decisions.json")
+    _ARM_STORES.append(dpath)
+    env = {"INSPEXIMUS_CODING_STORE": os.path.join(proj, ".inspeximus"), "INSPEXIMUS_NO_NUDGE": "1",
+           "INSPEXIMUS_DECISION_STORE": dpath}
+    saved = _clean_env()
+    os.environ.update(env)
+    try:
+        m = cc._store(proj)
+        _ARM_STORES.append(str(m.path))
+        for i in range(n):
+            m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic", tags=["bash"])
+        m.flush()
+        d = Inspeximus(dpath)
+        for i in range(n):
+            d.remember_decision(f"we decided that component {i} builds with the release target", because="the build is shared",
+                                topic=f"component-{i}")
+        d.flush()
+    finally:
+        _restore_env(saved)
+    ev = {"hook_event_name": "UserPromptSubmit", "prompt": "which target builds the release component",
+          "cwd": proj.replace("\\", "/"), "session_id": "gate"}
+
+    def run():
+        saved_run = _clean_env()
+        os.environ.update(env)
+        real_tokens = core._tokens
+        built = {"n": 0}
+
+        def counted(text):
+            built["n"] += 1
+            return real_tokens(text)
+        core._tokens = counted
+        try:
+            with Counters() as c, _cl.redirect_stdout(io.StringIO()):
+                cc.recall(ev)
+        finally:
+            core._tokens = real_tokens
+            _restore_env(saved_run)
+        run.inner = {**c.as_dict(), "token_builds": built["n"]}
+    return run
+
+
 def w_prompt_unstamped(n):
     """w_prompt's store and recall, run as a process that CANNOT verify the stamps: a key home that did
     not write them (another user, another machine, a store copied in). The read guard then assesses every
@@ -947,6 +1001,8 @@ WORKLOADS = {
     "prompt_restamped_n2000": (lambda: w_prompt_restamped(2000),
                            "prompt_n2000 after stamp_read_guards() stamped rows that had no verdict", "rows"),
     "digest_n2000":       (lambda: w_digest(2000),       "state_digest over 2,000 records (the action ledger takes it twice per tool call)", "rows"),
+    "prompt_decisions_n600": (lambda: w_prompt_decisions(600),
+                           "UserPromptSubmit with a 600-decision store (INSPEXIMUS_DECISION_STORE) beside a 600-capture project store", "rows"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
     "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),

@@ -7767,5 +7767,32 @@
   "tests": [
    "tests/test_stamp_read_guards_persists_the_verdict_once.py"
   ]
+ },
+ {
+  "name": "the decision store is never skipped for its size",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if size <= limit * 1024 * 1024:\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "a decision store limit of zero does not switch the check off",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if limit <= 0:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "--stamp-guards ignores --store",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if store:\n        from ._surface import open_store\n",
+  "new": "    if False:\n        from ._surface import open_store\n",
+  "tests": [
+   "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
  }
 ]
