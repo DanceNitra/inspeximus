@@ -43,19 +43,16 @@ def _project(tmp_path, monkeypatch, n_cmd=40, n_file=10, age_days=40, config=Non
     p = str(st / "coding_memory.json")
     m = Inspeximus(p)
     now = time.time()
-    real = core.time.time
     ids = []
-    try:
+    with pytest.MonkeyPatch.context() as mp:                  # restored on exit, whatever happens inside
         for i in range(n_cmd + n_file):
-            core.time.time = lambda i=i: now - age_days * DAY + i
+            mp.setattr(core.time, "time", lambda i=i: now - age_days * DAY + i)
             if i < n_cmd:
                 ids.append(m.remember(f"ran: export number {i} of the batch", key=f"cmd:{i:04d}", tags=["bash"],
                                       mtype="episodic"))
             else:
                 ids.append(m.remember(f"state of file number {i}", key=f"file:src/f{i}.py", tags=["file"],
                                       mtype="episodic"))
-    finally:
-        core.time.time = real
     m.flush()
     return str(proj), p, ids
 
@@ -205,14 +202,11 @@ def test_an_erasure_reaches_file_rows_that_were_archived(tmp_path, monkeypatch):
     proj, p, ids = _project(tmp_path, monkeypatch, n_cmd=0, n_file=0)
     m = Inspeximus(p)
     now = time.time()
-    real = core.time.time
-    try:
-        core.time.time = lambda: now - 40 * DAY
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(core.time, "time", lambda: now - 40 * DAY)
         mine = m.remember("state of the payroll file", key="file:hr/payroll.py", tags=["file"], mtype="episodic",
                           source={"doc": "hr/alice"})
         other = m.remember("state of another file", key="file:src/other.py", tags=["file"], mtype="episodic")
-    finally:
-        core.time.time = real
     m.flush()
     monkeypatch.chdir(proj)
     assert archive.apply(Inspeximus(p), 7, ("file",), allow_git_tracked=True)["applied"]
