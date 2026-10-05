@@ -433,11 +433,12 @@
    "guard_key_lookups": 0,
    "decision_syncs": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 0
+   "tracked_gets": 0,
+   "digest_rows": 2000
   },
-  "seconds_median": 0.0095,
-  "seconds_min": 0.0083,
-  "seconds_max": 0.0097
+  "seconds_median": 0.0049,
+  "seconds_min": 0.0047,
+  "seconds_max": 0.0055
  },
  "row_rewrite_n2000": {
   "desc": "row store: save 2,000 new rows, then rewrite all of them",

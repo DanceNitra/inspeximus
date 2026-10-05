@@ -590,7 +590,10 @@ def w_digest(n):
     h = Inspeximus(p)
 
     def run():
-        h.state_digest()
+        with Counters() as c:
+            h.state_digest()
+        # `digest_rows` is the work done: without a counter above zero an arm cannot go red.
+        run.inner = {**c.as_dict(), "digest_rows": len(h._items)}
     return run
 
 
