@@ -573,6 +573,39 @@ def _dump_chain(entries) -> str:
     return json.dumps(entries, ensure_ascii=False)
 
 
+def _encode_receipt(entry) -> str:
+    """One receipt as `json.dumps` writes it inside `_dump_chain`'s array. Counted by `perf/gate.py`."""
+    return json.dumps(entry, ensure_ascii=False)
+
+
+def _dump_chain_cached(entries, cache: dict) -> str:
+    """`_dump_chain(entries)`, byte for byte, encoding only the receipts it has not encoded before.
+
+    A receipt is built once and appended, so the sidecar rewrite re-encoded thousands of receipts that
+    had not changed. Measured on a copy of our MCP store's 16,053 receipts: 0.076 s for `_dump_chain`, 0.026 s
+    here (AUDIT-A measured the encode alone at 0.19 s against 0.02 s). The array text is
+    "[" + ", ".join(encoded entries) + "]", which is what `json.dumps` of the list produces, so the file is the
+    same bytes and every version reads it.
+
+    `cache` maps id(entry) to (entry, hash, field count, text). It holds the entry itself, so an id cannot be
+    reused while it is cached. The hash covers the committed fields, so a receipt whose hash or field count moved
+    is encoded again; a receipt that is not in the cache is encoded. Entries that left the chain are dropped
+    whenever the cache is larger than the chain."""
+    out = []
+    add = out.append
+    for e in entries:
+        hit = cache.get(id(e))
+        if hit is None or hit[0] is not e or hit[1] != e.get("hash") or hit[2] != len(e):
+            hit = (e, e.get("hash"), len(e), _encode_receipt(e))
+            cache[id(e)] = hit
+        add(hit[3])
+    if len(cache) != len(entries):
+        keep = {id(e) for e in entries}
+        for k in [k for k in cache if k not in keep]:
+            del cache[k]
+    return "[" + ", ".join(out) + "]"
+
+
 def new_receipt_keypair():
     """Return (private_key_hex, public_key_hex) for signing inspeximus write receipts. Needs `cryptography`."""
     if not _HAVE_ED:
@@ -4704,7 +4737,8 @@ class Inspeximus:
         if self._receipts_path:
             try:
                 Inspeximus._atomic_write(self._receipts_path,
-                                         _dump_chain(self._receipts))
+                                         _dump_chain_cached(self._receipts,
+                                                            self.__dict__.setdefault("_receipt_json", {})))
                 self._receipts_sig = self._receipts_disk_sig()
             except Exception as e:
                 # The receipt chain IS the evidence. Losing it silently was worse than losing a record:
@@ -5071,7 +5105,8 @@ class Inspeximus:
             return
         try:
             Inspeximus._atomic_write(self._receipts_path,
-                                     _dump_chain(self._receipts))
+                                     _dump_chain_cached(self._receipts,
+                                                        self.__dict__.setdefault("_receipt_json", {})))
             self._receipts_sig = self._receipts_disk_sig()
             self._sidecar_errors.pop("receipts", None)
         except Exception as e:
@@ -9761,6 +9796,61 @@ class Inspeximus:
                                          "record is still stored, exportable and erasable; release_quarantine() "
                                          "returns it to recall with the releasing actor recorded.")}
 
+    def _guard_stamp_valid(self, rec: dict, key, gset) -> bool:
+        """True when `rec` carries a clean read-guard stamp that this store's key vouches for under the
+        current guard set: the same test `_assess_read_guards` makes before it skips a record."""
+        meta = rec.get("meta") or {}
+        held = meta.get("read_guards")
+        if (not key or not gset or not isinstance(held, dict) or held.get("set") != gset
+                or meta.get("stuffed") or isinstance(meta.get("quarantined"), dict)):
+            return False
+        th = hashlib.sha256((rec.get("text") or "").encode("utf-8", "surrogatepass")).hexdigest()
+        return _guard_mac_ok(held.get("mac"), key, "clean", rec.get("id"), th, gset)
+
+    @_decides(save=True)
+    def stamp_read_guards(self, *, dry_run: bool = False) -> dict:
+        """Persist a clean read-guard verdict, under this store's key, for every active record that has
+        none (AUDIT-B, 3.16.3).
+
+        WHY. A read never saves, so a record written before 3.15.4, or one whose guard set changed,
+        carries no stamp the hook can trust, and every prompt assesses it again. Measured 2026-10-04
+        on our project store: 9,596 of 12,176 active rows had no stamp, and the hook assessed all of
+        them on every prompt (about 0.4 s). Rows written since 3.15.4 are stamped by `remember`, so
+        the backlog only shrinks by aging out; this clears it once.
+
+        WHAT IT STAMPS. Only a record the guards find clean. A flagged record is never stamped, and
+        its flags are kept, so its release is checked on every read as before. A flag found now that
+        no read had saved is saved too: this pass writes what the assessment finds, unlike a read.
+        A tenant view stamps its tenant's rows only. A record that already
+        carries a valid stamp is not touched. Nothing is stamped when this store has no guard key:
+        a stamp is a MAC, and a MAC without the key vouches for nothing.
+
+        Returns {"active", "valid_stamps", "to_stamp", "stamped", "flagged", "applied", ...}. With
+        `dry_run` nothing is assessed or written."""
+        key = self._guard_key()
+        gset = _guard_set_hash()
+        rows = [r for r in self._tenant_rows() if r.get("status") == "active"]    # a view stamps only its own rows
+        todo = [r for r in rows if not self._guard_stamp_valid(r, key, gset)]
+        out = {"active": len(rows), "valid_stamps": len(rows) - len(todo), "to_stamp": len(todo),
+               "stamped": 0, "flagged": 0, "applied": False, "has_key": bool(key)}
+        if dry_run or not key or not gset or not todo:
+            if not key:
+                out["note"] = "this store has no read-guard key in this key home, so nothing can be stamped"
+            return out
+        for r in todo:
+            self._guard_seen.discard(r.get("id") or id(r))
+            meta = self._assess_read_guards(r, stamp=True)
+            if isinstance(meta.get("read_guards"), dict):
+                out["stamped"] += 1
+                if r.get("id"):
+                    self._touched.add(r["id"])
+            else:
+                out["flagged"] += 1
+        if out["stamped"]:
+            self._save(force=True)
+            out["applied"] = True
+        return out
+
     def release_quarantine(self, id: str, actor: str, reason: str | None = None) -> dict:
         """A human decision that a quarantined record is a memory after all: it returns to recall, and
         the record keeps who released it and why."""
@@ -12243,12 +12333,18 @@ class Inspeximus:
         match anything. The missing word was doing all the work. If you need
         ranking-state integrity, pin it separately — the write receipts commit to content and attribution,
         not to standing."""
+        # `dict.get`, not `r.get`: a row is a _TrackedDict, whose `get` is a Python method that wraps a
+        # nested container on first access. Every field read here is a scalar, so the plain read returns
+        # the same value without the call. Measured 2026-10-04 through the MCP server on a 13,359-record
+        # store: 155,379 `_TrackedDict.get` calls, 0.095 s of the 0.18 s a `remember` spent here, once
+        # before and once after the write (the action ledger binds both states).
         h = hashlib.sha256()
-        for r in sorted(self._tenant_rows(), key=lambda x: x.get("id") or ""):
+        _get = dict.get
+        for r in sorted(self._tenant_rows(), key=lambda x: _get(x, "id") or ""):
             line = "\x1f".join([
-                str(r.get("id") or ""), str(r.get("status") or "active"),
-                repr(r.get("ts")), str(r.get("key") or ""), str(r.get("tenant") or ""),
-                hashlib.sha256((r.get("text") or "").encode("utf-8")).hexdigest(),
+                str(_get(r, "id") or ""), str(_get(r, "status") or "active"),
+                repr(_get(r, "ts")), str(_get(r, "key") or ""), str(_get(r, "tenant") or ""),
+                hashlib.sha256((_get(r, "text") or "").encode("utf-8")).hexdigest(),
             ])
             h.update(line.encode("utf-8")); h.update(b"\x1e")
         return h.hexdigest()
@@ -19741,6 +19837,7 @@ class _TenantView:
     def objections(self, *a, **k):      return Inspeximus.objections(self, *a, **k)
     def read_guard_report(self, *a, **k): return Inspeximus.read_guard_report(self, *a, **k)
     def release_quarantine(self, *a, **k): return Inspeximus.release_quarantine(self, *a, **k)
+    def stamp_read_guards(self, *a, **k): return Inspeximus.stamp_read_guards(self, *a, **k)
     def _withheld_ids(self, *a, **k):   return Inspeximus._withheld_ids(self, *a, **k)
     def _served_rows(self, *a, **k):    return Inspeximus._served_rows(self, *a, **k)
     def forget_pii(self, *a, **k):      return Inspeximus.forget_pii(self, *a, **k)

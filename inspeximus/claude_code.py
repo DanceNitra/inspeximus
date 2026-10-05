@@ -481,6 +481,123 @@ def _record_has_secret(r) -> bool:
 _COPY_MARKERS = ("bak", ".tmp", "torn", "corrupt", "pre-")
 
 
+#: The archive policy a project can switch on in `.inspeximus/config.json`: {"archive": {"auto": true, ...}}.
+#: OFF by default, because it moves a user's records. `trigger_mb` is the hot file's size at which the first
+#: prompt after it starts a detached run; `older_than_days` and `classes` are `--archive`'s own parameters.
+AUTO_ARCHIVE_DEFAULTS = {"auto": False, "trigger_mb": 40.0, "older_than_days": 7.0, "classes": ["cmd"],
+                         "min_interval_s": 3600.0, "allow_git_tracked": False}
+
+
+def archive_policy(cwd=None) -> dict:
+    """The archive policy for this project: defaults <- config.json {"archive": {...}} <- env
+    INSPEXIMUS_ARCHIVE_AUTO (1 or 0). A value of the wrong type falls back to its default."""
+    pol = dict(AUTO_ARCHIVE_DEFAULTS)
+    c = _cfg(cwd).get("archive")
+    if isinstance(c, dict):
+        for k, dv in AUTO_ARCHIVE_DEFAULTS.items():
+            v = c.get(k)
+            if k in ("auto", "allow_git_tracked") and isinstance(v, bool):
+                pol[k] = v
+            elif k == "classes" and isinstance(v, list) and v and all(isinstance(x, str) for x in v):
+                pol[k] = list(v)
+            elif k in ("trigger_mb", "older_than_days", "min_interval_s") and isinstance(v, (int, float))                     and not isinstance(v, bool) and v >= 0:
+                pol[k] = float(v)
+    env = os.environ.get("INSPEXIMUS_ARCHIVE_AUTO", "").strip().lower()
+    if env in ("1", "true", "yes"):
+        pol["auto"] = True
+    elif env in ("0", "false", "no"):
+        pol["auto"] = False
+    return pol
+
+
+def maintain_store(cwd=None, older_than=None, classes=("cmd",), allow_git_tracked=False) -> dict:
+    """What the detached run does: archive what is older than `older_than` days (`--apply`), then stamp
+    the read-guard verdicts the remaining hot rows lack. Each step reports its own failure, so a refused
+    archive (a git work tree, an encrypted store) does not stop the stamping."""
+    out = {}
+    try:
+        out["archive"] = archive_store(cwd, older_than=older_than, classes=classes, apply=True,
+                                       allow_git_tracked=allow_git_tracked)
+    except Exception as exc:                                    # noqa: BLE001
+        out["archive"] = {"refused": "%s: %s" % (type(exc).__name__, exc)}
+    try:
+        out["stamp_guards"] = stamp_guards(cwd, apply=True)
+    except Exception as exc:                                    # noqa: BLE001
+        out["stamp_guards"] = {"failed": "%s: %s" % (type(exc).__name__, exc)}
+    return out
+
+
+def maybe_archive_in_background(cwd=None) -> str:
+    """The prompt path's whole cost of the policy: one config read and one `stat`. When the policy is on,
+    the hot file is over `trigger_mb`, and no attempt started within `min_interval_s`, it starts ONE
+    detached `--maintain` and returns "started". The attempt is recorded BEFORE the spawn, so two prompts
+    in a row start one run. The run takes the store lock itself, so a hook that reads meanwhile sees the
+    old or the new hot file, never a half-written one. Returns why nothing started otherwise: "off",
+    "missing", "small", "recent" or "failed". Never raises: a hook that raises costs the user their turn."""
+    try:
+        pol = archive_policy(cwd)
+        if not pol["auto"]:
+            return "off"
+        import subprocess                       # imported only once the policy is on: the hook's import time is measured
+        import time
+        from ._surface import coding_store_path
+        path = coding_store_path(cwd)
+        try:
+            size = os.stat(path).st_size
+        except OSError:
+            return "missing"
+        if size < pol["trigger_mb"] * 1024 * 1024:
+            return "small"
+        state = path + ".archive-auto.json"
+        now = time.time()
+        try:
+            with open(state, encoding="utf-8") as fh:
+                last = float(json.load(fh).get("last_attempt") or 0)
+        except (OSError, ValueError, AttributeError):
+            last = 0.0
+        if now - last < pol["min_interval_s"]:
+            return "recent"
+        tmp = state + ".tmp.%d" % os.getpid()
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump({"last_attempt": now, "hot_bytes": size, "policy": {k: pol[k] for k in
+                       ("trigger_mb", "older_than_days", "classes")}}, fh)
+        os.replace(tmp, state)
+        argv = [sys.executable, "-m", "inspeximus.claude_code", "--maintain", "--older-than",
+                str(pol["older_than_days"])]
+        for cl in pol["classes"]:
+            argv += ["--class", cl]
+        if pol["allow_git_tracked"]:
+            argv.append("--allow-git-tracked")     # a store inside a git work tree: the user opted in
+        log = open(path + ".archive-auto.log", "w", encoding="utf-8")
+        kw = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
+              "close_fds": True}
+        if os.name == "nt":
+            kw["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000   # DETACHED, NEW_PROCESS_GROUP, NO_WINDOW
+        else:
+            kw["start_new_session"] = True
+        subprocess.Popen(argv, **kw)
+        log.close()
+        return "started"
+    except Exception:                                           # noqa: BLE001
+        return "failed"
+
+
+def stamp_guards(cwd=None, apply=False, store=None) -> dict:
+    """Persist a read-guard verdict for the project store's active records that have none. DRY BY
+    DEFAULT. A read never saves, so records written before 3.15.4 are assessed again on every prompt;
+    this stamps them once under the store's key. Counts only, never text. `store` names another store file,
+    for example the decision store `INSPEXIMUS_DECISION_STORE` points at: the hook reads it on every prompt
+    and cannot stamp it, so this is the one way its older rows stop being assessed."""
+    if store:
+        from ._surface import open_store
+        m = open_store(store, resolve=False)
+    else:
+        m = _store(cwd)
+    r = m.stamp_read_guards(dry_run=not apply)
+    r["applied"] = bool(r.get("applied"))
+    return r
+
+
 def scrub_secrets(cwd=None, apply=False) -> dict:
     """Find the records a pre-3.14.2 hook stored with a secret in them. DRY BY DEFAULT.
 
@@ -924,6 +1041,38 @@ def _not_for_replay(rec) -> bool:
     return any(p.search(text) for p in _NO_REPLAY)
 
 
+#: The decision store is opened and queried by EVERY prompt, in a process of its own. Measured 2026-10-04: a
+#: 4 MB store of 619 decisions costs +0.59 s per prompt, and the 53 MB MCP chain store, pointed at by mistake,
+#: costs 5.29 s per prompt with nothing in the output to say why. Above this size the store is skipped.
+DECISION_STORE_MAX_MB = 16.0
+
+
+def _decision_store_too_big(path) -> bool:
+    """True when the decision store at `path` is over DECISION_STORE_MAX_MB, and says so ONCE per hook
+    process on stderr (never stdout: stdout joins the prompt). `INSPEXIMUS_DECISION_STORE_MAX_MB` sets the
+    limit; 0 turns the check off. A hook must not fail, so an unreadable size means "not too big".
+
+    Why skip and not warn and run: the owner of the setting asked for decisions, not for a delay on every
+    prompt, and a store this large is almost always the general store configured by mistake (it holds
+    mechanics and receipts, and the hook reads decisions only). Why stderr and not silence: a skipped
+    store with no message is the failure this guard exists to prevent, in the other direction."""
+    try:
+        raw = (os.environ.get("INSPEXIMUS_DECISION_STORE_MAX_MB") or "").strip()
+        limit = float(raw) if raw else DECISION_STORE_MAX_MB
+        if limit <= 0:
+            return False
+        size = os.stat(path).st_size
+        if size <= limit * 1024 * 1024:
+            return False
+        sys.stderr.write("[inspeximus] INSPEXIMUS_DECISION_STORE is %.1f MB, over the %.0f MB limit: its decisions are "
+                         "skipped, because the hook reads it on every prompt (about 0.1 s per MB). Point it at a "
+                         "decisions-only store, or raise INSPEXIMUS_DECISION_STORE_MAX_MB (0 = no limit).%s"
+                         % (size / 1048576.0, limit, chr(10)))
+        return True
+    except (OSError, ValueError):
+        return False
+
+
 def recall(ev):
     cwd = ev.get("cwd") or os.getcwd()
     if not injection_enabled(cwd):
@@ -974,6 +1123,8 @@ def recall(ev):
     # out of this prompt and nothing here writes to it. Fail-open, like every other read on this path --
     # a hook that raises costs the user their turn.
     ext = (os.environ.get("INSPEXIMUS_DECISION_STORE") or "").strip()
+    if ext and decisions is not None and _decision_store_too_big(ext):
+        ext = ""
     if ext and decisions is not None:
         try:
             if os.path.abspath(ext) != os.path.abspath(getattr(m, "path", "") or ""):
@@ -1623,6 +1774,22 @@ def main():
             print("\nDry run. Add --apply to move %d record(s) into %d segment(s); nothing is deleted."
                   % (r["moving"], len(r.get("segments") or [])))
         return
+    if "--maintain" in sys.argv:
+        from .archive import ArchiveRefused  # noqa: F401
+        argv = sys.argv
+        older = argv[argv.index("--older-than") + 1] if "--older-than" in argv[:-1] else None
+        classes = tuple(argv[i + 1] for i, a in enumerate(argv[:-1]) if a == "--class") or ("cmd",)
+        print(json.dumps(maintain_store(older_than=older, classes=classes,
+                                        allow_git_tracked="--allow-git-tracked" in argv), indent=2, default=str))
+        return
+    if "--stamp-guards" in sys.argv:
+        argv = sys.argv
+        r = stamp_guards(apply="--apply" in argv,
+                         store=argv[argv.index("--store") + 1] if "--store" in argv[:-1] else None)
+        print(json.dumps(r, indent=2, default=str))
+        if not r["applied"] and r.get("to_stamp") and r.get("has_key"):
+            print(chr(10) + "Dry run. Add --apply to stamp %d record(s); the store is saved once." % r["to_stamp"])
+        return
     if "--scrub-secrets" in sys.argv:
         r = scrub_secrets(apply="--apply" in sys.argv)
         print(json.dumps(r, indent=2, default=str))
@@ -1642,6 +1809,7 @@ def main():
             capture(ev)
         elif name == "UserPromptSubmit":
             recall(ev)
+            maybe_archive_in_background(ev.get("cwd") or os.getcwd())
         elif name == "SessionStart":
             session_start(ev)
         elif name == "SessionEnd":

@@ -64,6 +64,9 @@ SEGMENT_CAP_BYTES = 45 * 1024 * 1024
 CLASSES = {
     "cmd": ("the hook's command captures (key prefix cmd:)",
             lambda r: str(r.get("key") or "").startswith("cmd:")),
+    "file": ("the hook's file-state captures (key prefix file:); the newest state of a file leaves the "
+             "default recall too, so name it only when that is wanted (3.16.3)",
+             lambda r: str(r.get("key") or "").startswith("file:")),
 }
 
 #: Fields through which a record refers to another record by id.

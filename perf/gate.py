@@ -255,6 +255,15 @@ class Counters:
 #:   partition_registry_reads  one read of `<store>.partitions.json`. Only a write that carries a
 #:                    `partition:` tag reads it, to refuse a closed partition (AUDIT-A F-7, 3.16.3); every
 #:                    arm here writes untagged, so the expected count is 0 everywhere.
+#:   guard_shape_scans  one record put through the read guard's instruction-shape scan. A record whose
+#:                    stored verdict this store's key vouches for skips it, so this is the number of
+#:                    rows a read really assessed, where read_guard_assessments also counts the cheap
+#:                    skip. After `stamp_read_guards()` a fresh handle's recall scans 0 (AUDIT-B 3.16.3);
+#:                    9,596 of 12,176 active rows of our own project store were scanned on every prompt.
+#:   tracked_gets    one `get` on a record, which is a Python method (it wraps a nested container on first
+#:                    access). state_digest read six fields of every row through it, twice per MCP tool call
+#:                    under the action ledger: 155,379 calls and 0.095 s on a 13,359-record store. It reads the
+#:                    scalars with `dict.get` now, so a digest costs 0 of these (AUDIT-B 3.16.3).
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
     "current_active_scans": (core.Inspeximus, "_current_active"),
@@ -264,6 +273,8 @@ COUNTED_CALLS = {
     "guard_key_lookups": (core, "_guard_key_file"),
     "decision_syncs": (core.Inspeximus, "_sync_before_decision"),
     "partition_registry_reads": (core, "_partition_registry"),
+    "guard_shape_scans": (core, "_instruction_shape"),
+    "tracked_gets": (core._TrackedDict, "get"),
 }
 
 
@@ -547,6 +558,130 @@ def w_prompt(n):
 
     def run():
         Inspeximus(p).recall("which make target builds the docs", k=6)
+    return run
+
+
+def w_prompt_restamped(n):
+    """The prompt hook's read of a store whose rows carried no read-guard stamp (written before 3.15.4)
+    and were then stamped once by `stamp_read_guards()`: a FRESH handle recalls once and
+    `guard_shape_scans` is 0. The stripped stamps and the stamping pass are setup, not measured."""
+    p = _store_path()
+    m = Inspeximus(p)
+    for i in range(n):
+        m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+    m.flush()
+    m = Inspeximus(p)
+    for r in m._items:
+        (r.get("meta") or {}).pop("read_guards", None)
+        m._touched.add(r["id"])
+    m._save(force=True)
+    stamped = Inspeximus(p).stamp_read_guards()
+    assert stamped["stamped"] == n, stamped
+
+    def run():
+        Inspeximus(p).recall("which make target builds the docs", k=6)
+    return run
+
+
+def w_digest(n):
+    """`state_digest()` over n records: the digest the action ledger takes before and after every MCP tool
+    call. `tracked_gets` is 0: the scalar fields are read without the record's Python-level `get`."""
+    p = _store_path()
+    m = Inspeximus(p)
+    for i in range(n):
+        m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+    m.flush()
+    h = Inspeximus(p)
+
+    def run():
+        with Counters() as c:
+            h.state_digest()
+        # `digest_rows` is the work done: without a counter above zero an arm cannot go red.
+        run.inner = {**c.as_dict(), "digest_rows": len(h._items)}
+    return run
+
+
+def w_prompt_decisions(n):
+    """The prompt hook with a DECISION STORE (`INSPEXIMUS_DECISION_STORE`), the form our own machine runs: a
+    project store of n captures and a second store of n decisions, both stamped, and one UserPromptSubmit.
+    The hook opens the second store and runs decisions_in_force plus a recall over it on every prompt:
+    measured 2026-10-04, +0.59 s on a 4 MB store of 619 decisions. `token_builds` is the number of record
+    token sets built from text (the in-process cache is empty in a fresh hook process), and
+    `store_loads` counts both stores' opens."""
+    import contextlib as _cl
+    import io
+    import inspeximus.claude_code as cc
+    proj = tempfile.mkdtemp()
+    os.makedirs(os.path.join(proj, ".git"))
+    dpath = os.path.join(tempfile.mkdtemp(), "decisions.json")
+    _ARM_STORES.append(dpath)
+    env = {"INSPEXIMUS_CODING_STORE": os.path.join(proj, ".inspeximus"), "INSPEXIMUS_NO_NUDGE": "1",
+           "INSPEXIMUS_DECISION_STORE": dpath}
+    saved = _clean_env()
+    os.environ.update(env)
+    try:
+        m = cc._store(proj)
+        _ARM_STORES.append(str(m.path))
+        for i in range(n):
+            m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic", tags=["bash"])
+        m.flush()
+        d = Inspeximus(dpath)
+        for i in range(n):
+            d.remember_decision(f"we decided that component {i} builds with the release target", because="the build is shared",
+                                topic=f"component-{i}")
+        d.flush()
+    finally:
+        _restore_env(saved)
+    ev = {"hook_event_name": "UserPromptSubmit", "prompt": "which target builds the release component",
+          "cwd": proj.replace("\\", "/"), "session_id": "gate"}
+
+    def run():
+        saved_run = _clean_env()
+        os.environ.update(env)
+        real_tokens = core._tokens
+        built = {"n": 0}
+
+        def counted(text):
+            built["n"] += 1
+            return real_tokens(text)
+        core._tokens = counted
+        try:
+            with Counters() as c, _cl.redirect_stdout(io.StringIO()):
+                cc.recall(ev)
+        finally:
+            core._tokens = real_tokens
+            _restore_env(saved_run)
+        run.inner = {**c.as_dict(), "token_builds": built["n"]}
+    return run
+
+
+def w_remember_receipted(n):
+    """Five receipted `remember` calls on a long-lived handle that already holds n receipts: the MCP server's
+    shape. Each write rewrites the receipts sidecar, and `receipt_encodes` counts the receipts encoded to
+    text for it: 5 (the new ones), where re-encoding the chain each time was about 5 x n. The handle is warmed
+    by one write before the measured part, as a server is by its first call."""
+    p = _store_path()
+    m = Inspeximus(p, receipts=True)
+    for i in range(n):
+        m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+    m.flush()
+    m.remember("warm up the receipt encodings", key="cmd:warm", mtype="episodic")
+
+    def run():
+        real = core._encode_receipt
+        built = {"n": 0}
+
+        def counted(e):
+            built["n"] += 1
+            return real(e)
+        core._encode_receipt = counted
+        try:
+            with Counters() as c:
+                for i in range(5):
+                    m.remember(f"measured write {i}", key=f"cmd:m{i}", mtype="episodic")
+        finally:
+            core._encode_receipt = real
+        run.inner = {**c.as_dict(), "receipt_encodes": built["n"]}
     return run
 
 
@@ -897,6 +1032,13 @@ WORKLOADS = {
     "prompt_n2000":       (lambda: w_prompt(2000),       "fresh handle opens a 2,000-record store and recalls once", "rows"),
     "prompt_unstamped_n2000": (lambda: w_prompt_unstamped(2000),
                            "prompt_n2000 under a key home that cannot verify the read-guard stamps", "rows"),
+    "prompt_restamped_n2000": (lambda: w_prompt_restamped(2000),
+                           "prompt_n2000 after stamp_read_guards() stamped rows that had no verdict", "rows"),
+    "digest_n2000":       (lambda: w_digest(2000),       "state_digest over 2,000 records (the action ledger takes it twice per tool call)", "rows"),
+    "prompt_decisions_n600": (lambda: w_prompt_decisions(600),
+                           "UserPromptSubmit with a 600-decision store (INSPEXIMUS_DECISION_STORE) beside a 600-capture project store", "rows"),
+    "remember_receipted_n2000": (lambda: w_remember_receipted(2000),
+                           "5 receipted remembers on a handle holding 2,000 receipts (the MCP server shape)", "rows"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
     "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),

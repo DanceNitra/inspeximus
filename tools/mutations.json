@@ -3363,8 +3363,8 @@
  {
   "name": "the receipt sidecar goes back to the pure-Python encoder (indent)",
   "file": "inspeximus/core.py",
-  "old": "    return json.dumps(entries, ensure_ascii=False)\n",
-  "new": "    return json.dumps(entries, indent=2, ensure_ascii=False)\n",
+  "old": "    return json.dumps(entry, ensure_ascii=False)\n",
+  "new": "    return json.dumps(entry, indent=2, ensure_ascii=False)\n",
   "tests": [
    "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py"
   ]
@@ -3372,8 +3372,8 @@
  {
   "name": "the receipt sidecar drops the newest receipt",
   "file": "inspeximus/core.py",
-  "old": "    return json.dumps(entries, ensure_ascii=False)\n",
-  "new": "    return json.dumps(entries[:-1], ensure_ascii=False)\n",
+  "old": "    for e in entries:\n        hit = cache.get(id(e))\n",
+  "new": "    for e in entries[:-1]:\n        hit = cache.get(id(e))\n",
   "tests": [
    "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py"
   ]
@@ -7784,6 +7784,141 @@
   "new": "        \"held_back_by_key\": 0,",
   "tests": [
    "tests/test_archive_keeps_a_keys_history_while_the_key_is_hot.py"
+  ]
+ },
+ {
+  "name": "stamp_read_guards stamps in memory and never saves",
+  "file": "inspeximus/core.py",
+  "old": "        if out[\"stamped\"]:\n            self._save(force=True)\n            out[\"applied\"] = True\n",
+  "new": "        if False:\n            self._save(force=True)\n            out[\"applied\"] = True\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
+ },
+ {
+  "name": "stamp_read_guards stamps on a dry run",
+  "file": "inspeximus/core.py",
+  "old": "        if dry_run or not key or not gset or not todo:\n",
+  "new": "        if not key or not gset or not todo:\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
+ },
+ {
+  "name": "stamp_read_guards treats every row as already stamped",
+  "file": "inspeximus/core.py",
+  "old": "        todo = [r for r in rows if not self._guard_stamp_valid(r, key, gset)]\n",
+  "new": "        todo = [r for r in rows if False]\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
+ },
+ {
+  "name": "the archive policy runs when nobody switched it on",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not pol[\"auto\"]:\n            return \"off\"\n",
+  "new": "        if False:\n            return \"off\"\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "the archive policy ignores the size threshold",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if size < pol[\"trigger_mb\"] * 1024 * 1024:\n",
+  "new": "        if False and size < pol[\"trigger_mb\"] * 1024 * 1024:\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "the archive policy starts a run on every prompt",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if now - last < pol[\"min_interval_s\"]:\n",
+  "new": "        if False and now - last < pol[\"min_interval_s\"]:\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "the file class selects the cmd rows",
+  "file": "inspeximus/archive.py",
+  "old": "             lambda r: str(r.get(\"key\") or \"\").startswith(\"file:\")),\n",
+  "new": "             lambda r: str(r.get(\"key\") or \"\").startswith(\"cmd:\")),\n",
+  "tests": [
+   "tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py"
+  ]
+ },
+ {
+  "name": "state_digest reads rows through the record's Python get again",
+  "file": "inspeximus/core.py",
+  "old": "        _get = dict.get\n",
+  "new": "        _get = lambda r, k: r.get(k)\n",
+  "tests": [
+   "tests/test_state_digest_reads_scalars_without_the_records_get.py"
+  ]
+ },
+ {
+  "name": "stamp_read_guards on a tenant view stamps the shared store's rows",
+  "file": "inspeximus/core.py",
+  "old": "        rows = [r for r in self._tenant_rows() if r.get(\"status\") == \"active\"]    # a view stamps only its own rows\n",
+  "new": "        rows = [r for r in self._items if r.get(\"status\") == \"active\"]    # a view stamps only its own rows\n",
+  "tests": [
+   "tests/test_stamp_read_guards_persists_the_verdict_once.py"
+  ]
+ },
+ {
+  "name": "the decision store is never skipped for its size",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if size <= limit * 1024 * 1024:\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "a decision store limit of zero does not switch the check off",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if limit <= 0:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "--stamp-guards ignores --store",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if store:\n        from ._surface import open_store\n",
+  "new": "    if False:\n        from ._surface import open_store\n",
+  "tests": [
+   "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "the receipt encoding cache never hits",
+  "file": "inspeximus/core.py",
+  "old": "        if hit is None or hit[0] is not e or hit[1] != e.get(\"hash\") or hit[2] != len(e):\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_receipt_chain_is_written_from_cached_encodings.py"
+  ]
+ },
+ {
+  "name": "the receipt encoding cache ignores a change in place",
+  "file": "inspeximus/core.py",
+  "old": "        if hit is None or hit[0] is not e or hit[1] != e.get(\"hash\") or hit[2] != len(e):\n",
+  "new": "        if hit is None or hit[0] is not e:\n",
+  "tests": [
+   "tests/test_the_receipt_chain_is_written_from_cached_encodings.py"
+  ]
+ },
+ {
+  "name": "the receipt chain text joins with a bare comma",
+  "file": "inspeximus/core.py",
+  "old": "    return \"[\" + \", \".join(out) + \"]\"\n",
+  "new": "    return \"[\" + \",\".join(out) + \"]\"\n",
+  "tests": [
+   "tests/test_the_receipt_chain_is_written_from_cached_encodings.py"
   ]
  }
 ]
