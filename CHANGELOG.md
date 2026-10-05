@@ -1,3 +1,102 @@
+## 3.16.3 - UPGRADE IF your Claude Code prompt hook still takes seconds on an archived store, you write into partitions, you archive a store whose keys are rewritten often, or a repository you open sets an `embed` URL: read-guard verdicts can be stored once, a closed partition refuses every write made through this version, a key's older values stay in the hot store while the key is in use, and a repository's config names a local embedder only
+
+### A closed partition takes no write, on every write path of this version
+
+A partition's membership is the `partition:<name>` tag, and the write receipt commits that tag. The partition handle refused a write after the partition closed. A plain `remember(..., tags=["partition:x"])` did not, so the record joined the closed partition and `verify_writes()` reported it clean (AUDIT-A).
+
+`remember()` and every wrapper that passes tags through it (`remember_decision`, `admit`, `remember_dedup`, tenant and agent views, the MCP server), and `import_changeset()`, now refuse a tag that names a partition the registry marks closed. The error names the partition and says to open a new one. A tag for an open partition, or for a name the registry does not know, still goes through.
+
+- **Cost.** The registry (`<store>.partitions.json`) is read only when a write carries a `partition:` tag. 2,000 untagged writes read it 0 times. `perf/gate.py` counts the reads as `partition_registry_reads`.
+- **A damaged registry** refuses a tagged write with `SidecarMalformed` and a remedy. Writes without a partition tag are not affected.
+- **Older versions.** A writer on an older version of inspeximus, in this process or a peer's, is not refused, and `reload()` adopts a peer's rows from disk as before.
+- **A tag is a label, not isolation.** A plain write tagged for an OPEN partition joins it, and it skips the partition's `max_records` cap and `on_cap="refuse"`, which only the handle enforces. Write through the handle.
+
+Tests: `tests/test_a_closed_partition_takes_no_write_on_any_path.py` (22 tests over 8 write paths, each with an open-partition control).
+
+### A key's older values stay in the hot store while the key is in use
+
+`history()`, `revert()`, `as_of()` and `provenance()` read the hot store. On 3.16.2, when a key's older value was older than the cutoff and its newer value was not, `--archive` moved the older one: `history()` lost it and `revert()` could not reach it (AUDIT-A).
+
+A row now stays in the hot store while its tenant and key still have a row there. `plan()` and `apply()` report these rows as `held_back_by_key`, next to `held_back_by_reference`. Each run decides again: once the key's hot row is retired or erased, the held rows move on the next run.
+
+On a copy of our project store (79,313 rows), 50 of the rows the archive would move are held, and 14,808 rows stay hot instead of 14,758. Reading the segments on every `history()` call instead was measured at about 36 times the cost per call.
+
+- **The trade.** A key written again every day keeps its whole history in the hot store.
+- **The limit.** Once every value of a key is older than the cutoff, the key moves whole. `history()`, `revert()`, `as_of()` and `provenance()` then see only values written after the move, and `revert()` cannot cross the archive boundary. `recall(include_archive=True)` reads the segments.
+
+Tests: `tests/test_archive_keeps_a_keys_history_while_the_key_is_hot.py` (5 tests).
+
+### Read-guard verdicts can be persisted once (AUDIT-B)
+
+A read never saves, so a record written before 3.15.4, or one whose guard set changed, has no stamp that the store's key vouches for. The prompt hook then assesses the record again on every prompt. On a copy of our own project store, 9,596 of 12,176 active rows had no stamp, and the hook assessed all of them each time (0.35 to 0.43 s of a 1.33 s hook, estimated from the 0.45 to 0.55 s measured without the key).
+
+`Inspeximus.stamp_read_guards()` stamps every active record the guards find clean and saves once. It leaves a flagged record unstamped with its flags, and it stamps nothing when the store has no guard key in the key home. The command is `python -m inspeximus.claude_code --stamp-guards`, a dry run until you add `--apply`. After it, a fresh handle's recall runs the instruction-shape scan on 0 rows. The new counter `guard_shape_scans` is 0 in the arm `prompt_restamped_n2000`, and 2,000 in `prompt_unstamped_n2000`, which reads the same kind of store with no stamp that the key can verify (`tests/test_stamp_read_guards_persists_the_verdict_once.py`). A flag that the pass finds and no read had saved is saved with the record.
+
+- **Another store.** `--stamp-guards --store PATH` stamps the store at `PATH`, for example the decision store that `INSPEXIMUS_DECISION_STORE` names. The hook reads that store on every prompt and never saves it, so this command stamps the rows of that store that carry no verdict (`tests/test_the_decision_store_has_a_size_limit.py`).
+- **A tenant view.** On a tenant view, `stamp_read_guards()` stamps that tenant's rows only (AUDIT-A F-8, `tests/test_stamp_read_guards_persists_the_verdict_once.py`).
+
+### The archive can run by itself, and `file` can be archived (AUDIT-B)
+
+The archive was manual. Your own config, `<key home>/inspeximus/config.json`, can now carry `{"archive": {"auto": true, "trigger_mb": 40, "older_than_days": 7, "classes": ["cmd"], "allow_git_tracked": false}}`. The key home is `INSPEXIMUS_KEY_HOME`, else `%APPDATA%`, else `$XDG_CONFIG_HOME`, else `~/.config`: the directory that holds the signing keys. The policy is off by default because it moves records. The prompt path pays at most two config reads, yours and the repository's when it has one, and one `stat` when the policy is on. Over `trigger_mb`, and at most once per `min_interval_s`, the first prompt starts one detached `--maintain`, which archives and then stamps the remaining rows under the store's lock. `min_interval_s` defaults to 3,600. `INSPEXIMUS_ARCHIVE_AUTO=1` or `0` overrides `auto`.
+
+- **Never from the repository (AUDIT-A F-9).** The archive runs on the Claude Code store, which is your shared store for every project after `inspeximus install --all`. A repository's `.inspeximus/config.json` is not used for `archive`. If it carries the key, the hook ignores it and writes one line to stderr that names the file (`tests/test_a_repo_config_cannot_start_an_archive_of_the_users_store.py`).
+- **Floors.** Every policy runs at most once a minute (`min_interval_s` of at least 60) and moves nothing younger than a day (`older_than_days` of at least 1). A higher value is kept.
+- **The environment.** `INSPEXIMUS_ARCHIVE_AUTO` and `INSPEXIMUS_KEY_HOME` are environment variables. Anything that sets the hook's environment, including a project's agent settings, can set them. This is the same trust boundary as `INSPEXIMUS_CODING_STORE`.
+- **Not checked.** Whether the detached run outlives the hook when Claude Code runs the hook inside a Windows job object. The plain detached case is tested.
+
+`file` joins `cmd` as an archivable class (`--class file`). The default stays `cmd`: archiving a `file:` capture takes the newest state of that file out of the default recall.
+
+A prompt hook that runs while `--apply` is working answers normally and loses nothing (`tests/test_a_size_triggered_archive_runs_off_the_prompt_path.py`, 600 captures, 40 hooks).
+
+### The state digest is cheaper (AUDIT-B)
+
+`state_digest()` read six fields of every row through the record's Python-level `get`. With the action ledger on, an MCP tool call takes the digest twice. It reads the scalars with `dict.get` now and returns the same digest on every store tested, including tenant views (`tests/test_state_digest_reads_scalars_without_the_records_get.py`, frozen 3.16.1 implementation as the reference). The arm `digest_n2000` counts `tracked_gets`: 0.
+
+### A repository's config names a local embedder only
+
+With `{"embed": {"hooks": true, "url": ...}}`, the hooks send text to that URL to embed it: each capture, and each prompt once the store holds 300 rows. Releases 1.25.0 through 3.16.2 read the URL and the `hooks` switch from the repository's `.inspeximus/config.json` as well as from the environment, so the repository you opened could turn the hooks on and choose where that text went.
+
+In 3.16.3 the repository's config no longer decides this:
+
+- **The hooks.** Only your own config, `<key home>/inspeximus/config.json`, or `INSPEXIMUS_EMBED_HOOKS=1` turns hook embedding on. The same holds for `key` and `timeout`. A repository's config that sets `hooks`, `key` or `timeout` is ignored for them, and the hook writes one line to stderr that names the file and the keys.
+- **The URL.** An embedder on another host is set in your own config or with `INSPEXIMUS_EMBED_URL`. An `embed` URL in a repository's config is used only when its host is this machine: `localhost`, `127.0.0.0/8` or `::1`. A repository URL to another host is ignored, and the hook writes one line to stderr that names the file and the host. A URL whose host could be read two ways, for example with a backslash, a space or an `@` in its authority, does not count as this machine.
+- **What you see.** A repository that switched the hooks on, or pointed them at an embedder on another host, gets lexical recall in its hooks until you set `hooks` (and the URL, for another host) in your own config or the environment. A local embedder URL in a repository's config, for example Ollama at `http://localhost:11434`, is still used once you turn the hooks on yourself. Your config's `embed` settings take precedence over the repository's.
+
+Tests: `tests/test_a_repo_config_cannot_send_text_to_another_host.py`. A listener on another host receives 0 requests through both the hook write and the prompt. The same URL in your config receives both. A repository's `hooks: true` sends nothing, even to a loopback URL. A repository's `key` and `timeout` are not used.
+
+### The prompt hook skips a decision store over 16 MB, and says so (AUDIT-B)
+
+The hook opens and queries the store that `INSPEXIMUS_DECISION_STORE` names on every prompt. Measured on 2026-10-04: a 4 MB store of 619 decisions added 0.59 s to the hook (2.04 s against 1.45 s without it, median of 5 interleaved runs). The 53 MB MCP store, configured there by mistake, took the hook to 5.29 s against 1.43 s without it, with nothing in the output to say why.
+
+A decision store over 16 MB is now skipped, and the hook writes one line to stderr that names the size, the limit and the fix. stdout is unchanged, because stdout joins the prompt. `INSPEXIMUS_DECISION_STORE_MAX_MB` sets the limit, and `0` turns the check off. A value that is not a number, for example `abc`, means the 16 MB default. When the hook cannot read the file size, it reads the store as before. The arm `prompt_decisions_n600` measures the hook with a decision store (`tests/test_the_decision_store_has_a_size_limit.py`).
+
+### The receipts sidecar is written from cached encodings (AUDIT-B)
+
+Every receipted write rewrites the whole receipts sidecar, and it encoded every receipt again each time. A receipt is built once and appended, so each one is now encoded once and its text is kept. The file is the same bytes the full encoding writes, so every version reads it. A receipt whose hash or field count changes is encoded again. Slash, restore, a signed chain and a peer adoption each write the same bytes as the full encoding (`tests/test_the_receipt_chain_is_written_from_cached_encodings.py`). In the arm `remember_receipted_n2000`, 5 receipted writes on a handle that holds 2,000 receipts encode 5 receipts (`receipt_encodes`). On the 16,053 receipts of a copy of our MCP store, building the sidecar text took 0.026 s instead of 0.076 s. The file write and the fsync of the 16 MB sidecar are unchanged.
+
+- **Memory.** The cache keeps the encoded text of every receipt beside the receipts, so a handle holds about the size of its sidecar again: about 40 MB for 50,000 receipts (AUDIT-A). Each tenant view keeps its own cache.
+- **Checked by AUDIT-A.** A wrapper compared the cached output with the full encoding over the whole test suite: 15,678 sidecar writes, 2,845,711 receipts, 0 differences.
+
+### Tooling: the suite's real-home guard attributes what it reports (no behaviour change)
+
+The suite's run-end guard failed a run when any new chain head under `%APPDATA%\inspeximus\heads` named a store in the system temp directory, so another process's temp store failed the run. Measured on 2026-10-05: a run failed on 6 such heads, and each of the 4 test files in question, run alone with a watcher polling the directory every 0.1 s, wrote none. Each run now creates its own temp root and points `TEMP`, `TMP` and `TMPDIR` at it for every test and child. A head counts against the run only when its store is under that root. A head the guard cannot read, or that names no store, still fails the run. The package is unchanged (`tests/test_the_home_guard_attributes_heads_to_this_run.py`).
+
+Mutations: 44 registry entries added or changed since v3.16.2, 44 killed, 0 survived (`tools/mutation_check.py`: 29 on 815aab1e, whose later merge c246c24c changes two test files only; the 4 F-9 entries on 954a9fae, with AUDIT-B's 4 archive-policy entries re-run there; the 4 F-10 entries, re-run after their test file changed; the 7 F-11, loopback and decision-store-limit entries on the release head). The registry holds 889 entries.
+
+Release record, 2026-10-05, on the tree of this release (5edfd775 before this version bump):
+- Windows, full suite, 4 processes: 6,277 passed, 0 failed, 464 skipped, 12 xfailed, 19 errors. The 19 errors are the openai-agents tests, as in 3.16.2.
+- WSL (Ubuntu 24.04, fresh clone), full suite, 2 processes: 5,763 passed, 0 failed, 727 skipped, 9 xfailed, 0 errors.
+- Perf gate, run alone: no regression. The new counters are `partition_registry_reads` (0 in every arm), `guard_shape_scans`, `tracked_gets`, `receipt_encodes` and `token_builds`.
+- AUDIT-A reviewed the branch and re-measured the archive policy, the embed rules and the loopback check on a detached copy: approved.
+
+## Not in this release, with the measurements (AUDIT-B)
+
+- Every `remember` through the MCP server rewrites the whole receipts sidecar (16,252,227 bytes on a 13,359-record store) and the action ledger (6,945 bytes). It does not rewrite the store, which is a row store: one row is serialized per write. A `remember` took 0.20 to 0.49 s through the server on that copy. By profile, the sidecar rewrite and the two state digests were about two thirds of one call (0.29 of 0.44 s, profiler on). 3.16.3 removes the re-encoding of each receipt and keeps the rewrite: the whole file is still written on every receipted write. An append-only receipts file would remove the rewrite. It changes the sidecar format, so it needs a design review.
+- The hook's decision store under the 16 MB limit: +0.59 s per prompt (a 4 MB `mcp_memory.json`). A persisted token cache would remove about 0.26 s of that, and it needs a write on the hook path or a maintenance writer.
+- The uvx pin against a venv path: 0.28 to 0.36 s. Parked.
+- Builder: `history(key, include_archive=True)` and the same on `as_of()` and `provenance()`, which would read a key that moved whole. It must refuse, as an erasure does, when a listed segment is missing or does not match the log.
+- Builder: `remember(tags="partition:x")` with a bare string stores the string's characters as tags (older than 3.16.3).
+
 ## 3.16.2 - UPGRADE IF you ran `--archive` on 3.16.1: a session that had the store open before the move wrote the moved rows back into the hot store on its next save, and one more `--archive --apply` on 3.16.2 takes them out again without a duplicate. Also UPGRADE IF you erase records whose tenant or agent ids name a person (they are now pseudonymised), or a sidecar of your store may be damaged (verifiers now name the defect instead of raising)
 
 ### An erasure pseudonymises the erased record's tenant and agent ids
