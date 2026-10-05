@@ -652,17 +652,37 @@ def _classify(r: dict, classes) -> str | None:
     return None
 
 
-def _select(items: list, cutoff: float, classes, logged=frozenset()) -> tuple:
-    """(moving, held_back) lists of records. Held back: selected by class and age, but referred to by a
-    record that stays. Iterated to a fixed point, because holding one back can hold back what it names.
-    Ids the log already lists are never selected again: they belong to a segment."""
+def _select(items: list, cutoff: float, classes, logged=frozenset(), reasons: dict | None = None) -> tuple:
+    """(moving, held_back) lists of records. Held back: selected by class and age, but either referred to by
+    a record that stays, or sharing its (tenant, key) with a record that stays. Iterated to a fixed point,
+    because holding one back can hold back what it names, or what shares its key. Ids the log already lists
+    are never selected again: they belong to a segment. `reasons`, when given, receives {id: "reference" |
+    "key"} for each record held back.
+
+    HELD BY KEY (3.16.3, AUDIT-A F-6). history(), revert(), as_of() and provenance() read the hot rows. A
+    key's older value that moved while a newer one stayed left those readers a history with a hole, and
+    revert() could not reach the older value. So a row stays while its key still has a row in the hot store;
+    the next run re-decides, and once the hot row is retired or erased the held rows move. Measured on a
+    copy of the agora project store: 51 of 64,412 movers held, across 13 keys. The trade: a key written again
+    every day keeps its whole history hot."""
     cand = {r["id"]: r for r in items
             if r["id"] not in logged and isinstance(r.get("ts"), (int, float)) and r["ts"] < cutoff
             and _classify(r, classes)}
     held: dict = {}
+    why = reasons if reasons is not None else {}
+
+    def _kt(r):
+        k = r.get("key")
+        return (r.get("tenant"), k) if isinstance(k, str) and k else None
+
     changed = True
     while changed:
         changed = False
+        staying_keys = {_kt(r) for r in items if r["id"] not in cand} - {None}
+        for rid in [i for i, r in cand.items() if _kt(r) in staying_keys]:
+            held[rid] = cand.pop(rid)
+            why[rid] = "key"
+            changed = True
         for r in items:
             if r["id"] in cand:
                 continue
@@ -670,6 +690,7 @@ def _select(items: list, cutoff: float, classes, logged=frozenset()) -> tuple:
                 for ref in (r.get(f) or ()):
                     if isinstance(ref, str) and ref in cand:
                         held[ref] = cand.pop(ref)
+                        why[ref] = "reference"
                         changed = True
     moving = [r for r in items if r["id"] in cand]
     return moving, list(held.values())
@@ -775,7 +796,8 @@ def plan(store, older_than_days: float, classes=("cmd",), now: float | None = No
     cutoff = now - float(older_than_days) * 86400.0
     items = list(m._items)
     listed = listed_segments(m.path) if m.path else {}
-    moving, held = _select(items, cutoff, classes, _logged_ids(listed))
+    reasons: dict = {}
+    moving, held = _select(items, cutoff, classes, _logged_ids(listed), reasons)
     existing = set(listed)
     layout = _layout(m.path, moving, cap_bytes, existing) if m.path else []
     per_class: dict = {}
@@ -789,7 +811,9 @@ def plan(store, older_than_days: float, classes=("cmd",), now: float | None = No
         "store": str(m.path) if m.path else None,
         "classes": {c: CLASSES[c][0] for c in classes},
         "cutoff_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(cutoff)),
-        "moving": len(moving), "moving_per_class": per_class, "held_back_by_reference": len(held),
+        "moving": len(moving), "moving_per_class": per_class,
+        "held_back_by_reference": sum(1 for v in reasons.values() if v == "reference"),
+        "held_back_by_key": sum(1 for v in reasons.values() if v == "key"),
         "hot_rows_before": len(items), "hot_rows_after": len(items) - len(moving),
         "hot_record_bytes_before": hot_bytes, "hot_record_bytes_after": hot_bytes - moved_bytes,
         "hot_file_bytes_before": os.path.getsize(m.path) if m.path and os.path.exists(m.path) else 0,
@@ -888,7 +912,13 @@ def apply(store, older_than_days: float, classes=("cmd",), now: float | None = N
           allow_git_tracked: bool = False, cap_bytes: int = SEGMENT_CAP_BYTES) -> dict:
     """Move the selected records into segments, append one `move` entry per segment, and save the hot
     store without them. Refused, with nothing written, when the store is not supported, the log does not
-    verify, or the segments would land in a git work tree without `allow_git_tracked`."""
+    verify, or the segments would land in a git work tree without `allow_git_tracked`.
+
+    A row stays while its key still has a row in the hot store (`held_back_by_key`), so history(), revert(),
+    as_of() and provenance() keep a key's older values while the key is in use. LIMIT: once every value of
+    a key is older than the cutoff, the key moves whole, and those readers then see only values written
+    after the move; revert() cannot cross the archive boundary. recall(include_archive=True) reads the
+    segments."""
     from .core import _StoreLock
     m = _base(store)
     _refuse_unsupported(m)

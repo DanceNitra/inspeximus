@@ -7758,5 +7758,32 @@
   "tests": [
    "tests/test_a_closed_partition_takes_no_write_on_any_path.py"
   ]
+ },
+ {
+  "name": "the archive moves a key's older value while the key is hot",
+  "file": "inspeximus/archive.py",
+  "old": "        for rid in [i for i, r in cand.items() if _kt(r) in staying_keys]:",
+  "new": "        for rid in []:",
+  "tests": [
+   "tests/test_archive_keeps_a_keys_history_while_the_key_is_hot.py"
+  ]
+ },
+ {
+  "name": "the key hold ignores the tenant",
+  "file": "inspeximus/archive.py",
+  "old": "        return (r.get(\"tenant\"), k) if isinstance(k, str) and k else None",
+  "new": "        return (None, k) if isinstance(k, str) and k else None",
+  "tests": [
+   "tests/test_archive_keeps_a_keys_history_while_the_key_is_hot.py"
+  ]
+ },
+ {
+  "name": "the plan reports no row held back by key",
+  "file": "inspeximus/archive.py",
+  "old": "        \"held_back_by_key\": sum(1 for v in reasons.values() if v == \"key\"),",
+  "new": "        \"held_back_by_key\": 0,",
+  "tests": [
+   "tests/test_archive_keeps_a_keys_history_while_the_key_is_hot.py"
+  ]
  }
 ]
