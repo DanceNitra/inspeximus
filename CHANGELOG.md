@@ -1,3 +1,65 @@
+## 3.16.2 - UPGRADE IF you ran `--archive` on 3.16.1: a session that had the store open before the move wrote the moved rows back into the hot store on its next save, and one more `--archive --apply` on 3.16.2 takes them out again without a duplicate. Also UPGRADE IF you erase records whose tenant or agent ids name a person (they are now pseudonymised), or a sidecar of your store may be damaged (verifiers now name the defect instead of raising)
+
+### An erasure pseudonymises the erased record's tenant and agent ids
+
+Through 3.16.1 an erasure took the record's text, source and key out of the store and left two ids as written: the tenant and agent columns of the record's rows in the event journal (`memory_events`), and the tenant stamp on its tombstone. AUDIT-A measured it on 3.15.8: after `for_tenant("jane-tenant-77").forget_subject("jane.example")`, the tenant id was still in the store file twice. On the first 3.16.2 candidate it measured a third copy, in `<store>.tombstones.json`, which every erasure certificate carries. 3.16.1 documented the journal copy as a limit.
+
+An erasure now replaces all of them with a pseudonym: `pseud:` and an HMAC-SHA256 of the id under a per-store salt. The ids are pseudonymised, not removed.
+
+- **The salt is in the key home**, beside the receipt keys and chain heads (`INSPEXIMUS_KEY_HOME`, else the per-user config directory), and is minted on the first erasure. Anyone who holds the key home can re-derive the pseudonym from a known id and confirm it.
+- **Linkable within one store.** One tenant's erased records share one pseudonym in a store, so they stay linkable to each other. A moved store gets a new salt, as it gets a new receipt key.
+- **Filters still work.** `poll_events()` on a tenant handle and with `agent_id=`, and the tombstones a tenant handle sees (`erasure_report()`), accept the id and its pseudonym.
+- **Without a salt home.** When the key home is inside the store's own directory, no salt is written there, because a salt beside the store gives its holder the same power as the key home. These fields are cleared outright instead, and a tenant handle counts the tombstone as withheld rather than hiding it.
+- **Scope.** Only the erased record's rows and tombstone change. A record that stays keeps its ids in the clear, because they are that tenant's live data.
+
+The README's Art. 17 row and `docs/ERASURE.md` ("Full scope") say this. The objection limit stays: `object_processing()` keeps the subject's identifier in `<store>.objections.json`, because that entry is what keeps suppressing new records about them.
+
+Tests: `tests/test_an_erasure_pseudonymises_the_agent_and_tenant_in_the_journal.py` (10 tests), including AUDIT-A's `test_f1` and one that scans every file beside the store and the certificate for each field of an erased record (tenant, agent, key, text and source) with receipts on. The tenant half of `tests/test_two_identifiers_an_erasure_keeps_by_design.py` now requires the absence.
+
+### A session that had the store open before `--archive` no longer writes the moved rows back
+
+AUDIT-A measured on 3.16.1: a handle that loaded the store before `archive apply` read every moved row as its own unsaved write, because a move leaves no tombstone, and its next save put the row back into the hot store. 10 of 10 archived rows came back after one `remember()` on such a handle. A 20,000-row run with a writer beside it reported `applied=True` and left all 20,000 rows hot. A long-running MCP server or agent session on the archived store is exactly such a handle.
+
+The merge behind every save, `reload()` and `refresh()` now never re-adds an id the archive log gives to a segment, and never re-applies a held edit to one. It does not drop rows that are still in the hot store: finishing a move needs its segment checked, and that stays with `apply()`. When the archive log cannot be read, the merge cannot tell which rows were moved, so it takes the rule `refresh()` already uses: a row this session read or saved and no longer finds on disk was taken off the disk, and only rows it never saved, or edited, are put back. Writes go on while the log is damaged, and no moved row returns.
+
+If you archived on 3.16.1 while another session had the store open, run `inspeximus --archive --older-than DAYS --apply` again on 3.16.2. It finds the rows the log gives to a segment that are still hot and finishes their move without copying them twice.
+
+Tests: `tests/test_audit_a_f5_a_peer_does_not_resurrect_archived_rows.py` (3 tests: a long-lived handle, a second apply healing the 3.16.1 state, an unreadable log) and `tests/test_audit_a_f5b_an_unreadable_log_during_a_peer_save.py` (AUDIT-A's).
+
+### `archive.apply()` on a stale handle
+
+On 3.16.1, on a copy of our 79,313-row project store, a handle was opened, a hook in another process wrote one capture, and `apply()` on the first handle wrote every segment and the log, returned `applied=True`, and left all 79,314 rows in the hot store. The save saw the peer's write and merged the disk back in, and a merge cannot re-apply a removal that has no tombstone. The next `apply()` finished the move without copying a row twice, so nothing was lost. The return value said done when it was not. Its counts were also the plan made before the merge: with a row a peer had erased, `moving` was 6 while 5 rows were written (AUDIT-A).
+
+`apply()` now reads the rows again under the store lock, plans from the merged rows, and saves inside that lock, so no peer can write between the selection and the save. It then reads the moved ids back from the hot file. If any are still there, it returns `applied=False` with the ids in `stranded`, and the next run finishes the move.
+
+The other writers with the same shape were checked. `forget` and `forget_subject` on a stale handle hold, because their tombstones keep the rows buried through the merge. An erasure's segment rewrite and `recover()` read the segment from disk under the lock. A pooled read cannot save.
+
+Tests: `tests/test_archive_apply_on_a_stale_handle_moves_every_row.py` (3 tests, including AUDIT-A's `test_f2`).
+
+### A malformed sidecar gets a named verdict, never a raw exception
+
+AUDIT-A found that a malformed `<store>.receipts.json`, `<store>.tombstones.json` or `<store>.archive.json` turned `verify_writes()`, `recommit()`, `context_unbound()`, `governance_report()`, `erasure_report()`, `erasure_certificate()` and `forget()` into AttributeError, TypeError, KeyError or a decode error. Nine receipt shapes failed, and a garbage archive log stopped `forget()` of a record that was never archived. A verifier that crashes reports nothing.
+
+- **Data loss, fixed: an unreadable tombstone chain was overwritten.** A `<store>.tombstones.json` that did not parse was read as an empty chain, and the next erasure wrote a fresh chain over the file, destroying the earlier proof of erasure. It is now named, never written over, and read again by the same handle once it is repaired.
+
+Each defect is now named. The verifiers and reports return it as a problem. `recommit()` refuses to extend a receipt chain it cannot read. `erasure_certificate()` and `forget()` raise `SidecarMalformed`, a new `ValueError`, and change nothing. Its message names the way on: move the tombstone file aside and run the erasure again. The new chain starts empty, so a certificate covers only the erasures recorded after the move, and the moved file keeps the earlier ones. `forget(dry_run=True)` still previews, because it writes nothing. An unreadable archive log raises `SegmentsUnreachable`, which an erasure already treats as a refusal.
+
+Tests: `tests/test_audit_a_f3_malformed_sidecars_get_a_verdict.py` (AUDIT-A's) and `tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py` (7 tombstone shapes, a malformed receipt, a repair).
+
+### Known limit: history of a key whose older value was archived
+
+After the older value of a key moves to a segment, `history()`, `revert()`, `as_of()` and `provenance()` read the hot rows only, so they do not see that value. The default archive class, `cmd:` captures, does carry such history: a command run again reuses its key, and our project store held 3,904 superseded `cmd:` rows of 71,119 before its archive. A session that had the store open before the move and then edits a moved row loses the edit: `retire()` returns `retired: 0`, and the row stays as it was in its segment. 3.16.3 either makes these readers consult the segments or keeps a hot key's superseded predecessors out of the move.
+
+Mutations: 20 new entries, 20 killed. 3 existing entries re-pointed to the lines this release changed. One existing assertion changed with the pseudonym: the merge test's tombstone stamps are the tenants' pseudonyms.
+
+Release record, 2026-10-05, on the tree of this release (44c7e5ca before this version bump):
+
+- Windows, full suite, 4 processes: 6,146 passed, 0 failed, 453 skipped, 12 xfailed, 19 errors. The 19 errors are the openai-agents tests: the installed openai-agents 0.20.0 has no `agents.testing`.
+- Linux (WSL, user account), full suite, 2 processes: 5,629 passed, 0 failed, 716 skipped, 9 xfailed, 3 errors. The 3 errors are `tests/test_probe_gate.py` waiting on `identity_gate_supersession_probe.py` under load; that file alone passes 24 of 24 on this tree (373 s) and on 3.16.1 (430 s).
+- Mutations: 23 entries added or changed since 3.16.1, run together with nothing else running. All 23 run and are killed.
+- `perf/gate.py check`, run alone: no regression against the 3.16.1 baseline.
+- AUDIT-A reviewed the branch and re-measured the archive and erasure fixes on a detached copy: approved.
+
 ## 3.16.1 - UPGRADE IF your Claude Code prompt hook is slow on a large project store, or you call `sleep()` on thousands of records: old captured commands can move to archive segments, and `sleep()` scores fewer pairs
 
 ### Old captured mechanics can leave the hot store
