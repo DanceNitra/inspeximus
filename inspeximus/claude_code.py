@@ -1185,8 +1185,9 @@ DECISION_STORE_MAX_MB = 16.0
 
 def _decision_store_too_big(path) -> bool:
     """True when the decision store at `path` is over DECISION_STORE_MAX_MB, and says so ONCE per hook
-    process on stderr (never stdout: stdout joins the prompt). `INSPEXIMUS_DECISION_STORE_MAX_MB` sets the
-    limit; 0 turns the check off. A hook must not fail, so an unreadable size means "not too big".
+    process on stderr (never stdout: stdout joins the prompt). `INSPEXIMUS_DECISION_STORE_MAX_MB` is a number of
+    megabytes; 0 or a negative value turns the guard off; anything that is not a number keeps 16 MB. A hook must
+    not fail, so an unreadable size means "not too big".
 
     Why skip and not warn and run: the owner of the setting asked for decisions, not for a delay on every
     prompt, and a store this large is almost always the general store configured by mistake (it holds
