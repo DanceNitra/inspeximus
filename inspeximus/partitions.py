@@ -23,7 +23,10 @@ basis, and the registry beside the store says what each partition's rules are an
 Kinds: `context` (deleted at close by default), `process` (kept at close unless told otherwise),
 `agent` (long-lived, capped and swept). A partition never crosses a tenant: it lives inside the store
 handle it was opened on. What it does not do: it is not an isolation boundary against a caller who
-holds the store, and a record written without going through the handle is not in any partition.
+holds the store. Membership is the `partition:<name>` tag, and the write receipt commits the tag. A
+write tagged for a CLOSED partition is refused on every path (3.16.3). A plain write tagged for an OPEN
+partition joins it, and its receipt commits the tag, but it skips the partition's `max_records` cap and
+`on_cap="refuse"`, which only the handle enforces: a tag is a label, not isolation. Use the handle.
 `report()` counts records that carry no partition tag, so an operator can see how much memory is
 outside the scheme.
 """

@@ -431,6 +431,46 @@ _COMMIT_BINDING_FIELDS = ("immutable_sha256", "mtype", "value_sha256", "status_s
 _PARTITION_TAG = "partition:"
 
 
+def _partition_registry(store_path) -> dict:
+    """{name: entry} from `<store>.partitions.json`, {} when the file does not exist (3.16.3, AUDIT-A F-7).
+
+    Read only by a write that carries a `partition:` tag; perf/gate.py counts the calls, and an untagged
+    write makes none. A registry that cannot be read raises SidecarMalformed: letting a tagged write through
+    would reopen F-7 whenever the file is damaged."""
+    p = Path(str(store_path) + ".partitions.json")
+    if not p.exists():
+        return {}
+    try:
+        doc = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeDecodeError) as exc:
+        raise SidecarMalformed([f"{p.name} cannot be read: {type(exc).__name__}"],
+                               f"repair or restore {p} before writing with a partition: tag; writes without one "
+                               f"are not affected")
+    if not isinstance(doc, dict) or not isinstance(doc.get("partitions"), dict):
+        raise SidecarMalformed([f"{p.name} is not a partitions registry"],
+                               f"repair or restore {p} before writing with a partition: tag")
+    return doc["partitions"]
+
+
+def _refuse_closed_partition_tags(store_path, tags) -> None:
+    """A write tagged for a CLOSED partition is refused, as the partition handle refuses it (AUDIT-A F-7).
+
+    Membership is the tag, and the write receipt commits the tag (`partition_sha256`), so a plain write
+    tagged `partition:x` after x closed joined it and verified clean. A write tagged for an open partition,
+    or for a name the registry does not know, still goes through: it joins, and it skips the partition's
+    `max_records` cap and `on_cap`, which only the handle enforces."""
+    names = sorted({t[len(_PARTITION_TAG):] for t in (tags or ())
+                    if isinstance(t, str) and t.startswith(_PARTITION_TAG)})
+    if not names or not store_path:
+        return
+    reg = _partition_registry(store_path)
+    for name in names:
+        entry = reg.get(name)
+        if isinstance(entry, dict) and entry.get("closed_at"):
+            raise ValueError(f"partition {name!r} is closed (at {entry['closed_at']}); a write tagged for it is "
+                             f"refused. Open a new partition for a new process")
+
+
 def _epoch_or_none(v):
     """Epoch seconds from a number, a numeric string or an ISO 8601 string; None if it is none of them."""
     if isinstance(v, bool) or v is None:
@@ -3687,6 +3727,8 @@ class Inspeximus:
         # rewrite. If no recent recall exists, an explicit derived=True falls through to the orphan rule (fail-closed).
         # This is the store-side inference the storm/verify pass found to be the ONLY form with measured defense
         # value (signature-only 6/6 attacks -> 0/6 once lineage propagates); a caller-supplied source string is not.
+        # A CLOSED PARTITION TAKES NO WRITE, whatever path the write comes by (3.16.3, AUDIT-A F-7).
+        _refuse_closed_partition_tags(self.path, tags)
         # Refuse a malformed call before anything is stored. See _reject_frame_markup: a value that
         # ends in call-frame markup means the caller's OTHER parameters are sitting inside this one,
         # so `key`, `source` and the rest never arrived and the record would land un-keyed and
@@ -11240,6 +11282,11 @@ class Inspeximus:
         buried = {t.get("memory_id") for t in (self._tombstones or [])}
         buried |= {t.get("memory_id") for t in (bundle.get("tombstones") or [])}
         have = {r.get("id") for r in self._items}
+        # A PEER'S RECORD TAGGED FOR A CLOSED PARTITION IS REFUSED HERE TOO (3.16.3, AUDIT-A F-7), before anything
+        # is added, so a refused import changes nothing.
+        _refuse_closed_partition_tags(self.path, [t for r in (bundle.get("records") or [])
+                                                  if isinstance(r, dict) and r.get("id") not in have
+                                                  for t in (r.get("tags") or [])])
         added = 0
         for r in bundle.get("records") or []:
             rid = r.get("id")

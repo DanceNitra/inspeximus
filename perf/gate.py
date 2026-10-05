@@ -252,6 +252,9 @@ class Counters:
 #:                    prompt_unstamped_n2000, whose counters were otherwise identical to the stamped
 #:                    arm's, so only the advisory clock showed it (1.509 s against 0.099 s). One per
 #:                    handle is the expected cost (A-45, 3.15.5).
+#:   partition_registry_reads  one read of `<store>.partitions.json`. Only a write that carries a
+#:                    `partition:` tag reads it, to refuse a closed partition (AUDIT-A F-7, 3.16.3); every
+#:                    arm here writes untagged, so the expected count is 0 everywhere.
 COUNTED_CALLS = {
     "type_inferences": (core, "_infer_type"),
     "current_active_scans": (core.Inspeximus, "_current_active"),
@@ -260,6 +263,7 @@ COUNTED_CALLS = {
     "store_hash_reads": (core.Inspeximus, "_disk_hash"),
     "guard_key_lookups": (core, "_guard_key_file"),
     "decision_syncs": (core.Inspeximus, "_sync_before_decision"),
+    "partition_registry_reads": (core, "_partition_registry"),
 }
 
 

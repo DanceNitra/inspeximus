@@ -5915,8 +5915,8 @@
  {
   "name": "home guard: the run-end check reads no writer",
   "file": "tests/conftest.py",
-  "old": "_home_guard.snapshot(config._real_home), config._real_home)",
-  "new": "_home_guard.snapshot(config._real_home))",
+  "old": "_home_guard.snapshot(config._real_home), config._real_home,",
+  "new": "_home_guard.snapshot(config._real_home),",
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
@@ -7712,6 +7712,51 @@
   "new": "        live = []",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "remember lets a write tagged for a closed partition through",
+  "file": "inspeximus/core.py",
+  "old": "        _refuse_closed_partition_tags(self.path, tags)\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_closed_partition_takes_no_write_on_any_path.py"
+  ]
+ },
+ {
+  "name": "the closed-partition rule never fires",
+  "file": "inspeximus/core.py",
+  "old": "        if isinstance(entry, dict) and entry.get(\"closed_at\"):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_a_closed_partition_takes_no_write_on_any_path.py"
+  ]
+ },
+ {
+  "name": "import_changeset takes a peer's record tagged for a closed partition",
+  "file": "inspeximus/core.py",
+  "old": "        _refuse_closed_partition_tags(self.path, [t for r in (bundle.get(\"records\") or [])",
+  "new": "        (lambda *a: None)(self.path, [t for r in (bundle.get(\"records\") or [])",
+  "tests": [
+   "tests/test_a_closed_partition_takes_no_write_on_any_path.py"
+  ]
+ },
+ {
+  "name": "every write reads the partitions registry",
+  "file": "inspeximus/core.py",
+  "old": "    if not names or not store_path:\n        return\n    reg = _partition_registry(store_path)",
+  "new": "    if not store_path:\n        return\n    reg = _partition_registry(store_path)",
+  "tests": [
+   "tests/test_a_closed_partition_takes_no_write_on_any_path.py"
+  ]
+ },
+ {
+  "name": "a damaged partitions registry lets a tagged write through",
+  "file": "inspeximus/core.py",
+  "old": "    except (OSError, ValueError, UnicodeDecodeError) as exc:\n        raise SidecarMalformed([f\"{p.name} cannot be read: {type(exc).__name__}\"],",
+  "new": "    except (OSError, ValueError, UnicodeDecodeError) as exc:\n        return {}\n        raise SidecarMalformed([f\"{p.name} cannot be read: {type(exc).__name__}\"],",
+  "tests": [
+   "tests/test_a_closed_partition_takes_no_write_on_any_path.py"
   ]
  }
 ]
