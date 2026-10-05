@@ -44,15 +44,12 @@ def _project(tmp_path, n=60, config=None):
     p = str(st / "coding_memory.json")
     m = Inspeximus(p)
     now = time.time()
-    real = core.time.time
     ids = []
-    try:
+    with pytest.MonkeyPatch.context() as mp:                  # restored on exit, whatever happens inside
         for i in range(n):
-            core.time.time = lambda i=i: now - 40 * DAY + i
+            mp.setattr(core.time, "time", lambda i=i: now - 40 * DAY + i)
             ids.append(m.remember(f"ran: export number {i} of the batch", key=f"cmd:{i:04d}", tags=["bash"],
                                   mtype="episodic"))
-    finally:
-        core.time.time = real
     m.flush()
     return str(proj), p, ids
 
@@ -78,11 +75,11 @@ def test_a_handle_opened_before_the_maintain_run_does_not_write_the_moved_rows_b
     assert hot == {note} and seg == set(ids), "a row is missing, doubled or misplaced"
 
 
-def test_the_same_through_the_detached_run_the_policy_starts(tmp_path):
+def test_the_same_through_the_detached_run_the_policy_starts(tmp_path, monkeypatch):
     proj, p, ids = _project(tmp_path, config={"archive": {"auto": True, "trigger_mb": 0.0001,
                                                           "allow_git_tracked": True}})
     mcp_handle = Inspeximus(p)
-    os.chdir(proj)
+    monkeypatch.chdir(proj)
     assert cc.maybe_archive_in_background(proj) == "started"
     end = time.time() + 90
     while time.time() < end and not archive.listed_segments(p):
