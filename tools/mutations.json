@@ -7992,5 +7992,68 @@
   "tests": [
    "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
   ]
+ },
+ {
+  "name": "a repository's embed hooks switch the hooks on again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if not (env_hooks or uc.get(\"hooks\") is True):\n",
+  "new": "    if not (env_hooks or uc.get(\"hooks\") is True or rc.get(\"hooks\") is True):\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "the repository's embed key is used again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    key = (os.environ.get(\"INSPEXIMUS_EMBED_KEY\") or uc.get(\"key\") or \"\").strip()\n",
+  "new": "    key = (os.environ.get(\"INSPEXIMUS_EMBED_KEY\") or uc.get(\"key\") or rc.get(\"key\") or \"\").strip()\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "the repository's embed timeout is used again",
+  "file": "inspeximus/claude_code.py",
+  "old": "        timeout = float(uc.get(\"timeout\", 10))\n",
+  "new": "        timeout = float(uc.get(\"timeout\", rc.get(\"timeout\", 10)))\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "a url whose authority holds a backslash, an @ or a space passes the loopback check",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if \"\\\\\" in url or \"@\" in authority or any(c.isspace() for c in url):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "the host the request connects to is not compared with the parsed host",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not host or connects_to != host:\n",
+  "new": "        if not host:\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "a repository's embed hooks, key or timeout are ignored without the stderr line",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if not found or _REPO_EMBED_KEYS_NOTICE:\n",
+  "new": "    if True:\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "an invalid decision store limit turns the guard off again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    except ValueError:\n        limit = DECISION_STORE_MAX_MB\n",
+  "new": "    except ValueError:\n        limit = 0.0\n",
+  "tests": [
+   "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
  }
 ]

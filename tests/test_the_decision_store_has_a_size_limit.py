@@ -108,3 +108,22 @@ def test_stamp_guards_store_stamps_the_named_store(tmp_path, monkeypatch):
     done = run("--apply")
     assert '"stamped": 1' in done.stdout, done.stdout + done.stderr
     assert Inspeximus(dpath).stamp_read_guards(dry_run=True)["to_stamp"] == 0
+
+
+@pytest.mark.parametrize("raw", ["abc", "1e", "nan"])
+def test_an_invalid_limit_keeps_the_guard_on_for_a_store_over_the_default(tmp_path, monkeypatch, capsys, raw):
+    """AUDIT-B 3.16.3: a value that is not a number fell into the stat's `except ValueError` and turned the guard
+    off. The default is lowered here so the small fixture store is over it; the invalid value must mean the default."""
+    proj, dpath = _setup(tmp_path, monkeypatch)
+    monkeypatch.setattr(cc, "DECISION_STORE_MAX_MB", 0.0001)
+    monkeypatch.setenv("INSPEXIMUS_DECISION_STORE_MAX_MB", raw)
+    out, err = _hook(proj, capsys)
+    assert "green handshake" not in out, f"INSPEXIMUS_DECISION_STORE_MAX_MB={raw!r} switched the guard off"
+    assert "INSPEXIMUS_DECISION_STORE_MAX_MB" in err
+
+
+def test_control_the_lowered_default_alone_skips_the_store(tmp_path, monkeypatch, capsys):
+    proj, dpath = _setup(tmp_path, monkeypatch)
+    monkeypatch.setattr(cc, "DECISION_STORE_MAX_MB", 0.0001)
+    out, err = _hook(proj, capsys)
+    assert "green handshake" not in out and "INSPEXIMUS_DECISION_STORE_MAX_MB" in err

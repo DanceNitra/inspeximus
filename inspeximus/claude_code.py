@@ -47,7 +47,8 @@ Recall is deterministic LEXICAL by default (runs anywhere, no service). For SEMA
 at any OpenAI-compatible /embeddings endpoint — e.g. local Ollama — via env (INSPEXIMUS_EMBED_URL / INSPEXIMUS_EMBED_MODEL)
 or the user's config, <key home>/inspeximus/config.json: {"embed": {"url": "http://localhost:11434/v1/embeddings",
 "model": "nomic-embed-text"}}. A per-project .inspeximus/config.json can name an embed url on this machine only
-(localhost, 127.0.0.0/8, ::1); a url to another host there is ignored (3.16.3, F-10). Writes stay verbatim, keyed and no-LLM; the embedder only builds a retrieval
+(localhost, 127.0.0.0/8, ::1); a url to another host there is ignored (3.16.3, F-10), and so are its `hooks`,
+`key` and `timeout` (F-11). Writes stay verbatim, keyed and no-LLM; the embedder only builds a retrieval
 index and fails open (a down endpoint silently degrades to lexical, never drops a capture).
 """
 import sys, os, re, json, hashlib, io, datetime
@@ -100,11 +101,24 @@ def user_config_path() -> str:
 
 
 def _is_loopback(url) -> bool:
-    """True when `url`'s host is this machine: localhost, 127.0.0.0/8 or ::1."""
+    """True when `url`'s host is this machine: localhost, 127.0.0.0/8 or ::1.
+
+    A backslash, whitespace or an `@` anywhere in the authority makes it False: `urlsplit` and `urllib.request`
+    can read a different host from `http://evil.example\\@127.0.0.1/` (AUDIT-A), so a URL whose host two parsers
+    could disagree on is not trusted. The host `urlsplit` reads must also be the host `urllib.request.Request`, which
+    makes the connection, reads."""
     try:
         import ipaddress
+        import urllib.request
         from urllib.parse import urlsplit
-        host = (urlsplit(str(url)).hostname or "").strip().lower()
+        url = str(url)
+        authority = url.split("://", 1)[1].split("/", 1)[0] if "://" in url else ""
+        if "\\" in url or "@" in authority or any(c.isspace() for c in url):
+            return False
+        host = (urlsplit(url).hostname or "").strip().lower()
+        connects_to = (urlsplit("//" + urllib.request.Request(url).host).hostname or "").strip().lower()
+        if not host or connects_to != host:
+            return False
         if host == "localhost":
             return True
         return ipaddress.ip_address(host).is_loopback
@@ -142,6 +156,24 @@ def _repo_embed_url(url, cfg_file) -> str:
     return ""
 
 
+_REPO_EMBED_KEYS = ("hooks", "key", "timeout")
+_REPO_EMBED_KEYS_NOTICE = []
+
+
+def _repo_embed_keys_notice(rc, cfg_file):
+    """One stderr line per process when a repository's `embed` sets a key only the user may set (F-11)."""
+    found = [k for k in _REPO_EMBED_KEYS if k in rc]
+    if not found or _REPO_EMBED_KEYS_NOTICE:
+        return
+    _REPO_EMBED_KEYS_NOTICE.append(cfg_file)
+    try:
+        sys.stderr.write("[inspeximus] %s sets embed %s: ignored, because only your own config or the environment "
+                         "turns hook embedding on or sets its key. Put them in %s.%s"
+                         % (cfg_file, ", ".join(found), user_config_path(), chr(10)))
+    except Exception:                                           # noqa: BLE001
+        pass
+
+
 def _make_embedder(cwd):
     """Optional embedder for SEMANTIC recall (zero extra deps — urllib against any OpenAI-compatible
     /embeddings endpoint, e.g. local Ollama at http://localhost:11434/v1/embeddings). Configured by env
@@ -151,7 +183,8 @@ def _make_embedder(cwd):
     Fail-open on the write path: inspeximus stores the record with vec=None if a call raises, so a down
     embedder degrades recall to lexical but never drops a capture.
 
-    HOOKS ARE LEXICAL BY DEFAULT (opt in with INSPEXIMUS_EMBED_HOOKS=1 or config {"embed": {"hooks": true}}).
+    HOOKS ARE LEXICAL BY DEFAULT (opt in with INSPEXIMUS_EMBED_HOOKS=1 or {"embed": {"hooks": true}} in the user's
+    config; a repository's config cannot turn them on, F-11).
     The hooks run in the agent's hot path — PostToolUse after EVERY Edit/Write/Bash, UserPromptSubmit
     blocking the prompt — and with a local GPU embedder each capture costs one embedding call (~2s on an
     idle GPU, unbounded on a busy one: this plugin's own dogfood machine runs a 21GB LLM on the same card).
@@ -163,20 +196,24 @@ def _make_embedder(cwd):
     rc = rc if isinstance(rc, dict) else {}
     uc = _read_cfg(user_config_path()).get("embed", {})
     uc = uc if isinstance(uc, dict) else {}
-    ec = dict(rc, **uc)                                     # the user's own config wins over the repository's
-    hooks_on = os.environ.get("INSPEXIMUS_EMBED_HOOKS", "").strip().lower() in ("1", "true", "yes") \
-        or ec.get("hooks") is True
-    if not hooks_on:
+    # WHO MAY SWITCH THE HOOKS ON (3.16.3, AUDIT-A F-11). The environment and the user's config only. Read from
+    # the merged config, a repository's `hooks: true` sent every capture and prompt to a REMOTE embedder the user
+    # had configured and left off for the hooks. `key` and `timeout` come from the user's config only, too. A
+    # repository file that sets any of the three is ignored for them, with one stderr line.
+    _repo_embed_keys_notice(rc, _cfg_file(cwd))
+    env_hooks = os.environ.get("INSPEXIMUS_EMBED_HOOKS", "").strip().lower() in ("1", "true", "yes")
+    if not (env_hooks or uc.get("hooks") is True):
         return None, None, None
     url = (os.environ.get("INSPEXIMUS_EMBED_URL") or uc.get("url") or "").strip()
     if not url:
         url = _repo_embed_url(rc.get("url"), _cfg_file(cwd))
     if not url:
         return None, None, None
-    model = (os.environ.get("INSPEXIMUS_EMBED_MODEL") or ec.get("model") or "nomic-embed-text").strip()
-    key = (os.environ.get("INSPEXIMUS_EMBED_KEY") or ec.get("key") or "").strip()
+    model = (os.environ.get("INSPEXIMUS_EMBED_MODEL") or uc.get("model") or rc.get("model")
+             or "nomic-embed-text").strip()
+    key = (os.environ.get("INSPEXIMUS_EMBED_KEY") or uc.get("key") or "").strip()
     try:
-        timeout = float(ec.get("timeout", 10))
+        timeout = float(uc.get("timeout", 10))
     except Exception:
         timeout = 10.0
 
@@ -1155,9 +1192,17 @@ def _decision_store_too_big(path) -> bool:
     prompt, and a store this large is almost always the general store configured by mistake (it holds
     mechanics and receipts, and the hook reads decisions only). Why stderr and not silence: a skipped
     store with no message is the failure this guard exists to prevent, in the other direction."""
+    # The limit is parsed apart from the stat (3.16.3, AUDIT-B): a value that is not a number, for example "abc",
+    # fell into the same `except ValueError` as an unreadable size and turned the guard off. It now means the
+    # default limit.
+    raw = (os.environ.get("INSPEXIMUS_DECISION_STORE_MAX_MB") or "").strip()
     try:
-        raw = (os.environ.get("INSPEXIMUS_DECISION_STORE_MAX_MB") or "").strip()
         limit = float(raw) if raw else DECISION_STORE_MAX_MB
+    except ValueError:
+        limit = DECISION_STORE_MAX_MB
+    if limit != limit:                                          # NaN: no comparison holds, so use the default
+        limit = DECISION_STORE_MAX_MB
+    try:
         if limit <= 0:
             return False
         size = os.stat(path).st_size
