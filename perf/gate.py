@@ -651,6 +651,36 @@ def w_prompt_decisions(n):
     return run
 
 
+def w_remember_receipted(n):
+    """Five receipted `remember` calls on a long-lived handle that already holds n receipts: the MCP server's
+    shape. Each write rewrites the receipts sidecar, and `receipt_encodes` counts the receipts encoded to
+    text for it: 5 (the new ones), where re-encoding the chain each time was about 5 x n. The handle is warmed
+    by one write before the measured part, as a server is by its first call."""
+    p = _store_path()
+    m = Inspeximus(p, receipts=True)
+    for i in range(n):
+        m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic")
+    m.flush()
+    m.remember("warm up the receipt encodings", key="cmd:warm", mtype="episodic")
+
+    def run():
+        real = core._encode_receipt
+        built = {"n": 0}
+
+        def counted(e):
+            built["n"] += 1
+            return real(e)
+        core._encode_receipt = counted
+        try:
+            with Counters() as c:
+                for i in range(5):
+                    m.remember(f"measured write {i}", key=f"cmd:m{i}", mtype="episodic")
+        finally:
+            core._encode_receipt = real
+        run.inner = {**c.as_dict(), "receipt_encodes": built["n"]}
+    return run
+
+
 def w_prompt_unstamped(n):
     """w_prompt's store and recall, run as a process that CANNOT verify the stamps: a key home that did
     not write them (another user, another machine, a store copied in). The read guard then assesses every
@@ -1003,6 +1033,8 @@ WORKLOADS = {
     "digest_n2000":       (lambda: w_digest(2000),       "state_digest over 2,000 records (the action ledger takes it twice per tool call)", "rows"),
     "prompt_decisions_n600": (lambda: w_prompt_decisions(600),
                            "UserPromptSubmit with a 600-decision store (INSPEXIMUS_DECISION_STORE) beside a 600-capture project store", "rows"),
+    "remember_receipted_n2000": (lambda: w_remember_receipted(2000),
+                           "5 receipted remembers on a handle holding 2,000 receipts (the MCP server shape)", "rows"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
     "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),

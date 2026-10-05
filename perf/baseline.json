@@ -693,5 +693,37 @@
   "seconds_median": 0.0888,
   "seconds_min": 0.0689,
   "seconds_max": 0.1013
+ },
+ "remember_receipted_n2000": {
+  "desc": "5 receipted remembers on a handle holding 2,000 receipts (the MCP server shape)",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
+  "counters": {
+   "replace_store": 5,
+   "replace_tombstones": 0,
+   "replace_receipts": 5,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 0,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "dir_listings": 0,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 5,
+   "read_guard_assessments": 5,
+   "store_hash_reads": 0,
+   "guard_key_lookups": 0,
+   "decision_syncs": 5,
+   "guard_shape_scans": 5,
+   "tracked_gets": 50315,
+   "receipt_encodes": 5
+  },
+  "seconds_median": 0.2268,
+  "seconds_min": 0.1673,
+  "seconds_max": 0.2283
  }
 }

@@ -3363,8 +3363,8 @@
  {
   "name": "the receipt sidecar goes back to the pure-Python encoder (indent)",
   "file": "inspeximus/core.py",
-  "old": "    return json.dumps(entries, ensure_ascii=False)\n",
-  "new": "    return json.dumps(entries, indent=2, ensure_ascii=False)\n",
+  "old": "    return json.dumps(entry, ensure_ascii=False)\n",
+  "new": "    return json.dumps(entry, indent=2, ensure_ascii=False)\n",
   "tests": [
    "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py"
   ]
@@ -3372,8 +3372,8 @@
  {
   "name": "the receipt sidecar drops the newest receipt",
   "file": "inspeximus/core.py",
-  "old": "    return json.dumps(entries, ensure_ascii=False)\n",
-  "new": "    return json.dumps(entries[:-1], ensure_ascii=False)\n",
+  "old": "    for e in entries:\n        hit = cache.get(id(e))\n",
+  "new": "    for e in entries[:-1]:\n        hit = cache.get(id(e))\n",
   "tests": [
    "tests/test_the_receipt_sidecar_is_written_by_the_c_encoder.py"
   ]
@@ -7793,6 +7793,33 @@
   "new": "    if False:\n        from ._surface import open_store\n",
   "tests": [
    "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "the receipt encoding cache never hits",
+  "file": "inspeximus/core.py",
+  "old": "        if hit is None or hit[0] is not e or hit[1] != e.get(\"hash\") or hit[2] != len(e):\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_receipt_chain_is_written_from_cached_encodings.py"
+  ]
+ },
+ {
+  "name": "the receipt encoding cache ignores a change in place",
+  "file": "inspeximus/core.py",
+  "old": "        if hit is None or hit[0] is not e or hit[1] != e.get(\"hash\") or hit[2] != len(e):\n",
+  "new": "        if hit is None or hit[0] is not e:\n",
+  "tests": [
+   "tests/test_the_receipt_chain_is_written_from_cached_encodings.py"
+  ]
+ },
+ {
+  "name": "the receipt chain text joins with a bare comma",
+  "file": "inspeximus/core.py",
+  "old": "    return \"[\" + \", \".join(out) + \"]\"\n",
+  "new": "    return \"[\" + \",\".join(out) + \"]\"\n",
+  "tests": [
+   "tests/test_the_receipt_chain_is_written_from_cached_encodings.py"
   ]
  }
 ]
