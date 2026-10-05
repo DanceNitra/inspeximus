@@ -53,23 +53,49 @@ import sys, os, re, json, hashlib, io, datetime
 from pathlib import Path as _Path
 
 
-def _cfg(cwd):
-    """Per-project plugin config at <project root>/.inspeximus/config.json (optional).
-
-    THE ROOT FIRST (3.9.7). This read <launch dir>/.inspeximus/config.json, so launching Claude Code
-    from a subdirectory ignored a config at the root, beside the store it configures. A config in the
-    launch directory is still read when the root has none, so a project that put it there keeps it."""
+def _cfg_file(cwd):
+    """The per-project config file this hook reads, or None: <project root>/.inspeximus/config.json, else the
+    same file in the launch directory."""
     from ._surface import find_project_root
     base = cwd or os.getcwd()
     for d in dict.fromkeys((find_project_root(base) or base, base)):
         try:
             p = os.path.join(d, ".inspeximus", "config.json")
             if os.path.exists(p):
-                c = json.loads(_Path(p).read_text(encoding="utf-8"))
-                return c if isinstance(c, dict) else {}
+                return p
         except Exception:
             pass
-    return {}
+    return None
+
+
+def _read_cfg(p):
+    try:
+        c = json.loads(_Path(p).read_text(encoding="utf-8"))
+        return c if isinstance(c, dict) else {}
+    except Exception:
+        return {}
+
+
+def _cfg(cwd):
+    """Per-project plugin config at <project root>/.inspeximus/config.json (optional).
+
+    THE ROOT FIRST (3.9.7). This read <launch dir>/.inspeximus/config.json, so launching Claude Code
+    from a subdirectory ignored a config at the root, beside the store it configures. A config in the
+    launch directory is still read when the root has none, so a project that put it there keeps it.
+
+    The file sits in the repository the user opened, so it can come from anyone who wrote that repository.
+    The `archive` policy is never read from it (3.16.3, AUDIT-A F-9): see `archive_policy`."""
+    p = _cfg_file(cwd)
+    return _read_cfg(p) if p else {}
+
+
+def user_config_path() -> str:
+    """The user's own inspeximus config, outside every repository: `<key home>/inspeximus/config.json`, where
+    the key home is INSPEXIMUS_KEY_HOME, else APPDATA, else XDG_CONFIG_HOME, else ~/.config. The same home
+    holds the signing keys and the chain heads (`core._head_path`)."""
+    home = (os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA")
+            or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"))
+    return os.path.join(home, "inspeximus", "config.json")
 
 
 def _make_embedder(cwd):
@@ -481,18 +507,40 @@ def _record_has_secret(r) -> bool:
 _COPY_MARKERS = ("bak", ".tmp", "torn", "corrupt", "pre-")
 
 
-#: The archive policy a project can switch on in `.inspeximus/config.json`: {"archive": {"auto": true, ...}}.
+#: The archive policy, switched on in the USER's config (`user_config_path()`): {"archive": {"auto": true, ...}}.
 #: OFF by default, because it moves a user's records. `trigger_mb` is the hot file's size at which the first
 #: prompt after it starts a detached run; `older_than_days` and `classes` are `--archive`'s own parameters.
 AUTO_ARCHIVE_DEFAULTS = {"auto": False, "trigger_mb": 40.0, "older_than_days": 7.0, "classes": ["cmd"],
                          "min_interval_s": 3600.0, "allow_git_tracked": False}
 
+#: Floors applied to every policy, wherever it comes from: at most one run a minute, and nothing younger than
+#: a day moves. A policy of 0 and 0 started a process on every prompt and archived the newest rows (F-9).
+AUTO_ARCHIVE_MIN_INTERVAL_S = 60.0
+AUTO_ARCHIVE_MIN_OLDER_THAN_DAYS = 1.0
+
+_REPO_ARCHIVE_NOTICE = []
+
 
 def archive_policy(cwd=None) -> dict:
-    """The archive policy for this project: defaults <- config.json {"archive": {...}} <- env
-    INSPEXIMUS_ARCHIVE_AUTO (1 or 0). A value of the wrong type falls back to its default."""
+    """The archive policy: defaults <- the user's config {"archive": {...}} <- env INSPEXIMUS_ARCHIVE_AUTO (1 or 0),
+    then the floors. A value of the wrong type falls back to its default.
+
+    NEVER FROM THE REPOSITORY (3.16.3, AUDIT-A F-9). The store the policy archives is `coding_store_path(cwd)`,
+    which is the user's shared store for every project once `install --all` recorded one. Read from the
+    repository's `.inspeximus/config.json`, a cloned repository switched the archive on for that shared store:
+    two prompts started two runs, and one run moved 29 of 30 rows out of recall. A repository config that
+    carries an `archive` key is ignored, and the hook says so once on stderr (never stdout, which joins the
+    prompt)."""
     pol = dict(AUTO_ARCHIVE_DEFAULTS)
-    c = _cfg(cwd).get("archive")
+    repo = _cfg_file(cwd)
+    if repo and "archive" in _read_cfg(repo) and not _REPO_ARCHIVE_NOTICE:
+        _REPO_ARCHIVE_NOTICE.append(repo)
+        try:
+            sys.stderr.write("[inspeximus] %s sets \"archive\": ignored, because a repository's config cannot switch "
+                             "on an archive of your store. Put the policy in %s.%s" % (repo, user_config_path(), chr(10)))
+        except Exception:                                       # noqa: BLE001
+            pass
+    c = _read_cfg(user_config_path()).get("archive")
     if isinstance(c, dict):
         for k, dv in AUTO_ARCHIVE_DEFAULTS.items():
             v = c.get(k)
@@ -507,6 +555,8 @@ def archive_policy(cwd=None) -> dict:
         pol["auto"] = True
     elif env in ("0", "false", "no"):
         pol["auto"] = False
+    pol["min_interval_s"] = max(pol["min_interval_s"], AUTO_ARCHIVE_MIN_INTERVAL_S)
+    pol["older_than_days"] = max(pol["older_than_days"], AUTO_ARCHIVE_MIN_OLDER_THAN_DAYS)
     return pol
 
 

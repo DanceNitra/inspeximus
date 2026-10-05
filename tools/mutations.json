@@ -7920,5 +7920,41 @@
   "tests": [
    "tests/test_the_receipt_chain_is_written_from_cached_encodings.py"
   ]
+ },
+ {
+  "name": "the archive policy is read from the repository's config again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    c = _read_cfg(user_config_path()).get(\"archive\")\n",
+  "new": "    c = _cfg(cwd).get(\"archive\")\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_start_an_archive_of_the_users_store.py"
+  ]
+ },
+ {
+  "name": "the archive policy's interval floor is dropped",
+  "file": "inspeximus/claude_code.py",
+  "old": "    pol[\"min_interval_s\"] = max(pol[\"min_interval_s\"], AUTO_ARCHIVE_MIN_INTERVAL_S)\n",
+  "new": "    pol[\"min_interval_s\"] = pol[\"min_interval_s\"]\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_start_an_archive_of_the_users_store.py"
+  ]
+ },
+ {
+  "name": "the archive policy's older-than floor is dropped",
+  "file": "inspeximus/claude_code.py",
+  "old": "    pol[\"older_than_days\"] = max(pol[\"older_than_days\"], AUTO_ARCHIVE_MIN_OLDER_THAN_DAYS)\n",
+  "new": "    pol[\"older_than_days\"] = pol[\"older_than_days\"]\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_start_an_archive_of_the_users_store.py"
+  ]
+ },
+ {
+  "name": "a repository config's archive key is ignored without the stderr line",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if repo and \"archive\" in _read_cfg(repo) and not _REPO_ARCHIVE_NOTICE:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_start_an_archive_of_the_users_store.py"
+  ]
  }
 ]

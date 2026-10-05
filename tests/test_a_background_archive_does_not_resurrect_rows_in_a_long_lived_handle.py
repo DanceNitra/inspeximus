@@ -34,13 +34,20 @@ def _env(monkeypatch, tmp_path_factory):
     monkeypatch.setenv("PYTHONPATH", ROOT)
 
 
+
+def _user_config(config):
+    path = cc.user_config_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(config if isinstance(config, str) else json.dumps(config))
+
 def _project(tmp_path, n=60, config=None):
     proj = tmp_path / "proj"
     (proj / ".git").mkdir(parents=True)
     st = proj / ".inspeximus"
     st.mkdir()
-    if config is not None:
-        (st / "config.json").write_text(json.dumps(config), encoding="utf-8")
+    if config is not None:                                    # the USER's config: a repository's is ignored (F-9)
+        _user_config(config)
     p = str(st / "coding_memory.json")
     m = Inspeximus(p)
     now = time.time()

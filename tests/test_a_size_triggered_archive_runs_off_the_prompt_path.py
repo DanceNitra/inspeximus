@@ -33,13 +33,20 @@ def _env(monkeypatch, tmp_path_factory):
     monkeypatch.setenv("PYTHONPATH", ROOT)          # the detached run is a new process: it must import THIS tree
 
 
+
+def _user_config(config):
+    path = cc.user_config_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(config if isinstance(config, str) else json.dumps(config))
+
 def _project(tmp_path, monkeypatch, n_cmd=40, n_file=10, age_days=40, config=None):
     proj = tmp_path / "proj"
     (proj / ".git").mkdir(parents=True)
     st = proj / ".inspeximus"
     st.mkdir()
-    if config is not None:
-        (st / "config.json").write_text(json.dumps(config), encoding="utf-8")
+    if config is not None:                                    # the USER's config: a repository's is ignored (F-9)
+        _user_config(config)
     p = str(st / "coding_memory.json")
     m = Inspeximus(p)
     now = time.time()
@@ -84,9 +91,7 @@ def test_the_policy_is_off_by_default_and_reads_config_and_env(tmp_path, monkeyp
     proj, p, _ = _project(tmp_path, monkeypatch, n_cmd=2, n_file=0)
     assert cc.archive_policy(proj)["auto"] is False
     assert cc.maybe_archive_in_background(proj) == "off"
-    cfg = tmp_path / "proj" / ".inspeximus" / "config.json"
-    cfg.write_text(json.dumps({"archive": {"auto": True, "trigger_mb": 12, "older_than_days": 3,
-                                            "classes": ["cmd", "file"]}}), encoding="utf-8")
+    _user_config({"archive": {"auto": True, "trigger_mb": 12, "older_than_days": 3, "classes": ["cmd", "file"]}})
     pol = cc.archive_policy(proj)
     assert pol["auto"] and pol["trigger_mb"] == 12.0 and pol["older_than_days"] == 3.0
     assert pol["classes"] == ["cmd", "file"] and pol["min_interval_s"] == 3600.0
@@ -110,7 +115,7 @@ def test_a_small_store_or_a_missing_one_starts_nothing(tmp_path, monkeypatch):
 
 def test_a_malformed_config_never_raises(tmp_path, monkeypatch):
     proj, p, _ = _project(tmp_path, monkeypatch, n_cmd=1, n_file=0)
-    (tmp_path / "proj" / ".inspeximus" / "config.json").write_text("{not json", encoding="utf-8")
+    _user_config("{not json")
     assert cc.maybe_archive_in_background(proj) == "off"
 
 
