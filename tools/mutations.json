@@ -7956,5 +7956,41 @@
   "tests": [
    "tests/test_a_repo_config_cannot_start_an_archive_of_the_users_store.py"
   ]
+ },
+ {
+  "name": "a repository embed url to another host is used again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if not url or _is_loopback(url):\n",
+  "new": "    if not url or True:\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "the loopback check accepts any address",
+  "file": "inspeximus/claude_code.py",
+  "old": "        return ipaddress.ip_address(host).is_loopback\n",
+  "new": "        return True\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "the user's embed url is not read",
+  "file": "inspeximus/claude_code.py",
+  "old": "    url = (os.environ.get(\"INSPEXIMUS_EMBED_URL\") or uc.get(\"url\") or \"\").strip()\n",
+  "new": "    url = (os.environ.get(\"INSPEXIMUS_EMBED_URL\") or \"\").strip()\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "an ignored repository embed url leaves no stderr line",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if not _REPO_EMBED_NOTICE:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
  }
 ]

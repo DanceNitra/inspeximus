@@ -45,8 +45,9 @@ INSPEXIMUS_SESSION_MAX_SESSIONS (default 3 -- how many past sessions the injecti
 
 Recall is deterministic LEXICAL by default (runs anywhere, no service). For SEMANTIC recall, point the plugin
 at any OpenAI-compatible /embeddings endpoint — e.g. local Ollama — via env (INSPEXIMUS_EMBED_URL / INSPEXIMUS_EMBED_MODEL)
-or a per-project .inspeximus/config.json: {"embed": {"url": "http://localhost:11434/v1/embeddings",
-"model": "nomic-embed-text"}}. Writes stay verbatim, keyed and no-LLM; the embedder only builds a retrieval
+or the user's config, <key home>/inspeximus/config.json: {"embed": {"url": "http://localhost:11434/v1/embeddings",
+"model": "nomic-embed-text"}}. A per-project .inspeximus/config.json can name an embed url on this machine only
+(localhost, 127.0.0.0/8, ::1); a url to another host there is ignored (3.16.3, F-10). Writes stay verbatim, keyed and no-LLM; the embedder only builds a retrieval
 index and fails open (a down endpoint silently degrades to lexical, never drops a capture).
 """
 import sys, os, re, json, hashlib, io, datetime
@@ -98,10 +99,54 @@ def user_config_path() -> str:
     return os.path.join(home, "inspeximus", "config.json")
 
 
+def _is_loopback(url) -> bool:
+    """True when `url`'s host is this machine: localhost, 127.0.0.0/8 or ::1."""
+    try:
+        import ipaddress
+        from urllib.parse import urlsplit
+        host = (urlsplit(str(url)).hostname or "").strip().lower()
+        if host == "localhost":
+            return True
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
+_REPO_EMBED_NOTICE = []
+
+
+def _repo_embed_url(url, cfg_file) -> str:
+    """An `embed` URL from the REPOSITORY's config, used only when it points at this machine (3.16.3, F-10).
+
+    The hooks send each capture and, once a store holds 300 rows, each prompt to that URL to embed it. Measured on
+    3.16.3 before this rule: a cloned repository's {"embed": {"hooks": true, "url": ...}} received the user's prompt
+    on every UserPromptSubmit. A remote embedder is therefore set in the user's own config (`user_config_path()`)
+    or the environment. A repository URL to another host is ignored with one stderr line, and recall stays
+    lexical."""
+    url = url.strip() if isinstance(url, str) else ""
+    if not url or _is_loopback(url):
+        return url
+    if not _REPO_EMBED_NOTICE:
+        _REPO_EMBED_NOTICE.append(url)
+        try:
+            from urllib.parse import urlsplit
+            host = urlsplit(url).hostname or url
+        except ValueError:
+            host = url
+        try:
+            sys.stderr.write("[inspeximus] %s sets an embed url on host %s: ignored, because a repository's config "
+                             "cannot send your text to another machine. Recall stays lexical. Put the url in %s.%s"
+                             % (cfg_file, host, user_config_path(), chr(10)))
+        except Exception:                                       # noqa: BLE001
+            pass
+    return ""
+
+
 def _make_embedder(cwd):
     """Optional embedder for SEMANTIC recall (zero extra deps — urllib against any OpenAI-compatible
     /embeddings endpoint, e.g. local Ollama at http://localhost:11434/v1/embeddings). Configured by env
-    (INSPEXIMUS_EMBED_URL / INSPEXIMUS_EMBED_MODEL / INSPEXIMUS_EMBED_KEY) or .inspeximus/config.json {"embed": {...}}.
+    (INSPEXIMUS_EMBED_URL / INSPEXIMUS_EMBED_MODEL / INSPEXIMUS_EMBED_KEY), the user's config, or
+    .inspeximus/config.json {"embed": {...}}, whose url is used only on this machine (`_repo_embed_url`).
     Returns (embed_doc, embed_query, embed_id); (None, None, None) when unconfigured -> LEXICAL recall.
     Fail-open on the write path: inspeximus stores the record with vec=None if a call raises, so a down
     embedder degrades recall to lexical but never drops a capture.
@@ -114,14 +159,18 @@ def _make_embedder(cwd):
     bulk is 'ran: ...' mechanics, the least semantic content there is), so the hot path defaults to the
     zero-network lexical mode and semantic stays a deliberate choice for stores where it earns its cost."""
     import urllib.request
-    ec = _cfg(cwd).get("embed", {})
-    if not isinstance(ec, dict):
-        ec = {}
+    rc = _cfg(cwd).get("embed", {})
+    rc = rc if isinstance(rc, dict) else {}
+    uc = _read_cfg(user_config_path()).get("embed", {})
+    uc = uc if isinstance(uc, dict) else {}
+    ec = dict(rc, **uc)                                     # the user's own config wins over the repository's
     hooks_on = os.environ.get("INSPEXIMUS_EMBED_HOOKS", "").strip().lower() in ("1", "true", "yes") \
         or ec.get("hooks") is True
     if not hooks_on:
         return None, None, None
-    url = (os.environ.get("INSPEXIMUS_EMBED_URL") or ec.get("url") or "").strip()
+    url = (os.environ.get("INSPEXIMUS_EMBED_URL") or uc.get("url") or "").strip()
+    if not url:
+        url = _repo_embed_url(rc.get("url"), _cfg_file(cwd))
     if not url:
         return None, None, None
     model = (os.environ.get("INSPEXIMUS_EMBED_MODEL") or ec.get("model") or "nomic-embed-text").strip()
