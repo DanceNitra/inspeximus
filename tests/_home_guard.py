@@ -122,10 +122,11 @@ def _inside(path: str, roots: list) -> bool:
 
 def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
     """(failing lines, information lines). A new chain head is attributed by the store it records: a
-    store inside the run's temporary directories (pytest's basetemp, the sandboxed homes and a tool's own
-    temp directories all live under the system temp dir) is a LEAK and fails the run; a store outside
-    them is a live session creating its first head beside the run, reported and not failed. A head that
-    cannot be read counts as a leak. Measured 2026-09-28: of 15 heads one run caught, 14 were temp
+    store inside `temp_roots` is a LEAK and fails the run; a store outside them was written by another
+    process during the run (a live session, another session's tests), reported and not failed. A head
+    that cannot be read, or names no store, counts as a leak: what the guard cannot attribute is never
+    excused. The conftest passes this run's own temporary root (3.16.3), which TEMP, TMP and TMPDIR point
+    at for every test and child; without it the root is the system temp dir, as before. Measured 2026-09-28: of 15 heads one run caught, 14 were temp
     stores and one was ~/.inspeximus/mcp_memory_chain.json, a live MCP server."""
     import tempfile
     roots = [os.path.normcase(os.path.realpath(r)) for r in (temp_roots or [tempfile.gettempdir()])]
@@ -138,9 +139,10 @@ def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
         added, removed = sorted(set(a or []) - set(b or [])), sorted(set(b or []) - set(a or []))
         stores = {n: _head_store(home, rel, n) for n in added}
         live = [n for n in added if stores[n] and not _inside(stores[n], roots)]
-        leaked = [n for n in added if n not in live]
+        leaked = [n for n in added if n not in live]       # this run's stores, and every head it cannot read
         if live:
-            info.append(f"{rel}: {len(live)} new head(s) for stores outside the temp dirs, a live session:")
+            info.append(f"{rel}: {len(live)} new head(s) for stores outside this run's temp root, written "
+                        f"by another process during the run:")
             info += [f"    new {n} (store {stores[n]})" for n in live[:20]]
         if leaked or removed:
             fail.append(f"{rel}: +{len(leaked)} -{len(removed)} (leaked heads of temp stores), "

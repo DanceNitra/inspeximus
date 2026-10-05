@@ -7686,5 +7686,32 @@
   "tests": [
    "tests/test_a_malformed_tombstone_sidecar_is_named_and_never_written_over.py"
   ]
+ },
+ {
+  "name": "the suite runs without a temp root of its own",
+  "file": "tests/conftest.py",
+  "old": "def pytest_configure(config):\n    _own_temp_root(config)\n",
+  "new": "def pytest_configure(config):\n",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "the home guard excuses a head it cannot read",
+  "file": "tests/_home_guard.py",
+  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
+  "new": "        live = [n for n in added if not stores[n] or not _inside(stores[n], roots)]",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "the home guard counts another process's temp store as this run's",
+  "file": "tests/_home_guard.py",
+  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
+  "new": "        live = []",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
  }
 ]

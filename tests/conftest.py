@@ -386,7 +386,46 @@ def pytest_collection_modifyitems(config, items):
 # call + teardown summed. Under xdist every worker's report reaches the controller, so only it writes.
 # Taken out of the environment at configure time for the same reason as SHARD_REPORT: a test that runs
 # pytest in a subprocess must not overwrite the file with its own few tests.
+#: The environment variable that names this run's own temporary root; read by `_home_guard` callers and tests.
+RUN_TMP_ENV = "PYTEST_INSPEXIMUS_RUN_TMP"
+
+
+def _own_temp_root(config):
+    """One temporary root per run, for every test, worker and child process (3.16.3).
+
+    The run-end guard attributed a new chain head by whether its store sat under the SYSTEM temp
+    directory, so another session's temp store failed this run: measured 2026-10-05, a -m mutation run
+    failed on 6 heads of temporary `s.json` stores, and each of the 4 mutation-marked files, run alone with a
+    watcher on the heads directory, wrote none. TEMP, TMP and TMPDIR point at a directory this run
+    creates, before collection and before xdist starts its workers, so they inherit it; the guard then
+    counts a head as this run's only when its store is under that root."""
+    if hasattr(config, "workerinput"):
+        return                                    # a worker inherits the controller's root
+    import tempfile as _tempfile
+    root = _tempfile.mkdtemp(prefix="inspeximus-run-")
+    names = ("TEMP", "TMP", "TMPDIR", RUN_TMP_ENV)
+    config._run_tmp_env_before = {k: os.environ.get(k) for k in names}
+    os.environ.update({k: root for k in names})
+    _tempfile.tempdir = None                      # recomputed from the environment on next use
+    config._run_tmp = root
+
+
+def _restore_temp_root(config):
+    before = getattr(config, "_run_tmp_env_before", None)
+    if before is None:
+        return
+    for k, v in before.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+    import tempfile as _tempfile
+    _tempfile.tempdir = None
+    shutil.rmtree(config._run_tmp, ignore_errors=True)
+
+
 def pytest_configure(config):
+    _own_temp_root(config)
     _redirect_home(config)
     # A mutation survivor is re-run against the full suite (tools/mutation_check.py). Tests that drive the
     # gate with a survivor on purpose would each start a full serial suite run, so the session turns that
@@ -425,7 +464,9 @@ def pytest_sessionfinish(session):
         # the mutation gate, whose mutant of this call survived the full suite for exactly that
         # reason. A crash of the guard is reported as a guard failure and fails the run instead.
         try:
-            changed, live = _home_guard.classify(before, _home_guard.snapshot(config._real_home), config._real_home)
+            changed, live = _home_guard.classify(before, _home_guard.snapshot(config._real_home), config._real_home,
+                                                 temp_roots=[config._run_tmp] if getattr(config, "_run_tmp", None)
+                                                 else None)
         except Exception as exc:                            # noqa: BLE001
             changed, live = ["the run-end guard itself failed: %r" % (exc,)], []
         tr = config.pluginmanager.get_plugin("terminalreporter")
@@ -447,3 +488,4 @@ def pytest_sessionfinish(session):
 
 def pytest_unconfigure(config):
     _restore_home(config)
+    _restore_temp_root(config)
