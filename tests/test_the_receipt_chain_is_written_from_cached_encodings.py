@@ -111,3 +111,38 @@ def test_a_second_handle_that_adopts_a_peers_receipts_writes_the_same_bytes(tmp_
     b.flush()
     assert open(p + ".receipts.json", encoding="utf-8").read() == core._dump_chain(b._receipts)
     assert Inspeximus(p, receipts=True).verify_writes()[0]
+
+
+def test_no_operation_changes_a_receipt_after_it_is_chained_so_the_cache_never_writes_stale_text(tmp_path):
+    """EM's question for the cache: is any receipt dict changed in place after it is appended, without its hash or
+    field count moving? By reading, `_append_receipt` sets seq, prev, hash, sig and pubkey BEFORE it appends, and
+    `amends` and `amend_reason` are set before `_append_receipt`. This runs the operations that emit receipts with
+    amends (slash, restore), a signed chain, and a peer adoption, writing after each step, and requires the sidecar
+    to equal the full encoding of the chain every time."""
+    p = str(tmp_path / "s.json")
+    sk = core.receipt_key_for(p, create=True) if hasattr(core, "receipt_key_for") else None
+    kw = {"receipt_key": sk} if sk else {}
+    m = Inspeximus(p, receipts=True, **kw)
+    ids = [m.remember(f"fact number {i} about the build", key=f"k:{i}", mtype="semantic") for i in range(9)]
+    m.flush()
+
+    def same():
+        side = p + ".receipts.json"
+        assert open(side, encoding="utf-8").read() == core._dump_chain(m._receipts)
+
+    same()
+    m.slash(ids[:2], scope="memory", reason="corrected in the test")
+    m.flush()
+    same()
+    m.restore(ids[:1], scope="memory")
+    m.flush()
+    same()
+    peer = Inspeximus(p, receipts=True, **kw)
+    peer.remember("a peer write", key="k:peer")
+    m.remember("this handle writes after the peer", key="k:later")
+    m.flush()
+    same()
+    assert any("amends" in r for r in m._receipts), "control: the run produced amending receipts"
+    if sk:
+        assert any("sig" in r for r in m._receipts), "control: the chain is signed"
+    assert Inspeximus(p, receipts=True, **kw).verify_writes()[0]
