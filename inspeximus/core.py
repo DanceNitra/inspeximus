@@ -1700,7 +1700,7 @@ _STOP = frozenset("the a an of for to in on and or is are was were be been with 
                   "by at from into our we us you your he she they them his her their not no".split())
 
 
-def _stem_uncached(w: str) -> str:
+def _stem(w: str) -> str:
     # A possessive is its noun: "alice's" and "agents'" tokenize to "alice" and "agent". The word
     # class admits the apostrophe, so without this fold "alice's" stemmed to "alice'", a token no
     # query contains, and "alice's phone is +200" matched `recall("alice phone")` on one token, level
@@ -1712,13 +1712,6 @@ def _stem_uncached(w: str) -> str:
     elif w.endswith("'"):
         w = w[:-1]
     return w[:-1] if (w.endswith("s") and len(w) > 4) else w   # crude plural/3rd-person fold
-
-
-#: `_stem` is a pure function of one word, and a prompt hook calls it 511,051 times for 31,676 distinct words on our
-#: project store (AUDIT-B, 2026-10-06): 0.12 s of a 1.6 s hook. The memo is bounded, so a process that reads an
-#: unusual corpus holds at most this many words.
-_STEM_CACHE_SIZE = 65536
-_stem = functools.lru_cache(maxsize=_STEM_CACHE_SIZE)(_stem_uncached)
 
 
 def _tokens(text: str) -> set:
