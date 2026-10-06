@@ -24,6 +24,7 @@ def _env(tmp_path, monkeypatch):
     monkeypatch.setenv("APPDATA", str(tmp_path / "appdata"))
     monkeypatch.setattr(_keyhome, "_NOTICE", [])
     monkeypatch.setattr(_keyhome, "_CACHE", {})
+    monkeypatch.setattr(_keyhome, "_CWD_PROJECT", {})
 
 
 # ---- F-13: the key home --------------------------------------------------------------------------------------------

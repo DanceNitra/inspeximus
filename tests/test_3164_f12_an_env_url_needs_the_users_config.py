@@ -31,10 +31,8 @@ def home(tmp_path, monkeypatch):
 
 
 def _mcp():
-    try:
-        from inspeximus import mcp_server
-    except Exception as e:                                      # noqa: BLE001
-        pytest.skip("the MCP SDK is not installed: %s" % e)
+    pytest.importorskip("mcp")                                  # CI installs the core only
+    from inspeximus import mcp_server
     return mcp_server
 
 
