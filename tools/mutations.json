@@ -8428,5 +8428,23 @@
   "tests": [
    "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
   ]
+ },
+ {
+  "name": "the stemmer memo is unbounded",
+  "file": "inspeximus/core.py",
+  "old": "_stem = functools.lru_cache(maxsize=_STEM_CACHE_SIZE)(_stem_uncached)",
+  "new": "_stem = functools.lru_cache(maxsize=None)(_stem_uncached)",
+  "tests": [
+   "tests/test_the_stemmer_memo_is_bounded_and_exact.py"
+  ]
+ },
+ {
+  "name": "the stemmer is not memoised",
+  "file": "inspeximus/core.py",
+  "old": "_stem = functools.lru_cache(maxsize=_STEM_CACHE_SIZE)(_stem_uncached)",
+  "new": "_stem = _stem_uncached",
+  "tests": [
+   "tests/test_the_stemmer_memo_is_bounded_and_exact.py"
+  ]
  }
 ]

@@ -776,6 +776,106 @@ def maybe_archive_in_background(cwd=None) -> str:
         return "failed"
 
 
+#: A hook that meets stamps made under another guard set (a Python upgrade, or another interpreter) starts ONE detached
+#: `--stamp-guards --apply` under its OWN interpreter, at most once per interval, so the store heals itself. It writes
+#: verdicts the hook computed anyway, under the store's key; it needs no policy because it only replaces stamps the store
+#: already carries. `INSPEXIMUS_STAMP_AUTO=0`, or {"stamp": {"auto": false}} in the user's config, turns it off.
+STAMP_HEAL_MIN_INTERVAL_S = 3600.0
+
+
+def stamp_heal_enabled() -> bool:
+    env = os.environ.get("INSPEXIMUS_STAMP_AUTO", "").strip().lower()
+    if env in ("0", "false", "no"):
+        return False
+    if env in ("1", "true", "yes"):
+        return True
+    c = _read_cfg(user_config_path()).get("stamp")
+    if isinstance(c, dict) and isinstance(c.get("auto"), bool):
+        return c["auto"]
+    return True
+
+
+def foreign_stamp_count(m) -> int:
+    """Active rows of `m` whose stored stamp carries another guard-set hash than this process computes. Counts only."""
+    from . import core
+    gset = core._guard_set_hash()
+    if not gset:
+        return 0
+    n = 0
+    for r in m.items:
+        if r.get("status") != "active":
+            continue
+        held = (r.get("meta") or {}).get("read_guards")
+        if isinstance(held, dict) and held.get("set") != gset:
+            n += 1
+    return n
+
+
+def maybe_restamp_in_background(cwd=None, store=None, foreign=0) -> str:
+    """Start the detached re-stamp when a read met `foreign` stamps. Returns "started", or why not: "none" (no foreign
+    stamps), "off", "missing", "recent" or "failed". Never raises. The attempt is recorded BEFORE the spawn, so two prompts
+    in a row start one run. The process is `sys.executable`, the interpreter that just found the stamps invalid."""
+    try:
+        if not foreign:
+            return "none"
+        if not stamp_heal_enabled():
+            return "off"
+        import subprocess
+        import time
+        from ._surface import coding_store_path
+        path = store or coding_store_path(cwd)
+        if not os.path.exists(path):
+            return "missing"
+        state = path + ".stamp-auto.json"
+        now = time.time()
+        try:
+            with open(state, encoding="utf-8") as fh:
+                last = float(json.load(fh).get("last_attempt") or 0)
+        except (OSError, ValueError, AttributeError):
+            last = 0.0
+        if now - last < STAMP_HEAL_MIN_INTERVAL_S:
+            return "recent"
+        tmp = state + ".tmp.%d" % os.getpid()
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump({"last_attempt": now, "foreign": int(foreign), "interpreter": sys.executable}, fh)
+        os.replace(tmp, state)
+        argv = [sys.executable, "-m", "inspeximus.claude_code", "--stamp-guards", "--apply"]
+        if store:
+            argv += ["--store", store]
+        log = open(path + ".stamp-auto.log", "w", encoding="utf-8")
+        kw = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
+              "close_fds": True}
+        if os.name == "nt":
+            kw["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000
+        else:
+            kw["start_new_session"] = True
+        subprocess.Popen(argv, **kw)
+        log.close()
+        return "started"
+    except Exception:                                           # noqa: BLE001
+        return "failed"
+
+
+def _hook_command(cwd=None) -> "str | None":
+    """The command the UserPromptSubmit hook runs, from the project's or the user's Claude Code settings: the interpreter
+    that stamps must be the one this command starts. Best effort; None when no settings name it."""
+    homes = [os.path.join(cwd or os.getcwd(), ".claude", "settings.local.json"),
+             os.path.join(cwd or os.getcwd(), ".claude", "settings.json"),
+             os.path.join(os.path.expanduser("~"), ".claude", "settings.json")]
+    for p in homes:
+        try:
+            with open(p, encoding="utf-8") as fh:
+                hooks = (json.load(fh).get("hooks") or {}).get("UserPromptSubmit") or []
+        except (OSError, ValueError, AttributeError):
+            continue
+        for group in hooks:
+            for h in (group.get("hooks") if isinstance(group, dict) else None) or []:
+                cmd = h.get("command") if isinstance(h, dict) else None
+                if isinstance(cmd, str) and "inspeximus" in cmd:
+                    return cmd
+    return None
+
+
 def stamp_guards(cwd=None, apply=False, store=None) -> dict:
     """Persist a read-guard verdict for the project store's active records that have none. DRY BY
     DEFAULT. A read never saves, so records written before 3.15.4 are assessed again on every prompt;
@@ -789,6 +889,7 @@ def stamp_guards(cwd=None, apply=False, store=None) -> dict:
         m = _store(cwd)
     r = m.stamp_read_guards(dry_run=not apply)
     r["applied"] = bool(r.get("applied"))
+    r["hook_command"] = _hook_command(cwd)          # the interpreter that stamps must be the one this starts
     return r
 
 
@@ -1288,6 +1389,8 @@ def recall(ev):
     # surface decision-typed memories ahead of the command/file mechanics — otherwise the useful signal drowns
     # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
     m = _store(cwd)
+    # Counted BEFORE the recall: assessing a row drops the stamp it cannot verify from the handle.
+    _LAST_STORES[:] = [(str(getattr(m, "path", "") or ""), False, foreign_stamp_count(m))]
     hits = m.recall(q, k=16)
     def has(h, tag):
         return tag in (h.get("tags") or [])
@@ -1333,6 +1436,7 @@ def recall(ev):
             if os.path.abspath(ext) != os.path.abspath(getattr(m, "path", "") or ""):
                 from ._surface import open_store
                 em = open_store(ext, resolve=False)
+                _LAST_STORES.append((ext, True, foreign_stamp_count(em)))
                 extra = list(em.decisions_in_force(limit=4))
                 extra += [h for h in em.recall(q, k=8) if has(h, "decision")]
                 have = {d.get("id") for d in decisions}
@@ -1366,6 +1470,17 @@ def recall(ev):
               ("[inspeximus] relevant project memory (deterministic, corrections already applied):\n"
                + "\n".join(out)) if out else "",
               notice, system_message=ask)
+
+
+_LAST_STORES: list = []        #: the stores the last `recall` read: (path, is_decision_store, stamps from another guard set)
+
+
+def maybe_restamp_after_recall(cwd) -> None:
+    """After the hook's recall: when a store it read holds stamps from another guard set, heal it in the background."""
+    for path, ext, n in _LAST_STORES:
+        if n:
+            maybe_restamp_in_background(cwd, store=path if ext else None, foreign=n)
+    _LAST_STORES.clear()
 
 
 def _emit(event, *blocks, system_message=None):
@@ -2034,6 +2149,7 @@ def main():
         elif name == "UserPromptSubmit":
             recall(ev)
             maybe_archive_in_background(ev.get("cwd") or os.getcwd())
+            maybe_restamp_after_recall(ev.get("cwd") or os.getcwd())
         elif name == "SessionStart":
             session_start(ev)
         elif name == "SessionEnd":
