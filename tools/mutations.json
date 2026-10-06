@@ -8077,10 +8077,168 @@
  {
   "name": "the hook embedder posts with plain urlopen again",
   "file": "inspeximus/claude_code.py",
-  "old": "        return post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout)[\"data\"][0][\"embedding\"]\n",
-  "new": "        import urllib.request as _u; return json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + text}).encode(), headers=dict(headers, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read())[\"data\"][0][\"embedding\"]\n",
+  "old": "        return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout))\n",
+  "new": "        import urllib.request as _u; return embedding_from(json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + text}).encode(), headers=dict(headers, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read()))\n",
   "tests": [
    "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
+  ]
+ },
+ {
+  "name": "an embedder answer is read whole again",
+  "file": "inspeximus/_http.py",
+  "old": "        body = r.read(MAX_ANSWER_BYTES + 1)\n",
+  "new": "        body = r.read()\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py",
+   "tests/test_audit_a_f17_an_embedder_answer_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "an embedding with a value that is not a finite number is accepted",
+  "file": "inspeximus/_http.py",
+  "old": "        if isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_audit_a_f17_an_embedder_answer_has_a_size_limit.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "an embedding of any length is accepted",
+  "file": "inspeximus/_http.py",
+  "old": "    if not isinstance(vec, list) or not vec or len(vec) > MAX_EMBEDDING_LEN:\n",
+  "new": "    if not isinstance(vec, list) or not vec:\n",
+  "tests": [
+   "tests/test_audit_a_f17_an_embedder_answer_has_a_size_limit.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the pinned-interpreter hook command runs without -I again",
+  "file": "inspeximus/install.py",
+  "old": "        return _shell_path(exe) + \" -I -m inspeximus.claude_code\"\n",
+  "new": "        return _shell_path(exe) + \" -m inspeximus.claude_code\"\n",
+  "tests": [
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the uvx hook command runs without -I again",
+  "file": "inspeximus/install.py",
+  "old": "    return _shell_path(exe) + \" --from %s python -I -m inspeximus.claude_code\" % _pinned()\n",
+  "new": "    return _shell_path(exe) + \" --from %s python -m inspeximus.claude_code\" % _pinned()\n",
+  "tests": [
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the MCP server launch for a python runtime runs without -I again",
+  "file": "inspeximus/install.py",
+  "old": "        return exe, [\"-I\", \"-m\", \"inspeximus.mcp_server\"]",
+  "new": "        return exe, [\"-m\", \"inspeximus.mcp_server\"]",
+  "tests": [
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the detached archive run starts without -I again",
+  "file": "inspeximus/claude_code.py",
+  "old": "        argv = [sys.executable, \"-I\", \"-c\",\n",
+  "new": "        argv = [sys.executable, \"-c\",\n",
+  "tests": [
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the --install SessionStart hook runs without -I again",
+  "file": "inspeximus/claude_code.py",
+  "old": "_HOOK = {\"hooks\": [{\"type\": \"command\", \"command\": \"python -I -m inspeximus.claude_code\"}]}\n",
+  "new": "_HOOK = {\"hooks\": [{\"type\": \"command\", \"command\": \"python -m inspeximus.claude_code\"}]}\n",
+  "tests": [
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "a repository-chosen key home is used again",
+  "file": "inspeximus/_keyhome.py",
+  "old": "    why = refusal(env, store_path)\n",
+  "new": "    why = None\n",
+  "tests": [
+   "tests/test_audit_a_f13_env_key_home_cannot_vouch_for_a_record.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "a key home inside a git work tree is accepted",
+  "file": "inspeximus/_keyhome.py",
+  "old": "    tree = _git_work_tree(k)\n",
+  "new": "    tree = None\n",
+  "tests": [
+   "tests/test_audit_a_f13_env_key_home_cannot_vouch_for_a_record.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the project of a store in .inspeximus is the store's own directory again",
+  "file": "inspeximus/_keyhome.py",
+  "old": "    return os.path.dirname(d) if os.path.basename(d) == \".inspeximus\" else d\n",
+  "new": "    return d\n",
+  "tests": [
+   "tests/test_audit_a_f13_env_key_home_cannot_vouch_for_a_record.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "a directory at the store path is retried like a file again",
+  "file": "inspeximus/core.py",
+  "old": "        if os.path.isdir(self.path):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_audit_a_f16_a_directory_at_the_store_path_fails_fast.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the detached archive run does not ask to leave the hook's job",
+  "file": "inspeximus/claude_code.py",
+  "old": "kw[\"creationflags\"] | 0x01000000",
+  "new": "kw[\"creationflags\"]",
+  "tests": [
+   "tests/test_audit_a_f14_a_killed_archive_run_is_retried.py"
+  ]
+ },
+ {
+  "name": "a dead archive run blocks the next try for the whole interval again",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if not (dead and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):\n",
+  "new": "            if True:\n",
+  "tests": [
+   "tests/test_audit_a_f14_a_killed_archive_run_is_retried.py"
+  ]
+ },
+ {
+  "name": "every archive run counts as alive",
+  "file": "inspeximus/claude_code.py",
+  "old": "            return bool(ok) and code.value == 259          # STILL_ACTIVE\n",
+  "new": "            return True\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py",
+   "tests/test_audit_a_f14_a_killed_archive_run_is_retried.py"
+  ]
+ },
+ {
+  "name": "an embedder answer over the limit is used again",
+  "file": "inspeximus/_http.py",
+  "old": "    if len(body) > MAX_ANSWER_BYTES:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_audit_a_f17_an_embedder_answer_has_a_size_limit.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
   ]
  }
 ]

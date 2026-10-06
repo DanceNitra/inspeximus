@@ -47,7 +47,7 @@ That registers this repository as a plugin marketplace and installs the MCP serv
 with `uvx --from "inspeximus[mcp]" inspeximus-mcp` and shares one store with the plugin's hooks,
 `.inspeximus/coding_memory.json` at the git root (`INSPEXIMUS_SCOPE=claude-code`). Up to 3.9.5 the server wrote
 `.inspeximus/memory.json` instead, which no hook read; the SessionStart hook names such a file until
-`python -m inspeximus.claude_code --merge-store <file> --apply` folds it in. Nothing to configure by hand, and nothing to install globally.
+`python -I -m inspeximus.claude_code --merge-store <file> --apply` folds it in. Nothing to configure by hand, and nothing to install globally.
 
 Prefer the manual route? `pip install "inspeximus[mcp]"` and point your client at `inspeximus-mcp` — the
 extra matters, because the core library is deliberately zero-dependency and the MCP server is the one
@@ -56,7 +56,7 @@ piece that needs a dependency.
 ## What you install, at a glance
 ### Your next session starts knowing what this one decided — with no LLM
 
-`python -m inspeximus.claude_code --install` also wires the cross-session loop. On `SessionEnd` inspeximus
+`python -I -m inspeximus.claude_code --install` also wires the cross-session loop. On `SessionEnd` inspeximus
 writes a **ledger diff** of what the session established — which keys changed value, which decisions were
 recorded, what was erased, what is still open — read straight off its own supersession ledger. On
 `SessionStart` it injects that, size-bounded and ranked. No transcript is sent anywhere, so it is instant,

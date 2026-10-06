@@ -73,7 +73,7 @@ CLASSES = {
 _REF_FIELDS = ("links", "derived_from", "retires")
 
 GIT_WARNING = ("an erasure can rewrite these files but cannot reach git history or any clone or push of it; "
-               "run `python -m inspeximus.claude_code --scrub-secrets` before committing a segment")
+               "run `python -I -m inspeximus.claude_code --scrub-secrets` before committing a segment")
 
 
 class ArchiveRefused(Exception):

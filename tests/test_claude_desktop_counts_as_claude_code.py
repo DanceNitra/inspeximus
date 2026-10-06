@@ -97,7 +97,7 @@ def test_the_commands_need_no_claude_and_no_uv_on_path(home):
     assert rc == 0, out
     entry = json.loads((home / ".claude.json").read_text(encoding="utf-8"))["mcpServers"]["inspeximus"]
     assert os.path.isabs(entry["command"]) and os.path.samefile(entry["command"], sys.executable), entry
-    assert entry["args"][:2] == ["-m", "inspeximus.mcp_server"], entry
+    assert entry["args"][:3] == ["-I", "-m", "inspeximus.mcp_server"], entry     # -I: AUDIT-A F-15
     hooks = json.loads((home / ".claude" / "settings.json").read_text(encoding="utf-8"))["hooks"]
     commands = [h["command"] for evt in hooks.values() for m in evt for h in m.get("hooks", [])
                 if "inspeximus" in h.get("command", "")]
