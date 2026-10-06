@@ -8317,5 +8317,122 @@
   "tests": [
    "tests/test_audit_a_317_receipts_tail_findings.py"
   ]
+ },
+ {
+  "name": "a stamp written by stamp_read_guards does not record where it was made",
+  "file": "inspeximus/core.py",
+  "old": "                meta[\"read_guards\"][\"env\"] = _guard_env_tag()       # where it was made; not in the MAC\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "a stamp written by remember does not record where it was made",
+  "file": "inspeximus/core.py",
+  "old": "                _held[\"env\"] = _guard_env_tag()          # where the stamp was made; not in the MAC\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the dry run counts no stamp as foreign",
+  "file": "inspeximus/core.py",
+  "old": "            if isinstance(held, dict) and held.get(\"set\") != gset:\n                foreign += 1",
+  "new": "            if isinstance(held, dict) and False:\n                foreign += 1",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook counts no stamp as foreign",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if isinstance(held, dict) and held.get(\"set\") != gset:\n            n += 1",
+  "new": "        if isinstance(held, dict) and False:\n            n += 1",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp starts with no foreign stamp",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not foreign:\n            return \"none\"",
+  "new": "        if False:\n            return \"none\"",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp ignores the off switch",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not stamp_heal_enabled():\n            return \"off\"",
+  "new": "        if False:\n            return \"off\"",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp starts more than once per interval",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if now - last < STAMP_HEAL_MIN_INTERVAL_S:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp runs under another interpreter than the hook",
+  "file": "inspeximus/claude_code.py",
+  "old": "        argv = [sys.executable, \"-m\", \"inspeximus.claude_code\", \"--stamp-guards\", \"--apply\"]",
+  "new": "        argv = [\"python\", \"-m\", \"inspeximus.claude_code\", \"--stamp-guards\", \"--apply\"]",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp only reports",
+  "file": "inspeximus/claude_code.py",
+  "old": "        argv = [sys.executable, \"-m\", \"inspeximus.claude_code\", \"--stamp-guards\", \"--apply\"]",
+  "new": "        argv = [sys.executable, \"-m\", \"inspeximus.claude_code\", \"--stamp-guards\"]",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook does not count foreign stamps before its recall",
+  "file": "inspeximus/claude_code.py",
+  "old": "False, foreign_stamp_count(m))]",
+  "new": "False, 0)]",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook never starts the restamp after its recall",
+  "file": "inspeximus/claude_code.py",
+  "old": "            maybe_restamp_after_recall(ev.get(\"cwd\") or os.getcwd())\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook command is not read from the settings",
+  "file": "inspeximus/claude_code.py",
+  "old": "                if isinstance(cmd, str) and \"inspeximus\" in cmd:",
+  "new": "                if isinstance(cmd, str) and False:",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the stamp unicode version is dropped from the guard-set hash",
+  "file": "inspeximus/core.py",
+  "old": "            h.update(unicodedata.unidata_version.encode(\"ascii\"))\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
  }
 ]
