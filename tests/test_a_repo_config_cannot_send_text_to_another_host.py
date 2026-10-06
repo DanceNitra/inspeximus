@@ -136,6 +136,8 @@ def test_the_environment_still_overrides_and_reaches_another_host(tmp_path, monk
     repo = _repo(tmp_path, {"hooks": True, "url": REMOTE})
     monkeypatch.setenv("INSPEXIMUS_EMBED_HOOKS", "1")
     monkeypatch.setenv("INSPEXIMUS_EMBED_URL", "http://env-embedder.example.test/v1/embeddings")
+    # 3.16.4, F-12: an environment URL to another host needs the user's config to name the host.
+    _user_config({"embed": {"allowed_hosts": ["env-embedder.example.test"]}})
     s = cc._store(repo)
     s.remember("ran: ENV-UNIQUE", key="cmd:e", tags=["bash"], mtype="episodic")
     assert [u for u, _ in sent] == ["http://env-embedder.example.test/v1/embeddings"]

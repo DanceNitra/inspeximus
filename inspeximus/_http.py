@@ -24,19 +24,13 @@ def is_loopback(url) -> bool:
     can read a different host from `http://evil.example\\@127.0.0.1/` (AUDIT-A), so a URL whose host two parsers
     could disagree on is not trusted. The host `urlsplit` reads must also be the host `urllib.request.Request`, which
     makes the connection, reads."""
+    import ipaddress
+    host = url_host(url)
+    if not host:
+        return False
+    if host == "localhost":
+        return True
     try:
-        import ipaddress
-        from urllib.parse import urlsplit
-        url = str(url)
-        authority = url.split("://", 1)[1].split("/", 1)[0] if "://" in url else ""
-        if "\\" in url or "@" in authority or any(c.isspace() for c in url):
-            return False
-        host = (urlsplit(url).hostname or "").strip().lower()
-        connects_to = (urlsplit("//" + urllib.request.Request(url).host).hostname or "").strip().lower()
-        if not host or connects_to != host:
-            return False
-        if host == "localhost":
-            return True
         return ipaddress.ip_address(host).is_loopback
     except ValueError:
         return False
@@ -99,3 +93,95 @@ def embedding_from(answer):
         if isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x):
             raise ValueError("an embedding holds a value that is not a finite number")
     return vec
+
+
+# WHO MAY NAME A REMOTE HOST (3.16.4, AUDIT-A F-12, the owner's decision). A host such as Claude Code applies a
+# project's settings `env` block to hooks and to the MCP server, so INSPEXIMUS_EMBED_URL and INSPEXIMUS_EMBED_KEY
+# can come from a repository: measured with Claude Code 2.1.291, a prompt and the repository's key reached a
+# listener on another machine. A URL from the environment to another host is therefore used only when the user's
+# own config (`<key home>/inspeximus/config.json`) names that host in `embed.url` or `embed.allowed_hosts`. A
+# key from the environment goes only to such a host. A loopback URL needs no entry.
+
+_ENV_NOTICE = set()
+
+
+def url_host(url):
+    """The host `url` connects to, in lower case, or None when it has none or two parsers could read different
+    hosts (the same test `is_loopback` applies)."""
+    try:
+        from urllib.parse import urlsplit
+        url = str(url)
+        authority = url.split("://", 1)[1].split("/", 1)[0] if "://" in url else ""
+        if "\\" in url or "@" in authority or any(c.isspace() for c in url):
+            return None
+        host = (urlsplit(url).hostname or "").strip().lower()
+        connects_to = (urlsplit("//" + urllib.request.Request(url).host).hostname or "").strip().lower()
+        return host if host and connects_to == host else None
+    except (ValueError, TypeError):
+        return None
+
+
+def user_embed_config():
+    """The `embed` block of the user's own config, or {} when there is none or it cannot be read."""
+    import os
+    try:
+        from ._keyhome import key_home
+        with open(os.path.join(key_home(), "inspeximus", "config.json"), encoding="utf-8") as fh:
+            embed = json.load(fh).get("embed", {})
+        return embed if isinstance(embed, dict) else {}
+    except Exception:                                           # noqa: BLE001
+        return {}
+
+
+def host_allowed(url, embed_cfg=None) -> bool:
+    """True when `url` is on this machine, or the user's config names its host in `embed.url` or
+    `embed.allowed_hosts`. An entry in `allowed_hosts` is a host name or address, or a URL whose host is used."""
+    if is_loopback(url):
+        return True
+    host = url_host(url)
+    if not host:
+        return False
+    cfg = user_embed_config() if embed_cfg is None else embed_cfg
+    named = []
+    if isinstance(cfg.get("url"), str):
+        named.append(url_host(cfg["url"].strip()))
+    hosts = cfg.get("allowed_hosts")
+    for h in (hosts if isinstance(hosts, list) else []):
+        if isinstance(h, str) and h.strip():
+            h = h.strip()
+            named.append(url_host(h) if "://" in h else h.lower().strip("[]"))
+    return host in named
+
+
+def _notice(var, url, what):
+    host = url_host(url) or "(unreadable)"
+    if (var, host) in _ENV_NOTICE:
+        return
+    _ENV_NOTICE.add((var, host))
+    try:
+        import sys
+        sys.stderr.write("[inspeximus] %s names host %s, which your config does not allow: %s. Add the host to "
+                         "embed.allowed_hosts in <key home>/inspeximus/config.json to use it.\n" % (var, host, what))
+    except Exception:                                           # noqa: BLE001
+        pass
+
+
+def env_url(var, embed_cfg=None, what="ignored, recall stays lexical"):
+    """The URL in environment variable `var` when its host is allowed (`host_allowed`), else "" and one stderr
+    line naming the variable and the host."""
+    import os
+    url = (os.environ.get(var) or "").strip()
+    if not url or host_allowed(url, embed_cfg):
+        return url
+    _notice(var, url, what)
+    return ""
+
+
+def env_key(var, url, embed_cfg=None):
+    """The key in environment variable `var` when `url`'s host is allowed, else "" and one stderr line."""
+    import os
+    key = (os.environ.get(var) or "").strip()
+    if not key or not url or host_allowed(url, embed_cfg):
+        return key
+    _notice(var, url, "the key is not sent")
+    return ""

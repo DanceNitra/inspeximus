@@ -184,14 +184,17 @@ def _make_embedder(cwd):
     env_hooks = os.environ.get("INSPEXIMUS_EMBED_HOOKS", "").strip().lower() in ("1", "true", "yes")
     if not (env_hooks or uc.get("hooks") is True):
         return None, None, None
-    url = (os.environ.get("INSPEXIMUS_EMBED_URL") or uc.get("url") or "").strip()
+    # An environment URL to another host needs the user's config to name it, and so does an environment key
+    # (3.16.4, F-12): a project's settings can set both. See inspeximus/_http.py.
+    from ._http import env_key, env_url
+    url = env_url("INSPEXIMUS_EMBED_URL", uc) or (uc.get("url") if isinstance(uc.get("url"), str) else "").strip()
     if not url:
         url = _repo_embed_url(rc.get("url"), _cfg_file(cwd))
     if not url:
         return None, None, None
     model = (os.environ.get("INSPEXIMUS_EMBED_MODEL") or uc.get("model") or rc.get("model")
              or "nomic-embed-text").strip()
-    key = (os.environ.get("INSPEXIMUS_EMBED_KEY") or uc.get("key") or "").strip()
+    key = env_key("INSPEXIMUS_EMBED_KEY", url, uc) or (uc.get("key") if isinstance(uc.get("key"), str) else "").strip()
     try:
         timeout = float(uc.get("timeout", 10))
     except Exception:

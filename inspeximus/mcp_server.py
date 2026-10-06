@@ -27,7 +27,9 @@ Config (environment):
                            INSPEXIMUS_WRITER_KEY); a ledger already signed by one of the two keeps that one.
     INSPEXIMUS_EMBED_URL   optional OpenAI-compatible /embeddings endpoint for SEMANTIC recall
     INSPEXIMUS_EMBED_MODEL embedding model id (default: text-embedding-3-small)
-    INSPEXIMUS_EMBED_KEY   bearer key for that endpoint
+    INSPEXIMUS_EMBED_KEY   bearer key for that endpoint. A URL to another machine, and this key, are used only
+                           when <key home>/inspeximus/config.json names the host in embed.url or
+                           embed.allowed_hosts (3.16.4); a loopback URL needs no entry.
     INSPEXIMUS_PERSIST_VECTORS  write the embedding vectors to disk instead of holding them for the
                            life of the process. Off by default. With an embedder configured and this
                            off, every open re-embeds every record and throws the result away at exit.
@@ -109,13 +111,12 @@ def _make_embedders():
     For nomic-embed-text (asymmetric, trained with task prefixes) it returns SEPARATE document/query
     embedders that prefix `search_document: ` / `search_query: ` — measured on LoCoMo (n=1536) to lift
     recall_any@1 from 0.19 to 0.29. For symmetric models it returns (embed, None). (None, None) if unconfigured."""
-    url = os.environ.get("INSPEXIMUS_EMBED_URL", "").strip()
+    from ._http import embedding_from, env_key, env_url, post_json   # no redirect, no proxy for loopback (3.16.4)
+    url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
     if not url:
         return None, None, None
     model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
-    key = os.environ.get("INSPEXIMUS_EMBED_KEY", "").strip()
-
-    from ._http import embedding_from, post_json      # no redirect followed, no proxy for a loopback URL (3.16.4)
+    key = env_key("INSPEXIMUS_EMBED_KEY", url)
 
     def _embed(text: str, prefix: str = ""):
         headers = {"Authorization": f"Bearer {key}"} if key else {}

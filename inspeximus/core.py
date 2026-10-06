@@ -20321,13 +20321,16 @@ def default_distiller(url=None, model=None, key=None, timeout=60):
     wire an LLM. OPT-IN: this is the only place an LLM touches capture; the core store/recall/revert stay zero-LLM.
     Raises if no URL is configured (so you know to inject your own). No redirect is followed and a loopback URL
     uses no proxy (3.16.4, `inspeximus/_http.py`): the text goes to the URL configured here and nowhere else."""
-    from ._http import post_json
-    url = (url or os.environ.get("INSPEXIMUS_LLM_URL", "")).strip()
+    from ._http import env_key, env_url, post_json
+    # An environment URL to another host, and an environment key, need the user's config to name the host
+    # (3.16.4, F-12): a project's settings can set the environment. A url= or key= argument is the caller's own.
+    # The environment key is checked against the URL in use wherever that URL came from.
+    url = (url or env_url("INSPEXIMUS_LLM_URL", what="ignored")).strip()
     if not url:
         raise RuntimeError("default_distiller needs INSPEXIMUS_LLM_URL (an OpenAI-compatible /chat/completions endpoint) "
                            "or explicit url= ; the core stays zero-LLM, so a distiller is opt-in.")
     model = (model or os.environ.get("INSPEXIMUS_LLM_MODEL", "gpt-4o-mini")).strip()
-    key = (key or os.environ.get("INSPEXIMUS_LLM_KEY", "")).strip()
+    key = (key or env_key("INSPEXIMUS_LLM_KEY", url)).strip()
 
     def distiller(prompt, text):
         payload = {"model": model, "temperature": 0, "messages": [

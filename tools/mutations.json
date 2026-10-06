@@ -7978,8 +7978,8 @@
  {
   "name": "the user's embed url is not read",
   "file": "inspeximus/claude_code.py",
-  "old": "    url = (os.environ.get(\"INSPEXIMUS_EMBED_URL\") or uc.get(\"url\") or \"\").strip()\n",
-  "new": "    url = (os.environ.get(\"INSPEXIMUS_EMBED_URL\") or \"\").strip()\n",
+  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\", uc) or (uc.get(\"url\") if isinstance(uc.get(\"url\"), str) else \"\").strip()\n",
+  "new": "    url = env_url(\"INSPEXIMUS_EMBED_URL\", uc)\n",
   "tests": [
    "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
   ]
@@ -8005,8 +8005,8 @@
  {
   "name": "the repository's embed key is used again",
   "file": "inspeximus/claude_code.py",
-  "old": "    key = (os.environ.get(\"INSPEXIMUS_EMBED_KEY\") or uc.get(\"key\") or \"\").strip()\n",
-  "new": "    key = (os.environ.get(\"INSPEXIMUS_EMBED_KEY\") or uc.get(\"key\") or rc.get(\"key\") or \"\").strip()\n",
+  "old": "    key = env_key(\"INSPEXIMUS_EMBED_KEY\", url, uc) or (uc.get(\"key\") if isinstance(uc.get(\"key\"), str) else \"\").strip()\n",
+  "new": "    key = env_key(\"INSPEXIMUS_EMBED_KEY\", url, uc) or (uc.get(\"key\") if isinstance(uc.get(\"key\"), str) else \"\").strip() or str(rc.get(\"key\") or \"\")\n",
   "tests": [
    "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
   ]
@@ -8025,15 +8025,6 @@
   "file": "inspeximus/_http.py",
   "old": "        if \"\\\\\" in url or \"@\" in authority or any(c.isspace() for c in url):\n",
   "new": "        if False:\n",
-  "tests": [
-   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
-  ]
- },
- {
-  "name": "the host the request connects to is not compared with the parsed host",
-  "file": "inspeximus/_http.py",
-  "old": "        if not host or connects_to != host:\n",
-  "new": "        if not host:\n",
   "tests": [
    "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
   ]
@@ -8342,6 +8333,100 @@
   "new": "            pass\n",
   "tests": [
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "env URL used without allow",
+  "file": "inspeximus/_http.py",
+  "old": "    if not url or host_allowed(url, embed_cfg):\n        return url\n",
+  "new": "    if True:\n        return url\n",
+  "tests": [
+   "tests/test_audit_a_f12_env_embed_url_needs_the_users_consent.py",
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "key sent to an unallowed host",
+  "file": "inspeximus/_http.py",
+  "old": "    if not key or not url or host_allowed(url, embed_cfg):\n",
+  "new": "    if True:\n",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "allowed_hosts entries are ignored",
+  "file": "inspeximus/_http.py",
+  "old": "            named.append(url_host(h) if \"://\" in h else h.lower().strip(\"[]\"))\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_audit_a_f12_env_embed_url_needs_the_users_consent.py",
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "the host the request connects to is not compared with the parsed host",
+  "file": "inspeximus/_http.py",
+  "old": "        return host if host and connects_to == host else None\n",
+  "new": "        return host or None\n",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py",
+   "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
+  ]
+ },
+ {
+  "name": "the hook reads the env URL without the allow rule",
+  "file": "inspeximus/claude_code.py",
+  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\", uc) or",
+  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip() or",
+  "tests": [
+   "tests/test_audit_a_f12_env_embed_url_needs_the_users_consent.py",
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "the CLI reads the env URL without the allow rule",
+  "file": "inspeximus/cli.py",
+  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
+  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "the MCP server reads the env URL without the allow rule",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
+  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "the distiller reads the env URL without the allow rule",
+  "file": "inspeximus/core.py",
+  "old": "    url = (url or env_url(\"INSPEXIMUS_LLM_URL\", what=\"ignored\")).strip()\n",
+  "new": "    url = (url or os.environ.get(\"INSPEXIMUS_LLM_URL\", \"\")).strip()\n",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "the distiller sends the env key to any host",
+  "file": "inspeximus/core.py",
+  "old": "    key = (key or env_key(\"INSPEXIMUS_LLM_KEY\", url)).strip()\n",
+  "new": "    key = (key or os.environ.get(\"INSPEXIMUS_LLM_KEY\", \"\")).strip()\n",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "a URL with no host raises out of the host check",
+  "file": "inspeximus/_http.py",
+  "old": "    except (ValueError, TypeError):\n        return None\n",
+  "new": "    except ValueError:\n        return None\n",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
   ]
  }
 ]

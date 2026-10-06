@@ -804,7 +804,7 @@ Or, after `pip install "inspeximus[mcp]"`, with the console script directly:
 
 For **semantic** recall, point it at any OpenAI-compatible embeddings endpoint via
 `INSPEXIMUS_EMBED_URL` / `INSPEXIMUS_EMBED_MODEL` / `INSPEXIMUS_EMBED_KEY`; with none set it uses the lexical
-fallback. The agent then calls `recall(query)` before reasoning and `remember(fact)` as it learns —
+fallback. An endpoint on another machine must also be named in your own config, `<key home>/inspeximus/config.json`, as `{"embed": {"allowed_hosts": ["<host>"]}}`; a loopback URL needs no entry (3.16.4). The agent then calls `recall(query)` before reasoning and `remember(fact)` as it learns —
 its memory is value-ranked and append-only, not a recency buffer. If `INSPEXIMUS_EMBED_MODEL` contains
 `nomic` (nomic-embed-text is asymmetric — see its model card; like E5's `passage:`/`query:`), inspeximus auto-applies its
 required task prefixes — `search_document: ` for stored text, `search_query: ` for the query (opt out with
