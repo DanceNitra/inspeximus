@@ -32,7 +32,7 @@ mode = sys.argv[1]
 if mode == "big":
     cc.recall = lambda ev: cc._emit("UserPromptSubmit", "x" * 65536)
 elif mode == "unflushed":
-    cc.recall = lambda ev: sys.stdout.write("y" * 20000) and None       # buffered: only the exit path can flush it
+    cc.recall = lambda ev: sys.stdout.write("y" * 300) and None         # far below the buffer size: only the exit path can flush it
 elif mode == "write":
     real = cc.recall
     def recall(ev):
@@ -92,11 +92,11 @@ def test_a_64_kb_block_reaches_a_pipe_whole_and_the_process_ends_in_the_fast_exi
 
 def test_text_a_handler_left_in_the_buffer_is_flushed_by_the_fast_exit(proj, tmp_path):
     r = _run(proj, "unflushed")
-    assert r.returncode == 0 and r.stdout == "y" * 20000, len(r.stdout)
+    assert r.returncode == 0 and r.stdout == "y" * 300, len(r.stdout)
     out = tmp_path / "unflushed.out"
     with open(out, "w", encoding="utf-8") as fh:
         _run(proj, "unflushed", stdout=fh)
-    assert out.read_text(encoding="utf-8") == "y" * 20000
+    assert out.read_text(encoding="utf-8") == "y" * 300
 
 
 def test_a_64_kb_block_reaches_a_file_whole(proj, tmp_path):
