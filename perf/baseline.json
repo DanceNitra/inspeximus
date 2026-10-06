@@ -725,5 +725,42 @@
   "seconds_median": 0.2268,
   "seconds_min": 0.1673,
   "seconds_max": 0.2283
+ },
+ "prompt_hook_n1200": {
+  "desc": "UserPromptSubmit, PreToolUse, PostToolUse and SessionStart over stamped 1,200-capture and 200-decision stores: stamps, scans, token builds, rows parsed, fast exit",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
+  "counters": {
+   "replace_store": 0,
+   "replace_tombstones": 0,
+   "replace_receipts": 0,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 2,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "dir_listings": 2,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 0,
+   "read_guard_assessments": 1404,
+   "store_hash_reads": 0,
+   "guard_key_lookups": 2,
+   "decision_syncs": 0,
+   "partition_registry_reads": 0,
+   "guard_shape_scans": 0,
+   "tracked_gets": 43288,
+   "foreign_stamps": 0,
+   "token_builds": 1402,
+   "rows_parsed": 1400,
+   "fast_exit_prompt": 1,
+   "fast_exit_other": 0
+  },
+  "seconds_median": 0.3041,
+  "seconds_min": 0.2956,
+  "seconds_max": 0.3143
  }
 }

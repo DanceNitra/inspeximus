@@ -8707,5 +8707,50 @@
   "tests": [
    "tests/test_audit_a_317hook_findings.py"
   ]
+ },
+ {
+  "name": "perf gate: a PreToolUse event takes the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n",
+  "new": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n            _FAST_EXIT[0] = True\n",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: the prompt hook never takes the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _FAST_EXIT[0] = os.environ.get(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")\n        elif name == \"SessionStart\":",
+  "new": "            _FAST_EXIT[0] = False\n        elif name == \"SessionStart\":",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: a stamp is written under another guard-set hash",
+  "file": "inspeximus/core.py",
+  "old": "meta[\"read_guards\"] = {\"set\": gset, \"mac\": _guard_mac(key, \"clean\", rid, th, gset)}",
+  "new": "meta[\"read_guards\"] = {\"set\": gset + \"x\", \"mac\": _guard_mac(key, \"clean\", rid, th, gset)}",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: a record's tokens are built twice",
+  "file": "inspeximus/core.py",
+  "old": "            t = _tokens(_index_text(rec)); self._tok_cache[rid] = t",
+  "new": "            _tokens(_index_text(rec)); t = _tokens(_index_text(rec)); self._tok_cache[rid] = t",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: a row is parsed twice when a store opens",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "            out.append(json.loads(doc))",
+  "new": "            json.loads(doc); out.append(json.loads(doc))",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
  }
 ]
