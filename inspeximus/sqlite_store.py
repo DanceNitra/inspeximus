@@ -362,8 +362,8 @@ def _event_salt_path(path) -> str:
     """Where the event salt for the store at `path` lives: the key home, as for the receipt key and the
     chain head (`INSPEXIMUS_KEY_HOME`, else APPDATA, else XDG_CONFIG_HOME, else ~/.config), under
     `inspeximus/salts/`, named by a hash of the store's absolute path."""
-    home = (os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA")
-            or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"))
+    from ._keyhome import key_home
+    home = key_home(path)                        # 3.16.4, F-13
     tag = hashlib.sha256(os.path.abspath(str(path)).encode("utf-8", "replace")).hexdigest()[:16]
     return os.path.join(home, "inspeximus", "salts", tag + ".salt")
 

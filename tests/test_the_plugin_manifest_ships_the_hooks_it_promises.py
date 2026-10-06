@@ -50,7 +50,7 @@ def test_every_hook_runs_the_module_through_uvx_so_pip_is_not_assumed():
                 assert h["command"].startswith("uvx --from inspeximus==%s " % inspeximus.__version__), (
                     "%s runs %r. A plugin cannot assume `pip install inspeximus` happened; uvx "
                     "resolves the package itself, the way the MCP entry already does." % (ev, h["command"]))
-                assert h["command"].endswith("python -m inspeximus.claude_code"), ev
+                assert h["command"].endswith("python -I -m inspeximus.claude_code"), ev     # -I: AUDIT-A F-15
 
 
 def test_the_pre_tool_matcher_matches_the_installer_exactly():

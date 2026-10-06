@@ -728,8 +728,8 @@ every prompt reads all of them. `--archive` moves the old command captures out o
 file per month beside it. Nothing is deleted.
 
 ```bash
-python -m inspeximus.claude_code --archive --older-than 7            # what would move; writes nothing
-python -m inspeximus.claude_code --archive --older-than 7 --apply    # move it
+python -I -m inspeximus.claude_code --archive --older-than 7         # what would move; writes nothing
+python -I -m inspeximus.claude_code --archive --older-than 7 --apply # move it
 ```
 
 - Recall reads the store alone by default. `recall(..., include_archive=True)` searches the archive

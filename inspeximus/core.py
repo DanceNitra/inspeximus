@@ -719,8 +719,8 @@ def _head_path(store_path) -> "str | None":
     (`anchor()` given to a witness, `verify_consistency()`, RFC 3161)."""
     if not store_path or os.environ.get("INSPEXIMUS_HEADS", "1").strip().lower() in ("0", "off", "false", "no"):
         return None
-    home = (os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA")
-            or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"))
+    from ._keyhome import key_home
+    home = key_home(store_path)                  # a repository-chosen key home is refused (3.16.4, F-13)
     tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
     return os.path.join(home, "inspeximus", "heads", f"{tag}.json")
 
@@ -798,8 +798,8 @@ def _receipt_key_file(store_path) -> str:
     server looks here for the store's key, and must not refuse to start merely because a key home it
     never uses sits inside the store's directory."""
     import hashlib as _h
-    home = os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA") \
-        or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    from ._keyhome import key_home
+    home = key_home(store_path)                  # 3.16.4, F-13
     tag = _h.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
     return os.path.join(home, "inspeximus", "keys", f"{tag}.key")
 
@@ -932,8 +932,8 @@ _NO_SIG = object()      # never equal to a stat signature: no absence has been r
 
 def _guard_key_file(store_path) -> str:
     """Where a store keeps its read-guard key: the key home, beside the receipt key, never the store."""
-    home = os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA") \
-        or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    from ._keyhome import key_home
+    home = key_home(store_path)                  # 3.16.4, F-13
     tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
     return os.path.join(home, "inspeximus", "keys", f"{tag}.guards.key")
 
@@ -10984,6 +10984,13 @@ class Inspeximus:
         """
         if not self.path:
             return None, False, None
+        # A DIRECTORY AT THE STORE PATH IS REFUSED AT ONCE (3.16.4, AUDIT-A F-16). Opening one raises
+        # PermissionError on Windows, which this loop reads as a peer mid-replace and retries for its whole
+        # budget, and that can never succeed: a repository that ships `.inspeximus/coding_memory.json/<file>`
+        # made every hook wait 8 to 10 s. A replace never leaves a directory at the name, so this is final.
+        if os.path.isdir(self.path):
+            raise IsADirectoryError("the store path %s is a directory, not a store file; remove it or point "
+                                    "the store elsewhere" % self.path)
         last = None
         for attempt in range(self._OPEN_ATTEMPTS):
             try:

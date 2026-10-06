@@ -9,8 +9,8 @@ by an echo. Persistent across sessions, provably erasable, zero-dependency. The 
 <project>/.inspeximus/coding_memory.json; the name ends in .json, the format does not.
 
 Use it two ways:
-  python -m inspeximus.claude_code --install     # write the hooks block into ./.claude/settings.json
-  python -m inspeximus.claude_code               # (as a hook) reads a Claude Code event on stdin and acts on it
+  python -I -m inspeximus.claude_code --install  # write the hooks block into ./.claude/settings.json
+  python -I -m inspeximus.claude_code            # (as a hook) reads a Claude Code event on stdin and acts on it
 
 Hook events handled (dispatched by hook_event_name on stdin JSON):
   PostToolUse       -> capture Edit/Write/MultiEdit/Bash deterministically, keyed by file path.
@@ -26,7 +26,7 @@ key-shaped strings and secret-named assignments (`inspeximus._secrets`) in the t
 source and meta, and a write to a secrets file (`.env*`, `*.pem`, `*.key`, SSH private keys,
 `credentials*`) stores its path and nothing derived from its content. Records captured before
 3.14.2 are announced once and erased on request:
-`python -m inspeximus.claude_code --scrub-secrets [--apply]`.
+`python -I -m inspeximus.claude_code --scrub-secrets [--apply]`.
 
 THE CROSS-SESSION LOOP (SessionEnd -> SessionStart), and why it needs no LLM. Other coding-agent memories
 close the loop by sending the transcript to a model and injecting its prose summary. inspeximus emits a LEDGER
@@ -95,8 +95,8 @@ def user_config_path() -> str:
     """The user's own inspeximus config, outside every repository: `<key home>/inspeximus/config.json`, where
     the key home is INSPEXIMUS_KEY_HOME, else APPDATA, else XDG_CONFIG_HOME, else ~/.config. The same home
     holds the signing keys and the chain heads (`core._head_path`)."""
-    home = (os.environ.get("INSPEXIMUS_KEY_HOME") or os.environ.get("APPDATA")
-            or os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"))
+    from ._keyhome import key_home
+    home = key_home()                            # 3.16.4, F-13
     return os.path.join(home, "inspeximus", "config.json")
 
 
@@ -197,12 +197,12 @@ def _make_embedder(cwd):
     except Exception:
         timeout = 10.0
 
-    from ._http import post_json
+    from ._http import embedding_from, post_json
 
     def _embed(text: str, prefix: str = ""):
         # No redirect is followed and a loopback URL uses no proxy (3.16.4): see inspeximus/_http.py.
         headers = {"Authorization": f"Bearer {key}"} if key else {}
-        return post_json(url, {"model": model, "input": prefix + text}, headers, timeout)["data"][0]["embedding"]
+        return embedding_from(post_json(url, {"model": model, "input": prefix + text}, headers, timeout))
 
     # nomic-embed-text is ASYMMETRIC — the doc/query task prefixes are REQUIRED for good retrieval (the
     # correctness fix shipped for the MCP in 1.15.0, now applied to the Claude Code plugin too). Returns
@@ -641,6 +641,47 @@ def maintain_store(cwd=None, older_than=None, classes=("cmd",), allow_git_tracke
     return out
 
 
+def _pid_alive(pid) -> bool:
+    """True when a process with this pid exists. Never os.kill(pid, 0) on Windows, which terminates the process."""
+    try:
+        pid = int(pid)
+        if pid <= 0:
+            return False
+        if os.name == "nt":
+            import ctypes
+            k32 = ctypes.windll.kernel32
+            h = k32.OpenProcess(0x1000, False, pid)        # PROCESS_QUERY_LIMITED_INFORMATION
+            if not h:
+                return False
+            code = ctypes.c_ulong()
+            try:
+                ok = k32.GetExitCodeProcess(h, ctypes.byref(code))
+            finally:
+                k32.CloseHandle(h)
+            return bool(ok) and code.value == 259          # STILL_ACTIVE
+        os.kill(pid, 0)
+        return True
+    except (OSError, ValueError, TypeError, AttributeError):
+        return False
+
+
+def _mark_archive_run_done(path, result) -> None:
+    """The `--maintain` run records that it finished, so the next policy check counts the interval normally."""
+    state = path + ".archive-auto.json"
+    try:
+        with open(state, encoding="utf-8") as fh:
+            st = json.load(fh)
+        if not isinstance(st, dict):
+            return
+        st.update(done=__import__("time").time(), result="ok" if result else "failed")
+        tmp = state + ".tmp.%d" % os.getpid()
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(st, fh)
+        os.replace(tmp, state)
+    except (OSError, ValueError):
+        pass
+
+
 def maybe_archive_in_background(cwd=None) -> str:
     """The prompt path's whole cost of the policy: one config read and one `stat`. When the policy is on,
     the hot file is over `trigger_mb`, and no attempt started within `min_interval_s`, it starts ONE
@@ -666,17 +707,33 @@ def maybe_archive_in_background(cwd=None) -> str:
         now = time.time()
         try:
             with open(state, encoding="utf-8") as fh:
-                last = float(json.load(fh).get("last_attempt") or 0)
+                st = json.load(fh)
+            last = float(st.get("last_attempt") or 0)
         except (OSError, ValueError, AttributeError):
-            last = 0.0
+            st, last = {}, 0.0
         if now - last < pol["min_interval_s"]:
-            return "recent"
+            # A RUN THAT DIED IS TRIED AGAIN AFTER THE FLOOR (3.16.4, AUDIT-A F-14). The attempt is recorded before
+            # the start, so a run its host killed with the hook's process tree blocked the next try for the whole
+            # interval (3,600 s by default). A run marks itself `done`; an attempt with no `done` whose process is
+            # gone is retried once AUTO_ARCHIVE_MIN_INTERVAL_S has passed.
+            pid = st.get("pid") if isinstance(st, dict) else None
+            dead = isinstance(pid, int) and not st.get("done") and not _pid_alive(pid)
+            if not (dead and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):
+                return "recent"
         tmp = state + ".tmp.%d" % os.getpid()
+        record = {"last_attempt": now, "hot_bytes": size, "policy": {k: pol[k] for k in
+                  ("trigger_mb", "older_than_days", "classes")}}
         with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump({"last_attempt": now, "hot_bytes": size, "policy": {k: pol[k] for k in
-                       ("trigger_mb", "older_than_days", "classes")}}, fh)
+            json.dump(record, fh)
         os.replace(tmp, state)
-        argv = [sys.executable, "-m", "inspeximus.claude_code", "--maintain", "--older-than",
+        # ISOLATED (3.16.4, AUDIT-A F-15): the run starts in the repository, and `python -m` would import a
+        # repository's own `inspeximus/` first. -I leaves the working directory and PYTHONPATH out, so the package
+        # this process imported is named explicitly instead.
+        _pkg_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        argv = [sys.executable, "-I", "-c",
+                "import sys; sys.path.insert(0, %r); import runpy; "
+                "runpy.run_module('inspeximus.claude_code', run_name='__main__', alter_sys=True)" % _pkg_parent,
+                "--maintain", "--older-than",
                 str(pol["older_than_days"])]
         for cl in pol["classes"]:
             argv += ["--class", cl]
@@ -689,8 +746,21 @@ def maybe_archive_in_background(cwd=None) -> str:
             kw["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000   # DETACHED, NEW_PROCESS_GROUP, NO_WINDOW
         else:
             kw["start_new_session"] = True
-        subprocess.Popen(argv, **kw)
+        try:
+            # LEAVE THE HOOK'S JOB (3.16.4, AUDIT-A F-14): a host that runs hooks inside a job object which
+            # ends with the hook ended this run too. CREATE_BREAKAWAY_FROM_JOB asks to leave it; a job that
+            # does not allow breakaway refuses the start, and the run then starts without the flag.
+            proc = subprocess.Popen(argv, **dict(kw, creationflags=kw["creationflags"] | 0x01000000)) \
+                if os.name == "nt" else subprocess.Popen(argv, **kw)
+        except OSError:
+            if os.name != "nt":
+                raise
+            proc = subprocess.Popen(argv, **kw)
         log.close()
+        record["pid"] = getattr(proc, "pid", None)
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(record, fh)
+        os.replace(tmp, state)
         return "started"
     except Exception:                                           # noqa: BLE001
         return "failed"
@@ -792,7 +862,7 @@ def _secrets_notice(cwd, m):
     if not n:
         return None
     return ("[inspeximus] %d stored record(s) look like they contain a secret, captured before inspeximus "
-            "3.14.2 masked them. Tell the user; to review: python -m inspeximus.claude_code --scrub-secrets "
+            "3.14.2 masked them. Tell the user; to review: python -I -m inspeximus.claude_code --scrub-secrets "
             "(add --apply to erase them, each with a tombstone)." % n)
 
 
@@ -1188,7 +1258,7 @@ def _decision_store_too_big(path) -> bool:
         if size <= limit * 1024 * 1024:
             return False
         sys.stderr.write("[inspeximus] INSPEXIMUS_DECISION_STORE is %.1f MB, over the %.0f MB limit: its decisions are "
-                         "skipped, because the hook reads it on every prompt (about 0.1 s per MB). Point it at a "
+                         "skipped, because the hook reads all of it on every prompt. Point it at a "
                          "decisions-only store, or raise INSPEXIMUS_DECISION_STORE_MAX_MB (0 = no limit).%s"
                          % (size / 1048576.0, limit, chr(10)))
         return True
@@ -1375,7 +1445,7 @@ def session_start(ev):
         if orphan:
             emit.append("[inspeximus] %s holds %d memories this session does not read: inspeximus 3.9.5 "
                         "and older stored MCP decisions there. To fold them into this project's store: "
-                        "python -m inspeximus.claude_code --merge-store \"%s\" --apply"
+                        "python -I -m inspeximus.claude_code --merge-store \"%s\" --apply"
                         % (orphan[0], orphan[1], orphan[0]))
     except Exception:
         pass
@@ -1457,12 +1527,12 @@ def session_end(ev):
     return rep
 
 
-_HOOK = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
+_HOOK = {"hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code"}]}
 # SessionEnd shares a 1.5s budget across every SessionEnd hook unless the settings raise it. The digest
 # is a ledger scan, not a model call, so it is fast -- but on a large store plus a cold interpreter 1.5s
 # is not a margin, and a hook that is killed mid-write writes nothing. Asking for the budget is cheaper
 # than losing the session.
-_HOOK_SESSION_END = {"hooks": [{"type": "command", "command": "python -m inspeximus.claude_code",
+_HOOK_SESSION_END = {"hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code",
                                 "timeout": 15}]}
 #: The tools pre_tool_use() can say anything about. The matcher is DERIVED from this tuple rather
 #: than written beside it, because the two drifting apart is silent in both directions: a tool in the
@@ -1476,13 +1546,13 @@ _PRE_TOOLS = ("Bash", "Write", "Edit", "MultiEdit", "NotebookEdit")
 # it this handler launches a process and loads the store on every Read, Grep and Glob as well, at
 # ~0.77 s each (measured, silent path included).
 _HOOK_PRE_TOOL = {"matcher": "|".join(_PRE_TOOLS),
-                  "hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
+                  "hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code"}]}
 # THE SAME SCOPE FOR PostToolUse, derived from what `capture` records. Without it Claude Code started a
 # process that imports this package for every Read, Grep, Glob and WebFetch, and `capture` returned at
 # once: 0.29 to 0.43 s per such event after the handler stopped opening the store, measured 2026-09-27
 # (AUDIT-B B-02). An entry installed before this keeps no matcher; `capture` still returns early for it.
 _HOOK_POST_TOOL = {"matcher": "|".join(_CAPTURED_TOOLS),
-                   "hooks": [{"type": "command", "command": "python -m inspeximus.claude_code"}]}
+                   "hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code"}]}
 _EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END, "PreToolUse": _HOOK_PRE_TOOL, "PostToolUse": _HOOK_POST_TOOL}
 
 # Hooks written before the 1.25.0 rename invoke `python -m inspeximus.claude_code`, which still works
@@ -1534,9 +1604,9 @@ def install_codex(root=None) -> str:
 
     exe = sys.executable or "python"
     if os.name == "nt":
-        cmd = "cmd /c " + exe.replace("\\", "/") + " -m inspeximus.claude_code"
+        cmd = "cmd /c " + exe.replace("\\", "/") + " -I -m inspeximus.claude_code"      # -I: F-15
     else:
-        cmd = "sh -c '%s -m inspeximus.claude_code'" % exe
+        cmd = "sh -c '%s -I -m inspeximus.claude_code'" % exe
     events = ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "SessionEnd"]
     plugin = {
         "name": "inspeximus",
@@ -1601,7 +1671,7 @@ def install(cwd=None):
     _atomic_write_json(p, cfg)
     print(f"inspeximus: installed Claude Code hooks into {p}")
     print("Restart Claude Code in this project. Memory lands in ./.inspeximus/coding_memory.json (deterministic, "
-          "no LLM, provably erasable). Run `python -m inspeximus.claude_code --uninstall` to remove.")
+          "no LLM, provably erasable). Run `python -I -m inspeximus.claude_code --uninstall` to remove.")
     return True
 
 
@@ -1902,8 +1972,10 @@ def main():
         argv = sys.argv
         older = argv[argv.index("--older-than") + 1] if "--older-than" in argv[:-1] else None
         classes = tuple(argv[i + 1] for i, a in enumerate(argv[:-1]) if a == "--class") or ("cmd",)
-        print(json.dumps(maintain_store(older_than=older, classes=classes,
-                                        allow_git_tracked="--allow-git-tracked" in argv), indent=2, default=str))
+        res = maintain_store(older_than=older, classes=classes, allow_git_tracked="--allow-git-tracked" in argv)
+        print(json.dumps(res, indent=2, default=str))
+        from ._surface import coding_store_path
+        _mark_archive_run_done(coding_store_path(None), "refused" not in (res.get("archive") or {}))   # F-14
         return
     if "--stamp-guards" in sys.argv:
         argv = sys.argv

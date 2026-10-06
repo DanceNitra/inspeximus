@@ -223,7 +223,7 @@ def missing_mcp_warning(kind):
 def _server_launch(kind, exe):
     """(command, args) for the MCP server under a runtime from `resolve_runtime`."""
     if kind == "python":
-        return exe, ["-m", "inspeximus.mcp_server"]
+        return exe, ["-I", "-m", "inspeximus.mcp_server"]          # -I: see hook_command (F-15)
     return exe, ["--from", _pinned("mcp"), "inspeximus-mcp"]
 
 
@@ -237,10 +237,15 @@ def _shell_path(p):
 
 
 def hook_command(kind, exe):
-    """The hook command under a runtime from `resolve_runtime`."""
+    """The hook command under a runtime from `resolve_runtime`.
+
+    ISOLATED (-I, 3.16.4, AUDIT-A F-15). Claude Code and Codex run a hook with the project as the working
+    directory, and `python -m` puts the working directory first on sys.path, so a repository holding an
+    `inspeximus/` directory ran its own code as this hook. `-I` leaves the working directory, PYTHONPATH and
+    the user site out of sys.path; it works through uvx, and on every Python this package supports."""
     if kind == "python":
-        return _shell_path(exe) + " -m inspeximus.claude_code"
-    return _shell_path(exe) + " --from %s python -m inspeximus.claude_code" % _pinned()
+        return _shell_path(exe) + " -I -m inspeximus.claude_code"
+    return _shell_path(exe) + " --from %s python -I -m inspeximus.claude_code" % _pinned()
 
 
 def _claude_settings_path(mcp_config_path):
@@ -258,7 +263,7 @@ def _claude_settings_path(mcp_config_path):
 #: written by a person, and is theirs.
 _OWN_HOOK_LINE = re.compile(
     r'^(?P<exe>"(?:[A-Za-z]:[\\/]|/)[^"]+"|(?:[A-Za-z]:[\\/]|/)\S+)\s+'
-    r'(?:(?P<uvx>--from\s+inspeximus(?:==[0-9][0-9A-Za-z.+-]*)?\s+python\s+))?-m\s+inspeximus\.claude_code$')
+    r'(?:(?P<uvx>--from\s+inspeximus(?:==[0-9][0-9A-Za-z.+-]*)?\s+python\s+))?(?:-I\s+)?-m\s+inspeximus\.claude_code$')
 
 
 def _hook_exe(command):
