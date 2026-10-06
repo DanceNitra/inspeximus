@@ -279,3 +279,68 @@ def test_the_uvx_warm_up_names_the_same_index(tmp_path):
     seen = []
     ia.warm_uvx(str(exe), runner=lambda cmd, **k: seen.append(cmd) or type("R", (), {"returncode": 0})())
     assert seen and seen[0][1:3] == _launch.UVX_INDEX_ARGS, seen
+
+
+# ---- 3.16.4, AUDIT-B: the pid write never erases a finished run's mark ----
+
+def _archive_setup(tmp_path, monkeypatch):
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
+    (tmp_path / "keyhome" / "inspeximus").mkdir(parents=True)
+    (tmp_path / "keyhome" / "inspeximus" / "config.json").write_text(json.dumps(
+        {"archive": {"auto": True, "trigger_mb": 0.0001}}))
+    proj = tmp_path / "repo"
+    (proj / ".git").mkdir(parents=True)
+    m = cc._store(str(proj))
+    for i in range(40):
+        m.remember("ran: command number %d with some output" % i, key="cmd:%d" % i, tags=["bash"], mtype="episodic")
+    m.flush()
+    return proj, str(m.path)
+
+
+def test_a_run_that_finishes_before_the_pid_write_keeps_its_done_mark(tmp_path, monkeypatch):
+    """The run marks itself done before the parent writes the pid: the mark must survive, or the finished run looks
+    dead and is started again after 60 s (AUDIT-B saw it as a 120 s test timeout)."""
+    import subprocess as sp
+    proj, path = _archive_setup(tmp_path, monkeypatch)
+
+    def fast_run(argv, **kw):
+        cc._mark_archive_run_done(path, True)               # the whole run, finished inside the start
+        return type("P", (), {"pid": 424242})()
+    monkeypatch.setattr(sp, "Popen", fast_run)
+    monkeypatch.setattr(cc, "ARCHIVE_MARK_WAIT_S", 0.5)      # here the run waits inside the start call
+    assert cc.maybe_archive_in_background(str(proj)) == "started"
+    st = json.load(open(path + ".archive-auto.json", encoding="utf-8"))
+    assert st.get("done") and st.get("result") == "ok" and st.get("pid") == 424242, st
+
+
+def test_a_mark_lost_between_the_parents_read_and_write_is_written_again(tmp_path, monkeypatch):
+    """The parent read the record before the mark and wrote the pid after it: the run sees the pid without its mark
+    and writes the mark again."""
+    import threading
+    import time as _t
+    proj, path = _archive_setup(tmp_path, monkeypatch)
+    state = path + ".archive-auto.json"
+    with open(state, "w", encoding="utf-8") as fh:
+        json.dump({"last_attempt": _t.time(), "hot_bytes": 1}, fh)
+    t = threading.Thread(target=cc._mark_archive_run_done, args=(path, True))
+    t.start()
+    _t.sleep(0.5)                                            # the run has marked itself and waits for the pid
+    seen = json.load(open(state, encoding="utf-8"))
+    assert seen.get("done"), "control: the run marked itself before the parent's write"
+    with open(state, "w", encoding="utf-8") as fh:            # the parent's write, from a read before the mark
+        json.dump({"last_attempt": seen["last_attempt"], "hot_bytes": 1, "pid": 7}, fh)
+    t.join(15)
+    st = json.load(open(state, encoding="utf-8"))
+    assert not t.is_alive() and st.get("done") and st.get("pid") == 7, st
+
+
+def test_control_a_stale_record_without_a_pid_does_not_make_the_run_wait(tmp_path, monkeypatch):
+    import time as _t
+    proj, path = _archive_setup(tmp_path, monkeypatch)
+    with open(path + ".archive-auto.json", "w", encoding="utf-8") as fh:
+        json.dump({"last_attempt": _t.time() - 3600, "hot_bytes": 1}, fh)
+    t0 = _t.time()
+    cc._mark_archive_run_done(path, True)
+    assert _t.time() - t0 < 2 and json.load(open(path + ".archive-auto.json", encoding="utf-8")).get("done")

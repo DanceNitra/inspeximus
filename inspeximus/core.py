@@ -4499,6 +4499,38 @@ class Inspeximus:
         r.setdefault("meta", {})
         r.setdefault("value", 1.0)
         r.setdefault("text", "")
+        # A FIELD OF THE WRONG TYPE, since 3.16.4 (AUDIT-A F-26). One record whose `meta` was a string, or whose
+        # `text`, `tags`, `links`, `value` or `key` had the wrong type, made every recall on the store raise, and the
+        # prompt hook printed one stderr line and no memory. A store a repository ships could switch the user's
+        # memory off for that project. The field gets a safe value, the original is kept under meta["malformed"],
+        # and the record is quarantined: recall withholds it until release_quarantine, and the rest is served.
+        # Inline checks, not a table of lambdas: this runs for every record on every open.
+        bad = None
+        _v = r["meta"]
+        if not isinstance(_v, dict):
+            bad = {"meta": _v}
+            r["meta"] = {}
+        _v = r["text"]
+        if _v is not None and not isinstance(_v, str):
+            bad = dict(bad or {}, text=_v)
+            r["text"] = ""
+        if not isinstance(r["tags"], list):
+            bad = dict(bad or {}, tags=r["tags"])
+            r["tags"] = []
+        if not isinstance(r["links"], list):
+            bad = dict(bad or {}, links=r["links"])
+            r["links"] = []
+        _v = r["value"]
+        if not isinstance(_v, (int, float)):
+            bad = dict(bad or {}, value=_v)
+            r["value"] = 1.0
+        _v = r.get("key")
+        if _v is not None and not isinstance(_v, str):
+            bad = dict(bad or {}, key=_v)
+            r["key"] = None
+        if bad:
+            r["meta"].setdefault("malformed", {}).update(bad)
+            r["meta"]["quarantined"] = {"reason": "malformed_record", "shapes": [], "released": None}
         # A FIXED fallback, never time.time(): inventing a timestamp at load made state_digest
         # differ across two opens of identical bytes, so a witness or anchor pinned to such a
         # store could never re-verify. An undated legacy record is honestly undated.
@@ -16755,8 +16787,8 @@ class Inspeximus:
     def _save_cusum(self):
         if self.path:
             try:
-                (self.path.with_name(self.path.name + ".cusum.json")).write_text(
-                    json.dumps(self._cusum, ensure_ascii=False), encoding="utf-8")
+                from ._safewrite import write_atomic                                  # F-24: no link
+                write_atomic(self.path.with_name(self.path.name + ".cusum.json"), json.dumps(self._cusum, ensure_ascii=False))
                 self._sidecar_errors.pop('cusum', None)
             except Exception as e:
                 self._sidecar_errors['cusum'] = f"{type(e).__name__}: {e}"
@@ -16883,7 +16915,8 @@ class Inspeximus:
         if self.path:
             try:
                 _bp = self.path.with_name(self.path.name + ".irrev.json")
-                _bp.write_text(json.dumps(self._irrev, ensure_ascii=False), encoding="utf-8")
+                from ._safewrite import write_atomic                                  # F-24: no link
+                write_atomic(_bp, json.dumps(self._irrev, ensure_ascii=False))
                 self._irrev_sig = Inspeximus._sidecar_sig(_bp)
             except Exception as e:
                 self._sidecar_errors['irrev'] = f"{type(e).__name__}: {e}"
@@ -19190,7 +19223,8 @@ class Inspeximus:
             if self._persist_vectors and getattr(self, "_embedid_path", None) is not None \
                     and self.embed_id is not None:
                 try:
-                    self._embedid_path.write_text(self.embed_id, encoding="utf-8")
+                    from ._safewrite import write_atomic                              # F-24: no link
+                    write_atomic(self._embedid_path, self.embed_id)
                 except Exception as e:
                     self._sidecar_errors['embedid'] = f"{type(e).__name__}: {e}"
             self._last_save = now

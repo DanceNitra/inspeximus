@@ -109,10 +109,8 @@ def _read_sidecar(store) -> set[str]:
 
 def _write_sidecar(store, hashes: set[str]) -> None:
     p = sidecar_path(store)
-    tmp = p + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as fh:
-        json.dump({"format": "inspeximus-mem0-import/1", "imported": sorted(hashes)}, fh, indent=0)
-    os.replace(tmp, p)
+    from ._safewrite import write_atomic            # never through a link (3.16.4, F-24)
+    write_atomic(p, json.dumps({"format": "inspeximus-mem0-import/1", "imported": sorted(hashes)}, indent=0))
 
 
 def _h(identity: str) -> str:
