@@ -625,8 +625,12 @@ def main(argv=None):
                                            "(a store in the snapshot-plus-tail format)")
     rcc.add_argument("--json", action="store_true")
     rcl = rcsub.add_parser("to-legacy", help="write the receipt chain back as the array that every released "
-                                             "version reads, and remove the tail. A downgrade needs it")
+                                             "version reads, and remove the tail. A downgrade needs it. Stop every "
+                                             "server that runs with INSPEXIMUS_RECEIPTS_TAIL=1 first")
     rcl.add_argument("--json", action="store_true")
+    rct = rcsub.add_parser("to-tail", help="convert an array receipt sidecar to the snapshot-plus-tail format and "
+                                           "remove the marker `to-legacy` leaves")
+    rct.add_argument("--json", action="store_true")
 
     rt = sub.add_parser("retire", help="end a key with NO replacement: every active value becomes superseded "
                                        "with the reason on the record and in the receipt chain")
@@ -1644,9 +1648,13 @@ def main(argv=None):
                 print("  !", pr)
         return 1 if res["problems"] else 0
 
-    if a.cmd == "receipts" and a.receipts_cmd in ("compact", "to-legacy"):
+    if a.cmd == "receipts" and a.receipts_cmd in ("compact", "to-legacy", "to-tail"):
         from . import receipts_tail as _rtail
-        res = (_rtail.compact if a.receipts_cmd == "compact" else _rtail.to_legacy)(a.path)
+        try:
+            res = {"compact": _rtail.compact, "to-legacy": _rtail.to_legacy, "to-tail": _rtail.to_tail}[a.receipts_cmd](a.path)
+        except ValueError as exc:
+            print(f"receipts {a.receipts_cmd}: {exc}", file=sys.stderr)
+            return 2
         print(json.dumps(res, ensure_ascii=False) if a.json else
               f"receipts {a.receipts_cmd}: " + ", ".join(f"{k}={v}" for k, v in res.items()))
         return 0

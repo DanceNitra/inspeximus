@@ -313,10 +313,17 @@ bytes after.
 The snapshot becomes a JSON object, `{"kind": "inspeximus.receipts/2", ...}`, and no released version can extend
 it: 3.16.1, 3.16.2, and 3.16.3 fail on their first receipted write and leave both files unchanged, and
 `verify_writes()` on the newer version names every record such a write left without a receipt. A store in this format
-stays in it, with or without the variable. Each receipted call of an older server saves its record before it fails, so
-restart long-running older servers before the first write that converts a store. To return a store to the array that
-older versions read, run
-`inspeximus receipts to-legacy`. `inspeximus receipts compact` rewrites the snapshot and empties the tail. A damaged
+stays in it when a handle opens it later, with or without the variable. Each receipted call of an older server saves its
+record before it fails, so restart long-running older servers before the first write that converts a store. An agent
+that retries the failed call writes an unkeyed record twice, because the first call saved it. To bind the records an
+older server left without a receipt, restart it on 3.17 or later and run `recommit(ids=[...])` with the ids
+`verify_writes()` names.
+
+To downgrade, stop every server that runs with `INSPEXIMUS_RECEIPTS_TAIL=1`, run `inspeximus receipts to-legacy`, then
+start the older version. `to-legacy` writes the array that older versions read, removes the tail, and leaves
+`<store>.receipts.legacy`. While that marker exists the variable does not convert the store again, so a server that still
+has it set cannot undo the downgrade; `inspeximus receipts to-tail` removes the marker and converts. `inspeximus receipts
+compact` rewrites the snapshot of a store that is already in the tail format and empties the tail; on an array it refuses. A damaged
 pair is named by `verify_writes()` and is never written over. A last line that was cut by a crash is reported as
 `receipts_torn_tail` and is not a problem while the outside head is not ahead of the last good line.
 

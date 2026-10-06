@@ -35,6 +35,21 @@ TAIL_SUFFIX = ".tail.jsonl"          #: appended to `<store>.receipts` to name t
 #: 16 MB chain is about 32 KB per write, against 16 MB per write for the array.
 COMPACT_AT = 500
 
+#: `to_legacy` leaves this file beside the store. While it exists, the switch (`INSPEXIMUS_RECEIPTS_TAIL=1`) does not
+#: convert the store again: a long-lived server that still has the switch on would otherwise undo the downgrade at its
+#: next write. `to_tail` removes it.
+MARKER_SUFFIX = ".receipts.legacy"
+
+
+def marker_path(receipts_path) -> Path:
+    """The downgrade marker beside a snapshot path (`<store>.receipts.json` -> `<store>.receipts.legacy`)."""
+    p = str(receipts_path)
+    return Path((p[:-len(".json")] if p.endswith(".json") else p) + ".legacy")
+
+
+def marker_exists(receipts_path) -> bool:
+    return marker_path(receipts_path).exists()
+
 
 def tail_path(receipts_path) -> Path:
     """The tail beside a snapshot path (`<store>.receipts.json` -> `<store>.receipts.tail.jsonl`)."""
@@ -262,6 +277,11 @@ def compact(store_path) -> dict:
     before = m._rc_snap_n
     with _StoreLock(m._receipts_path):
         m._reconcile_receipts_with_disk()
+        if m._rc_mode != "tail":
+            # Converting is the switch's job (INSPEXIMUS_RECEIPTS_TAIL=1), or `to_tail`'s. A compaction that converts
+            # would leave a store that no released version can extend, without anyone having asked for that.
+            raise ValueError("this store's receipt sidecar is the array, not the snapshot-plus-tail format, so there "
+                             "is nothing to compact; `inspeximus receipts to-tail` converts it. Nothing was changed.")
         if m._rc_mode == "tail" and m._rc_problems:
             from .core import SidecarMalformed
             raise SidecarMalformed(list(m._rc_problems))
@@ -285,8 +305,31 @@ def to_legacy(store_path) -> dict:
             raise SidecarMalformed(list(res["problems"]), "nothing was changed")
         if res["mode"] == "tail":
             _durable_replace(path, _dump_chain(res["entries"]))
+        _durable_replace(marker_path(path), json.dumps({"kind": "inspeximus.receipts.legacy/1", "at": time.time()}))
         try:
             os.remove(str(tail_path(path)))
         except FileNotFoundError:
             pass
     return {"mode_before": res["mode"], "entries": len(res["entries"])}
+
+
+def to_tail(store_path) -> dict:
+    """Convert an array store to the snapshot-plus-tail format and remove the downgrade marker. The explicit form of
+    what `INSPEXIMUS_RECEIPTS_TAIL=1` does at the next receipted write."""
+    from .core import SidecarMalformed, _StoreLock
+    m = _open(store_path)
+    path = m._receipts_path
+    with _StoreLock(path):
+        m._reconcile_receipts_with_disk()
+        if m._rc_mode == "tail" and m._rc_problems:
+            raise SidecarMalformed(list(m._rc_problems), "nothing was changed")
+        try:
+            os.remove(str(marker_path(path)))
+        except FileNotFoundError:
+            pass
+        was = m._rc_mode
+        if was != "tail":
+            m._compact_receipts_locked(m.__dict__.setdefault("_receipt_json", {}))
+            m._receipts_sig = m._receipts_disk_sig()
+    m._record_head()
+    return {"mode_before": was, "entries": len(m._receipts)}

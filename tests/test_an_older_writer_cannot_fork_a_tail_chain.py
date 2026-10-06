@@ -214,9 +214,12 @@ def test_to_legacy_gives_older_writers_their_array_and_a_new_writer_converts_aga
     assert [x["hash"] for x in json.load(open(p + ".receipts.json"))][:6] == chain
     assert Inspeximus(p, receipts=True).verify_writes()[0]
     monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    Inspeximus(p, receipts=True).remember("with the switch on and the downgrade marker present", key="k-marked")
+    assert _pair(p)["mode"] == "list", "the marker keeps the switch from converting the store again"
+    rt.to_tail(p)
     m2 = Inspeximus(p, receipts=True)
     m2.remember("the new writer again", key="k-new")
     m2.flush()
     res = _pair(p)
-    assert res["mode"] == "tail" and len(res["entries"]) == 8 and not res["problems"]
+    assert res["mode"] == "tail" and len(res["entries"]) == 9 and not res["problems"]
     assert Inspeximus(p, receipts=True).verify_writes()[0]

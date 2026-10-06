@@ -5190,7 +5190,7 @@ class Inspeximus:
         if not path:
             return
         cache = self.__dict__.setdefault("_receipt_json", {})
-        tail = (self._rc_mode == "tail") or _receipts_tail_on()
+        tail = (self._rc_mode == "tail") or (_receipts_tail_on() and not _rtail.marker_exists(path))
         if not tail:
             Inspeximus._atomic_write(path, _dump_chain_cached(self._receipts, cache))
             self._receipts_sig = self._receipts_disk_sig()
@@ -7901,7 +7901,11 @@ class Inspeximus:
                     f"{len(_uncovered)} record(s) are covered by NO write receipt, so nothing here "
                     f"vouches for them: {_uncovered[:5]}{' ...' if len(_uncovered) > 5 else ''}. They "
                     f"were inserted out of band, or written while receipts were off. Pass "
-                    f"coverage_strict=False if this store enabled receipts part-way.")
+                    f"coverage_strict=False if this store enabled receipts part-way."
+                    + (" This store is in the snapshot-plus-tail receipt format, which a server on an older version "
+                       "than 3.17 cannot extend: such a server saves the record, then fails at the receipt, so it may "
+                       "have written these. Restart it on 3.17 or later, then run recommit(ids=[...]) with these ids."
+                       if self._rc_mode == "tail" else ""))
 
         # A RECORD A LATER WRITE RETIRED MUST NOT BE ACTIVE. This is the half `status_sha256` cannot
         # cover: it folds `active` and `superseded` into one serving class on purpose, so SWAPPING the
@@ -10764,7 +10768,7 @@ class Inspeximus:
     #: The store's sidecars, their archives, salts and temp files, and the lock. None is a copy of the
     #: records, so none is a sibling an erasure has to account for.
     _SIDECAR_RE = re.compile(r"(\.(receipts|tombstones|objections|irrev|cusum|partitions|actions|archive)\.json"
-                             r"(\.archive\.\d{4}\.json)?(\.salt)?|\.receipts\.tail\.jsonl|\.salt|\.embedid|\.app|\.lock)"
+                             r"(\.archive\.\d{4}\.json)?(\.salt)?|\.receipts\.tail\.jsonl|\.receipts\.legacy|\.salt|\.embedid|\.app|\.lock)"
                              r"(\.tmp\.\d+|\.[a-z0-9_]{8}\.tmp)?")
 
     def _store_siblings(self) -> dict:

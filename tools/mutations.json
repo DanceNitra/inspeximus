@@ -8168,8 +8168,8 @@
  {
   "name": "a store in the tail format is rewritten as an array when the switch is off",
   "file": "inspeximus/core.py",
-  "old": "        tail = (self._rc_mode == \"tail\") or _receipts_tail_on()\n",
-  "new": "        tail = _receipts_tail_on()\n",
+  "old": "        tail = (self._rc_mode == \"tail\") or (_receipts_tail_on() and not _rtail.marker_exists(path))\n",
+  "new": "        tail = (_receipts_tail_on() and not _rtail.marker_exists(path))\n",
   "tests": [
    "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
   ]
@@ -8177,8 +8177,8 @@
  {
   "name": "the tail is not a sidecar to the sibling scan",
   "file": "inspeximus/core.py",
-  "old": "|\\.receipts\\.tail\\.jsonl|\\.salt|",
-  "new": "|\\.salt|",
+  "old": "|\\.receipts\\.tail\\.jsonl|\\.receipts\\.legacy|\\.salt|",
+  "new": "|\\.receipts\\.legacy|\\.salt|",
   "tests": [
    "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
   ]
@@ -8271,6 +8271,51 @@
   "new": "    if known is not None and sig is not None:",
   "tests": [
    "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "compact converts a store that is still the array",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "        if m._rc_mode != \"tail\":\n            # Converting is the switch's job",
+  "new": "        if False:\n            # Converting is the switch's job",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "to-legacy leaves no downgrade marker",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "        _durable_replace(marker_path(path), json.dumps({\"kind\": \"inspeximus.receipts.legacy/1\", \"at\": time.time()}))\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "the switch converts a store that a downgrade marked",
+  "file": "inspeximus/core.py",
+  "old": "(_receipts_tail_on() and not _rtail.marker_exists(path))",
+  "new": "_receipts_tail_on()",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "verify_writes does not name an older version for records without a receipt on a tail store",
+  "file": "inspeximus/core.py",
+  "old": "                       if self._rc_mode == \"tail\" else \"\"))",
+  "new": "                       if False else \"\"))",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "the downgrade marker is listed as an unknown copy beside the store",
+  "file": "inspeximus/core.py",
+  "old": "|\\.receipts\\.legacy|",
+  "new": "|",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
   ]
  }
 ]
