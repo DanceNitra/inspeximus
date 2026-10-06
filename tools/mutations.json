@@ -8236,5 +8236,23 @@
   "tests": [
    "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
   ]
+ },
+ {
+  "name": "the snapshot is read before the tail, so a compaction between the reads reads as a snapshot older than its tail",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    tail_data, tail_err = _read_bytes(tail)\n    try:\n        raw = json.loads(_read_bytes(snapshot, required=True)[0].decode(\"utf-8\"))\n    except FileNotFoundError:\n        return out\n    except Exception as e:                                     # noqa: BLE001\n        out[\"problems\"].append(f\"{Path(snapshot).name} is not JSON ({type(e).__name__})\")\n        return out\n",
+  "new": "    try:\n        raw = json.loads(_read_bytes(snapshot, required=True)[0].decode(\"utf-8\"))\n    except FileNotFoundError:\n        return out\n    except Exception as e:                                     # noqa: BLE001\n        out[\"problems\"].append(f\"{Path(snapshot).name} is not JSON ({type(e).__name__})\")\n        return out\n    tail_data, tail_err = _read_bytes(tail)\n",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "a batch as long as the tail limit is appended instead of written as one snapshot",
+  "file": "inspeximus/core.py",
+  "old": "                    or len(mine) - self._rc_disk_n >= _rtail.COMPACT_AT):",
+  "new": "                    or False):",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
  }
 ]

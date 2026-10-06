@@ -198,3 +198,44 @@ def test_concurrent_writers_lose_no_receipt_across_a_compaction(tmp_path, monkey
     ok, problems = m.verify_writes()
     assert ok, problems
     assert _pair(p)["snap_n"] > 1, "a compaction happened among the appends"
+
+
+def test_a_batch_as_long_as_the_tail_limit_is_one_snapshot_write_and_no_tail_lines(tmp_path, monkeypatch):
+    """`recommit` and the backfill emit many receipts and write them once. At the tail limit that is one snapshot
+    write, not an append that the next write would compact."""
+    monkeypatch.setattr(rt, "COMPACT_AT", 5)
+    p = str(tmp_path / "s.json")
+    m = Inspeximus(p)                                           # receipts off: eight records with no receipt
+    for i in range(8):
+        m.remember(f"fact number {i}", key=f"k{i}")
+    m.flush()
+    w = _Work(monkeypatch)
+    m.enable_receipts(backfill_genesis=True, reason="test")
+    assert w.replaces == 1 and w.appends == 0, (w.replaces, w.appends)
+    res = _pair(p)
+    assert res["snap_n"] == 8 == len(res["entries"]) and not res["problems"]
+    assert Inspeximus(p, receipts=True).verify_writes()[0]
+
+
+def test_a_reader_that_meets_a_compaction_between_its_two_reads_finds_no_problem(tmp_path, monkeypatch):
+    """The compaction replaces the snapshot, then the tail. The tail is read first, so a compaction that lands
+    between the two reads gives an older tail with a newer snapshot, which reads as consistent."""
+    p = str(tmp_path / "s.json")
+    m = Inspeximus(p, receipts=True)
+    for i in range(5):
+        m.remember(f"fact number {i}", key=f"k{i}")
+    m.flush()
+    assert _pair(p)["snap_n"] == 1
+    real, fired = rt._read_bytes, []
+
+    def compact_after_the_first_read(path, **k):
+        out = real(path, **k)
+        if not fired:
+            fired.append(1)
+            monkeypatch.setattr(rt, "_read_bytes", real)
+            rt.compact(p)
+        return out
+
+    monkeypatch.setattr(rt, "_read_bytes", compact_after_the_first_read)
+    res = rt.read(p + ".receipts.json", rt.tail_path(p + ".receipts.json"), core._GENESIS)
+    assert fired and not res["problems"] and len(res["entries"]) == 5, res["problems"]

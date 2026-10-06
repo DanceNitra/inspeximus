@@ -5183,9 +5183,20 @@ class Inspeximus:
                     list(self._rc_problems),
                     "restore the receipt files from a backup, or run `inspeximus receipts --to-legacy` on a copy; "
                     "nothing was written")
+            if self._rc_mode == "tail" and self._rc_disk_n > len(self._receipts):
+                # This handle's list is shorter than the pair it last read (a rolled-back batch). Re-read; never
+                # write a shorter chain over a longer one.
+                self._receipts_sig = None
+                self._reconcile_receipts_with_disk()
+                if self._rc_disk_n > len(self._receipts):
+                    raise SidecarMalformed([f"the receipt pair holds {self._rc_disk_n} receipts and this handle "
+                                            f"{len(self._receipts)}"], "reopen the store; nothing was written")
             mine = self._receipts
-            if self._rc_mode != "tail" or not self._rc_base_ok or self._rc_disk_n > len(mine):
-                self._compact_receipts_locked(cache)               # conversion, or a pair that cannot be extended
+            if (self._rc_mode != "tail" or not self._rc_base_ok
+                    or len(mine) - self._rc_disk_n >= _rtail.COMPACT_AT):
+                # Conversion, a pair that cannot be extended, or a batch (recommit, backfill) as long as the tail may
+                # grow: one snapshot write instead of an append that the next write would compact.
+                self._compact_receipts_locked(cache)
             else:
                 pending = mine[self._rc_disk_n:]
                 if pending:

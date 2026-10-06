@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from pathlib import Path
 
 SNAPSHOT_KIND = "inspeximus.receipts/2"
@@ -75,8 +76,13 @@ def read(snapshot, tail, genesis: str) -> dict:
     """
     out = {"entries": [], "mode": None, "snap_n": 0, "disk_n": 0, "good_off": 0, "torn": False,
            "problems": [], "base_ok": True}
+    # THE TAIL IS READ BEFORE THE SNAPSHOT. A compaction replaces the snapshot first and the tail second, so a
+    # reader that takes the tail first and the snapshot after can see an older tail with a newer snapshot (the
+    # skip rule below reads that), and never a newer tail with an older snapshot, which would read as a snapshot
+    # older than its tail.
+    tail_data, tail_err = _read_bytes(tail)
     try:
-        raw = json.loads(Path(snapshot).read_text(encoding="utf-8"))
+        raw = json.loads(_read_bytes(snapshot, required=True)[0].decode("utf-8"))
     except FileNotFoundError:
         return out
     except Exception as e:                                     # noqa: BLE001
@@ -95,14 +101,12 @@ def read(snapshot, tail, genesis: str) -> dict:
         out["problems"].append(f"{snap_name} says n={raw.get('n')} and holds {len(entries)} entries")
     if entries and raw.get("tip") != entries[-1].get("hash"):
         out["problems"].append(f"{snap_name} tip does not match its last entry")
-    try:
-        data = Path(tail).read_bytes()
-    except FileNotFoundError:
+    if tail_err is not None:
+        out["problems"].append(f"{Path(tail).name} could not be read ({tail_err})")
         return out
-    except OSError as e:
-        out["problems"].append(f"{Path(tail).name} could not be read ({type(e).__name__})")
+    if tail_data is None:
         return out
-    pieces = data.split(b"\n")
+    pieces = tail_data.split(b"\n")
     last = pieces.pop()                                        # b"" when the file ends in a newline
     out["torn"] = bool(last)
     off = 0
@@ -158,6 +162,25 @@ def read(snapshot, tail, genesis: str) -> dict:
         out["good_off"] = off
     out["disk_n"] = len(entries)
     return out
+
+
+def _read_bytes(path, required: bool = False, attempts: int = 40):
+    """(bytes or None when the file does not exist, error name or None). Retries a PermissionError, which Windows
+    raises while a writer's replace holds the name (`core._durable_replace` retries the other side)."""
+    last = None
+    for i in range(attempts):
+        try:
+            return Path(path).read_bytes(), None
+        except FileNotFoundError:
+            if required:
+                raise
+            return None, None
+        except PermissionError as e:
+            last = e
+            time.sleep(0.005 * (i + 1))
+        except OSError as e:
+            return None, type(e).__name__
+    return None, type(last).__name__
 
 
 def read_entries(snapshot) -> list:
