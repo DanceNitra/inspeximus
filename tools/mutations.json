@@ -7391,8 +7391,8 @@
  {
   "name": "B25-R1: the log head is written before the log",
   "file": "inspeximus/archive.py",
-  "old": "    tmp.write_text(json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\",\n                   encoding=\"utf-8\")\n    os.replace(tmp, p)\n",
-  "new": "    _write_head(store_path, entries)\n    tmp.write_text(json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\",\n                   encoding=\"utf-8\")\n    os.replace(tmp, p)\n",
+  "old": "    write_atomic(p, json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\")\n",
+  "new": "    _write_head(store_path, entries)\n    write_atomic(p, json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\")\n",
   "tests": [
    "tests/test_audit_b_archive_kill_points.py"
   ]
@@ -8427,6 +8427,235 @@
   "new": "    except ValueError:\n        return None\n",
   "tests": [
    "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "a link at a write target is written through",
+  "file": "inspeximus/_safewrite.py",
+  "old": "    if is_link(path):\n        raise LinkRefused(errno.ELOOP, \"inspeximus does not write through a link\", str(path))\n",
+  "new": "    if False:\n        raise LinkRefused(errno.ELOOP, \"inspeximus does not write through a link\", str(path))\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ]
+ },
+ {
+  "name": "a junction is not seen as a link",
+  "file": "inspeximus/_safewrite.py",
+  "old": "    return stat.S_ISLNK(st.st_mode) or bool(getattr(st, \"st_file_attributes\", 0) & _REPARSE_POINT)\n",
+  "new": "    return stat.S_ISLNK(st.st_mode)\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "win32"
+ },
+ {
+  "name": "the archive run's log is opened through a link",
+  "file": "inspeximus/claude_code.py",
+  "old": "            log = open_for_write(path + \".archive-auto.log\")\n",
+  "new": "            log = open(path + \".archive-auto.log\", \"w\", encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the secrets notice is written through a link",
+  "file": "inspeximus/claude_code.py",
+  "old": "        write_atomic(p, json.dumps({\"rev\": _SECRETS_NOTICE_REV, \"found\": n,\n",
+  "new": "        (lambda p, s: open(p, \"w\", encoding=\"utf-8\").write(s))(p, json.dumps({\"rev\": _SECRETS_NOTICE_REV, \"found\": n,\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the nudge counter is written through a link",
+  "file": "inspeximus/claude_code.py",
+  "old": "        st[\"writes\"] = int(st.get(\"writes\", 0)) + 1\n        __import__(\"inspeximus._safewrite\", fromlist=[\"x\"]).write_atomic(_nudge_path(cwd), json.dumps(st))\n",
+  "new": "        st[\"writes\"] = int(st.get(\"writes\", 0)) + 1\n        open(_nudge_path(cwd), \"w\", encoding=\"utf-8\").write(json.dumps(st))\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the cusum sidecar is written through a link",
+  "file": "inspeximus/core.py",
+  "old": "                write_atomic(self.path.with_name(self.path.name + \".cusum.json\"), json.dumps(self._cusum, ensure_ascii=False))\n",
+  "new": "                self.path.with_name(self.path.name + \".cusum.json\").write_text(json.dumps(self._cusum, ensure_ascii=False), encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the irreversible-budget sidecar is written through a link",
+  "file": "inspeximus/core.py",
+  "old": "                write_atomic(_bp, json.dumps(self._irrev, ensure_ascii=False))\n",
+  "new": "                _bp.write_text(json.dumps(self._irrev, ensure_ascii=False), encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the embed recipe sidecar is written through a link",
+  "file": "inspeximus/core.py",
+  "old": "                    write_atomic(self._embedid_path, self.embed_id)\n",
+  "new": "                    self._embedid_path.write_text(self.embed_id, encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the archive log is written through a link",
+  "file": "inspeximus/archive.py",
+  "old": "    write_atomic(p, json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\")\n",
+  "new": "    p.write_text(json.dumps({\"kind\": LOG_KIND, \"entries\": entries}, indent=1, ensure_ascii=False) + \"\\n\", encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the partitions registry is written through a link",
+  "file": "inspeximus/partitions.py",
+  "old": "        write_atomic(self.path, json.dumps(self._reg, indent=1, ensure_ascii=False))\n",
+  "new": "        self.path.write_text(json.dumps(self._reg, indent=1, ensure_ascii=False), encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the action ledger is written through a link",
+  "file": "inspeximus/actions.py",
+  "old": "        write_atomic(self.path, json.dumps(body, indent=1, ensure_ascii=False))\n",
+  "new": "        self.path.write_text(json.dumps(body, indent=1, ensure_ascii=False), encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the ledger salt is written through a link",
+  "file": "inspeximus/actions.py",
+  "old": "                write_atomic(p, self._salt.hex())\n",
+  "new": "                p.write_text(self._salt.hex(), encoding=\"utf-8\")\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the import sidecar is written through a link",
+  "file": "inspeximus/migrate.py",
+  "old": "    write_atomic(p, json.dumps({\"format\": \"inspeximus-mem0-import/1\", \"imported\": sorted(hashes)}, indent=0))\n",
+  "new": "    open(p, \"w\", encoding=\"utf-8\").write(json.dumps({\"format\": \"inspeximus-mem0-import/1\", \"imported\": sorted(hashes)}, indent=0))\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "the update cache is written through a link",
+  "file": "inspeximus/_update.py",
+  "old": "            write_atomic(cache, json.dumps({\"checked_at\": time.time(), \"latest\": latest}))\n",
+  "new": "            open(cache, \"w\", encoding=\"utf-8\").write(json.dumps({\"checked_at\": time.time(), \"latest\": latest}))\n",
+  "tests": [
+   "tests/test_3164_f24_no_write_follows_a_link.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "a record whose meta is not an object is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if not isinstance(_v, dict):\n            bad = {\"meta\": _v}\n",
+  "new": "        if False:\n            bad = {\"meta\": _v}\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose text is not a string is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if _v is not None and not isinstance(_v, str):\n            bad = dict(bad or {}, text=_v)\n",
+  "new": "        if False:\n            bad = dict(bad or {}, text=_v)\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose tags are not a list are kept as they are",
+  "file": "inspeximus/core.py",
+  "old": "        if not isinstance(r[\"tags\"], list):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose links are not a list are kept as they are",
+  "file": "inspeximus/core.py",
+  "old": "        if not isinstance(r[\"links\"], list):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose value is not a number is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if not isinstance(_v, (int, float)):\n            bad = dict(bad or {}, value=_v)\n",
+  "new": "        if False:\n            bad = dict(bad or {}, value=_v)\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose key is not a string is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if _v is not None and not isinstance(_v, str):\n            bad = dict(bad or {}, key=_v)\n",
+  "new": "        if False:\n            bad = dict(bad or {}, key=_v)\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a repaired record is served instead of withheld",
+  "file": "inspeximus/core.py",
+  "old": "            r[\"meta\"][\"quarantined\"] = {\"reason\": \"malformed_record\", \"shapes\": [], \"released\": None}\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "the pid write replaces a finished run's record",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if isinstance(cur, dict) and cur.get(\"last_attempt\") == record[\"last_attempt\"]:\n                record = cur\n",
+  "new": "            if False:\n                record = cur\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "a finished run does not write its lost mark again",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if not st.get(\"done\"):\n                st.update(mark)\n",
+  "new": "            if False:\n                st.update(mark)\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "a run waits for a pid on a stale record",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if st.get(\"done\") and (\"pid\" in st or not fresh):\n",
+  "new": "            if st.get(\"done\") and \"pid\" in st:\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
   ]
  }
 ]

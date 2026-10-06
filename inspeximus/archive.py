@@ -184,10 +184,8 @@ def _sig_problem(obj: dict, what: str, expected_pubkey: str | None = None) -> st
 def _write_log(target, entries: list) -> None:
     store_path = _path_of(target)
     p = log_path(store_path)
-    tmp = p.with_name(p.name + ".tmp.%d" % os.getpid())
-    tmp.write_text(json.dumps({"kind": LOG_KIND, "entries": entries}, indent=1, ensure_ascii=False) + "\n",
-                   encoding="utf-8")
-    os.replace(tmp, p)
+    from ._safewrite import write_atomic        # never through a link the store's directory holds (3.16.4, F-24)
+    write_atomic(p, json.dumps({"kind": LOG_KIND, "entries": entries}, indent=1, ensure_ascii=False) + "\n")
     # The log first, then its head: a crash between the two leaves a log LONGER than its head, which
     # still verifies, never a head that claims entries the log does not have.
     _write_head(store_path, entries)

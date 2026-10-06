@@ -62,13 +62,23 @@ def _mcp_remember_decision(launch):
     async def run():
         params = StdioServerParameters(command=sys.executable, args=["-m", "inspeximus.mcp_server"],
                                        env=env, cwd=str(launch))
-        async with stdio_client(params) as (r, w):
+        # A REAL FILE FOR THE SERVER'S STDERR. `stdio_client` takes `errlog=sys.stderr` as a default bound when
+        # mcp.client.stdio is first imported; under xdist that import can happen inside a captured test, where
+        # sys.stderr has no fileno, and the start raised io.UnsupportedOperation (AUDIT-B, 3.16.4, -n 2).
+        errlog = open(launch / "mcp_server_stderr.log", "w", encoding="utf-8")
+        stack.append(errlog)
+        async with stdio_client(params, errlog=errlog) as (r, w):
             async with ClientSession(r, w) as s:
                 await s.initialize()
                 await s.call_tool("remember_decision", {
                     "decision": "Use tabs, not spaces, in every Python file.",
                     "because": "the linter config expects tabs", "topic": "indentation"})
-    asyncio.run(run())
+    stack = []
+    try:
+        asyncio.run(run())
+    finally:
+        for fh in stack:
+            fh.close()
 
 
 @pytest.mark.parametrize("session_one", ["no hooks", "hooks with a tool capture", "no SessionEnd"])

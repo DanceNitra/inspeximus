@@ -75,7 +75,8 @@ def check_for_update(current_version, cache_dir=None, timeout=1.5):
 
         # Stamp the attempt regardless, so a flaky network doesn't retry every call for a day.
         try:
-            _Path(cache).write_text(json.dumps({"checked_at": time.time(), "latest": latest}), encoding="utf-8")
+            from ._safewrite import write_atomic        # the cache can sit in a project: no link (3.16.4, F-24)
+            write_atomic(cache, json.dumps({"checked_at": time.time(), "latest": latest}))
         except Exception:
             pass
 

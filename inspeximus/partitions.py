@@ -126,9 +126,8 @@ class Partitions:
                 pass
 
     def _save(self):
-        tmp = self.path.with_name(self.path.name + ".tmp.%d" % os.getpid())
-        tmp.write_text(json.dumps(self._reg, indent=1, ensure_ascii=False), encoding="utf-8")
-        os.replace(tmp, self.path)
+        from ._safewrite import write_atomic        # never through a link (3.16.4, F-24)
+        write_atomic(self.path, json.dumps(self._reg, indent=1, ensure_ascii=False))
 
     def _get(self, name: str) -> dict:
         p = self._reg["partitions"].get(name)

@@ -376,10 +376,8 @@ def merge_fragments(cwd=None, apply=False):
             bak = dest + ".bak-merge-" + _time.strftime("%Y%m%d-%H%M%S")
             _shutil.copy2(dest, bak)
             report["backup"] = bak
-        tmp = dest + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            _json.dump(merged, f, ensure_ascii=False)
-        os.replace(tmp, dest)
+        from ._safewrite import write_atomic                 # never through a link (3.16.4, F-24)
+        write_atomic(dest, _json.dumps(merged, ensure_ascii=False))
         report["applied"] = True
     return report
 
@@ -674,21 +672,42 @@ def _pid_alive(pid) -> bool:
         return False
 
 
+#: How long a finished archive run waits for the hook's pid write, so its `done` mark survives it.
+ARCHIVE_MARK_WAIT_S = 10.0
+
+
 def _mark_archive_run_done(path, result) -> None:
     """The `--maintain` run records that it finished, so the next policy check counts the interval normally."""
     state = path + ".archive-auto.json"
-    try:
-        with open(state, encoding="utf-8") as fh:
-            st = json.load(fh)
-        if not isinstance(st, dict):
+    import time as _t
+    from ._safewrite import write_atomic                     # never through a link (3.16.4, F-24)
+    # THE MARK SURVIVES THE PARENT'S PID WRITE (3.16.4, AUDIT-B). The hook writes the attempt record once more after the
+    # start, to add the pid. A run that finished first lost its `done` to that write, looked dead, and was started
+    # again after 60 s. The parent now merges the pid into what is on disk; a mark written between its read and its
+    # write is still lost, so the run checks until the pid has landed (the parent's only later write) and writes the
+    # mark again if it is gone. Bounded at 10 s: a parent that never writes the pid leaves the mark as written.
+    mark = {"done": _t.time(), "result": "ok" if result else "failed"}
+    deadline = _t.time() + ARCHIVE_MARK_WAIT_S
+    while True:
+        try:
+            with open(state, encoding="utf-8") as fh:
+                st = json.load(fh)
+            if not isinstance(st, dict):
+                return
+            try:
+                fresh = _t.time() - float(st.get("last_attempt") or 0) < 30.0    # a hook started this run just now
+            except (TypeError, ValueError):
+                fresh = False
+            if st.get("done") and ("pid" in st or not fresh):
+                return
+            if not st.get("done"):
+                st.update(mark)
+                write_atomic(state, json.dumps(st))
+        except (OSError, ValueError):
             return
-        st.update(done=__import__("time").time(), result="ok" if result else "failed")
-        tmp = state + ".tmp.%d" % os.getpid()
-        with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump(st, fh)
-        os.replace(tmp, state)
-    except (OSError, ValueError):
-        pass
+        if _t.time() >= deadline:
+            return
+        _t.sleep(0.2)
 
 
 def maybe_archive_in_background(cwd=None) -> str:
@@ -729,12 +748,12 @@ def maybe_archive_in_background(cwd=None) -> str:
             dead = isinstance(pid, int) and not st.get("done") and not _pid_alive(pid)
             if not (dead and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):
                 return "recent"
-        tmp = state + ".tmp.%d" % os.getpid()
+        # NOTHING HERE IS WRITTEN THROUGH A LINK (3.16.4, AUDIT-A F-24). A repository controls this directory, and a
+        # link it ships at the state or log name made `open(name, "w")` truncate the file the link names.
+        from ._safewrite import LinkRefused, open_for_write, write_atomic
         record = {"last_attempt": now, "hot_bytes": size, "policy": {k: pol[k] for k in
                   ("trigger_mb", "older_than_days", "classes")}}
-        with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump(record, fh)
-        os.replace(tmp, state)
+        write_atomic(state, json.dumps(record))
         # NO WORKING DIRECTORY ON THE IMPORT PATH (3.16.4, AUDIT-A F-15, F-22): the run starts in the repository,
         # and `python -m` would import a repository's own `inspeximus/` first. The shim drops '' and '.', keeps the
         # user site (which -I dropped), and puts the package this process imported first, so the run is the same
@@ -749,7 +768,10 @@ def maybe_archive_in_background(cwd=None) -> str:
             argv += ["--class", cl]
         if pol["allow_git_tracked"]:
             argv.append("--allow-git-tracked")     # a store inside a git work tree: the user opted in
-        log = open(path + ".archive-auto.log", "w", encoding="utf-8")
+        try:
+            log = open_for_write(path + ".archive-auto.log")
+        except LinkRefused:
+            log = subprocess.DEVNULL                         # the run still starts; its output goes nowhere
         kw = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
               "close_fds": True}
         if os.name == "nt":
@@ -766,11 +788,19 @@ def maybe_archive_in_background(cwd=None) -> str:
             if os.name != "nt":
                 raise
             proc = subprocess.Popen(argv, **kw)
-        log.close()
+        if log is not subprocess.DEVNULL:
+            log.close()
+        # MERGED, NEVER OVER A FINISHED RUN'S MARK (3.16.4, AUDIT-B): a fast run has written `done` and `result` by
+        # now, and writing `record` over it made a finished run look dead (see _mark_archive_run_done).
+        try:
+            with open(state, encoding="utf-8") as fh:
+                cur = json.load(fh)
+            if isinstance(cur, dict) and cur.get("last_attempt") == record["last_attempt"]:
+                record = cur
+        except (OSError, ValueError):
+            pass
         record["pid"] = getattr(proc, "pid", None)
-        with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump(record, fh)
-        os.replace(tmp, state)
+        write_atomic(state, json.dumps(record))
         return "started"
     except Exception:                                           # noqa: BLE001
         return "failed"
@@ -864,9 +894,9 @@ def _secrets_notice(cwd, m):
     except Exception:
         return None
     try:
-        with open(p, "w", encoding="utf-8") as fh:
-            json.dump({"rev": _SECRETS_NOTICE_REV, "found": n,
-                       "at": datetime.datetime.now().isoformat(timespec="seconds")}, fh)
+        from ._safewrite import write_atomic                 # never through a link (3.16.4, F-24)
+        write_atomic(p, json.dumps({"rev": _SECRETS_NOTICE_REV, "found": n,
+                                    "at": datetime.datetime.now().isoformat(timespec="seconds")}))
     except Exception:
         return None                          # no marker, no notice: never announce it every turn
     if not n:
@@ -939,7 +969,7 @@ def _bump_writes(cwd):
     try:
         st = _nudge_state(cwd)
         st["writes"] = int(st.get("writes", 0)) + 1
-        _Path(_nudge_path(cwd)).write_text(json.dumps(st), encoding="utf-8")
+        __import__("inspeximus._safewrite", fromlist=["x"]).write_atomic(_nudge_path(cwd), json.dumps(st))
     except Exception:
         pass
 
@@ -969,7 +999,7 @@ def _star_ask(cwd):
             "find it, and it would genuinely make my day. Thank you so much! https://github.com/DanceNitra/inspeximus\n"
             "(you'll only ever see this once; silence it anytime with INSPEXIMUS_NO_NUDGE=1)")
         st["shown"] = True
-        _Path(_nudge_path(cwd)).write_text(json.dumps(st), encoding="utf-8")
+        __import__("inspeximus._safewrite", fromlist=["x"]).write_atomic(_nudge_path(cwd), json.dumps(st))
         return text
     except Exception:
         return None

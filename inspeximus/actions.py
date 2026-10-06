@@ -383,7 +383,8 @@ class ActionLedger:
                     f"one included. Restore the salt file beside the ledger.")
             else:
                 self._salt = os.urandom(32)
-                p.write_text(self._salt.hex(), encoding="utf-8")
+                from ._safewrite import write_atomic    # never through a link (3.16.4, F-24)
+                write_atomic(p, self._salt.hex())
         return self._salt
 
     # ----------------------------------------------------------------- persistence
@@ -447,10 +448,9 @@ class ActionLedger:
 
     def _save(self) -> None:
         self._refuse_if_unreadable()               # the backstop; every writer checks before it mutates
-        tmp = self.path.with_name(self.path.name + ".tmp.%d" % os.getpid())
+        from ._safewrite import write_atomic        # never through a link (3.16.4, F-24)
         body = ([self._checkpoint] if self._checkpoint else []) + self._entries
-        tmp.write_text(json.dumps(body, indent=1, ensure_ascii=False), encoding="utf-8")
-        os.replace(tmp, self.path)
+        write_atomic(self.path, json.dumps(body, indent=1, ensure_ascii=False))
         self._sig = self._stat_sig()
 
     @property
@@ -2178,9 +2178,8 @@ class ActionLedger:
             if arc.read_bytes() != raw:
                 raise FileExistsError(f"{arc} already exists with different content; refusing to overwrite an archive")
         else:
-            tmp = arc.with_name(arc.name + ".tmp.%d" % os.getpid())
-            tmp.write_bytes(raw)
-            os.replace(tmp, arc)
+            from ._safewrite import write_atomic    # never through a link (3.16.4, F-24)
+            write_atomic(arc, raw)
         cp: dict = {
             "v": LEDGER_VERSION,
             "kind": "checkpoint",
