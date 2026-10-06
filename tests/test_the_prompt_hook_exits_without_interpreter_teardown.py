@@ -68,6 +68,7 @@ def _event(proj):
 
 def _run(proj, mode, env_extra=None, stdout=subprocess.PIPE):
     env = {**os.environ, "PYTHONPATH": ROOT, **(env_extra or {})}
+    env.pop("PYTHONUNBUFFERED", None)       # the mutation runner sets it, and an unbuffered stdout hides a missing flush
     return subprocess.run([sys.executable, "-c", WRAP, mode], input=_event(proj), stdout=stdout, stderr=subprocess.PIPE,
                           text=True, encoding="utf-8", env=env, cwd=proj, timeout=120)
 
