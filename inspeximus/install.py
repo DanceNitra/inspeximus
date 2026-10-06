@@ -28,6 +28,12 @@ import time
 SERVER_NAME = "inspeximus"
 
 
+
+def _which_safe(name):
+    """shutil.which without the working directory (inspeximus._launch.which, 3.16.4)."""
+    from ._launch import which
+    return which(name)
+
 def _pinned(extra=""):
     """`inspeximus[<extra>]==<this version>`: the spec every uvx launch this installer writes names.
 
@@ -42,7 +48,8 @@ def _pinned(extra=""):
 
 def default_server_block(store_path=None):
     """The stdio MCP entry, in the shape every JSON-configured host uses."""
-    block = {"command": "uvx", "args": ["--from", _pinned("mcp"), "inspeximus-mcp"]}
+    from ._launch import UVX_INDEX_ARGS                                # F-23: the index, not the environment's
+    block = {"command": "uvx", "args": UVX_INDEX_ARGS + ["--from", _pinned("mcp"), "inspeximus-mcp"]}
     if store_path:
         block["env"] = {"INSPEXIMUS_PATH": str(store_path)}
     return block
@@ -178,7 +185,7 @@ def resolve_launcher():
     path removes that whole class of support question. Falls back to the bare name rather than
     failing, because a PATH that exists only at launch time is still valid.
     """
-    return shutil.which("uvx") or "uvx"
+    return _which_safe("uvx") or "uvx"
 
 
 def _mcp_importable():
@@ -199,7 +206,7 @@ def resolve_runtime():
     versions against one store. When that interpreter cannot import the `mcp` extra, `plan()` still
     writes the config and says, first, which command makes it start: see `missing_mcp_warning`.
     """
-    uvx = shutil.which("uvx")
+    uvx = _which_safe("uvx")
     if uvx:
         return "uvx", uvx
     return "python", sys.executable
@@ -223,8 +230,10 @@ def missing_mcp_warning(kind):
 def _server_launch(kind, exe):
     """(command, args) for the MCP server under a runtime from `resolve_runtime`."""
     if kind == "python":
-        return exe, ["-I", "-m", "inspeximus.mcp_server"]          # -I: see hook_command (F-15)
-    return exe, ["--from", _pinned("mcp"), "inspeximus-mcp"]
+        from ._launch import interpreter_version, module_args
+        return exe, module_args("inspeximus.mcp_server", interpreter_version(exe))   # see hook_command (F-15, F-22)
+    from ._launch import UVX_INDEX_ARGS
+    return exe, UVX_INDEX_ARGS + ["--from", _pinned("mcp"), "inspeximus-mcp"]
 
 
 def _shell_path(p):
@@ -239,13 +248,18 @@ def _shell_path(p):
 def hook_command(kind, exe):
     """The hook command under a runtime from `resolve_runtime`.
 
-    ISOLATED (-I, 3.16.4, AUDIT-A F-15). Claude Code and Codex run a hook with the project as the working
-    directory, and `python -m` puts the working directory first on sys.path, so a repository holding an
-    `inspeximus/` directory ran its own code as this hook. `-I` leaves the working directory, PYTHONPATH and
-    the user site out of sys.path; it works through uvx, and on every Python this package supports."""
+    NO WORKING DIRECTORY ON THE IMPORT PATH (3.16.4, AUDIT-A F-15, F-22). Claude Code and Codex run a hook with
+    the project as the working directory, and `python -m` puts it first on sys.path, so a repository holding an
+    `inspeximus/` directory ran its own code as this hook. `inspeximus._launch` builds the launch: `-P -m` on
+    Python 3.11 and later, a `-c` shim otherwise. Both keep the user site, which `-I` dropped (F-22)."""
     if kind == "python":
-        return _shell_path(exe) + " -I -m inspeximus.claude_code"
-    return _shell_path(exe) + " --from %s python -I -m inspeximus.claude_code" % _pinned()
+        from ._launch import interpreter_version, module_command
+        return _shell_path(exe) + " " + module_command("inspeximus.claude_code", interpreter_version(exe))
+    from ._launch import module_command
+    # uvx chooses the interpreter, so its version is not known here: the shim runs on every version.
+    from ._launch import DEFAULT_INDEX
+    return _shell_path(exe) + " --default-index %s --from %s python %s" % (
+        DEFAULT_INDEX, _pinned(), module_command("inspeximus.claude_code"))
 
 
 def _claude_settings_path(mcp_config_path):
@@ -263,7 +277,7 @@ def _claude_settings_path(mcp_config_path):
 #: written by a person, and is theirs.
 _OWN_HOOK_LINE = re.compile(
     r'^(?P<exe>"(?:[A-Za-z]:[\\/]|/)[^"]+"|(?:[A-Za-z]:[\\/]|/)\S+)\s+'
-    r'(?:(?P<uvx>--from\s+inspeximus(?:==[0-9][0-9A-Za-z.+-]*)?\s+python\s+))?(?:-I\s+)?-m\s+inspeximus\.claude_code$')
+    r'(?:(?P<uvx>(?:--default-index\s+\S+\s+)?--from\s+inspeximus(?:==[0-9][0-9A-Za-z.+-]*)?\s+python\s+))?(?:(?:-[EIP]\s+)*-m\s+inspeximus\.claude_code|(?:-E\s+)?-c\s+"[^"]*"\s+inspeximus\.claude_code)$')
 
 
 def _hook_exe(command):

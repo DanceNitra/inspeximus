@@ -47,10 +47,12 @@ def test_every_hook_runs_the_module_through_uvx_so_pip_is_not_assumed():
                 assert h["type"] == "command", ev
                 # Pinned to the release since 3.9.7: an unpinned spec resolved the previous release
                 # while the index lagged. Still uvx, still no pip assumed.
-                assert h["command"].startswith("uvx --from inspeximus==%s " % inspeximus.__version__), (
+                assert h["command"].startswith("uvx --default-index https://pypi.org/simple --from inspeximus==%s "
+                                               % inspeximus.__version__), (
                     "%s runs %r. A plugin cannot assume `pip install inspeximus` happened; uvx "
                     "resolves the package itself, the way the MCP entry already does." % (ev, h["command"]))
-                assert h["command"].endswith("python -I -m inspeximus.claude_code"), ev     # -I: AUDIT-A F-15
+                from inspeximus import _launch
+                assert h["command"].endswith("python " + _launch.module_command("inspeximus.claude_code")), ev
 
 
 def test_the_pre_tool_matcher_matches_the_installer_exactly():

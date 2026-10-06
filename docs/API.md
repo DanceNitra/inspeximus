@@ -145,7 +145,7 @@ back:
 
 ```bash
 pip install inspeximus
-python -I -m inspeximus.claude_code --install     # writes the hooks into ./.claude/settings.json
+python -P -m inspeximus.claude_code --install     # writes the hooks into ./.claude/settings.json
 ```
 
 That is it. `PostToolUse` captures your edits and commands into a deterministic, keyed store; `UserPromptSubmit`
@@ -199,7 +199,7 @@ Why it differs from the LLM-summarizing coding memories: you change an API signa
 file, and inspeximus keeps only the current state (keyed by file). Next session Claude recalls the new signature,
 never the old one, and a stale line reappearing in a diff or paste cannot resurrect it (`echo_guard`). Same
 convenience, but corrections stick, capture is reproducible, and a secret can be provably erased. Remove with
-`python -I -m inspeximus.claude_code --uninstall`.
+`python -P -m inspeximus.claude_code --uninstall`.
 
 ## Correction is a first-class operation (measured across systems)
 

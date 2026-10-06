@@ -95,7 +95,9 @@ def test_a_directory_as_the_decision_store_costs_the_prompt_hook_no_wait(tmp_pat
 def test_every_hook_command_the_install_flag_writes_is_isolated():
     groups = [cc._HOOK] + list(cc._EVENT_HOOK.values())
     cmds = [h["command"] for g in groups for h in g["hooks"]]
-    assert len(cmds) == 4 and all(" -I -m inspeximus.claude_code" in c for c in cmds), cmds
+    from inspeximus import _launch
+    expected = "python " + _launch.module_command("inspeximus.claude_code")     # a bare python: the shim (F-22)
+    assert len(cmds) == 4 and all(c == expected for c in cmds), cmds
 
 
 def test_the_codex_plugin_command_is_isolated(tmp_path):
@@ -108,7 +110,9 @@ def test_the_codex_plugin_command_is_isolated(tmp_path):
                 text = open(os.path.join(dirpath, f), encoding="utf-8").read()
                 if "inspeximus.claude_code" in text:
                     found.append(text)
-    assert found and all("-I -m inspeximus.claude_code" in t for t in found), found
+    from inspeximus import _launch
+    form = _launch.module_command("inspeximus.claude_code", sys.version_info)
+    assert found and all(form.replace(chr(34), chr(92) + chr(34)) in t or form in t for t in found), found
 
 
 # ---- teeth for two mutants that the round-2 tests did not reach --------------------------------------------------
@@ -159,3 +163,118 @@ def test_a_process_that_has_exited_is_not_alive_and_this_one_is():
     p.wait()
     assert cc._pid_alive(os.getpid()) is True
     assert cc._pid_alive(p.pid) is False
+
+
+# ---- 3.16.4 second round: which, the output encoding under -E, the uvx index, the working-directory project ----
+
+def test_which_never_answers_from_the_working_directory(tmp_path, monkeypatch):
+    """Windows Python 3.9 to 3.11 search the working directory before PATH (measured: uvx.BAT, relative)."""
+    from inspeximus import _launch
+    import shutil
+    work, good = tmp_path / "repo", tmp_path / "bin"
+    work.mkdir()
+    good.mkdir()
+    ext = ".bat" if os.name == "nt" else ""
+    for d in (work, good):
+        p = d / ("uvx" + ext)
+        p.write_text("@echo off\n" if os.name == "nt" else "#!/bin/sh\n")
+        p.chmod(0o755)
+    monkeypatch.chdir(work)
+    monkeypatch.setenv("PATH", str(good))
+    monkeypatch.setattr(shutil, "which", lambda name, *a, **k: str(work / ("uvx" + ext)))   # what 3.10 answers
+    found = _launch.which("uvx")
+    assert found and os.path.dirname(os.path.abspath(found)) == str(good), found
+
+
+def test_control_which_keeps_an_answer_from_path(tmp_path, monkeypatch):
+    from inspeximus import _launch
+    import shutil
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(shutil, "which", lambda name, *a, **k: "/usr/local/bin/uvx")
+    assert _launch.which("uvx") == "/usr/local/bin/uvx"
+
+
+def test_every_generated_uvx_command_names_its_package_index():
+    """AUDIT-A F-23: UV_INDEX_URL from a project's settings would choose where the hook's code comes from."""
+    import inspeximus.install as ins
+    from inspeximus import _launch
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    assert "--default-index " + _launch.DEFAULT_INDEX in ins.hook_command("uvx", "uvx")
+    assert ins._server_launch("uvx", "uvx")[1][:2] == ["--default-index", _launch.DEFAULT_INDEX]
+    assert ins.default_server_block()["args"][:2] == ["--default-index", _launch.DEFAULT_INDEX]
+    hooks = json.load(open(os.path.join(root, "hooks", "hooks.json"), encoding="utf-8"))["hooks"]
+    cmds = [h["command"] for g in hooks.values() for e in g for h in e["hooks"]]
+    assert cmds and all(c.startswith("uvx --default-index " + _launch.DEFAULT_INDEX + " ") for c in cmds), cmds
+    mcp = json.load(open(os.path.join(root, ".mcp.json"), encoding="utf-8"))["mcpServers"]["inspeximus"]["args"]
+    assert mcp[:2] == ["--default-index", _launch.DEFAULT_INDEX], mcp
+
+
+def test_the_hook_keeps_the_users_utf8_choice_under_E(tmp_path):
+    """-E makes the interpreter ignore PYTHONUTF8; main() applies it to its own stdout (measured: c4 be vs be).
+    The hook's JSON is ASCII-escaped, so the probe runs main() with a command that prints raw text."""
+    import subprocess
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("INSPEXIMUS_", "PYTHON"))}
+    env.update(INSPEXIMUS_KEY_HOME=str(tmp_path / "keys"), INSPEXIMUS_NO_UPDATE_CHECK="1")
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    code = ("import sys;sys.path.insert(0, %r);import inspeximus.claude_code as c;"
+            "c.install=lambda: print(chr(318)+'adov'+chr(225));sys.argv=['x','--install'];c.main()") % root
+    for name, extra in (("PYTHONUTF8", {"PYTHONUTF8": "1"}), ("PYTHONIOENCODING", {"PYTHONIOENCODING": "utf-8"})):
+        out = subprocess.run([sys.executable, "-E", "-c", code], env=dict(env, **extra), cwd=str(tmp_path),
+                             capture_output=True, timeout=120)
+        assert out.returncode == 0, out.stderr[-300:]
+        assert "ľadová".encode("utf-8") in out.stdout, (name, out.stdout)
+
+
+def test_the_working_directory_project_rule_ignores_the_home_directory(tmp_path, monkeypatch):
+    """A terminal starts in the home directory, and ~/.claude is the user's own config, not a project."""
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
+    monkeypatch.setenv("HOME", str(tmp_path))
+    (tmp_path / ".claude").mkdir()
+    monkeypatch.chdir(tmp_path)
+    assert _keyhome._cwd_project() is None
+    sub = tmp_path / "work" / "repo"
+    (sub / ".claude").mkdir(parents=True)
+    monkeypatch.chdir(sub)
+    assert os.path.normcase(_keyhome._cwd_project()) == os.path.normcase(os.path.realpath(str(sub)))
+
+
+def test_the_shim_form_does_not_run_a_repository_package(tmp_path):
+    """Python 3.9 and 3.10 get `-E -c SHIM`; run that form here, in a directory holding inspeximus/."""
+    import subprocess
+    from inspeximus import _launch
+    repo = tmp_path / "repo"
+    (repo / "inspeximus").mkdir(parents=True)
+    marker = tmp_path / "SHADOW-RAN"
+    (repo / "inspeximus" / "__init__.py").write_text("open(%r, 'w').write('ran')" % str(marker))
+    args = _launch.module_args("inspeximus.claude_code", (3, 10))
+    assert args[:3] == ["-E", "-c", _launch.SHIM], args
+    subprocess.run([sys.executable] + args, input=b"{}", cwd=str(repo), capture_output=True, timeout=120)
+    assert not marker.exists(), "the shim form ran the repository's inspeximus/"
+
+
+def test_the_installer_resolves_tools_without_the_working_directory(tmp_path, monkeypatch):
+    import shutil
+    import inspeximus.install as ins
+    work, good = tmp_path / "repo", tmp_path / "bin"
+    work.mkdir()
+    good.mkdir()
+    ext = ".bat" if os.name == "nt" else ""
+    for d in (work, good):
+        p = d / ("hermes" + ext)
+        p.write_text("@echo off\n" if os.name == "nt" else "#!/bin/sh\n")
+        p.chmod(0o755)
+    monkeypatch.chdir(work)
+    monkeypatch.setenv("PATH", str(good))
+    monkeypatch.setattr(shutil, "which", lambda name, *a, **k: str(work / ("hermes" + ext)))
+    found = ins._which_safe("hermes")
+    assert found and os.path.dirname(os.path.abspath(found)) == str(good), found
+
+
+def test_the_uvx_warm_up_names_the_same_index(tmp_path):
+    import inspeximus.install_all as ia
+    from inspeximus import _launch
+    exe = tmp_path / ("uvx.exe" if os.name == "nt" else "uvx")
+    exe.write_text("")
+    seen = []
+    ia.warm_uvx(str(exe), runner=lambda cmd, **k: seen.append(cmd) or type("R", (), {"returncode": 0})())
+    assert seen and seen[0][1:3] == _launch.UVX_INDEX_ARGS, seen
