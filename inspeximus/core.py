@@ -20312,8 +20312,9 @@ def default_distiller(url=None, model=None, key=None, timeout=60):
     e.g. local Ollama at http://localhost:11434/v1/chat/completions). Returns a `distiller(prompt, text) -> str`
     you pass straight to distill_and_remember, so capture works out of the box instead of forcing every caller to
     wire an LLM. OPT-IN: this is the only place an LLM touches capture; the core store/recall/revert stay zero-LLM.
-    Raises if no URL is configured (so you know to inject your own)."""
-    import urllib.request
+    Raises if no URL is configured (so you know to inject your own). No redirect is followed and a loopback URL
+    uses no proxy (3.16.4, `inspeximus/_http.py`): the text goes to the URL configured here and nowhere else."""
+    from ._http import post_json
     url = (url or os.environ.get("INSPEXIMUS_LLM_URL", "")).strip()
     if not url:
         raise RuntimeError("default_distiller needs INSPEXIMUS_LLM_URL (an OpenAI-compatible /chat/completions endpoint) "
@@ -20322,14 +20323,10 @@ def default_distiller(url=None, model=None, key=None, timeout=60):
     key = (key or os.environ.get("INSPEXIMUS_LLM_KEY", "")).strip()
 
     def distiller(prompt, text):
-        body = json.dumps({"model": model, "temperature": 0, "messages": [
-            {"role": "system", "content": prompt}, {"role": "user", "content": text or ""}]}).encode()
-        headers = {"Content-Type": "application/json"}
-        if key:
-            headers["Authorization"] = f"Bearer {key}"
-        req = urllib.request.Request(url, data=body, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            return json.loads(r.read())["choices"][0]["message"]["content"]
+        payload = {"model": model, "temperature": 0, "messages": [
+            {"role": "system", "content": prompt}, {"role": "user", "content": text or ""}]}
+        headers = {"Authorization": f"Bearer {key}"} if key else {}
+        return post_json(url, payload, headers, timeout)["choices"][0]["message"]["content"]
 
     return distiller
 

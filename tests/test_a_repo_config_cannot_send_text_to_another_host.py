@@ -51,7 +51,9 @@ def sent(monkeypatch):
         calls.append((req.full_url, req.data.decode("utf-8", "replace")))
         return _Resp(json.dumps({"data": [{"embedding": [0.1] * 8}]}).encode())
 
-    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    # 3.16.4: embedders POST through inspeximus._http, whose opener is what reaches the network.
+    from inspeximus import _http
+    monkeypatch.setattr(_http, "opener_for", lambda url: type("O", (), {"open": staticmethod(fake_urlopen)})())
     return calls
 
 
@@ -191,7 +193,9 @@ def test_f11_key_and_timeout_come_from_the_users_config_only(tmp_path, monkeypat
         captured["timeout"] = timeout
         return _Resp(json.dumps({"data": [{"embedding": [0.1] * 8}]}).encode())
 
-    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    # 3.16.4: embedders POST through inspeximus._http, whose opener is what reaches the network.
+    from inspeximus import _http
+    monkeypatch.setattr(_http, "opener_for", lambda url: type("O", (), {"open": staticmethod(fake_urlopen)})())
     _user_config({"embed": {"hooks": True}})
     repo = _repo(tmp_path, {"url": LOOPBACK, "key": "REPO-KEY", "timeout": 999})
     emb = cc._make_embedder(str(repo))[0]

@@ -7968,7 +7968,7 @@
  },
  {
   "name": "the loopback check accepts any address",
-  "file": "inspeximus/claude_code.py",
+  "file": "inspeximus/_http.py",
   "old": "        return ipaddress.ip_address(host).is_loopback\n",
   "new": "        return True\n",
   "tests": [
@@ -8022,7 +8022,7 @@
  },
  {
   "name": "a url whose authority holds a backslash, an @ or a space passes the loopback check",
-  "file": "inspeximus/claude_code.py",
+  "file": "inspeximus/_http.py",
   "old": "        if \"\\\\\" in url or \"@\" in authority or any(c.isspace() for c in url):\n",
   "new": "        if False:\n",
   "tests": [
@@ -8031,7 +8031,7 @@
  },
  {
   "name": "the host the request connects to is not compared with the parsed host",
-  "file": "inspeximus/claude_code.py",
+  "file": "inspeximus/_http.py",
   "old": "        if not host or connects_to != host:\n",
   "new": "        if not host:\n",
   "tests": [
@@ -8054,6 +8054,33 @@
   "new": "    except ValueError:\n        limit = 0.0\n",
   "tests": [
    "tests/test_the_decision_store_has_a_size_limit.py"
+  ]
+ },
+ {
+  "name": "an embedder request follows redirects again",
+  "file": "inspeximus/_http.py",
+  "old": "    handlers = [_NoRedirect()]\n",
+  "new": "    handlers = [urllib.request.HTTPRedirectHandler()]\n",
+  "tests": [
+   "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
+  ]
+ },
+ {
+  "name": "a loopback embedder URL uses the environment's proxy again",
+  "file": "inspeximus/_http.py",
+  "old": "        handlers.append(urllib.request.ProxyHandler({}))\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
+  ]
+ },
+ {
+  "name": "the hook embedder posts with plain urlopen again",
+  "file": "inspeximus/claude_code.py",
+  "old": "        return post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout)[\"data\"][0][\"embedding\"]\n",
+  "new": "        import urllib.request as _u; return json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + text}).encode(), headers=dict(headers, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read())[\"data\"][0][\"embedding\"]\n",
+  "tests": [
+   "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
   ]
  }
 ]
