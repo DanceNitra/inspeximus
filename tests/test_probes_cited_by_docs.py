@@ -506,6 +506,9 @@ def _run_probe(probe, extra_env=None):
     """
     env = {**os.environ, "PYTHONIOENCODING": "utf-8",
            "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep + os.environ.get("PYTHONPATH", "")}
+    # A cited probe reproduces a claim the docs make about the DEFAULT configuration, and three of them read the
+    # receipt sidecar as the array. The snapshot-plus-tail switch is not part of that claim.
+    env.pop("INSPEXIMUS_RECEIPTS_TAIL", None)
     env.update(extra_env or {})
     try:
         return subprocess.run([sys.executable, os.path.join("probes", probe)],
