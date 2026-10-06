@@ -115,14 +115,11 @@ def _make_embedders():
     model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
     key = os.environ.get("INSPEXIMUS_EMBED_KEY", "").strip()
 
+    from ._http import post_json      # no redirect followed, no proxy for a loopback URL (3.16.4)
+
     def _embed(text: str, prefix: str = ""):
-        body = json.dumps({"model": model, "input": prefix + text}).encode()
-        headers = {"Content-Type": "application/json"}
-        if key:
-            headers["Authorization"] = f"Bearer {key}"
-        req = urllib.request.Request(url, data=body, headers=headers)
-        with urllib.request.urlopen(req, timeout=20) as r:
-            return json.loads(r.read())["data"][0]["embedding"]
+        headers = {"Authorization": f"Bearer {key}"} if key else {}
+        return post_json(url, {"model": model, "input": prefix + text}, headers, 20)["data"][0]["embedding"]
 
     # nomic-embed-text is asymmetric; task prefixes are REQUIRED for good retrieval. Opt out with INSPEXIMUS_NOMIC_PREFIX=0.
     if "nomic" in model.lower() and os.environ.get("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":

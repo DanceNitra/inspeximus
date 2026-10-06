@@ -101,29 +101,10 @@ def user_config_path() -> str:
 
 
 def _is_loopback(url) -> bool:
-    """True when `url`'s host is this machine: localhost, 127.0.0.0/8 or ::1.
-
-    A backslash, whitespace or an `@` anywhere in the authority makes it False: `urlsplit` and `urllib.request`
-    can read a different host from `http://evil.example\\@127.0.0.1/` (AUDIT-A), so a URL whose host two parsers
-    could disagree on is not trusted. The host `urlsplit` reads must also be the host `urllib.request.Request`, which
-    makes the connection, reads."""
-    try:
-        import ipaddress
-        import urllib.request
-        from urllib.parse import urlsplit
-        url = str(url)
-        authority = url.split("://", 1)[1].split("/", 1)[0] if "://" in url else ""
-        if "\\" in url or "@" in authority or any(c.isspace() for c in url):
-            return False
-        host = (urlsplit(url).hostname or "").strip().lower()
-        connects_to = (urlsplit("//" + urllib.request.Request(url).host).hostname or "").strip().lower()
-        if not host or connects_to != host:
-            return False
-        if host == "localhost":
-            return True
-        return ipaddress.ip_address(host).is_loopback
-    except ValueError:
-        return False
+    """True when `url`'s host is this machine. The rule lives in `_http.is_loopback` (3.16.4), beside the opener
+    that relies on it, so the check and the connection cannot drift apart."""
+    from ._http import is_loopback
+    return is_loopback(url)
 
 
 _REPO_EMBED_NOTICE = []
@@ -191,7 +172,6 @@ def _make_embedder(cwd):
     The capture is deterministic and keyed either way; what the embedder buys on THIS store is small (its
     bulk is 'ran: ...' mechanics, the least semantic content there is), so the hot path defaults to the
     zero-network lexical mode and semantic stays a deliberate choice for stores where it earns its cost."""
-    import urllib.request
     rc = _cfg(cwd).get("embed", {})
     rc = rc if isinstance(rc, dict) else {}
     uc = _read_cfg(user_config_path()).get("embed", {})
@@ -217,14 +197,12 @@ def _make_embedder(cwd):
     except Exception:
         timeout = 10.0
 
+    from ._http import post_json
+
     def _embed(text: str, prefix: str = ""):
-        body = json.dumps({"model": model, "input": prefix + text}).encode()
-        headers = {"Content-Type": "application/json"}
-        if key:
-            headers["Authorization"] = f"Bearer {key}"
-        req = urllib.request.Request(url, data=body, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            return json.loads(r.read())["data"][0]["embedding"]
+        # No redirect is followed and a loopback URL uses no proxy (3.16.4): see inspeximus/_http.py.
+        headers = {"Authorization": f"Bearer {key}"} if key else {}
+        return post_json(url, {"model": model, "input": prefix + text}, headers, timeout)["data"][0]["embedding"]
 
     # nomic-embed-text is ASYMMETRIC — the doc/query task prefixes are REQUIRED for good retrieval (the
     # correctness fix shipped for the MCP in 1.15.0, now applied to the Claude Code plugin too). Returns

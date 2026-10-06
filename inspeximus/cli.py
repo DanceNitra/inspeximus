@@ -27,18 +27,13 @@ def _embedder():
     url = os.environ.get("INSPEXIMUS_EMBED_URL", "").strip()
     if not url:
         return None
-    import urllib.request
+    from ._http import post_json      # no redirect followed, no proxy for a loopback URL (3.16.4)
     model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
     key = os.environ.get("INSPEXIMUS_EMBED_KEY", "").strip()
 
     def embed(text: str):
-        body = json.dumps({"model": model, "input": text}).encode()
-        headers = {"Content-Type": "application/json"}
-        if key:
-            headers["Authorization"] = f"Bearer {key}"
-        req = urllib.request.Request(url, data=body, headers=headers)
-        with urllib.request.urlopen(req, timeout=20) as r:
-            return json.loads(r.read())["data"][0]["embedding"]
+        headers = {"Authorization": f"Bearer {key}"} if key else {}
+        return post_json(url, {"model": model, "input": text}, headers, 20)["data"][0]["embedding"]
 
     return embed
 
