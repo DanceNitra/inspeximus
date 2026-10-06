@@ -68,12 +68,25 @@ def _cwd_project():
 
     A hook runs with the repository as its working directory, and a repository's `.claude/settings.json` is what
     can set INSPEXIMUS_KEY_HOME (AUDIT-A F-13b: a zip download with no .git, its store named by
-    INSPEXIMUS_CODING_STORE outside .inspeximus)."""
+    INSPEXIMUS_CODING_STORE outside .inspeximus).
+
+    Kept per working directory and home, as given, like `_CACHE`: every reader of the key home asks, and the
+    walk normalizes each ancestor (measured: 10 more lower() calls per erasure in perf/gate.py without it)."""
     try:
-        cwd = _norm(os.getcwd())
+        raw = (os.getcwd(), os.path.expanduser("~"))
     except OSError:
         return None
-    home = _norm(os.path.expanduser("~"))
+    if raw not in _CWD_PROJECT:
+        _CWD_PROJECT[raw] = _walk_cwd_project(*raw)
+    return _CWD_PROJECT[raw]
+
+
+_CWD_PROJECT = {}
+
+
+def _walk_cwd_project(cwd, home):
+    cwd = _norm(cwd)
+    home = _norm(home)
     d = cwd
     while _inside(d, home) and d != home:
         if any(os.path.exists(os.path.join(d, m)) for m in _MARKERS):
