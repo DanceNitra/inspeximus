@@ -777,13 +777,24 @@ def maybe_archive_in_background(cwd=None) -> str:
 
 
 #: A hook that meets stamps made under another guard set (a Python upgrade, or another interpreter) starts ONE detached
-#: `--stamp-guards --apply` under its OWN interpreter, at most once per interval, so the store heals itself. It writes
-#: verdicts the hook computed anyway, under the store's key; it needs no policy because it only replaces stamps the store
-#: already carries. `INSPEXIMUS_STAMP_AUTO=0`, or {"stamp": {"auto": false}} in the user's config, turns it off.
+#: `--stamp-guards --apply --auto` under its OWN interpreter, at most once per interval, so the store heals itself. It writes
+#: verdicts the hook computed anyway, under the store's key; it only replaces stamps the store already carries.
+#: THE LAUNCH FOLLOWS 3.16.4's RULES for a run started from the prompt hook (AUDIT-A F-9, F-14, F-15, F-22):
+#:   * no working directory and no PYTHON* variable on the import path (`-E` and the shim, as `maybe_archive_in_background`);
+#:   * CREATE_BREAKAWAY_FROM_JOB on Windows, falling back to the start without it;
+#:   * the attempt is recorded before the start with the pid, and the run marks itself `done` or `failed`, so a run its
+#:     host killed is retried after AUTO_ARCHIVE_MIN_INTERVAL_S and not after the whole interval;
+#:   * the switch comes from the environment and the user's config only, never from a repository's config;
+#:   * it stamps only the store the hook resolved: the run is told which, and refuses when its own resolution differs. The
+#:     decision store is never stamped from here: its path comes from an environment variable a repository can set;
+#:   * the key home is `_keyhome.key_home()`, which ignores one inside a git work tree or the project (F-13, F-13b).
+#: `INSPEXIMUS_STAMP_AUTO=0`, or {"stamp": {"auto": false}} in the user's config, turns it off.
 STAMP_HEAL_MIN_INTERVAL_S = 3600.0
 
 
 def stamp_heal_enabled() -> bool:
+    """The environment, then the USER's config (`user_config_path()`, outside every repository), else on. A repository's
+    own `.inspeximus/config.json` is not read."""
     env = os.environ.get("INSPEXIMUS_STAMP_AUTO", "").strip().lower()
     if env in ("0", "false", "no"):
         return False
@@ -812,10 +823,30 @@ def foreign_stamp_count(m) -> int:
     return n
 
 
-def maybe_restamp_in_background(cwd=None, store=None, foreign=0) -> str:
-    """Start the detached re-stamp when a read met `foreign` stamps. Returns "started", or why not: "none" (no foreign
-    stamps), "off", "missing", "recent" or "failed". Never raises. The attempt is recorded BEFORE the spawn, so two prompts
-    in a row start one run. The process is `sys.executable`, the interpreter that just found the stamps invalid."""
+def _stamp_state_path(store_path) -> str:
+    return str(store_path) + ".stamp-auto.json"
+
+
+def _mark_stamp_run(store_path, result) -> None:
+    """The run's own mark: `done` with the time and "ok" or "failed". Never raises."""
+    try:
+        import time
+        state = _stamp_state_path(store_path)
+        with open(state, encoding="utf-8") as fh:
+            st = json.load(fh)
+        st.update(done=time.time(), result="ok" if result else "failed")
+        tmp = state + ".tmp.%d" % os.getpid()
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(st, fh)
+        os.replace(tmp, state)
+    except Exception:                                           # noqa: BLE001
+        pass
+
+
+def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
+    """Start the detached re-stamp of the store the hook resolved when a read met `foreign` stamps. Returns "started", or
+    why not: "none" (no foreign stamps), "off", "missing", "recent" or "failed". Never raises: a hook that raises costs the
+    user their turn."""
     try:
         if not foreign:
             return "none"
@@ -824,34 +855,52 @@ def maybe_restamp_in_background(cwd=None, store=None, foreign=0) -> str:
         import subprocess
         import time
         from ._surface import coding_store_path
-        path = store or coding_store_path(cwd)
+        path = coding_store_path(cwd)
         if not os.path.exists(path):
             return "missing"
-        state = path + ".stamp-auto.json"
+        state = _stamp_state_path(path)
         now = time.time()
         try:
             with open(state, encoding="utf-8") as fh:
-                last = float(json.load(fh).get("last_attempt") or 0)
+                st = json.load(fh)
+            last = float(st.get("last_attempt") or 0)
         except (OSError, ValueError, AttributeError):
-            last = 0.0
+            st, last = {}, 0.0
         if now - last < STAMP_HEAL_MIN_INTERVAL_S:
-            return "recent"
+            # A run that died is tried again after the floor, as the archive's is (F-14).
+            pid = st.get("pid") if isinstance(st, dict) else None
+            dead = isinstance(pid, int) and not st.get("done") and not _pid_alive(pid)
+            if not (dead and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):
+                return "recent"
         tmp = state + ".tmp.%d" % os.getpid()
+        record = {"last_attempt": now, "foreign": int(foreign), "interpreter": sys.executable}
         with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump({"last_attempt": now, "foreign": int(foreign), "interpreter": sys.executable}, fh)
+            json.dump(record, fh)
         os.replace(tmp, state)
-        argv = [sys.executable, "-m", "inspeximus.claude_code", "--stamp-guards", "--apply"]
-        if store:
-            argv += ["--store", store]
+        _pkg_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        argv = [sys.executable, "-E", "-c",                  # -E: no PYTHON* variable from the project
+                "import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
+                "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % _pkg_parent,
+                "inspeximus.claude_code", "--stamp-guards", "--apply", "--auto", "--expect-store", path]
         log = open(path + ".stamp-auto.log", "w", encoding="utf-8")
         kw = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
               "close_fds": True}
         if os.name == "nt":
-            kw["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000
+            kw["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000   # DETACHED, NEW_PROCESS_GROUP, NO_WINDOW
         else:
             kw["start_new_session"] = True
-        subprocess.Popen(argv, **kw)
+        try:
+            proc = subprocess.Popen(argv, **dict(kw, creationflags=kw["creationflags"] | 0x01000000)) \
+                if os.name == "nt" else subprocess.Popen(argv, **kw)       # CREATE_BREAKAWAY_FROM_JOB
+        except OSError:
+            if os.name != "nt":
+                raise
+            proc = subprocess.Popen(argv, **kw)
         log.close()
+        record["pid"] = getattr(proc, "pid", None)
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(record, fh)
+        os.replace(tmp, state)
         return "started"
     except Exception:                                           # noqa: BLE001
         return "failed"
@@ -1391,7 +1440,7 @@ def recall(ev):
     # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
     m = _store(cwd)
     # Counted BEFORE the recall: assessing a row drops the stamp it cannot verify from the handle.
-    _LAST_STORES[:] = [(str(getattr(m, "path", "") or ""), False, foreign_stamp_count(m))]
+    _LAST_STORES[:] = [(str(getattr(m, "path", "") or ""), False, foreign_stamp_count(m))]   # the project store only
     hits = m.recall(q, k=16)
     def has(h, tag):
         return tag in (h.get("tags") or [])
@@ -1437,7 +1486,6 @@ def recall(ev):
             if os.path.abspath(ext) != os.path.abspath(getattr(m, "path", "") or ""):
                 from ._surface import open_store
                 em = open_store(ext, resolve=False)
-                _LAST_STORES.append((ext, True, foreign_stamp_count(em)))
                 extra = list(em.decisions_in_force(limit=4))
                 extra += [h for h in em.recall(q, k=8) if has(h, "decision")]
                 have = {d.get("id") for d in decisions}
@@ -1480,7 +1528,7 @@ def maybe_restamp_after_recall(cwd) -> None:
     """After the hook's recall: when a store it read holds stamps from another guard set, heal it in the background."""
     for path, ext, n in _LAST_STORES:
         if n:
-            maybe_restamp_in_background(cwd, store=path if ext else None, foreign=n)
+            maybe_restamp_in_background(cwd, foreign=n)
     _LAST_STORES.clear()
 
 
@@ -2124,6 +2172,26 @@ def main():
         return
     if "--stamp-guards" in sys.argv:
         argv = sys.argv
+        if "--auto" in argv:
+            # The run the prompt hook started (see `maybe_restamp_in_background`): the project store only, and only the
+            # one the hook resolved. A different resolution here (another environment) stamps nothing.
+            from ._surface import coding_store_path
+            want = argv[argv.index("--expect-store") + 1] if "--expect-store" in argv[:-1] else None
+            have = coding_store_path(os.getcwd())
+            same = bool(want) and os.path.normcase(os.path.abspath(want)) == os.path.normcase(os.path.abspath(have))
+            if "--store" in argv or not same:
+                print(json.dumps({"refused": "this run stamps only the store the hook resolved", "expected": want,
+                                  "resolved_here": have}, indent=2))
+                _mark_stamp_run(want or have, False)
+                return
+            try:
+                r = stamp_guards(apply=True)
+            except Exception:                                   # noqa: BLE001
+                _mark_stamp_run(have, False)
+                raise
+            _mark_stamp_run(have, bool(r.get("applied") or not r.get("to_stamp")))
+            print(json.dumps(r, indent=2, default=str))
+            return
         r = stamp_guards(apply="--apply" in argv,
                          store=argv[argv.index("--store") + 1] if "--store" in argv[:-1] else None)
         print(json.dumps(r, indent=2, default=str))
