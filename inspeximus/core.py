@@ -918,6 +918,14 @@ def _guard_canon(v) -> str:
     return repr(v)
 
 
+def _guard_env_tag() -> str:
+    """Where a stamp was made: `<python version>/ucd<unicode version>`. Informational: it is not in the MAC, so it can
+    be edited without a key and decides nothing. It lets a report say WHY stamps are foreign: the guard-set hash holds
+    the Unicode database version, and a stamp made by another interpreter reads as invalid."""
+    import unicodedata
+    return "%d.%d.%d/ucd%s" % (sys.version_info[0], sys.version_info[1], sys.version_info[2], unicodedata.unidata_version)
+
+
 def _guard_set_hash() -> "str | None":
     """What a stored verdict was computed with: the guards' source, their inputs by value, and the
     Unicode database that IGNORECASE and \\w depend on. Any change re-assesses every record once.
@@ -1718,7 +1726,7 @@ _STOP = frozenset("the a an of for to in on and or is are was were be been with 
                   "by at from into our we us you your he she they them his her their not no".split())
 
 
-def _stem(w: str) -> str:
+def _stem_uncached(w: str) -> str:
     # A possessive is its noun: "alice's" and "agents'" tokenize to "alice" and "agent". The word
     # class admits the apostrophe, so without this fold "alice's" stemmed to "alice'", a token no
     # query contains, and "alice's phone is +200" matched `recall("alice phone")` on one token, level
@@ -1730,6 +1738,13 @@ def _stem(w: str) -> str:
     elif w.endswith("'"):
         w = w[:-1]
     return w[:-1] if (w.endswith("s") and len(w) > 4) else w   # crude plural/3rd-person fold
+
+
+#: `_stem` is a pure function of one word, and a prompt hook calls it 511,051 times for 31,676 distinct words on our
+#: project store (AUDIT-B, 2026-10-06): 0.12 s of a 1.6 s hook. The memo is bounded, so a process that reads an
+#: unusual corpus holds at most this many words.
+_STEM_CACHE_SIZE = 65536
+_stem = functools.lru_cache(maxsize=_STEM_CACHE_SIZE)(_stem_uncached)
 
 
 def _tokens(text: str) -> set:
@@ -4037,7 +4052,9 @@ class Inspeximus:
             rec["meta"]["asserts_change"] = False       # a restatement, not a correction (see extractor block)
         if self.read_guards:
             self._guard_key(create=True)          # a write mints the key, so its clean verdict is stamped
-            self._assess_read_guards(rec, stamp=True)
+            _held = self._assess_read_guards(rec, stamp=True).get("read_guards")
+            if isinstance(_held, dict):
+                _held["env"] = _guard_env_tag()          # where the stamp was made; not in the MAC
         if _trunc_from is not None:
             rec["meta"]["truncated_from"] = _trunc_from
         # MEMORY HIERARCHY (user > agent > session): stamp the scope this memory belongs to. A memory with only
@@ -10002,6 +10019,27 @@ class Inspeximus:
         todo = [r for r in rows if not self._guard_stamp_valid(r, key, gset)]
         out = {"active": len(rows), "valid_stamps": len(rows) - len(todo), "to_stamp": len(todo),
                "stamped": 0, "flagged": 0, "applied": False, "has_key": bool(key)}
+        # STAMPS THAT ARE INVALID BECAUSE OF WHERE THEY WERE MADE. The guard-set hash includes the Unicode database
+        # version, so a stamp made under one Python reads as invalid under another, and the hook then assesses the row
+        # on every prompt as if it had no stamp. Measured 2026-10-06: stamps from Python 3.12.10 (Unicode 15.0.0) under
+        # the hook's Python 3.14.4 (Unicode 16.0.0) bought nothing. Counted here, with where they came from.
+        foreign, envs = 0, {}
+        for r in todo:
+            held = (r.get("meta") or {}).get("read_guards")
+            if isinstance(held, dict) and held.get("set") != gset:
+                foreign += 1
+                e = held.get("env") if isinstance(held.get("env"), str) else "unknown (made before 3.17.0)"
+                envs[e] = envs.get(e, 0) + 1
+        import unicodedata
+        out["guard_set"] = (gset or "")[:12] or None
+        out["interpreter"] = {"executable": sys.executable, "version": sys.version.split()[0],
+                              "unicode": unicodedata.unidata_version, "stamps_made_here_read_as": _guard_env_tag()}
+        out["foreign_stamps"] = foreign
+        if foreign:
+            out["foreign_made_under"] = dict(sorted(envs.items(), key=lambda kv: -kv[1])[:5])
+            out["note_foreign"] = (f"{foreign} stamp(s) were made under another Python or Unicode version than this one "
+                                   f"({_guard_env_tag()}) and read as invalid here. Stamp with the interpreter the hook "
+                                   f"runs; {sys.executable} is the one running now.")
         if dry_run or not key or not gset or not todo:
             if not key:
                 out["note"] = "this store has no read-guard key in this key home, so nothing can be stamped"
@@ -10010,6 +10048,7 @@ class Inspeximus:
             self._guard_seen.discard(r.get("id") or id(r))
             meta = self._assess_read_guards(r, stamp=True)
             if isinstance(meta.get("read_guards"), dict):
+                meta["read_guards"]["env"] = _guard_env_tag()       # where it was made; not in the MAC
                 out["stamped"] += 1
                 if r.get("id"):
                     self._touched.add(r["id"])
