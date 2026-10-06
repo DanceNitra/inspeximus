@@ -843,6 +843,34 @@ def _mark_stamp_run(store_path, result) -> None:
         pass
 
 
+def _run_has_died(st) -> bool:
+    """An attempt record that names a pid, has no `done` mark, and whose process is gone."""
+    pid = st.get("pid") if isinstance(st, dict) else None
+    return isinstance(pid, int) and not st.get("done") and not _pid_alive(pid)
+
+
+def _start_detached(args, cwd, log_path):
+    """Start `python -m inspeximus.claude_code <args>` as a detached run that follows 3.16.4's rules for a run started from
+    the prompt hook: `-E` and the shim (no working directory and no PYTHON* variable on the import path, this checkout first),
+    DETACHED_PROCESS and a new process group on Windows with CREATE_BREAKAWAY_FROM_JOB tried first, a new session elsewhere,
+    stdin closed, output to `log_path`. Returns the process."""
+    import subprocess
+    parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    prog = ("import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
+            "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % parent)
+    command = [sys.executable, "-E", "-c", prog, "inspeximus.claude_code"] + list(args)
+    with open(log_path, "w", encoding="utf-8") as log:
+        opts = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
+                "close_fds": True}
+        if os.name != "nt":
+            return subprocess.Popen(command, start_new_session=True, **opts)
+        flags = 0x00000008 | 0x00000200 | 0x08000000          # DETACHED_PROCESS, NEW_PROCESS_GROUP, CREATE_NO_WINDOW
+        try:
+            return subprocess.Popen(command, creationflags=flags | 0x01000000, **opts)    # CREATE_BREAKAWAY_FROM_JOB
+        except OSError:                                        # the job does not allow breakaway
+            return subprocess.Popen(command, creationflags=flags, **opts)
+
+
 def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
     """Start the detached re-stamp of the store the hook resolved when a read met `foreign` stamps. Returns "started", or
     why not: "none" (no foreign stamps), "off", "missing", "recent" or "failed". Never raises: a hook that raises costs the
@@ -852,7 +880,6 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
             return "none"
         if not stamp_heal_enabled():
             return "off"
-        import subprocess
         import time
         from ._surface import coding_store_path
         path = coding_store_path(cwd)
@@ -868,35 +895,15 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
             st, last = {}, 0.0
         if now - last < STAMP_HEAL_MIN_INTERVAL_S:
             # A run that died is tried again after the floor, as the archive's is (F-14).
-            pid = st.get("pid") if isinstance(st, dict) else None
-            dead = isinstance(pid, int) and not st.get("done") and not _pid_alive(pid)
-            if not (dead and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):
+            if not (_run_has_died(st) and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):
                 return "recent"
         tmp = state + ".tmp.%d" % os.getpid()
         record = {"last_attempt": now, "foreign": int(foreign), "interpreter": sys.executable}
         with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(record, fh)
         os.replace(tmp, state)
-        _pkg_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        argv = [sys.executable, "-E", "-c",                  # -E: no PYTHON* variable from the project
-                "import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
-                "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % _pkg_parent,
-                "inspeximus.claude_code", "--stamp-guards", "--apply", "--auto", "--expect-store", path]
-        log = open(path + ".stamp-auto.log", "w", encoding="utf-8")
-        kw = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
-              "close_fds": True}
-        if os.name == "nt":
-            kw["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000   # DETACHED, NEW_PROCESS_GROUP, NO_WINDOW
-        else:
-            kw["start_new_session"] = True
-        try:
-            proc = subprocess.Popen(argv, **dict(kw, creationflags=kw["creationflags"] | 0x01000000)) \
-                if os.name == "nt" else subprocess.Popen(argv, **kw)       # CREATE_BREAKAWAY_FROM_JOB
-        except OSError:
-            if os.name != "nt":
-                raise
-            proc = subprocess.Popen(argv, **kw)
-        log.close()
+        proc = _start_detached(["--stamp-guards", "--apply", "--auto", "--expect-store", path], cwd,
+                               path + ".stamp-auto.log")
         record["pid"] = getattr(proc, "pid", None)
         # A FAST RUN HAS MARKED ITSELF DONE BY NOW. Writing the record again over its mark would lose `done`, and a run that
         # finished would look dead and be started again after the floor. The pid is merged into what the run left.
