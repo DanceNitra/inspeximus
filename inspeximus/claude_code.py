@@ -802,10 +802,11 @@ def foreign_stamp_count(m) -> int:
     if not gset:
         return 0
     n = 0
+    get = dict.get                  # the rows are tracked dicts: a plain `get` is counted as a read of the row
     for r in m.items:
-        if r.get("status") != "active":
+        if get(r, "status") != "active":
             continue
-        held = (r.get("meta") or {}).get("read_guards")
+        held = (get(r, "meta") or {}).get("read_guards")
         if isinstance(held, dict) and held.get("set") != gset:
             n += 1
     return n
