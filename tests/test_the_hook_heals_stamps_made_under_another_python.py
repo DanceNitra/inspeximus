@@ -60,6 +60,7 @@ def test_stamps_made_here_are_not_foreign(proj):
     m.flush()
     out = cc.stamp_guards(proj)
     assert out["foreign_stamps"] == 0 and out["valid_stamps"] == out["active"] == 3
+    assert {r["meta"]["read_guards"].get("env") for r in cc._store(proj).items} == {core._guard_env_tag()}, "a remember stamps its origin"
     assert out["interpreter"]["executable"] == sys.executable
     assert out["interpreter"]["stamps_made_here_read_as"] == core._guard_env_tag()
     assert "note_foreign" not in out
