@@ -128,7 +128,7 @@ def test_a_prompt_that_meets_foreign_stamps_starts_the_restamp_and_the_store_hea
     assert out["valid_stamps"] == out["active"] == 6 and out["foreign_stamps"] == 0, out
     m = cc._store(proj)
     assert {r["meta"]["read_guards"].get("env") for r in m.items if r["status"] == "active"} == {core._guard_env_tag()}
-    state = json.load(open(os.path.join(proj, ".inspeximus", "coding_memory.json.stamp-auto.json"), encoding="utf-8"))
+    state = json.load(open(cc._stamp_state_path(os.path.join(proj, ".inspeximus", "coding_memory.json")), encoding="utf-8"))
     assert state["foreign"] == 6 and state["interpreter"] == sys.executable
 
 

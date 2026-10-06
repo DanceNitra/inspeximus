@@ -65,7 +65,7 @@ def _cli(args, cwd):
 
 
 def _state(proj):
-    return json.load(open(os.path.join(proj, ".inspeximus", "coding_memory.json.stamp-auto.json"), encoding="utf-8"))
+    return json.load(open(cc._stamp_state_path(os.path.join(proj, ".inspeximus", "coding_memory.json")), encoding="utf-8"))
 
 
 def _wait_done(proj, secs=120):
@@ -153,7 +153,7 @@ def test_the_attempt_carries_the_pid_and_the_run_marks_itself_done(proj):
 
 def test_a_run_that_finished_before_the_hook_wrote_the_pid_keeps_its_done_mark(proj, monkeypatch):
     _foreign(proj)
-    state = os.path.join(proj, ".inspeximus", "coding_memory.json.stamp-auto.json")
+    state = cc._stamp_state_path(os.path.join(proj, ".inspeximus", "coding_memory.json"))
 
     def fast_run(argv, **k):                      # the run is over before Popen returns to the hook
         st = json.load(open(state, encoding="utf-8"))
@@ -169,7 +169,7 @@ def test_a_run_that_finished_before_the_hook_wrote_the_pid_keeps_its_done_mark(p
 
 def test_a_run_that_died_is_retried_after_the_floor_and_a_live_one_is_not(proj, monkeypatch):
     _foreign(proj)
-    state = os.path.join(proj, ".inspeximus", "coding_memory.json.stamp-auto.json")
+    state = cc._stamp_state_path(os.path.join(proj, ".inspeximus", "coding_memory.json"))
     started = []
     monkeypatch.setattr(subprocess, "Popen", lambda argv, **k: started.append(argv) or type("P", (), {"pid": 5})())
     now = time.time()

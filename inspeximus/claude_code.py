@@ -823,8 +823,28 @@ def foreign_stamp_count(m) -> int:
     return n
 
 
-def _stamp_state_path(store_path) -> str:
-    return str(store_path) + ".stamp-auto.json"
+def _stamp_state_path(store_path, suffix=".json") -> str:
+    """Where the re-stamp keeps its attempt record and its log: the USER's key home, keyed by the store's path, and never
+    beside the store (AUDIT-A F-24). A repository ships files beside its store, and `open(path, "w")` follows a symlink a
+    repository ships at `<store>.stamp-auto.log`: on POSIX the run overwrote the file the link named (64 bytes became 648).
+    The key home is the user's own directory (a key home inside a repository is ignored, F-13), so a repository cannot place
+    a link in it, and a heal leaves nothing in the work tree."""
+    import hashlib
+    from ._keyhome import key_home
+    tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
+    d = os.path.join(key_home(store_path), "inspeximus", "stamp-auto")
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(d, tag + suffix)
+
+
+def _store_named_by_the_environment(cwd=None) -> bool:
+    """True when the store the hook resolves is the one an environment variable names. A repository's settings `env` reaches
+    the hook, so INSPEXIMUS_CODING_STORE could aim a write at another store of the user's (AUDIT-A F-25). The heal runs only
+    on the project's own store, or on the store the user's config records (`inspeximus install --all`); the manual
+    `--stamp-guards --apply` stays available for the rest."""
+    from ._surface import coding_store_path
+    return os.path.normcase(os.path.abspath(coding_store_path(cwd))) != \
+        os.path.normcase(os.path.abspath(coding_store_path(cwd, env={})))
 
 
 def _mark_stamp_run(store_path, result) -> None:
@@ -878,7 +898,7 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
     try:
         if not foreign:
             return "none"
-        if not stamp_heal_enabled():
+        if not stamp_heal_enabled() or _store_named_by_the_environment(cwd):
             return "off"
         import time
         from ._surface import coding_store_path
@@ -903,7 +923,7 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
             json.dump(record, fh)
         os.replace(tmp, state)
         proc = _start_detached(["--stamp-guards", "--apply", "--auto", "--expect-store", path], cwd,
-                               path + ".stamp-auto.log")
+                               _stamp_state_path(path, ".log"))
         record["pid"] = getattr(proc, "pid", None)
         # A FAST RUN HAS MARKED ITSELF DONE BY NOW. Writing the record again over its mark would lose `done`, and a run that
         # finished would look dead and be started again after the floor. The pid is merged into what the run left.
@@ -2196,7 +2216,7 @@ def main():
             want = argv[argv.index("--expect-store") + 1] if "--expect-store" in argv[:-1] else None
             have = coding_store_path(os.getcwd())
             same = bool(want) and os.path.normcase(os.path.abspath(want)) == os.path.normcase(os.path.abspath(have))
-            if "--store" in argv or not same:
+            if "--store" in argv or not same or _store_named_by_the_environment(os.getcwd()):
                 print(json.dumps({"refused": "this run stamps only the store the hook resolved", "expected": want,
                                   "resolved_here": have}, indent=2))
                 _mark_stamp_run(want or have, False)

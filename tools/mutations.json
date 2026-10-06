@@ -8671,5 +8671,41 @@
   "tests": [
    "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
   ]
+ },
+ {
+  "name": "the re-stamp keeps its state and log beside the store",
+  "file": "inspeximus/claude_code.py",
+  "old": "    d = os.path.join(key_home(store_path), \"inspeximus\", \"stamp-auto\")\n",
+  "new": "    d = os.path.dirname(os.path.abspath(str(store_path)))\n",
+  "tests": [
+   "tests/test_audit_a_317hook_findings.py"
+  ]
+ },
+ {
+  "name": "the heal runs on a store only the environment names",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not stamp_heal_enabled() or _store_named_by_the_environment(cwd):\n",
+  "new": "        if not stamp_heal_enabled():\n",
+  "tests": [
+   "tests/test_audit_a_317hook_findings.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run accepts a store only the environment names",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if \"--store\" in argv or not same or _store_named_by_the_environment(os.getcwd()):",
+  "new": "            if \"--store\" in argv or not same:",
+  "tests": [
+   "tests/test_audit_a_317hook_findings.py"
+  ]
+ },
+ {
+  "name": "a store named by the environment is not told from the project's own",
+  "file": "inspeximus/claude_code.py",
+  "old": "        os.path.normcase(os.path.abspath(coding_store_path(cwd, env={})))",
+  "new": "        os.path.normcase(os.path.abspath(coding_store_path(cwd)))",
+  "tests": [
+   "tests/test_audit_a_317hook_findings.py"
+  ]
  }
 ]
