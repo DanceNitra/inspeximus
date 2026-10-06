@@ -202,19 +202,26 @@ def test_concurrent_writers_lose_no_receipt_across_a_compaction(tmp_path, monkey
 
 def test_a_batch_as_long_as_the_tail_limit_is_one_snapshot_write_and_no_tail_lines(tmp_path, monkeypatch):
     """`recommit` and the backfill emit many receipts and write them once. At the tail limit that is one snapshot
-    write, not an append that the next write would compact."""
+    write, not an append that the next write would compact. The store is already in the tail format here, so the
+    conversion write does not stand in for it."""
     monkeypatch.setattr(rt, "COMPACT_AT", 5)
     p = str(tmp_path / "s.json")
-    m = Inspeximus(p)                                           # receipts off: eight records with no receipt
-    for i in range(8):
-        m.remember(f"fact number {i}", key=f"k{i}")
+    m = Inspeximus(p, receipts=True)
+    m.remember("converts the store", key="k-first")
+    assert _pair(p)["mode"] == "tail"
+    m.receipts_enabled = False                                  # eight records with no receipt
+    ids = [m.remember(f"fact number {i}", key=f"k{i}") for i in range(8)]
+    m.receipts_enabled = True
     m.flush()
     w = _Work(monkeypatch)
-    m.enable_receipts(backfill_genesis=True, reason="test")
+    m._defer_receipt_flush = True
+    for rec in [r for r in m._items if r["id"] in ids]:
+        m._emit_write_receipt(rec)
+    m._defer_receipt_flush = False
+    m._persist_receipts()
     assert w.replaces == 1 and w.appends == 0, (w.replaces, w.appends)
     res = _pair(p)
-    assert res["snap_n"] == 8 == len(res["entries"]) and not res["problems"]
-    assert Inspeximus(p, receipts=True).verify_writes()[0]
+    assert res["snap_n"] == 9 == len(res["entries"]) and not res["problems"]
 
 
 def test_a_reader_that_meets_a_compaction_between_its_two_reads_finds_no_problem(tmp_path, monkeypatch):

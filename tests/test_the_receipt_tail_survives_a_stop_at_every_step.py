@@ -260,6 +260,8 @@ def test_a_damaged_pair_is_named_and_a_writer_refuses_to_write_over_it(tmp_path,
     m2 = Inspeximus(p, receipts=True)
     ok, problems = m2.verify_writes()
     assert not ok and problems, "a damaged pair is never a passing verify_writes"
+    res = _pair(p)
+    assert len(res["problems"]) == 1, "the read stops at the first line that does not fit and names only it"
     with pytest.raises((core.SidecarMalformed, core.ProofNotWritten)):
         m2.remember("must not write over the damage", key="k-refused")
     assert _bytes(p) == before, "the damaged files are left as they were: nothing healed the evidence away"

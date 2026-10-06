@@ -718,12 +718,48 @@
    "store_hash_reads": 0,
    "guard_key_lookups": 0,
    "decision_syncs": 5,
+   "partition_registry_reads": 0,
    "guard_shape_scans": 5,
    "tracked_gets": 50315,
-   "receipt_encodes": 5
+   "receipt_encodes": 5,
+   "receipt_bytes_written": 10061974
   },
-  "seconds_median": 0.2268,
-  "seconds_min": 0.1673,
-  "seconds_max": 0.2283
+  "seconds_median": 0.2384,
+  "seconds_min": 0.2198,
+  "seconds_max": 0.3804
+ },
+ "remember_receipted_tail_n2000": {
+  "desc": "remember_receipted_n2000 with the receipt sidecar as a snapshot plus an append-only tail",
+  "backend": {
+   "declared": "rows",
+   "observed": "rows"
+  },
+  "counters": {
+   "replace_store": 5,
+   "replace_tombstones": 0,
+   "replace_receipts": 0,
+   "full_serializations": 0,
+   "serialized_bytes": 0,
+   "store_loads": 0,
+   "guard_regex_searches": 0,
+   "order_updates": 0,
+   "full_diff_saves": 0,
+   "dir_listings": 0,
+   "type_inferences": 0,
+   "current_active_scans": 0,
+   "row_serializations": 5,
+   "read_guard_assessments": 5,
+   "store_hash_reads": 0,
+   "guard_key_lookups": 0,
+   "decision_syncs": 5,
+   "partition_registry_reads": 0,
+   "guard_shape_scans": 5,
+   "tracked_gets": 50315,
+   "receipt_encodes": 5,
+   "receipt_bytes_written": 5139
+  },
+  "seconds_median": 0.1847,
+  "seconds_min": 0.1847,
+  "seconds_max": 0.2151
  }
 }
