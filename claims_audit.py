@@ -539,6 +539,33 @@ NUMBER_CLAIMS = [
     # concurrency result are separate sentences on separate lines and separate probes, and they were
     # nearly published as one claim: the concurrency figure had been measured against
     # `sqlite_store.save` directly rather than through the library, where the answer was the opposite.
+    # ---- README.md "EU AI Act and GDPR evidence": the assessor pack (added 2026-10-06) ----
+    _c("readme-assessor-intake-fields", "README.md", ["66"],
+       "you once for the 66 fields only the operator can write.",
+       "The number of fields `intake_form()` asks the operator for, counted from the form itself "
+       "rather than from the 3.7.0 CHANGELOG that first stated it.",
+       "REPRODUCIBLE",
+       "python -c \"from inspeximus.assessor_pack import intake_form; print(intake_form()['count'], "
+       "len(intake_form()['fields']))\""),
+    # ---- README.md "Use it in Claude Code": hook times (added 2026-10-06) ----
+    # Measured on copies of our own project stores, which hold our records and cannot be shipped, so a
+    # reader cannot re-run them on the same data. The sentence says where they were measured and points
+    # at the CHANGELOG entries that carry the method; perf/gate.py gates the work counters behind them.
+    _c("readme-hook-read-time", "README.md", ["4.96", "0.41", "67,165"],
+       "a Read went from 4.96 s to 0.41 s on a 67,165-record store (3.15.1),",
+       "PostToolUse for a Read on a copy of a 67,165-record project store: 4.96 s before 3.15.1, 0.41 s "
+       "on 3.15.1, which returns before opening the store for tools capture() does not record.",
+       "EXTERNAL",
+       "CHANGELOG.md, section 3.15.1",
+       note="The store copy holds our own records. perf/gate.py arm hook_n2000 gates the work behind it."),
+    _c("readme-hook-prompt-time", "README.md", ["6.39", "1.82", "71,772"],
+       "and the prompt hook from a 6.39 s median to 1.82 s on a 71,772-record store after `--archive` (3.16.1).",
+       "UserPromptSubmit median on a 71,772-record copy of our project store, both arms interleaved: "
+       "6.39 s on 3.15.9, 1.82 s after `--archive` on 3.16.1. The run counts are in the CHANGELOG entry.",
+       "EXTERNAL",
+       "CHANGELOG.md, section 3.16.1",
+       note="The store copy holds our own records. perf/gate.py arm prompt_archived_n2000 gates the "
+            "rows the prompt hook loads after an archive."),
     _c("readme-row-write-cost-10k", "README.md", ["10,000", "0.0818", "0.0422", "1.9"],
        "| 10,000 | 0.0818 s | 0.0422 s | rows about 1.9x faster |",
        "One persisted write to a 10,000-record store, median of thirty, three independent trials: "

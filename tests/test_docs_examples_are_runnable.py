@@ -126,6 +126,17 @@ def test_every_documented_inspeximus_command_block_runs():
         if not lines:
             continue
         work = tempfile.mkdtemp(prefix="readme_block_")
+        # A HOME OF ITS OWN per block (2026-10-06). `inspeximus install --all` is documented, and a
+        # reader runs it in their own home: it writes ~/.inspeximus/shared.json, which moves the default
+        # store for every later process. Run in the worker's shared test home, that file outlived the
+        # block and changed what later tests in the same worker resolved (test_surface_parity read a
+        # shared store; the audit-verify block verified the wrong one). The command still runs, exit
+        # code checked; only the home it writes to is the block's own.
+        home = os.path.join(work, "home")
+        os.makedirs(home)
+        block_home = {"HOME": home, "USERPROFILE": home, "APPDATA": os.path.join(home, "AppData", "Roaming"),
+                      "LOCALAPPDATA": os.path.join(home, "AppData", "Local"),
+                      "XDG_CONFIG_HOME": os.path.join(home, ".config")}
         for line in lines:
             # shlex, not .split(): a documented command contains a quoted sentence, and
             # splitting on spaces turned it into six unrecognised arguments -- the test
@@ -141,7 +152,7 @@ def test_every_documented_inspeximus_command_block_runs():
             reader_env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
             r = subprocess.run([sys.executable, "-m", "inspeximus.cli", *argv], cwd=work,
                                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
-                               env={**reader_env, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
+                               env={**reader_env, **block_home, "PYTHONIOENCODING": "utf-8", "PYTHONPATH": ROOT})
             total += 1
             assert r.returncode == 0, (
                 f"a documented command fails when pasted: $ {line} -- exit={r.returncode}; "

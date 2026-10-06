@@ -174,6 +174,11 @@ boundary of every row, is on the **[EU AI Act evidence page](https://dancenitra.
 and in [docs/AI_ACT.md](docs/AI_ACT.md). Scope in one sentence: `inspeximus coverage` lists 36 of 36 in-scope provider and deployer duties
 covered on a fresh store (3.12.0), stated per article; a certification is a separate act by someone else.
 
+For the documents an assessor reads, `assessor_pack()` (3.7.0) renders Annex IV, the deployer report
+with its DPIA and FRIA appendices, the Annex VIII export and the audit bundle, after `intake_form()` asks
+you once for the 66 fields only the operator can write. It does not call itself complete while any field
+is unanswered.
+
 ## The 30 seconds that matter
 
 Every memory library can store and retrieve. The question nobody answers is what happens when a stored
@@ -659,6 +664,33 @@ the line it starts on, generated from the AST and re-checked in CI.
 
 ---
 
+## One memory for every agent you use
+
+```bash
+pip install inspeximus
+inspeximus install --all
+```
+
+`install --all` (3.14.0) finds each agent you have installed: Claude Code, including the copy that
+Claude Desktop runs for its Code tab (3.14.4), Codex CLI, Gemini CLI, Antigravity, Cursor, Windsurf
+(Devin Desktop), Devin CLI, Cline and Hermes Agent. It registers the MCP server in each and points all
+of them at one user-level store, so a decision recorded in one agent is in the store every other agent
+reads.
+
+- **How each agent recalls.** Claude Code and Hermes Agent recall through their hooks and memory
+  provider. Gemini CLI and Codex read the server's instruction to recall at the start of each task. For
+  Cursor, Windsurf, Devin, Cline and Antigravity, `--all` offers one line in the agent's rules file
+  (`--rules yes` or `--rules no`).
+- **Your config is kept.** It merges into existing entries and copies every file it changes first. If
+  your agents already name two different stores, it stops and asks.
+- **It says whether it worked.** The install ends with a five-line block: the version and `ARMED` or
+  `NOT ARMED`, the store and its record count, the wired agents, the apps to restart, and a seal.
+  `inspeximus install --check` prints the block again, recomputes the seal from the store, and exits
+  non-zero when it no longer matches.
+
+The macOS path for Claude Desktop follows the Windows layout and has not been measured on a Mac.
+Per-agent steps: [docs/install/index.md](docs/install/index.md).
+
 ## Use it in Claude Code (one line)
 
 From inside Claude Code, no pip, no config file:
@@ -681,8 +713,13 @@ knowing what the last one decided — no `CLAUDE.md` editing, no re-explaining:
 - **PostToolUse** captures what actually happened, keyed by file
 - **PreToolUse** surfaces the decision that bears on the action *before* it runs
 
-Verified with the Claude Code CLI on a clean profile, both routes, across two sessions. The Code tab
-of the Claude desktop app is not verified.
+Verified with the Claude Code CLI on a clean profile, both routes, across two sessions. In the Code
+tab of the Claude desktop app on Windows, live sessions on 3.16.2 show hook captures in the store, the
+recall block on each prompt, and the MCP tools. The Code tab has not been measured on macOS.
+
+Hook times, measured on copies of our own project stores and recorded in the CHANGELOG:
+a Read went from 4.96 s to 0.41 s on a 67,165-record store (3.15.1),
+and the prompt hook from a 6.39 s median to 1.82 s on a 71,772-record store after `--archive` (3.16.1).
 
 ### When the project store grows
 
