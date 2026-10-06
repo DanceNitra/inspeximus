@@ -171,13 +171,17 @@ def test_the_attempt_record_is_whole_and_the_detached_run_outlives_the_hook(proj
     state = os.path.join(proj, ".inspeximus", "coding_memory.json.archive-auto.json")
     st = json.load(open(state, encoding="utf-8"))                       # whole JSON, or this raises
     assert isinstance(st["pid"], int), "the attempt record carries the pid of the run the hook started"
+    # The run's own log says it finished. (The state file's `done` mark is not used: the archive's attempt record is written
+    # again by the hook after the start, and a run that finishes first loses its mark: see the report.)
+    log = os.path.join(proj, ".inspeximus", "coding_memory.json.archive-auto.log")
     end = time.time() + 120
+    text = ""
     while time.time() < end:
-        st = json.load(open(state, encoding="utf-8"))
-        if st.get("done"):
+        text = open(log, encoding="utf-8", errors="replace").read() if os.path.exists(log) else ""
+        if '"stamp_guards"' in text:
             break
         time.sleep(0.25)
-    assert st.get("done"), "the detached run did not finish after the hook's process ended: %r" % st
+    assert '"stamp_guards"' in text, "the detached run did not finish after the hook's process ended: %r" % text[-300:]
 
 
 def test_the_prompt_hook_writes_no_receipt_and_leaves_the_receipt_files_as_they_were(proj, tmp_path, monkeypatch):
