@@ -898,6 +898,16 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
             proc = subprocess.Popen(argv, **kw)
         log.close()
         record["pid"] = getattr(proc, "pid", None)
+        # A FAST RUN HAS MARKED ITSELF DONE BY NOW. Writing the record again over its mark would lose `done`, and a run that
+        # finished would look dead and be started again after the floor. The pid is merged into what the run left.
+        try:
+            with open(state, encoding="utf-8") as fh:
+                cur = json.load(fh)
+            if isinstance(cur, dict) and cur.get("last_attempt") == record["last_attempt"]:
+                cur["pid"] = record["pid"]
+                record = cur
+        except (OSError, ValueError):
+            pass
         with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(record, fh)
         os.replace(tmp, state)

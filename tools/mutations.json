@@ -8662,5 +8662,14 @@
   "tests": [
    "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
   ]
+ },
+ {
+  "name": "the re-stamp attempt record overwrites the done mark of a run that finished first",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if isinstance(cur, dict) and cur.get(\"last_attempt\") == record[\"last_attempt\"]:\n                cur[\"pid\"] = record[\"pid\"]\n                record = cur",
+  "new": "            if False:\n                cur[\"pid\"] = record[\"pid\"]\n                record = cur",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
  }
 ]

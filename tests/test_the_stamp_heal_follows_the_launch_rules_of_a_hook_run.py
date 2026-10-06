@@ -151,6 +151,22 @@ def test_the_attempt_carries_the_pid_and_the_run_marks_itself_done(proj):
     assert st["result"] == "ok" and st["done"] >= st["last_attempt"]
 
 
+def test_a_run_that_finished_before_the_hook_wrote_the_pid_keeps_its_done_mark(proj, monkeypatch):
+    _foreign(proj)
+    state = os.path.join(proj, ".inspeximus", "coding_memory.json.stamp-auto.json")
+
+    def fast_run(argv, **k):                      # the run is over before Popen returns to the hook
+        st = json.load(open(state, encoding="utf-8"))
+        st.update(done=time.time(), result="ok")
+        json.dump(st, open(state, "w"))
+        return type("P", (), {"pid": 4242})()
+
+    monkeypatch.setattr(subprocess, "Popen", fast_run)
+    assert cc.maybe_restamp_in_background(proj, foreign=4) == "started"
+    st = json.load(open(state, encoding="utf-8"))
+    assert st["pid"] == 4242 and st.get("done") and st["result"] == "ok", st
+
+
 def test_a_run_that_died_is_retried_after_the_floor_and_a_live_one_is_not(proj, monkeypatch):
     _foreign(proj)
     state = os.path.join(proj, ".inspeximus", "coding_memory.json.stamp-auto.json")
