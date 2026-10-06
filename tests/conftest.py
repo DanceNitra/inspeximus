@@ -22,7 +22,7 @@ import pytest
 
 from inspeximus import Inspeximus
 
-from _store_io import load_store, save_store
+from _store_io import load_receipts, load_store, save_receipts, save_store
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -102,12 +102,10 @@ def fork_of(ix, dest, records, receipt_key=None, keep=1):
     """
     shutil.copytree(os.path.dirname(str(ix.path)), dest)
     p = os.path.join(dest, os.path.basename(str(ix.path)))
-    rp = p + ".receipts.json"
-    rec = json.load(open(rp, encoding="utf-8"))
-    rows = rec if isinstance(rec, list) else rec["receipts"]
+    rows = load_receipts(p)
     kept = {r["memory_id"] for r in rows[:keep]}
     del rows[keep:]
-    json.dump(rec, open(rp, "w", encoding="utf-8"))
+    save_receipts(p, rows)
     save_store(p, [r for r in load_store(p) if r["id"] in kept])
 
     f = Inspeximus(path=p, receipts=True, receipt_key=receipt_key)

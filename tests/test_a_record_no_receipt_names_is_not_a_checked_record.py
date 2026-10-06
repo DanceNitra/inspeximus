@@ -29,7 +29,7 @@ import pytest
 
 from inspeximus import Inspeximus
 
-from _store_io import load_store, save_store
+from _store_io import load_receipts, load_store, save_receipts, save_store
 
 FORGED = "the deploy key rotates every 3650 days"
 
@@ -67,12 +67,10 @@ def test_dropping_a_receipt_no_longer_launders_an_edit():
     """The composition. Without the sweep this was: delete the trailing receipt, then rewrite that
     record's text AND value, and verify_writes goes from False to True."""
     p, _ = _mk(3)
-    rp = p + ".receipts.json"
-    rec = json.load(open(rp, encoding="utf-8"))
-    rows = rec if isinstance(rec, list) else rec.get("receipts")
+    rows = load_receipts(p)
     victim = rows[-1]["memory_id"]
     del rows[-1]
-    json.dump(rec, open(rp, "w", encoding="utf-8"))
+    save_receipts(p, rows)
     _edit(p, lambda rr: [r.update(text="rewritten out of band", object="evil")
                          for r in rr if r["id"] == victim])
     ok, problems = Inspeximus(path=p, receipts=True).verify_writes()

@@ -25,6 +25,7 @@ pytest.importorskip("mcp")
 
 from _mcp_review import call, load_server  # noqa: E402
 
+from _store_io import load_receipts, receipt_files
 from inspeximus import Inspeximus  # noqa: E402
 
 XFAIL = dict(strict=True, raises=AssertionError)
@@ -86,7 +87,7 @@ def _disk_counts(store_path):
     else:
         raw = json.loads(open(store_path, encoding="utf-8").read())
         items = raw.get("items", raw) if isinstance(raw, dict) else raw
-    receipts = json.loads(open(str(store_path) + ".receipts.json", encoding="utf-8").read())
+    receipts = load_receipts(store_path)
     return len(items), len(receipts)
 
 
@@ -162,7 +163,7 @@ def test_verify_consistency_on_a_running_server_catches_a_rollback_on_disk(serve
     call(mod, "remember", text="the region is frankfurt", key="svc::region", object="frankfurt")
     mod._MEM.flush()
     sp = server.store_path
-    earlier = {p: open(p, "rb").read() for p in (str(sp), str(sp) + ".receipts.json")}
+    earlier = {p: open(p, "rb").read() for p in (str(sp), *receipt_files(sp))}
     call(mod, "remember", text="the limit is 50000", key="limit", object="50000")
     call(mod, "remember", text="the escalation contact is the on-call SRE", key="esc", object="sre")
     mod._MEM.flush()

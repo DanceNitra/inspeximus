@@ -40,6 +40,22 @@ def _full_disk_for(monkeypatch, suffix):
 
     monkeypatch.setattr(Inspeximus, "_atomic_write", staticmethod(aw))
     monkeypatch.setattr(type(core.Path("x")), "write_text", wt)
+    if suffix == ".receipts.json":
+        # The snapshot-plus-tail format writes the sidecar through `_durable_replace` and the tail through
+        # `receipts_tail.append`; a full disk refuses both.
+        real_dr = core._durable_replace
+
+        def dr(path, *a, **k):
+            if str(path).endswith((".receipts.json", ".receipts.tail.jsonl")):
+                raise OSError(28, "No space left on device")
+            return real_dr(path, *a, **k)
+
+        def app(tail, *a, **k):
+            raise OSError(28, "No space left on device")
+
+        monkeypatch.setattr(core, "_durable_replace", dr)
+        import inspeximus.receipts_tail as _rt
+        monkeypatch.setattr(_rt, "append", app)
 
 
 def _store(tmp_path):

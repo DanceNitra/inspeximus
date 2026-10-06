@@ -11,6 +11,7 @@ import sqlite3
 
 import pytest
 
+from _store_io import load_receipts, receipt_files, save_receipts
 from inspeximus import Inspeximus, new_receipt_keypair
 
 
@@ -29,15 +30,14 @@ def _store(tmp_path, sk, name="m.json"):
 def _cut_tail_with_receipts(path: str, n: int) -> None:
     """What an attacker with write access to the store's DIRECTORY does: delete the newest n records
     and their receipts, leaving a shorter chain that is internally consistent."""
-    rp = path + ".receipts.json"
-    rec = json.loads(open(rp, encoding="utf-8").read())
+    rec = load_receipts(path)
     victims = [r["memory_id"] for r in rec[-n:]]
     c = sqlite3.connect(path)
     for v in victims:
         c.execute("delete from records where id=?", (v,))
     c.commit()
     c.close()
-    open(rp, "w", encoding="utf-8").write(json.dumps(rec[:-n]))
+    save_receipts(path, rec[:-n])
 
 
 def test_a_tail_cut_with_its_receipts_is_reported_and_the_head_is_what_reports_it(tmp_path, home, monkeypatch):
@@ -78,7 +78,8 @@ def test_a_fresh_store_at_a_reused_path_is_not_a_rollback(tmp_path, home):
     path = str(m.path)
     del m
     os.remove(path)
-    os.remove(path + ".receipts.json")
+    for f in receipt_files(path):
+        os.remove(f)
     sk2, pk2 = new_receipt_keypair()
     fresh = Inspeximus(path, receipts=True, receipt_key=sk2)
     fresh.remember("a new store, one record", key="k")

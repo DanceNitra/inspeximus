@@ -16,9 +16,17 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json.encoder
 
+import pytest
 import inspeximus.core as core
 from inspeximus import Inspeximus
 
+
+
+@pytest.fixture(autouse=True)
+def _the_array_format(monkeypatch):
+    """This file pins the ARRAY sidecar (`<store>.receipts.json` as one JSON array, written whole). The snapshot-plus-tail
+    format has its own tests (`test_the_receipt_tail_*`), so the switch is off here whichever way the run set it."""
+    monkeypatch.delenv("INSPEXIMUS_RECEIPTS_TAIL", raising=False)
 
 def _store(n=6):
     p = os.path.join(tempfile.mkdtemp(), "m.json")

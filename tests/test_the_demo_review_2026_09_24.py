@@ -26,6 +26,7 @@ import shutil
 import pytest
 
 import inspeximus.erasure_residue as erasure_residue
+from _store_io import load_receipts, save_receipts
 from inspeximus import demo
 from inspeximus.core import Inspeximus, _canon, _sha256_hex, verify_erasure_certificate
 from inspeximus.demo import KEY, NEW, OLD, SUBJECT_VALUE, run_demo
@@ -328,9 +329,7 @@ def _rewrite_receipts_without_a_key(store_path):
     receipt from the records on disk, drop any signature (a chain with none is accepted unless one is
     demanded), and re-link the chain. sha256 is public; nothing here is secret."""
     records = {r["id"]: r for r in Inspeximus(path=store_path, receipts=True).items}
-    sidecar = store_path + ".receipts.json"
-    with open(sidecar, encoding="utf-8") as fh:
-        chain = json.load(fh)
+    chain = load_receipts(store_path)
     prev = "0" * 64
     for r in chain:
         rec = records[r["memory_id"]]
@@ -345,8 +344,7 @@ def _rewrite_receipts_without_a_key(store_path):
         r["prev"] = prev
         r["hash"] = _sha256_hex(_canon(Inspeximus._chain_core(r, "write")))
         prev = r["hash"]
-    with open(sidecar, "w", encoding="utf-8") as fh:
-        json.dump(chain, fh, indent=2)
+    save_receipts(store_path, chain)
 
 
 def test_F2_an_edit_that_also_rewrites_the_receipts_is_refused_by_step_3(monkeypatch):

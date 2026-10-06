@@ -28,14 +28,13 @@ def _unbound_store(tmp_path):
 
 def _count_receipt_writes(monkeypatch):
     writes = []
-    real = Inspeximus._atomic_write
+    real = Inspeximus._flush_receipts            # the one place both sidecar formats are written from
 
-    def counted(path, data, *a, **k):
-        if str(path).endswith(".receipts.json"):
-            writes.append(path)
-        return real(path, data, *a, **k)
+    def counted(self):
+        writes.append(self._receipts_path)
+        return real(self)
 
-    monkeypatch.setattr(Inspeximus, "_atomic_write", staticmethod(counted))
+    monkeypatch.setattr(Inspeximus, "_flush_receipts", counted)
     return writes
 
 
@@ -82,14 +81,11 @@ def test_a_chain_that_cannot_be_written_is_put_back(tmp_path, monkeypatch):
     from inspeximus.core import ProofNotWritten
     p, m = _unbound_store(tmp_path)
     before = list(m._receipts)
-    real = Inspeximus._atomic_write
 
-    def failing(path, data, *a, **k):
-        if str(path).endswith(".receipts.json"):
-            raise OSError("disk full (test)")
-        return real(path, data, *a, **k)
+    def failing(self):
+        raise OSError("disk full (test)")
 
-    monkeypatch.setattr(Inspeximus, "_atomic_write", staticmethod(failing))
+    monkeypatch.setattr(Inspeximus, "_flush_receipts", failing)
     with pytest.raises(ProofNotWritten):
         m.recommit()
     assert m._receipts == before

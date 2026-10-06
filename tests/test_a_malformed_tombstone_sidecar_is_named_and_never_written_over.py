@@ -16,6 +16,7 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from _store_io import load_receipts, save_receipts
 from inspeximus.core import Inspeximus, SidecarMalformed  # noqa: E402
 
 SHAPES = {
@@ -75,10 +76,9 @@ def test_a_malformed_tombstone_sidecar_gets_a_named_verdict(tmp_path, shape):
 
 def test_a_malformed_receipt_makes_the_certificate_refuse_and_the_report_say_why(tmp_path):
     p, _ = _store(tmp_path)
-    rp = p + ".receipts.json"
-    chain = json.load(open(rp))
+    chain = load_receipts(p)
     chain[0] = "garbage"
-    json.dump(chain, open(rp, "w"))
+    save_receipts(p, chain)
     with pytest.raises(SidecarMalformed):
         Inspeximus(p, receipts=True).erasure_certificate()
     rep = Inspeximus(p, receipts=True).governance_report()

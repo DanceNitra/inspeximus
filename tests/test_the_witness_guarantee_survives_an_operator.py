@@ -25,7 +25,7 @@ from inspeximus.core import new_ed25519_keypair
 from conftest import fork_of
 from inspeximus.witness_pool import Witness
 
-from _store_io import load_store, save_store
+from _store_io import load_receipts, load_store, save_receipts, save_store
 
 SK, PK = new_ed25519_keypair()
 EVIL_SK, EVIL_PK = new_ed25519_keypair()
@@ -65,12 +65,10 @@ def test_copying_a_rolled_back_store_does_not_buy_a_fresh_witness():
 
     # roll the chain back IN PLACE, keeping genesis, then copy the whole store elsewhere
     p = str(ix.path)
-    rp = p + ".receipts.json"
-    rec = json.load(open(rp, encoding="utf-8"))
-    rows = rec if isinstance(rec, list) else rec["receipts"]
+    rows = load_receipts(p)
     keep = {r["memory_id"] for r in rows[:2]}
     del rows[2:]
-    json.dump(rec, open(rp, "w", encoding="utf-8"))
+    save_receipts(p, rows)
     save_store(p, [r for r in load_store(p) if r["id"] in keep])
 
     B = os.path.join(d, "B")
@@ -209,12 +207,10 @@ def test_rewrite_then_grow_is_a_fork_not_staleness():
     # The forged store must share a genesis with the witnessed one, or this measures "a different
     # store" rather than a fork. Roll the real one back on disk and grow it instead.
     p = str(a.path)
-    rp = p + ".receipts.json"
-    rec = json.load(open(rp, encoding="utf-8"))
-    rows = rec if isinstance(rec, list) else rec["receipts"]
+    rows = load_receipts(p)
     keep = {r["memory_id"] for r in rows[:1]}
     del rows[1:]
-    json.dump(rec, open(rp, "w", encoding="utf-8"))
+    save_receipts(p, rows)
     save_store(p, [r for r in load_store(p) if r["id"] in keep])
     forged = Inspeximus(path=p, receipts=True, receipt_key=SK)
     for i in range(4):

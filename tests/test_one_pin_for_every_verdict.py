@@ -16,6 +16,7 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from _store_io import receipt_files
 from inspeximus import Inspeximus  # noqa: E402
 from inspeximus.erasure_residue import scan_residue  # noqa: E402
 
@@ -174,18 +175,22 @@ def test_verify_consistency_reads_the_chain_on_disk_as_well(tmp_path):
     st.remember("one", key="a", object="1")
     st.flush()
     side = str(path) + ".receipts.json"
-    earlier = open(side, "rb").read()
+    earlier = {p: open(p, "rb").read() for p in receipt_files(path)}
     st.remember("two", key="b", object="2")
     st.remember("three", key="c", object="3")
     st.flush()
     a = st.anchor()
     st.remember("four", key="d", object="4")
     assert st.verify_consistency(a) == (True, []), "control: growth after the anchor stays consistent"
-    with open(side, "wb") as fh:                                   # the handle keeps its 4; disk has 1
-        fh.write(earlier)
+    for p, b in earlier.items():                                   # the handle keeps its 4; disk has 1
+        with open(p, "wb") as fh:
+            fh.write(b)
+    if os.path.exists(str(path) + ".receipts.tail.jsonl") and str(path) + ".receipts.tail.jsonl" not in earlier:
+        os.remove(str(path) + ".receipts.tail.jsonl")
     ok, problems = st.verify_consistency(a)
     assert ok is False and any(p.startswith("on disk: write log shrank") for p in problems), problems
-    os.remove(side)
+    for p in receipt_files(path):
+        os.remove(p)
     ok, problems = st.verify_consistency(a)
     assert ok is False and any("on disk: write log shrank: 0" in p for p in problems), problems
     with open(side, "w", encoding="utf-8") as fh:

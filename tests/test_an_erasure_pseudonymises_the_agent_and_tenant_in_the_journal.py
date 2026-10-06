@@ -176,7 +176,8 @@ def test_no_field_of_an_erased_record_is_left_in_any_file_or_the_certificate(tmp
     assert not after, f"a field of the erased record is still in a file: {after}"
     stamps = [t.get("tenant") for t in Inspeximus(str(p))._tombstones]
     assert stamps == [rows.pseudonym(p, "zq-tenant-7741")] and stamps[0].startswith(rows.PSEUDONYM_PREFIX), stamps
-    assert sorted(os.listdir(p.parent)) == ["memory.json", "memory.json.receipts.json", "memory.json.tombstones.json"]
+    assert sorted(n for n in os.listdir(p.parent) if not n.endswith(".receipts.tail.jsonl")) == [
+        "memory.json", "memory.json.receipts.json", "memory.json.tombstones.json"]
     mine, withheld = Inspeximus(str(p)).for_tenant("zq-tenant-7741")._visible_tombstones()
     assert len(mine) == 1 and withheld == 0, "the tenant handle still finds its own erasure"
     cert = json.dumps(Inspeximus(str(p)).erasure_certificate())
