@@ -81,7 +81,7 @@ def test_the_distiller_ignores_an_env_url_to_another_host(home, monkeypatch):
 
 def test_a_url_whose_host_two_parsers_read_differently_is_not_allowed(home, monkeypatch):
     home({"allowed_hosts": ["192.168.0.99"]})
-    for url in ("http://192.168.0.99@203.0.113.7/v1", "http://203.0.113.7\@192.168.0.99/v1"):
+    for url in ("http://192.168.0.99@203.0.113.7/v1", "http://203.0.113.7\\@192.168.0.99/v1"):
         monkeypatch.setenv("INSPEXIMUS_EMBED_URL", url)
         assert _http.env_url("INSPEXIMUS_EMBED_URL") == "", url
     # urlsplit reads the host "192.168.0.99%40203.0.113.7"; urllib.request unquotes it and connects to 203.0.113.7.
