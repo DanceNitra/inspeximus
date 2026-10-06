@@ -313,7 +313,9 @@ bytes after.
 The snapshot becomes a JSON object, `{"kind": "inspeximus.receipts/2", ...}`, and no released version can extend
 it: 3.16.1, 3.16.2, and 3.16.3 fail on their first receipted write and leave both files unchanged, and
 `verify_writes()` on the newer version names every record such a write left without a receipt. A store in this format
-stays in it, with or without the variable. To return a store to the array that older versions read, run
+stays in it, with or without the variable. Each receipted call of an older server saves its record before it fails, so
+restart long-running older servers before the first write that converts a store. To return a store to the array that
+older versions read, run
 `inspeximus receipts to-legacy`. `inspeximus receipts compact` rewrites the snapshot and empties the tail. A damaged
 pair is named by `verify_writes()` and is never written over. A last line that was cut by a crash is reported as
 `receipts_torn_tail` and is not a problem while the outside head is not ahead of the last good line.
