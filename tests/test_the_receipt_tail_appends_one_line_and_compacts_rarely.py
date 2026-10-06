@@ -246,3 +246,28 @@ def test_a_reader_that_meets_a_compaction_between_its_two_reads_finds_no_problem
     monkeypatch.setattr(rt, "_read_bytes", compact_after_the_first_read)
     res = rt.read(p + ".receipts.json", rt.tail_path(p + ".receipts.json"), core._GENESIS)
     assert fired and not res["problems"] and len(res["entries"]) == 5, res["problems"]
+
+
+def test_a_peers_append_is_adopted_by_reading_the_tail_and_not_the_snapshot(tmp_path, monkeypatch):
+    """The reconcile that follows a peer's append parses the tail only while the snapshot has not changed. On our MCP
+    store the snapshot is 16 MB and the tail at most 500 lines."""
+    p = str(tmp_path / "s.json")
+    a = Inspeximus(p, receipts=True)
+    for i in range(6):
+        a.remember(f"fact number {i}", key=f"k{i}")
+    a.flush()
+    b = Inspeximus(p, receipts=True)
+    b.remember("the peer's write", key="k-peer")
+    b.flush()
+    reads = []
+    real = rt._read_bytes
+    monkeypatch.setattr(rt, "_read_bytes", lambda path, **k: (reads.append(os.path.basename(str(path))), real(path, **k))[1])
+    assert a._reconcile_receipts_with_disk() == 1, "the peer's receipt was adopted"
+    assert reads == ["s.json.receipts.tail.jsonl"], reads
+    assert [r["hash"] for r in a._receipts] == [r["hash"] for r in b._receipts]
+    # A compaction by the peer replaces the snapshot: the next reconcile reads it.
+    rt.compact(p)
+    reads.clear()
+    a.remember("after the peer's compaction", key="k-after")
+    assert "s.json.receipts.json" in reads, reads
+    assert a.verify_writes()[0]

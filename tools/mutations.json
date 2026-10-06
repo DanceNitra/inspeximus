@@ -8254,5 +8254,23 @@
   "tests": [
    "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
   ]
+ },
+ {
+  "name": "a peer's append is adopted by parsing the whole snapshot again",
+  "file": "inspeximus/core.py",
+  "old": "        if (reuse_snapshot and self._rc_mode == \"tail\" and self._rc_snap_sig is not None",
+  "new": "        if (False and self._rc_mode == \"tail\" and self._rc_snap_sig is not None",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "a replaced snapshot is read from the handle's old copy of it",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    if known is not None and sig is not None and known[0] == sig:",
+  "new": "    if known is not None and sig is not None:",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
  }
 ]

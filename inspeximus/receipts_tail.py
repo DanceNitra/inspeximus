@@ -58,7 +58,16 @@ def entry_line(pos: int, entry_json: str) -> bytes:
     return ('{"pos": %d, "entry": %s}\n' % (pos, entry_json)).encode("utf-8")
 
 
-def read(snapshot, tail, genesis: str) -> dict:
+def snapshot_sig(snapshot):
+    """(mtime_ns, size) of the snapshot, or None when it is absent. The snapshot is only ever replaced whole."""
+    try:
+        st = os.stat(str(snapshot))
+    except OSError:
+        return None
+    return (st.st_mtime_ns, st.st_size)
+
+
+def read(snapshot, tail, genesis: str, known=None) -> dict:
     """Read the chain a snapshot and a tail hold.
 
     Returns {entries, mode, snap_n, disk_n, good_off, torn, problems, base_ok}:
@@ -73,21 +82,32 @@ def read(snapshot, tail, genesis: str) -> dict:
     * `good_off` is the byte offset in the tail after the last good line: where the next append goes.
     * `base_ok` is False when the header does not fit the snapshot, in which case a writer rewrites the snapshot
       rather than appending to a tail whose base it cannot trust.
+    * `snap_sig` is the snapshot's stat taken before it was read.
+
+    `known` is `(snap_sig, entries)` from an earlier read of the snapshot. When the snapshot's stat is still
+    `snap_sig`, its entries are taken from `known` and only the tail is parsed: a peer's append then costs one
+    small file, not the whole chain.
     """
     out = {"entries": [], "mode": None, "snap_n": 0, "disk_n": 0, "good_off": 0, "torn": False,
-           "problems": [], "base_ok": True}
+           "problems": [], "base_ok": True, "snap_sig": None}
     # THE TAIL IS READ BEFORE THE SNAPSHOT. A compaction replaces the snapshot first and the tail second, so a
     # reader that takes the tail first and the snapshot after can see an older tail with a newer snapshot (the
     # skip rule below reads that), and never a newer tail with an older snapshot, which would read as a snapshot
     # older than its tail.
     tail_data, tail_err = _read_bytes(tail)
-    try:
-        raw = json.loads(_read_bytes(snapshot, required=True)[0].decode("utf-8"))
-    except FileNotFoundError:
-        return out
-    except Exception as e:                                     # noqa: BLE001
-        out["problems"].append(f"{Path(snapshot).name} is not JSON ({type(e).__name__})")
-        return out
+    sig = snapshot_sig(snapshot)
+    out["snap_sig"] = sig
+    if known is not None and sig is not None and known[0] == sig:
+        raw = {"kind": SNAPSHOT_KIND, "n": len(known[1]), "entries": list(known[1]),
+               "tip": known[1][-1].get("hash") if known[1] else None}
+    else:
+        try:
+            raw = json.loads(_read_bytes(snapshot, required=True)[0].decode("utf-8"))
+        except FileNotFoundError:
+            return out
+        except Exception as e:                                 # noqa: BLE001
+            out["problems"].append(f"{Path(snapshot).name} is not JSON ({type(e).__name__})")
+            return out
     if isinstance(raw, list):
         out.update(entries=raw, mode="list", snap_n=len(raw), disk_n=len(raw))
         return out

@@ -4614,10 +4614,23 @@ class Inspeximus:
         self._rc_torn = False
         self._rc_problems: list = []
         self._rc_base_ok = True
+        self._rc_snap_sig = None        #: the snapshot's stat when this handle last read or wrote it
+        self._rc_snap_tip = None        #: the hash of the snapshot's last entry then
 
-    def _read_receipts_sidecar(self) -> dict:
-        """Read the sidecar pair (`receipts_tail.read`) and remember what it says about the file's state."""
-        res = _rtail.read(self._receipts_path, _rtail.tail_path(self._receipts_path), _GENESIS)
+    def _read_receipts_sidecar(self, reuse_snapshot: bool = False) -> dict:
+        """Read the sidecar pair (`receipts_tail.read`) and remember what it says about the file's state.
+
+        `reuse_snapshot` takes the snapshot's entries from this handle's own chain when the snapshot's stat is the
+        one this handle last saw, so a reconcile after a peer's append parses the tail and not 16 MB of snapshot."""
+        known = None
+        n = self._rc_snap_n
+        if (reuse_snapshot and self._rc_mode == "tail" and self._rc_snap_sig is not None
+                and n <= len(self._receipts) and (n == 0 or self._receipts[n - 1].get("hash") == self._rc_snap_tip)):
+            known = (self._rc_snap_sig, self._receipts[:n])
+        res = _rtail.read(self._receipts_path, _rtail.tail_path(self._receipts_path), _GENESIS, known=known)
+        self._rc_snap_sig = res["snap_sig"]
+        self._rc_snap_tip = (res["entries"][res["snap_n"] - 1].get("hash")
+                             if res["mode"] == "tail" and res["snap_n"] else None)
         self._rc_mode = res["mode"]
         self._rc_snap_n = res["snap_n"]
         self._rc_disk_n = res["disk_n"]
@@ -4656,7 +4669,7 @@ class Inspeximus:
         if sig is None or sig == getattr(self, "_receipts_sig", None):
             return 0
         try:
-            res = self._read_receipts_sidecar()
+            res = self._read_receipts_sidecar(reuse_snapshot=True)
         except Exception:
             return 0
         disk = res["entries"]
@@ -5229,6 +5242,7 @@ class Inspeximus:
         _durable_replace(path, _rtail.snapshot_text(_dump_chain_cached(mine, cache), len(mine), tip))
         _durable_replace(_rtail.tail_path(path), _rtail.header_line(len(mine), tip))
         self._rc_mode, self._rc_snap_n, self._rc_disk_n = "tail", len(mine), len(mine)
+        self._rc_snap_sig, self._rc_snap_tip = _rtail.snapshot_sig(path), (mine[-1]["hash"] if mine else None)
         self._rc_good_off = len(_rtail.header_line(len(mine), tip))
         self._rc_torn, self._rc_base_ok, self._rc_problems = False, True, []
 
