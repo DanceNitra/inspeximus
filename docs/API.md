@@ -18,7 +18,7 @@ inspeximus stats               # store summary   ·   add --json to any command 
 It shares one store with the MCP server (`--path`, else `$INSPEXIMUS_PATH`, else `$INSPEXIMUS_SCOPE`, else
 `./inspeximus_memory.json` — see [Working across several projects](#working-across-several-projects)). Recall is
 lexical by default; set `$INSPEXIMUS_EMBED_URL` (+ `$INSPEXIMUS_EMBED_MODEL`) to any OpenAI-compatible `/embeddings`
-endpoint (e.g. local Ollama) for semantic recall. Zero dependencies.
+endpoint (e.g. local Ollama) for semantic recall. An endpoint on another machine must also be named in your own config, `<key home>/inspeximus/config.json`, as `{"embed": {"allowed_hosts": ["<host>"]}}`; a loopback URL needs no entry (3.16.4). Zero dependencies.
 
 ## Multi-hop recall, reachable from MCP and the shell: `recall_iterative` / `recall_followup` (1.90.0)
 

@@ -24,12 +24,12 @@ import time
 
 def _embedder():
     """Optional embedder (urllib, zero-dep) — enabled only if INSPEXIMUS_EMBED_URL is set. Fail-open."""
-    url = os.environ.get("INSPEXIMUS_EMBED_URL", "").strip()
+    from ._http import embedding_from, env_key, env_url, post_json   # no redirect, no proxy for loopback (3.16.4)
+    url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
     if not url:
         return None
-    from ._http import embedding_from, post_json      # no redirect followed, no proxy for a loopback URL (3.16.4)
     model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
-    key = os.environ.get("INSPEXIMUS_EMBED_KEY", "").strip()
+    key = env_key("INSPEXIMUS_EMBED_KEY", url)
 
     def embed(text: str):
         headers = {"Authorization": f"Bearer {key}"} if key else {}
