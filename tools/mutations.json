@@ -8545,5 +8545,77 @@
   "tests": [
    "tests/test_the_hook_heals_stamps_made_under_another_python.py"
   ]
+ },
+ {
+  "name": "the re-stamp run reads PYTHON* variables from the project",
+  "file": "inspeximus/claude_code.py",
+  "old": "        argv = [sys.executable, \"-E\", \"-c\",                  # -E: no PYTHON* variable from the project\n                \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];\"\n                \"sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))\" % _pkg_parent,\n                \"inspeximus.claude_code\", \"--stamp-guards\"",
+  "new": "        argv = [sys.executable, \"-c\",\n                \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];\"\n                \"sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))\" % _pkg_parent,\n                \"inspeximus.claude_code\", \"--stamp-guards\"",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run keeps the working directory on its import path",
+  "file": "inspeximus/claude_code.py",
+  "old": "                \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];\"\n                \"sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))\" % _pkg_parent,\n                \"inspeximus.claude_code\", \"--stamp-guards\"",
+  "new": "                \"import runpy,sys;sys.path[:]=[p for p in sys.path];\"\n                \"sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))\" % _pkg_parent,\n                \"inspeximus.claude_code\", \"--stamp-guards\"",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run does not ask to leave the hook's job",
+  "file": "inspeximus/claude_code.py",
+  "old": "creationflags=kw[\"creationflags\"] | 0x01000000)) \\\n                if os.name == \"nt\" else subprocess.Popen(argv, **kw)       # CREATE_BREAKAWAY_FROM_JOB",
+  "new": "creationflags=kw[\"creationflags\"])) \\\n                if os.name == \"nt\" else subprocess.Popen(argv, **kw)       # CREATE_BREAKAWAY_FROM_JOB",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp attempt does not record the pid of the run",
+  "file": "inspeximus/claude_code.py",
+  "old": "        record[\"pid\"] = getattr(proc, \"pid\", None)\n        with open(tmp, \"w\", encoding=\"utf-8\") as fh:\n            json.dump(record, fh)\n        os.replace(tmp, state)\n        return \"started\"\n    except Exception:                                           # noqa: BLE001\n        return \"failed\"\n\n\ndef _hook_command",
+  "new": "        return \"started\"\n    except Exception:                                           # noqa: BLE001\n        return \"failed\"\n\n\ndef _hook_command",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "a re-stamp run never marks itself done",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _mark_stamp_run(have, bool(r.get(\"applied\") or not r.get(\"to_stamp\")))\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "a re-stamp run that died is not retried after the floor",
+  "file": "inspeximus/claude_code.py",
+  "old": "            dead = isinstance(pid, int) and not st.get(\"done\") and not _pid_alive(pid)\n            if not (dead and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):\n                return \"recent\"\n        tmp = state + \".tmp.%d\" % os.getpid()\n        record = {\"last_attempt\": now, \"foreign\"",
+  "new": "            return \"recent\"\n        tmp = state + \".tmp.%d\" % os.getpid()\n        record = {\"last_attempt\": now, \"foreign\"",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp switch is read from a repository's config",
+  "file": "inspeximus/claude_code.py",
+  "old": "    c = _read_cfg(user_config_path()).get(\"stamp\")\n    if isinstance(c, dict) and isinstance(c.get(\"auto\"), bool):\n        return c[\"auto\"]\n    return True",
+  "new": "    c = _read_cfg(_cfg_file(os.getcwd()) or user_config_path()).get(\"stamp\")\n    if isinstance(c, dict) and isinstance(c.get(\"auto\"), bool):\n        return c[\"auto\"]\n    return True",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run stamps a store the hook did not resolve",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if \"--store\" in argv or not same:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
  }
 ]
