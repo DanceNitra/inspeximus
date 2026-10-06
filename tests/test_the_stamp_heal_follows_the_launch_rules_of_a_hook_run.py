@@ -176,6 +176,7 @@ def test_a_run_told_another_store_refuses(proj):
 # 4 ---------------------------------------------------------------------------------------------------------------------
 
 def test_the_switch_comes_from_the_environment_and_the_users_config_only(proj, tmp_path, monkeypatch):
+    monkeypatch.chdir(proj)                      # the repository is the working directory, as for a hook
     os.makedirs(os.path.join(proj, ".inspeximus"), exist_ok=True)
     json.dump({"stamp": {"auto": False}}, open(os.path.join(proj, ".inspeximus", "config.json"), "w"))
     assert cc.stamp_heal_enabled() is True, "a repository's config does not switch it off, or on"
