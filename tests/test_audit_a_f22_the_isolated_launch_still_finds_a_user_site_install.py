@@ -30,11 +30,11 @@ def _user_site_env(tmp_path):
     env.update(APPDATA=str(home / "AppData" / "Roaming"), LOCALAPPDATA=str(home / "AppData" / "Local"),
                HOME=str(home), USERPROFILE=str(home))
     site = subprocess.run([sys.executable, "-E", "-c", "import site; print(site.getusersitepackages())"], env=env,
-                          capture_output=True, text=True).stdout.strip()
+                          capture_output=True, text=True, encoding="utf-8", errors="replace").stdout.strip()
     if not site or not os.path.normcase(os.path.abspath(site)).startswith(os.path.normcase(str(home))):
         pytest.skip("this interpreter's user site cannot be moved into a sandbox: %s" % site)
     enabled = subprocess.run([sys.executable, "-E", "-c", "import site; print(site.ENABLE_USER_SITE)"], env=env,
-                             capture_output=True, text=True).stdout.strip()
+                             capture_output=True, text=True, encoding="utf-8", errors="replace").stdout.strip()
     if enabled != "True":
         pytest.skip("the user site is disabled for this interpreter (a venv): %s" % enabled)
     os.makedirs(site, exist_ok=True)
@@ -44,13 +44,13 @@ def _user_site_env(tmp_path):
 
 
 def _run(cmd, env, cwd, stdin):
-    return subprocess.run(cmd, shell=True, env=env, cwd=str(cwd), input=stdin, capture_output=True, text=True,
+    return subprocess.run(cmd, shell=True, env=env, cwd=str(cwd), input=stdin, capture_output=True, text=True, encoding="utf-8", errors="replace",
                           timeout=120)
 
 
 def _ran_from(env, cmd, cwd):
     """Which inspeximus the command imports: its file, printed by a tiny stand-in for the module."""
-    return subprocess.run(cmd, shell=True, env=env, cwd=str(cwd), capture_output=True, text=True, timeout=60)
+    return subprocess.run(cmd, shell=True, env=env, cwd=str(cwd), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
 
 
 def test_f22_the_installers_python_hook_command_finds_a_user_site_install(tmp_path):
@@ -76,7 +76,7 @@ def test_f22_the_mcp_launch_for_a_python_runtime_finds_a_user_site_install(tmp_p
     env = _user_site_env(tmp_path)
     command, args = ins._server_launch("python", sys.executable)
     probe = [command] + [a for a in args if a not in ("-m", "inspeximus.mcp_server")] + ["-c", "import inspeximus"]
-    p = subprocess.run(probe, env=env, cwd=str(tmp_path), capture_output=True, text=True, timeout=60)
+    p = subprocess.run(probe, env=env, cwd=str(tmp_path), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
     assert p.returncode == 0, p.stderr.strip()[-200:]
 
 
@@ -115,6 +115,6 @@ def test_control_plain_python_m_does_run_the_repositorys_package(tmp_path):
     (repo / "inspeximus").mkdir(parents=True)
     (repo / "inspeximus" / "__init__.py").write_text("open(r'%s', 'w').write('ran')\n" % (tmp_path / "PWNED3.txt").as_posix())
     (repo / "inspeximus" / "claude_code.py").write_text("")
-    subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], cwd=str(repo), input="{}", text=True,
+    subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], cwd=str(repo), input="{}", text=True, encoding="utf-8", errors="replace",
                    capture_output=True, timeout=60)
     assert (tmp_path / "PWNED3.txt").exists(), "control: the fixture no longer reproduces F-15"

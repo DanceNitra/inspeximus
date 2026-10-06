@@ -24,18 +24,18 @@ def test_the_installer_pins_the_server_and_the_hooks_to_its_own_version(tmp_path
     monkeypatch.setattr(I, "_home", lambda: tmp_path)
     monkeypatch.setattr(I.shutil, "which", lambda name: "/usr/bin/uvx" if name == "uvx" else None)
     p = I.plan("claude")
-    assert p["block"]["args"] == ["--from", PIN_MCP, "inspeximus-mcp"]
+    assert p["block"]["args"] == ["--default-index", "https://pypi.org/simple", "--from", PIN_MCP, "inspeximus-mcp"]
     cmd = p["hooks"]["data"]["hooks"]["SessionStart"][0]["hooks"][0]["command"]
     assert f" --from {PIN_CORE} " in cmd, cmd
 
 
 def test_the_default_server_block_is_pinned():
-    assert I.default_server_block()["args"] == ["--from", PIN_MCP, "inspeximus-mcp"]
+    assert I.default_server_block()["args"] == ["--default-index", "https://pypi.org/simple", "--from", PIN_MCP, "inspeximus-mcp"]
 
 
 def test_the_plugin_server_is_pinned_to_the_release():
     cfg = json.load(open(os.path.join(ROOT, ".mcp.json"), encoding="utf-8"))
-    assert cfg["mcpServers"]["inspeximus"]["args"] == ["--from", PIN_MCP, "inspeximus-mcp"]
+    assert cfg["mcpServers"]["inspeximus"]["args"] == ["--default-index", "https://pypi.org/simple", "--from", PIN_MCP, "inspeximus-mcp"]
 
 
 def test_every_plugin_hook_is_pinned_to_the_release():
