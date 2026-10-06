@@ -59,6 +59,12 @@ RECALL_MECHANISM = {
 
 
 # ── detection ────────────────────────────────────────────────────────────────────────────────────────
+
+def _which_safe(name):
+    """shutil.which without the working directory (inspeximus._launch.which, 3.16.4)."""
+    from ._launch import which
+    return which(name)
+
 def _codex_home():
     return pathlib.Path(os.environ.get("CODEX_HOME") or (_i._home() / ".codex"))
 
@@ -107,7 +113,7 @@ def detect(host):
     import glob
     cmds, globs = _install_markers(host)
     for cmd in cmds:
-        if shutil.which(cmd):
+        if _which_safe(cmd):
             return True, f"`{cmd}` on PATH"
     for g in globs:
         hit = glob.glob(g)
@@ -368,7 +374,7 @@ def hermes_installs():
     no entry-point discovery, so it never lists inspeximus; the official install (0.21.3 on the owner's
     machine) does. The kind is reported, and hermes_loads_provider() decides, not the version number."""
     out = [(home, py, "official installer") for home, py in hermes_candidates()]
-    exe = shutil.which("hermes")
+    exe = _which_safe("hermes")
     if exe:
         d = pathlib.Path(exe).resolve().parent
         inside = any(os.path.normcase(str(d)).startswith(os.path.normcase(str(home))) for home, _, _ in out)
@@ -409,7 +415,7 @@ def _uv_for(py):
     """uv on PATH, else the uv the official Hermes installer ships in <hermes home>/bin or /tools. A venv
     that uv built has no pip, so without uv there is no way to install into it."""
     import glob
-    found = shutil.which("uv")
+    found = _which_safe("uv")
     if found:
         return found
     exe = "uv.exe" if os.name == "nt" else "uv"
@@ -436,9 +442,10 @@ def warm_uvx(exe, runner=subprocess.run):
     A STALE INDEX IS REFRESHED ONCE (3.15.6). On PC1 on 2026-09-28 uvx answered "no version of
     inspeximus[mcp]==3.15.3" from a cached index an hour after PyPI served it: every MCP server and hook
     would have failed to start. Returns None when there is no uvx to run, else (ok, note)."""
-    if not exe or not (os.path.isfile(str(exe)) or shutil.which(str(exe))):
+    if not exe or not (os.path.isfile(str(exe)) or _which_safe(str(exe))):
         return None
-    cmd = [str(exe), "--from", "inspeximus[mcp]==%s" % _version(), "python", "-c", "import inspeximus"]
+    from ._launch import UVX_INDEX_ARGS      # the same index the hooks and the server use (F-23)
+    cmd = [str(exe)] + UVX_INDEX_ARGS + ["--from", "inspeximus[mcp]==%s" % _version(), "python", "-c", "import inspeximus"]
     try:
         r = runner(cmd, capture_output=True, text=True, timeout=300)
         if r.returncode == 0:
@@ -1000,7 +1007,7 @@ def entry_status(entry, store):
     cmd = str(entry.get("command") or "")
     if pin and pin != _version():
         reasons.append(f"pin {pin}, this is {_version()}")
-    elif not pin and not (cmd and (shutil.which(cmd) or os.path.exists(cmd))):
+    elif not pin and not (cmd and (_which_safe(cmd) or os.path.exists(cmd))):
         reasons.append(f"command not found: {cmd or '(none)'}")
     path = ((entry.get("env") or {}).get("INSPEXIMUS_PATH"))
     if not path:

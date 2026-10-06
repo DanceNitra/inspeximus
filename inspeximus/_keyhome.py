@@ -58,10 +58,40 @@ def _project_of(store_path):
     return os.path.dirname(d) if os.path.basename(d) == ".inspeximus" else None
 
 
+_MARKERS = (".git", ".claude", ".inspeximus")
+
+
+def _cwd_project():
+    """The project the process runs in: the nearest directory at or above the working directory that holds .git,
+    .claude or .inspeximus, searched below the user's home only (the user's own ~/.claude is not a project); else
+    the working directory itself, unless that is the home directory or above it, where a terminal starts.
+
+    A hook runs with the repository as its working directory, and a repository's `.claude/settings.json` is what
+    can set INSPEXIMUS_KEY_HOME (AUDIT-A F-13b: a zip download with no .git, its store named by
+    INSPEXIMUS_CODING_STORE outside .inspeximus)."""
+    try:
+        cwd = _norm(os.getcwd())
+    except OSError:
+        return None
+    home = _norm(os.path.expanduser("~"))
+    d = cwd
+    while _inside(d, home) and d != home:
+        if any(os.path.exists(os.path.join(d, m)) for m in _MARKERS):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    if cwd == home or _inside(home, cwd):
+        return None
+    return cwd
+
+
 def refusal(env_home, store_path=None):
     """Why `env_home` cannot be the key home, or None when it can."""
     k = _norm(env_home)
-    key = (k, _norm(store_path) if store_path else None)
+    proj = _cwd_project()
+    key = (k, _norm(store_path) if store_path else None, proj)
     if key in _CACHE:
         return _CACHE[key]
     why = None
@@ -70,6 +100,8 @@ def refusal(env_home, store_path=None):
         why = "it is inside the git work tree %s" % tree
     elif store_path and _project_of(store_path) and _inside(k, _project_of(store_path)):
         why = "it is inside the project of the store %s" % store_path
+    elif proj and _inside(k, proj):
+        why = "it is inside the project this process runs in, %s" % proj
     _CACHE[key] = why
     return why
 

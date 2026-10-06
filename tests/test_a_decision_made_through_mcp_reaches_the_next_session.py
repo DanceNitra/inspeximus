@@ -216,8 +216,10 @@ def test_install_claude_writes_the_hooks_the_plugin_ships(home, monkeypatch):
     assert list(hooks) == list(plugin)
     for evt, entries in hooks.items():
         (h,) = entries[0]["hooks"]
-        assert h["command"].endswith("--from inspeximus==%s python -I -m inspeximus.claude_code"
-                                     % inspeximus.__version__), h
+        from inspeximus import _launch
+        assert h["command"].endswith("--default-index %s --from inspeximus==%s python %s"
+                                     % (_launch.DEFAULT_INDEX, inspeximus.__version__,
+                                        _launch.module_command("inspeximus.claude_code"))), h
         assert "\\" not in h["command"]
         assert entries[0].get("matcher") == plugin[evt][0].get("matcher")
         assert h.get("timeout") == plugin[evt][0]["hooks"][0].get("timeout")
@@ -244,9 +246,10 @@ def test_install_without_uvx_uses_this_python(home, monkeypatch):
     monkeypatch.setattr(I, "_mcp_importable", lambda: True)
     p = I.plan("claude")
     assert p["block"]["command"] == sys.executable
-    assert p["block"]["args"] == ["-I", "-m", "inspeximus.mcp_server"]       # -I: AUDIT-A F-15
+    from inspeximus import _launch
+    assert p["block"]["args"] == _launch.module_args("inspeximus.mcp_server", sys.version_info)   # F-15, F-22
     cmd = p["hooks"]["data"]["hooks"]["SessionStart"][0]["hooks"][0]["command"]
-    assert cmd.endswith(" -I -m inspeximus.claude_code") and "uvx" not in cmd
+    assert cmd.endswith(" " + _launch.module_command("inspeximus.claude_code", sys.version_info)) and "uvx" not in cmd
 
 
 def test_install_without_uvx_or_the_mcp_extra_writes_this_python_and_names_the_pip_command(home, monkeypatch):

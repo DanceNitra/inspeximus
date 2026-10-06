@@ -58,6 +58,12 @@ class TimestampError(Exception):
 
 
 # ── minimal DER, only what a TimeStampReq needs ────────────────────────────────────────────────────
+
+def _which_safe(name):
+    """shutil.which without the working directory (inspeximus._launch.which, 3.16.4)."""
+    from ._launch import which
+    return which(name)
+
 def _len(n: int) -> bytes:
     if n < 0x80:
         return bytes([n])
@@ -162,7 +168,7 @@ def verify_with_openssl(token: bytes, digest: bytes, ca_file: str | None = None,
     failure: "I could not check this" and "this is bad" are different answers, and a caller that
     cannot tell them apart will act on the wrong one.
     """
-    exe = openssl or shutil.which("openssl")
+    exe = openssl or _which_safe("openssl")
     out = {"ran": False, "verified": None, "returncode": None, "output": "", "problems": []}
     if not exe:
         out["problems"].append("openssl is not on PATH, so this token was NOT verified here")

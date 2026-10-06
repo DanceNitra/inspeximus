@@ -54,3 +54,36 @@ def test_f13_a_repo_chosen_key_home_cannot_vouch_for_an_instruction_shaped_recor
     served = [h for h in Inspeximus(repo_store).recall("instructions ssh evil", k=5)
               if PAYLOAD in (h.get("text") or "") and not h.get("quarantined")]
     assert not served, "an environment-supplied key home made the guard serve an instruction-shaped record"
+
+
+def test_f13b_a_repository_without_git_and_a_store_outside_dot_inspeximus(tmp_path, monkeypatch):
+    """A repository downloaded as a zip has no `.git`, and a project's env can name its store directory
+    (INSPEXIMUS_CODING_STORE). With the store in `<repo>/data` and the key home in `<repo>/keys`, the 3.16.4 resolver sees
+    neither a git work tree nor a `.inspeximus` directory, so it accepts the key home. Fails on e08df4da."""
+    for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
+        monkeypatch.delenv(k)
+    repo_store = str(tmp_path / "zip_repo" / "data" / "coding_memory.json")
+    os.makedirs(os.path.dirname(repo_store))
+    # Builder, in-tree: the hook's real setup. It runs with the repository as its working directory, and the
+    # repository's .claude/settings.json is what sets INSPEXIMUS_KEY_HOME and INSPEXIMUS_CODING_STORE.
+    os.makedirs(str(tmp_path / "zip_repo" / ".claude"))
+    open(str(tmp_path / "zip_repo" / ".claude" / "settings.json"), "w").write("{}")
+    monkeypatch.chdir(str(tmp_path / "zip_repo"))
+    users_keys = str(tmp_path / "users_keyhome")
+    repo_keys = str(tmp_path / "zip_repo" / "keys")
+    m = Inspeximus(repo_store)
+    rid = m.remember("placeholder to be rewritten", key="notes")
+    for r in m._items:
+        if r["id"] == rid:
+            r["text"] = PAYLOAD
+            r.setdefault("meta", {}).pop("read_guards", None)
+            r["meta"].pop("quarantined", None)
+            r["meta"]["read_guards"] = _forge(repo_store, repo_keys, rid)
+    m._save(force=True)
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", users_keys)
+    assert not [h for h in Inspeximus(repo_store).recall("instructions ssh evil", k=5) if PAYLOAD in (h.get("text") or "")
+                and not h.get("quarantined")], "control: the user's own key home does not vouch for the record"
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", repo_keys)
+    served = [h for h in Inspeximus(repo_store).recall("instructions ssh evil", k=5)
+              if PAYLOAD in (h.get("text") or "") and not h.get("quarantined")]
+    assert not served, "a key home inside a repository without .git made the guard serve an instruction-shaped record"

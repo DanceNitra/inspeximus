@@ -2,7 +2,7 @@
   "mcpServers": {
     "inspeximus": {
       "command": "uvx",
-      "args": ["--from", "inspeximus[mcp]==3.16.3", "inspeximus-mcp"],
+      "args": ["--default-index", "https://pypi.org/simple", "--from", "inspeximus[mcp]==3.16.3", "inspeximus-mcp"],
       "env": {
         "INSPEXIMUS_SCOPE": "claude-code"
       }

@@ -9,8 +9,8 @@ by an echo. Persistent across sessions, provably erasable, zero-dependency. The 
 <project>/.inspeximus/coding_memory.json; the name ends in .json, the format does not.
 
 Use it two ways:
-  python -I -m inspeximus.claude_code --install  # write the hooks block into ./.claude/settings.json
-  python -I -m inspeximus.claude_code            # (as a hook) reads a Claude Code event on stdin and acts on it
+  python -P -m inspeximus.claude_code --install  # write the hooks block into ./.claude/settings.json
+  python -P -m inspeximus.claude_code            # (as a hook) reads a Claude Code event on stdin and acts on it
 
 Hook events handled (dispatched by hook_event_name on stdin JSON):
   PostToolUse       -> capture Edit/Write/MultiEdit/Bash deterministically, keyed by file path.
@@ -26,7 +26,7 @@ key-shaped strings and secret-named assignments (`inspeximus._secrets`) in the t
 source and meta, and a write to a secrets file (`.env*`, `*.pem`, `*.key`, SSH private keys,
 `credentials*`) stores its path and nothing derived from its content. Records captured before
 3.14.2 are announced once and erased on request:
-`python -I -m inspeximus.claude_code --scrub-secrets [--apply]`.
+`python -P -m inspeximus.claude_code --scrub-secrets [--apply]` (-P: Python 3.11 and later).
 
 THE CROSS-SESSION LOOP (SessionEnd -> SessionStart), and why it needs no LLM. Other coding-agent memories
 close the loop by sending the transcript to a model and injecting its prose summary. inspeximus emits a LEDGER
@@ -641,6 +641,12 @@ def maintain_store(cwd=None, older_than=None, classes=("cmd",), allow_git_tracke
     return out
 
 
+def _user_cmd() -> str:
+    """The hook module as a person types it, in the form this interpreter runs (F-15, F-22)."""
+    from ._launch import user_command
+    return user_command("inspeximus.claude_code")
+
+
 def _pid_alive(pid) -> bool:
     """True when a process with this pid exists. Never os.kill(pid, 0) on Windows, which terminates the process."""
     try:
@@ -726,14 +732,15 @@ def maybe_archive_in_background(cwd=None) -> str:
         with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(record, fh)
         os.replace(tmp, state)
-        # ISOLATED (3.16.4, AUDIT-A F-15): the run starts in the repository, and `python -m` would import a
-        # repository's own `inspeximus/` first. -I leaves the working directory and PYTHONPATH out, so the package
-        # this process imported is named explicitly instead.
+        # NO WORKING DIRECTORY ON THE IMPORT PATH (3.16.4, AUDIT-A F-15, F-22): the run starts in the repository,
+        # and `python -m` would import a repository's own `inspeximus/` first. The shim drops '' and '.', keeps the
+        # user site (which -I dropped), and puts the package this process imported first, so the run is the same
+        # inspeximus as the hook that started it.
         _pkg_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        argv = [sys.executable, "-I", "-c",
-                "import sys; sys.path.insert(0, %r); import runpy; "
-                "runpy.run_module('inspeximus.claude_code', run_name='__main__', alter_sys=True)" % _pkg_parent,
-                "--maintain", "--older-than",
+        argv = [sys.executable, "-E", "-c",                  # -E: no PYTHON* variable from the project
+                "import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
+                "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % _pkg_parent,
+                "inspeximus.claude_code", "--maintain", "--older-than",
                 str(pol["older_than_days"])]
         for cl in pol["classes"]:
             argv += ["--class", cl]
@@ -861,9 +868,9 @@ def _secrets_notice(cwd, m):
         return None                          # no marker, no notice: never announce it every turn
     if not n:
         return None
-    return ("[inspeximus] %d stored record(s) look like they contain a secret, captured before inspeximus "
-            "3.14.2 masked them. Tell the user; to review: python -I -m inspeximus.claude_code --scrub-secrets "
-            "(add --apply to erase them, each with a tombstone)." % n)
+    return (("[inspeximus] %d stored record(s) look like they contain a secret, captured before inspeximus "
+             "3.14.2 masked them. Tell the user; to review: " + _user_cmd() + " --scrub-secrets "
+             "(add --apply to erase them, each with a tombstone).") % n)
 
 
 #: The literal strings this module prints to mark ITS OWN output. A record that reproduces one of
@@ -1443,9 +1450,9 @@ def session_start(ev):
     try:
         orphan = _orphaned_mcp_store(cwd, m)
         if orphan:
-            emit.append("[inspeximus] %s holds %d memories this session does not read: inspeximus 3.9.5 "
-                        "and older stored MCP decisions there. To fold them into this project's store: "
-                        "python -I -m inspeximus.claude_code --merge-store \"%s\" --apply"
+            emit.append(("[inspeximus] %s holds %d memories this session does not read: inspeximus 3.9.5 "
+                         "and older stored MCP decisions there. To fold them into this project's store: "
+                         + _user_cmd() + " --merge-store \"%s\" --apply")
                         % (orphan[0], orphan[1], orphan[0]))
     except Exception:
         pass
@@ -1527,12 +1534,15 @@ def session_end(ev):
     return rep
 
 
-_HOOK = {"hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code"}]}
+# A bare `python`, whose version this file cannot know, so the launch is the shim (inspeximus._launch, F-15, F-22).
+_HOOK_COMMAND = "python " + __import__("inspeximus._launch", fromlist=["module_command"]).module_command(
+    "inspeximus.claude_code")
+_HOOK = {"hooks": [{"type": "command", "command": _HOOK_COMMAND}]}
 # SessionEnd shares a 1.5s budget across every SessionEnd hook unless the settings raise it. The digest
 # is a ledger scan, not a model call, so it is fast -- but on a large store plus a cold interpreter 1.5s
 # is not a margin, and a hook that is killed mid-write writes nothing. Asking for the budget is cheaper
 # than losing the session.
-_HOOK_SESSION_END = {"hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code",
+_HOOK_SESSION_END = {"hooks": [{"type": "command", "command": _HOOK_COMMAND,
                                 "timeout": 15}]}
 #: The tools pre_tool_use() can say anything about. The matcher is DERIVED from this tuple rather
 #: than written beside it, because the two drifting apart is silent in both directions: a tool in the
@@ -1546,13 +1556,13 @@ _PRE_TOOLS = ("Bash", "Write", "Edit", "MultiEdit", "NotebookEdit")
 # it this handler launches a process and loads the store on every Read, Grep and Glob as well, at
 # ~0.77 s each (measured, silent path included).
 _HOOK_PRE_TOOL = {"matcher": "|".join(_PRE_TOOLS),
-                  "hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code"}]}
+                  "hooks": [{"type": "command", "command": _HOOK_COMMAND}]}
 # THE SAME SCOPE FOR PostToolUse, derived from what `capture` records. Without it Claude Code started a
 # process that imports this package for every Read, Grep, Glob and WebFetch, and `capture` returned at
 # once: 0.29 to 0.43 s per such event after the handler stopped opening the store, measured 2026-09-27
 # (AUDIT-B B-02). An entry installed before this keeps no matcher; `capture` still returns early for it.
 _HOOK_POST_TOOL = {"matcher": "|".join(_CAPTURED_TOOLS),
-                   "hooks": [{"type": "command", "command": "python -I -m inspeximus.claude_code"}]}
+                   "hooks": [{"type": "command", "command": _HOOK_COMMAND}]}
 _EVENT_HOOK = {"SessionEnd": _HOOK_SESSION_END, "PreToolUse": _HOOK_PRE_TOOL, "PostToolUse": _HOOK_POST_TOOL}
 
 # Hooks written before the 1.25.0 rename invoke `python -m inspeximus.claude_code`, which still works
@@ -1604,9 +1614,11 @@ def install_codex(root=None) -> str:
 
     exe = sys.executable or "python"
     if os.name == "nt":
-        cmd = "cmd /c " + exe.replace("\\", "/") + " -I -m inspeximus.claude_code"      # -I: F-15
+        from ._launch import module_command                                            # F-15, F-22
+        cmd = "cmd /c " + exe.replace("\\", "/") + " " + module_command("inspeximus.claude_code", sys.version_info)
     else:
-        cmd = "sh -c '%s -I -m inspeximus.claude_code'" % exe
+        from ._launch import module_command
+        cmd = "sh -c '%s %s'" % (exe, module_command("inspeximus.claude_code", sys.version_info))
     events = ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "SessionEnd"]
     plugin = {
         "name": "inspeximus",
@@ -1671,7 +1683,7 @@ def install(cwd=None):
     _atomic_write_json(p, cfg)
     print(f"inspeximus: installed Claude Code hooks into {p}")
     print("Restart Claude Code in this project. Memory lands in ./.inspeximus/coding_memory.json (deterministic, "
-          "no LLM, provably erasable). Run `python -I -m inspeximus.claude_code --uninstall` to remove.")
+          "no LLM, provably erasable). Run `" + _user_cmd() + " --uninstall` to remove.")
     return True
 
 
@@ -1929,6 +1941,20 @@ def main():
     # character keeps the contract and costs one '?'.
     try:
         sys.stdout.reconfigure(errors="replace")
+    except Exception:
+        pass
+    # THE USER'S OUTPUT ENCODING SURVIVES -E (3.16.4, F-22). The launch runs Python with -E, so the interpreter
+    # ignores PYTHONUTF8 and PYTHONIOENCODING, and a user who set one to get UTF-8 hook output got the locale code
+    # page instead (measured: "ľ" as c4 be under PYTHONUTF8=1, as be under -E). An encoding cannot import code, so
+    # the hook applies the user's choice to its own stdout; the import path stays isolated.
+    try:
+        _enc = (os.environ.get("PYTHONIOENCODING") or "").split(":")[0].strip()
+        if not _enc and os.environ.get("PYTHONUTF8", "").strip() == "1":
+            _enc = "utf-8"
+        if _enc:
+            import codecs
+            codecs.lookup(_enc)
+            sys.stdout.reconfigure(encoding=_enc, errors="replace")
     except Exception:
         pass
     if "--install-codex" in sys.argv:

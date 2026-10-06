@@ -20,13 +20,21 @@ SAFE = re.compile(r"\s-(I|P)\s|\s-[A-Za-z]*I[A-Za-z]*\s")
 
 
 def _safe(cmd: str) -> bool:
-    return bool(SAFE.search(" " + cmd.replace("\\", "/") + " "))
+    """Builder, 3.16.4 (F-22): a command that runs an inspeximus module is safe when it carries -E and either
+    `-P -m` or the sys.path shim of inspeximus._launch. -I alone is no longer written: it drops the user site."""
+    from inspeximus import _launch
+    c = " " + cmd.replace("\\", "/") + " "
+    return " -E " in c and (" -P -m inspeximus." in c or _launch.SHIM in cmd.replace('\\"', '"'))
+
+
+def _runs_inspeximus(cmd: str) -> bool:
+    return "inspeximus.claude_code" in cmd or "inspeximus.mcp_server" in cmd
 
 
 def test_the_hook_command_the_installer_writes_ignores_the_working_directory():
     for kind, exe in (("python", sys.executable), ("uvx", "uvx")):
         cmd = ins.hook_command(kind, exe)
-        assert "-m inspeximus." in cmd and _safe(cmd), f"{kind}: {cmd}"
+        assert _runs_inspeximus(cmd) and _safe(cmd), f"{kind}: {cmd}"
 
 
 def test_the_mcp_server_launch_for_a_python_runtime_ignores_the_working_directory():
@@ -48,8 +56,8 @@ def test_the_plugin_hooks_file_ignores_the_working_directory():
             for v in o:
                 walk(v)
     walk(json.load(open(path, encoding="utf-8")))
-    assert cmds, "control: the file holds hook commands"
-    assert all(_safe(c) for c in cmds if "-m inspeximus." in c), [c for c in cmds if not _safe(c)]
+    assert cmds and all(_runs_inspeximus(c) for c in cmds), "control: the file holds the hook commands"
+    assert all(_safe(c) for c in cmds), [c for c in cmds if not _safe(c)]
 
 
 def test_the_detached_archive_run_ignores_its_working_directory(tmp_path, monkeypatch):
@@ -72,9 +80,10 @@ def test_the_detached_archive_run_ignores_its_working_directory(tmp_path, monkey
     monkeypatch.setattr(subprocess, "Popen", lambda argv, **kw: spawned.append((argv, kw)) or type("P", (), {"pid": 1})())
     assert cc.maybe_archive_in_background(str(repo)) == "started"
     argv, kw = spawned[0]
-    # Builder, 3.16.4: the spawn is `python -I -c <run the package this process imported>`, not `-I -m`: under -I
+    # Builder, 3.16.4: the spawn is `python -E -c <shim that names the package this process imported>`: -E keeps
+    # every PYTHON* variable out, the shim keeps the working directory out, and the user site stays (F-22).
     # a `-m` would import whatever inspeximus the interpreter has installed, not the one that started the run.
-    assert "-I" in argv[1:argv.index("-c") if "-c" in argv else argv.index("-m")], argv
+    assert "-E" in argv[1:argv.index("-c")] and "-I" not in argv, argv
     # And run it for real, in the repository, with PYTHONPATH pointing at it: the repository's package must not run.
     env = dict(os.environ, PYTHONPATH=str(repo))
     r = real_popen(argv, cwd=str(repo), env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -98,6 +107,8 @@ def test_the_isolated_hook_command_does_not_run_the_repositorys_package(tmp_path
     (repo / "inspeximus").mkdir(parents=True)
     marker = tmp_path / "SHADOW-RAN"
     (repo / "inspeximus" / "__init__.py").write_text("open(%r, 'w').write('ran')" % str(marker))
-    subprocess.run([sys.executable, "-I", "-m", "inspeximus.claude_code"], input=b"{}", cwd=str(repo),
+    from inspeximus import _launch
+    subprocess.run([sys.executable] + _launch.module_args("inspeximus.claude_code", sys.version_info),
+                   input=b"{}", cwd=str(repo),
                    capture_output=True, timeout=120)
-    assert not marker.exists(), "python -I -m ran the repository's inspeximus/"
+    assert not marker.exists(), "the isolated launch ran the repository's inspeximus/"

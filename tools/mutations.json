@@ -8114,9 +8114,9 @@
   ]
  },
  {
-  "name": "the pinned-interpreter hook command runs without -I again",
+  "name": "the pinned-interpreter hook command runs without launch isolation again",
   "file": "inspeximus/install.py",
-  "old": "        return _shell_path(exe) + \" -I -m inspeximus.claude_code\"\n",
+  "old": "        return _shell_path(exe) + \" \" + module_command(\"inspeximus.claude_code\", interpreter_version(exe))\n",
   "new": "        return _shell_path(exe) + \" -m inspeximus.claude_code\"\n",
   "tests": [
    "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
@@ -8124,19 +8124,19 @@
   ]
  },
  {
-  "name": "the uvx hook command runs without -I again",
+  "name": "the uvx hook command runs without launch isolation again",
   "file": "inspeximus/install.py",
-  "old": "    return _shell_path(exe) + \" --from %s python -I -m inspeximus.claude_code\" % _pinned()\n",
-  "new": "    return _shell_path(exe) + \" --from %s python -m inspeximus.claude_code\" % _pinned()\n",
+  "old": "        DEFAULT_INDEX, _pinned(), module_command(\"inspeximus.claude_code\"))\n",
+  "new": "        DEFAULT_INDEX, _pinned(), \"-m inspeximus.claude_code\")\n",
   "tests": [
    "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
   ]
  },
  {
-  "name": "the MCP server launch for a python runtime runs without -I again",
+  "name": "the MCP server launch for a python runtime runs without launch isolation again",
   "file": "inspeximus/install.py",
-  "old": "        return exe, [\"-I\", \"-m\", \"inspeximus.mcp_server\"]",
+  "old": "        return exe, module_args(\"inspeximus.mcp_server\", interpreter_version(exe))",
   "new": "        return exe, [\"-m\", \"inspeximus.mcp_server\"]",
   "tests": [
    "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
@@ -8144,9 +8144,9 @@
   ]
  },
  {
-  "name": "the detached archive run starts without -I again",
+  "name": "the detached archive run starts without launch isolation again",
   "file": "inspeximus/claude_code.py",
-  "old": "        argv = [sys.executable, \"-I\", \"-c\",\n",
+  "old": "        argv = [sys.executable, \"-E\", \"-c\",                  # -E: no PYTHON* variable from the project\n",
   "new": "        argv = [sys.executable, \"-c\",\n",
   "tests": [
    "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
@@ -8154,10 +8154,10 @@
   ]
  },
  {
-  "name": "the --install SessionStart hook runs without -I again",
+  "name": "the --install SessionStart hook runs without launch isolation again",
   "file": "inspeximus/claude_code.py",
-  "old": "_HOOK = {\"hooks\": [{\"type\": \"command\", \"command\": \"python -I -m inspeximus.claude_code\"}]}\n",
-  "new": "_HOOK = {\"hooks\": [{\"type\": \"command\", \"command\": \"python -m inspeximus.claude_code\"}]}\n",
+  "old": "_HOOK_COMMAND = \"python \" + __import__(",
+  "new": "_HOOK_COMMAND = \"python -m inspeximus.claude_code\" or __import__(",
   "tests": [
    "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
@@ -8238,6 +8238,109 @@
   "new": "    if False:\n",
   "tests": [
    "tests/test_audit_a_f17_an_embedder_answer_has_a_size_limit.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "which answers from the working directory",
+  "file": "inspeximus/_launch.py",
+  "old": "    if here != cwd:\n",
+  "new": "    if True:\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the installer resolves tools with shutil.which",
+  "file": "inspeximus/install.py",
+  "old": "    return which(name)\n",
+  "new": "    import shutil\n    return shutil.which(name)\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the 3.11 launch drops -E",
+  "file": "inspeximus/_launch.py",
+  "old": "        return [\"-E\", \"-P\", \"-m\", module]\n",
+  "new": "        return [\"-P\", \"-m\", module]\n",
+  "tests": [
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the 3.11 launch drops -P",
+  "file": "inspeximus/_launch.py",
+  "old": "        return [\"-E\", \"-P\", \"-m\", module]\n",
+  "new": "        return [\"-E\", \"-m\", module]\n",
+  "tests": [
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the shim keeps the working directory on the path",
+  "file": "inspeximus/_launch.py",
+  "old": "SHIM = (\"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];\"\n",
+  "new": "SHIM = (\"import runpy,sys;\"\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py",
+   "tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py"
+  ]
+ },
+ {
+  "name": "the hook command names no package index",
+  "file": "inspeximus/install.py",
+  "old": "    return _shell_path(exe) + \" --default-index %s --from %s python %s\" % (\n",
+  "new": "    return _shell_path(exe) + \"%.0s --from %s python %s\" % (\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the uvx server launch names no package index",
+  "file": "inspeximus/install.py",
+  "old": "    return exe, UVX_INDEX_ARGS + [\"--from\", _pinned(\"mcp\"), \"inspeximus-mcp\"]\n",
+  "new": "    return exe, [\"--from\", _pinned(\"mcp\"), \"inspeximus-mcp\"]\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the default server block names no package index",
+  "file": "inspeximus/install.py",
+  "old": "    block = {\"command\": \"uvx\", \"args\": UVX_INDEX_ARGS + [\"--from\", _pinned(\"mcp\"), \"inspeximus-mcp\"]}\n",
+  "new": "    block = {\"command\": \"uvx\", \"args\": [\"--from\", _pinned(\"mcp\"), \"inspeximus-mcp\"]}\n",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the uvx warm-up names no package index",
+  "file": "inspeximus/install_all.py",
+  "old": "    cmd = [str(exe)] + UVX_INDEX_ARGS + [\"--from\"",
+  "new": "    cmd = [str(exe)] + [\"--from\"",
+  "tests": [
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "a key home inside the working-directory project is accepted",
+  "file": "inspeximus/_keyhome.py",
+  "old": "    elif proj and _inside(k, proj):\n",
+  "new": "    elif False:\n",
+  "tests": [
+   "tests/test_audit_a_f13_env_key_home_cannot_vouch_for_a_record.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "the hook ignores the user's PYTHONUTF8 under -E",
+  "file": "inspeximus/claude_code.py",
+  "old": "            sys.stdout.reconfigure(encoding=_enc, errors=\"replace\")\n",
+  "new": "            pass\n",
+  "tests": [
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
   ]
  }
