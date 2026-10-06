@@ -48,12 +48,14 @@ def _git_work_tree(path):
 
 def _project_of(store_path):
     """The project a store belongs to: the git work tree above it; else, for a store in a `.inspeximus`
-    directory (the hook's `<project>/.inspeximus/<store>`), that directory's parent; else the store's directory."""
+    directory (the hook's `<project>/.inspeximus/<store>`), that directory's parent; else None. A plain store
+    file in a plain directory has no project here: a key home beside it is the accident the location guards
+    (`core._guard_key_location`) already refuse with an error, and that contract stays theirs."""
     d = _norm(os.path.dirname(os.path.abspath(str(store_path))) or ".")
     tree = _git_work_tree(d)
     if tree:
         return tree
-    return os.path.dirname(d) if os.path.basename(d) == ".inspeximus" else d
+    return os.path.dirname(d) if os.path.basename(d) == ".inspeximus" else None
 
 
 def refusal(env_home, store_path=None):
@@ -66,7 +68,7 @@ def refusal(env_home, store_path=None):
     tree = _git_work_tree(k)
     if tree:
         why = "it is inside the git work tree %s" % tree
-    elif store_path and _inside(k, _project_of(store_path)):
+    elif store_path and _project_of(store_path) and _inside(k, _project_of(store_path)):
         why = "it is inside the project of the store %s" % store_path
     _CACHE[key] = why
     return why

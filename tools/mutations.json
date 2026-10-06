@@ -8184,10 +8184,10 @@
   ]
  },
  {
-  "name": "the project of a store in .inspeximus is the store's own directory again",
+  "name": "a store in .inspeximus has no project again",
   "file": "inspeximus/_keyhome.py",
-  "old": "    return os.path.dirname(d) if os.path.basename(d) == \".inspeximus\" else d\n",
-  "new": "    return d\n",
+  "old": "    return os.path.dirname(d) if os.path.basename(d) == \".inspeximus\" else None\n",
+  "new": "    return None\n",
   "tests": [
    "tests/test_audit_a_f13_env_key_home_cannot_vouch_for_a_record.py",
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
