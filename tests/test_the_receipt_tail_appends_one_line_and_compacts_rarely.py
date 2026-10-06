@@ -186,7 +186,7 @@ def test_concurrent_writers_lose_no_receipt_across_a_compaction(tmp_path, monkey
     code = "import sys; sys.modules['inspeximus.receipts_tail'] = __import__('inspeximus.receipts_tail', fromlist=['x']); " \
            "import inspeximus.receipts_tail as r; r.COMPACT_AT = 20\n" + CONCURRENT
     procs = [subprocess.Popen([sys.executable, "-c", code, p, str(w), "12"], env=env, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, text=True) for w in range(6)]
+                              stderr=subprocess.PIPE, text=True, encoding="utf-8") for w in range(6)]
     for pr in procs:
         out, err = pr.communicate(timeout=300)
         assert pr.returncode == 0, err[-600:]

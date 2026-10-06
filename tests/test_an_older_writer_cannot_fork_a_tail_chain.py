@@ -67,7 +67,8 @@ def _run_old(root, body, store, extra_env=None):
     env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_RECEIPTS_TAIL")}
     env.update(extra_env or {})
     env["PYTHONPATH"] = root
-    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env=env, timeout=180)
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8",
+                       env=env, timeout=180)
     return r
 
 

@@ -160,7 +160,17 @@ def _decrypt_blob(key: bytes, blob: bytes) -> bytes:
 
 _GENESIS = "0" * 64
 
-from . import receipts_tail as _rtail   # the snapshot-plus-tail receipt sidecar (3.17.0 candidate)
+
+class _LazyReceiptsTail:
+    """`receipts_tail` imported on first use, so importing `inspeximus` does not add `receipts_tail` to the names the
+    package lists (`tests/test_audit_b_the_hook_imports_only_what_it_uses.py`). Attribute reads go to the module."""
+
+    def __getattr__(self, name):
+        from . import receipts_tail
+        return getattr(receipts_tail, name)
+
+
+_rtail = _LazyReceiptsTail()   # the snapshot-plus-tail receipt sidecar (3.17.0 candidate)
 
 #: Keyspaces whose records a GUARD reads to decide whether to refuse. Housekeeping -- capacity eviction and
 #: the consolidate() keep-budget -- must neither count nor remove them: they are bookkeeping the guard's

@@ -139,7 +139,9 @@ class Counters:
         # (16 MB on our MCP store); the tail format appends one line. `os.replace` counts the first and not the
         # second, so the bytes are counted where both pass: `_durable_replace` and `receipts_tail.append`.
         self._real_durable = core._durable_replace
-        self._real_tail_append = core._rtail.append if hasattr(core, "_rtail") else None
+        from inspeximus import receipts_tail as _rtmod
+        self._rtmod = _rtmod
+        self._real_tail_append = getattr(_rtmod, "append", None)
         counter0 = self
 
         def durable(path, payload, encoding="utf-8"):
@@ -153,7 +155,7 @@ class Counters:
                 counter0.receipt_bytes += len(data)
                 return counter0._real_tail_append(tail, data, *a, **k)
 
-            core._rtail.append = tail_append
+            _rtmod.append = tail_append
 
         self.calls = dict.fromkeys(COUNTED_CALLS, 0)
         self._real_calls = {}
@@ -232,7 +234,7 @@ class Counters:
         core.os.replace, core._dump_store = self._real_replace, self._real_dump
         core._durable_replace = self._real_durable
         if self._real_tail_append is not None:
-            core._rtail.append = self._real_tail_append
+            self._rtmod.append = self._real_tail_append
         core.Inspeximus._load_from_disk = self._real_load
         for name, (owner, attr) in COUNTED_CALLS.items():
             setattr(owner, attr, self._real_calls[name])
