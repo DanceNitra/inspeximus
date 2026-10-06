@@ -621,6 +621,12 @@ def main(argv=None):
                      help="cover the records the chain does not name (without it: only switch on)")
     rce.add_argument("--reason", default="", help="why the backfill is happening, committed in each receipt")
     rce.add_argument("--json", action="store_true")
+    rcc = rcsub.add_parser("compact", help="rewrite the receipt snapshot to hold the whole chain and empty the tail "
+                                           "(a store in the snapshot-plus-tail format)")
+    rcc.add_argument("--json", action="store_true")
+    rcl = rcsub.add_parser("to-legacy", help="write the receipt chain back as the array that every released "
+                                             "version reads, and remove the tail. A downgrade needs it")
+    rcl.add_argument("--json", action="store_true")
 
     rt = sub.add_parser("retire", help="end a key with NO replacement: every active value becomes superseded "
                                        "with the reason on the record and in the receipt chain")
@@ -1637,6 +1643,13 @@ def main(argv=None):
             for pr in res["problems"]:
                 print("  !", pr)
         return 1 if res["problems"] else 0
+
+    if a.cmd == "receipts" and a.receipts_cmd in ("compact", "to-legacy"):
+        from . import receipts_tail as _rtail
+        res = (_rtail.compact if a.receipts_cmd == "compact" else _rtail.to_legacy)(a.path)
+        print(json.dumps(res, ensure_ascii=False) if a.json else
+              f"receipts {a.receipts_cmd}: " + ", ".join(f"{k}={v}" for k, v in res.items()))
+        return 0
 
     if a.cmd == "receipts":
         # The store above was opened with receipts on (forced list), so an existing chain is adopted

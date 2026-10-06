@@ -87,6 +87,8 @@ def instructions_for_use(store, ledger=None) -> dict:
         "files": {
             "memory_store": name or None,
             "write_receipts": (name + ".receipts.json") if name else None,
+            **({"write_receipts_tail": name + ".receipts.tail.jsonl"}
+               if name and os.path.exists(str(store.path) + ".receipts.tail.jsonl") else {}),
             "erasure_tombstones": "kept inside the store file under the tombstone list; anchor() covers both chains",
             "action_ledger": ledger_name,
             "archives": "<ledger>.archive.NNNN.json beside the ledger, named by the checkpoint",

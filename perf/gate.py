@@ -56,6 +56,10 @@ from inspeximus.core import Inspeximus                # noqa: E402
 #: a real one is a multiple, not a fraction of a percent).
 BYTES_BAND = 0.02
 
+#: Counters of bytes, banded for the same reason: `receipt_bytes_written` is the size of the receipts the arm
+#: wrote, and a timestamp's digit count moves it by a fraction of a percent.
+BANDED_BYTES = ("serialized_bytes", "receipt_bytes_written")
+
 #: Wall-clock is advisory. This multiple exists only to catch a catastrophe (an accidental O(n^2) in a
 #: path with no counter), not to police normal variation. Measured run-to-run spread on the development
 #: machine was 15-40% on these workloads; 4x is comfortably outside that and still catches a 10x.
@@ -90,6 +94,7 @@ class Counters:
 
     def __init__(self):
         self.replaces = {"store": 0, "tombstones": 0, "receipts": 0, "other": 0}
+        self.receipt_bytes = 0       #: bytes written to the receipt sidecar pair: whole-file replaces and tail appends
         self.dumps = 0
         self.dump_bytes = 0
         self.loads = 0
@@ -129,6 +134,26 @@ class Counters:
             return out
 
         core.os.replace, core._dump_store = replace, dump
+
+        # BYTES WRITTEN TO THE RECEIPT SIDECARS. The array format replaces the whole file on every receipted write
+        # (16 MB on our MCP store); the tail format appends one line. `os.replace` counts the first and not the
+        # second, so the bytes are counted where both pass: `_durable_replace` and `receipts_tail.append`.
+        self._real_durable = core._durable_replace
+        self._real_tail_append = core._rtail.append if hasattr(core, "_rtail") else None
+        counter0 = self
+
+        def durable(path, payload, encoding="utf-8"):
+            if str(path).endswith((".receipts.json", ".receipts.tail.jsonl")):
+                counter0.receipt_bytes += len(payload) if isinstance(payload, bytes) else len(payload.encode(encoding))
+            return counter0._real_durable(path, payload, encoding)
+
+        core._durable_replace = durable
+        if self._real_tail_append is not None:
+            def tail_append(tail, data, *a, **k):
+                counter0.receipt_bytes += len(data)
+                return counter0._real_tail_append(tail, data, *a, **k)
+
+            core._rtail.append = tail_append
 
         self.calls = dict.fromkeys(COUNTED_CALLS, 0)
         self._real_calls = {}
@@ -205,6 +230,9 @@ class Counters:
     def __exit__(self, *exc):
         core.os.listdir, core.os.scandir = self._real_listdir, self._real_scandir
         core.os.replace, core._dump_store = self._real_replace, self._real_dump
+        core._durable_replace = self._real_durable
+        if self._real_tail_append is not None:
+            core._rtail.append = self._real_tail_append
         core.Inspeximus._load_from_disk = self._real_load
         for name, (owner, attr) in COUNTED_CALLS.items():
             setattr(owner, attr, self._real_calls[name])
@@ -681,7 +709,37 @@ def w_remember_receipted(n):
                     m.remember(f"measured write {i}", key=f"cmd:m{i}", mtype="episodic")
         finally:
             core._encode_receipt = real
-        run.inner = {**c.as_dict(), "receipt_encodes": built["n"]}
+        run.inner = {**c.as_dict(), "receipt_encodes": built["n"], "receipt_bytes_written": c.receipt_bytes}
+    return run
+
+
+def w_remember_receipted_tail(n):
+    """`w_remember_receipted` with the receipt sidecar in the snapshot-plus-tail format
+    (`INSPEXIMUS_RECEIPTS_TAIL=1`, 3.17.0 candidate). The five measured writes append five tail lines:
+    `replace_receipts` is 0 where the array format replaces the sidecar five times, and `receipt_bytes_written` is
+    five receipts where the array's is five whole chains. The tail holds 6 entries at that point, below
+    `COMPACT_AT`, so no snapshot is rewritten inside the counted region."""
+    prev = os.environ.get("INSPEXIMUS_RECEIPTS_TAIL")
+    os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = "1"
+    try:
+        inner_run = w_remember_receipted(n)
+    finally:
+        if prev is None:
+            os.environ.pop("INSPEXIMUS_RECEIPTS_TAIL", None)
+        else:
+            os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = prev
+
+    def run():
+        prev2 = os.environ.get("INSPEXIMUS_RECEIPTS_TAIL")
+        os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = "1"
+        try:
+            inner_run()
+        finally:
+            if prev2 is None:
+                os.environ.pop("INSPEXIMUS_RECEIPTS_TAIL", None)
+            else:
+                os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = prev2
+        run.inner = inner_run.inner
     return run
 
 
@@ -1039,6 +1097,8 @@ WORKLOADS = {
                            "UserPromptSubmit with a 600-decision store (INSPEXIMUS_DECISION_STORE) beside a 600-capture project store", "rows"),
     "remember_receipted_n2000": (lambda: w_remember_receipted(2000),
                            "5 receipted remembers on a handle holding 2,000 receipts (the MCP server shape)", "rows"),
+    "remember_receipted_tail_n2000": (lambda: w_remember_receipted_tail(2000),
+                           "remember_receipted_n2000 with the receipt sidecar as a snapshot plus an append-only tail", "rows"),
     "row_rewrite_n2000":  (lambda: w_row_rewrite(2000),  "row store: save 2,000 new rows, then rewrite all of them", "rows"),
     "hook_import":        (lambda: w_hook_import(),      "the hook process for a PreToolUse `ls`: does it import numpy", "none"),
     "memreport_n1000":    (lambda: w_memreport(1000),    "memory_report over 1,000 records: 400 sampled recalls", "rows"),
@@ -1134,7 +1194,7 @@ def compare(base, now):
             nv = n["counters"].get(key)
             if nv is None:
                 fail.append(f"{name}.{key}: counter disappeared (instrumentation detached?)")
-            elif key == "serialized_bytes":
+            elif key in BANDED_BYTES:
                 if bv and abs(nv - bv) / bv > BYTES_BAND:
                     d = (nv - bv) / bv * 100
                     (fail if nv > bv else warn).append(

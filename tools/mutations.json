@@ -8055,5 +8055,186 @@
   "tests": [
    "tests/test_the_decision_store_has_a_size_limit.py"
   ]
+ },
+ {
+  "name": "the snapshot is an array again, which older writers extend and fork",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    return ('{\"kind\": %s, \"n\": %d, \"tip\": %s, \"entries\": %s}'\n            % (json.dumps(SNAPSHOT_KIND), n, json.dumps(tip), entries_json))\n",
+  "new": "    return entries_json\n",
+  "tests": [
+   "tests/test_an_older_writer_cannot_fork_a_tail_chain.py",
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail's base hash is not compared with the snapshot's entry",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if want != bh:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a tail whose base is ahead of the snapshot is read as consistent",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if bp > snap_n:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a repeated tail line below the snapshot is not compared with the snapshot's receipt",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if entries[pos].get(\"hash\") != e.get(\"hash\"):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a tail line is not checked to link to the receipt before it",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if e.get(\"prev\") != prev or e.get(\"seq\") != pos:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a cut last line is not reported as cut",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    out[\"torn\"] = bool(last)\n",
+  "new": "    out[\"torn\"] = False\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a cut last line is not removed before the next append",
+  "file": "inspeximus/core.py",
+  "old": "truncate_to=(0 if fresh else self._rc_good_off) if (fresh or self._rc_torn) else None,",
+  "new": "truncate_to=None,",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the snapshot is replaced after the tail is emptied, not before",
+  "file": "inspeximus/core.py",
+  "old": "        _durable_replace(path, _rtail.snapshot_text(_dump_chain_cached(mine, cache), len(mine), tip))\n        _durable_replace(_rtail.tail_path(path), _rtail.header_line(len(mine), tip))\n",
+  "new": "        _durable_replace(_rtail.tail_path(path), _rtail.header_line(len(mine), tip))\n        _durable_replace(path, _rtail.snapshot_text(_dump_chain_cached(mine, cache), len(mine), tip))\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the snapshot is never rewritten when the tail grows",
+  "file": "inspeximus/core.py",
+  "old": "                    if self._rc_disk_n - self._rc_snap_n >= _rtail.COMPACT_AT:\n",
+  "new": "                    if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "the tail append does not look at the pair again under the lock",
+  "file": "inspeximus/core.py",
+  "old": "            if self._receipts_disk_sig() != self._receipts_sig:\n                self._reconcile_receipts_with_disk()\n            if self._rc_mode == \"tail\" and self._rc_problems:",
+  "new": "            if self._rc_mode == \"tail\" and self._rc_problems:",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a writer appends to a tail pair that has a problem",
+  "file": "inspeximus/core.py",
+  "old": "            if self._rc_mode == \"tail\" and self._rc_problems:\n                raise SidecarMalformed(",
+  "new": "            if False:\n                raise SidecarMalformed(",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a cut last line with the head ahead is information",
+  "file": "inspeximus/core.py",
+  "old": "isinstance(head.get(\"n_writes\"), int) and head[\"n_writes\"] > len(disk_receipts):",
+  "new": "isinstance(head.get(\"n_writes\"), int) and False:",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a store in the tail format is rewritten as an array when the switch is off",
+  "file": "inspeximus/core.py",
+  "old": "        tail = (self._rc_mode == \"tail\") or _receipts_tail_on()\n",
+  "new": "        tail = _receipts_tail_on()\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail is not a sidecar to the sibling scan",
+  "file": "inspeximus/core.py",
+  "old": "|\\.receipts\\.tail\\.jsonl|\\.salt|",
+  "new": "|\\.salt|",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "the anchor checks read the snapshot as an array",
+  "file": "inspeximus/core.py",
+  "old": "            if side.name.endswith(\".receipts.json\"):\n                res = _rtail.read(",
+  "new": "            if False:\n                res = _rtail.read(",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail is appended without an fsync",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "        view = memoryview(data)\n        while view:\n            n = os.write(fd, view)\n            view = view[n:]\n        os.fsync(fd)\n",
+  "new": "        view = memoryview(data)\n        while view:\n            n = os.write(fd, view)\n            view = view[n:]\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail handle is kept open between appends",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    finally:\n        os.close(fd)\n    if new_file:",
+  "new": "    finally:\n        pass\n    if new_file:",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "the MCP server's start-up check reads the snapshot as an array",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                rows = _rt.read_entries(str(path) + suffix)\n",
+  "new": "                with open(str(path) + suffix, encoding=\"utf-8\") as f:\n                    rows = json.load(f)\n",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "a bad tail line is read past instead of stopping the chain",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            out[\"problems\"].append(f\"{tail_name} line {ln + 1} is not JSON\")\n            return out\n",
+  "new": "            out[\"problems\"].append(f\"{tail_name} line {ln + 1} is not JSON\")\n            continue\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail is not read for peers' appends when only the tail moved",
+  "file": "inspeximus/core.py",
+  "old": "            tsig = (tt.st_mtime_ns, tt.st_size)\n",
+  "new": "            tsig = None\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
  }
 ]

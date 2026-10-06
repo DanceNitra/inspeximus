@@ -322,8 +322,14 @@ def _chain_on_disk(path) -> tuple:
     n, signers = 0, set()
     for suffix in (".receipts.json", ".tombstones.json"):
         try:
-            with open(str(path) + suffix, encoding="utf-8") as f:
-                rows = json.load(f)
+            if suffix == ".receipts.json":
+                # The snapshot is an object once the receipt tail is in use (receipts_tail.py): read the pair, so
+                # the signing key a store's receipts name is found whichever format holds them.
+                from inspeximus import receipts_tail as _rt
+                rows = _rt.read_entries(str(path) + suffix)
+            else:
+                with open(str(path) + suffix, encoding="utf-8") as f:
+                    rows = json.load(f)
         except (OSError, ValueError):
             continue
         for r in rows if isinstance(rows, list) else ():
