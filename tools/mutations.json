@@ -8617,5 +8617,50 @@
   "tests": [
    "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
   ]
+ },
+ {
+  "name": "the prompt hook's fast exit does not flush stdout and stderr first",
+  "file": "inspeximus/claude_code.py",
+  "old": "    for st in (sys.stdout, sys.stderr):\n        try:\n            st.flush()\n        except Exception:                                       # noqa: BLE001\n            pass\n        try:\n            os.fsync(st.fileno())\n        except Exception:                                       # noqa: BLE001\n            pass\n    os._exit(0)",
+  "new": "    os._exit(0)",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "the prompt hook's fast exit reports failure",
+  "file": "inspeximus/claude_code.py",
+  "old": "    os._exit(0)\n",
+  "new": "    os._exit(1)\n",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "the prompt hook never marks itself finished for the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _FAST_EXIT[0] = os.environ.get(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")",
+  "new": "            _FAST_EXIT[0] = False",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "the fast exit ignores its off switch",
+  "file": "inspeximus/claude_code.py",
+  "old": ".strip().lower() not in (\"0\", \"false\", \"no\")",
+  "new": ".strip().lower() not in (\"no-such-value\",)",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "every hook event and a failing handler take the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "    main()\n    if _FAST_EXIT[0]:\n        _exit_now()",
+  "new": "    main()\n    if True:\n        _exit_now()",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
  }
 ]

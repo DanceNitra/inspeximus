@@ -2219,6 +2219,7 @@ def main():
             recall(ev)
             maybe_archive_in_background(ev.get("cwd") or os.getcwd())
             maybe_restamp_after_recall(ev.get("cwd") or os.getcwd())
+            _FAST_EXIT[0] = os.environ.get("INSPEXIMUS_HOOK_FAST_EXIT", "").strip().lower() not in ("0", "false", "no")
         elif name == "SessionStart":
             session_start(ev)
         elif name == "SessionEnd":
@@ -2235,5 +2236,43 @@ def main():
             pass
 
 
-if __name__ == "__main__":
+#: Set by the prompt hook when everything it does is finished: see `_exit_now`.
+_FAST_EXIT = [False]
+
+
+def _exit_now() -> None:
+    """End the process without the interpreter's teardown, which frees every row dictionary the hook loaded: 0.12 s of a
+    1.3 s prompt on our project store (9 interleaved runs, 2026-10-07: 1.281 s with a normal exit, 1.158 s with this).
+
+    ONLY THE PROMPT HOOK, ONLY WHEN IT HAS FINISHED, ONLY AS A SCRIPT. What a normal exit would still have done, and why
+    each is already done or absent on this path:
+      * stdout and stderr are flushed here, and fsynced where the stream is a file (a pipe or a console cannot be);
+      * no store lock is held: the prompt path only reads, and a read takes none;
+      * every file the hook writes (the secrets notice, the nudge state, the archive and re-stamp attempt records) is
+        written inside a `with` or by `os.replace` before its function returns;
+      * the detached archive and re-stamp runs are separate processes (DETACHED_PROCESS, or a new session) with the log
+        handle closed in the parent; they do not end with it;
+      * the package registers no `atexit` handler and no finalizer, starts no thread, and configures no logging handler;
+      * the hook saves nothing and emits no receipt (`remember` and the receipt chain are not on this path), so no receipt
+        tail needs an fsync here.
+    A hook that fails (an exception in a handler) takes the normal exit, as does `INSPEXIMUS_HOOK_FAST_EXIT=0`."""
+    for st in (sys.stdout, sys.stderr):
+        try:
+            st.flush()
+        except Exception:                                       # noqa: BLE001
+            pass
+        try:
+            os.fsync(st.fileno())
+        except Exception:                                       # noqa: BLE001
+            pass
+    os._exit(0)
+
+
+def _script_main() -> None:
     main()
+    if _FAST_EXIT[0]:
+        _exit_now()
+
+
+if __name__ == "__main__":
+    _script_main()
