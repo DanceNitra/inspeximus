@@ -119,7 +119,7 @@
    "guard_shape_scans": 0,
    "tracked_gets": 36600,
    "erase_items_reads": 11,
-   "erase_lower_calls": 6614
+   "erase_lower_calls": 6616
   },
   "seconds_median": 0.3472,
   "seconds_min": 0.2254,
@@ -152,7 +152,7 @@
    "guard_shape_scans": 0,
    "tracked_gets": 34260,
    "erase_items_reads": 11,
-   "erase_lower_calls": 6074
+   "erase_lower_calls": 6076
   },
   "seconds_median": 0.1298,
   "seconds_min": 0.1045,
@@ -185,7 +185,7 @@
    "guard_shape_scans": 0,
    "tracked_gets": 0,
    "erase_items_reads": 11,
-   "erase_lower_calls": 1664
+   "erase_lower_calls": 1666
   },
   "seconds_median": 0.062,
   "seconds_min": 0.0597,
