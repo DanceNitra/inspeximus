@@ -302,6 +302,22 @@ signing keys use), so `verify_writes()` reports a tail cut that took its receipt
 turns it off. An attacker with the whole user account can remove the head; that case needs `anchor()`
 held off the machine and `verify_consistency()`.
 
+**Receipt tail (prototype, 3.17.0 candidate).** By default every receipted write replaces the whole
+`<store>.receipts.json`: 16,254,237 bytes per `remember` on a copy of our MCP store, which holds 16,053 receipts.
+With `INSPEXIMUS_RECEIPTS_TAIL=1`, a store's receipt sidecar converts at its next receipted write to a snapshot plus an
+append-only tail, `<store>.receipts.tail.jsonl`. A write then appends one line of about 1 KB and fsyncs it, and the
+snapshot is rewritten once per 500 receipts. The outside head moves after the fsync. Compared on 12 `remember` calls
+on that copy, the counters were 1 whole-file replace and 16,254,237 bytes per write before, and 0 replaces and 1,029
+bytes after.
+
+The snapshot becomes a JSON object, `{"kind": "inspeximus.receipts/2", ...}`, and no released version can extend
+it: 3.16.1, 3.16.2, and 3.16.3 fail on their first receipted write and leave both files unchanged, and
+`verify_writes()` on the newer version names every record such a write left without a receipt. A store in this format
+stays in it, with or without the variable. To return a store to the array that older versions read, run
+`inspeximus receipts to-legacy`. `inspeximus receipts compact` rewrites the snapshot and empties the tail. A damaged
+pair is named by `verify_writes()` and is never written over. A last line that was cut by a crash is reported as
+`receipts_torn_tail` and is not a problem while the outside head is not ahead of the last good line.
+
 Shell: `inspeximus actions list | record ACTION | verify [FILE] | knew SEQ | matches SEQ --inputs FILE`; `verify FILE`
 opens no store. `matches` needs the salt file beside the ledger; without it the digests cannot be re-derived.
 The LangChain callback digests a chat-model call as every message's role, content and tool calls; rebuild
