@@ -8792,5 +8792,77 @@
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
   ]
+ },
+ {
+  "name": "bad record: the hook's read never isolates a record",
+  "file": "inspeximus/claude_code.py",
+  "old": "        from ._isolate import without_bad_records\n        return without_bad_records(m, fn, first)",
+  "new": "        raise first",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
+ },
+ {
+  "name": "bad record: a failure no single record explains is swallowed",
+  "file": "inspeximus/_isolate.py",
+  "old": "    if not bad:\n        raise first",
+  "new": "    if not bad:\n        return None",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
+ },
+ {
+  "name": "bad record: the search reads only the first half of the store",
+  "file": "inspeximus/_isolate.py",
+  "old": "        search(items[:mid])\n        search(items[mid:])\n    if not bad:",
+  "new": "        search(items[:mid])\n    if not bad:",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
+ },
+ {
+  "name": "bad record: the read after isolation still includes the bad records",
+  "file": "inspeximus/_isolate.py",
+  "old": "    rest = [r for r in items if id(r) not in gone]",
+  "new": "    rest = items",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
+ },
+ {
+  "name": "bad record: the isolation line is said on every read",
+  "file": "inspeximus/_isolate.py",
+  "old": "    if key in _SAID:\n        return\n",
+  "new": "",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
+ },
+ {
+  "name": "bad record: the prompt block renders a record that cannot be rendered",
+  "file": "inspeximus/claude_code.py",
+  "old": "    hits, standing = _renderable(hits), _renderable(standing)",
+  "new": "    hits, standing = hits, standing",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
+ },
+ {
+  "name": "bad record: an id that is not a string is kept on load",
+  "file": "inspeximus/core.py",
+  "old": "        if _v is not None and not isinstance(_v, str):\n            bad = dict(bad or {}, id=_v)",
+  "new": "        if False and _v is not None and not isinstance(_v, str):\n            bad = dict(bad or {}, id=_v)",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
+ },
+ {
+  "name": "bad record: an unhashable id passes the block's check",
+  "file": "inspeximus/claude_code.py",
+  "old": "            hash(r.get(\"id\"))                                   # the block keeps ids in sets\n",
+  "new": "",
+  "tests": [
+   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
+  ]
  }
 ]

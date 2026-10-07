@@ -1317,6 +1317,35 @@ def _decision_store_too_big(path) -> bool:
         return False
 
 
+def _read(m, fn):
+    """`fn(m)`, and when the read raises, the same read over the store without the records that make it raise (3.16.5, F-29).
+    The failure path only: a store with no bad record never imports `_isolate`. When no single record explains the failure, the
+    exception is raised unchanged."""
+    try:
+        return fn(m)
+    except Exception as first:                                  # noqa: BLE001
+        from ._isolate import without_bad_records
+        return without_bad_records(m, fn, first)
+
+
+def _renderable(records):
+    """The records the prompt block can classify and render; a record that raises on the way is left out and named once."""
+    out, bad = [], []
+    for r in records:
+        try:
+            tags = r.get("tags") or []
+            hash(r.get("id"))                                   # the block keeps ids in sets
+            ("decision" in tags, "knowledge" in tags, _not_for_replay(r), _injected(r["text"], 480))
+            out.append(r)
+        except Exception as exc:                                # noqa: BLE001
+            bad.append((r, exc))
+    if bad:
+        from ._isolate import say
+        say("the memory block", len(bad), [(dict.get(r, "id") if isinstance(r, dict) else None) or "?" for r, _ in bad],
+            bad[0][1], what="rendered")
+    return out
+
+
 def recall(ev):
     cwd = ev.get("cwd") or os.getcwd()
     if not injection_enabled(cwd):
@@ -1329,7 +1358,7 @@ def recall(ev):
     # surface decision-typed memories ahead of the command/file mechanics — otherwise the useful signal drowns
     # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
     m = _store(cwd)
-    hits = m.recall(q, k=16)
+    hits = _read(m, lambda h: h.recall(q, k=16))
     def has(h, tag):
         return tag in (h.get("tags") or [])
     # STANDING DECISIONS ARE NOT SEARCHED FOR, THEY ARE ENUMERATED. Similarity is the wrong instrument
@@ -1341,9 +1370,12 @@ def recall(ev):
     # Only the VALUE namespace (`decision::<topic>`): commit-message decisions are events keyed by SHA,
     # never retracted, and enumerating them would paste the project's whole history into every prompt.
     try:
-        standing = m.decisions_in_force(limit=4)
+        standing = _read(m, lambda h: h.decisions_in_force(limit=4))
     except Exception:
         standing = []
+    # ONE RECORD CANNOT BREAK THE ANSWER (3.16.5, AUDIT-A F-29): a record that raises while it is classified or rendered is left
+    # out, with one stderr line, and the others are rendered.
+    hits, standing = _renderable(hits), _renderable(standing)
     seen_ids = {h.get("id") for h in hits}
     standing = [s for s in standing if s.get("id") not in seen_ids]
     decisions = standing + [h for h in hits if has(h, "decision")][:4]
@@ -1374,10 +1406,10 @@ def recall(ev):
             if os.path.abspath(ext) != os.path.abspath(getattr(m, "path", "") or ""):
                 from ._surface import open_store
                 em = open_store(ext, resolve=False)
-                extra = list(em.decisions_in_force(limit=4))
-                extra += [h for h in em.recall(q, k=8) if has(h, "decision")]
+                extra, ranked = _read(em, lambda h: (list(h.decisions_in_force(limit=4)), h.recall(q, k=8)))
+                extra += [h for h in ranked if has(h, "decision")]
                 have = {d.get("id") for d in decisions}
-                for e in extra:
+                for e in _renderable(extra):
                     if e.get("id") not in have and len(decisions) < 8:
                         decisions.append(e); have.add(e.get("id"))
         except Exception:

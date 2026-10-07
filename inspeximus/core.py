@@ -4528,6 +4528,13 @@ class Inspeximus:
         if _v is not None and not isinstance(_v, str):
             bad = dict(bad or {}, key=_v)
             r["key"] = None
+        # AN `id` THAT IS NOT A STRING, since 3.16.5 (AUDIT-A F-29 fuzz). Opening the store keys a dict by id, so a list or an
+        # object there raised TypeError at open and the hook answered with nothing. Repaired like the fields above: a stable
+        # derived string, the original kept under meta["malformed"], the record quarantined. None and "" are left alone.
+        _v = r.get("id")
+        if _v is not None and not isinstance(_v, str):
+            bad = dict(bad or {}, id=_v)
+            r["id"] = "malformed-" + hashlib.sha256(repr(_v).encode("utf-8", "replace")).hexdigest()[:16]
         if bad:
             r["meta"].setdefault("malformed", {}).update(bad)
             r["meta"]["quarantined"] = {"reason": "malformed_record", "shapes": [], "released": None}
