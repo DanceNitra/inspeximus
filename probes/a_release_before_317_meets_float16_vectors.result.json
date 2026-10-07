@@ -7,14 +7,14 @@
   {
    "by": "new",
    "disk": {
-    "k0:active": "vec16",
-    "k1:active": "vec16",
-    "k2:active": "vec16",
-    "k3:active": "vec16",
-    "k4:active": "vec16",
-    "k5:active": "vec16"
+    "k0:active": "vec16+tag",
+    "k1:active": "vec16+tag",
+    "k2:active": "vec16+tag",
+    "k3:active": "vec16+tag",
+    "k4:active": "vec16+tag",
+    "k5:active": "vec16+tag"
    },
-   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16\\inspeximus\\__init__.py",
+   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16r\\inspeximus\\__init__.py",
    "problems": [],
    "recall_after": 3,
    "records": 6,
@@ -25,12 +25,12 @@
   {
    "by": "old",
    "disk": {
-    "k0:active": "vec16",
+    "k0:active": "vec16+tag",
     "k1:active": "list",
-    "k1:superseded": "vec16",
-    "k3:active": "vec16",
-    "k4:active": "vec16",
-    "k5:active": "vec16",
+    "k1:superseded": "vec16+tag",
+    "k3:active": "vec16+tag",
+    "k4:active": "vec16+tag",
+    "k5:active": "vec16+tag",
     "new_touch:active": "list"
    },
    "file": "C:\\Users\\Danculus\\AppData\\Local\\uv\\cache\\archive-v0\\Md1kS8bSPuJ9bPoY\\Lib\\site-packages\\inspeximus\\__init__.py",
@@ -45,15 +45,15 @@
   {
    "by": "new",
    "disk": {
-    "k0:active": "vec16",
+    "k0:active": "vec16+tag",
     "k1:active": "list",
-    "k1:superseded": "vec16",
-    "k3:active": "vec16",
-    "k4:active": "vec16",
-    "k5:active": "vec16",
+    "k1:superseded": "vec16+tag",
+    "k3:active": "vec16+tag",
+    "k4:active": "vec16+tag",
+    "k5:active": "vec16+tag",
     "new_touch:active": "list"
    },
-   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16\\inspeximus\\__init__.py",
+   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16r\\inspeximus\\__init__.py",
    "problems": [],
    "recall_after": 3,
    "records": 7,
@@ -64,12 +64,12 @@
   {
    "by": "old",
    "disk": {
-    "k0:active": "vec16",
+    "k0:active": "vec16+tag",
     "k1:active": "list",
-    "k1:superseded": "vec16",
+    "k1:superseded": "vec16+tag",
     "k3:active": "none",
-    "k3:superseded": "vec16",
-    "k5:active": "vec16",
+    "k3:superseded": "vec16+tag",
+    "k5:active": "vec16+tag",
     "new_touch:active": "list",
     "new_touch_off:active": "none"
    },
@@ -85,16 +85,16 @@
   {
    "by": "new",
    "disk": {
-    "k0:active": "vec16",
+    "k0:active": "vec16+tag",
     "k1:active": "list",
-    "k1:superseded": "vec16",
+    "k1:superseded": "vec16+tag",
     "k3:active": "none",
-    "k3:superseded": "vec16",
-    "k5:active": "vec16",
+    "k3:superseded": "vec16+tag",
+    "k5:active": "vec16+tag",
     "new_touch:active": "list",
     "new_touch_off:active": "none"
    },
-   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16\\inspeximus\\__init__.py",
+   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16r\\inspeximus\\__init__.py",
    "problems": [],
    "recall_after": 2,
    "records": 8,
@@ -139,7 +139,7 @@
     "new_touch:active": "list",
     "new_touch_off:active": "list"
    },
-   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16\\inspeximus\\__init__.py",
+   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16r\\inspeximus\\__init__.py",
    "problems": [],
    "recall_after": 2,
    "records": 8,
@@ -163,7 +163,7 @@
     "new_touch:active": "vec16",
     "new_touch_off:active": "vec16"
    },
-   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16\\inspeximus\\__init__.py",
+   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16r\\inspeximus\\__init__.py",
    "problems": [],
    "recall_after": 2,
    "records": 8,
@@ -193,14 +193,14 @@
    "by": "new",
    "disk": {
     "k0:active": "vec16",
-    "k1:active": "vec16",
+    "k1:active": "vec16+tag",
     "k1:superseded": "vec16",
     "k3:active": "vec16",
     "k4:active": "vec16",
     "k5:active": "vec16",
-    "new_touch:active": "vec16"
+    "new_touch:active": "vec16+tag"
    },
-   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16\\inspeximus\\__init__.py",
+   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16r\\inspeximus\\__init__.py",
    "problems": [],
    "recall": 3,
    "recall_after": 3,
@@ -213,12 +213,12 @@
    "by": "old",
    "disk": {
     "k0:active": "vec16",
-    "k1:active": "vec16",
+    "k1:active": "vec16+tag",
     "k1:superseded": "vec16",
     "k3:active": "vec16",
     "k4:active": "vec16",
     "k5:active": "vec16",
-    "new_touch:active": "vec16"
+    "new_touch:active": "vec16+tag"
    },
    "file": "C:\\Users\\Danculus\\AppData\\Local\\uv\\cache\\archive-v0\\Md1kS8bSPuJ9bPoY\\Lib\\site-packages\\inspeximus\\__init__.py",
    "problems": [],
@@ -232,15 +232,15 @@
    "by": "new",
    "disk": {
     "k0:active": "vec16",
-    "k1:active": "vec16",
+    "k1:active": "vec16+tag",
     "k1:superseded": "vec16",
     "k3:active": "none",
     "k3:superseded": "none",
     "k5:active": "vec16",
-    "new_touch:active": "vec16",
+    "new_touch:active": "vec16+tag",
     "new_touch_off:active": "none"
    },
-   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16\\inspeximus\\__init__.py",
+   "file": "C:\\Users\\Danculus\\AppData\\Local\\Temp\\wt-vec16r\\inspeximus\\__init__.py",
    "problems": [],
    "recall": 3,
    "recall_after": 2,
@@ -253,12 +253,12 @@
    "by": "old",
    "disk": {
     "k0:active": "vec16",
-    "k1:active": "vec16",
+    "k1:active": "vec16+tag",
     "k1:superseded": "vec16",
     "k3:active": "none",
     "k3:superseded": "none",
     "k5:active": "vec16",
-    "new_touch:active": "vec16",
+    "new_touch:active": "vec16+tag",
     "new_touch_off:active": "none"
    },
    "file": "C:\\Users\\Danculus\\AppData\\Local\\uv\\cache\\archive-v0\\Md1kS8bSPuJ9bPoY\\Lib\\site-packages\\inspeximus\\__init__.py",

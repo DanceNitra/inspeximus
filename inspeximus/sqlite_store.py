@@ -90,7 +90,26 @@ DOC_FORMAT = 2
 #:
 #: Rows written before 3.17 keep their JSON list, which still reads. A row is re-encoded when it is next
 #: written; `Inspeximus.compact_vectors()` re-encodes them all at once.
+#:
+#: THE RECIPE TRAVELS WITH THE VECTOR. The text is `<tag>:<base64>`, where the tag is `recipe_tag(embed_id,
+#: dim)`. A vector made under another embed recipe is then recognised and not ranked: the case is a
+#: release before 3.17 that re-embeds under a new model and fails on one row, which keeps the old model's
+#: vector (AUDIT-A, vec16 review). The tag lives inside the string and not in a field of its own, because
+#: an older release keeps every field it does not know: a separate field would survive that release
+#: writing a list under the new model, and would then mislabel it. Base64 has no `:`, so the split is exact.
 VEC_KEY = "vec16"
+
+#: The most numbers a stored vector may hold, the cap an embedder's answer already has (F-17, 3.16.4).
+#: AUDIT-A F-40: a `vec16` of 5,000,000 half floats (a 10 MB string) decoded to a 160 MB list, and 40 such
+#: rows made a store take 72 s to open, before the hook's per-record isolation could act. The length of
+#: the text is checked before it is decoded, so a refused vector costs nothing.
+MAX_VEC_LEN = 16384
+_MAX_VEC16_CHARS = 4 * ((2 * MAX_VEC_LEN + 2) // 3)
+
+
+def recipe_tag(embed_id, dim) -> str:
+    """Eight hex characters naming the embed recipe and the dimension a vector was made with."""
+    return hashlib.sha256(("%s|%d" % (embed_id or "", int(dim))).encode("utf-8")).hexdigest()[:8]
 
 
 def encode_vec(vec):
@@ -104,7 +123,7 @@ def encode_vec(vec):
 def decode_vec(text):
     """The list `encode_vec` wrote, or None for text that is not one: bad base64, an odd byte count, or
     a value that is not finite. A record whose vector does not decode is ranked lexically, not refused."""
-    if not isinstance(text, str) or not text:
+    if not isinstance(text, str) or not text or len(text) > _MAX_VEC16_CHARS:
         return None
     try:
         raw = base64.b64decode(text.encode("ascii"), validate=True)
@@ -130,9 +149,14 @@ def _decode_row(rec) -> None:
     have = rec.get("vec")
     if isinstance(have, list) and have:
         return
+    tag = None
+    if isinstance(enc, str) and ":" in enc[:9]:
+        tag, _, enc = enc.partition(":")
     vec = decode_vec(enc)
     if vec is not None:
         rec["vec"] = vec
+        if tag:
+            rec["vec_recipe"] = tag
     elif "vec" not in rec:
         rec["vec"] = None
 
@@ -319,13 +343,18 @@ def _doc(rec, keep_vec: bool = True) -> str:
                if k[:1] != "_" and (keep_vec or k != "vec")}
     # THE VECTOR IS WRITTEN AS FLOAT16 (3.17), see VEC_KEY. The round trip is exact from the second
     # write on, so the stored text of an unchanged row serialises back to the same bytes.
+    # The recipe tag goes INTO the vec16 text and never stays a field of its own, see VEC_KEY.
+    _enc = None
     if keep_vec:
         _v = rec.get("vec")
         if isinstance(_v, list) and _v:
             _enc = encode_vec(_v)
-            if _enc is not None:
-                rec = {k: v for k, v in rec.items() if k != "vec"}
-                rec[VEC_KEY] = _enc
+    if _enc is not None:
+        _tag = rec.get("vec_recipe")
+        rec = {k: v for k, v in rec.items() if k not in ("vec", "vec_recipe")}
+        rec[VEC_KEY] = ("%s:%s" % (_tag, _enc)) if isinstance(_tag, str) and _tag else _enc
+    elif "vec_recipe" in rec:
+        rec = {k: v for k, v in rec.items() if k != "vec_recipe"}
     return json.dumps(rec, sort_keys=True, default=str, allow_nan=False, ensure_ascii=False)
 
 

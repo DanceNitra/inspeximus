@@ -9280,11 +9280,12 @@
  {
   "name": "3.17: a vector that does not fit float16 is written as an empty vec16",
   "file": "inspeximus/sqlite_store.py",
-  "old": "            if _enc is not None:\n",
-  "new": "            if True:\n",
+  "old": "    if _enc is not None:\n        _tag = rec.get(\"vec_recipe\")\n",
+  "new": "    if True:\n        _tag = rec.get(\"vec_recipe\")\n",
   "tests": [
-   "tests/test_vectors_are_stored_as_float16.py",
-   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py",
+   "tests/test_vectors_are_stored_as_float16.py"
   ]
  },
  {
@@ -9305,6 +9306,78 @@
   "tests": [
    "tests/test_vectors_are_stored_as_float16.py",
    "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
+ },
+ {
+  "name": "3.17 F-40: decode_vec decodes a vec16 of any length",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    if not isinstance(text, str) or not text or len(text) > _MAX_VEC16_CHARS:\n",
+  "new": "    if not isinstance(text, str) or not text:\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17 F-40: a JSON-list vector over the cap is kept for ranking",
+  "file": "inspeximus/core.py",
+  "old": "        if isinstance(_vv, list) and len(_vv) > _MAX_VEC_LEN:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: a vector stamped with another recipe is ranked",
+  "file": "inspeximus/core.py",
+  "old": "            if tag and isinstance(vec, list) and vec and tag != _rows.recipe_tag(self.embed_id, len(vec)):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: a new vector is not stamped with its recipe",
+  "file": "inspeximus/core.py",
+  "old": "        if vec and self.embed_id and _rows is not None:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: the recipe tag is left out of the vec16 text",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "        rec[VEC_KEY] = (\"%s:%s\" % (_tag, _enc)) if isinstance(_tag, str) and _tag else _enc\n",
+  "new": "        rec[VEC_KEY] = _enc\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: the recipe tag is also written as a field of its own",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "        rec = {k: v for k, v in rec.items() if k not in (\"vec\", \"vec_recipe\")}\n",
+  "new": "        rec = {k: v for k, v in rec.items() if k != \"vec\"}\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: the loader drops the recipe tag it read",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "        if tag:\n            rec[\"vec_recipe\"] = tag\n",
+  "new": "        if False:\n            rec[\"vec_recipe\"] = tag\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: index_coherence does not name vectors of another recipe",
+  "file": "inspeximus/core.py",
+  "old": "        if _foreign:\n            problems.append(\"%d active records carry a vector made under another embed recipe",
+  "new": "        if False:\n            problems.append(\"%d active records carry a vector made under another embed recipe",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]
  }
 ]

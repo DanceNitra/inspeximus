@@ -44,6 +44,7 @@ if len(sys.argv) > 3:
     sys.path.insert(0, sys.argv[3])
 import inspeximus
 from inspeximus import Inspeximus
+RECIPE = "probe-model"   # a named recipe, so 3.17 writes vec16 as <tag>:<base64>
 def emb(t):
     h = sum(map(ord, t))
     return [((h * (i + 3)) % 97) / 97.0 - 0.5 for i in range(16)]
@@ -54,17 +55,19 @@ def disk():
     finally:
         con.close()
     return {(d.get("key") or d["id"]) + ":" + d.get("status", "?"):
-            ("both" if "vec16" in d and isinstance(d.get("vec"), list) else "vec16" if "vec16" in d
+            ("both" if "vec16" in d and isinstance(d.get("vec"), list) else
+             "vec16+tag" if ":" in str(d.get("vec16", ""))[:9] else "vec16" if "vec16" in d
              else "list" if isinstance(d.get("vec"), list) else "none") for d in docs}
 out = {"step": step, "file": inspeximus.__file__}
 if step == "seed":
-    m = Inspeximus(path=path, embed=emb, persist_vectors=True, receipts=True)
+    m = Inspeximus(path=path, embed=emb, embed_id=RECIPE, persist_vectors=True, receipts=True)
     for i in range(6):
         m.remember("seed fact %d about the deploy window" % i, key="k%d" % i)
     m.flush()
 elif step in ("touch", "touch_off"):
     on = step == "touch"
-    m = Inspeximus(path=path, embed=emb if on else None, persist_vectors=on, receipts=True)
+    m = Inspeximus(path=path, embed=emb if on else None, embed_id=RECIPE if on else None,
+                    persist_vectors=on, receipts=True)
     sup, gone = ("k1", "k2") if on else ("k3", "k4")
     out["recall"] = len(m.recall("seed fact about the deploy window", k=3))
     m.remember("written by " + step, key="new_" + step)
@@ -73,12 +76,12 @@ elif step in ("touch", "touch_off"):
         m.forget(rid)
     m.flush()
 elif step == "reembed":
-    m = Inspeximus(path=path, embed=emb, persist_vectors=True, receipts=True)
+    m = Inspeximus(path=path, embed=emb, embed_id=RECIPE, persist_vectors=True, receipts=True)
     out["reembed"] = {k: v for k, v in m.reembed(only_missing=True).items() if k != "warning"}
 elif step == "compact":
-    m = Inspeximus(path=path, embed=emb, persist_vectors=True, receipts=True)
+    m = Inspeximus(path=path, embed=emb, embed_id=RECIPE, persist_vectors=True, receipts=True)
     out["compact"] = m.compact_vectors()
-m = Inspeximus(path=path, embed=emb, persist_vectors=True, receipts=True)
+m = Inspeximus(path=path, embed=emb, embed_id=RECIPE, persist_vectors=True, receipts=True)
 out["vectors_in_memory"] = sum(1 for r in m.items if isinstance(r.get("vec"), list) and r["vec"])
 out["records"] = len(m.items)
 out["recall_after"] = len(m.recall("seed fact about the deploy window", k=3))
@@ -118,21 +121,21 @@ def main():
     a, b = os.path.join(d, "a.json"), os.path.join(d, "b.json")
     print("A. 3.17 writes; the older release meets float16 vectors")
     s = step("new", "seed", a)
-    assert set(s["disk"].values()) == {"vec16"}, "CONTROL: 3.17 did not write float16, so A tests nothing"
+    assert set(s["disk"].values()) == {"vec16+tag"}, "CONTROL: 3.17 did not write tagged float16, so A tests nothing"
     o1 = step("old", "touch", a)
     assert o1["file"] != log[0]["file"], "CONTROL: both steps imported the same package"
-    assert o1["disk"]["k1:superseded"] == "vec16", "the older release dropped vec16 from a row it rewrote"
-    assert all(o1["disk"][k] == "vec16" for k in ("k0:active", "k3:active", "k4:active", "k5:active"))
+    assert o1["disk"]["k1:superseded"] == "vec16+tag", "the older release dropped vec16 from a row it rewrote"
+    assert all(o1["disk"][k] == "vec16+tag" for k in ("k0:active", "k3:active", "k4:active", "k5:active"))
     n1 = step("new", "read", a)
     assert n1["vectors_in_memory"] == 7, "3.17 lost a vector after the older release wrote"
     o2 = step("old", "touch_off", a)
-    assert o2["disk"]["k3:superseded"] == "vec16", "a no-persist older handle dropped vec16 from a row"
+    assert o2["disk"]["k3:superseded"] == "vec16+tag", "a no-persist older handle dropped vec16 from a row"
     step("new", "read", a)
     o3 = step("old", "reembed", a)
     n3 = step("new", "read", a)
     assert n3["vectors_in_memory"] == n3["records"]
     c = step("new", "compact", a)
-    assert set(c["disk"].values()) == {"vec16"}, "compact_vectors left a list on disk"
+    assert not set(c["disk"].values()) & {"list", "both"}, "compact_vectors left a list on disk"
     print("B. the older release writes list vectors; 3.17 writes into the store")
     s = step("old", "seed", b)
     assert set(s["disk"].values()) == {"list"}, "CONTROL: the older release did not write lists"
