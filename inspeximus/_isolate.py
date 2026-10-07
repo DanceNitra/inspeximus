@@ -15,8 +15,9 @@ isolation off. When the time runs out, the chunks that were still failing are le
 examined, and the stderr line says how many records that is. A good record is hidden only in a chunk that failed or was not
 examined, never in one that passed.
 
-The records left out are remembered in the key home, with a fingerprint of each, so that the next prompt reads once without them
-and does not search again.
+Nothing is remembered between prompts (AUDIT-A F-37). A record that fails once is not proof for the next prompt, and a left-out
+list that outlives the prompt hides good records for good when one run was starved of time. Each prompt decides for itself, within
+its own time bound, and says so when the bound ran out.
 
 What this does not do:
 - It does not wrap the hook in a blanket `except`. If no single record explains the failure, the original exception is raised
@@ -24,8 +25,6 @@ What this does not do:
 - It does not write the store. The bad records stay in the file for the user to inspect; the read leaves them out of this answer.
 """
 import copy
-import json
-import os
 import sys
 import time
 
@@ -35,9 +34,6 @@ CHUNK = 32
 TIME_S = 1.5
 #: Ids named on the stderr line.
 NAMED = 5
-#: Records whose positions are remembered per store; more than this is not cached.
-CACHE_MAX = 5000
-CACHE_NAME = "left-out.json"
 
 _SAID = set()
 
@@ -67,76 +63,6 @@ def say(path, count, ids, exc, what="read", more="") -> None:
         pass
 
 
-# ── the remembered left-out records ───────────────────────────────────────────────────────────────────────────────────
-
-def _fingerprint(record):
-    import hashlib
-    try:
-        return hashlib.sha256(repr(record).encode("utf-8", "replace")).hexdigest()[:16]
-    except Exception:                                           # noqa: BLE001
-        return None
-
-
-def _cache_file():
-    from ._keyhome import key_home
-    return os.path.join(key_home(), "inspeximus", CACHE_NAME)
-
-
-def _cache_get(path):
-    try:
-        with open(_cache_file(), encoding="utf-8") as fh:
-            entry = json.load(fh).get(os.path.normcase(os.path.abspath(str(path))))
-        return entry if isinstance(entry, dict) else None
-    except (OSError, ValueError, AttributeError):
-        return None
-
-
-def _cache_put(path, items, left_out):
-    """Remember the positions of `left_out` records, with a fingerprint each. Never raises: a cache that cannot be written costs
-    the next prompt a search, nothing else."""
-    try:
-        if not left_out or len(left_out) > CACHE_MAX:
-            return
-        pos = {id(r): i for i, r in enumerate(items)}
-        idx = [pos[id(r)] for r in left_out]
-        fps = [_fingerprint(r) for r in left_out]
-        if None in fps:
-            return
-        file = _cache_file()
-        try:
-            with open(file, encoding="utf-8") as fh:
-                data = json.load(fh)
-            data = data if isinstance(data, dict) else {}
-        except (OSError, ValueError):
-            data = {}
-        data[os.path.normcase(os.path.abspath(str(path)))] = {"idx": idx, "fp": fps}
-        from . import _safewrite
-        os.makedirs(os.path.dirname(file), exist_ok=True)
-        _safewrite.write_atomic(file, json.dumps(data))
-    except Exception:                                           # noqa: BLE001
-        pass
-
-
-def _from_cache(m, fn, items):
-    """The read over the store without the records the last search left out, when each is still there and unchanged and the read
-    passes; otherwise None."""
-    entry = _cache_get(getattr(m, "path", ""))
-    if not entry:
-        return None
-    try:
-        idx, fps = entry["idx"], entry["fp"]
-        if len(idx) != len(fps) or any(not isinstance(i, int) or i < 0 or i >= len(items) for i in idx):
-            return None
-        if any(_fingerprint(items[i]) != f for i, f in zip(idx, fps)):
-            return None
-        gone = set(idx)
-        rest = [r for i, r in enumerate(items) if i not in gone]
-        result = fn(_clone_over(m, rest))
-    except Exception:                                           # noqa: BLE001
-        return None
-    return result, len(idx)
-
-
 # ── the search ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 def without_bad_records(m, fn, first):
@@ -146,11 +72,6 @@ def without_bad_records(m, fn, first):
     usable id."""
     items = list(m._items)
     path = getattr(m, "path", "the store")
-    cached = _from_cache(m, fn, items)
-    if cached is not None:
-        result, n = cached
-        say(path, n, ["(as before)"], first, more=" Remembered from an earlier prompt.")
-        return result
     deadline = time.monotonic() + TIME_S
     bad = []                    # (record, exception): a read over this record alone raises
     failing = []                # chunks known to fail that the time did not allow to resolve
@@ -162,6 +83,8 @@ def without_bad_records(m, fn, first):
     def fails(chunk):
         try:
             fn(_clone_over(m, chunk))
+        except MemoryError:
+            raise                                               # the machine ran out of memory: that proves nothing about a record
         except Exception as exc:                                # noqa: BLE001
             return exc
         return None
@@ -201,7 +124,6 @@ def without_bad_records(m, fn, first):
         result = fn(_clone_over(m, rest))
     except Exception:                                           # noqa: BLE001
         raise first from None
-    _cache_put(path, items, left)
     ids = [(dict.get(r, "id") if isinstance(r, dict) else None) or "?" for r, _ in bad] or ["(not isolated)"]
     held = sum(len(c) for c, _ in failing)
     more = ""

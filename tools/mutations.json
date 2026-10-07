@@ -8733,7 +8733,7 @@
  {
   "name": "link rule: condition B (the target stays inside the project) is dropped",
   "file": "inspeximus/_storelink.py",
-  "old": "    if _inside_project((real_d, real_f), cwd):                                                         # B",
+  "old": "    if not up and _inside_project((real_d, real_f), cwd):                                              # B",
   "new": "    if False and _inside_project((real_d, real_f), cwd):                                               # B",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
@@ -8832,8 +8832,8 @@
  {
   "name": "link rule: condition C also judges the environment override",
   "file": "inspeximus/_storelink.py",
-  "old": "    if links:\n        git_root = find_project_root(",
-  "new": "    if True:\n        git_root = find_project_root(",
+  "old": "    if links and not has_dotdot(f):",
+  "new": "    if True:",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
   ]
@@ -9003,7 +9003,7 @@
  {
   "name": "F-33: a link outside the project named by INSPEXIMUS_PATH is judged",
   "file": "inspeximus/_surface.py",
-  "old": "    if not _inside(p, root):\n        return path\n",
+  "old": "    if not has_dotdot(raw) and not _inside(p, root):\n        return path\n",
   "new": "",
   "tests": [
    "tests/test_audit_a_3165_findings.py"
@@ -9092,24 +9092,6 @@
   ]
  },
  {
-  "name": "F-36: the left-out records are not remembered",
-  "file": "inspeximus/_isolate.py",
-  "old": "    _cache_put(path, items, left)\n",
-  "new": "    pass\n",
-  "tests": [
-   "tests/test_audit_a_3165_second_review.py"
-  ]
- },
- {
-  "name": "F-36: a remembered record is trusted although it changed",
-  "file": "inspeximus/_isolate.py",
-  "old": "        if any(_fingerprint(items[i]) != f for i, f in zip(idx, fps)):",
-  "new": "        if False:",
-  "tests": [
-   "tests/test_audit_a_3165_second_review.py"
-  ]
- },
- {
   "name": "F-36: the chunks not examined in time are kept in the final read",
   "file": "inspeximus/_isolate.py",
   "old": "            unexamined.extend(chunk)\n            continue",
@@ -9139,7 +9121,7 @@
  {
   "name": "F-35: INSPEXIMUS_PATH is returned unchanged whatever the chain holds",
   "file": "inspeximus/_surface.py",
-  "old": "    if not link_chain(os.path.dirname(p), os.path.basename(p), root):",
+  "old": "    if not link_chain(head, tail, root):",
   "new": "    if True:",
   "tests": [
    "tests/test_audit_a_3165_second_review.py"
@@ -9150,6 +9132,51 @@
   "file": "inspeximus/_storelink.py",
   "old": "    links = link_chain(d, filename, root)\n",
   "new": "    links = [p for p in (d, f) if _safewrite.is_link(p)]\n",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-37: a MemoryError marks a record bad",
+  "file": "inspeximus/_isolate.py",
+  "old": "        except MemoryError:\n            raise                                               # the machine ran out of memory: that proves nothing about a record\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-38: a path with .. is judged lexically",
+  "file": "inspeximus/_storelink.py",
+  "old": "    if has_dotdot(f):\n        return _physical_links(f, root)\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-38: condition C judges a path that goes back up through a link",
+  "file": "inspeximus/_storelink.py",
+  "old": "    if links and not has_dotdot(f):",
+  "new": "    if links:",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-38: condition B judges a path that goes back up through a link",
+  "file": "inspeximus/_storelink.py",
+  "old": "    up = bool(links) and has_dotdot(f) ",
+  "new": "    up = False and has_dotdot(f) ",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-38: INSPEXIMUS_PATH through a link comes back as the string it was given",
+  "file": "inspeximus/_surface.py",
+  "old": "    return vet(head, tail, cwd, root=root)[1]",
+  "new": "    return path\n    return vet(head, tail, cwd, root=root)[1]",
   "tests": [
    "tests/test_audit_a_3165_second_review.py"
   ]
