@@ -808,6 +808,193 @@ def maybe_archive_in_background(cwd=None) -> str:
         return "failed"
 
 
+#: A hook that meets stamps made under another guard set (a Python upgrade, or another interpreter) starts ONE detached
+#: `--stamp-guards --apply --auto` under its OWN interpreter, at most once per interval, so the store heals itself. It writes
+#: verdicts the hook computed anyway, under the store's key; it only replaces stamps the store already carries.
+#: THE LAUNCH FOLLOWS 3.16.4's RULES for a run started from the prompt hook (AUDIT-A F-9, F-14, F-15, F-22):
+#:   * no working directory and no PYTHON* variable on the import path (`-E` and the shim, as `maybe_archive_in_background`);
+#:   * CREATE_BREAKAWAY_FROM_JOB on Windows, falling back to the start without it;
+#:   * the attempt is recorded before the start with the pid, and the run marks itself `done` or `failed`, so a run its
+#:     host killed is retried after AUTO_ARCHIVE_MIN_INTERVAL_S and not after the whole interval;
+#:   * the switch comes from the environment and the user's config only, never from a repository's config;
+#:   * it stamps only the store the hook resolved: the run is told which, and refuses when its own resolution differs. The
+#:     decision store is never stamped from here: its path comes from an environment variable a repository can set;
+#:   * the key home is `_keyhome.key_home()`, which ignores one inside a git work tree or the project (F-13, F-13b).
+#: `INSPEXIMUS_STAMP_AUTO=0`, or {"stamp": {"auto": false}} in the user's config, turns it off.
+STAMP_HEAL_MIN_INTERVAL_S = 3600.0
+
+
+def stamp_heal_enabled() -> bool:
+    """The environment, then the USER's config (`user_config_path()`, outside every repository), else on. A repository's
+    own `.inspeximus/config.json` is not read."""
+    env = os.environ.get("INSPEXIMUS_STAMP_AUTO", "").strip().lower()
+    if env in ("0", "false", "no"):
+        return False
+    if env in ("1", "true", "yes"):
+        return True
+    c = _read_cfg(user_config_path()).get("stamp")
+    if isinstance(c, dict) and isinstance(c.get("auto"), bool):
+        return c["auto"]
+    return True
+
+
+def foreign_stamp_count(m) -> int:
+    """Active rows of `m` whose stored stamp carries another guard-set hash than this process computes. Counts only."""
+    from . import core
+    gset = core._guard_set_hash()
+    if not gset:
+        return 0
+    n = 0
+    get = dict.get                  # the rows are tracked dicts: a plain `get` is counted as a read of the row
+    for r in m.items:
+        if get(r, "status") != "active":
+            continue
+        held = (get(r, "meta") or {}).get("read_guards")
+        if isinstance(held, dict) and held.get("set") != gset:
+            n += 1
+    return n
+
+
+def _stamp_state_path(store_path, suffix=".json") -> str:
+    """Where the re-stamp keeps its attempt record and its log: the USER's key home, keyed by the store's path, and never
+    beside the store (AUDIT-A F-24). A repository ships files beside its store, and `open(path, "w")` follows a symlink a
+    repository ships at `<store>.stamp-auto.log`: on POSIX the run overwrote the file the link named (64 bytes became 648).
+    The key home is the user's own directory (a key home inside a repository is ignored, F-13), so a repository cannot place
+    a link in it, and a heal leaves nothing in the work tree."""
+    import hashlib
+    from ._keyhome import key_home
+    tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
+    d = os.path.join(key_home(store_path), "inspeximus", "stamp-auto")
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(d, tag + suffix)
+
+
+def _store_named_by_the_environment(cwd=None) -> bool:
+    """True when the store the hook resolves is the one an environment variable names. A repository's settings `env` reaches
+    the hook, so INSPEXIMUS_CODING_STORE could aim a write at another store of the user's (AUDIT-A F-25). The heal runs only
+    on the project's own store, or on the store the user's config records (`inspeximus install --all`); the manual
+    `--stamp-guards --apply` stays available for the rest."""
+    from ._surface import coding_store_path
+    return os.path.normcase(os.path.abspath(coding_store_path(cwd))) != \
+        os.path.normcase(os.path.abspath(coding_store_path(cwd, env={})))
+
+
+def _mark_stamp_run(store_path, result) -> None:
+    """The run's own mark: `done` with the time and "ok" or "failed". Never raises."""
+    try:
+        import time
+        state = _stamp_state_path(store_path)
+        with open(state, encoding="utf-8") as fh:
+            st = json.load(fh)
+        st.update(done=time.time(), result="ok" if result else "failed")
+        tmp = state + ".tmp.%d" % os.getpid()
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(st, fh)
+        os.replace(tmp, state)
+    except Exception:                                           # noqa: BLE001
+        pass
+
+
+def _run_has_died(st) -> bool:
+    """An attempt record that names a pid, has no `done` mark, and whose process is gone."""
+    pid = st.get("pid") if isinstance(st, dict) else None
+    return isinstance(pid, int) and not st.get("done") and not _pid_alive(pid)
+
+
+def _start_detached(args, cwd, log_path):
+    """Start `python -m inspeximus.claude_code <args>` as a detached run that follows 3.16.4's rules for a run started from
+    the prompt hook: `-E` and the shim (no working directory and no PYTHON* variable on the import path, this checkout first),
+    DETACHED_PROCESS and a new process group on Windows with CREATE_BREAKAWAY_FROM_JOB tried first, a new session elsewhere,
+    stdin closed, output to `log_path`. Returns the process."""
+    import subprocess
+    parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    prog = ("import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
+            "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % parent)
+    command = [sys.executable, "-E", "-c", prog, "inspeximus.claude_code"] + list(args)
+    with open(log_path, "w", encoding="utf-8") as log:
+        opts = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
+                "close_fds": True}
+        if os.name != "nt":
+            return subprocess.Popen(command, start_new_session=True, **opts)
+        flags = 0x00000008 | 0x00000200 | 0x08000000          # DETACHED_PROCESS, NEW_PROCESS_GROUP, CREATE_NO_WINDOW
+        try:
+            return subprocess.Popen(command, creationflags=flags | 0x01000000, **opts)    # CREATE_BREAKAWAY_FROM_JOB
+        except OSError:                                        # the job does not allow breakaway
+            return subprocess.Popen(command, creationflags=flags, **opts)
+
+
+def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
+    """Start the detached re-stamp of the store the hook resolved when a read met `foreign` stamps. Returns "started", or
+    why not: "none" (no foreign stamps), "off", "missing", "recent" or "failed". Never raises: a hook that raises costs the
+    user their turn."""
+    try:
+        if not foreign:
+            return "none"
+        if not stamp_heal_enabled() or _store_named_by_the_environment(cwd):
+            return "off"
+        import time
+        from ._surface import coding_store_path
+        path = coding_store_path(cwd)
+        if not os.path.exists(path):
+            return "missing"
+        state = _stamp_state_path(path)
+        now = time.time()
+        try:
+            with open(state, encoding="utf-8") as fh:
+                st = json.load(fh)
+            last = float(st.get("last_attempt") or 0)
+        except (OSError, ValueError, AttributeError):
+            st, last = {}, 0.0
+        if now - last < STAMP_HEAL_MIN_INTERVAL_S:
+            # A run that died is tried again after the floor, as the archive's is (F-14).
+            if not (_run_has_died(st) and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):
+                return "recent"
+        tmp = state + ".tmp.%d" % os.getpid()
+        record = {"last_attempt": now, "foreign": int(foreign), "interpreter": sys.executable}
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(record, fh)
+        os.replace(tmp, state)
+        proc = _start_detached(["--stamp-guards", "--apply", "--auto", "--expect-store", path], cwd,
+                               _stamp_state_path(path, ".log"))
+        record["pid"] = getattr(proc, "pid", None)
+        # A FAST RUN HAS MARKED ITSELF DONE BY NOW. Writing the record again over its mark would lose `done`, and a run that
+        # finished would look dead and be started again after the floor. The pid is merged into what the run left.
+        try:
+            with open(state, encoding="utf-8") as fh:
+                cur = json.load(fh)
+            if isinstance(cur, dict) and cur.get("last_attempt") == record["last_attempt"]:
+                cur["pid"] = record["pid"]
+                record = cur
+        except (OSError, ValueError):
+            pass
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(record, fh)
+        os.replace(tmp, state)
+        return "started"
+    except Exception:                                           # noqa: BLE001
+        return "failed"
+
+
+def _hook_command(cwd=None) -> "str | None":
+    """The command the UserPromptSubmit hook runs, from the project's or the user's Claude Code settings: the interpreter
+    that stamps must be the one this command starts. Best effort; None when no settings name it."""
+    homes = [os.path.join(cwd or os.getcwd(), ".claude", "settings.local.json"),
+             os.path.join(cwd or os.getcwd(), ".claude", "settings.json"),
+             os.path.join(os.path.expanduser("~"), ".claude", "settings.json")]
+    for p in homes:
+        try:
+            with open(p, encoding="utf-8") as fh:
+                hooks = (json.load(fh).get("hooks") or {}).get("UserPromptSubmit") or []
+        except (OSError, ValueError, AttributeError):
+            continue
+        for group in hooks:
+            for h in (group.get("hooks") if isinstance(group, dict) else None) or []:
+                cmd = h.get("command") if isinstance(h, dict) else None
+                if isinstance(cmd, str) and "inspeximus" in cmd:
+                    return cmd
+    return None
+
+
 def stamp_guards(cwd=None, apply=False, store=None) -> dict:
     """Persist a read-guard verdict for the project store's active records that have none. DRY BY
     DEFAULT. A read never saves, so records written before 3.15.4 are assessed again on every prompt;
@@ -821,6 +1008,7 @@ def stamp_guards(cwd=None, apply=False, store=None) -> dict:
         m = _store(cwd)
     r = m.stamp_read_guards(dry_run=not apply)
     r["applied"] = bool(r.get("applied"))
+    r["hook_command"] = _hook_command(cwd)          # the interpreter that stamps must be the one this starts
     return r
 
 
@@ -1357,6 +1545,8 @@ def recall(ev):
     # surface decision-typed memories ahead of the command/file mechanics — otherwise the useful signal drowns
     # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
     m = _store(cwd)
+    # Counted BEFORE the recall: assessing a row drops the stamp it cannot verify from the handle.
+    _LAST_STORES[:] = [(str(getattr(m, "path", "") or ""), False, foreign_stamp_count(m))]   # the project store only
     hits = _read(m, lambda h: h.recall(q, k=16))
     def has(h, tag):
         return tag in (h.get("tags") or [])
@@ -1438,6 +1628,17 @@ def recall(ev):
               ("[inspeximus] relevant project memory (deterministic, corrections already applied):\n"
                + "\n".join(out)) if out else "",
               notice, system_message=ask)
+
+
+_LAST_STORES: list = []        #: the stores the last `recall` read: (path, is_decision_store, stamps from another guard set)
+
+
+def maybe_restamp_after_recall(cwd) -> None:
+    """After the hook's recall: when a store it read holds stamps from another guard set, heal it in the background."""
+    for path, ext, n in _LAST_STORES:
+        if n:
+            maybe_restamp_in_background(cwd, foreign=n)
+    _LAST_STORES.clear()
 
 
 def _emit(event, *blocks, system_message=None):
@@ -2080,6 +2281,26 @@ def main():
         return
     if "--stamp-guards" in sys.argv:
         argv = sys.argv
+        if "--auto" in argv:
+            # The run the prompt hook started (see `maybe_restamp_in_background`): the project store only, and only the
+            # one the hook resolved. A different resolution here (another environment) stamps nothing.
+            from ._surface import coding_store_path
+            want = argv[argv.index("--expect-store") + 1] if "--expect-store" in argv[:-1] else None
+            have = coding_store_path(os.getcwd())
+            same = bool(want) and os.path.normcase(os.path.abspath(want)) == os.path.normcase(os.path.abspath(have))
+            if "--store" in argv or not same or _store_named_by_the_environment(os.getcwd()):
+                print(json.dumps({"refused": "this run stamps only the store the hook resolved", "expected": want,
+                                  "resolved_here": have}, indent=2))
+                _mark_stamp_run(want or have, False)
+                return
+            try:
+                r = stamp_guards(apply=True)
+            except Exception:                                   # noqa: BLE001
+                _mark_stamp_run(have, False)
+                raise
+            _mark_stamp_run(have, bool(r.get("applied") or not r.get("to_stamp")))
+            print(json.dumps(r, indent=2, default=str))
+            return
         r = stamp_guards(apply="--apply" in argv,
                          store=argv[argv.index("--store") + 1] if "--store" in argv[:-1] else None)
         print(json.dumps(r, indent=2, default=str))
@@ -2106,6 +2327,8 @@ def main():
         elif name == "UserPromptSubmit":
             recall(ev)
             maybe_archive_in_background(ev.get("cwd") or os.getcwd())
+            maybe_restamp_after_recall(ev.get("cwd") or os.getcwd())
+            _FAST_EXIT[0] = os.environ.get("INSPEXIMUS_HOOK_FAST_EXIT", "").strip().lower() not in ("0", "false", "no")
         elif name == "SessionStart":
             session_start(ev)
         elif name == "SessionEnd":
@@ -2131,5 +2354,43 @@ def main():
             pass
 
 
-if __name__ == "__main__":
+#: Set by the prompt hook when everything it does is finished: see `_exit_now`.
+_FAST_EXIT = [False]
+
+
+def _exit_now() -> None:
+    """End the process without the interpreter's teardown, which frees every row dictionary the hook loaded: 0.12 s of a
+    1.3 s prompt on our project store (9 interleaved runs, 2026-10-07: 1.281 s with a normal exit, 1.158 s with this).
+
+    ONLY THE PROMPT HOOK, ONLY WHEN IT HAS FINISHED, ONLY AS A SCRIPT. What a normal exit would still have done, and why
+    each is already done or absent on this path:
+      * stdout and stderr are flushed here, and fsynced where the stream is a file (a pipe or a console cannot be);
+      * no store lock is held: the prompt path only reads, and a read takes none;
+      * every file the hook writes (the secrets notice, the nudge state, the archive and re-stamp attempt records) is
+        written inside a `with` or by `os.replace` before its function returns;
+      * the detached archive and re-stamp runs are separate processes (DETACHED_PROCESS, or a new session) with the log
+        handle closed in the parent; they do not end with it;
+      * the package registers no `atexit` handler and no finalizer, starts no thread, and configures no logging handler;
+      * the hook saves nothing and emits no receipt (`remember` and the receipt chain are not on this path), so no receipt
+        tail needs an fsync here.
+    A hook that fails (an exception in a handler) takes the normal exit, as does `INSPEXIMUS_HOOK_FAST_EXIT=0`."""
+    for st in (sys.stdout, sys.stderr):
+        try:
+            st.flush()
+        except Exception:                                       # noqa: BLE001
+            pass
+        try:
+            os.fsync(st.fileno())
+        except Exception:                                       # noqa: BLE001
+            pass
+    os._exit(0)
+
+
+def _script_main() -> None:
     main()
+    if _FAST_EXIT[0]:
+        _exit_now()
+
+
+if __name__ == "__main__":
+    _script_main()

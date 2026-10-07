@@ -1357,3 +1357,25 @@ that only fires on near-verbatim reuse is not lineage — but for the recall rea
 So the ~22% firing rate above is not 22% of true derivations. Default stays `0.0` = OFF; the code is kept as a substrate, the claim is not. It over-taints deliberately: a false parent is visible in `provenance()`, a
 missing one is silent. Default `0.0` = OFF (byte-identical legacy), and an explicit `derived_from` always
 wins. Receipt: `tests/test_infer_lineage.py` (8/8).
+
+
+## Read-guard stamps and the Python that made them
+
+A read-guard stamp (`m.stamp_read_guards()`, `--stamp-guards --apply`, and every `remember`) lets the prompt hook skip
+the guard assessment of a clean row. The stamp is a MAC over a guard-set hash, and the hash includes the Unicode database
+version of the Python that computed it, because a regex that reads Unicode properties can answer differently under another
+version. A stamp made by one Python therefore reads as invalid under a Python with another Unicode version, and the hook
+assesses that row on every prompt as if it had no stamp. Measured on our project store (14,898 active rows): stamps made
+by Python 3.12.10 (Unicode 15.0.0) saved nothing for the hook that runs Python 3.14.4 (Unicode 16.0.0), and stamps made by
+3.14.4 took the uvx hook from 2.40 s to 1.87 s.
+
+`--stamp-guards` reports `foreign_stamps`, the stamps invalid for that reason, with `foreign_made_under` (the Python and
+Unicode version each stamp names), the `interpreter` that ran, and `hook_command`, the hook command from the Claude Code
+settings when it names one. Run `--stamp-guards --apply` through the hook's own command, for example `uvx --from
+inspeximus==X python -m inspeximus.claude_code --stamp-guards --apply`, so the interpreter is the hook's.
+
+A prompt that meets foreign stamps starts one detached `--stamp-guards --apply` under its own interpreter, at most once an
+hour per store, so a Python upgrade heals itself after one prompt: measured 2.02 s for that prompt against 1.98 s without the
+heal, then 1.70 s against 1.98 s for the next one, with the background run taking about 2.5 s. Set
+`INSPEXIMUS_STAMP_AUTO=0`, or `{"stamp": {"auto": false}}` in the user's config, to turn it off. A store with no read-guard
+key is not stamped, with or without the heal.

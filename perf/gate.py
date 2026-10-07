@@ -685,6 +685,99 @@ def w_prompt_decisions(n):
     return run
 
 
+def w_prompt_hook(n):
+    """The prompt hook as the user's process runs it, event by event, over a project store of n captures and a decision
+    store of n // 6 decisions, both stamped under this key home by the same interpreter. The work counters that the 3.17
+    gains rest on (AUDIT-B 3.17 hook, 2026-10-07):
+      foreign_stamps   active rows whose stamp carries another guard-set hash: 0 when the same interpreter stamped them
+                       (a Unicode-version mismatch made it n and cost 2.4 s of 3.2 s before the heal);
+      guard_shape_scans  rows put through the instruction-shape scan: 0 while every stamp verifies;
+      token_builds     record token sets built from text, over both stores: one per active row, once per process;
+      rows_parsed      rows `json.loads`-ed out of the row stores: every row of both stores, once;
+      fast_exit_prompt 1: the UserPromptSubmit run marked itself finished for `os._exit` (the 0.12 s teardown);
+      fast_exit_other  0: no other event, and no event of a failing handler, takes it.
+    `tracked_gets` stays in the counters, so a read of the rows through the record's Python-level `get` shows."""
+    import contextlib as _cl
+    import io
+    import inspeximus.claude_code as cc
+    from inspeximus import sqlite_store as _sq
+    proj = tempfile.mkdtemp()
+    os.makedirs(os.path.join(proj, ".git"))
+    dpath = os.path.join(tempfile.mkdtemp(), "decisions.json")
+    _ARM_STORES.append(dpath)
+    env = {"INSPEXIMUS_CODING_STORE": os.path.join(proj, ".inspeximus"), "INSPEXIMUS_NO_NUDGE": "1",
+           "INSPEXIMUS_DECISION_STORE": dpath, "INSPEXIMUS_STAMP_AUTO": "0"}
+    saved = _clean_env()
+    os.environ.update(env)
+    try:
+        m = cc._store(proj)
+        _ARM_STORES.append(str(m.path))
+        for i in range(n):
+            m.remember(f"ran: make target {i} in the build directory", key=f"cmd:{i}", mtype="episodic", tags=["bash"])
+        m.flush()
+        d = Inspeximus(dpath)
+        for i in range(n // 6):
+            d.remember_decision(f"we decided that component {i} builds with the release target", because="the build is shared",
+                                topic=f"component-{i}")
+        d.flush()
+    finally:
+        _restore_env(saved)
+    cwd = proj.replace("\\", "/")
+    events = {"UserPromptSubmit": {"prompt": "which target builds the release component"},
+              "PreToolUse": {"tool_name": "Bash", "tool_input": {"command": "ls -la"}},
+              "PostToolUse": {"tool_name": "Read", "tool_input": {"file_path": cwd + "/x.py"}},
+              "SessionStart": {"source": "startup"}}
+
+    def run():
+        saved_run = _clean_env()
+        os.environ.update(env)
+        real_tokens, real_json, real_stdin, real_foreign = core._tokens, _sq.json, sys.stdin, cc.foreign_stamp_count
+        built, parsed, fast, seen = {"n": 0}, {"n": 0}, {}, {"foreign": -1}
+
+        def counted(text):
+            built["n"] += 1
+            return real_tokens(text)
+
+        class _CountedJson:
+            """The row store's `json`, counting every `loads`: a row parsed twice is counted twice, whoever parses it."""
+            def __getattr__(self, name):
+                return getattr(real_json, name)
+
+            @staticmethod
+            def loads(*a, **k):
+                parsed["n"] += 1
+                return real_json.loads(*a, **k)
+
+        def foreign_counted(m):
+            seen["foreign"] = real_foreign(m)
+            return seen["foreign"]
+
+        def send(name):
+            cc._FAST_EXIT[0] = False
+            sys.stdin = io.StringIO(json.dumps(dict(events[name], hook_event_name=name, cwd=cwd, session_id="gate")))
+            cc.main()
+            fast[name] = int(cc._FAST_EXIT[0])
+        core._tokens, _sq.json, cc.foreign_stamp_count = counted, _CountedJson(), foreign_counted
+        try:
+            # THE COUNTED REGION IS ONE PROMPT. The other events run after it, for their exit flag only.
+            with Counters() as c, _cl.redirect_stdout(io.StringIO()):
+                send("UserPromptSubmit")
+            prompt_built, prompt_parsed = built["n"], parsed["n"]          # the other events' loads are not the prompt's
+            with _cl.redirect_stdout(io.StringIO()):
+                for name in events:
+                    if name != "UserPromptSubmit":
+                        send(name)
+        finally:
+            core._tokens, _sq.json, sys.stdin = real_tokens, real_json, real_stdin
+            cc.foreign_stamp_count = real_foreign
+            cc._FAST_EXIT[0] = False
+            _restore_env(saved_run)
+        run.inner = {**c.as_dict(), "foreign_stamps": seen["foreign"], "token_builds": prompt_built,
+                     "rows_parsed": prompt_parsed, "fast_exit_prompt": fast["UserPromptSubmit"],
+                     "fast_exit_other": sum(v for k, v in fast.items() if k != "UserPromptSubmit")}
+    return run
+
+
 def w_remember_receipted(n):
     """Five receipted `remember` calls on a long-lived handle that already holds n receipts: the MCP server's
     shape. Each write rewrites the receipts sidecar, and `receipt_encodes` counts the receipts encoded to
@@ -1097,6 +1190,8 @@ WORKLOADS = {
     "digest_n2000":       (lambda: w_digest(2000),       "state_digest over 2,000 records (the action ledger takes it twice per tool call)", "rows"),
     "prompt_decisions_n600": (lambda: w_prompt_decisions(600),
                            "UserPromptSubmit with a 600-decision store (INSPEXIMUS_DECISION_STORE) beside a 600-capture project store", "rows"),
+    "prompt_hook_n1200": (lambda: w_prompt_hook(1200),
+                           "UserPromptSubmit, PreToolUse, PostToolUse and SessionStart over stamped 1,200-capture and 200-decision stores: stamps, scans, token builds, rows parsed, fast exit", "rows"),
     "remember_receipted_n2000": (lambda: w_remember_receipted(2000),
                            "5 receipted remembers on a handle holding 2,000 receipts (the MCP server shape)", "rows"),
     "remember_receipted_tail_n2000": (lambda: w_remember_receipted_tail(2000),
