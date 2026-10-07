@@ -9790,8 +9790,8 @@
  {
   "name": "perf gate: a row is parsed twice when a store opens",
   "file": "inspeximus/sqlite_store.py",
-  "old": "            out.append(json.loads(doc))",
-  "new": "            json.loads(doc); out.append(json.loads(doc))",
+  "old": "            rec = json.loads(doc)\n            if isinstance(rec, dict) and VEC_KEY in rec:",
+  "new": "            json.loads(doc); rec = json.loads(doc)\n            if isinstance(rec, dict) and VEC_KEY in rec:",
   "tests": [
    "tests/test_the_prompt_hook_arm_goes_red.py"
   ]
