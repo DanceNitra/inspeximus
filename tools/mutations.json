@@ -8927,5 +8927,132 @@
   "tests": [
    "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
   ]
+ },
+ {
+  "name": "F-30: git keeps every GIT_* variable",
+  "file": "inspeximus/_storelink.py",
+  "old": "    env = {k: v for k, v in os.environ.items() if k.upper() in _GIT_ENV_KEEP}",
+  "new": "    env = dict(os.environ)",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-30: git runs with the repository's fsmonitor",
+  "file": "inspeximus/_storelink.py",
+  "old": "\"-c\", \"core.fsmonitor=false\", ",
+  "new": "",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-30: git runs with the repository's hooks path",
+  "file": "inspeximus/_storelink.py",
+  "old": "           \"-c\", \"core.hooksPath=\" + os.devnull, \"-C\", root,",
+  "new": "           \"-C\", root,",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-31: a worktree's index is not stamped in the cache key",
+  "file": "inspeximus/_storelink.py",
+  "old": "            return os.path.realpath(os.path.join(root, line[len(\"gitdir:\"):].strip()))",
+  "new": "            return None",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-32: git may take ten seconds",
+  "file": "inspeximus/_storelink.py",
+  "old": "GIT_TIMEOUT_S = 2\n",
+  "new": "GIT_TIMEOUT_S = 10\n",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-32: a failed git answer is asked again",
+  "file": "inspeximus/_storelink.py",
+  "old": "                _GIT_FAILED.add((_norm(root), rel))\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-33: scope=project follows a shipped link",
+  "file": "inspeximus/_surface.py",
+  "old": "        return vet(os.path.join(root, \".inspeximus\"), \"memory.json\", cwd)[1]",
+  "new": "        return os.path.join(root, \".inspeximus\", \"memory.json\")",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-33: a link named by INSPEXIMUS_PATH is not judged",
+  "file": "inspeximus/_surface.py",
+  "old": "        return _vet_path_link(from_env, cwd)",
+  "new": "        return from_env",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-33: a link outside the project named by INSPEXIMUS_PATH is judged",
+  "file": "inspeximus/_surface.py",
+  "old": "    if not _inside(p, root):\n        return path\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-34: the model's refusal carries the command",
+  "file": "inspeximus/_storelink.py",
+  "old": "Ask the user whether that store is theirs. Only the user can allow it; see docs/store-links.md.",
+  "new": "If this store is yours, run: inspeximus link /x . Only the user can allow it; see docs/store-links.md.",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-34: the model's refusal carries the target path",
+  "file": "inspeximus/_storelink.py",
+  "old": "% clean(os.path.basename(links[0]) or \"link\")",
+  "new": "% clean(os.path.realpath(links[0]))",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-34: a path is not cleaned of control characters",
+  "file": "inspeximus/_storelink.py",
+  "old": "\"?\" if (ord(c) < 32 or ord(c) == 127) else c",
+  "new": "c",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-34: link records a target with no terminal and no --yes",
+  "file": "inspeximus/cli.py",
+  "old": "            if not (sys.stdin.isatty() and sys.stdout.isatty()):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py"
+  ]
+ },
+ {
+  "name": "F-34: the hook prints the model's text, not the line for the person",
+  "file": "inspeximus/claude_code.py",
+  "old": "getattr(exc, \"user_line\", str(exc))",
+  "new": "str(exc)",
+  "tests": [
+   "tests/test_audit_a_3165_findings.py",
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
  }
 ]

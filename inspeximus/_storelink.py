@@ -134,18 +134,53 @@ def _inside_project(real_paths, cwd) -> bool:
     return False
 
 
+#: The only variables git sees (AUDIT-A F-30). A project's Claude Code settings can set the environment of the hook, and
+#: `GIT_DIR`, `GIT_WORK_TREE`, `GIT_INDEX_FILE` or `GIT_CONFIG_*` make a tracked link look untracked. Everything else, every
+#: `GIT_*` included, is dropped; `GIT_OPTIONAL_LOCKS` and `GIT_TERMINAL_PROMPT` are set here.
+_GIT_ENV_KEEP = ("PATH", "HOME", "USERPROFILE", "SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP",
+                 "TMPDIR", "LANG", "LC_ALL")
+#: Seconds one `git ls-files` may take (AUDIT-A F-32: an index that is a FIFO blocks it, and a prompt resolves the store 3 times).
+GIT_TIMEOUT_S = 2
+#: (root, relative path) whose git call failed in this process: not asked again, and the link stays refused.
+_GIT_FAILED = set()
+
+
+def _git_env() -> dict:
+    env = {k: v for k, v in os.environ.items() if k.upper() in _GIT_ENV_KEEP}
+    env.update(GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0")
+    return env
+
+
 def _git_tracks(root, rel) -> "bool | None":
     """True when git tracks `rel` in the work tree at `root`, False when it does not, None when git cannot say."""
     import subprocess                           # imported here: the hook's import time is measured, and git runs rarely
-    cmd = ["git", "-c", "core.fsmonitor=false", "-C", root, "ls-files", "--error-unmatch", "--", rel]
-    env = dict(os.environ, GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0")
+    # No repository config may run a program: no fsmonitor hook, no hooks path, no untracked cache. `--literal-pathspecs`
+    # keeps a link named like a glob from matching a tracked sibling.
+    cmd = ["git", "--no-optional-locks", "--literal-pathspecs", "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false",
+           "-c", "core.hooksPath=" + os.devnull, "-C", root, "ls-files", "--error-unmatch", "--", rel]
     try:
-        r = subprocess.run(cmd, capture_output=True, env=env, timeout=10, stdin=subprocess.DEVNULL)
+        r = subprocess.run(cmd, capture_output=True, env=_git_env(), timeout=GIT_TIMEOUT_S, stdin=subprocess.DEVNULL)
     except (OSError, subprocess.SubprocessError):
         return None
     if r.returncode == 0:
         return True
     return False if r.returncode == 1 else None
+
+
+def _git_dir(root):
+    """The git directory of the work tree at `root`: `.git` itself, or the directory a worktree's `.git` FILE names. A worktree's
+    index lives there, so a cache key that looked only at `<root>/.git/index` never saw a commit made in a worktree (F-31)."""
+    dotgit = os.path.join(root, ".git")
+    try:
+        if os.path.isdir(dotgit):
+            return dotgit
+        with open(dotgit, encoding="utf-8") as fh:
+            line = fh.read().strip()
+        if line.startswith("gitdir:"):
+            return os.path.realpath(os.path.join(root, line[len("gitdir:"):].strip()))
+    except OSError:
+        pass
+    return None
 
 
 def _cache_path() -> str:
@@ -157,11 +192,12 @@ def _cache_key(link, real, root) -> str:
     """A decision holds while the link, its target and the repository's index are what they were."""
     def stamp(p):
         try:
-            return str(os.lstat(p).st_mtime_ns)
+            st = os.lstat(p)
+            return "%d:%d" % (st.st_mtime_ns, st.st_size)
         except OSError:
             return "-"
-    index = os.path.join(root, ".git", "index") if os.path.isdir(os.path.join(root, ".git")) else ""
-    parts = [_norm(link), _norm(real), stamp(link), stamp(index) if index else "-"]
+    gitdir = _git_dir(root)
+    parts = [_norm(link), _norm(real), stamp(link), stamp(os.path.join(gitdir, "index")) if gitdir else "-"]
     import hashlib
     return hashlib.sha256("|".join(parts).encode("utf-8", "replace")).hexdigest()
 
@@ -184,8 +220,11 @@ def _untracked(links, root) -> bool:
         verdict = cache.get(key)
         if verdict is None:
             rel = os.path.relpath(os.path.abspath(link), os.path.abspath(root)).replace(os.sep, "/")
+            if (_norm(root), rel) in _GIT_FAILED:
+                return False                      # git failed for this link earlier in this process: not asked again
             tracked = _git_tracks(root, rel)
             if tracked is None:
+                _GIT_FAILED.add((_norm(root), rel))
                 return False                      # git could not say: no store, and no cache entry
             verdict = cache[key] = {"untracked": not tracked}
             dirty = True
@@ -223,10 +262,29 @@ def vet(directory, filename, cwd=None, named_by_env=False):
             return real_d, real_f
     shown = os.path.abspath(links[0]) if links else os.path.abspath(d)
     target = real_f if links and links[0] == f else real_d
-    how = ("INSPEXIMUS_CODING_STORE names %s" % shown) if not links else ("%s is a link to %s" % (shown, target))
-    raise StoreLinkRefused(
-        "%s, which is outside this project and is not named in your config. No store is used and nothing is written. "
-        "If this store is yours, run: inspeximus link %s" % (how, target), path=shown)
+    raise StoreLinkRefused(_model_text(links), path=shown, user_line=_user_text(links, shown, target))
+
+
+def clean(text) -> str:
+    """`text` with control characters replaced: a path the repository chose is data, and it must not carry a line break."""
+    return "".join("?" if (ord(c) < 32 or ord(c) == 127) else c for c in str(text))
+
+
+def _model_text(links) -> str:
+    """The refusal as the MCP server hands it to the model (AUDIT-A F-34): the problem, and what to ask. It carries no target
+    path and no command, because a path a repository chose can carry words, and a command the model runs would make the link
+    legitimate."""
+    what = "the store location is set by an environment variable" if not links else \
+        "the store of this project is reached through a link (%s)" % clean(os.path.basename(links[0]) or "link")
+    return ("%s, and it leads outside this project to a place your config does not name. No store is used and nothing is written. "
+            "Ask the user whether that store is theirs. Only the user can allow it; see docs/store-links.md." % what)
+
+
+def _user_text(links, shown, target) -> str:
+    """The same refusal for the person at the hook's stderr line: the link, where it leads, and the command to allow it."""
+    how = ("INSPEXIMUS_CODING_STORE names %s" % clean(shown)) if not links else ("%s is a link to %s" % (clean(shown), clean(target)))
+    return ("%s, which is outside this project and is not named in your config. No store is used and nothing is written. "
+            "If this store is yours, run in a terminal: inspeximus link %s" % (how, clean(target)))
 
 
 def dir_allowed(directory, filename, cwd=None) -> bool:

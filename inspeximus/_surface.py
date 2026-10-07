@@ -55,9 +55,10 @@ class StoreLinkRefused(StoreLocationError):
     """The store is reached through a link or an environment override that the rules in `_storelink` do not allow (3.16.5).
     `path` is the link, or the override, as the project spells it. The message names the target and the fix."""
 
-    def __init__(self, message, path=None):
+    def __init__(self, message, path=None, user_line=None):
         super().__init__(message)
         self.path = path
+        self.user_line = user_line or message              # for the person at the hook's stderr; `str(exc)` goes to a model
 
 
 def relpath_or_abs(path, start=None):
@@ -326,7 +327,7 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
         return path
     from_env = env.get("INSPEXIMUS_PATH")
     if from_env:
-        return from_env
+        return _vet_path_link(from_env, cwd)
     scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
     if scope == "":
         # THE SHARED STORE, WHEN `install --all` RECORDED ONE (3.14.3). The hooks already read the record
@@ -345,13 +346,33 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
                 f"{os.path.abspath(cwd or os.getcwd())!r}. Refusing to fall back to the working-directory "
                 f"default, because that is the cwd-dependent behaviour this scope exists to remove. "
                 f"Either run inside a repository, or set INSPEXIMUS_PATH to an absolute file.")
-        return os.path.join(root, ".inspeximus", "memory.json")
+        from ._storelink import vet                         # a link the project ships is judged as for claude-code (3.16.5, F-33)
+        return vet(os.path.join(root, ".inspeximus"), "memory.json", cwd)[1]
     if scope == "claude-code":
         # The Claude Code hook's store, resolved by the hook's own rule. No repository is not an error
         # here, because the hook falls back to the working directory and this must land beside it.
         return coding_store_path(cwd, env)
     raise StoreScopeError(f"INSPEXIMUS_SCOPE={scope!r} is not a known scope; "
                           f"use 'user', 'project' or 'claude-code'")
+
+
+def _vet_path_link(path, cwd=None) -> str:
+    """`INSPEXIMUS_PATH` as it is, unless it is a LINK THAT THE PROJECT SHIPS (3.16.5, F-33).
+
+    The boundary is the project. A plain path is the user's own choice and stays as it is: Codex, Gemini and Cursor set this
+    variable on purpose. A link that lies inside the project is repository content, so it goes through the same three
+    conditions as the Claude Code store. A link outside the project (a dotfiles link in the home folder) is the user's own
+    and stays as it is. A project's settings can set this variable for Claude Code's MCP server, so the variable alone does not
+    make a link the user's; its location does."""
+    from . import _safewrite
+    p = os.path.abspath(path)
+    if not _safewrite.is_link(p):
+        return path
+    from ._storelink import _inside, vet
+    root = find_project_root(cwd) or os.path.abspath(cwd or os.getcwd())
+    if not _inside(p, root):
+        return path
+    return vet(os.path.dirname(p), os.path.basename(p), cwd)[1]
 
 
 def resolved_path_source(path=None, env=None) -> str:

@@ -2117,7 +2117,7 @@ def main():
             # carries the link, the target and the fix; stdout stays empty, and nothing was read or written. Matched by
             # name, so the hook imports nothing for a rule that almost never fires.
             try:
-                sys.stderr.write("[inspeximus] " + str(exc) + chr(10))
+                sys.stderr.write("[inspeximus] " + getattr(exc, "user_line", str(exc)) + chr(10))
             except Exception:
                 pass
             return

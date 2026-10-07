@@ -611,6 +611,8 @@ def main(argv=None):
                                      "INSPEXIMUS_CODING_STORE, is yours: records the target in your own config")
     lk.add_argument("target", help="the store directory (or the store file) the link or the variable names")
     lk.add_argument("--json", action="store_true")
+    lk.add_argument("--yes", action="store_true",
+                    help="record the target without asking; needed when there is no terminal (an agent's shell has none)")
 
     rc = sub.add_parser("receipts", help="write receipts on an EXISTING store: turn them on and cover every "
                                          "record the chain does not name with a genesis checkpoint")
@@ -1350,6 +1352,17 @@ def main(argv=None):
         if not os.path.exists(target):
             print(f"inspeximus: {target} does not exist, so nothing was recorded", file=sys.stderr)
             return 2
+        if not a.yes:
+            # ONLY A PERSON ALLOWS A STORE (3.16.5, AUDIT-A F-34): with no terminal this refuses, so an agent has to add a flag
+            # that the person sees in the tool prompt. The MCP server has no tool for it.
+            if not (sys.stdin.isatty() and sys.stdout.isatty()):
+                print("inspeximus: `link` asks you to confirm, and there is no terminal. Run it yourself in a terminal, or add "
+                      "--yes if you mean it.", file=sys.stderr)
+                return 2
+            from inspeximus._storelink import clean
+            if input("Record %s as a store you trust? [y/N] " % clean(target)).strip().lower() not in ("y", "yes"):
+                print("nothing recorded")
+                return 1
         cfg = add_configured_link(target)
         print(json.dumps({"linked": target, "config": cfg}) if a.json else f"linked {target}" + chr(10) + f"recorded in {cfg}")
         return 0
