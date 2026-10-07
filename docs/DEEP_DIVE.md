@@ -816,6 +816,8 @@ retrieval-recall — an upper bound, not end-to-end QA; a self-comparison, not a
 asymmetric embedder. If you use `persist_vectors=True`, also pass `Inspeximus(embed_id="…")` (a recipe fingerprint): when
 it changes, inspeximus re-embeds the persisted vectors once so a new-space query can't silently mis-match old vectors.
 
+**Stored vectors are float16 (3.17).** A row store writes each persisted vector as base64 little-endian half floats under `vec16`, about a fifth of the size of a JSON list of float32 values. Rows written before 3.17 keep their list and still read; a row is re-encoded when it is next written, and `inspeximus reembed --compact-only` (or `compact_vectors()`) re-encodes them all without an embedding call. A release before 3.17 does not read `vec16`: it ranks those records lexically, keeps the field on every row it rewrites, and verifies the store as before. A JSON store keeps lists. Opening a store embeds nothing, so with `persist_vectors` off the index holds only what that process writes; `index_coherence()` and the MCP server's `where_am_i` report the count (3.16.6).
+
 **Compact recall + progressive disclosure (1.14.0).** Over MCP, `recall` returns a compact projection — `{id,
 text, score, value, tags}` — dropping internal bookkeeping fields the model doesn't reason over, and `k` is
 hard-capped (`INSPEXIMUS_MAX_K`, default 50), so a recall drops cheaply into the prompt. **Full text is kept by

@@ -19101,6 +19101,48 @@ class Inspeximus:
                               "store with persist_vectors=True to keep them.")
         return out
 
+    def compact_vectors(self) -> dict:
+        """Re-encode every vector a row store still holds as a JSON list into the float16 form, then persist.
+
+        No embedding call: the stored values are converted, so this needs no embedder and costs one row
+        write per vector. Since 3.17 a row store writes vectors as base64 float16 under `vec16` (see
+        `sqlite_store.VEC_KEY`), and a row written before that keeps its list until it is next written.
+        This writes them all at once. Rows whose values do not fit a half float keep their list and are
+        counted in `kept_as_list`.
+
+        Needs persist_vectors=True, because a handle that does not persist vectors writes rows without
+        them. A JSON store keeps lists and is reported, not converted."""
+        if not self._persist_vectors:
+            return {"compacted": 0, "kept_as_list": 0,
+                    "error": "persist_vectors=False: this handle writes rows without their vectors. Open the "
+                             "store with persist_vectors=True (INSPEXIMUS_PERSIST_VECTORS=1)."}
+        if self.tenant is not None:
+            raise AttributeError("compact_vectors() rewrites rows of every tenant and is operator-only; "
+                                 "call it from an unbound handle.")
+        snap = self._row_snapshot
+        if _rows is None or not isinstance(snap, dict) or not self._rows_available():
+            return {"compacted": 0, "kept_as_list": 0,
+                    "note": "not a row store: a JSON store keeps its vectors as lists"}
+        # The stored text is the only place the encoding shows: in memory both forms are the same list.
+        # `"vec": [` with unescaped quotes is a key; inside a string value the quotes are escaped.
+        listed = {k for k, d in snap.items() if isinstance(d, str) and '"vec": [' in d}
+        n = kept = 0
+        for r in self._items:
+            rid = r.get("id") if isinstance(r, dict) else None
+            if rid not in listed or not (isinstance(r.get("vec"), list) and r["vec"]):
+                continue
+            if _rows.encode_vec(r["vec"]) is None:
+                kept += 1
+                continue
+            # `_same` reads the stored list and this row's float16 text as the same record, which is
+            # right for every other write and wrong here, so the baseline is cleared for these rows.
+            snap[rid] = None
+            self._touch(r)
+            n += 1
+        if n:
+            self._save(force=True)
+        return {"compacted": n, "kept_as_list": kept}
+
     def _touch(self, rec) -> None:
         """Note that one record changed, so a row store can write that row and nothing else.
 

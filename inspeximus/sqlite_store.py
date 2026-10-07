@@ -24,11 +24,13 @@ THE WRITE IS A DIFF, WHICH IS THE ENTIRE POINT. `snapshot()` records what was on
 `save()` compares the current list against it and issues only what actually changed. A hook that
 appends one record performs one INSERT rather than serialising the whole store.
 """
+import base64
 import hashlib
 import hmac
 import json
 import os
 import sqlite3
+import struct
 import time
 
 SCHEMA = """
@@ -75,6 +77,64 @@ _EVENT_FIELDS = ("key", "status", "mtype")
 #: from the residue scanner. `needs_rewrite()` reports a store that is behind, and the library takes
 #: one full reconcile to bring it forward.
 DOC_FORMAT = 2
+
+#: Where a row keeps its embedding (3.17): base64 of little-endian IEEE 754 half floats, under a key no
+#: release before 3.17 reads. A JSON list of float32 values cost 186 MB for 13,498 vectors of 1,024
+#: dimensions on a real store; this encoding is 37 MB, and on 8 real queries the top 10 was identical
+#: to float32's on all 8 (measured 2026-10-07, agora_output/strategy/builder_crew_store_recall.md).
+#:
+#: A NEW KEY IS THE FORMAT GATE. An older release finds no `vec`, so it ranks those records lexically,
+#: and it keeps `vec16` as an unknown field on every row it rewrites: it cannot misread the vector and
+#: cannot drop it. `doc_format` is not bumped, because a bump makes the first save a full rewrite, and
+#: a handle that does not persist vectors would write every row without its vector.
+#:
+#: Rows written before 3.17 keep their JSON list, which still reads. A row is re-encoded when it is next
+#: written; `Inspeximus.compact_vectors()` re-encodes them all at once.
+VEC_KEY = "vec16"
+
+
+def encode_vec(vec):
+    """`vec` as base64 float16, or None when a value does not fit a half float (the caller keeps the list)."""
+    try:
+        return base64.b64encode(struct.pack("<%de" % len(vec), *vec)).decode("ascii")
+    except (struct.error, OverflowError, TypeError, ValueError):
+        return None
+
+
+def decode_vec(text):
+    """The list `encode_vec` wrote, or None for text that is not one: bad base64, an odd byte count, or
+    a value that is not finite. A record whose vector does not decode is ranked lexically, not refused."""
+    if not isinstance(text, str) or not text:
+        return None
+    try:
+        raw = base64.b64decode(text.encode("ascii"), validate=True)
+    except (ValueError, UnicodeEncodeError):
+        return None
+    if not raw or len(raw) % 2:
+        return None
+    vals = struct.unpack("<%de" % (len(raw) // 2), raw)
+    for x in vals:
+        if x != x or x in (float("inf"), float("-inf")):
+            return None
+    return list(vals)
+
+
+def _decode_row(rec) -> None:
+    """Turn a stored `vec16` back into the `vec` list the library ranks with, in place. A `vec` list
+    already on the row wins: only a release before 3.17 writes one beside `vec16`, and it wrote it
+    later. Replaces one key with one key, so the caller's "normalisation added no key" test still
+    holds and the stored text stays the save baseline."""
+    enc = rec.pop(VEC_KEY, None)
+    if enc is None:
+        return
+    have = rec.get("vec")
+    if isinstance(have, list) and have:
+        return
+    vec = decode_vec(enc)
+    if vec is not None:
+        rec["vec"] = vec
+    elif "vec" not in rec:
+        rec["vec"] = None
 
 MAGIC = b"SQLite format 3\x00"
 
@@ -215,7 +275,10 @@ def load_with_docs(path):
     out, docs = [], []
     for (doc,) in rows:
         try:
-            out.append(json.loads(doc))
+            rec = json.loads(doc)
+            if isinstance(rec, dict) and VEC_KEY in rec:
+                _decode_row(rec)
+            out.append(rec)
         except Exception:
             # ONE UNREADABLE ROW MUST NOT COST THE STORE. The JSON path fails whole-file: a single
             # bad byte makes every record unreachable, and this project lost its coding store to
@@ -254,6 +317,15 @@ def _doc(rec, keep_vec: bool = True) -> str:
     if (not keep_vec and "vec" in rec) or any(k[:1] == "_" for k in rec):
         rec = {k: v for k, v in rec.items()
                if k[:1] != "_" and (keep_vec or k != "vec")}
+    # THE VECTOR IS WRITTEN AS FLOAT16 (3.17), see VEC_KEY. The round trip is exact from the second
+    # write on, so the stored text of an unchanged row serialises back to the same bytes.
+    if keep_vec:
+        _v = rec.get("vec")
+        if isinstance(_v, list) and _v:
+            _enc = encode_vec(_v)
+            if _enc is not None:
+                rec = {k: v for k, v in rec.items() if k != "vec"}
+                rec[VEC_KEY] = _enc
     return json.dumps(rec, sort_keys=True, default=str, allow_nan=False, ensure_ascii=False)
 
 

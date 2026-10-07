@@ -9236,5 +9236,75 @@
   "tests": [
    "tests/test_an_embedder_with_no_vectors_says_so.py"
   ]
+ },
+ {
+  "name": "3.17: the row writer stores the vector as a JSON list again",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    if keep_vec:\n        _v = rec.get(\"vec\")\n",
+  "new": "    if False:\n        _v = rec.get(\"vec\")\n",
+  "tests": [
+   "tests/test_vectors_are_stored_as_float16.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
+ },
+ {
+  "name": "3.17: the row loader leaves vec16 undecoded",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "            if isinstance(rec, dict) and VEC_KEY in rec:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_vectors_are_stored_as_float16.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
+ },
+ {
+  "name": "3.17: vec16 wins over a list an older release wrote beside it",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    if isinstance(have, list) and have:\n        return\n",
+  "new": "    if False:\n        return\n",
+  "tests": [
+   "tests/test_vectors_are_stored_as_float16.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
+ },
+ {
+  "name": "3.17: decode_vec accepts a value that is not finite",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "        if x != x or x in (float(\"inf\"), float(\"-inf\")):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_vectors_are_stored_as_float16.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
+ },
+ {
+  "name": "3.17: a vector that does not fit float16 is written as an empty vec16",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "            if _enc is not None:\n",
+  "new": "            if True:\n",
+  "tests": [
+   "tests/test_vectors_are_stored_as_float16.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
+ },
+ {
+  "name": "3.17: compact_vectors keeps the baseline, so _same calls every list row unchanged",
+  "file": "inspeximus/core.py",
+  "old": "            snap[rid] = None\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_vectors_are_stored_as_float16.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
+ },
+ {
+  "name": "3.17: compact_vectors runs on a handle that writes rows without vectors",
+  "file": "inspeximus/core.py",
+  "old": "        if not self._persist_vectors:\n            return {\"compacted\": 0, \"kept_as_list\": 0,\n",
+  "new": "        if False:\n            return {\"compacted\": 0, \"kept_as_list\": 0,\n",
+  "tests": [
+   "tests/test_vectors_are_stored_as_float16.py",
+   "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
+  ]
  }
 ]
