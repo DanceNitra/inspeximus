@@ -1,3 +1,140 @@
+## 3.16.4 - UPGRADE IF you open repositories you did not write: the hooks and the MCP server no longer import a repository's own `inspeximus` package, a repository cannot choose where your keys and config live or which remote host receives your text, and an embedder's answer is bounded. ACTION if you set a remote embedder or distiller only through INSPEXIMUS_EMBED_URL or INSPEXIMUS_LLM_URL: add its host to embed.allowed_hosts in your config
+
+### The hooks and the MCP server start isolated from the repository
+
+Claude Code and Codex run a hook with the project as the working directory, and `python -m inspeximus.claude_code` puts the working directory first on Python's import path. A repository that contains an `inspeximus/` directory therefore ran its own code in place of the hook.
+
+In 3.16.4 every command inspeximus writes or starts for a project leaves the working directory out of the import path and ignores every `PYTHON*` environment variable (`-E`). The user site stays on the path, so an inspeximus installed with `pip install --user` keeps working.
+
+- On Python 3.11 and later the command is `python -E -P -m <module>`.
+- On Python 3.9 and 3.10, and where the version cannot be known in advance (the plugin's static hook file, a `uvx` launch), the command is `python -E -c "<a short line that removes the working directory from the path>" <module>`.
+- This covers the plugin's `hooks/hooks.json`, `install`'s hook command for every agent, the MCP server launch for a Python runtime, the hooks `python -m inspeximus.claude_code --install` writes, the Codex plugin command, and the detached archive run. The archive run names the package that started it, so it runs the same inspeximus as the hook.
+- The commands inspeximus prints for you to type in a project (`--scrub-secrets`, `--merge-store`, `--uninstall`, `--archive`) use the same form, and the docs show `python -P -m`.
+- `inspeximus install` rewrites a hook line it wrote earlier to the new form. A line you wrote yourself is kept, as before.
+- `PYTHONUTF8=1` and `PYTHONIOENCODING` still set the encoding of the hook's output: the hook applies them itself, because `-E` makes Python ignore them.
+- `-E` also ignores `PYTHONUSERBASE`. An inspeximus installed with `pip install --user` under a custom `PYTHONUSERBASE` is not found by these commands; install it into the default user site or into the interpreter instead.
+
+Tests: `tests/test_audit_a_f15_a_repo_directory_cannot_shadow_the_package.py`, `tests/test_audit_a_f22_the_isolated_launch_still_finds_a_user_site_install.py`, `tests/test_3164_key_home_embedding_and_directory_rules.py`. A repository holding `inspeximus/__init__.py` runs it under plain `python -m`, and not under any command inspeximus writes. A user-site-only install is found by the generated commands (measured on Python 3.10 and 3.11).
+
+### Every uvx command names its package index
+
+A project's settings `env` can set `UV_INDEX_URL`, which chooses where `uvx` fetches the hook's code. In 3.16.4 every `uvx` command inspeximus writes or runs carries `--default-index https://pypi.org/simple`, which takes precedence over `UV_INDEX_URL`: the plugin's hooks and `.mcp.json`, `install`'s hook command and MCP server entry, and the cache warm-up `install` runs.
+
+What this does not cover: `UV_EXTRA_INDEX_URL`, `UV_CACHE_DIR` and `UV_PYTHON` from a project's settings still reach a `uvx` launch. A launch through an installed interpreter (`pip install inspeximus`, then `install` with a Python runtime) does not use uv. A later release addresses uv's environment. The `server.json` registry metadata does not carry the flag.
+
+Tests: `tests/test_3164_key_home_embedding_and_directory_rules.py`.
+
+### The installer does not pick up a tool from the working directory
+
+On Windows, Python 3.9 to 3.11 look in the working directory before `PATH` when they resolve a command name. An `inspeximus install` run inside a directory that held `uvx.bat` wrote that file into every agent's config. In 3.16.4 the installer resolves `uv`, `uvx`, `hermes`, `openssl` and each agent's own command with the working directory left out. The Python runtime is the interpreter that runs `install`, which is not looked up by name. Python 3.12 and later already leave the working directory out.
+
+Tests: `tests/test_3164_key_home_embedding_and_directory_rules.py`.
+
+### A repository cannot choose the key home
+
+The key home holds your receipt keys, read-guard keys, chain heads, event salts and your own inspeximus config. `INSPEXIMUS_KEY_HOME` sets it, and an agent can apply environment variables that a project's settings declare.
+
+In 3.16.4 a value of `INSPEXIMUS_KEY_HOME` that resolves inside a git work tree, inside the project of the store in use, or inside the project the process runs in, is ignored with one line on stderr, and the per-user directory is used instead (`%APPDATA%`, `$XDG_CONFIG_HOME` or `~/.config`). A key home anywhere else is used as before.
+
+- The project the process runs in is the nearest directory at or above the working directory, and below your home directory, that holds `.git`, `.claude` or `.inspeximus`; without one, it is the working directory itself. This covers a repository downloaded as a zip file, which has no `.git`. Your home directory and its own `.claude` are not a project.
+- If you keep your dotfiles in a git repository and point `INSPEXIMUS_KEY_HOME` into it, the value is now ignored. Point it at a directory outside any git work tree.
+- What you see: a project that sets `INSPEXIMUS_KEY_HOME` to a directory inside itself gets the stderr line, and inspeximus keeps your keys and config where they were.
+
+Tests: `tests/test_audit_a_f13_env_key_home_cannot_vouch_for_a_record.py`, `tests/test_3164_key_home_embedding_and_directory_rules.py`.
+
+### An embedder's request goes to the configured URL only, and its answer is bounded
+
+Every embedder (hook, CLI and MCP server) and `default_distiller` now send their request through one function:
+
+- **No redirect is followed.** A redirect answer is an error, and the hook falls back to lexical recall. Before, a 301, 302 or 303 sent a new request, with the `Authorization` header, to the host the answer named.
+- **No proxy for this machine.** A URL on `localhost`, `127.0.0.0/8` or `::1` is opened without a proxy. A URL to another host keeps the environment's proxy settings.
+- **A bounded answer.** An answer over 8 MB is refused, and an embedding must be a list of at most 16,384 finite numbers. Anything else means no vector for that text, and recall stays lexical.
+
+Tests: `tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py`, `tests/test_audit_a_f17_an_embedder_answer_has_a_size_limit.py`.
+
+### An endpoint on another machine must be named in your own config
+
+An agent such as Claude Code applies the environment variables in a project's settings to the hooks and the MCP server. A project could therefore set `INSPEXIMUS_EMBED_URL` and `INSPEXIMUS_EMBED_KEY`, or `INSPEXIMUS_LLM_URL` and `INSPEXIMUS_LLM_KEY` for the distiller, and your text went to the host it chose, with the key it chose.
+
+What changed in 3.16.4:
+
+- A URL from `INSPEXIMUS_EMBED_URL` or `INSPEXIMUS_LLM_URL` that points at another machine is used only when your own config, `<key home>/inspeximus/config.json`, names its host in `embed.url` or `embed.allowed_hosts`.
+- `INSPEXIMUS_EMBED_KEY` and `INSPEXIMUS_LLM_KEY` are sent only to a host that config allows.
+- Otherwise inspeximus ignores the variable, writes one line to stderr naming the variable and the host, and recall stays lexical. The distiller reports that no URL is configured.
+- A URL on this machine (`localhost`, `127.0.0.0/8`, `::1`) works as before, with no entry.
+- A URL in your own config works as before.
+- The rule applies in the hooks, the CLI, the MCP server and `default_distiller`. A `url=` or `key=` argument passed to `default_distiller` in code is used as given. `INSPEXIMUS_LLM_KEY` from the environment is still sent only to an allowed host, also when the URL comes from a `url=` argument.
+
+Who is affected: anyone who sets a remote embedder or distiller only through `INSPEXIMUS_EMBED_URL` or `INSPEXIMUS_LLM_URL`.
+
+To keep using it, add the host to `embed.allowed_hosts` (or set `embed.url`) in `<key home>/inspeximus/config.json`. The key home is `%APPDATA%` on Windows, else `$XDG_CONFIG_HOME`, else `~/.config`:
+
+```json
+{
+  "embed": {
+    "allowed_hosts": ["api.openai.com"]
+  }
+}
+```
+
+An entry is a host name or an address. A URL is also accepted, and its host is used.
+
+Tests: `tests/test_audit_a_f12_env_embed_url_needs_the_users_consent.py`, `tests/test_3164_f12_an_env_url_needs_the_users_config.py`.
+
+### Files beside the store are never written through a link
+
+A repository controls its `.inspeximus/` directory, and git can store a symbolic link. Before 3.16.4, several files inspeximus writes there were opened with a plain write, which follows a link: a repository that shipped one of those names as a link to a file of yours made inspeximus overwrite that file, or create a file where the link pointed.
+
+In 3.16.4 these files are written through one helper that refuses a symbolic link, and on Windows any reparse point, a junction included:
+
+- the archive run's log and state file (`<store>.archive-auto.log`, `<store>.archive-auto.json`)
+- `secrets_notice.json`, `nudge.json` and the update-check cache
+- the store's `.cusum.json`, `.irrev.json` and `.embedid` sidecars, the archive log, the partitions registry, the action ledger and its salt, and the mem0 import sidecar
+
+A file is written to a new temporary file with a random name in the same directory, then moved into place. A link at the name is refused before the write and checked again before the move. The archive run's log is opened with `O_NOFOLLOW` where the platform has it; when the log name is a link, the run starts and its output is discarded.
+
+Who is affected: users on Linux and macOS who open repositories they did not write. The archive log applies only when you turned the automatic archive on. On Windows a symbolic link needs a privilege, and git writes one as a plain file unless `core.symlinks` is on.
+
+Your own config files, such as `settings.json`, are not written through this helper. They follow links as before, so a dotfiles setup keeps working.
+
+Known limit: a store path that is a symbolic link is still followed, so a store inside a repository you did not write can point at another file. A later release adds a rule for this.
+
+Tests: `tests/test_3164_f24_no_write_follows_a_link.py`, run on Linux with real symbolic links and on Windows with junctions.
+
+### A record of the wrong shape no longer switches the prompt hook off
+
+One record with a field of the wrong type made every recall on the store fail, and the prompt hook gave no memory. This covered `meta` that was not an object, `text`, `tags`, `links`, `value` or `key` of the wrong type, and a list or an object in `status`, `mtype`, `id` or inside `links`, or a `pii` that is not a list. Such a record is now repaired as it is read: the field gets a safe value, the original value is kept under `meta.malformed`, and the record is held back from recall until `release_quarantine`. The other records are served. A malformed `tenant` or `owner_agent` gets a value that matches no view, so the record never appears in the default tenant, and a repaired `pii` still marks the record for erasure.
+
+Tests: `tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py`.
+
+Known limit: a record with other malformed values in a store file can still stop the prompt hook from answering. A later release isolates each record, so one bad record cannot stop the hook.
+
+### A directory at the store path fails at once
+
+A directory where the store file (or `INSPEXIMUS_DECISION_STORE`) should be was retried as if a peer were replacing the file, so every hook waited 8 to 10 seconds before failing. It is now refused at once with `IsADirectoryError`, and the hook carries on without that store.
+
+Tests: `tests/test_audit_a_f16_a_directory_at_the_store_path_fails_fast.py`.
+
+### The automatic archive run survives the hook, and a killed run is retried
+
+- On Windows the detached `--maintain` run asks to leave the hook's job object, so a host that ends the job with the hook does not end the run. A job that refuses this starts the run as before.
+- The run records its process id and marks itself done. An attempt whose process is gone and that never finished is retried once 60 seconds have passed, instead of after the full `min_interval_s` (3,600 seconds by default).
+- A run that finishes before the hook has recorded its process id keeps its `done` mark. Before, the hook's second write could erase the mark, and the finished run was started again after 60 seconds.
+
+Tests: `tests/test_audit_a_f14_a_killed_archive_run_is_retried.py`.
+
+### Smaller changes
+
+- The stderr line for a decision store over the size limit no longer quotes a cost per megabyte.
+
+Mutations: 70 new entries in `tools/mutations.json` and 6 re-pointed since 3.16.3. They cover launch isolation, the index flag, `which`, the key-home rules, the embedder rules, writes that refuse a link, records of the wrong shape, the store-path refusal and the archive run. All 76 are killed by their listed tests on the release head: 64 on Windows, and the 12 that need POSIX symbolic links on Linux. The registry holds 959 entries.
+
+Release record, 2026-10-07, on the code of this release (b04e52d3; rebased onto main, which added only transparency log files, before this version bump):
+- Windows, full suite, 3 processes: 6,412 passed, 0 failed, 484 skipped, 12 xfailed, 19 errors. The 19 errors are the openai-agents tests, as in 3.16.3.
+- WSL (Ubuntu 24.04, fresh clone), full suite, 2 processes: 5,897 passed, 0 failed, 748 skipped, 9 xfailed, 0 errors.
+- Perf gate, run alone: no regression. The three erase arms count 2 more `str.lower` calls for the key-home check, as recorded in the baseline.
+- AUDIT-A reviewed every finding on the branch and re-checked the last one (F-27) on b04e52d3: fixed.
+
 ## 3.16.3 - UPGRADE IF your Claude Code prompt hook still takes seconds on an archived store, you write into partitions, you archive a store whose keys are rewritten often, or a repository you open sets an `embed` URL: read-guard verdicts can be stored once, a closed partition refuses every write made through this version, a key's older values stay in the hot store while the key is in use, and a repository's config names a local embedder only
 
 ### A closed partition takes no write, on every write path of this version
