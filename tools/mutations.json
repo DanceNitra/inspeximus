@@ -9329,8 +9329,8 @@
  {
   "name": "3.17: a vector stamped with another recipe is ranked",
   "file": "inspeximus/core.py",
-  "old": "            if tag and isinstance(vec, list) and vec and tag != _rows.recipe_tag(self.embed_id, len(vec)):\n",
-  "new": "            if False:\n",
+  "old": "                if self._recipe_of(r) is False:\n                    dict.__setitem__(r, \"vec\", None)\n",
+  "new": "                if False:\n                    dict.__setitem__(r, \"vec\", None)\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]
@@ -9376,6 +9376,51 @@
   "file": "inspeximus/core.py",
   "old": "        if _foreign:\n            problems.append(\"%d active records carry a vector made under another embed recipe",
   "new": "        if False:\n            problems.append(\"%d active records carry a vector made under another embed recipe",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17 F-41: a merge from disk keeps another recipe's vectors in ranking",
+  "file": "inspeximus/core.py",
+  "old": "        self._drop_foreign_vectors()                  # a peer's rows may carry another recipe (F-41)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17 F-42: the realign counts rows stamped with the current recipe as stale",
+  "file": "inspeximus/core.py",
+  "old": "                      and self._recipe_of(r) is not True]\n",
+  "new": "                      ]\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: verify_writes reads a foreign vector on disk as ranked",
+  "file": "inspeximus/core.py",
+  "old": "                    if self._recipe_of(r) is False:             # as the load took it out of ranking (3.17)\n",
+  "new": "                    if False:\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: taking a foreign vector out of ranking marks its row for writing",
+  "file": "inspeximus/core.py",
+  "old": "                    dict.__setitem__(r, \"vec\", None)\n",
+  "new": "                    r[\"vec\"] = None\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17 F-42: a sidecar out of step with the tags reads as a recipe change",
+  "file": "inspeximus/core.py",
+  "old": "                sidecar_stale = True\n",
+  "new": "                recipe_match = False\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]

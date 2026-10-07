@@ -3588,7 +3588,13 @@ class Inspeximus:
             # ONLY records that carry a vec are in the old space, so they are the only ones to realign.
             # Re-embedding vec-less records here would (a) make a load cost one network call per record —
             # an unbounded stall, and (b) silently ADD vectors the store never had.
-            _stale = [r for r in self.items if r.get("vec") and r.get("text") is not None]
+            # A ROW ALREADY STAMPED WITH THE CURRENT RECIPE IS NOT STALE, whatever the sidecar says (AUDIT-A
+            # F-42). The sidecar is one line for the whole store and can be out of step with the rows: an
+            # older release rewrites it after re-embedding some of them. Trusted alone, it made vectors flap
+            # between recipes, and over the cap it dropped every vector, the correctly stamped ones too.
+            # Only rows this handle cannot vouch for count against the cap.
+            _stale = [r for r in self.items if r.get("vec") and r.get("text") is not None
+                      and self._recipe_of(r) is not True]
             if _prev is not None and _prev != _cur and self.embed is not None and _stale:
                 try:
                     _cap = int(os.environ.get("INSPEXIMUS_REALIGN_MAX", "256"))
@@ -7411,6 +7417,9 @@ class Inspeximus:
                 _disk_rows = [r for r in _rows.load(self.path) if isinstance(r, dict) and r.get("id")]
                 for r in _disk_rows:
                     Inspeximus._normalise_loaded(r)
+                    if self._recipe_of(r) is False:             # as the load took it out of ranking (3.17)
+                        r["vec"] = None
+                        r.pop("vec_recipe", None)
                 _disk = {r["id"]: _rows_mod_doc({_k: _v for _k, _v in r.items()
                                                  if _k != "vec" or self._persist_vectors})
                          for r in _disk_rows}
@@ -11404,6 +11413,7 @@ class Inspeximus:
         # since the read, the next save refuses and the caller reloads again with them still held.
         self._items_view_rev = None
         self._prune_derived_caches()                  # a peer's erasure leaves nothing here either
+        self._drop_foreign_vectors()                  # a peer's rows may carry another recipe (F-41)
         return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
                 "kept_buried": len(resurrected)}
 
@@ -12749,8 +12759,15 @@ class Inspeximus:
             except OSError:
                 sidecar = None
         recipe_match = True
+        sidecar_stale = False
         if self._persist_vectors and sidecar is not None and (self.embed_id or "") != sidecar:
-            recipe_match = False
+            # Every vector stamped with the current recipe means the sidecar is the stale part: the next
+            # save rewrites it from embed_id. Untagged vectors cannot vouch, so they keep the old verdict.
+            _vecs = [r for r in act_text if r.get("vec")]
+            if has_embedder and _vecs and all(self._recipe_of(r) is True for r in _vecs):
+                sidecar_stale = True
+            else:
+                recipe_match = False
         out = {"coherent": (missing == 0 and recipe_match),
                "embedder_configured": has_embedder,
                "active_text_records": len(act_text), "vectors": vectors, "missing_vecs": missing,
@@ -12779,6 +12796,9 @@ class Inspeximus:
         if _foreign:
             problems.append("%d active records carry a vector made under another embed recipe, which is not "
                             "ranked; reembed() replaces them" % len(_foreign))
+        if sidecar_stale:
+            problems.append("the .embedid sidecar names embed recipe %r, but every vector carries the current "
+                            "recipe %r; the next save rewrites the sidecar" % (sidecar, self.embed_id or None))
         if not recipe_match:
             problems.append("persisted vectors were made by embed recipe %r and the current recipe is %r, so "
                             "they cannot be ranked against fresh queries; run reembed(only_missing=False)"
@@ -19133,22 +19153,49 @@ class Inspeximus:
         else:
             rec.pop("vec_recipe", None)
 
+    def _recipe_of(self, rec):
+        """Whether `rec`'s vector carries this handle's recipe: True, False, or None when nobody can tell
+        (no embedder or embed_id here, no vector, or a vector written without a tag).
+
+        Reads through `dict.get`, so asking does not count as reading a tracked record."""
+        if self.embed is None or not self.embed_id or _rows is None or not isinstance(rec, dict):
+            return None
+        tag = dict.get(rec, "vec_recipe")
+        vec = dict.get(rec, "vec")
+        if not tag or not isinstance(vec, list) or not vec:
+            return None
+        cache = self.__dict__.setdefault("_recipe_tags", {})
+        want = cache.get(len(vec))
+        if want is None or cache.get("_for") != self.embed_id:
+            if cache.get("_for") != self.embed_id:
+                cache.clear()
+                cache["_for"] = self.embed_id
+            want = cache[len(vec)] = _rows.recipe_tag(self.embed_id, len(vec))
+        return tag == want
+
     def _drop_foreign_vectors(self) -> None:
         """Take out of ranking every vector whose stamp names another embed recipe (3.17).
 
         Such a vector ranks against a query from another model as if the two spaces were one. It is
         removed from memory, so the record ranks lexically, `index_coherence()` names it, and `reembed()`
-        replaces it. The row on disk keeps it until the row is next written."""
-        self._foreign_vec_ids = set()
-        if self.embed is None or not self.embed_id or _rows is None:
-            return
-        for r in self._items:
-            tag = r.get("vec_recipe") if isinstance(r, dict) else None
-            vec = r.get("vec") if tag else None
-            if tag and isinstance(vec, list) and vec and tag != _rows.recipe_tag(self.embed_id, len(vec)):
-                r["vec"] = None
-                r.pop("vec_recipe", None)
-                self._foreign_vec_ids.add(r.get("id"))
+        replaces it. The removal is not an edit: the row on disk keeps its vector, so a handle with the
+        other recipe still ranks it, and this handle does not write the row because of it.
+
+        RUN ON EVERY PATH THAT BRINGS ROWS FROM DISK, not only at open (AUDIT-A F-41). A long-lived
+        handle adopts a peer's rows in `_merge_with_disk`, which `reload()`, `refresh()` and the save
+        merge all go through, and ranked the peer's vectors made under another recipe."""
+        ids = set()
+        if self.embed is not None and self.embed_id and _rows is not None:
+            for r in self._items:
+                if self._recipe_of(r) is False:
+                    dict.__setitem__(r, "vec", None)
+                    dict.pop(r, "vec_recipe", None)
+                    ids.add(dict.get(r, "id"))
+            if ids:
+                self._mat = None
+        # Ids found by an earlier pass stay counted until reembed() gives them a vector; index_coherence
+        # counts only the ones that still have none.
+        self._foreign_vec_ids = ids | set(getattr(self, "_foreign_vec_ids", ()))
 
     def compact_vectors(self) -> dict:
         """Re-encode every vector a row store still holds as a JSON list into the float16 form, then persist.
@@ -19791,6 +19838,9 @@ class _TenantView:
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
+        # The vector encoding is one per file, like the recipe sidecar `reembed` keeps (3.17). It reads
+        # no record's text and returns two counts.
+        "compact_vectors",
         # The receipt chain is one per store file, over every tenant's writes, like `anchor`; a
         # backfill covers the rows the chain does not name, whoever wrote them.
         "enable_receipts",

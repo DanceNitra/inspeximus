@@ -55,6 +55,11 @@ _STORE_WIDE_PRIVATE = {
     # `_open_store_bytes` is the loader's file read, retried across a peer's replace (2.27.8); it
     # returns the bytes of the one file and is store-wide for the reason `_load_from_disk` is.
     "_open_store_bytes",
+    # THE VECTOR RECIPE CHECK IS PER FILE (3.17). `_drop_foreign_vectors` takes out of ranking every vector
+    # stamped with another embed recipe, and runs after the store-wide merge; scoped to one tenant it would
+    # leave another tenant's foreign vectors ranked in the shared items list. It returns nothing, and
+    # changes no record's text, key or status.
+    "_drop_foreign_vectors",
     # THE TOMBSTONE SIDECAR IS ONE CHAIN PER FILE (3.9.7). `_reconcile_tombstones_with_disk` adopts
     # what another PROCESS appended, and `_seal_tombstone` chains onto the file's tip: scoped to one
     # tenant, either would fork the chain the way `_merge_with_disk` would drop rows. The tenant stamp

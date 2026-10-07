@@ -155,3 +155,110 @@ def test_a_list_an_older_release_wrote_beside_a_tagged_vec16_is_not_judged_by_th
     _set_doc(p, ids[0], d)
     m = _open(p, "model-b")
     assert next(r for r in m.items if r["id"] == ids[0])["vec"] == d["vec"]
+
+
+# ── F-41: the check runs on every path that brings rows from disk (AUDIT-A, b9fe6fb9 re-check) ────────
+def _seeded_emb(seed):
+    def emb(t):
+        h = sum(map(ord, seed + t)) % 89
+        return [round(((h * (i + 5)) % 89) / 89.0 - 0.5, 6) for i in range(DIM)]
+    return emb
+
+
+def _open_as(p, seed, eid, **kw):
+    return Inspeximus(path=str(p), embed=_seeded_emb(seed), embed_id=eid, persist_vectors=True, **kw)
+
+
+def _foreign_in_memory(m, eid):
+    return [x.get("key") for x in m._items
+            if x.get("vec") and x.get("vec_recipe") and x["vec_recipe"] != S.recipe_tag(eid, len(x["vec"]))]
+
+
+def test_v2_a_long_lived_handle_does_not_rank_vectors_another_recipe_wrote(tmp_path):
+    """AUDIT-A's check, in-tree: handle A stays open, a peer with recipe B realigns the store and writes,
+    and A's next save adopts the peer's rows."""
+    p = tmp_path / "s.json"
+    a = _open_as(p, "A", "model-A")
+    for i in range(10):
+        a.remember("note %d about the plan" % i, key="n%d" % i)
+    a.flush()
+    b = _open_as(p, "B", "model-B")
+    b.remember("peer record under model B", key="peerB")
+    b.flush()
+    assert _foreign_in_memory(b, "model-A"), "CONTROL: the peer's rows carry model-B, or this tests nothing"
+    a.remember("a later write by the long-lived A", key="late")
+    a.flush()
+    assert not _foreign_in_memory(a, "model-A"), "vectors made under model-B are ranked by the model-A handle"
+    assert a.index_coherence()["foreign_recipe_vecs"] > 0, "the dropped vectors are not reported"
+
+
+def test_refresh_applies_the_same_check(tmp_path):
+    """refresh() is the read path's merge; the MCP server calls it before every read."""
+    p = tmp_path / "s.json"
+    a = _open_as(p, "A", "model-A")
+    a.remember("one note", key="n0")
+    a.flush()
+    b = _open_as(p, "B", "model-B")
+    b.remember("peer record under model B", key="peerB")
+    b.flush()
+    a.refresh()
+    assert not _foreign_in_memory(a, "model-A")
+
+
+def test_control_the_same_recipe_on_both_handles_keeps_every_vector_after_a_merge(tmp_path):
+    p = tmp_path / "s.json"
+    a = _open_as(p, "A", "model-A")
+    a.remember("one note", key="n0")
+    a.flush()
+    b = _open_as(p, "A", "model-A")
+    b.remember("peer record under the same recipe", key="peer")
+    b.flush()
+    a.remember("a later write", key="late")
+    a.flush()
+    assert all(x.get("vec") for x in a._items), "a vector of the handle's own recipe was dropped in a merge"
+
+
+def test_dropping_a_foreign_vector_writes_nothing_and_verify_writes_holds(tmp_path):
+    """Taking a vector out of ranking is not an edit: the peer's row keeps its vector on disk, and the
+    memory-against-disk check in verify_writes reads the disk side the same way."""
+    p = tmp_path / "s.json"
+    a = _open_as(p, "A", "model-A", receipts=True)
+    a.remember("one note", key="n0")
+    a.flush()
+    b = _open_as(p, "B", "model-B", receipts=True)
+    rid = b.remember("peer record under model B", key="peerB")
+    b.flush()
+    a.remember("a later write", key="late")
+    a.flush()
+    tag = _docs(p)[rid][S.VEC_KEY].partition(":")[0]
+    assert tag == S.recipe_tag("model-B", DIM), "the peer's row lost its model-B vector on disk"
+    ok, probs = a.verify_writes()
+    assert ok, probs
+
+
+# ── F-42: the realign reads the tags, not only the sidecar ───────────────────────────────────────────
+def test_v3_the_realign_does_not_drop_vectors_that_already_carry_the_current_recipe(tmp_path):
+    """AUDIT-A's check, in-tree: 300 rows stamped for the current recipe and a sidecar naming another one
+    exceed INSPEXIMUS_REALIGN_MAX (256). Every vector was dropped, the valid ones too."""
+    p = tmp_path / "s.json"
+    m = _open_as(p, "B", "model-B")
+    for i in range(300):
+        m.remember("note %d about the plan" % i, key="n%d" % i)
+    m.flush()
+    (tmp_path / "s.json.embedid").write_text("model-A")
+    m2 = _open_as(p, "B", "model-B")
+    assert sum(1 for x in m2._items if x.get("vec")) == 300
+    ic = m2.index_coherence()
+    assert ic["recipe_match"] is True and any("sidecar names" in x for x in ic["problems"]), ic
+
+
+def test_control_an_untagged_vector_is_still_realigned_from_the_sidecar(tmp_path):
+    """Rows written before 3.17, or without an embed_id, carry no tag; the sidecar still decides for them."""
+    p = tmp_path / "s.json"
+    m = Inspeximus(path=str(p), embed=_seeded_emb("A"), persist_vectors=True)
+    rid = m.remember("an untagged note", key="u")
+    m.flush()
+    (tmp_path / "s.json.embedid").write_text("model-A")
+    m2 = _open_as(p, "B", "model-B")
+    rec = next(x for x in m2._items if x["id"] == rid)
+    assert rec["vec"] == _seeded_emb("B")("an untagged note"), "the untagged vector was not realigned"
