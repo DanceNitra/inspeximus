@@ -776,6 +776,8 @@ def main(argv=None):
                                          "change dropped them); needs an embedder configured")
     re_.add_argument("--all", action="store_true", help="re-embed EVERY record, not just the ones missing a vector")
     re_.add_argument("--batch", type=int, default=None, help="cap how many records this run re-embeds")
+    re_.add_argument("--compact-only", action="store_true",
+                     help="re-encode vectors stored as JSON lists into float16 (3.17); no embedder needed")
 
     dep = sub.add_parser("deprecate", help="record a refactor: code symbol OLD was replaced by NEW "
                                            "(coding-agent guard; keyed supersession)")
@@ -2520,6 +2522,15 @@ def main(argv=None):
         _out(st, a.json) or print(
             f"{st['path']}: {st['total']} total ({active} active, {superseded} superseded, {keyed} keyed)")
 
+    elif a.cmd == "reembed" and a.compact_only:
+        m = _store(a.path, persist_vectors=True)
+        res = m.compact_vectors()
+        _out(res, a.json) or print(res.get("error") or res.get("note") or
+                                   f"re-encoded {res['compacted']} vector(s) as float16"
+                                   + (f", {res['kept_as_list']} kept as a list" if res["kept_as_list"] else ""))
+        if res.get("error"):
+            return 2
+
     elif a.cmd == "reembed":
         if m.embed is None:
             print("reembed: no embedder configured (set INSPEXIMUS_EMBED_URL, or .inspeximus/config.json {\"embed\":{...}})",
@@ -2527,8 +2538,12 @@ def main(argv=None):
             return 2
         m = _store(a.path, persist_vectors=True)      # re-open so the rebuilt vectors actually reach disk
         res = m.reembed(only_missing=not a.all, batch=a.batch)
+        # The vectors this run did not touch are re-encoded too, so one command leaves the whole store
+        # in the float16 form (3.17).
+        res["compacted"] = m.compact_vectors().get("compacted", 0)
         _out(res, a.json) or print(
             f"re-embedded {res['reembedded']} ({res['failed']} failed, {res['remaining']} still without a vector)"
+            + (f", re-encoded {res['compacted']} stored vector(s) as float16" if res["compacted"] else "")
             + (f"\n{res['warning']}" if res.get("warning") else ""))
 
     elif a.cmd == "browse":
