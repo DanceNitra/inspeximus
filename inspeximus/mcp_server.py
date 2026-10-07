@@ -32,7 +32,9 @@ Config (environment):
                            embed.allowed_hosts (3.16.4); a loopback URL needs no entry.
     INSPEXIMUS_PERSIST_VECTORS  write the embedding vectors to disk instead of holding them for the
                            life of the process. Off by default. With an embedder configured and this
-                           off, every open re-embeds every record and throws the result away at exit.
+                           off, opening the store embeds nothing: only records this server writes get a
+                           vector, those are dropped at exit, and recall on older records is lexical.
+                           Run `inspeximus reembed` with this on to embed the existing records once.
     INSPEXIMUS_PII_DETECT  tag records that match the PII detector as they are written, so pii_report
                            counts real exposure. Off by default: the tag is stamped at write time and
                            forget_pii() hard-deletes every record carrying one, so turning this on
@@ -263,9 +265,11 @@ def _writer_key_from_env():
 
 _WRITER_KEY = _writer_key_from_env()
 # KEEP THE VECTORS THIS SERVER PAYS FOR. `open_store` has taken `persist_vectors` all along and this
-# call never passed it, so a server configured with INSPEXIMUS_EMBED_URL ran a RAM-only index: one
-# embedding call per record on every open, discarded at exit, paid again on the next start. On a
-# 619-record store that is 619 network calls per restart for an index that never reaches disk.
+# call never passed it, so a server configured with INSPEXIMUS_EMBED_URL ran a RAM-only index.
+# CORRECTED 3.16.6: this comment used to say that each open re-embedded every record. Opening
+# embeds nothing and nothing backfills, so the index holds only what this process writes and is
+# dropped at exit; recall on every older record is lexical. Measured 2026-10-07 on a 13,489-record
+# store: 0 vectors after open, and the open made no embedding call.
 #
 # The store had been saying so. `index_coherence` returns the note "persist_vectors=False: vectors
 # are a RAM-only cache rebuilt per process", and `reembed` returns a warning naming the remedy --
@@ -428,6 +432,28 @@ try:
 except StoreLocationError as _refused:
     print(f"[inspeximus-mcp] {_refused}", file=sys.stderr)
     _MEM = _RefusedStore(str(_refused))
+
+
+def _vector_posture() -> dict:
+    """How many active records carry a vector, and the problem in words when an embedder is configured
+    and some do not. Read by the startup line and by where_am_i, so the two cannot disagree."""
+    try:
+        ic = _MEM.index_coherence()
+    except Exception as e:                                  # noqa: BLE001 -- a refused store, or a broken one
+        return {"vectors": None, "active_text_records": None, "persist_vectors": _PERSIST_VECTORS,
+                "problem": None, "error": "%s: %s" % (type(e).__name__, e)}
+    probs = ic.get("problems") or []
+    return {"vectors": ic.get("vectors"), "active_text_records": ic.get("active_text_records"),
+            "persist_vectors": ic.get("persist_vectors"),
+            "problem": "; ".join(probs) if probs else None}
+
+
+# ONE LINE AT START when the configured embedder has nothing to rank against (3.16.6). Two MCP servers
+# ran semantic recall over 0 vectors on a 13,489-record store, and nothing at any surface said so.
+if _EMB_DOC is not None and not isinstance(_MEM, _RefusedStore):
+    _VP = _vector_posture()
+    if _VP.get("problem"):
+        print("[inspeximus-mcp] %s" % _VP["problem"], file=sys.stderr)
 
 
 def _recover_from_concurrent_writes(store, methods=(
@@ -1142,6 +1168,9 @@ def where_am_i() -> dict:
             "receipt_signing": {"signed": bool(_SIGNING["key"]), "pubkey": _SIGNING["pubkey"],
                                 "key_source": _SIGNING["source"], "note": _SIGNING["note"]},
             "embedder": _EMB_ID,
+            # the index the embedder ranks against: vectors present, persisted or not, and the problem
+            # in words when an embedder is configured and records have none (3.16.6)
+            "semantic_index": _vector_posture(),
             "version": _INSPEXIMUS_VERSION}
 
 

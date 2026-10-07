@@ -12726,7 +12726,8 @@ class Inspeximus:
         store content and recipe."""
         has_embedder = self.embed is not None
         act_text = [r for r in self._tenant_rows() if r.get("status") == "active" and r.get("text")]
-        missing = sum(1 for r in act_text if not r.get("vec")) if has_embedder else 0
+        vectors = sum(1 for r in act_text if r.get("vec"))
+        missing = (len(act_text) - vectors) if has_embedder else 0
         sidecar = None
         if getattr(self, "_embedid_path", None) is not None and self._embedid_path.exists():
             try:
@@ -12738,14 +12739,37 @@ class Inspeximus:
             recipe_match = False
         out = {"coherent": (missing == 0 and recipe_match),
                "embedder_configured": has_embedder,
-               "active_text_records": len(act_text), "missing_vecs": missing,
+               "active_text_records": len(act_text), "vectors": vectors, "missing_vecs": missing,
                "recipe_match": recipe_match, "persist_vectors": self._persist_vectors,
                "embed_id": self.embed_id or None, "sidecar_embed_id": sidecar}
+        # SAY IT IN WORDS, NOT ONLY IN `coherent` (3.16.6). A store with an embedder and no vectors ranks
+        # every query lexically, and the only signal was `coherent: false` beside a count nobody read.
+        # Measured 2026-10-07 on a 13,489-record store behind two MCP servers with an embedder: 0 vectors
+        # on disk. Opening a store embeds nothing and nothing backfills: only records written by this
+        # process get a vector, and with persist_vectors=False those are dropped at exit.
+        problems = []
+        if has_embedder and act_text and missing:
+            problems.append(
+                ("an embedder is configured and none of the %d active records has a vector, so recall "
+                 "on this store is lexical only" % len(act_text)) if vectors == 0 else
+                ("an embedder is configured and %d of %d active records have no vector, so recall ranks "
+                 "those lexically" % (missing, len(act_text))))
+            problems.append(
+                "run reembed() or `inspeximus reembed` to embed them" +
+                ("" if self._persist_vectors else
+                 ", and open the store with persist_vectors=True (INSPEXIMUS_PERSIST_VECTORS=1 for the MCP "
+                 "server), or the vectors are dropped when this process exits"))
+        if not recipe_match:
+            problems.append("persisted vectors were made by embed recipe %r and the current recipe is %r, so "
+                            "they cannot be ranked against fresh queries; run reembed(only_missing=False)"
+                            % (sidecar, self.embed_id or None))
+        out["problems"] = problems
         if not has_embedder:
             out["note"] = "lexical-only store: no derived index to drift; coherent by construction"
         elif not self._persist_vectors:
-            out["note"] = ("persist_vectors=False: vectors are a RAM-only cache rebuilt per process; "
-                           "a fresh open starts with an empty index until the backfill re-embeds")
+            out["note"] = ("persist_vectors=False: vectors live in this process only. Opening the store embeds "
+                           "nothing and nothing backfills, so a fresh open has vectors only for records it "
+                           "writes, and all of them are dropped at exit")
         return out
 
     def erasure_certificate(self, request_id: str | None = None, expected_pubkey: str | None = None) -> dict:
@@ -19073,7 +19097,8 @@ class Inspeximus:
         if not self._persist_vectors:
             # _save strips vectors on a RAM-only store, so this warmed the cache for THIS process only.
             out["warning"] = ("persist_vectors=False: vectors are not written to disk, so the next open "
-                              "re-embeds again. Open the store with persist_vectors=True to keep them.")
+                              "starts with none and recall is lexical until reembed() runs again. Open the "
+                              "store with persist_vectors=True to keep them.")
         return out
 
     def _touch(self, rec) -> None:

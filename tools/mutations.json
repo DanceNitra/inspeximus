@@ -9200,5 +9200,41 @@
   "tests": [
    "tests/test_the_read_only_probe_is_judged_unless_run_as_root.py"
   ]
+ },
+ {
+  "name": "3.16.6: index_coherence never names a missing-vector problem",
+  "file": "inspeximus/core.py",
+  "old": "        if has_embedder and act_text and missing:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_an_embedder_with_no_vectors_says_so.py"
+  ]
+ },
+ {
+  "name": "3.16.6: index_coherence omits the persist remedy on a store that drops its vectors",
+  "file": "inspeximus/core.py",
+  "old": "                (\"\" if self._persist_vectors else\n",
+  "new": "                (\"\" if True else\n",
+  "tests": [
+   "tests/test_an_embedder_with_no_vectors_says_so.py"
+  ]
+ },
+ {
+  "name": "3.16.6: the server prints nothing at start about an embedder with no vectors",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    if _VP.get(\"problem\"):\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_an_embedder_with_no_vectors_says_so.py"
+  ]
+ },
+ {
+  "name": "3.16.6: where_am_i reports no vector posture",
+  "file": "inspeximus/mcp_server.py",
+  "old": "            \"semantic_index\": _vector_posture(),\n",
+  "new": "            \"semantic_index\": {\"vectors\": 0, \"problem\": None},\n",
+  "tests": [
+   "tests/test_an_embedder_with_no_vectors_says_so.py"
+  ]
  }
 ]
