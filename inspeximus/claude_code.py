@@ -1334,7 +1334,6 @@ def _renderable(records):
     for r in records:
         try:
             tags = r.get("tags") or []
-            hash(r.get("id"))                                   # the block keeps ids in sets
             ("decision" in tags, "knowledge" in tags, _not_for_replay(r), _injected(r["text"], 480))
             out.append(r)
         except Exception as exc:                                # noqa: BLE001

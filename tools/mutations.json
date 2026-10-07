@@ -8857,15 +8857,6 @@
   ]
  },
  {
-  "name": "bad record: an unhashable id passes the block's check",
-  "file": "inspeximus/claude_code.py",
-  "old": "            hash(r.get(\"id\"))                                   # the block keeps ids in sets\n",
-  "new": "",
-  "tests": [
-   "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
-  ]
- },
- {
   "name": "F-30: git keeps every GIT_* variable",
   "file": "inspeximus/_storelink.py",
   "old": "    env = {k: v for k, v in os.environ.items() if k.upper() in _GIT_ENV_KEEP}",

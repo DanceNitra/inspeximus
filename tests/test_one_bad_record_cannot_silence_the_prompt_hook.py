@@ -55,10 +55,18 @@ def test_a_failure_no_single_record_explains_is_raised_unchanged(sandbox):
     p, _ = _project(sandbox, "global")
     m = cc._store(p)
 
+    full = len(m._items)
+
     def fn(h):
-        raise RuntimeError("the embedder is down")
+        if len(h._items) == full:                       # only the read over the WHOLE store fails: no record, and no half, explains it
+            raise RuntimeError("the embedder is down")
     with pytest.raises(RuntimeError, match="the embedder is down"):
         cc._read(m, fn)
+
+    def always(h):
+        raise RuntimeError("every read fails")          # every record fails alone, so none can be told from the others
+    with pytest.raises(RuntimeError, match="every read fails"):
+        cc._read(m, always)
 
 
 def test_a_bad_record_is_left_out_of_the_answer_and_named_once(sandbox):

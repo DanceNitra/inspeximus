@@ -229,11 +229,8 @@ def test_f33_a_link_inside_the_project_named_by_inspeximus_path_is_judged(world,
     other = str(world / "other")
     os.makedirs(other)
     open(os.path.join(other, "mem.json"), "w").write("x")
-    link = os.path.join(proj, "mem.json")
-    try:
-        os.symlink(os.path.join(other, "mem.json"), link)
-    except OSError:
-        pytest.skip("a file link needs a privilege here")
+    _link(os.path.join(proj, "mem"), other)                  # a DIRECTORY link: a junction on Windows, which needs no privilege
+    link = os.path.join(proj, "mem", "mem.json")
     monkeypatch.chdir(proj)
     with pytest.raises(_surface.StoreLinkRefused):
         _surface.resolve_path(env={"INSPEXIMUS_PATH": link}, cwd=proj)
@@ -249,11 +246,8 @@ def test_f33_the_env_boundary_a_plain_path_and_a_users_own_link_stay_as_they_are
     real = str(world / "dotfiles")
     os.makedirs(real)
     open(os.path.join(real, "mem.json"), "w").write("x")
-    home_link = str(world / "home" / "mem.json")
-    try:
-        os.symlink(os.path.join(real, "mem.json"), home_link)
-    except OSError:
-        pytest.skip("a file link needs a privilege here")
+    _link(str(world / "home" / "dots"), real)                # the user's own directory link, outside the project
+    home_link = os.path.join(str(world / "home" / "dots"), "mem.json")
     assert _surface.resolve_path(env={"INSPEXIMUS_PATH": home_link}, cwd=proj) == home_link
 
 
