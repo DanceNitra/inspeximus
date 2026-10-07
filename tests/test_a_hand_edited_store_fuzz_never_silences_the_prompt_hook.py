@@ -57,9 +57,9 @@ def test_every_field_set_by_hand_to_every_wrong_shape_leaves_the_hook_answering(
         # whatever the record does, the output is ONE block and never carries the raw value of an invalid field
         assert out.count("relevant project memory") <= 1
     assert not silenced, "%d of %d cases silenced or broke the hook; first: %s" % (len(silenced), len(CASES), silenced[:6])
-    # CONTROL: the fuzz must still reach the isolation. F-29's two shapes are cases that load, rank and raise; if no case is
+    # CONTROL: the fuzz must still reach the isolation. F-29's meta.quarantined shapes are cases that load, rank and raise (the numbers are repaired at load since F-36); if no case is
     # isolated any more, the fixture stopped reproducing the defect and the green above measures nothing.
-    assert ("top", "value", "bigint") in isolated and ("meta", "quarantined", "str") in isolated, isolated
+    assert ("meta", "quarantined", "str") in isolated and ("meta", "quarantined", "list2") in isolated, isolated
     print("fuzz: %d cases, %d isolated" % (len(CASES), len(isolated)))
 
 

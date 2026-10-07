@@ -239,15 +239,35 @@ def _untracked(links, root) -> bool:
     return True
 
 
-def vet(directory, filename, cwd=None, named_by_env=False):
+def link_chain(directory, filename, root) -> list:
+    """Every link, a junction included, on the way from the project root down to the store file (AUDIT-A F-35).
+
+    A shipped DIRECTORY link in the middle of a path (`.inspeximus/memory.json`, with `.inspeximus` the link) leads outside as
+    surely as a link at the file, and a check of the last component alone never sees it. The walk tests each component below the
+    root with `_safewrite.is_link`, which sees a junction (`os.path.islink` does not). A path outside the project has no
+    components of the project's to judge: only the directory and the file themselves are tested then."""
+    d = str(directory)
+    f = os.path.join(d, filename)
+    if root and _inside(f, root):
+        out, cur = [], os.path.abspath(root)
+        for part in os.path.relpath(os.path.abspath(f), cur).split(os.sep):
+            cur = os.path.join(cur, part)
+            if _safewrite.is_link(cur):
+                out.append(cur)
+        return out
+    return [p for p in (d, f) if _safewrite.is_link(p)]
+
+
+def vet(directory, filename, cwd=None, named_by_env=False, root=None):
     """The (directory, file) the caller must open, or `StoreLinkRefused`.
 
-    With no link and no environment override, the two lexical paths come back unchanged after two `lstat` calls. With a link,
-    or with an override, both come back as REAL paths."""
+    With no link and no environment override, the two lexical paths come back unchanged after one `lstat` per path component
+    below the project root (two for the default store). With a link, or with an override, both come back as REAL paths."""
     from ._surface import StoreLinkRefused, find_project_root
     d = str(directory)
     f = os.path.join(d, filename)
-    links = [p for p in (d, f) if _safewrite.is_link(p)]
+    root = root or find_project_root(os.path.abspath(cwd or os.getcwd())) or os.path.abspath(cwd or os.getcwd())
+    links = link_chain(d, filename, root)
     if not links and not named_by_env:
         return d, f
     real_d, real_f = os.path.realpath(d), os.path.realpath(f)
@@ -257,11 +277,11 @@ def vet(directory, filename, cwd=None, named_by_env=False):
     if _inside_project((real_d, real_f), cwd):                                                         # B
         return real_d, real_f
     if links:
-        root = find_project_root(os.path.abspath(cwd or os.getcwd()))
-        if root and _untracked(links, root):                                                           # C
+        git_root = find_project_root(os.path.abspath(cwd or os.getcwd()))
+        if git_root and _untracked(links, git_root):                                                   # C
             return real_d, real_f
     shown = os.path.abspath(links[0]) if links else os.path.abspath(d)
-    target = real_f if links and links[0] == f else real_d
+    target = os.path.realpath(links[0]) if links else real_d
     raise StoreLinkRefused(_model_text(links), path=shown, user_line=_user_text(links, shown, target))
 
 

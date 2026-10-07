@@ -8679,8 +8679,8 @@
  {
   "name": "link rule: condition C (git does not track the link) is dropped",
   "file": "inspeximus/_storelink.py",
-  "old": "        if root and _untracked(links, root):                                                           # C",
-  "new": "        if False and root and _untracked(links, root):                                                 # C",
+  "old": "        if git_root and _untracked(links, git_root):                                                   # C",
+  "new": "        if False and git_root and _untracked(links, git_root):                                         # C",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
   ]
@@ -8706,8 +8706,8 @@
  {
   "name": "link rule: git that cannot answer counts as untracked",
   "file": "inspeximus/_storelink.py",
-  "old": "            if tracked is None:\n                return False                      # git could not say: no store, and no cache entry",
-  "new": "            if tracked is None:\n                return True",
+  "old": "                return False                      # git could not say: no store, and no cache entry",
+  "new": "                return True",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
   ]
@@ -8715,8 +8715,8 @@
  {
   "name": "link rule: a link is tested with os.path.islink, which misses a junction",
   "file": "inspeximus/_storelink.py",
-  "old": "    links = [p for p in (d, f) if _safewrite.is_link(p)]",
-  "new": "    links = [p for p in (d, f) if os.path.islink(p)]",
+  "old": "            if _safewrite.is_link(cur):",
+  "new": "            if os.path.islink(cur):",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
   ]
@@ -8733,8 +8733,8 @@
  {
   "name": "link rule: the caller is handed the link and not the real path",
   "file": "inspeximus/_storelink.py",
-  "old": "        if root and _untracked(links, root):                                                           # C\n            return real_d, real_f",
-  "new": "        if root and _untracked(links, root):                                                           # C\n            return d, f",
+  "old": "        if git_root and _untracked(links, git_root):                                                   # C\n            return real_d, real_f",
+  "new": "        if git_root and _untracked(links, git_root):                                                   # C\n            return d, f",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
   ]
@@ -8751,7 +8751,7 @@
  {
   "name": "link rule: the cache key ignores the repository's index",
   "file": "inspeximus/_storelink.py",
-  "old": "stamp(index) if index else \"-\"]",
+  "old": "stamp(os.path.join(gitdir, \"index\")) if gitdir else \"-\"]",
   "new": "\"-\"]",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
@@ -8769,8 +8769,8 @@
  {
   "name": "link rule: condition C also judges the environment override",
   "file": "inspeximus/_storelink.py",
-  "old": "    if links:\n        root = find_project_root(",
-  "new": "    if True:\n        root = find_project_root(",
+  "old": "    if links:\n        git_root = find_project_root(",
+  "new": "    if True:\n        git_root = find_project_root(",
   "tests": [
    "tests/test_a_store_reached_through_a_link.py"
   ]
@@ -8805,17 +8805,17 @@
  {
   "name": "bad record: a failure no single record explains is swallowed",
   "file": "inspeximus/_isolate.py",
-  "old": "    if not bad:\n        raise first",
-  "new": "    if not bad:\n        return None",
+  "old": "    if not left:\n        raise first",
+  "new": "    if not left:\n        return None",
   "tests": [
    "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
   ]
  },
  {
-  "name": "bad record: the search reads only the first half of the store",
+  "name": "bad record: the scan examines one record of each chunk",
   "file": "inspeximus/_isolate.py",
-  "old": "        search(items[:mid])\n        search(items[mid:])\n    if not bad:",
-  "new": "        search(items[:mid])\n    if not bad:",
+  "old": "        chunk = items[start:start + CHUNK]\n",
+  "new": "        chunk = items[start:start + 1]\n",
   "tests": [
    "tests/test_one_bad_record_cannot_silence_the_prompt_hook.py"
   ]
@@ -8990,6 +8990,105 @@
   "tests": [
    "tests/test_audit_a_3165_findings.py",
    "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "F-36: a number the arithmetic cannot use is kept on load",
+  "file": "inspeximus/core.py",
+  "old": "                if not isinstance(_v, bool) and isinstance(_v, (int, float)) and not _finite_number(_v):",
+  "new": "                if False and not isinstance(_v, bool) and isinstance(_v, (int, float)) and not _finite_number(_v):",
+  "tests": [
+   "tests/test_a_number_the_arithmetic_cannot_use_is_repaired_at_load.py"
+  ]
+ },
+ {
+  "name": "F-36: an integer too large for a float counts as usable",
+  "file": "inspeximus/core.py",
+  "old": "    except OverflowError:\n        return False\n",
+  "new": "    except OverflowError:\n        return True\n",
+  "tests": [
+   "tests/test_a_number_the_arithmetic_cannot_use_is_repaired_at_load.py"
+  ]
+ },
+ {
+  "name": "F-36: a repaired float is kept as a float in meta.malformed",
+  "file": "inspeximus/core.py",
+  "old": "repr(_v) if isinstance(_v, float) else _v",
+  "new": "_v",
+  "tests": [
+   "tests/test_a_number_the_arithmetic_cannot_use_is_repaired_at_load.py"
+  ]
+ },
+ {
+  "name": "F-36: the isolation search has no time bound",
+  "file": "inspeximus/_isolate.py",
+  "old": "    def late():\n        return time.monotonic() >= deadline",
+  "new": "    def late():\n        return False",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-36: the left-out records are not remembered",
+  "file": "inspeximus/_isolate.py",
+  "old": "    _cache_put(path, items, left)\n",
+  "new": "    pass\n",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-36: a remembered record is trusted although it changed",
+  "file": "inspeximus/_isolate.py",
+  "old": "        if any(_fingerprint(items[i]) != f for i, f in zip(idx, fps)):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-36: the chunks not examined in time are kept in the final read",
+  "file": "inspeximus/_isolate.py",
+  "old": "            unexamined.extend(chunk)\n            continue",
+  "new": "            continue",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-36: a failing chunk is left out whole instead of searched",
+  "file": "inspeximus/_isolate.py",
+  "old": "        if exc is not None:\n            resolve(chunk, exc)",
+  "new": "        if exc is not None:\n            failing.append((chunk, exc))",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-35: the link walk tests only the last path component",
+  "file": "inspeximus/_storelink.py",
+  "old": "        for part in os.path.relpath(os.path.abspath(f), cur).split(os.sep):",
+  "new": "        for part in os.path.relpath(os.path.abspath(f), cur).split(os.sep)[-1:]:",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-35: INSPEXIMUS_PATH is returned unchanged whatever the chain holds",
+  "file": "inspeximus/_surface.py",
+  "old": "    if not link_chain(os.path.dirname(p), os.path.basename(p), root):",
+  "new": "    if True:",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ]
+ },
+ {
+  "name": "F-35: the store resolution tests the directory and the file only",
+  "file": "inspeximus/_storelink.py",
+  "old": "    links = link_chain(d, filename, root)\n",
+  "new": "    links = [p for p in (d, f) if _safewrite.is_link(p)]\n",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
   ]
  }
 ]
