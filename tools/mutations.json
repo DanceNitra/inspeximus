@@ -7789,8 +7789,8 @@
  {
   "name": "stamp_read_guards stamps in memory and never saves",
   "file": "inspeximus/core.py",
-  "old": "        if out[\"stamped\"]:\n            self._save(force=True)\n            out[\"applied\"] = True\n",
-  "new": "        if False:\n            self._save(force=True)\n            out[\"applied\"] = True\n",
+  "old": "        if out[\"stamped\"]:\n            self._save(force=True)\n            _note_stamp_env(self.path)",
+  "new": "        if False:\n            self._save(force=True)\n            _note_stamp_env(self.path)",
   "tests": [
    "tests/test_stamp_read_guards_persists_the_verdict_once.py"
   ]
@@ -9499,24 +9499,6 @@
   ]
  },
  {
-  "name": "a stamp written by stamp_read_guards does not record where it was made",
-  "file": "inspeximus/core.py",
-  "old": "                meta[\"read_guards\"][\"env\"] = _guard_env_tag()       # where it was made; not in the MAC\n",
-  "new": "",
-  "tests": [
-   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
-  ]
- },
- {
-  "name": "a stamp written by remember does not record where it was made",
-  "file": "inspeximus/core.py",
-  "old": "                _held[\"env\"] = _guard_env_tag()          # where the stamp was made; not in the MAC\n",
-  "new": "                pass\n",
-  "tests": [
-   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
-  ]
- },
- {
   "name": "the dry run counts no stamp as foreign",
   "file": "inspeximus/core.py",
   "old": "            if isinstance(held, dict) and held.get(\"set\") != gset:\n                foreign += 1",
@@ -9817,8 +9799,8 @@
  {
   "name": "3.17.0: the run's mark is written beside the store",
   "file": "inspeximus/claude_code.py",
-  "old": "    state = _archive_state_path(path)                        # the key home (3.17.0); the old place beside the store is read, not written",
-  "new": "    state = path + \".archive-auto.json\"",
+  "old": "    _mark_run_done(_archive_state_path(path), result)",
+  "new": "    _mark_run_done(path + \".archive-auto.json\", result)",
   "tests": [
    "tests/test_run_state_and_migration_files_use_the_safe_helpers.py",
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
@@ -10067,6 +10049,52 @@
   "new": "        rows = [{k: v for k, v in r.items() if k != \"vec\"} for r in self.items]\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17.0: a stamping pass records no interpreter",
+  "file": "inspeximus/core.py",
+  "old": "            _note_stamp_env(self.path)                  # once per pass, in the key home: not on every record\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "3.17.0: foreign stamps are reported without the recorded interpreter",
+  "file": "inspeximus/core.py",
+  "old": "            seen = _read_stamp_env(self.path)",
+  "new": "            seen = None",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "3.17.0: a replace that a reader blocks is not retried",
+  "file": "inspeximus/_safewrite.py",
+  "old": "            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:",
+  "new": "            if True:",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ]
+ },
+ {
+  "name": "3.17.0: a run gives up its mark at the first blocked write",
+  "file": "inspeximus/claude_code.py",
+  "old": "        except (OSError, ValueError):\n            pass                                                # a reader or a torn read: try again until the deadline",
+  "new": "        except (OSError, ValueError):\n            return",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ]
+ },
+ {
+  "name": "3.17.0: a run counts its mark as kept before the hook has written the pid",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if st.get(\"done\") and (\"pid\" in st or not fresh):\n                return",
+  "new": "            if st.get(\"done\"):\n                return",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
   ]
  }
 ]

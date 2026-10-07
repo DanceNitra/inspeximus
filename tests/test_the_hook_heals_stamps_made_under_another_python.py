@@ -60,7 +60,7 @@ def test_stamps_made_here_are_not_foreign(proj):
     m.flush()
     out = cc.stamp_guards(proj)
     assert out["foreign_stamps"] == 0 and out["valid_stamps"] == out["active"] == 3
-    assert {r["meta"]["read_guards"].get("env") for r in cc._store(proj).items} == {core._guard_env_tag()}, "a remember stamps its origin"
+    assert not [r for r in cc._store(proj).items if "env" in r["meta"]["read_guards"]], "a stamp carries no origin field (31 bytes a row)"
     assert out["interpreter"]["executable"] == sys.executable
     assert out["interpreter"]["stamps_made_here_read_as"] == core._guard_env_tag()
     assert "note_foreign" not in out
@@ -70,20 +70,32 @@ def test_a_dry_run_counts_the_stamps_another_unicode_version_made_and_names_it(p
     _stamped_elsewhere(proj)
     out = cc.stamp_guards(proj)
     assert out["active"] == 6 and out["valid_stamps"] == 0 and out["foreign_stamps"] == 6, out
-    assert list(out["foreign_made_under"]) == ["%d.%d.%d/ucd%s" % (*sys.version_info[:3], FAKE_UCD)]
+    assert list(out["foreign_made_under"]) == ["unknown (no stamping pass recorded for this store)"], out["foreign_made_under"]
+    assert out["foreign_made_under"]["unknown (no stamping pass recorded for this store)"] == 6
     assert "another Python or Unicode version" in out["note_foreign"] and sys.executable in out["note_foreign"]
     assert cc.foreign_stamp_count(cc._store(proj)) == 6
 
 
-def test_a_stamp_without_the_origin_field_is_reported_as_unknown(proj):
+def test_the_interpreter_of_the_last_stamping_pass_is_recorded_once_per_store_in_the_key_home(proj, monkeypatch):
     _stamped_elsewhere(proj)
-    m = cc._store(proj)
-    for r in m.items:
-        r["meta"]["read_guards"].pop("env", None)
-        m._touched.add(r["id"])
-    m.flush()
+    store = os.path.join(proj, ".inspeximus", "coding_memory.json")
+    with monkeypatch.context() as mp:
+        mp.setattr(core, "_guard_env_tag", lambda: "3.12.10/ucd99.0.0")            # the interpreter that ran the pass
+        core._note_stamp_env(store)
+    assert core._read_stamp_env(store) == "3.12.10/ucd99.0.0"
+    assert os.path.dirname(core._stamp_env_file(store)).startswith(os.environ["INSPEXIMUS_KEY_HOME"]), "it lives in the key home"
     out = cc.stamp_guards(proj)
-    assert list(out["foreign_made_under"]) == ["unknown (made before 3.17.0)"]
+    assert list(out["foreign_made_under"]) == ["last stamping pass: 3.12.10/ucd99.0.0"], out["foreign_made_under"]
+
+
+def test_a_stamping_pass_records_its_interpreter_and_adds_nothing_to_the_rows(proj):
+    _stamped_elsewhere(proj)
+    store = os.path.join(proj, ".inspeximus", "coding_memory.json")
+    assert core._read_stamp_env(store) is None
+    out = cc.stamp_guards(proj, apply=True)
+    assert out["stamped"] == 6, out
+    assert core._read_stamp_env(store) == core._guard_env_tag()
+    assert not [r for r in cc._store(proj).items if "env" in r["meta"]["read_guards"]], "the rows carry no origin field"
 
 
 def test_the_hook_command_is_read_from_the_settings_when_there_is_one(proj, tmp_path, monkeypatch):
@@ -127,7 +139,8 @@ def test_a_prompt_that_meets_foreign_stamps_starts_the_restamp_and_the_store_hea
         time.sleep(0.5)
     assert out["valid_stamps"] == out["active"] == 6 and out["foreign_stamps"] == 0, out
     m = cc._store(proj)
-    assert {r["meta"]["read_guards"].get("env") for r in m.items if r["status"] == "active"} == {core._guard_env_tag()}
+    assert not [r for r in m.items if "env" in (r["meta"].get("read_guards") or {})], "the rows carry no origin field"
+    assert core._read_stamp_env(os.path.join(proj, ".inspeximus", "coding_memory.json")) == core._guard_env_tag(), "the heal's pass recorded it"
     state = json.load(open(cc._stamp_state_path(os.path.join(proj, ".inspeximus", "coding_memory.json")), encoding="utf-8"))
     assert state["foreign"] == 6 and state["interpreter"] == sys.executable
 

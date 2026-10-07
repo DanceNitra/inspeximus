@@ -58,13 +58,36 @@ def write_atomic(path, data, encoding: str = "utf-8") -> None:
         with os.fdopen(fd, "wb") as fh:
             fh.write(data if isinstance(data, bytes) else str(data).encode(encoding))
         _refuse(path)
-        os.replace(tmp, path)
+        _replace(tmp, path)
     except BaseException:
         try:
             os.unlink(tmp)
         except OSError:
             pass
         raise
+
+
+#: How long `os.replace` onto a file that a reader holds open is retried on Windows (3.17.0). A reader holds it for about a
+#: millisecond, and a replace that gave up at once lost a run's `done` mark and a hook's attempt record under load: measured,
+#: 293 of 300 replaces failed with PermissionError while three threads read the target in a loop.
+REPLACE_RETRY_S = 2.0
+
+
+#: Windows refuses a replace onto a file that is open; POSIX does not, so only Windows retries.
+RETRY_ON_PERMISSION = os.name == "nt"
+
+
+def _replace(tmp, path) -> None:
+    import time
+    deadline = time.monotonic() + REPLACE_RETRY_S
+    while True:
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.01)
 
 
 def fresh_file(path) -> str:

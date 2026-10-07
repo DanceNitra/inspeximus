@@ -178,3 +178,80 @@ def test_the_receipt_tail_is_never_appended_through_a_link(env):
         receipts_tail.append(tail, b'{"x":1}\n')
     assert ei.value.errno == errno.ELOOP
     assert victim.read_text() == VICTIM
+
+
+# ── a run's done mark, and a replace that a reader blocks (3.17.0) ─────────────────────────────────────────────────────
+
+def test_a_replace_that_a_reader_blocks_is_retried_and_then_succeeds(env, monkeypatch):
+    """Windows refuses os.replace onto an open file. The first two attempts fail here, the third lands."""
+    target = str(env / "state.json")
+    real = os.replace
+    calls = []
+
+    def flaky(a, b):
+        calls.append(1)
+        if len(calls) < 3:
+            raise PermissionError(13, "the file is open")
+        return real(a, b)
+    monkeypatch.setattr(_safewrite, "RETRY_ON_PERMISSION", True)
+    monkeypatch.setattr(os, "replace", flaky)
+    _safewrite.write_atomic(target, '{"ok": true}')
+    assert len(calls) == 3 and json.load(open(target, encoding="utf-8")) == {"ok": True}
+    assert not [f for f in os.listdir(str(env)) if f.endswith(".tmp")], "no temp file is left behind"
+
+
+def test_a_replace_that_stays_blocked_raises_after_the_bound(env, monkeypatch):
+    monkeypatch.setattr(_safewrite, "RETRY_ON_PERMISSION", True)
+    monkeypatch.setattr(_safewrite, "REPLACE_RETRY_S", 0.15)
+    monkeypatch.setattr(os, "replace", lambda a, b: (_ for _ in ()).throw(PermissionError(13, "open")))
+    with pytest.raises(PermissionError):
+        _safewrite.write_atomic(str(env / "state.json"), "x")
+
+
+def test_without_the_retry_flag_a_blocked_replace_raises_at_once(env, monkeypatch):
+    calls = []
+    monkeypatch.setattr(_safewrite, "RETRY_ON_PERMISSION", False)
+    monkeypatch.setattr(os, "replace", lambda a, b: calls.append(1) or (_ for _ in ()).throw(PermissionError(13, "open")))
+    with pytest.raises(PermissionError):
+        _safewrite.write_atomic(str(env / "state.json"), "x")
+    assert len(calls) == 1
+
+
+def test_the_restamp_run_waits_for_the_pid_and_writes_its_mark_again(env, monkeypatch):
+    """The hook read the record before the run's mark and wrote the pid after it: the mark is gone, and the run writes it again."""
+    import threading
+    path = str(env / "proj" / ".inspeximus" / "coding_memory.json")
+    os.makedirs(os.path.dirname(path))
+    state = cc._stamp_state_path(path)
+    with open(state, "w", encoding="utf-8") as fh:
+        json.dump({"last_attempt": time.time(), "foreign": 3}, fh)
+    t = threading.Thread(target=cc._mark_stamp_run, args=(path, True))
+    t.start()
+    time.sleep(0.5)                                          # the run has marked itself and waits for the pid
+    seen = json.load(open(state, encoding="utf-8"))
+    assert seen.get("done"), "control: the run marked itself before the hook's write"
+    with open(state, "w", encoding="utf-8") as fh:            # the hook's write, from a read before the mark
+        json.dump({"last_attempt": seen["last_attempt"], "foreign": 3, "pid": 7}, fh)
+    t.join(15)
+    st = json.load(open(state, encoding="utf-8"))
+    assert not t.is_alive() and st.get("done") and st.get("pid") == 7 and st.get("result") == "ok", st
+
+
+def test_the_restamp_run_marks_itself_through_a_blocked_replace(env, monkeypatch):
+    path = str(env / "proj" / ".inspeximus" / "coding_memory.json")
+    os.makedirs(os.path.dirname(path))
+    state = cc._stamp_state_path(path)
+    with open(state, "w", encoding="utf-8") as fh:
+        json.dump({"last_attempt": time.time() - 100, "foreign": 3}, fh)
+    real = os.replace
+    fails = []
+
+    def flaky(a, b):
+        if len(fails) < 4:
+            fails.append(1)
+            raise PermissionError(13, "a reader has the file open")
+        return real(a, b)
+    monkeypatch.setattr(_safewrite, "RETRY_ON_PERMISSION", False)       # the helper gives up at once: the RUN must go on trying
+    monkeypatch.setattr(os, "replace", flaky)
+    cc._mark_stamp_run(path, True)
+    assert json.load(open(state, encoding="utf-8")).get("done"), "the run left itself unmarked after four blocked writes"

@@ -680,7 +680,15 @@ ARCHIVE_MARK_WAIT_S = 10.0
 
 def _mark_archive_run_done(path, result) -> None:
     """The `--maintain` run records that it finished, so the next policy check counts the interval normally."""
-    state = _archive_state_path(path)                        # the key home (3.17.0); the old place beside the store is read, not written
+    _mark_run_done(_archive_state_path(path), result)       # the key home (3.17.0); the old place beside the store is read, not written
+
+
+def _mark_run_done(state, result) -> None:
+    """A detached run (the archive's, the re-stamp's) marks its attempt record `done`, and keeps the mark through the hook's pid write.
+
+    ONE RULE FOR BOTH RUNS (3.17.0). The re-stamp run wrote its mark once and swallowed any error, so a write that lost to the hook's
+    pid write, or to a reader holding the file on Windows, left the run unmarked for good and the test (and the next hook) saw a
+    run that never finished. The archive run already waited for the pid and wrote the mark again; the re-stamp run now does the same."""
     import time as _t
     from ._safewrite import write_atomic                     # never through a link (3.16.4, F-24)
     # THE MARK SURVIVES THE PARENT'S PID WRITE (3.16.4, AUDIT-B). The hook writes the attempt record once more after the
@@ -705,8 +713,10 @@ def _mark_archive_run_done(path, result) -> None:
             if not st.get("done"):
                 st.update(mark)
                 write_atomic(state, json.dumps(st))
+        except FileNotFoundError:
+            return                                              # no attempt record: nothing to mark
         except (OSError, ValueError):
-            return
+            pass                                                # a reader or a torn read: try again until the deadline
         if _t.time() >= deadline:
             return
         _t.sleep(0.2)
@@ -892,13 +902,7 @@ def _read_archive_state(store_path):
 def _mark_stamp_run(store_path, result) -> None:
     """The run's own mark: `done` with the time and "ok" or "failed". Never raises."""
     try:
-        import time
-        state = _stamp_state_path(store_path)
-        with open(state, encoding="utf-8") as fh:
-            st = json.load(fh)
-        st.update(done=time.time(), result="ok" if result else "failed")
-        from ._safewrite import write_atomic                    # one safe-write helper for every run state (3.17.0)
-        write_atomic(state, json.dumps(st))
+        _mark_run_done(_stamp_state_path(store_path), result)
     except Exception:                                           # noqa: BLE001
         pass
 

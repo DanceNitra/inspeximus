@@ -947,6 +947,33 @@ def _guard_env_tag() -> str:
     return "%d.%d.%d/ucd%s" % (sys.version_info[0], sys.version_info[1], sys.version_info[2], unicodedata.unidata_version)
 
 
+def _stamp_env_file(store_path) -> str:
+    from ._keyhome import key_home
+    tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
+    return os.path.join(key_home(store_path), "inspeximus", "stamp-env", tag + ".json")
+
+
+def _note_stamp_env(store_path) -> None:
+    """Record, once per store and per stamping pass, the interpreter that stamped (informational: nothing reads it to decide).
+    Never raises: a report that cannot be written is only a less detailed report."""
+    try:
+        from . import _safewrite
+        f = _stamp_env_file(store_path)
+        os.makedirs(os.path.dirname(f), exist_ok=True)
+        _safewrite.write_atomic(f, json.dumps({"env": _guard_env_tag(), "at": time.time()}))
+    except Exception:                                           # noqa: BLE001
+        pass
+
+
+def _read_stamp_env(store_path) -> "str | None":
+    try:
+        with open(_stamp_env_file(store_path), encoding="utf-8") as fh:
+            e = json.load(fh).get("env")
+        return e if isinstance(e, str) else None
+    except (OSError, ValueError, AttributeError):
+        return None
+
+
 def _guard_set_hash() -> "str | None":
     """What a stored verdict was computed with: the guards' source, their inputs by value, and the
     Unicode database that IGNORECASE and \\w depend on. Any change re-assesses every record once.
@@ -4076,9 +4103,7 @@ class Inspeximus:
             rec["meta"]["asserts_change"] = False       # a restatement, not a correction (see extractor block)
         if self.read_guards:
             self._guard_key(create=True)          # a write mints the key, so its clean verdict is stamped
-            _held = self._assess_read_guards(rec, stamp=True).get("read_guards")
-            if isinstance(_held, dict):
-                _held["env"] = _guard_env_tag()          # where the stamp was made; not in the MAC
+            self._assess_read_guards(rec, stamp=True)
         if _trunc_from is not None:
             rec["meta"]["truncated_from"] = _trunc_from
         # MEMORY HIERARCHY (user > agent > session): stamp the scope this memory belongs to. A memory with only
@@ -10135,20 +10160,22 @@ class Inspeximus:
         # version, so a stamp made under one Python reads as invalid under another, and the hook then assesses the row
         # on every prompt as if it had no stamp. Measured 2026-10-06: stamps from Python 3.12.10 (Unicode 15.0.0) under
         # the hook's Python 3.14.4 (Unicode 16.0.0) bought nothing. Counted here, with where they came from.
-        foreign, envs = 0, {}
+        foreign = 0
         for r in todo:
             held = (r.get("meta") or {}).get("read_guards")
             if isinstance(held, dict) and held.get("set") != gset:
                 foreign += 1
-                e = held.get("env") if isinstance(held.get("env"), str) else "unknown (made before 3.17.0)"
-                envs[e] = envs.get(e, 0) + 1
         import unicodedata
         out["guard_set"] = (gset or "")[:12] or None
         out["interpreter"] = {"executable": sys.executable, "version": sys.version.split()[0],
                               "unicode": unicodedata.unidata_version, "stamps_made_here_read_as": _guard_env_tag()}
         out["foreign_stamps"] = foreign
         if foreign:
-            out["foreign_made_under"] = dict(sorted(envs.items(), key=lambda kv: -kv[1])[:5])
+            # WHERE THEY WERE MADE is not on the records (3.17.0 dropped the per-record field: 31 bytes a row, 5% of a JSON write).
+            # The last stamping pass of this store recorded its interpreter once, in the key home.
+            seen = _read_stamp_env(self.path)
+            out["foreign_made_under"] = {("last stamping pass: " + seen) if seen else "unknown (no stamping pass recorded for this store)":
+                                         foreign}
             out["note_foreign"] = (f"{foreign} stamp(s) were made under another Python or Unicode version than this one "
                                    f"({_guard_env_tag()}) and read as invalid here. Stamp with the interpreter the hook "
                                    f"runs; {sys.executable} is the one running now.")
@@ -10160,7 +10187,6 @@ class Inspeximus:
             self._guard_seen.discard(r.get("id") or id(r))
             meta = self._assess_read_guards(r, stamp=True)
             if isinstance(meta.get("read_guards"), dict):
-                meta["read_guards"]["env"] = _guard_env_tag()       # where it was made; not in the MAC
                 out["stamped"] += 1
                 if r.get("id"):
                     self._touched.add(r["id"])
@@ -10168,6 +10194,7 @@ class Inspeximus:
                 out["flagged"] += 1
         if out["stamped"]:
             self._save(force=True)
+            _note_stamp_env(self.path)                  # once per pass, in the key home: not on every record
             out["applied"] = True
         return out
 
