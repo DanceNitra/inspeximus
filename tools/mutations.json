@@ -9181,5 +9181,15 @@
    "tests/test_audit_a_3165_second_review.py"
   ],
   "platform": "posix"
+ },
+ {
+  "name": "F-39: a backslash separates path components on every system",
+  "file": "inspeximus/_storelink.py",
+  "old": "    return re.split(\"[\" + re.escape(seps) + \"]+\", str(path))",
+  "new": "    return re.split(r\"[\\\\/]+\", str(path))",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ],
+  "platform": "posix"
  }
 ]
