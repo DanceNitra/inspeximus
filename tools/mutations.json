@@ -4376,7 +4376,7 @@
  {
   "name": "the replay filter judges every record, not only bash captures",
   "file": "inspeximus/claude_code.py",
-  "old": "if \"bash\" not in (rec.get(\"tags\") or []):",
+  "old": "if \"bash\" not in (dict.get(rec, \"tags\") or []):",
   "new": "if False:",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
@@ -8449,16 +8449,6 @@
   "platform": "win32"
  },
  {
-  "name": "the archive run's log is opened through a link",
-  "file": "inspeximus/claude_code.py",
-  "old": "            log = open_for_write(path + \".archive-auto.log\")\n",
-  "new": "            log = open(path + \".archive-auto.log\", \"w\", encoding=\"utf-8\")\n",
-  "tests": [
-   "tests/test_3164_f24_no_write_follows_a_link.py"
-  ],
-  "platform": "posix"
- },
- {
   "name": "the secrets notice is written through a link",
   "file": "inspeximus/claude_code.py",
   "old": "        with open_for_write(p) as fh:\n",
@@ -9236,5 +9226,641 @@
   "tests": [
    "tests/test_an_embedder_with_no_vectors_says_so.py"
   ]
+ },
+ {
+  "name": "the archive run's log is written beside the store",
+  "file": "inspeximus/claude_code.py",
+  "old": "            log = open_for_write(_archive_state_path(path, \".log\"))\n",
+  "new": "            log = open_for_write(path + \".archive-auto.log\")\n",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ]
+ },
+ {
+  "name": "the snapshot is an array again, which older writers extend and fork",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    return ('{\"kind\": %s, \"n\": %d, \"tip\": %s, \"entries\": %s}'\n            % (json.dumps(SNAPSHOT_KIND), n, json.dumps(tip), entries_json))\n",
+  "new": "    return entries_json\n",
+  "tests": [
+   "tests/test_an_older_writer_cannot_fork_a_tail_chain.py",
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail's base hash is not compared with the snapshot's entry",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if want != bh:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a tail whose base is ahead of the snapshot is read as consistent",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if bp > snap_n:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a repeated tail line below the snapshot is not compared with the snapshot's receipt",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if entries[pos].get(\"hash\") != e.get(\"hash\"):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a tail line is not checked to link to the receipt before it",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            if e.get(\"prev\") != prev or e.get(\"seq\") != pos:\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a cut last line is not reported as cut",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    out[\"torn\"] = bool(last)\n",
+  "new": "    out[\"torn\"] = False\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a cut last line is not removed before the next append",
+  "file": "inspeximus/core.py",
+  "old": "truncate_to=(0 if fresh else self._rc_good_off) if (fresh or self._rc_torn) else None,",
+  "new": "truncate_to=None,",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the snapshot is replaced after the tail is emptied, not before",
+  "file": "inspeximus/core.py",
+  "old": "        _durable_replace(path, _rtail.snapshot_text(_dump_chain_cached(mine, cache), len(mine), tip))\n        _durable_replace(_rtail.tail_path(path), _rtail.header_line(len(mine), tip))\n",
+  "new": "        _durable_replace(_rtail.tail_path(path), _rtail.header_line(len(mine), tip))\n        _durable_replace(path, _rtail.snapshot_text(_dump_chain_cached(mine, cache), len(mine), tip))\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the snapshot is never rewritten when the tail grows",
+  "file": "inspeximus/core.py",
+  "old": "                    if self._rc_disk_n - self._rc_snap_n >= _rtail.COMPACT_AT:\n",
+  "new": "                    if False:\n",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "the tail append does not look at the pair again under the lock",
+  "file": "inspeximus/core.py",
+  "old": "            if self._receipts_disk_sig() != self._receipts_sig:\n                self._reconcile_receipts_with_disk()\n            if self._rc_mode == \"tail\" and self._rc_problems:",
+  "new": "            if self._rc_mode == \"tail\" and self._rc_problems:",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a writer appends to a tail pair that has a problem",
+  "file": "inspeximus/core.py",
+  "old": "            if self._rc_mode == \"tail\" and self._rc_problems:\n                raise SidecarMalformed(",
+  "new": "            if False:\n                raise SidecarMalformed(",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a cut last line with the head ahead is information",
+  "file": "inspeximus/core.py",
+  "old": "isinstance(head.get(\"n_writes\"), int) and head[\"n_writes\"] > len(disk_receipts):",
+  "new": "isinstance(head.get(\"n_writes\"), int) and False:",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "a store in the tail format is rewritten as an array when the switch is off",
+  "file": "inspeximus/core.py",
+  "old": "        tail = (self._rc_mode == \"tail\") or (_receipts_tail_on() and not _rtail.marker_exists(path))\n",
+  "new": "        tail = (_receipts_tail_on() and not _rtail.marker_exists(path))\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail is not a sidecar to the sibling scan",
+  "file": "inspeximus/core.py",
+  "old": "|\\.receipts\\.tail\\.jsonl|\\.receipts\\.legacy|\\.salt|",
+  "new": "|\\.receipts\\.legacy|\\.salt|",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "the anchor checks read the snapshot as an array",
+  "file": "inspeximus/core.py",
+  "old": "            if side.name.endswith(\".receipts.json\"):\n                res = _rtail.read(",
+  "new": "            if False:\n                res = _rtail.read(",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail is appended without an fsync",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "        view = memoryview(data)\n        while view:\n            n = os.write(fd, view)\n            view = view[n:]\n        os.fsync(fd)\n",
+  "new": "        view = memoryview(data)\n        while view:\n            n = os.write(fd, view)\n            view = view[n:]\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail handle is kept open between appends",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    finally:\n        os.close(fd)\n    if new_file:",
+  "new": "    finally:\n        pass\n    if new_file:",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "the MCP server's start-up check reads the snapshot as an array",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                rows = _rt.read_entries(str(path) + suffix)\n",
+  "new": "                with open(str(path) + suffix, encoding=\"utf-8\") as f:\n                    rows = json.load(f)\n",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "a bad tail line is read past instead of stopping the chain",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "            out[\"problems\"].append(f\"{tail_name} line {ln + 1} is not JSON\")\n            return out\n",
+  "new": "            out[\"problems\"].append(f\"{tail_name} line {ln + 1} is not JSON\")\n            continue\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the tail is not read for peers' appends when only the tail moved",
+  "file": "inspeximus/core.py",
+  "old": "            tsig = (tt.st_mtime_ns, tt.st_size)\n",
+  "new": "            tsig = None\n",
+  "tests": [
+   "tests/test_the_receipt_tail_survives_a_stop_at_every_step.py"
+  ]
+ },
+ {
+  "name": "the snapshot is read before the tail, so a compaction between the reads reads as a snapshot older than its tail",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    tail_data, tail_err = _read_bytes(tail)\n    sig = snapshot_sig(snapshot)\n    out[\"snap_sig\"] = sig\n    if known is not None and sig is not None and known[0] == sig:\n        raw = {\"kind\": SNAPSHOT_KIND, \"n\": len(known[1]), \"entries\": list(known[1]),\n               \"tip\": known[1][-1].get(\"hash\") if known[1] else None}\n    else:\n        try:\n            raw = json.loads(_read_bytes(snapshot, required=True)[0].decode(\"utf-8\"))\n        except FileNotFoundError:\n            return out\n        except Exception as e:                                 # noqa: BLE001\n            out[\"problems\"].append(f\"{Path(snapshot).name} is not JSON ({type(e).__name__})\")\n            return out\n    if isinstance(raw, list):\n",
+  "new": "    sig = snapshot_sig(snapshot)\n    out[\"snap_sig\"] = sig\n    if known is not None and sig is not None and known[0] == sig:\n        raw = {\"kind\": SNAPSHOT_KIND, \"n\": len(known[1]), \"entries\": list(known[1]),\n               \"tip\": known[1][-1].get(\"hash\") if known[1] else None}\n    else:\n        try:\n            raw = json.loads(_read_bytes(snapshot, required=True)[0].decode(\"utf-8\"))\n        except FileNotFoundError:\n            return out\n        except Exception as e:                                 # noqa: BLE001\n            out[\"problems\"].append(f\"{Path(snapshot).name} is not JSON ({type(e).__name__})\")\n            return out\n    tail_data, tail_err = _read_bytes(tail)\n    if isinstance(raw, list):\n",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "a batch as long as the tail limit is appended instead of written as one snapshot",
+  "file": "inspeximus/core.py",
+  "old": "                    or len(mine) - self._rc_disk_n >= _rtail.COMPACT_AT):",
+  "new": "                    or False):",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "a peer's append is adopted by parsing the whole snapshot again",
+  "file": "inspeximus/core.py",
+  "old": "        if (reuse_snapshot and self._rc_mode == \"tail\" and self._rc_snap_sig is not None",
+  "new": "        if (False and self._rc_mode == \"tail\" and self._rc_snap_sig is not None",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "a replaced snapshot is read from the handle's old copy of it",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    if known is not None and sig is not None and known[0] == sig:",
+  "new": "    if known is not None and sig is not None:",
+  "tests": [
+   "tests/test_the_receipt_tail_appends_one_line_and_compacts_rarely.py"
+  ]
+ },
+ {
+  "name": "compact converts a store that is still the array",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "        if m._rc_mode != \"tail\":\n            # Converting is the switch's job",
+  "new": "        if False:\n            # Converting is the switch's job",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "to-legacy leaves no downgrade marker",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "        _durable_replace(marker_path(path), json.dumps({\"kind\": \"inspeximus.receipts.legacy/1\", \"at\": time.time()}))\n",
+  "new": "",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "the switch converts a store that a downgrade marked",
+  "file": "inspeximus/core.py",
+  "old": "(_receipts_tail_on() and not _rtail.marker_exists(path))",
+  "new": "_receipts_tail_on()",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "verify_writes does not name an older version for records without a receipt on a tail store",
+  "file": "inspeximus/core.py",
+  "old": "                       if self._rc_mode == \"tail\" else \"\"))",
+  "new": "                       if False else \"\"))",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "the downgrade marker is listed as an unknown copy beside the store",
+  "file": "inspeximus/core.py",
+  "old": "|\\.receipts\\.legacy|",
+  "new": "|",
+  "tests": [
+   "tests/test_audit_a_317_receipts_tail_findings.py"
+  ]
+ },
+ {
+  "name": "a stamp written by stamp_read_guards does not record where it was made",
+  "file": "inspeximus/core.py",
+  "old": "                meta[\"read_guards\"][\"env\"] = _guard_env_tag()       # where it was made; not in the MAC\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "a stamp written by remember does not record where it was made",
+  "file": "inspeximus/core.py",
+  "old": "                _held[\"env\"] = _guard_env_tag()          # where the stamp was made; not in the MAC\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the dry run counts no stamp as foreign",
+  "file": "inspeximus/core.py",
+  "old": "            if isinstance(held, dict) and held.get(\"set\") != gset:\n                foreign += 1",
+  "new": "            if isinstance(held, dict) and False:\n                foreign += 1",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook counts no stamp as foreign",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if isinstance(held, dict) and held.get(\"set\") != gset:\n            n += 1",
+  "new": "        if isinstance(held, dict) and False:\n            n += 1",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp starts with no foreign stamp",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not foreign:\n            return \"none\"",
+  "new": "        if False:\n            return \"none\"",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp ignores the off switch",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if not stamp_heal_enabled():\n            return \"off\"",
+  "new": "        if False:\n            return \"off\"",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp starts more than once per interval",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if now - last < STAMP_HEAL_MIN_INTERVAL_S:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp runs under another interpreter than the hook",
+  "file": "inspeximus/claude_code.py",
+  "old": "    command = [sys.executable, \"-E\", \"-c\", prog, \"inspeximus.claude_code\"] + list(args)",
+  "new": "    command = [\"python\", \"-E\", \"-c\", prog, \"inspeximus.claude_code\"] + list(args)",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the background restamp only reports",
+  "file": "inspeximus/claude_code.py",
+  "old": "        proc = _start_detached([\"--stamp-guards\", \"--apply\", \"--auto\", \"--expect-store\", path], cwd,",
+  "new": "        proc = _start_detached([\"--stamp-guards\", \"--auto\", \"--expect-store\", path], cwd,",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook does not count foreign stamps before its recall",
+  "file": "inspeximus/claude_code.py",
+  "old": "False, foreign_stamp_count(m))]",
+  "new": "False, 0)]",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook never starts the restamp after its recall",
+  "file": "inspeximus/claude_code.py",
+  "old": "            maybe_restamp_after_recall(ev.get(\"cwd\") or os.getcwd())\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the hook command is not read from the settings",
+  "file": "inspeximus/claude_code.py",
+  "old": "                if isinstance(cmd, str) and \"inspeximus\" in cmd:",
+  "new": "                if isinstance(cmd, str) and False:",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the stamp unicode version is dropped from the guard-set hash",
+  "file": "inspeximus/core.py",
+  "old": "            h.update(unicodedata.unidata_version.encode(\"ascii\"))\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hook_heals_stamps_made_under_another_python.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run reads PYTHON* variables from the project",
+  "file": "inspeximus/claude_code.py",
+  "old": "    command = [sys.executable, \"-E\", \"-c\", prog, \"inspeximus.claude_code\"] + list(args)",
+  "new": "    command = [sys.executable, \"-c\", prog, \"inspeximus.claude_code\"] + list(args)",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run keeps the working directory on its import path",
+  "file": "inspeximus/claude_code.py",
+  "old": "    prog = (\"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];\"\n            \"sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))\" % parent)\n    command = [sys.executable, \"-E\", \"-c\", prog, \"inspeximus.claude_code\"] + list(args)",
+  "new": "    prog = (\"import runpy,sys;sys.path[:]=[p for p in sys.path];\"\n            \"sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))\" % parent)\n    command = [sys.executable, \"-E\", \"-c\", prog, \"inspeximus.claude_code\"] + list(args)",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run does not ask to leave the hook's job",
+  "file": "inspeximus/claude_code.py",
+  "old": "            return subprocess.Popen(command, creationflags=flags | 0x01000000, **opts)    # CREATE_BREAKAWAY_FROM_JOB",
+  "new": "            return subprocess.Popen(command, creationflags=flags, **opts)    # CREATE_BREAKAWAY_FROM_JOB",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp attempt record overwrites the done mark of a run that finished first",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if isinstance(cur, dict) and cur.get(\"last_attempt\") == record[\"last_attempt\"]:\n                cur[\"pid\"] = record[\"pid\"]\n                record = cur",
+  "new": "            if isinstance(cur, dict) and cur.get(\"last_attempt\") == record[\"last_attempt\"]:\n                record = cur",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "a re-stamp run never marks itself done",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _mark_stamp_run(have, bool(r.get(\"applied\") or not r.get(\"to_stamp\")))\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "a re-stamp run that died is not retried after the floor",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if not (_run_has_died(st) and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):\n                return \"recent\"",
+  "new": "            return \"recent\"",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp switch is read from a repository's config",
+  "file": "inspeximus/claude_code.py",
+  "old": "    c = _read_cfg(user_config_path()).get(\"stamp\")\n    if isinstance(c, dict) and isinstance(c.get(\"auto\"), bool):\n        return c[\"auto\"]\n    return True",
+  "new": "    c = _read_cfg(_cfg_file(os.getcwd()) or user_config_path()).get(\"stamp\")\n    if isinstance(c, dict) and isinstance(c.get(\"auto\"), bool):\n        return c[\"auto\"]\n    return True",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp run stamps a store the hook did not resolve",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if \"--store\" in argv or not same:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the prompt hook's fast exit does not flush stdout and stderr first",
+  "file": "inspeximus/claude_code.py",
+  "old": "    for st in (sys.stdout, sys.stderr):\n        try:\n            st.flush()\n        except Exception:                                       # noqa: BLE001\n            pass\n        try:\n            os.fsync(st.fileno())\n        except Exception:                                       # noqa: BLE001\n            pass\n    os._exit(0)",
+  "new": "    os._exit(0)",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "the prompt hook's fast exit reports failure",
+  "file": "inspeximus/claude_code.py",
+  "old": "    os._exit(0)\n",
+  "new": "    os._exit(1)\n",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "the prompt hook never marks itself finished for the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _FAST_EXIT[0] = os.environ.get(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")",
+  "new": "            _FAST_EXIT[0] = False",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "the fast exit ignores its off switch",
+  "file": "inspeximus/claude_code.py",
+  "old": ".strip().lower() not in (\"0\", \"false\", \"no\")",
+  "new": ".strip().lower() not in (\"no-such-value\",)",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "every hook event and a failing handler take the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "    main()\n    if _FAST_EXIT[0]:\n        _exit_now()",
+  "new": "    main()\n    if True:\n        _exit_now()",
+  "tests": [
+   "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
+  ]
+ },
+ {
+  "name": "the re-stamp attempt record does not keep the pid of the run",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if isinstance(cur, dict) and cur.get(\"last_attempt\") == record[\"last_attempt\"]:\n                cur[\"pid\"] = record[\"pid\"]\n                record = cur",
+  "new": "            if False:\n                cur[\"pid\"] = record[\"pid\"]\n                record = cur",
+  "tests": [
+   "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
+  ]
+ },
+ {
+  "name": "the re-stamp keeps its state and log beside the store",
+  "file": "inspeximus/claude_code.py",
+  "old": "    d = os.path.join(key_home(store_path), \"inspeximus\", kind)\n",
+  "new": "    d = os.path.dirname(os.path.abspath(str(store_path)))\n",
+  "tests": [
+   "tests/test_audit_a_317hook_findings.py",
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ]
+ },
+ {
+  "name": "perf gate: a PreToolUse event takes the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n",
+  "new": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n            _FAST_EXIT[0] = True\n",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: the prompt hook never takes the fast exit",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _FAST_EXIT[0] = os.environ.get(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")\n        elif name == \"SessionStart\":",
+  "new": "            _FAST_EXIT[0] = False\n        elif name == \"SessionStart\":",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: a stamp is written under another guard-set hash",
+  "file": "inspeximus/core.py",
+  "old": "meta[\"read_guards\"] = {\"set\": gset, \"mac\": _guard_mac(key, \"clean\", rid, th, gset)}",
+  "new": "meta[\"read_guards\"] = {\"set\": gset + \"x\", \"mac\": _guard_mac(key, \"clean\", rid, th, gset)}",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: a record's tokens are built twice",
+  "file": "inspeximus/core.py",
+  "old": "            t = _tokens(_index_text(rec)); self._tok_cache[rid] = t",
+  "new": "            _tokens(_index_text(rec)); t = _tokens(_index_text(rec)); self._tok_cache[rid] = t",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "perf gate: a row is parsed twice when a store opens",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "            out.append(json.loads(doc))",
+  "new": "            json.loads(doc); out.append(json.loads(doc))",
+  "tests": [
+   "tests/test_the_prompt_hook_arm_goes_red.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the archive state is not read from the old place for one release",
+  "file": "inspeximus/claude_code.py",
+  "old": "    for p in (_archive_state_path(store_path), str(store_path) + \".archive-auto.json\"):",
+  "new": "    for p in (_archive_state_path(store_path),):",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the old archive record outranks the key home's",
+  "file": "inspeximus/claude_code.py",
+  "old": "    for p in (_archive_state_path(store_path), str(store_path) + \".archive-auto.json\"):",
+  "new": "    for p in (str(store_path) + \".archive-auto.json\", _archive_state_path(store_path)):",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the run's mark is written beside the store",
+  "file": "inspeximus/claude_code.py",
+  "old": "    state = _archive_state_path(path)                        # the key home (3.17.0); the old place beside the store is read, not written",
+  "new": "    state = path + \".archive-auto.json\"",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py",
+   "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "3.17.0: a refused store in the stamp run is a traceback",
+  "file": "inspeximus/claude_code.py",
+  "old": "            except OSError as exc:\n                print(json.dumps({\"refused\": \"the store this run resolves is refused",
+  "new": "            except ZeroDivisionError as exc:\n                print(json.dumps({\"refused\": \"the store this run resolves is refused",
+  "tests": [
+   "tests/test_audit_a_317hook_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the migration backup is copied through a link",
+  "file": "inspeximus/core.py",
+  "old": "                copy_file(self.path, backup)",
+  "new": "                shutil.copy2(str(self.path), str(backup))",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.17.0: the migration's temp file is opened at a name a link may hold",
+  "file": "inspeximus/core.py",
+  "old": "            fresh_file(tmp)                                   # an exclusive file at the name SQLite will open\n",
+  "new": "",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.17.0: the receipt tail is appended through a link",
+  "file": "inspeximus/receipts_tail.py",
+  "old": "    if _safewrite.is_link(str(tail)):                  # 3.17.0: a link shipped at the tail's name is refused, as it is for every sidecar\n        raise _safewrite.LinkRefused(errno.ELOOP, \"inspeximus does not write through a link\", str(tail))\n    flags = os.O_WRONLY | os.O_CREAT | getattr(os, \"O_BINARY\", 0) | getattr(os, \"O_NOFOLLOW\", 0)\n",
+  "new": "    flags = os.O_WRONLY | os.O_CREAT | getattr(os, \"O_BINARY\", 0)\n",
+  "tests": [
+   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
+  ],
+  "platform": "posix"
  }
 ]
