@@ -258,15 +258,16 @@ def test_f38_a_path_spelled_in_another_case_is_judged_like_the_original_on_windo
 # ── F-39 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 def test_f39_components_split_on_this_systems_separators_only():
+    bs = chr(92)
     assert _storelink._components("a/b//c") == ["a", "b", "c"]
     if os.name == "nt":
-        assert _storelink._components("a\b/c") == ["a", "b", "c"]
+        assert _storelink._components("a" + bs + "b/c") == ["a", "b", "c"]
     else:
-        assert _storelink._components("a\b/c") == ["a\b", "c"], "a backslash is a file name character on POSIX"
-        assert not _storelink.has_dotdot("a\..\b") and _storelink.has_dotdot("a\b/../c")
+        assert _storelink._components("a" + bs + "b/c") == ["a" + bs + "b", "c"], "a backslash is a file name character on POSIX"
+        assert not _storelink.has_dotdot("a" + bs + ".." + bs + "b") and _storelink.has_dotdot("a" + bs + "b/../c")
 
 
-@pytest.mark.skipif(os.name == "nt", reason="a backslash is a separator on Windows; on POSIX git can ship a link named a\b")
+@pytest.mark.skipif(os.name == "nt", reason="a backslash is a separator on Windows; on POSIX git can ship a link whose name holds one")
 def test_f39_a_link_whose_name_holds_a_backslash_is_one_component(sandbox, monkeypatch):
     other = str(sandbox / "other")
     os.makedirs(other + "/sub")
