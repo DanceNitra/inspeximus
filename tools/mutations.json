@@ -8461,8 +8461,8 @@
  {
   "name": "the secrets notice is written through a link",
   "file": "inspeximus/claude_code.py",
-  "old": "        write_atomic(p, json.dumps({\"rev\": _SECRETS_NOTICE_REV, \"found\": n,\n",
-  "new": "        (lambda p, s: open(p, \"w\", encoding=\"utf-8\").write(s))(p, json.dumps({\"rev\": _SECRETS_NOTICE_REV, \"found\": n,\n",
+  "old": "        with open_for_write(p) as fh:\n",
+  "new": "        with open(p, \"w\", encoding=\"utf-8\") as fh:\n",
   "tests": [
    "tests/test_3164_f24_no_write_follows_a_link.py"
   ],
@@ -8471,8 +8471,8 @@
  {
   "name": "the nudge counter is written through a link",
   "file": "inspeximus/claude_code.py",
-  "old": "        st[\"writes\"] = int(st.get(\"writes\", 0)) + 1\n        __import__(\"inspeximus._safewrite\", fromlist=[\"x\"]).write_atomic(_nudge_path(cwd), json.dumps(st))\n",
-  "new": "        st[\"writes\"] = int(st.get(\"writes\", 0)) + 1\n        open(_nudge_path(cwd), \"w\", encoding=\"utf-8\").write(json.dumps(st))\n",
+  "old": "    with open_for_write(_nudge_path(cwd)) as fh:\n",
+  "new": "    with open(_nudge_path(cwd), \"w\", encoding=\"utf-8\") as fh:\n",
   "tests": [
    "tests/test_3164_f24_no_write_follows_a_link.py"
   ],
