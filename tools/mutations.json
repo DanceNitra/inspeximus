@@ -9329,8 +9329,8 @@
  {
   "name": "3.17: a vector stamped with another recipe is ranked",
   "file": "inspeximus/core.py",
-  "old": "                if self._recipe_of(r) is False:\n                    dict.__setitem__(r, \"vec\", None)\n",
-  "new": "                if False:\n                    dict.__setitem__(r, \"vec\", None)\n",
+  "old": "                if self._recipe_of(r) is False:\n                    Inspeximus._shelve_vector(r)\n                    ids.add",
+  "new": "                if False:\n                    Inspeximus._shelve_vector(r)\n                    ids.add",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]
@@ -9408,19 +9408,37 @@
   ]
  },
  {
-  "name": "3.17: taking a foreign vector out of ranking marks its row for writing",
+  "name": "3.17 F-42: a sidecar out of step with the tags reads as a recipe change",
   "file": "inspeximus/core.py",
-  "old": "                    dict.__setitem__(r, \"vec\", None)\n",
-  "new": "                    r[\"vec\"] = None\n",
+  "old": "                sidecar_stale = True\n",
+  "new": "                recipe_match = False\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]
  },
  {
-  "name": "3.17 F-42: a sidecar out of step with the tags reads as a recipe change",
+  "name": "3.17 F-43: a shelved vector is not kept, so a write of its row loses the peer's vector",
   "file": "inspeximus/core.py",
-  "old": "                sidecar_stale = True\n",
-  "new": "                recipe_match = False\n",
+  "old": "            dict.__setitem__(rec, _rows.VEC_KEY, (\"%s:%s\" % (tag, enc)) if tag else enc)\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17 F-43: a shelved vector loses its recipe tag",
+  "file": "inspeximus/core.py",
+  "old": "            dict.__setitem__(rec, _rows.VEC_KEY, (\"%s:%s\" % (tag, enc)) if tag else enc)\n",
+  "new": "            dict.__setitem__(rec, _rows.VEC_KEY, enc)\n",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17: a changeset carries a shelved vector",
+  "file": "inspeximus/core.py",
+  "old": "        rows = [{k: v for k, v in r.items() if k not in (\"vec\", \"vec16\", \"vec_recipe\")} for r in self.items]\n",
+  "new": "        rows = [{k: v for k, v in r.items() if k != \"vec\"} for r in self.items]\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]

@@ -4526,6 +4526,8 @@ class Inspeximus:
                     _m.setdefault("unparsed_time", {})[_f] = _v
         # A STORED VECTOR HAS THE EMBEDDER'S CAP (3.17, AUDIT-A F-40). A list over it ranks every query
         # against a vector no embedder could have answered, at the cost of its length on every recall.
+        if _rows is not None and _rows.VEC_KEY in r:
+            _rows._decode_row(r)                   # vec16 outside a row store: a shelved vector (3.17)
         _vv = r.get("vec")
         if isinstance(_vv, list) and len(_vv) > _MAX_VEC_LEN:
             r["vec"] = None
@@ -7418,8 +7420,7 @@ class Inspeximus:
                 for r in _disk_rows:
                     Inspeximus._normalise_loaded(r)
                     if self._recipe_of(r) is False:             # as the load took it out of ranking (3.17)
-                        r["vec"] = None
-                        r.pop("vec_recipe", None)
+                        Inspeximus._shelve_vector(r)
                 _disk = {r["id"]: _rows_mod_doc({_k: _v for _k, _v in r.items()
                                                  if _k != "vec" or self._persist_vectors})
                          for r in _disk_rows}
@@ -11468,7 +11469,7 @@ class Inspeximus:
         of this payload, so a receiver must not read a match as proof of convergence: `import_changeset`
         legitimately ends elsewhere when the receiver holds records the sender never saw.
         """
-        rows = [{k: v for k, v in r.items() if k != "vec"} for r in self.items]
+        rows = [{k: v for k, v in r.items() if k not in ("vec", "vec16", "vec_recipe")} for r in self.items]
         return {"format": self.CHANGESET_FORMAT, "records": rows,
                 "tombstones": [dict(t) for t in (self._tombstones or [])],
                 "digest": self.state_digest(), "count": len(rows)}
@@ -11504,7 +11505,7 @@ class Inspeximus:
             rid = r.get("id")
             if not rid or rid in have or rid in buried:
                 continue
-            _r = {k: v for k, v in r.items() if k != "vec"}
+            _r = {k: v for k, v in r.items() if k not in ("vec", "vec16", "vec_recipe")}
             # A PEER'S VERDICT IS NEVER OURS (3.15.4, A-30): its read-guard fields are dropped whatever
             # they say, so the record is assessed here, and a release made there must be made here.
             if isinstance(_r.get("meta"), dict) and any(k in _r["meta"] for k in _GUARD_META):
@@ -19152,6 +19153,8 @@ class Inspeximus:
             rec["vec_recipe"] = _rows.recipe_tag(self.embed_id, len(vec))
         else:
             rec.pop("vec_recipe", None)
+        if _rows is not None and _rows.VEC_KEY in rec:
+            rec.pop(_rows.VEC_KEY, None)            # a shelved vector is replaced, see _shelve_vector
 
     def _recipe_of(self, rec):
         """Whether `rec`'s vector carries this handle's recipe: True, False, or None when nobody can tell
@@ -19173,6 +19176,21 @@ class Inspeximus:
             want = cache[len(vec)] = _rows.recipe_tag(self.embed_id, len(vec))
         return tag == want
 
+    @staticmethod
+    def _shelve_vector(rec) -> None:
+        """Take `rec`'s vector out of ranking and keep it, as the text it was stored as (AUDIT-A F-43).
+
+        The vector leaves `vec`, so nothing ranks it, and goes back to `vec16` with its tag, a field the
+        row writer passes through unchanged. Any later write of the row -- a supersede, a touch, a retire
+        or a tag edit -- therefore writes the peer's vector back as it found it, where dropping it lost the
+        vector from disk. Works on a tracked record and on a plain dict alike, and declares no edit."""
+        tag = dict.get(rec, "vec_recipe")
+        enc = _rows.encode_vec(dict.get(rec, "vec")) if _rows is not None else None
+        dict.pop(rec, "vec", None)
+        dict.pop(rec, "vec_recipe", None)
+        if enc is not None:
+            dict.__setitem__(rec, _rows.VEC_KEY, ("%s:%s" % (tag, enc)) if tag else enc)
+
     def _drop_foreign_vectors(self) -> None:
         """Take out of ranking every vector whose stamp names another embed recipe (3.17).
 
@@ -19188,8 +19206,7 @@ class Inspeximus:
         if self.embed is not None and self.embed_id and _rows is not None:
             for r in self._items:
                 if self._recipe_of(r) is False:
-                    dict.__setitem__(r, "vec", None)
-                    dict.pop(r, "vec_recipe", None)
+                    Inspeximus._shelve_vector(r)
                     ids.add(dict.get(r, "id"))
             if ids:
                 self._mat = None

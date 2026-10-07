@@ -262,3 +262,68 @@ def test_control_an_untagged_vector_is_still_realigned_from_the_sidecar(tmp_path
     m2 = _open_as(p, "B", "model-B")
     rec = next(x for x in m2._items if x["id"] == rid)
     assert rec["vec"] == _seeded_emb("B")("an untagged note"), "the untagged vector was not realigned"
+
+
+# ── F-43: a write to a row taken out of ranking keeps the peer's vector on disk ──────────────────────
+def _a_holding_foreign_rows(tmp_path):
+    """Handle A (model-A) stays open while a peer (model-B) realigns every row; A's next save adopts them."""
+    p = tmp_path / "s.json"
+    a = _open_as(p, "A", "model-A")
+    for i in range(6):
+        a.remember("note %d about the plan" % i, key="n%d" % i)
+    a.flush()
+    b = _open_as(p, "B", "model-B")
+    b.remember("peer record under model B", key="peerB")
+    b.flush()
+    a.remember("a later write by A", key="late")
+    a.flush()
+    assert a.index_coherence()["foreign_recipe_vecs"] >= 6, "CONTROL: A holds no foreign rows, so this tests nothing"
+    return p, a
+
+
+def _tag_on_disk(p, key, status="active"):
+    d = [x for x in _docs(p).values() if x.get("key") == key and x.get("status") == status]
+    assert d, (key, status)
+    return d[0].get(S.VEC_KEY, "").partition(":")[0]
+
+
+def test_v4_a_handle_that_edits_a_row_it_dropped_as_foreign_keeps_the_peers_vector_on_disk(tmp_path):
+    """AUDIT-A's check, in-tree: A supersedes n3, a row it holds out of ranking."""
+    p, a = _a_holding_foreign_rows(tmp_path)
+    a.remember("n3 replaced by A", key="n3")
+    a.flush()
+    assert _tag_on_disk(p, "n3", "superseded") == S.recipe_tag("model-B", DIM), "the peer's vector left the disk"
+    assert _tag_on_disk(p, "n3") == S.recipe_tag("model-A", DIM), "control: A's own new value carries A's recipe"
+
+
+def test_every_write_path_keeps_the_peers_vector(tmp_path):
+    """The fix is in the row the writer sees, not in one method: a credit, a retire and a tag edit each
+    rewrite the row, and each keeps the vector."""
+    p, a = _a_holding_foreign_rows(tmp_path)
+    rid = {r.get("key"): r["id"] for r in a._items if r.get("status") == "active"}
+    a.credit([rid["n1"]], "good")
+    a.retire("n2", "no longer true")
+    next(r for r in a._items if r["id"] == rid["n4"])["tags"].append("edited")
+    a._touch(rid["n4"])
+    a.flush()
+    docs = _docs(p)
+    assert docs[rid["n4"]].get("tags") and "edited" in docs[rid["n4"]]["tags"], "CONTROL: the tag edit reached disk"
+    for k, status in (("n1", "active"), ("n2", "superseded"), ("n4", "active")):
+        assert _tag_on_disk(p, k, status) == S.recipe_tag("model-B", DIM), (k, "lost the peer's vector")
+    _ok, probs = a.verify_writes()
+    assert not [x for x in probs if "differs" in x], probs
+    m = _open_as(p, "B", "model-B")
+    assert all(r.get("vec") for r in m._items if r.get("key") in ("n1", "n2", "n4")), "the peer reads its vectors back"
+
+
+def test_reembed_replaces_a_shelved_vector(tmp_path):
+    p, a = _a_holding_foreign_rows(tmp_path)
+    a.reembed()
+    assert _tag_on_disk(p, "n0") == S.recipe_tag("model-A", DIM)
+    assert a.index_coherence()["foreign_recipe_vecs"] == 0
+
+
+def test_a_changeset_carries_no_vector_in_either_form(tmp_path):
+    p, a = _a_holding_foreign_rows(tmp_path)
+    rows = a.export_changeset()["records"]
+    assert not any(k in r for r in rows for k in ("vec", "vec16", "vec_recipe")), "a vector left in a changeset"
