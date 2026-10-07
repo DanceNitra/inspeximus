@@ -126,7 +126,7 @@ def test_a_big_store_starts_one_detached_run_and_no_second(tmp_path, monkeypatch
     monkeypatch.chdir(proj)
     assert cc.maybe_archive_in_background(proj) == "started"
     assert cc.maybe_archive_in_background(proj) == "recent", "two prompts in a row start one run"
-    state = json.load(open(p + ".archive-auto.json", encoding="utf-8"))
+    state = json.load(open(cc._archive_state_path(p), encoding="utf-8"))
     assert state["last_attempt"] > 0 and state["policy"]["classes"] == ["cmd"]
     assert _wait_for(lambda: archive.listed_segments(p)), "the detached run archived nothing within 90 s"
     time.sleep(1.5)
@@ -145,7 +145,7 @@ def test_the_detached_run_stamps_the_rows_that_have_no_verdict(tmp_path, monkeyp
     m._save(force=True)
     monkeypatch.chdir(proj)
     assert cc.maybe_archive_in_background(proj) == "started"
-    log = p + ".archive-auto.log"
+    log = cc._archive_state_path(p, ".log")
     assert _wait_for(lambda: os.path.exists(log) and '"stamp_guards"' in open(log, encoding="utf-8").read())
     time.sleep(1.0)
     assert Inspeximus(p).stamp_read_guards(dry_run=True)["to_stamp"] == 0

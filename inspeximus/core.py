@@ -11010,13 +11010,15 @@ class Inspeximus:
     def _migrate_json_store_locked(self, backup, tmp) -> dict | None:
         """The body of `_migrate_json_store`, entered with the store lock held and the header checked."""
         try:
+            from ._safewrite import copy_file, fresh_file       # 3.17.0: no copy and no temp is made through a link
             if not backup.exists():
-                shutil.copy2(str(self.path), str(backup))
+                copy_file(self.path, backup)
             # WRITE WHAT THIS VERSION READ, not the bytes on disk. Re-reading the source file here
             # skipped the normalisation that had just run, so a legacy record with no `status` went
             # into the row store exactly as it was found and then came back out that way -- a bare
             # `KeyError: 'status'` in six methods, which is the defect the normalisation exists to
             # prevent. The records in memory are the migrated ones.
+            fresh_file(tmp)                                   # an exclusive file at the name SQLite will open
             _out = _rows.save(tmp, self._items, {})
             _back = _rows.load(tmp)
             if len(_back) != len(self._items):

@@ -22,6 +22,7 @@ chain in memory.
 """
 from __future__ import annotations
 
+import errno
 import json
 import os
 import time
@@ -230,7 +231,10 @@ def append(tail, data: bytes, truncate_to: "int | None" = None, new_file: bool =
 
     `truncate_to` cuts a torn last line first (the offset `read` gave as `good_off`). `new_file` fsyncs the
     directory afterwards, so the file's existence survives a crash as well as its bytes."""
-    flags = os.O_WRONLY | os.O_CREAT | getattr(os, "O_BINARY", 0)
+    from . import _safewrite
+    if _safewrite.is_link(str(tail)):                  # 3.17.0: a link shipped at the tail's name is refused, as it is for every sidecar
+        raise _safewrite.LinkRefused(errno.ELOOP, "inspeximus does not write through a link", str(tail))
+    flags = os.O_WRONLY | os.O_CREAT | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     if truncate_to is None:
         flags |= os.O_APPEND
     fd = os.open(str(tail), flags, 0o666)

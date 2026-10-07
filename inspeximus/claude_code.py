@@ -680,7 +680,7 @@ ARCHIVE_MARK_WAIT_S = 10.0
 
 def _mark_archive_run_done(path, result) -> None:
     """The `--maintain` run records that it finished, so the next policy check counts the interval normally."""
-    state = path + ".archive-auto.json"
+    state = _archive_state_path(path)                        # the key home (3.17.0); the old place beside the store is read, not written
     import time as _t
     from ._safewrite import write_atomic                     # never through a link (3.16.4, F-24)
     # THE MARK SURVIVES THE PARENT'S PID WRITE (3.16.4, AUDIT-B). The hook writes the attempt record once more after the
@@ -733,14 +733,13 @@ def maybe_archive_in_background(cwd=None) -> str:
             return "missing"
         if size < pol["trigger_mb"] * 1024 * 1024:
             return "small"
-        state = path + ".archive-auto.json"
+        state = _archive_state_path(path)
         now = time.time()
+        st = _read_archive_state(path)                          # the key home's record, else 3.16's file beside the store
         try:
-            with open(state, encoding="utf-8") as fh:
-                st = json.load(fh)
             last = float(st.get("last_attempt") or 0)
-        except (OSError, ValueError, AttributeError):
-            st, last = {}, 0.0
+        except (TypeError, ValueError):
+            last = 0.0
         if now - last < pol["min_interval_s"]:
             # A RUN THAT DIED IS TRIED AGAIN AFTER THE FLOOR (3.16.4, AUDIT-A F-14). The attempt is recorded before
             # the start, so a run its host killed with the hook's process tree blocked the next try for the whole
@@ -771,7 +770,7 @@ def maybe_archive_in_background(cwd=None) -> str:
         if pol["allow_git_tracked"]:
             argv.append("--allow-git-tracked")     # a store inside a git work tree: the user opted in
         try:
-            log = open_for_write(path + ".archive-auto.log")
+            log = open_for_write(_archive_state_path(path, ".log"))
         except LinkRefused:
             log = subprocess.DEVNULL                         # the run still starts; its output goes nowhere
         kw = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
@@ -855,28 +854,39 @@ def foreign_stamp_count(m) -> int:
     return n
 
 
-def _stamp_state_path(store_path, suffix=".json") -> str:
-    """Where the re-stamp keeps its attempt record and its log: the USER's key home, keyed by the store's path, and never
-    beside the store (AUDIT-A F-24). A repository ships files beside its store, and `open(path, "w")` follows a symlink a
-    repository ships at `<store>.stamp-auto.log`: on POSIX the run overwrote the file the link named (64 bytes became 648).
-    The key home is the user's own directory (a key home inside a repository is ignored, F-13), so a repository cannot place
-    a link in it, and a heal leaves nothing in the work tree."""
+def _state_path(store_path, kind, suffix=".json") -> str:
+    """Where a background run (`kind`: "stamp-auto" or "archive-auto") keeps its attempt record and its log (3.17.0): the USER's
+    key home, keyed by the store's path, and never beside the store (AUDIT-A F-24). A repository ships files beside its store,
+    and a link it ships at `<store>.<kind>.log` made `open(path, "w")` overwrite the file the link names. The key home is the
+    user's own directory (a key home inside a repository is ignored, F-13), so a repository cannot place a link in it, and a run
+    leaves nothing in the work tree."""
     import hashlib
     from ._keyhome import key_home
     tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
-    d = os.path.join(key_home(store_path), "inspeximus", "stamp-auto")
+    d = os.path.join(key_home(store_path), "inspeximus", kind)
     os.makedirs(d, exist_ok=True)
     return os.path.join(d, tag + suffix)
 
 
-def _store_named_by_the_environment(cwd=None) -> bool:
-    """True when the store the hook resolves is the one an environment variable names. A repository's settings `env` reaches
-    the hook, so INSPEXIMUS_CODING_STORE could aim a write at another store of the user's (AUDIT-A F-25). The heal runs only
-    on the project's own store, or on the store the user's config records (`inspeximus install --all`); the manual
-    `--stamp-guards --apply` stays available for the rest."""
-    from ._surface import coding_store_path
-    return os.path.normcase(os.path.abspath(coding_store_path(cwd))) != \
-        os.path.normcase(os.path.abspath(coding_store_path(cwd, env={})))
+def _stamp_state_path(store_path, suffix=".json") -> str:
+    return _state_path(store_path, "stamp-auto", suffix)
+
+
+def _archive_state_path(store_path, suffix=".json") -> str:
+    return _state_path(store_path, "archive-auto", suffix)
+
+
+def _read_archive_state(store_path):
+    """The archive run's attempt record: the key home's, and for ONE RELEASE the file that 3.16 kept beside the store
+    (`<store>.archive-auto.json`), read only when the key home has none. Nothing is written to the old place any more."""
+    for p in (_archive_state_path(store_path), str(store_path) + ".archive-auto.json"):
+        try:
+            with open(p, encoding="utf-8") as fh:
+                st = json.load(fh)
+            return st if isinstance(st, dict) else {}
+        except (OSError, ValueError):
+            continue
+    return {}
 
 
 def _mark_stamp_run(store_path, result) -> None:
@@ -887,10 +897,8 @@ def _mark_stamp_run(store_path, result) -> None:
         with open(state, encoding="utf-8") as fh:
             st = json.load(fh)
         st.update(done=time.time(), result="ok" if result else "failed")
-        tmp = state + ".tmp.%d" % os.getpid()
-        with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump(st, fh)
-        os.replace(tmp, state)
+        from ._safewrite import write_atomic                    # one safe-write helper for every run state (3.17.0)
+        write_atomic(state, json.dumps(st))
     except Exception:                                           # noqa: BLE001
         pass
 
@@ -911,7 +919,8 @@ def _start_detached(args, cwd, log_path):
     prog = ("import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
             "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % parent)
     command = [sys.executable, "-E", "-c", prog, "inspeximus.claude_code"] + list(args)
-    with open(log_path, "w", encoding="utf-8") as log:
+    from ._safewrite import open_for_write
+    with open_for_write(log_path) as log:
         opts = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
                 "close_fds": True}
         if os.name != "nt":
@@ -930,11 +939,11 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
     try:
         if not foreign:
             return "none"
-        if not stamp_heal_enabled() or _store_named_by_the_environment(cwd):
+        if not stamp_heal_enabled():
             return "off"
         import time
         from ._surface import coding_store_path
-        path = coding_store_path(cwd)
+        path = coding_store_path(cwd)                           # vetted (3.16.5): a link or an override the rules refuse raises here
         if not os.path.exists(path):
             return "missing"
         state = _stamp_state_path(path)
@@ -949,11 +958,9 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
             # A run that died is tried again after the floor, as the archive's is (F-14).
             if not (_run_has_died(st) and now - last >= AUTO_ARCHIVE_MIN_INTERVAL_S):
                 return "recent"
-        tmp = state + ".tmp.%d" % os.getpid()
+        from ._safewrite import write_atomic
         record = {"last_attempt": now, "foreign": int(foreign), "interpreter": sys.executable}
-        with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump(record, fh)
-        os.replace(tmp, state)
+        write_atomic(state, json.dumps(record))
         proc = _start_detached(["--stamp-guards", "--apply", "--auto", "--expect-store", path], cwd,
                                _stamp_state_path(path, ".log"))
         record["pid"] = getattr(proc, "pid", None)
@@ -967,9 +974,7 @@ def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
                 record = cur
         except (OSError, ValueError):
             pass
-        with open(tmp, "w", encoding="utf-8") as fh:
-            json.dump(record, fh)
-        os.replace(tmp, state)
+        write_atomic(state, json.dumps(record))
         return "started"
     except Exception:                                           # noqa: BLE001
         return "failed"
@@ -1458,9 +1463,9 @@ _NO_REPLAY = [re.compile(p, re.I) for p in (
 def _not_for_replay(rec) -> bool:
     """True for a captured shell command in a `_NO_REPLAY` shape. Only `bash` captures are judged:
     a file's content that mentions `rm -rf` is a file state, not a suggestion to run it."""
-    if "bash" not in (rec.get("tags") or []):
+    if "bash" not in (dict.get(rec, "tags") or []):       # `dict.get`: a tracked `get` is counted by the perf gate
         return False
-    text = rec.get("text") or ""
+    text = dict.get(rec, "text") or ""
     return any(p.search(text) for p in _NO_REPLAY)
 
 
@@ -1521,7 +1526,7 @@ def _renderable(records):
     out, bad = [], []
     for r in records:
         try:
-            tags = r.get("tags") or []
+            tags = dict.get(r, "tags") or []                    # `dict.get`: the records are tracked, and a tracked `get` is counted by the perf gate
             ("decision" in tags, "knowledge" in tags, _not_for_replay(r), _injected(r["text"], 480))
             out.append(r)
         except Exception as exc:                                # noqa: BLE001
@@ -2286,9 +2291,14 @@ def main():
             # one the hook resolved. A different resolution here (another environment) stamps nothing.
             from ._surface import coding_store_path
             want = argv[argv.index("--expect-store") + 1] if "--expect-store" in argv[:-1] else None
-            have = coding_store_path(os.getcwd())
+            try:
+                have = coding_store_path(os.getcwd())              # vetted (3.16.5)
+            except OSError as exc:
+                print(json.dumps({"refused": "the store this run resolves is refused: %s" % exc, "expected": want}, indent=2))
+                _mark_stamp_run(want, False)
+                return
             same = bool(want) and os.path.normcase(os.path.abspath(want)) == os.path.normcase(os.path.abspath(have))
-            if "--store" in argv or not same or _store_named_by_the_environment(os.getcwd()):
+            if "--store" in argv or not same:
                 print(json.dumps({"refused": "this run stamps only the store the hook resolved", "expected": want,
                                   "resolved_here": have}, indent=2))
                 _mark_stamp_run(want or have, False)

@@ -122,6 +122,8 @@ def test_the_archive_runs_log_and_state_are_not_written_through_a_link(env, tmp_
     if name == "archive-auto.json":
         cc._mark_archive_run_done(str(m.path), True)
     assert intact()
+    # 3.17.0: the run's state and log are not beside the store at all. They are in the key home, where the run wrote them.
+    assert os.path.exists(cc._archive_state_path(str(m.path), ".json" if name.endswith("json") else ".log"))
 
 
 @pytest.mark.parametrize("sidecar", ["cusum.json", "irrev.json"])

@@ -55,7 +55,8 @@ def _hook(tmp, cwd, extra=None):
 
 
 def _foreign(tmp, cwd, extra=None):
-    code = "import sys,inspeximus.claude_code as cc\nm=cc._store(sys.argv[1])\nprint(cc.foreign_stamp_count(m))"
+    code = ("import sys,inspeximus.claude_code as cc\n"
+            "try:\n    m=cc._store(sys.argv[1])\nexcept OSError:\n    print(-1)\nelse:\n    print(cc.foreign_stamp_count(m))")
     r = subprocess.run([sys.executable, "-c", code, cwd], env=_env(tmp, extra), capture_output=True, text=True, encoding="utf-8")
     return int(r.stdout.strip())
 
@@ -102,21 +103,38 @@ def test_f24_the_run_keeps_its_state_and_log_in_the_key_home_and_none_beside_the
     assert any(n.endswith(".json") for n in names) and any(n.endswith(".log") for n in names), names
 
 
-# F-25 ------------------------------------------------------------------------------------------------------------------
+# F-25, under 3.16.5's rule: the heal resolves its store through the vetted resolver, so a store that only the environment
+# names, outside the project, is refused unless the user's own config names it ------------------------------------------
 
-def test_f25_a_store_the_environment_names_is_not_rewritten_by_the_heal(tmp_path):
+def _hash(path):
+    import hashlib
+    return hashlib.sha256(open(path, "rb").read()).hexdigest()
+
+
+def test_f25_a_store_the_environment_names_is_neither_read_nor_rewritten_unless_the_config_names_it(tmp_path):
     tmp = str(tmp_path)
     other = _project(tmp, "otherproject")
     odir = os.path.join(other, ".inspeximus")
+    store = os.path.join(odir, "coding_memory.json")
     repo = os.path.join(tmp, "cloned")
     os.makedirs(os.path.join(repo, ".git"))
     named = {"INSPEXIMUS_CODING_STORE": odir}
-    assert _foreign(tmp, repo, named) == 6
-    _hook(tmp, repo, named)
-    time.sleep(8)
-    assert _foreign(tmp, repo, named) == 6, "the heal re-stamped a store that only the environment named"
+    before = _hash(store)
+    assert _foreign(tmp, repo, named) == -1, "the vetted resolver must refuse a store only the environment names"
+    r = _hook(tmp, repo, named)
+    time.sleep(3)
+    assert "inspeximus link" in r.stderr and r.stdout.strip() == "", (r.stdout, r.stderr[-200:])
+    assert _hash(store) == before, "a refused store must not be rewritten by the heal"
     assert not os.path.exists(os.path.join(tmp, "kh", "inspeximus", "stamp-auto")) or \
         not os.listdir(os.path.join(tmp, "kh", "inspeximus", "stamp-auto"))
+    # The user's own config names it: now it is the user's store, and the heal runs on it.
+    cfg = os.path.join(tmp, "kh", "inspeximus", "config.json")
+    os.makedirs(os.path.dirname(cfg), exist_ok=True)
+    with open(cfg, "w", encoding="utf-8") as fh:
+        json.dump({"stores": {"links": [os.path.realpath(odir)]}}, fh)
+    assert _foreign(tmp, repo, named) == 6
+    _hook(tmp, repo, named)
+    assert _wait_healed(tmp, repo, named), "the heal did not run on a store the user's config names"
 
 
 def test_f25_the_run_refuses_a_store_the_environment_named(tmp_path):
@@ -124,13 +142,16 @@ def test_f25_the_run_refuses_a_store_the_environment_named(tmp_path):
     other = _project(tmp, "otherproject")
     odir = os.path.join(other, ".inspeximus")
     store = os.path.join(odir, "coding_memory.json")
+    before = _hash(store)
+    repo = os.path.join(tmp, "cloned")                  # the project the run starts in: the named store lies outside it
+    os.makedirs(os.path.join(repo, ".git"))
     shim = ("import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
             "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % ROOT)
     r = subprocess.run([sys.executable, "-E", "-c", shim, "inspeximus.claude_code", "--stamp-guards", "--apply", "--auto",
-                        "--expect-store", store], cwd=tmp, capture_output=True, text=True, encoding="utf-8",
+                        "--expect-store", store], cwd=repo, capture_output=True, text=True, encoding="utf-8",
                        env=_env(tmp, {"INSPEXIMUS_CODING_STORE": odir}))
     assert "refused" in r.stdout, (r.stdout, r.stderr[-300:])
-    assert _foreign(tmp, other) == 6
+    assert _hash(store) == before
 
 
 def test_f25_the_project_store_is_healed_when_nothing_in_the_environment_names_it(tmp_path):

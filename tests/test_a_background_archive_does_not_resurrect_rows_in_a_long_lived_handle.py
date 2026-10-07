@@ -92,7 +92,7 @@ def test_the_same_through_the_detached_run_the_policy_starts(tmp_path, monkeypat
     while time.time() < end and not archive.listed_segments(p):
         time.sleep(0.5)
     assert archive.listed_segments(p), "the detached run archived nothing within 90 s"
-    log = p + ".archive-auto.log"
+    log = cc._archive_state_path(p, ".log")
     while time.time() < end and not (os.path.exists(log) and '"stamp_guards"' in open(log, encoding="utf-8").read()):
         time.sleep(0.5)
     time.sleep(1.0)

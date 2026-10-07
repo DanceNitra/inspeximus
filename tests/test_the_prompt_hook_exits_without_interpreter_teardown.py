@@ -162,19 +162,21 @@ def test_a_write_made_in_the_hook_run_is_on_disk_when_the_process_is_gone(proj):
     assert [x for x in m.items if x["key"] == "hook-run-write"], "the record saved in the hook run is not on disk"
 
 
-def test_the_attempt_record_is_whole_and_the_detached_run_outlives_the_hook(proj, tmp_path):
+def test_the_attempt_record_is_whole_and_the_detached_run_outlives_the_hook(proj, tmp_path, monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))      # where the hook run keeps its state (3.17.0)
     cfg = tmp_path / "keyhome" / "inspeximus" / "config.json"
     os.makedirs(cfg.parent, exist_ok=True)
     cfg.write_text(json.dumps({"archive": {"auto": True, "trigger_mb": 0.00001, "allow_git_tracked": True,
                                            "older_than_days": 1, "classes": ["cmd"]}}), encoding="utf-8")
     r = _run(proj, "normal-fast")
     assert r.returncode == 0 and "REACHED THE END" not in r.stdout
-    state = os.path.join(proj, ".inspeximus", "coding_memory.json.archive-auto.json")
+    store = os.path.join(proj, ".inspeximus", "coding_memory.json")
+    state = cc._archive_state_path(store)
     st = json.load(open(state, encoding="utf-8"))                       # whole JSON, or this raises
     assert isinstance(st["pid"], int), "the attempt record carries the pid of the run the hook started"
     # The run's own log says it finished. (The state file's `done` mark is not used: the archive's attempt record is written
     # again by the hook after the start, and a run that finishes first loses its mark: see the report.)
-    log = os.path.join(proj, ".inspeximus", "coding_memory.json.archive-auto.log")
+    log = cc._archive_state_path(store, ".log")
     end = time.time() + 120
     text = ""
     while time.time() < end:

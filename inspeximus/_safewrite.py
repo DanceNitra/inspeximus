@@ -67,6 +67,42 @@ def write_atomic(path, data, encoding: str = "utf-8") -> None:
         raise
 
 
+def fresh_file(path) -> str:
+    """An empty file at `path`, created exclusively (3.17.0): whatever was at that name, a leftover or a link, is removed first, and
+    removing a link removes the link and not its target. The caller then hands the name to a writer that opens it by name, such
+    as SQLite, which would otherwise follow a link a repository shipped at that name."""
+    path = os.fspath(path)
+    try:
+        os.unlink(path)
+    except FileNotFoundError:
+        pass
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0), 0o600)
+    os.close(fd)
+    return path
+
+
+def copy_file(src, dst) -> None:
+    """Copy `src` to `dst` through a new temporary file in the same directory, keeping the times (3.17.0). A link at `dst` is
+    refused before the copy and again before the replace, so the copy never lands in the file a link names."""
+    import shutil
+    src, dst = os.fspath(src), os.fspath(dst)
+    _refuse(dst)
+    d = os.path.dirname(os.path.abspath(dst))
+    fd, tmp = tempfile.mkstemp(prefix="." + os.path.basename(dst) + ".", suffix=".tmp", dir=d)
+    try:
+        with os.fdopen(fd, "wb") as out, open(src, "rb") as inp:
+            shutil.copyfileobj(inp, out, 1 << 20)
+        shutil.copystat(src, tmp)
+        _refuse(dst)
+        os.replace(tmp, dst)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
 def open_for_write(path, encoding: str = "utf-8"):
     """A text file opened for writing at `path`, truncated or created, and never a link's target."""
     path = os.fspath(path)

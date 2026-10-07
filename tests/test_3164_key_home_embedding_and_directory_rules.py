@@ -311,7 +311,7 @@ def test_a_run_that_finishes_before_the_pid_write_keeps_its_done_mark(tmp_path, 
     monkeypatch.setattr(sp, "Popen", fast_run)
     monkeypatch.setattr(cc, "ARCHIVE_MARK_WAIT_S", 0.5)      # here the run waits inside the start call
     assert cc.maybe_archive_in_background(str(proj)) == "started"
-    st = json.load(open(path + ".archive-auto.json", encoding="utf-8"))
+    st = json.load(open(cc._archive_state_path(path), encoding="utf-8"))
     assert st.get("done") and st.get("result") == "ok" and st.get("pid") == 424242, st
 
 
@@ -321,7 +321,7 @@ def test_a_mark_lost_between_the_parents_read_and_write_is_written_again(tmp_pat
     import threading
     import time as _t
     proj, path = _archive_setup(tmp_path, monkeypatch)
-    state = path + ".archive-auto.json"
+    state = cc._archive_state_path(path)
     with open(state, "w", encoding="utf-8") as fh:
         json.dump({"last_attempt": _t.time(), "hot_bytes": 1}, fh)
     t = threading.Thread(target=cc._mark_archive_run_done, args=(path, True))
@@ -339,8 +339,8 @@ def test_a_mark_lost_between_the_parents_read_and_write_is_written_again(tmp_pat
 def test_control_a_stale_record_without_a_pid_does_not_make_the_run_wait(tmp_path, monkeypatch):
     import time as _t
     proj, path = _archive_setup(tmp_path, monkeypatch)
-    with open(path + ".archive-auto.json", "w", encoding="utf-8") as fh:
+    with open(cc._archive_state_path(path), "w", encoding="utf-8") as fh:
         json.dump({"last_attempt": _t.time() - 3600, "hot_bytes": 1}, fh)
     t0 = _t.time()
     cc._mark_archive_run_done(path, True)
-    assert _t.time() - t0 < 2 and json.load(open(path + ".archive-auto.json", encoding="utf-8")).get("done")
+    assert _t.time() - t0 < 2 and json.load(open(cc._archive_state_path(path), encoding="utf-8")).get("done")
