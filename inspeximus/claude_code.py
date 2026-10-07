@@ -58,12 +58,14 @@ from pathlib import Path as _Path
 def _cfg_file(cwd):
     """The per-project config file this hook reads, or None: <project root>/.inspeximus/config.json, else the
     same file in the launch directory."""
+    from ._storelink import dir_allowed
     from ._surface import find_project_root
     base = cwd or os.getcwd()
     for d in dict.fromkeys((find_project_root(base) or base, base)):
         try:
             p = os.path.join(d, ".inspeximus", "config.json")
-            if os.path.exists(p):
+            # A `.inspeximus` link this project ships is not read either (3.16.5): its config would come from another project.
+            if os.path.exists(p) and dir_allowed(os.path.join(d, ".inspeximus"), "config.json", d):
                 return p
         except Exception:
             pass
@@ -2078,6 +2080,15 @@ def main():
         elif name == "SessionEnd":
             session_end(ev)
     except Exception as exc:
+        if type(exc).__name__ == "StoreLinkRefused":
+            # NO STORE, SAID ONCE (3.16.5): a link or an override the rules refuse is not a handler bug. One stderr line
+            # carries the link, the target and the fix; stdout stays empty, and nothing was read or written. Matched by
+            # name, so the hook imports nothing for a rule that almost never fires.
+            try:
+                sys.stderr.write("[inspeximus] " + str(exc) + chr(10))
+            except Exception:
+                pass
+            return
         # A HANDLER BUG MUST NOT LOOK LIKE SILENCE. This was a bare `pass`, and a missing import in
         # pre_tool_use() produced an EMPTY stdout and exit 0 -- indistinguishable from 'no relevant
         # memory found', the same failure the cp1250 note above records for encoding. stderr, never

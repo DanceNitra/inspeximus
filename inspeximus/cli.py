@@ -607,6 +607,11 @@ def main(argv=None):
                     help="write the SECRET to this file (referenced by INSPEXIMUS_WRITER_KEY_FILE); "
                          "printed to stdout if omitted")
 
+    lk = sub.add_parser("link", help="tell the hooks and the MCP server that a store reached through a link, or through "
+                                     "INSPEXIMUS_CODING_STORE, is yours: records the target in your own config")
+    lk.add_argument("target", help="the store directory (or the store file) the link or the variable names")
+    lk.add_argument("--json", action="store_true")
+
     rc = sub.add_parser("receipts", help="write receipts on an EXISTING store: turn them on and cover every "
                                          "record the chain does not name with a genesis checkpoint")
     rcsub = rc.add_subparsers(dest="receipts_cmd", required=True)
@@ -1339,6 +1344,15 @@ def main(argv=None):
                           "already pinned to")
 
     a = ap.parse_args(argv)
+    if a.cmd == "link":                       # before any store is opened: it is how a refused store becomes allowed
+        from inspeximus._storelink import add_configured_link
+        target = os.path.realpath(os.path.abspath(a.target))
+        if not os.path.exists(target):
+            print(f"inspeximus: {target} does not exist, so nothing was recorded", file=sys.stderr)
+            return 2
+        cfg = add_configured_link(target)
+        print(json.dumps({"linked": target, "config": cfg}) if a.json else f"linked {target}" + chr(10) + f"recorded in {cfg}")
+        return 0
 
     # `install` edits an editor's config; it must never touch a memory store. Opening one here would
     # create inspeximus_memory.json in the working directory as a side effect of asking for help.

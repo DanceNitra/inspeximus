@@ -143,7 +143,12 @@ def _path_source(env: dict | None = None) -> str:
 # itself -- `os.environ.get("INSPEXIMUS_PATH", "inspeximus_memory.json")` -- and then hand the result to
 # open_store(), which resolves it AGAIN. A default re-declared at each entry point is a default that drifts,
 # which is the whole reason _surface.py exists (see its module docstring).
-_PATH = resolve_path()
+try:
+    _PATH = resolve_path()
+    _PATH_REFUSED = None
+except StoreLocationError as _link_refused:       # a link the project ships (3.16.5): the server starts and says why
+    _PATH_REFUSED = str(_link_refused)
+    _PATH = getattr(_link_refused, "path", None) or "inspeximus-refused-store"
 # INSPEXIMUS_RECEIPTS (opt-in, default off): keep the tamper-evident write/erasure chain that the compliance_*
 # / audit_bundle MCP tools evidence (EU AI Act Art. 12/19). Off by default so an existing MCP store gains no
 # sidecar file unexpectedly; set INSPEXIMUS_RECEIPTS=1 to enable it.
@@ -415,6 +420,8 @@ class _RefusedStore:
 
 
 try:
+    if _PATH_REFUSED:
+        raise StoreLocationError(_PATH_REFUSED)
     _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
                       receipt_key=_SIGNING["key"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
                       persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)

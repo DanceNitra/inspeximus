@@ -200,7 +200,12 @@ def _hook(env, cwd, event):
 def test_a_hook_on_a_refused_store_never_blocks_the_prompt(tmp_path):
     proj = tmp_path / "proj"
     proj.mkdir()
-    r = _hook(_env(INSPEXIMUS_CODING_STORE=str(tmp_path / "no_such_dir")), proj, "UserPromptSubmit")
+    # The user's own config names the directory (3.16.5: an override outside the project needs it), so the refusal under test
+    # is the missing directory and not the link rule.
+    kh = tmp_path / "kh"
+    (kh / "inspeximus").mkdir(parents=True)
+    (kh / "inspeximus" / "config.json").write_text(json.dumps({"stores": {"links": [os.path.realpath(str(tmp_path / "no_such_dir"))]}}))
+    r = _hook(_env(INSPEXIMUS_CODING_STORE=str(tmp_path / "no_such_dir"), INSPEXIMUS_KEY_HOME=str(kh)), proj, "UserPromptSubmit")
     assert r.returncode == 0 and r.stdout.strip() == "", (r.returncode, r.stdout, r.stderr)
     assert "no such directory" in r.stderr, r.stderr
     ok = _hook(_env(), proj, "UserPromptSubmit")                                      # control: the project store
