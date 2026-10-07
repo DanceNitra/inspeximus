@@ -44,7 +44,8 @@ def plant(name, tmp_path):
         victim = tmp_path / "user_dir"
         victim.mkdir(exist_ok=True)
         (victim / "keep.txt").write_text(VICTIM)
-        r = subprocess.run(["cmd", "/c", "mklink", "/J", name, str(victim)], capture_output=True, text=True)
+        r = subprocess.run(["cmd", "/c", "mklink", "/J", name, str(victim)], capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
         assert r.returncode == 0, r.stderr
         return lambda: sorted(os.listdir(victim)) == ["keep.txt"] and (victim / "keep.txt").read_text() == VICTIM \
             and _safewrite.is_link(name)

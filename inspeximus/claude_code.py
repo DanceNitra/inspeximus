@@ -894,9 +894,10 @@ def _secrets_notice(cwd, m):
     except Exception:
         return None
     try:
-        from ._safewrite import write_atomic                 # never through a link (3.16.4, F-24)
-        write_atomic(p, json.dumps({"rev": _SECRETS_NOTICE_REV, "found": n,
-                                    "at": datetime.datetime.now().isoformat(timespec="seconds")}))
+        from ._safewrite import open_for_write               # in place, never through a link (3.16.4, F-24)
+        with open_for_write(p) as fh:
+            fh.write(json.dumps({"rev": _SECRETS_NOTICE_REV, "found": n,
+                                 "at": datetime.datetime.now().isoformat(timespec="seconds")}))
     except Exception:
         return None                          # no marker, no notice: never announce it every turn
     if not n:
@@ -957,6 +958,14 @@ def _nudge_path(cwd):
     return os.path.join(_store_dir(cwd), "nudge.json")
 
 
+def _write_nudge(cwd, st):
+    """The counter, written in place on every capture: no temporary file and no replace on the hot path, and never
+    through a link (3.16.4, F-24): `open_for_write` refuses one, and O_NOFOLLOW where the platform has it."""
+    from ._safewrite import open_for_write
+    with open_for_write(_nudge_path(cwd)) as fh:
+        fh.write(json.dumps(st))
+
+
 def _nudge_state(cwd):
     try:
         return json.loads(_Path(_nudge_path(cwd)).read_text(encoding="utf-8"))
@@ -969,7 +978,7 @@ def _bump_writes(cwd):
     try:
         st = _nudge_state(cwd)
         st["writes"] = int(st.get("writes", 0)) + 1
-        __import__("inspeximus._safewrite", fromlist=["x"]).write_atomic(_nudge_path(cwd), json.dumps(st))
+        _write_nudge(cwd, st)
     except Exception:
         pass
 
@@ -999,7 +1008,7 @@ def _star_ask(cwd):
             "find it, and it would genuinely make my day. Thank you so much! https://github.com/DanceNitra/inspeximus\n"
             "(you'll only ever see this once; silence it anytime with INSPEXIMUS_NO_NUDGE=1)")
         st["shown"] = True
-        __import__("inspeximus._safewrite", fromlist=["x"]).write_atomic(_nudge_path(cwd), json.dumps(st))
+        _write_nudge(cwd, st)
         return text
     except Exception:
         return None

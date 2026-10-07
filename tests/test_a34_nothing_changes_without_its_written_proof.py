@@ -40,6 +40,16 @@ def _full_disk_for(monkeypatch, suffix):
 
     monkeypatch.setattr(Inspeximus, "_atomic_write", staticmethod(aw))
     monkeypatch.setattr(type(core.Path("x")), "write_text", wt)
+    # 3.16.4 (F-24): the store's sidecars are written by `_safewrite.write_atomic`, which refuses a link. A full disk
+    # there must fail the same way, or this fixture stops reaching the write it exists to break.
+    from inspeximus import _safewrite
+    real_sw = _safewrite.write_atomic
+
+    def sw(path, *a, **k):
+        if str(path).endswith(suffix):
+            raise OSError(28, "No space left on device")
+        return real_sw(path, *a, **k)
+    monkeypatch.setattr(_safewrite, "write_atomic", sw)
 
 
 def _store(tmp_path):
