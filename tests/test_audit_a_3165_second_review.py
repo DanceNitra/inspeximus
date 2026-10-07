@@ -253,3 +253,31 @@ def test_f38_a_path_spelled_in_another_case_is_judged_like_the_original_on_windo
                      os.path.join(proj.lower(), ".Inspeximus", "memory.json")):
         with pytest.raises(_surface.StoreLinkRefused):
             _surface.resolve_path(env={"INSPEXIMUS_PATH": spelling}, cwd=proj)
+
+
+# ── F-39 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+def test_f39_components_split_on_this_systems_separators_only():
+    assert _storelink._components("a/b//c") == ["a", "b", "c"]
+    if os.name == "nt":
+        assert _storelink._components("a\b/c") == ["a", "b", "c"]
+    else:
+        assert _storelink._components("a\b/c") == ["a\b", "c"], "a backslash is a file name character on POSIX"
+        assert not _storelink.has_dotdot("a\..\b") and _storelink.has_dotdot("a\b/../c")
+
+
+@pytest.mark.skipif(os.name == "nt", reason="a backslash is a separator on Windows; on POSIX git can ship a link named a\b")
+def test_f39_a_link_whose_name_holds_a_backslash_is_one_component(sandbox, monkeypatch):
+    other = str(sandbox / "other")
+    os.makedirs(other + "/sub")
+    os.makedirs(other + "/.inspeximus")
+    open(other + "/.inspeximus/memory.json", "w").write("x")
+    clone = str(sandbox / "clone")
+    _git_init(clone)
+    bs = chr(92)
+    os.symlink(other + "/sub", clone + "/a" + bs + "b")
+    monkeypatch.chdir(clone)
+    spelling = "a" + bs + "b/../.inspeximus/memory.json"
+    assert [os.path.basename(x) for x in _storelink._physical_links(spelling, clone)] == ["a" + bs + "b"]
+    with pytest.raises(_surface.StoreLinkRefused):
+        _surface.resolve_path(env={"INSPEXIMUS_PATH": spelling}, cwd=clone)

@@ -240,8 +240,15 @@ def _untracked(links, root) -> bool:
     return True
 
 
+def _components(path) -> list:
+    """The components of `path`, split on the separators of THIS system only (AUDIT-A F-39). On POSIX a backslash is a file name
+    character, and git can ship a link named `a\b`: splitting on it would turn one component into two and walk past the link."""
+    seps = os.sep + (os.altsep or "")
+    return re.split("[" + re.escape(seps) + "]+", str(path))
+
+
 def has_dotdot(path) -> bool:
-    return ".." in re.split(r"[\\/]+", str(path))
+    return ".." in _components(path)
 
 
 def _physical_links(raw, root) -> list:
@@ -254,7 +261,7 @@ def _physical_links(raw, root) -> list:
     drive, rest = os.path.splitdrive(raw)
     cur = drive + os.sep
     out = []
-    for part in re.split(r"[\\/]+", rest):
+    for part in _components(rest):
         if not part or part == ".":
             continue
         if part == "..":
