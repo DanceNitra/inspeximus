@@ -4531,7 +4531,7 @@ class Inspeximus:
         # AND EVERY FIELD USED AS A DICT KEY OR IN A SET (3.16.4, AUDIT-A F-27). A list or an object in `status` or
         # `mtype`, a list or an object inside `links`, or a `pii` that cannot be iterated raised TypeError in recall,
         # and the hook went silent again. `id`, `tenant` and `owner_agent` are keys too; the API cannot write a wrong
-        # type there, a store file can. A malformed tenant or owner becomes a value no view matches, never None, so
+        # type there, a store file can (3.16.5 F-29 fuzz: an unhashable id raised at open). A malformed tenant or owner becomes a value no view matches, never None, so
         # the record cannot surface in the default tenant; a malformed `pii` stays truthy so erasure still finds it.
         if not isinstance(r["status"], str):
             bad = dict(bad or {}, status=r["status"])
@@ -4550,7 +4550,7 @@ class Inspeximus:
         _v = r.get("id")
         if _v is not None and not isinstance(_v, str):
             bad = dict(bad or {}, id=_v)
-            r["id"] = "malformed-" + hashlib.sha256(json.dumps(_v, sort_keys=True, default=str).encode()).hexdigest()[:16]
+            r["id"] = "malformed-" + hashlib.sha256(repr(_v).encode("utf-8", "replace")).hexdigest()[:16]
         for _f in ("tenant", "owner_agent"):
             _v = r.get(_f)
             if _v is not None and not isinstance(_v, str):
