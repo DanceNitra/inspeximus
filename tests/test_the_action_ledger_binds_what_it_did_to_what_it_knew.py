@@ -7,6 +7,7 @@ import json
 
 import pytest
 
+from _store_io import load_receipts, save_receipts
 from inspeximus import Inspeximus, new_receipt_keypair
 from inspeximus.actions import ActionLedger, verify_entries, verify_file, GENESIS
 
@@ -65,9 +66,8 @@ def test_a_rewritten_memory_history_is_caught_from_the_action_side(tmp_path):
     led.record("tool:b")
     assert led.verify() == (True, [])
     # an operator drops the last memory receipt and re-opens the store with the same key
-    rp = tmp_path / "mem.json.receipts.json"
-    r = json.loads(rp.read_text(encoding="utf-8"))
-    rp.write_text(json.dumps(r[:-1]), encoding="utf-8")
+    r = load_receipts(tmp_path / "mem.json")
+    save_receipts(tmp_path / "mem.json", r[:-1])
     m2 = Inspeximus(str(tmp_path / "mem.json"), receipts=True, receipt_key=sk)
     led2 = ActionLedger(m2)
     ok, problems = led2.verify()

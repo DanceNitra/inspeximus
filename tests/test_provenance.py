@@ -8,6 +8,8 @@ source shows up as `attribution_matches_receipt=False` instead of passing silent
 import os, sys, subprocess, tempfile, json
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _store_io import receipt_files
 from inspeximus import Inspeximus
 
 
@@ -112,6 +114,10 @@ def test_an_attacker_who_rewrites_the_sidecar_too_is_NOT_caught():
     rec = next(r for r in m.items if r.get("key") == "billing::auth")
     rec["source"] = {"doc": "forged-source"}
     m._receipts = []
+    for f in receipt_files(path):                    # the attacker has the directory: both receipt files go
+        os.remove(f)
+    m._rc_state_reset()
+    m._receipts_sig = None
     m._emit_write_receipt(rec)
     # `flush()`, not `_save(force=True)`. The relabel above edits the record directly, so nothing
     # declared the change and a row store writes what is declared. `flush()` is the documented

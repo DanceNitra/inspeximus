@@ -108,8 +108,7 @@ def test_the_live_store_is_never_written():
     ix = _store()
     path = str(ix.path)
     before = open(path, "rb").read()
-    before_side = {p: open(p, "rb").read() for p in
-                   (path + ".receipts.json",) if os.path.exists(p)}
+    before_side = {p: open(p, "rb").read() for p in receipt_files(path)}
     ix.audit_the_audits()
     assert open(path, "rb").read() == before, "the audit modified the live store"
     for p, b in before_side.items():
@@ -318,7 +317,7 @@ def test_the_attribution_probe_is_unaskable_without_receipts_and_says_so():
 # ───────────────────────────── PURE surfaces: the four that never read the store
 import inspeximus.core as _core
 
-from _store_io import load_store, save_store
+from _store_io import load_store, receipt_files, save_store
 
 
 PURE_SURFACES = [

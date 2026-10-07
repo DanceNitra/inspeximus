@@ -32,7 +32,7 @@ import pytest
 
 from inspeximus import Inspeximus
 
-from _store_io import load_store, save_store
+from _store_io import load_receipts, load_store, save_receipts, save_store
 
 T24 = time.mktime((2024, 1, 1, 0, 0, 0, 0, 1, -1))
 T25 = time.mktime((2025, 1, 1, 0, 0, 0, 0, 1, -1))
@@ -153,10 +153,9 @@ def test_a_receipt_written_before_this_field_existed_does_not_alarm():
     ix = Inspeximus(path=p, receipts=True)
     ix.remember("a record from an older version", key="k", object="v")
     ix.flush()
-    rp = p + ".receipts.json"
-    rec = json.load(open(rp, encoding="utf-8"))
-    for r in (rec if isinstance(rec, list) else rec.get("receipts")):
+    rec = load_receipts(p)
+    for r in rec:
         r.get("commit", {}).pop("time_sha256", None)
-    json.dump(rec, open(rp, "w", encoding="utf-8"))
+    save_receipts(p, rec)
     _ok, problems = Inspeximus(path=p, receipts=True).verify_writes()
     assert [x for x in problems if "valid_from" in x] == [], problems

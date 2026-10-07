@@ -26,6 +26,7 @@ pytest.importorskip("cryptography")
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey  # noqa: E402
 
 import inspeximus.core as core  # noqa: E402
+from _store_io import load_receipts
 from inspeximus import Inspeximus, new_receipt_keypair  # noqa: E402
 from inspeximus.core import _canon, _sha256_hex  # noqa: E402
 
@@ -129,7 +130,7 @@ def test_a_chain_written_with_two_keys_is_reported(tmp_path):
     p = str(tmp_path / "s.json")
     _open(p).remember("a", key="a", object="1")
     _open(p, key=OTHER_SK).remember("b", key="b", object="2")
-    keys = {r.get("pubkey") for r in _load(p + ".receipts.json") if r.get("sig")}
+    keys = {r.get("pubkey") for r in load_receipts(p) if r.get("sig")}
     assert keys == {PK, OTHER_PK}, "CONTROL: the chain carries both keys"
     ok, problems = _open(p, key=OTHER_SK).verify_writes()
     assert not ok

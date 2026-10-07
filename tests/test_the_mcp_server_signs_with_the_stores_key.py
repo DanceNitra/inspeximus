@@ -21,7 +21,7 @@ pytest.importorskip("mcp")
 pytest.importorskip("cryptography")
 
 from _mcp_review import call, load_server  # noqa: E402
-from _store_io import load_store, save_store  # noqa: E402
+from _store_io import load_receipts, load_store, receipt_files, save_store  # noqa: E402
 
 from inspeximus import Inspeximus, receipt_key_for, verify_erasure_certificate  # noqa: E402
 from inspeximus.core import new_receipt_keypair  # noqa: E402
@@ -39,10 +39,10 @@ def _library_store(tmp_path, **kw):
 
 def _chain(tmp_path):
     out = []
-    for suffix in (".receipts.json", ".tombstones.json"):
-        p = tmp_path / ("store.json" + suffix)
-        if p.exists():
-            out += json.loads(p.read_text(encoding="utf-8"))
+    out += load_receipts(tmp_path / "store.json")
+    p = tmp_path / "store.json.tombstones.json"
+    if p.exists():
+        out += json.loads(p.read_text(encoding="utf-8"))
     return out
 
 
@@ -205,7 +205,8 @@ def test_a_ledger_signed_with_the_writer_key_keeps_it_when_a_receipt_key_arrives
     assert len(writer_pub) == 1
 
     # the next server holds a receipt key for a NEW store beside the same ledger file name
-    (tmp_path / "store.json.receipts.json").unlink(missing_ok=True)
+    for f in receipt_files(tmp_path / "store.json"):
+        os.remove(f)
     mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_ACTIONS="1", INSPEXIMUS_WRITER_KEY=wk,
                       INSPEXIMUS_RECEIPT_KEY=sk, INSPEXIMUS_RECEIPTS="1")
     _ok(call(mod, "record_risk", risk_id="R1", hazard="stale price", harm="safety", source="intended_use",

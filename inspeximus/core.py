@@ -160,6 +160,18 @@ def _decrypt_blob(key: bytes, blob: bytes) -> bytes:
 
 _GENESIS = "0" * 64
 
+
+class _LazyReceiptsTail:
+    """`receipts_tail` imported on first use, so importing `inspeximus` does not add `receipts_tail` to the names the
+    package lists (`tests/test_audit_b_the_hook_imports_only_what_it_uses.py`). Attribute reads go to the module."""
+
+    def __getattr__(self, name):
+        from . import receipts_tail
+        return getattr(receipts_tail, name)
+
+
+_rtail = _LazyReceiptsTail()   # the snapshot-plus-tail receipt sidecar (3.17.0 candidate)
+
 #: Keyspaces whose records a GUARD reads to decide whether to refuse. Housekeeping -- capacity eviction and
 #: the consolidate() keep-budget -- must neither count nor remove them: they are bookkeeping the guard's
 #: correctness rests on, not part of the recall working set those policies exist to bound. The same carve-out
@@ -608,6 +620,17 @@ def _dump_chain_cached(entries, cache: dict) -> str:
     reused while it is cached. The hash covers the committed fields, so a receipt whose hash or field count moved
     is encoded again; a receipt that is not in the cache is encoded. Entries that left the chain are dropped
     whenever the cache is larger than the chain."""
+    out = _receipt_texts(entries, cache)
+    if len(cache) != len(entries):
+        keep = {id(e) for e in entries}
+        for k in [k for k in cache if k not in keep]:
+            del cache[k]
+    return "[" + ", ".join(out) + "]"
+
+
+def _receipt_texts(entries, cache: dict) -> list:
+    """The JSON text of each receipt, from `cache` (see `_dump_chain_cached`) or encoded and cached. The tail
+    writes one of these per line and the snapshot joins all of them."""
     out = []
     add = out.append
     for e in entries:
@@ -616,11 +639,14 @@ def _dump_chain_cached(entries, cache: dict) -> str:
             hit = (e, e.get("hash"), len(e), _encode_receipt(e))
             cache[id(e)] = hit
         add(hit[3])
-    if len(cache) != len(entries):
-        keep = {id(e) for e in entries}
-        for k in [k for k in cache if k not in keep]:
-            del cache[k]
-    return "[" + ", ".join(out) + "]"
+    return out
+
+
+def _receipts_tail_on() -> bool:
+    """INSPEXIMUS_RECEIPTS_TAIL=1 converts a store's receipt sidecar to the snapshot-plus-tail format at its next
+    receipted write. Off by default. A store that is already in that format stays in it whatever this says: the
+    sidecar is no longer an array, and no released version can extend it."""
+    return os.environ.get("INSPEXIMUS_RECEIPTS_TAIL", "").strip().lower() in ("1", "true", "yes", "on")
 
 
 def new_receipt_keypair():
@@ -3640,9 +3666,10 @@ class Inspeximus:
         self.receipt_pubkey = receipt_pubkey
         self._receipts: list[dict] = []
         self._receipts_path = (self.path.parent / (self.path.name + ".receipts.json")) if self.path else None
+        self._rc_state_reset()
         if self.receipts_enabled and self._receipts_path and self._receipts_path.exists():
             try:
-                self._receipts = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+                self._receipts = self._read_receipts_sidecar()["entries"]
             except Exception:
                 self._receipts = []
         self._receipts_sig = self._receipts_disk_sig() if self._receipts_path else None
@@ -4665,11 +4692,54 @@ class Inspeximus:
             self._emit_write_receipt(rec, amends=("status_sha256",), reason=reason)
 
     def _receipts_disk_sig(self):
+        """(snapshot stat, tail stat) of the receipt sidecar pair; None when the snapshot is absent. The tail's stat
+        is None until a tail exists, so a store that never converted compares as it always did."""
         try:
             st = self._receipts_path.stat()
-            return (st.st_mtime_ns, st.st_size)
         except (AttributeError, OSError):
             return None
+        try:
+            tt = _rtail.tail_path(self._receipts_path).stat()
+            tsig = (tt.st_mtime_ns, tt.st_size)
+        except OSError:
+            tsig = None
+        return (st.st_mtime_ns, st.st_size, tsig)
+
+    def _rc_state_reset(self) -> None:
+        """What this handle knows of the receipt sidecar pair on disk: its format, how many entries the snapshot and
+        the pair hold, where the next tail line goes, whether the tail ends in a cut line, and what is wrong."""
+        self._rc_mode = None            #: "list" (the array), "tail" (snapshot object + tail), None (absent or unreadable)
+        self._rc_snap_n = 0
+        self._rc_disk_n = 0
+        self._rc_good_off = 0
+        self._rc_torn = False
+        self._rc_problems: list = []
+        self._rc_base_ok = True
+        self._rc_snap_sig = None        #: the snapshot's stat when this handle last read or wrote it
+        self._rc_snap_tip = None        #: the hash of the snapshot's last entry then
+
+    def _read_receipts_sidecar(self, reuse_snapshot: bool = False) -> dict:
+        """Read the sidecar pair (`receipts_tail.read`) and remember what it says about the file's state.
+
+        `reuse_snapshot` takes the snapshot's entries from this handle's own chain when the snapshot's stat is the
+        one this handle last saw, so a reconcile after a peer's append parses the tail and not 16 MB of snapshot."""
+        known = None
+        n = self._rc_snap_n
+        if (reuse_snapshot and self._rc_mode == "tail" and self._rc_snap_sig is not None
+                and n <= len(self._receipts) and (n == 0 or self._receipts[n - 1].get("hash") == self._rc_snap_tip)):
+            known = (self._rc_snap_sig, self._receipts[:n])
+        res = _rtail.read(self._receipts_path, _rtail.tail_path(self._receipts_path), _GENESIS, known=known)
+        self._rc_snap_sig = res["snap_sig"]
+        self._rc_snap_tip = (res["entries"][res["snap_n"] - 1].get("hash")
+                             if res["mode"] == "tail" and res["snap_n"] else None)
+        self._rc_mode = res["mode"]
+        self._rc_snap_n = res["snap_n"]
+        self._rc_disk_n = res["disk_n"]
+        self._rc_good_off = res["good_off"]
+        self._rc_torn = res["torn"]
+        self._rc_problems = list(res["problems"])
+        self._rc_base_ok = res["base_ok"]
+        return res
 
     def _reconcile_receipts_with_disk(self) -> int:
         """Adopt receipts a peer process appended to the sidecar, and re-chain ours on top of them.
@@ -4700,10 +4770,16 @@ class Inspeximus:
         if sig is None or sig == getattr(self, "_receipts_sig", None):
             return 0
         try:
-            disk = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+            res = self._read_receipts_sidecar(reuse_snapshot=True)
         except Exception:
             return 0
-        if not isinstance(disk, list):
+        disk = res["entries"]
+        if res["mode"] is None or not isinstance(disk, list):
+            return 0
+        if res["mode"] == "tail" and res["problems"]:
+            # A damaged pair is named and left as it is: nothing is adopted from it and nothing is written over it
+            # (`_flush_receipts` refuses). Re-chaining our entries onto a prefix of a cut chain would move them.
+            self._receipts_sig = sig
             return 0
         mine = self._receipts
         n = 0
@@ -4732,8 +4808,11 @@ class Inspeximus:
         if not (self.receipts_enabled and self._receipts_path) or "receipts" in (self._sidecar_errors or {}):
             return 0
         try:
-            disk = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+            res = self._read_receipts_sidecar()
         except Exception:
+            return 0
+        disk = res["entries"]
+        if res["mode"] is None or (res["mode"] == "tail" and res["problems"]):
             return 0
         if not isinstance(disk, list) or len(disk) >= len(before) \
                 or any(before[i].get("hash") != disk[i].get("hash") for i in range(len(disk))):
@@ -4827,10 +4906,7 @@ class Inspeximus:
             return r
         if self._receipts_path:
             try:
-                Inspeximus._atomic_write(self._receipts_path,
-                                         _dump_chain_cached(self._receipts,
-                                                            self.__dict__.setdefault("_receipt_json", {})))
-                self._receipts_sig = self._receipts_disk_sig()
+                self._flush_receipts()
             except Exception as e:
                 # The receipt chain IS the evidence. Losing it silently was worse than losing a record:
                 # measured, 4 receipts in memory, verify_writes() -> (True, []), and ZERO on reload — the
@@ -5131,7 +5207,7 @@ class Inspeximus:
         if not was_enabled and self._receipts_path and self._receipts_path.exists() and not self._receipts:
             # Opened with receipts off beside an existing sidecar: adopt the chain, do not restart it.
             try:
-                self._receipts = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+                self._receipts = self._read_receipts_sidecar()["entries"]
             except Exception:
                 self._receipts = []
             self._receipts_sig = self._receipts_disk_sig()
@@ -5189,16 +5265,95 @@ class Inspeximus:
                     "genesis_root": root, "chain_tip": self._receipts[-1]["hash"]})
         return out
 
+    def _flush_receipts(self) -> None:
+        """Make the receipt sidecar hold `self._receipts`. Raises when it cannot.
+
+        THE ARRAY FORMAT rewrites the whole file (atomic replace + fsync), as it always did. THE TAIL FORMAT
+        (`receipts_tail`) appends the receipts the pair does not hold yet, one line each, and fsyncs the tail; the
+        snapshot is rewritten when the tail passes `COMPACT_AT` entries, and on conversion. A store converts when
+        `INSPEXIMUS_RECEIPTS_TAIL=1` at its next receipted write; once converted it stays in the tail format.
+
+        UNDER THE STORE LOCK, with the state looked at again: the reconcile that ran before the receipt was built is
+        not under the lock, so a peer can append between it and this write. The array format lost that peer's receipt
+        (the whole file is replaced by this handle's list); here the peer's lines are adopted first and our receipt is
+        re-chained after them, so none is lost. The outside head is the caller's next step, after this fsync."""
+        path = self._receipts_path
+        if not path:
+            return
+        cache = self.__dict__.setdefault("_receipt_json", {})
+        tail = (self._rc_mode == "tail") or (_receipts_tail_on() and not _rtail.marker_exists(path))
+        if not tail:
+            Inspeximus._atomic_write(path, _dump_chain_cached(self._receipts, cache))
+            self._receipts_sig = self._receipts_disk_sig()
+            self._rc_mode, self._rc_snap_n = "list", len(self._receipts)
+            self._rc_disk_n = len(self._receipts)
+            return
+        tp = _rtail.tail_path(path)
+        with _StoreLock(path):
+            if self._receipts_disk_sig() != self._receipts_sig:
+                self._reconcile_receipts_with_disk()
+            if self._rc_mode == "tail" and self._rc_problems:
+                raise SidecarMalformed(
+                    list(self._rc_problems),
+                    "restore the receipt files from a backup, or run `inspeximus receipts --to-legacy` on a copy; "
+                    "nothing was written")
+            if self._rc_mode == "tail" and self._rc_disk_n > len(self._receipts):
+                # This handle's list is shorter than the pair it last read (a rolled-back batch). Re-read; never
+                # write a shorter chain over a longer one.
+                self._receipts_sig = None
+                self._reconcile_receipts_with_disk()
+                if self._rc_disk_n > len(self._receipts):
+                    raise SidecarMalformed([f"the receipt pair holds {self._rc_disk_n} receipts and this handle "
+                                            f"{len(self._receipts)}"], "reopen the store; nothing was written")
+            mine = self._receipts
+            if (self._rc_mode != "tail" or not self._rc_base_ok
+                    or len(mine) - self._rc_disk_n >= _rtail.COMPACT_AT):
+                # Conversion, a pair that cannot be extended, or a batch (recommit, backfill) as long as the tail may
+                # grow: one snapshot write instead of an append that the next write would compact.
+                self._compact_receipts_locked(cache)
+            else:
+                pending = mine[self._rc_disk_n:]
+                if pending:
+                    texts = _receipt_texts(pending, cache)
+                    base = self._rc_disk_n
+                    data = b"".join(_rtail.entry_line(base + i, t) for i, t in enumerate(texts))
+                    fresh = self._rc_good_off == 0
+                    if fresh:
+                        snap_n = self._rc_snap_n
+                        data = _rtail.header_line(snap_n, mine[snap_n - 1]["hash"] if snap_n else _GENESIS) + data
+                    _rtail.append(tp, data, truncate_to=(0 if fresh else self._rc_good_off) if (fresh or self._rc_torn) else None,
+                                  new_file=fresh)
+                    self._rc_disk_n = len(mine)
+                    self._rc_good_off = (0 if fresh else self._rc_good_off) + len(data)
+                    self._rc_torn = False
+                    if self._rc_disk_n - self._rc_snap_n >= _rtail.COMPACT_AT:
+                        self._compact_receipts_locked(cache)
+            self._receipts_sig = self._receipts_disk_sig()
+
+    def _compact_receipts_locked(self, cache: dict) -> None:
+        """Write the whole chain as the snapshot, then a tail with a header and no entries. Caller holds the lock.
+
+        THE ORDER IS THE CRASH SAFETY. The snapshot goes first (temp file, fsync, replace). A cut between the two
+        steps leaves a snapshot that already holds entries the old tail also holds, and `receipts_tail.read` skips
+        the tail's lines below the snapshot's length after checking that they are the same receipts. Nothing is lost
+        and nothing is counted twice. The other order would drop receipts."""
+        path = self._receipts_path
+        mine = self._receipts
+        tip = mine[-1]["hash"] if mine else _GENESIS
+        _durable_replace(path, _rtail.snapshot_text(_dump_chain_cached(mine, cache), len(mine), tip))
+        _durable_replace(_rtail.tail_path(path), _rtail.header_line(len(mine), tip))
+        self._rc_mode, self._rc_snap_n, self._rc_disk_n = "tail", len(mine), len(mine)
+        self._rc_snap_sig, self._rc_snap_tip = _rtail.snapshot_sig(path), (mine[-1]["hash"] if mine else None)
+        self._rc_good_off = len(_rtail.header_line(len(mine), tip))
+        self._rc_torn, self._rc_base_ok, self._rc_problems = False, True, []
+
     def _persist_receipts(self) -> None:
         """Write the whole receipt chain to its sidecar once, then record the head. One write for a
         batch, so a 2,000-record backfill is one atomic replace rather than 2,000."""
         if not self._receipts_path:
             return
         try:
-            Inspeximus._atomic_write(self._receipts_path,
-                                     _dump_chain_cached(self._receipts,
-                                                        self.__dict__.setdefault("_receipt_json", {})))
-            self._receipts_sig = self._receipts_disk_sig()
+            self._flush_receipts()
             self._sidecar_errors.pop("receipts", None)
         except Exception as e:
             self._sidecar_errors["receipts"] = f"{self._receipts_path}: {type(e).__name__}: {e}"
@@ -7837,7 +7992,11 @@ class Inspeximus:
                     f"{len(_uncovered)} record(s) are covered by NO write receipt, so nothing here "
                     f"vouches for them: {_uncovered[:5]}{' ...' if len(_uncovered) > 5 else ''}. They "
                     f"were inserted out of band, or written while receipts were off. Pass "
-                    f"coverage_strict=False if this store enabled receipts part-way.")
+                    f"coverage_strict=False if this store enabled receipts part-way."
+                    + (" This store is in the snapshot-plus-tail receipt format, which a server on an older version "
+                       "than 3.17 cannot extend: such a server saves the record, then fails at the receipt, so it may "
+                       "have written these. Restart it on 3.17 or later, then run recommit(ids=[...]) with these ids."
+                       if self._rc_mode == "tail" else ""))
 
         # A RECORD A LATER WRITE RETIRED MUST NOT BE ACTIVE. This is the half `status_sha256` cannot
         # cover: it folds `active` and `superseded` into one serving class on purpose, so SWAPPING the
@@ -7894,9 +8053,15 @@ class Inspeximus:
         # rollback of anything. Measured before this line existed: two handles, one store, the older
         # one reported "shrank 1 < 2" after the newer one wrote once.
         disk_receipts = self._receipts
+        torn_tail = False
         if self._receipts_path and self._receipts_path.exists():
             try:
-                disk_receipts = json.loads(self._receipts_path.read_text(encoding="utf-8"))
+                _res = _rtail.read(self._receipts_path, _rtail.tail_path(self._receipts_path), _GENESIS)
+                if _res["mode"] is not None:
+                    disk_receipts = _res["entries"]
+                for _why in _res["problems"] if _res["mode"] == "tail" else ():
+                    problems.append(f"receipt sidecar pair: {_why}")
+                torn_tail = _res["torn"]
             except (OSError, ValueError):
                 pass
         if head and isinstance(head.get("n_writes"), int) and disk_receipts                 and head.get("genesis") == disk_receipts[0].get("hash"):
@@ -7908,6 +8073,14 @@ class Inspeximus:
             elif not self._chain_holds_tip(disk_receipts, n0, tip0):
                 problems.append(f"write log diverges from the head kept outside the store at receipt {n0}: "
                                 f"the chain was rewritten past that point")
+        # A CUT LAST LINE IS INFORMATION ONLY WHILE THE OUTSIDE HEAD IS NOT AHEAD OF THE LAST GOOD LINE. The head is
+        # written after the tail's fsync, so a write cut by a crash never reached it. A head ahead of the good lines
+        # means a line the head had seen is gone, which is a cut chain and not a crash, and the check above says so.
+        self.receipts_torn_tail = bool(torn_tail)
+        if torn_tail and head and isinstance(head.get("n_writes"), int) and head["n_writes"] > len(disk_receipts):
+            problems.append(f"the receipt tail ends in a cut line while the head kept outside the store records "
+                            f"{head['n_writes']} writes and the last good line is receipt {len(disk_receipts)}: "
+                            f"not a crash before the head moved")
         return (len(problems) == 0, problems)
 
     @staticmethod
@@ -10686,7 +10859,7 @@ class Inspeximus:
     #: The store's sidecars, their archives, salts and temp files, and the lock. None is a copy of the
     #: records, so none is a sibling an erasure has to account for.
     _SIDECAR_RE = re.compile(r"(\.(receipts|tombstones|objections|irrev|cusum|partitions|actions|archive)\.json"
-                             r"(\.archive\.\d{4}\.json)?(\.salt)?|\.salt|\.embedid|\.app|\.lock)"
+                             r"(\.archive\.\d{4}\.json)?(\.salt)?|\.receipts\.tail\.jsonl|\.receipts\.legacy|\.salt|\.embedid|\.app|\.lock)"
                              r"(\.tmp\.\d+|\.[a-z0-9_]{8}\.tmp)?")
 
     def _store_siblings(self) -> dict:
@@ -13327,7 +13500,15 @@ class Inspeximus:
         if not side.exists():
             return ([], None) if self.path.exists() else (None, None)
         try:
-            chain = json.loads(side.read_text(encoding="utf-8"))
+            if side.name.endswith(".receipts.json"):
+                res = _rtail.read(side, _rtail.tail_path(side), _GENESIS)
+                if res["mode"] is None and res["problems"]:
+                    return None, f"{side.name}: {res['problems'][0]}"
+                if res["mode"] == "tail" and res["problems"]:
+                    return None, f"{side.name}: {res['problems'][0]}"
+                chain = res["entries"]
+            else:
+                chain = json.loads(side.read_text(encoding="utf-8"))
         except Exception as e:                                             # noqa: BLE001
             return None, f"{side.name}: {type(e).__name__}"
         if not isinstance(chain, list) or not all(isinstance(r, dict) for r in chain):

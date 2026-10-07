@@ -22,7 +22,7 @@ import pytest
 from inspeximus import Inspeximus
 from inspeximus.core import new_receipt_keypair
 
-from _store_io import edit_store
+from _store_io import edit_store, load_receipts, save_receipts
 
 
 def _mk(n=3, **kw):
@@ -76,11 +76,10 @@ def test_an_edit_after_the_backfill_fails_verify_writes():
 def test_the_backfill_marker_is_inside_the_hash():
     p, ix = _mk(2)
     ix.enable_receipts()
-    side = p + ".receipts.json"
-    chain = json.loads(open(side, encoding="utf-8").read())
+    chain = load_receipts(p)
     assert all(rc.get("backfill", {}).get("genesis_root") for rc in chain)
     chain[0].pop("backfill")                        # dress it up as an ordinary receipt
-    open(side, "w", encoding="utf-8").write(json.dumps(chain))
+    save_receipts(p, chain)
     ok, problems = Inspeximus(path=p, receipts=True).verify_writes()
     assert ok is False
     assert any("receipt 0" in x and "tampered" in x for x in problems)

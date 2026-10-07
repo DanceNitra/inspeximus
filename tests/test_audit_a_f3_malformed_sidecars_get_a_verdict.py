@@ -15,6 +15,7 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from _store_io import load_receipts, save_receipts
 from inspeximus import archive  # noqa: E402
 import inspeximus.core as core  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
@@ -49,11 +50,10 @@ def test_a_malformed_receipt_gets_a_verdict_not_an_exception(clean, shape):
     m = Inspeximus(p, receipts=True)
     m.remember("fact one", key="k1")
     m.remember("fact two", key="k2")
-    rp = p + ".receipts.json"
-    chain = json.load(open(rp))
+    chain = load_receipts(p)
     assert len(chain) >= 2 and isinstance(chain[0].get("commit"), dict), "control: the fixture wrote a real chain"
     BAD_RECEIPTS[shape](chain)
-    json.dump(chain, open(rp, "w"))
+    save_receipts(p, chain)
     ok, problems = Inspeximus(p, receipts=True).verify_writes()
     assert ok is False and problems, shape
     Inspeximus(p, receipts=True).context_unbound()

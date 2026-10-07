@@ -302,6 +302,31 @@ signing keys use), so `verify_writes()` reports a tail cut that took its receipt
 turns it off. An attacker with the whole user account can remove the head; that case needs `anchor()`
 held off the machine and `verify_consistency()`.
 
+**Receipt tail (prototype, 3.17.0 candidate).** By default every receipted write replaces the whole
+`<store>.receipts.json`: 16,254,237 bytes per `remember` on a copy of our MCP store, which holds 16,053 receipts.
+With `INSPEXIMUS_RECEIPTS_TAIL=1`, a store's receipt sidecar converts at its next receipted write to a snapshot plus an
+append-only tail, `<store>.receipts.tail.jsonl`. A write then appends one line of about 1 KB and fsyncs it, and the
+snapshot is rewritten once per 500 receipts. The outside head moves after the fsync. Compared on 12 `remember` calls
+on that copy, the counters were 1 whole-file replace and 16,254,237 bytes per write before, and 0 replaces and 1,029
+bytes after.
+
+The snapshot becomes a JSON object, `{"kind": "inspeximus.receipts/2", ...}`, and no released version can extend
+it: 3.16.1, 3.16.2, and 3.16.3 fail on their first receipted write and leave both files unchanged, and
+`verify_writes()` on the newer version names every record such a write left without a receipt. A store in this format
+stays in it when a handle opens it later, with or without the variable. Each receipted call of an older server saves its
+record before it fails, so restart long-running older servers before the first write that converts a store. An agent
+that retries the failed call writes an unkeyed record twice, because the first call saved it. To bind the records an
+older server left without a receipt, restart it on 3.17 or later and run `recommit(ids=[...])` with the ids
+`verify_writes()` names.
+
+To downgrade, stop every server that runs with `INSPEXIMUS_RECEIPTS_TAIL=1`, run `inspeximus receipts to-legacy`, then
+start the older version. `to-legacy` writes the array that older versions read, removes the tail, and leaves
+`<store>.receipts.legacy`. While that marker exists the variable does not convert the store again, so a server that still
+has it set cannot undo the downgrade; `inspeximus receipts to-tail` removes the marker and converts. `inspeximus receipts
+compact` rewrites the snapshot of a store that is already in the tail format and empties the tail; on an array it refuses. A damaged
+pair is named by `verify_writes()` and is never written over. A last line that was cut by a crash is reported as
+`receipts_torn_tail` and is not a problem while the outside head is not ahead of the last good line.
+
 Shell: `inspeximus actions list | record ACTION | verify [FILE] | knew SEQ | matches SEQ --inputs FILE`; `verify FILE`
 opens no store. `matches` needs the salt file beside the ledger; without it the digests cannot be re-derived.
 The LangChain callback digests a chat-model call as every message's role, content and tool calls; rebuild

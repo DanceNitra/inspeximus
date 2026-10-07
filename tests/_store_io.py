@@ -26,6 +26,40 @@ def load_store(path) -> list:
     return raw if isinstance(raw, list) else (raw.get("records") or [])
 
 
+def receipt_files(path) -> list:
+    """The receipt files a store has on disk: the sidecar, and the tail beside it in the snapshot-plus-tail format.
+
+    A test that copies, rolls back or deletes the receipts handles all of them, whichever format the store is in."""
+    base = str(path) + ".receipts"
+    return [p for p in (base + ".json", base + ".tail.jsonl") if os.path.exists(p)]
+
+
+def load_receipts(path) -> list:
+    """Every receipt of the store at `path`, as a list, from either sidecar format (`<store>.receipts.json`, and the
+    tail beside it when the store is in the snapshot-plus-tail format). The list is a copy: change it and call
+    `save_receipts`. A sidecar that is not JSON, or is not a list of receipts, reads as an empty list."""
+    from inspeximus import receipts_tail as rt
+    from inspeximus.core import _GENESIS
+    snap = str(path) + ".receipts.json"
+    if not os.path.exists(snap):
+        return []
+    res = rt.read(snap, rt.tail_path(snap), _GENESIS)
+    return list(res["entries"]) if isinstance(res["entries"], list) else []
+
+
+def save_receipts(path, entries) -> None:
+    """Write `entries` as the store's whole receipt chain, as the array every version reads, and remove the tail.
+
+    This is what an attacker with the directory does: replace the chain. A handle that writes afterwards finds an
+    array, and converts it again when the tail is switched on."""
+    snap = str(path) + ".receipts.json"
+    with open(snap, "w", encoding="utf-8") as fh:
+        json.dump(list(entries), fh)
+    tail = str(path) + ".receipts.tail.jsonl"
+    if os.path.exists(tail):
+        os.remove(tail)
+
+
 def save_store(path, items) -> None:
     """Write the records back, keeping the format the file is already in.
 
