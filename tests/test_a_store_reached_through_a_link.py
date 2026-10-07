@@ -87,7 +87,7 @@ def _decide(proj, env=None):
     try:
         return True, _surface.coding_store_path(proj, dict(env or {}))
     except _surface.StoreLinkRefused as exc:
-        return False, str(exc)
+        return False, exc.user_line                     # the line for the person; `str(exc)` is what a model reads (F-34)
 
 
 def _same(a, b):
@@ -305,7 +305,7 @@ def test_the_link_command_records_the_target_and_keeps_the_rest_of_the_config(wo
         json.dump({"embed": {"hooks": True}}, fh)
     target = str(world / "dotfiles")
     os.makedirs(target)
-    r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "link", target], capture_output=True, text=True,
+    r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "link", target, "--yes"], capture_output=True, text=True,
                        encoding="utf-8", env=dict(os.environ, PYTHONPATH=ROOT))
     assert r.returncode == 0, r.stderr
     with open(cfg, encoding="utf-8") as fh:
