@@ -9117,5 +9117,15 @@
   "tests": [
    "tests/test_audit_a_3165_second_review.py"
   ]
+ },
+ {
+  "name": "F-38: a path with .. is collapsed before the walk",
+  "file": "inspeximus/_surface.py",
+  "old": "    p = raw if has_dotdot(raw) else os.path.abspath(raw)",
+  "new": "    p = os.path.abspath(raw)",
+  "tests": [
+   "tests/test_audit_a_3165_second_review.py"
+  ],
+  "platform": "posix"
  }
 ]
