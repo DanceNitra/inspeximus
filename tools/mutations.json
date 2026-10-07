@@ -9191,5 +9191,14 @@
    "tests/test_audit_a_3165_second_review.py"
   ],
   "platform": "posix"
+ },
+ {
+  "name": "3.16.6: the read-only probe arm is skipped on every run, not only as root",
+  "file": "probes/three_reasons_a_hook_can_look_installed_and_never_run.py",
+  "old": "    if not w[\"write_was_actually_denied\"] and hasattr(os, \"geteuid\") and os.geteuid() == 0:\n",
+  "new": "    if True:\n",
+  "tests": [
+   "tests/test_the_read_only_probe_is_judged_unless_run_as_root.py"
+  ]
  }
 ]

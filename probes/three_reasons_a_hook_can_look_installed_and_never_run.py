@@ -187,6 +187,14 @@ def main():
     assert not bad, "agent identity wrong in %d case(s): %s" % (len(bad), bad)
     assert w["records_when_writable"] > 0, "the writable control captured nothing, so the arm is void"
     assert w["silent_when_writable"], "a healthy write reported a failure, so the report means nothing"
+    # ROOT IGNORES FILE AND DIRECTORY MODES (3.16.6). Run as root, which a WSL or container shell often is,
+    # chmod cannot deny the write, the store accepted it, and the assertion below failed on a defect the
+    # fixture never produced (AUDIT-B, WSL as root, on eebae5de and rc-317). The read-only arm cannot be set
+    # up there, so it is reported as not reachable instead of judged; a non-root run asserts all of it.
+    if not w["write_was_actually_denied"] and hasattr(os, "geteuid") and os.geteuid() == 0:
+        print("    read-only store  -> NOT REACHABLE as root: root ignores file and directory modes, so "
+              "the denial cannot be set up; only the writable control was asserted")
+        return
     assert w["write_was_actually_denied"], (
         "the store accepted the write after both the file and its directory were made read-only, so "
         "nothing was lost and the report assertion below would be judging an event that never "
