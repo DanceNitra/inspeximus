@@ -687,7 +687,7 @@
    "guard_key_lookups": 2,
    "decision_syncs": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 36288,
+   "tracked_gets": 36296,
    "token_builds": 1202
   },
   "seconds_median": 0.0888,
