@@ -39,7 +39,10 @@ def test_the_hook_command_the_installer_writes_ignores_the_working_directory():
 
 def test_the_mcp_server_launch_for_a_python_runtime_ignores_the_working_directory():
     command, args = ins._server_launch("python", sys.executable)
-    assert "-m" in args and ("-I" in args[:args.index("-m")] or "-P" in args[:args.index("-m")]), (command, args)
+    # Builder, 3.16.4 (F-22): `-E -P -m` on Python 3.11 and later, `-E -c SHIM` on 3.9 and 3.10 (CI runs 3.9).
+    from inspeximus import _launch
+    assert args in (["-E", "-P", "-m", "inspeximus.mcp_server"], ["-E", "-c", _launch.SHIM, "inspeximus.mcp_server"]),         (command, args)
+    assert args == _launch.module_args("inspeximus.mcp_server", sys.version_info), (command, args)
 
 
 def test_the_plugin_hooks_file_ignores_the_working_directory():

@@ -75,7 +75,9 @@ def test_f22_the_shim_form_finds_a_user_site_install(tmp_path, monkeypatch):
 def test_f22_the_mcp_launch_for_a_python_runtime_finds_a_user_site_install(tmp_path):
     env = _user_site_env(tmp_path)
     command, args = ins._server_launch("python", sys.executable)
-    probe = [command] + [a for a in args if a not in ("-m", "inspeximus.mcp_server")] + ["-c", "import inspeximus"]
+    # The launch's own flags, up to the part that names the module: `-m` on 3.11 and later, `-c SHIM` on 3.9 and 3.10.
+    flags = args[:args.index("-m")] if "-m" in args else args[:args.index("-c")]
+    probe = [command] + flags + ["-c", "import inspeximus"]
     p = subprocess.run(probe, env=env, cwd=str(tmp_path), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
     assert p.returncode == 0, p.stderr.strip()[-200:]
 
