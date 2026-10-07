@@ -37,7 +37,7 @@ def _mklink(link, target, is_dir):
         os.symlink(target, link, target_is_directory=is_dir)
     except (OSError, NotImplementedError):
         if os.name == "nt" and is_dir:
-            r = subprocess.run(["cmd", "/c", "mklink", "/J", link, target], capture_output=True, text=True)
+            r = subprocess.run(["cmd", "/c", "mklink", "/J", link, target], capture_output=True, text=True, encoding="utf-8", errors="replace")
             assert r.returncode == 0, r.stderr
         else:
             pytest.skip("this platform cannot create a %s link without a privilege" % ("directory" if is_dir else "file"))
