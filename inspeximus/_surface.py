@@ -286,7 +286,8 @@ def _coding_store_location(cwd=None, env=None):
     if shared:
         return os.path.dirname(shared), shared
     base = cwd or os.getcwd()
-    return vet(os.path.join(find_project_root(base) or base, ".inspeximus"), CODING_STORE_FILENAME, cwd)
+    root = find_project_root(base) or base
+    return vet(os.path.join(root, ".inspeximus"), CODING_STORE_FILENAME, cwd, root=root)
 
 
 def coding_store_path(cwd=None, env=None) -> str:
@@ -357,22 +358,21 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
 
 
 def _vet_path_link(path, cwd=None) -> str:
-    """`INSPEXIMUS_PATH` as it is, unless it is a LINK THAT THE PROJECT SHIPS (3.16.5, F-33).
+    """`INSPEXIMUS_PATH` as it is, unless it goes through a LINK THAT THE PROJECT SHIPS (3.16.5, F-33, F-35).
 
     The boundary is the project. A plain path is the user's own choice and stays as it is: Codex, Gemini and Cursor set this
     variable on purpose. A link that lies inside the project is repository content, so it goes through the same three
     conditions as the Claude Code store. A link outside the project (a dotfiles link in the home folder) is the user's own
     and stays as it is. A project's settings can set this variable for Claude Code's MCP server, so the variable alone does not
     make a link the user's; its location does."""
-    from . import _safewrite
+    from ._storelink import _inside, link_chain, vet
     p = os.path.abspath(path)
-    if not _safewrite.is_link(p):
-        return path
-    from ._storelink import _inside, vet
     root = find_project_root(cwd) or os.path.abspath(cwd or os.getcwd())
     if not _inside(p, root):
         return path
-    return vet(os.path.dirname(p), os.path.basename(p), cwd)[1]
+    if not link_chain(os.path.dirname(p), os.path.basename(p), root):      # a link ANYWHERE below the root, not only at the file (F-35)
+        return path
+    return vet(os.path.dirname(p), os.path.basename(p), cwd, root=root)[1]
 
 
 def resolved_path_source(path=None, env=None) -> str:

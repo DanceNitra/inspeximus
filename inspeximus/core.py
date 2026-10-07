@@ -471,6 +471,23 @@ def _refuse_closed_partition_tags(store_path, tags) -> None:
                              f"refused. Open a new partition for a new process")
 
 
+#: Top-level numeric fields a read computes with, and the value that replaces a number that cannot be used (None: the field is
+#: dropped, and the fixed fallback of `_normalise_loaded` or the field's own default applies).
+_NUMERIC_FIELDS = (("value", 1.0), ("good", 0), ("bad", 0), ("ts", None), ("last_access", None), ("valid_from", None),
+                   ("invalidated_at", None), ("expires_at", None))
+
+
+def _finite_number(v) -> bool:
+    """True for a float that is finite and an integer that a float can hold (`float(10 ** 400)` raises OverflowError)."""
+    if isinstance(v, float):
+        return v - v == 0.0                               # False for inf and NaN
+    try:
+        float(v)
+    except OverflowError:
+        return False
+    return True
+
+
 def _epoch_or_none(v):
     """Epoch seconds from a number, a numeric string or an ISO 8601 string; None if it is none of them."""
     if isinstance(v, bool) or v is None:
@@ -4556,6 +4573,20 @@ class Inspeximus:
             if _v is not None and not isinstance(_v, str):
                 bad = dict(bad or {}, **{_f: _v})
                 r[_f] = "\x00malformed"
+        # A NUMBER THE ARITHMETIC CANNOT USE, since 3.16.5 (AUDIT-A F-36). `inf`, `NaN` and an integer too large for a float parse as
+        # JSON and raise (or poison a score) in the first sum that touches them, one record at a time. Repaired at load like the
+        # shapes above, for every numeric field a read computes with: a safe value, the original under meta["malformed"], the
+        # record quarantined. Time fields are dropped so the fixed fallback below applies.
+        for _f, _safe in _NUMERIC_FIELDS:
+            if _f in r:
+                _v = r[_f]
+                if not isinstance(_v, bool) and isinstance(_v, (int, float)) and not _finite_number(_v):
+                    # a float is kept as its text: the row store serialises with allow_nan=False and refuses inf and NaN
+                    bad = dict(bad or {}, **{_f: repr(_v) if isinstance(_v, float) else _v})
+                    if _safe is None:
+                        del r[_f]
+                    else:
+                        r[_f] = _safe
         if bad:
             r["meta"].setdefault("malformed", {}).update(bad)
             r["meta"]["quarantined"] = {"reason": "malformed_record", "shapes": [], "released": None}

@@ -63,18 +63,18 @@ def test_a_failure_no_single_record_explains_is_raised_unchanged(sandbox):
 
 def test_a_bad_record_is_left_out_of_the_answer_and_named_once(sandbox):
     p, store = _project(sandbox, "named")
-    _hand_edit(store, lambda d: d.__setitem__("value", 10 ** 400))
+    _hand_edit(store, lambda d: d.setdefault("meta", {}).__setitem__("quarantined", "x"))
     out, err = _prompt(p)
     assert "release process uses the gate" in out and "number one" in out
     assert "another note about the release from the victim" not in out, "the bad record must be left out"
-    assert err.count("left out of this answer") == 1 and "OverflowError" in err and "failed" not in err, err
+    assert err.count("left out of this answer") == 1 and "AttributeError" in err and "failed" not in err, err
     again_out, again_err = _prompt(p)                                   # the store is unchanged: still isolated, still said once per process
     assert "left out of this answer" not in again_err
 
 
 def test_the_isolation_does_not_write_the_store(sandbox):
     p, store = _project(sandbox, "nowrite")
-    _hand_edit(store, lambda d: d.__setitem__("value", 10 ** 400))
+    _hand_edit(store, lambda d: d.setdefault("meta", {}).__setitem__("quarantined", "x"))
     import hashlib
     before = hashlib.sha256(open(store, "rb").read()).hexdigest()
     _prompt(p)
@@ -87,7 +87,7 @@ def test_two_bad_records_are_both_left_out(sandbox):
     for rid, doc in con.execute("SELECT id, doc FROM records").fetchall():
         d = json.loads(doc)
         if d.get("key") in ("victim", "n2"):
-            d["value"] = 10 ** 400
+            d.setdefault("meta", {})["quarantined"] = "x"
             con.execute("UPDATE records SET doc=? WHERE id=?", (json.dumps(d), rid))
     con.commit()
     con.close()
