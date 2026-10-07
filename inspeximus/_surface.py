@@ -51,6 +51,15 @@ class StoreLocationError(FileNotFoundError):
     """A store path whose directory does not exist, outside the locations inspeximus creates itself."""
 
 
+class StoreLinkRefused(StoreLocationError):
+    """The store is reached through a link or an environment override that the rules in `_storelink` do not allow (3.16.5).
+    `path` is the link, or the override, as the project spells it. The message names the target and the fix."""
+
+    def __init__(self, message, path=None):
+        super().__init__(message)
+        self.path = path
+
+
 def relpath_or_abs(path, start=None):
     """`path` relative to `start` (default: the working directory), or absolute when that is impossible.
 
@@ -260,26 +269,29 @@ def coding_store_dir(cwd=None, env=None) -> str:
     directory (Claude Code 2.1.282 sets it to wherever `claude` started) while the hook walks up to
     the git root. A decision written through MCP never reached the next session's SessionStart.
     """
+    return _coding_store_location(cwd, env)[0]
+
+
+def _coding_store_location(cwd=None, env=None):
+    """(directory, file) of the Claude Code store, vetted: a link or an override is followed only under the rules of
+    `_storelink` (3.16.5), and the pair that comes back is the REAL path, so the open, the sidecars and the lock all use the
+    file the check saw."""
+    from ._storelink import vet
     env = os.environ if env is None else env
     override = (env.get("INSPEXIMUS_CODING_STORE") or "").strip()
     if override:
-        return override
-    shared = shared_store_path()                 # `inspeximus install --all` (3.14.0)
+        return vet(override, CODING_STORE_FILENAME, cwd, named_by_env=True)
+    shared = shared_store_path()                 # `inspeximus install --all` (3.14.0): the user's own record
     if shared:
-        return os.path.dirname(shared)
+        return os.path.dirname(shared), shared
     base = cwd or os.getcwd()
-    return os.path.join(find_project_root(base) or base, ".inspeximus")
+    return vet(os.path.join(find_project_root(base) or base, ".inspeximus"), CODING_STORE_FILENAME, cwd)
 
 
 def coding_store_path(cwd=None, env=None) -> str:
     """The Claude Code store file. See `coding_store_dir`. The shared store keeps its own file name, so a
     store a user had already named (for example `mcp_memory_chain.json`) can be the shared one."""
-    env_ = os.environ if env is None else env
-    if not (env_.get("INSPEXIMUS_CODING_STORE") or "").strip():
-        shared = shared_store_path()
-        if shared:
-            return shared
-    return os.path.join(coding_store_dir(cwd, env), CODING_STORE_FILENAME)
+    return _coding_store_location(cwd, env)[1]
 
 
 def resolve_path(path=None, *, env=None, cwd=None) -> str:

@@ -8657,5 +8657,140 @@
   "tests": [
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
   ]
+ },
+ {
+  "name": "link rule: condition A (the user's config names the target) is dropped",
+  "file": "inspeximus/_storelink.py",
+  "old": "    if listed and any(_norm(x) in (_norm(real_d), _norm(real_f)) for x in listed):                    # A",
+  "new": "    if False and listed and any(_norm(x) in (_norm(real_d), _norm(real_f)) for x in listed):          # A",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: condition B (the target stays inside the project) is dropped",
+  "file": "inspeximus/_storelink.py",
+  "old": "    if _inside_project((real_d, real_f), cwd):                                                         # B",
+  "new": "    if False and _inside_project((real_d, real_f), cwd):                                               # B",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: condition C (git does not track the link) is dropped",
+  "file": "inspeximus/_storelink.py",
+  "old": "        if root and _untracked(links, root):                                                           # C",
+  "new": "        if False and root and _untracked(links, root):                                                 # C",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: a target inside .git counts as inside the project",
+  "file": "inspeximus/_storelink.py",
+  "old": "        if all(_inside(p, root) and not _has_dot_git(p, root) for p in real_paths):",
+  "new": "        if all(_inside(p, root) for p in real_paths):",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: a worktree's main-checkout claim is accepted without the back-pointer",
+  "file": "inspeximus/_storelink.py",
+  "old": "        if _norm(back) != _norm(os.path.join(os.path.realpath(root), \".git\")):\n            return None\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: git that cannot answer counts as untracked",
+  "file": "inspeximus/_storelink.py",
+  "old": "            if tracked is None:\n                return False                      # git could not say: no store, and no cache entry",
+  "new": "            if tracked is None:\n                return True",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: a link is tested with os.path.islink, which misses a junction",
+  "file": "inspeximus/_storelink.py",
+  "old": "    links = [p for p in (d, f) if _safewrite.is_link(p)]",
+  "new": "    links = [p for p in (d, f) if os.path.islink(p)]",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: a refused link falls back to the default path",
+  "file": "inspeximus/_storelink.py",
+  "old": "    shown = os.path.abspath(links[0]) if links else os.path.abspath(d)\n    target =",
+  "new": "    return d, f\n    shown = os.path.abspath(links[0]) if links else os.path.abspath(d)\n    target =",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: the caller is handed the link and not the real path",
+  "file": "inspeximus/_storelink.py",
+  "old": "        if root and _untracked(links, root):                                                           # C\n            return real_d, real_f",
+  "new": "        if root and _untracked(links, root):                                                           # C\n            return d, f",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: the git decision is not cached",
+  "file": "inspeximus/_storelink.py",
+  "old": "        verdict = cache.get(key)\n",
+  "new": "        verdict = None\n",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: the cache key ignores the repository's index",
+  "file": "inspeximus/_storelink.py",
+  "old": "stamp(index) if index else \"-\"]",
+  "new": "\"-\"]",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: the environment override is judged as a project link",
+  "file": "inspeximus/_surface.py",
+  "old": "        return vet(override, CODING_STORE_FILENAME, cwd, named_by_env=True)",
+  "new": "        return vet(override, CODING_STORE_FILENAME, cwd, named_by_env=False)",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: condition C also judges the environment override",
+  "file": "inspeximus/_storelink.py",
+  "old": "    if links:\n        root = find_project_root(",
+  "new": "    if True:\n        root = find_project_root(",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: a refusal is reported as a handler failure",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if type(exc).__name__ == \"StoreLinkRefused\":",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
+ },
+ {
+  "name": "link rule: a project config behind a refused link is read",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if os.path.exists(p) and dir_allowed(os.path.join(d, \".inspeximus\"), \"config.json\", d):",
+  "new": "            if os.path.exists(p):",
+  "tests": [
+   "tests/test_a_store_reached_through_a_link.py"
+  ]
  }
 ]

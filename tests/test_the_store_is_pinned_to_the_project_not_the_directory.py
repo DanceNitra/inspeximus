@@ -54,9 +54,12 @@ def test_outside_a_repository_the_old_behaviour_survives():
     assert os.path.normcase(_store_dir(d)) == os.path.normcase(os.path.join(d, ".inspeximus"))
 
 
-def test_the_env_override_still_wins():
+def test_the_env_override_still_wins(tmp_path, monkeypatch):
     root = _repo(tempfile.mkdtemp())
     forced = os.path.join(tempfile.mkdtemp(), "pinned")
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "kh"))
+    from inspeximus import _storelink
+    _storelink.add_configured_link(forced)              # 3.16.5: an override outside the project needs the user's config
     os.environ["INSPEXIMUS_CODING_STORE"] = forced
     try:
         assert _store_dir(root) == forced

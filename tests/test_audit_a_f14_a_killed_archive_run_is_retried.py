@@ -27,7 +27,7 @@ def _setup(tmp_path, monkeypatch):
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
     (tmp_path / "keyhome" / "inspeximus").mkdir(parents=True)
     (tmp_path / "keyhome" / "inspeximus" / "config.json").write_text(json.dumps(
-        {"archive": {"auto": True, "trigger_mb": 0.0001}}))
+        {"archive": {"auto": True, "trigger_mb": 0.0001}, "stores": {"links": [os.path.realpath(str(tmp_path / "store"))]}}))
     store_dir = tmp_path / "store"
     store_dir.mkdir()
     monkeypatch.setenv("INSPEXIMUS_CODING_STORE", str(store_dir))

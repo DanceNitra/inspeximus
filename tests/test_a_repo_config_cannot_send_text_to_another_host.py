@@ -62,6 +62,8 @@ def _shared_store(tmp_path, monkeypatch, rows=320):
     d = tmp_path / "shared"
     d.mkdir()
     monkeypatch.setenv("INSPEXIMUS_CODING_STORE", str(d))
+    from inspeximus import _storelink
+    _storelink.add_configured_link(str(d))              # 3.16.5: an override outside the project needs the user's config
     m = Inspeximus(str(d / "coding_memory.json"))
     for i in range(rows):
         m.remember(f"we decided the vendor for job {i} is zeta", key=f"decision:v{i}", mtype="semantic")
@@ -79,6 +81,13 @@ def _repo(tmp_path, embed):
 def _user_config(config):
     path = cc.user_config_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
+    try:                                           # keep the store link the fixture recorded (3.16.5)
+        with open(path, encoding="utf-8") as fh:
+            kept = json.load(fh).get("stores")
+    except (OSError, ValueError):
+        kept = None
+    if kept:
+        config = dict(config, stores=kept)
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(config, fh)
 
