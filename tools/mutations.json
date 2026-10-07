@@ -9236,5 +9236,42 @@
   "tests": [
    "tests/test_an_embedder_with_no_vectors_says_so.py"
   ]
+ },
+ {
+  "name": "3.16.6: write_atomic replaces without the retry",
+  "file": "inspeximus/_safewrite.py",
+  "old": "        _refuse(path)\n        _replace(tmp, path)\n",
+  "new": "        _refuse(path)\n        os.replace(tmp, path)\n",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ]
+ },
+ {
+  "name": "3.16.6: a blocked replace is not retried",
+  "file": "inspeximus/_safewrite.py",
+  "old": "            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:\n                raise\n",
+  "new": "            raise\n",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ]
+ },
+ {
+  "name": "3.16.6: the replace retry is off on Windows",
+  "file": "inspeximus/_safewrite.py",
+  "old": "RETRY_ON_PERMISSION = os.name == \"nt\"\n",
+  "new": "RETRY_ON_PERMISSION = False\n",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ],
+  "platform": "win32"
+ },
+ {
+  "name": "3.16.6: the archive run gives up its mark at the first blocked write",
+  "file": "inspeximus/claude_code.py",
+  "old": "        except (OSError, ValueError):\n            # A READER OR A TORN READ IS NOT THE END",
+  "new": "        except (OSError, ValueError):\n            return\n            # A READER OR A TORN READ IS NOT THE END",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ]
  }
 ]
