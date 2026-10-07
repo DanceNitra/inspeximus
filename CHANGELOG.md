@@ -1,3 +1,60 @@
+## 3.16.5 - UPGRADE IF you open repositories you did not write: a store reached through a link is followed only when you allow it, and one bad record can no longer stop the prompt hook. ACTION if you point INSPEXIMUS_CODING_STORE at a directory outside the project: run `inspeximus link <directory>` once
+
+### A store reached through a link is followed only when you allow it
+
+A repository can ship a link, a symbolic link or a junction, at `.inspeximus` or at the store file inside it. Before 3.16.5 the link was followed: another project's memory reached the hook's output and the model, and a session's captures were written into that store.
+
+In 3.16.5 inspeximus follows such a link only when one of these holds:
+
+1. Your own config names the target. `inspeximus link <directory-or-file>` records it in `<key home>/inspeximus/config.json` under `stores.links`. The shared store that `inspeximus install --all` sets up needs no entry.
+2. The target stays inside the project, or inside the main checkout when the project is a git worktree, and never inside a `.git` directory.
+3. Git does not track the link. A `git clone` can only deliver a tracked link, so a link you made yourself keeps working.
+
+Every part of the path below the project root is checked, so a link anywhere along the way counts. A path that goes up through a link with `..` is judged by condition 1 only.
+
+When none of the three holds, there is no store. The hooks print one line on stderr, naming the link, its target and the command, and answer nothing else. The MCP server answers every call with the refusal, and the CLI exits with status 2. Nothing is read or written, and the default location is not used instead.
+
+`inspeximus link` asks you to confirm on a terminal. With no terminal it refuses unless you pass `--yes`, so an agent that runs it has to add a flag you can see. The MCP server has no tool for it. Check that the store is yours before you allow it: the path in the refusal was chosen by the repository.
+
+Which variables are judged:
+
+- `INSPEXIMUS_CODING_STORE` is judged by conditions 1 and 2, because a project's settings can set it.
+- `INSPEXIMUS_SCOPE=project` and `claude-code` follow the same rules as a shipped link.
+- `INSPEXIMUS_PATH` is judged only when a part of it below the project root is a link. A plain path, and a link outside the project, are used as they are, because Codex, Gemini and Cursor set this variable on purpose.
+
+**Behaviour change.** If you point `INSPEXIMUS_CODING_STORE` at a directory outside the project, for example to share one store between projects, the hooks stop using it until you run `inspeximus link <directory>` once, or add the directory to `stores.links` in your config. The first prompt after the upgrade prints the line with the command.
+
+Known limits:
+
+- A directory that arrives with its own `.git`, for example from an archive, can make a shipped link look untracked, so condition 3 allows it. Conditions 1 and 2 do not depend on git.
+- A project's settings that set `INSPEXIMUS_PATH` to a plain path of another store still reach that store. Only the shipped-link form is covered here.
+
+Git is run for condition 3 with a minimal environment: only `PATH`, the home and system variables it needs, `GIT_OPTIONAL_LOCKS=0` and `GIT_TERMINAL_PROMPT=0`. No other `GIT_*` variable reaches it, and the command line turns off the file-system monitor, the untracked cache and hooks, so a repository's own git config cannot run a program. One call is capped at 2 seconds; a call that fails leaves the link refused.
+
+Docs: `docs/store-links.md`. Tests: `tests/test_a_store_reached_through_a_link.py`, `tests/test_audit_a_3165_findings.py`, `tests/test_audit_a_3165_second_review.py`.
+
+### One bad record can no longer stop the prompt hook
+
+3.16.4 repaired records whose fields had the wrong type, one field at a time, and left other shapes open. In 3.16.5 the prompt hook's reads and its rendering are isolated per record:
+
+- When a read fails, inspeximus finds the records that make it fail, leaves them out, and answers with the rest. One line on stderr gives the count, the first ids and the first fault.
+- The search is bounded at 1.5 seconds per prompt. When the time runs out, the parts not yet cleared are left out whole, and the line says that some of them may be good.
+- A failure that no single record explains, such as an embedder that is down, is reported as before.
+- Nothing is written and nothing is remembered between prompts. The store file is unchanged.
+
+A number that arithmetic cannot use (`inf`, `-inf`, NaN, or an integer too large for a float) in a score or time field is repaired as the store is read: a safe value, the original kept under `meta.malformed`, and the record held back from recall until `release_quarantine`.
+
+Tests: `tests/test_one_bad_record_cannot_silence_the_prompt_hook.py`, `tests/test_a_hand_edited_store_fuzz_never_silences_the_prompt_hook.py` (437 hand-edited stores), `tests/test_a_number_the_arithmetic_cannot_use_is_repaired_at_load.py`, `tests/test_a_store_with_hundreds_of_bad_records_scales.py`.
+
+Mutations: 52 new entries in `tools/mutations.json` and 1 re-pointed since 3.16.4, covering the link rule, the git environment, the path walk, the per-record isolation and the numeric repair. All 53 are killed by their listed tests on the release head: 51 on Windows, and the 2 that need POSIX path rules on Linux. The registry holds 1,011 entries.
+
+Release record, 2026-10-07, on the tree of this release (3f627874 before this version bump):
+- Windows, full suite, 3 processes: 6,506 passed, 0 failed, 500 skipped, 12 xfailed, 19 errors. The 19 errors are the openai-agents tests, as in 3.16.4.
+- WSL (Ubuntu 24.04, fresh clone), full suite, 2 processes: 5,998 passed, 0 failed, 757 skipped, 9 xfailed, 0 errors.
+- Python 3.9 and 3.10 on Linux, the 13 test files changed since 3.16.4: 143 passed, 0 failed on each.
+- Perf gate, run alone: no regression. The 600-decision prompt arm counts 8 more record reads for the per-record render check, as recorded in the baseline.
+- AUDIT-A reviewed the change and passed it on its tests g1 to g10.
+
 ## 3.16.4 - UPGRADE IF you open repositories you did not write: the hooks and the MCP server no longer import a repository's own `inspeximus` package, a repository cannot choose where your keys and config live or which remote host receives your text, and an embedder's answer is bounded. ACTION if you set a remote embedder or distiller only through INSPEXIMUS_EMBED_URL or INSPEXIMUS_LLM_URL: add its host to embed.allowed_hosts in your config
 
 ### The hooks and the MCP server start isolated from the repository
