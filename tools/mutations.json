@@ -8657,5 +8657,68 @@
   "tests": [
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
   ]
+ },
+ {
+  "name": "a record whose status is not a string is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if not isinstance(r[\"status\"], str):\n            bad = dict(bad or {}, status=r[\"status\"])\n",
+  "new": "        if False:\n            bad = dict(bad or {}, status=r[\"status\"])\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose type is not a string is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if _v is not None and not isinstance(_v, str):\n            bad = dict(bad or {}, mtype=_v)\n",
+  "new": "        if False:\n            bad = dict(bad or {}, mtype=_v)\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose links hold an object are kept as they are",
+  "file": "inspeximus/core.py",
+  "old": "        if any(not isinstance(_x, str) for _x in r[\"links\"]):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose pii is not a list is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if _v is not None and not isinstance(_v, list):\n            bad = dict(bad or {}, pii=_v)\n",
+  "new": "        if False:\n            bad = dict(bad or {}, pii=_v)\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a repaired pii no longer counts as pii",
+  "file": "inspeximus/core.py",
+  "old": "            r[\"pii\"] = [\"malformed\"]\n",
+  "new": "            r[\"pii\"] = []\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a record whose id is not a string is kept as it is",
+  "file": "inspeximus/core.py",
+  "old": "        if _v is not None and not isinstance(_v, str):\n            bad = dict(bad or {}, id=_v)\n",
+  "new": "        if False:\n            bad = dict(bad or {}, id=_v)\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
+ },
+ {
+  "name": "a malformed tenant becomes the default tenant",
+  "file": "inspeximus/core.py",
+  "old": "                r[_f] = \"\\x00malformed\"\n",
+  "new": "                r[_f] = None\n",
+  "tests": [
+   "tests/test_audit_a_f26_a_malformed_record_does_not_silence_the_hook.py"
+  ]
  }
 ]

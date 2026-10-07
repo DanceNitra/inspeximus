@@ -4528,6 +4528,34 @@ class Inspeximus:
         if _v is not None and not isinstance(_v, str):
             bad = dict(bad or {}, key=_v)
             r["key"] = None
+        # AND EVERY FIELD USED AS A DICT KEY OR IN A SET (3.16.4, AUDIT-A F-27). A list or an object in `status` or
+        # `mtype`, a list or an object inside `links`, or a `pii` that cannot be iterated raised TypeError in recall,
+        # and the hook went silent again. `id`, `tenant` and `owner_agent` are keys too; the API cannot write a wrong
+        # type there, a store file can. A malformed tenant or owner becomes a value no view matches, never None, so
+        # the record cannot surface in the default tenant; a malformed `pii` stays truthy so erasure still finds it.
+        if not isinstance(r["status"], str):
+            bad = dict(bad or {}, status=r["status"])
+            r["status"] = "active"
+        _v = r.get("mtype")
+        if _v is not None and not isinstance(_v, str):
+            bad = dict(bad or {}, mtype=_v)
+            r["mtype"] = _infer_type(r.get("text") or "")
+        if any(not isinstance(_x, str) for _x in r["links"]):
+            bad = dict(bad or {}, links=list(r["links"]))
+            r["links"] = [_x for _x in r["links"] if isinstance(_x, str)]
+        _v = r.get("pii")
+        if _v is not None and not isinstance(_v, list):
+            bad = dict(bad or {}, pii=_v)
+            r["pii"] = ["malformed"]
+        _v = r.get("id")
+        if _v is not None and not isinstance(_v, str):
+            bad = dict(bad or {}, id=_v)
+            r["id"] = "malformed-" + hashlib.sha256(json.dumps(_v, sort_keys=True, default=str).encode()).hexdigest()[:16]
+        for _f in ("tenant", "owner_agent"):
+            _v = r.get(_f)
+            if _v is not None and not isinstance(_v, str):
+                bad = dict(bad or {}, **{_f: _v})
+                r[_f] = "\x00malformed"
         if bad:
             r["meta"].setdefault("malformed", {}).update(bad)
             r["meta"]["quarantined"] = {"reason": "malformed_record", "shapes": [], "released": None}

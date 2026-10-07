@@ -17,7 +17,10 @@ sys.path.insert(0, ROOT)
 from inspeximus import claude_code as cc  # noqa: E402
 
 CASES = [("meta", "oops"), ("meta", [1, 2]), ("meta", 7), ("text", 5), ("tags", 5), ("links", 5),
-         ("value", "z"), ("key", 5)]
+         ("value", "z"), ("key", 5),
+         # F-27 (AUDIT-A, a530c095): a field used as a dict key or in a set, given an unhashable value
+         ("status", []), ("status", {}), ("mtype", []), ("mtype", {}), ("links", [{}]), ("links", [[1]]),
+         ("pii", 5), ("pii", True)]
 
 
 @pytest.fixture
@@ -76,3 +79,44 @@ def test_control_a_well_formed_record_is_not_touched(project):
     m.flush()
     rec = next(r for r in cc._store(str(project)).items if r.get("key") == "plain")
     assert "malformed" not in rec["meta"] and "quarantined" not in rec["meta"]
+
+
+def _raw_store(proj, field, value):
+    """The API refuses an unhashable id, tenant or owner_agent; a store file a repository ships does not."""
+    m = cc._store(str(proj))
+    for i in range(6):
+        m.remember("a note about the release, number %d" % i, key="n%d" % i)
+    m.flush()
+    rows = json.loads(json.dumps([{k: v for k, v in dict(x).items() if k != "vec"} for x in m.items], default=str))
+    rows[1][field] = value
+    p = str(m.path)
+    del m
+    for f in (p, p + "-wal", p + "-shm"):
+        if os.path.exists(f):
+            os.remove(f)
+    with open(p, "w", encoding="utf-8") as fh:
+        json.dump(rows, fh)
+    return rows[1]
+
+
+@pytest.mark.parametrize("field,value", [("id", []), ("id", {}), ("tenant", []), ("tenant", {}),
+                                         ("owner_agent", []), ("owner_agent", {})])
+def test_a_store_file_with_an_unhashable_key_field_still_answers(project, field, value):
+    _raw_store(project, field, value)
+    r = _hook(project)
+    assert r.returncode == 0 and "failed" not in r.stderr and "release" in r.stdout, (field, value, r.stderr[-200:])
+
+
+def test_a_malformed_tenant_is_never_read_as_the_default_tenant(project):
+    """A tenant the store cannot read becomes a value no view matches, not None: None is the default tenant."""
+    _raw_store(project, "tenant", {"x": 1})
+    rec = [r for r in cc._store(str(project)).items if r["meta"].get("malformed")]
+    assert len(rec) == 1 and rec[0]["tenant"] not in (None, "") and rec[0]["meta"]["quarantined"]
+    assert rec[0]["meta"]["malformed"] == {"tenant": {"x": 1}}
+
+
+def test_a_malformed_pii_still_counts_as_pii(project):
+    """Erasure finds personal data by `pii`; a repaired value must stay truthy."""
+    _break(project, "pii", 5)
+    rec = [r for r in cc._store(str(project)).items if r["meta"].get("malformed")]
+    assert len(rec) == 1 and rec[0]["pii"], rec
