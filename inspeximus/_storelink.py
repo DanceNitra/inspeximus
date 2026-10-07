@@ -25,6 +25,7 @@ link. A and B do not depend on git. The residual risk of C is recorded in the 3.
 """
 import json
 import os
+import re
 
 from . import _safewrite
 
@@ -239,6 +240,32 @@ def _untracked(links, root) -> bool:
     return True
 
 
+def has_dotdot(path) -> bool:
+    return ".." in re.split(r"[\\/]+", str(path))
+
+
+def _physical_links(raw, root) -> list:
+    """The links on the way to `raw`, walked as the kernel walks it (AUDIT-A F-38): `..` goes up from the directory the walk is
+    really in, which after a link is the link's target and not the link's parent. `os.path.abspath` collapses `evil/..` lexically
+    and never sees `evil`. Only the links that lie inside the project are returned."""
+    raw = str(raw)
+    if not os.path.isabs(raw):
+        raw = os.path.join(os.getcwd(), raw)
+    drive, rest = os.path.splitdrive(raw)
+    cur = drive + os.sep
+    out = []
+    for part in re.split(r"[\\/]+", rest):
+        if not part or part == ".":
+            continue
+        if part == "..":
+            cur = os.path.dirname(os.path.realpath(cur)) or cur
+            continue
+        cur = os.path.join(cur, part)
+        if _safewrite.is_link(cur) and (not root or _inside(cur, root)):
+            out.append(cur)
+    return out
+
+
 def link_chain(directory, filename, root) -> list:
     """Every link, a junction included, on the way from the project root down to the store file (AUDIT-A F-35).
 
@@ -248,6 +275,8 @@ def link_chain(directory, filename, root) -> list:
     components of the project's to judge: only the directory and the file themselves are tested then."""
     d = str(directory)
     f = os.path.join(d, filename)
+    if has_dotdot(f):
+        return _physical_links(f, root)
     if root and _inside(f, root):
         out, cur = [], os.path.abspath(root)
         for part in os.path.relpath(os.path.abspath(f), cur).split(os.sep):
@@ -274,9 +303,10 @@ def vet(directory, filename, cwd=None, named_by_env=False, root=None):
     listed = configured_links()
     if listed and any(_norm(x) in (_norm(real_d), _norm(real_f)) for x in listed):                    # A
         return real_d, real_f
-    if _inside_project((real_d, real_f), cwd):                                                         # B
+    up = bool(links) and has_dotdot(f)               # a path that goes back UP through a link means two things on two systems (F-38)
+    if not up and _inside_project((real_d, real_f), cwd):                                              # B
         return real_d, real_f
-    if links:
+    if links and not has_dotdot(f):                 # a path that goes back UP through a link is not a link a user made (F-38)
         git_root = find_project_root(os.path.abspath(cwd or os.getcwd()))
         if git_root and _untracked(links, git_root):                                                   # C
             return real_d, real_f

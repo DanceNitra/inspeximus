@@ -3,7 +3,9 @@
 F-36  the isolation must not give up when a store holds many bad records
       a) numbers the arithmetic cannot use (inf, NaN, an integer too large for a float) are repaired at load, in every numeric field
       b) the search scans fixed chunks, is bounded by time and not by a count of reads, leaves out the chunks still failing when
-         the time runs out and says so, never hides a record of a chunk that passed, and remembers what it left out
+         the time runs out and says so, and never hides a record of a chunk that passed
+F-37  nothing is remembered between prompts, and a MemoryError is not proof that a record is bad
+F-38  a `..` after a link is resolved as the kernel resolves it
 F-35  every link between the project root and the store file is judged, not only the last component
 """
 import json
@@ -76,44 +78,6 @@ def test_f36_a_chunk_that_passed_is_never_left_out(sandbox):
     good = {str(i) for i in range(600)} - bad
     assert good <= served, sorted(good - served)[:5]
     assert not (served & bad)
-
-
-def test_f36_the_left_out_records_are_remembered_and_the_next_prompt_does_not_search_again(sandbox, monkeypatch):
-    p, store, bad = _big_store(sandbox, "cache", 600, 10)
-    calls = []
-    real = _isolate._clone_over
-    monkeypatch.setattr(_isolate, "_clone_over", lambda m, recs: calls.append(len(recs)) or real(m, recs))
-    _isolate._SAID.clear()
-    first_out, _ = _prompt(p)
-    first = len(calls)
-    calls.clear()
-    _isolate._SAID.clear()
-    second_out, _ = _prompt(p)
-    second = len(calls)
-    assert "release process uses the gate" in first_out and "release process uses the gate" in second_out
-    assert first > 30 and second <= 6, (first, second)
-
-
-def test_f36_a_record_that_changed_since_it_was_left_out_is_read_again(sandbox):
-    p, store, bad = _big_store(sandbox, "changed", 300, 50)
-    _isolate._SAID.clear()
-    _prompt(p)                                                              # leaves the bad ones out and remembers them
-    _hand_edit_all(store, lambda d: (d.get("meta") or {}).pop("quarantined", None))
-    _isolate._SAID.clear()
-    served = _served_keys(p, 400)
-    assert bad <= served, "records that were repaired by hand must be served again: %s" % sorted(bad - served)[:3]
-
-
-def _hand_edit_all(store_path, mutate):
-    con = sqlite3.connect(store_path)
-    try:
-        for rid, doc in con.execute("SELECT id, doc FROM records").fetchall():
-            d = json.loads(doc)
-            mutate(d)
-            con.execute("UPDATE records SET doc=? WHERE id=?", (json.dumps(d), rid))
-        con.commit()
-    finally:
-        con.close()
 
 
 def test_f36_a_failure_no_record_explains_is_still_raised_unchanged(sandbox):
@@ -192,3 +156,100 @@ def test_f35_a_directory_link_in_the_middle_of_an_override_is_judged(sandbox):
     _dir_link(os.path.join(proj, "mid"), str(sandbox / "outside"))
     with pytest.raises(_surface.StoreLinkRefused):
         _surface.coding_store_path(proj, {"INSPEXIMUS_CODING_STORE": os.path.join(proj, "mid", "store")})
+
+
+# ── F-37 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+def test_f37_nothing_is_remembered_between_prompts_and_a_starved_run_hides_nothing_for_good(sandbox, monkeypatch):
+    p, store, bad = _big_store(sandbox, "starved", 300, 50)
+    monkeypatch.setattr(_isolate, "TIME_S", 0.0)                            # a run whose time ran out: everything is left out
+    _isolate._SAID.clear()
+    out, err = _prompt(p)
+    assert "release process uses the gate" in out and "limit ran out" in err
+    kh = os.path.join(str(sandbox), "kh")
+    left = [f for dp, dn, fn in os.walk(kh) for f in fn if "left-out" in f]
+    assert not left, "nothing may be written for a later prompt: %s" % left
+    monkeypatch.setattr(_isolate, "TIME_S", 1.5)
+    _isolate._SAID.clear()
+    good = {str(i) for i in range(300)} - bad
+    assert good <= _served_keys(p, 400), "a later normal prompt must serve every good record"
+    assert not hasattr(_isolate, "_cache_put") and not hasattr(_isolate, "_from_cache")
+
+
+def test_f37_a_memory_error_is_not_proof_that_a_record_is_bad(sandbox):
+    p, _ = _project(sandbox, "memerr")
+    m = cc._store(p)
+
+    def fn(h):
+        if len(h._items) == len(m._items):
+            raise ValueError("the full read fails")
+        raise MemoryError("the machine is out of memory")
+    with pytest.raises(MemoryError):
+        cc._read(m, fn)
+
+
+# ── F-38 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+def _git_init(path):
+    os.makedirs(path, exist_ok=True)
+    subprocess.run(["git", "init", "-q"], cwd=path, capture_output=True, check=True)
+
+
+def test_f38_dot_dot_after_a_shipped_link_is_refused_in_both_spellings(sandbox, monkeypatch):
+    """`evil/../.inspeximus/memory.json`: the kernel goes up from the link's TARGET. The link is untracked in a real repository, so
+    condition C would allow it, which is why a path that goes back up through a link is judged by A and B only."""
+    other = str(sandbox / "other")
+    os.makedirs(other + "/sub")
+    os.makedirs(other + "/.inspeximus")
+    open(other + "/.inspeximus/memory.json", "w").write("x")
+    clone = str(sandbox / "clone")
+    _git_init(clone)
+    _dir_link(clone + "/evil", other + "/sub")
+    monkeypatch.chdir(clone)
+    assert _storelink.has_dotdot("evil/../.inspeximus/memory.json")
+    assert [os.path.basename(x) for x in _storelink._physical_links("evil/../.inspeximus/memory.json", clone)] == ["evil"]
+    for spelling in ("evil/../.inspeximus/memory.json", clone + "/evil/../.inspeximus/memory.json"):
+        with pytest.raises(_surface.StoreLinkRefused):
+            _surface.resolve_path(env={"INSPEXIMUS_PATH": spelling}, cwd=clone)
+
+
+def test_f38_a_path_through_a_link_that_a_user_made_comes_back_as_the_real_path(sandbox, monkeypatch):
+    """No `..`: an untracked link is the user's own (condition C), and the open takes the REAL path, never the link."""
+    other = str(sandbox / "other" / ".inspeximus")
+    os.makedirs(other)
+    open(other + "/memory.json", "w").write("x")
+    clone = str(sandbox / "clone")
+    _git_init(clone)
+    _dir_link(clone + "/.inspeximus", other)
+    monkeypatch.chdir(clone)
+    got = _surface.resolve_path(env={"INSPEXIMUS_PATH": ".inspeximus/memory.json"}, cwd=clone)
+    assert got == os.path.realpath(other + "/memory.json"), got
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Windows collapses `..` before it follows a junction")
+def test_f38_when_the_config_names_the_target_the_real_path_is_returned(sandbox, monkeypatch):
+    other = str(sandbox / "other")
+    os.makedirs(other + "/sub")
+    os.makedirs(other + "/.inspeximus")
+    open(other + "/.inspeximus/memory.json", "w").write("x")
+    clone = str(sandbox / "clone")
+    os.makedirs(clone + "/.git")
+    os.symlink(other + "/sub", clone + "/evil")
+    monkeypatch.chdir(clone)
+    _storelink.add_configured_link(other + "/.inspeximus")
+    got = _surface.resolve_path(env={"INSPEXIMUS_PATH": "evil/../.inspeximus/memory.json"}, cwd=clone)
+    assert got == os.path.realpath(other + "/.inspeximus/memory.json"), got
+
+
+@pytest.mark.skipif(os.name != "nt", reason="case differences matter on Windows")
+def test_f38_a_path_spelled_in_another_case_is_judged_like_the_original_on_windows(sandbox, monkeypatch):
+    other = str(sandbox / "other" / ".inspeximus")
+    os.makedirs(other)
+    proj = str(sandbox / "zip")
+    os.makedirs(proj + "/.git")
+    _dir_link(os.path.join(proj, ".inspeximus"), other)
+    monkeypatch.chdir(proj)
+    for spelling in (os.path.join(proj, ".inspeximus", "memory.json"), os.path.join(proj.upper(), ".INSPEXIMUS", "MEMORY.JSON"),
+                     os.path.join(proj.lower(), ".Inspeximus", "memory.json")):
+        with pytest.raises(_surface.StoreLinkRefused):
+            _surface.resolve_path(env={"INSPEXIMUS_PATH": spelling}, cwd=proj)

@@ -365,14 +365,18 @@ def _vet_path_link(path, cwd=None) -> str:
     conditions as the Claude Code store. A link outside the project (a dotfiles link in the home folder) is the user's own
     and stays as it is. A project's settings can set this variable for Claude Code's MCP server, so the variable alone does not
     make a link the user's; its location does."""
-    from ._storelink import _inside, link_chain, vet
-    p = os.path.abspath(path)
+    from ._storelink import _inside, has_dotdot, link_chain, vet
     root = find_project_root(cwd) or os.path.abspath(cwd or os.getcwd())
-    if not _inside(p, root):
+    raw = str(path)
+    if not os.path.isabs(raw):
+        raw = os.path.join(os.getcwd(), raw)                                # NOT abspath: it collapses `evil/..` before the kernel sees it
+    p = raw if has_dotdot(raw) else os.path.abspath(raw)
+    if not has_dotdot(raw) and not _inside(p, root):
         return path
-    if not link_chain(os.path.dirname(p), os.path.basename(p), root):      # a link ANYWHERE below the root, not only at the file (F-35)
+    head, tail = os.path.split(p)
+    if not link_chain(head, tail, root):                                    # a link ANYWHERE below the root, not only at the file (F-35)
         return path
-    return vet(os.path.dirname(p), os.path.basename(p), cwd, root=root)[1]
+    return vet(head, tail, cwd, root=root)[1]                               # the REAL path comes back: the open takes no second route (F-38)
 
 
 def resolved_path_source(path=None, env=None) -> str:
