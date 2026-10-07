@@ -3390,8 +3390,8 @@
  {
   "name": "the Claude Code store path ignores the shared store",
   "file": "inspeximus/_surface.py",
-  "old": "        shared = shared_store_path()\n",
-  "new": "        shared = None\n",
+  "old": "    shared = shared_store_path()                 # `inspeximus install --all` (3.14.0): the user's own record\n",
+  "new": "    shared = None                 # `inspeximus install --all` (3.14.0): the user's own record\n",
   "tests": [
    "tests/test_install_all_wires_every_agent_to_one_store.py"
   ]
