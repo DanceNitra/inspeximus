@@ -9573,7 +9573,7 @@
  {
   "name": "the hook never starts the restamp after its recall",
   "file": "inspeximus/claude_code.py",
-  "old": "            maybe_restamp_after_recall(ev.get(\"cwd\") or os.getcwd())\n",
+  "old": "                maybe_restamp_after_recall(_cwd)\n",
   "new": "",
   "tests": [
    "tests/test_the_hook_heals_stamps_made_under_another_python.py"
@@ -10374,7 +10374,8 @@
   "old": "            store._rev = getattr(store, \"_rev\", 0) + 1\n",
   "new": "            pass\n",
   "tests": [
-   "tests/test_the_recall_index_stays_exact.py"
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  },
  {
@@ -10383,7 +10384,8 @@
   "old": "        if not (self._root is None and isinstance(key, str) and key[:1] == \"_\"):\n            store._rev",
   "new": "        if True:\n            store._rev",
   "tests": [
-   "tests/test_the_recall_index_stays_exact.py"
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  },
  {
@@ -10392,34 +10394,38 @@
   "old": "        self._rev = getattr(self, \"_rev\", 0) + 1             # a declared change moves the content revision\n",
   "new": "        pass\n",
   "tests": [
-   "tests/test_the_recall_index_stays_exact.py"
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  },
  {
   "name": "3.18 index: the cached pool ignores the content revision",
   "file": "inspeximus/core.py",
-  "old": "                    and _c[\"n\"] == len(self._items) and _c[\"rev\"] == self._rev):\n",
-  "new": "                    and _c[\"n\"] == len(self._items)):\n",
+  "old": "                if _c[\"n\"] == len(self._items) and _c[\"rev\"] == self._rev:\n",
+  "new": "                if _c[\"n\"] == len(self._items):\n",
   "tests": [
-   "tests/test_the_recall_index_stays_exact.py"
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  },
  {
   "name": "3.18 index: the cached pool ignores the pool arguments",
   "file": "inspeximus/core.py",
-  "old": "            if (_c is not None and _c[\"args\"] == _ix_args and _c[\"items\"] is self._items\n",
-  "new": "            if (_c is not None and _c[\"items\"] is self._items\n",
+  "old": "            _c = self._recall_ix.get(_ix_args)\n",
+  "new": "            _c = next(iter(self._recall_ix.values()), None)\n",
   "tests": [
-   "tests/test_the_recall_index_stays_exact.py"
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  },
  {
   "name": "3.18 index: the cache is never reused",
   "file": "inspeximus/core.py",
-  "old": "        if _ix is not None:\n            pool = list(_ix[\"pool\"])\n",
+  "old": "        if _ix is not None and _ix_new is None:\n            pool = list(_ix[\"pool\"])\n",
   "new": "        if False:\n            pool = list(_ix[\"pool\"])\n",
   "tests": [
-   "tests/test_the_recall_index_stays_exact.py"
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  },
  {
@@ -10428,7 +10434,78 @@
   "old": "        self._fire(a[0] if a else None)\n",
   "new": "        pass\n",
   "tests": [
-   "tests/test_the_recall_index_stays_exact.py"
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-1: the pool key has the tenant and not the agent",
+  "file": "inspeximus/core.py",
+  "old": "                        agent_id, session_id, self.read_guards) + _view_scope(self)\n",
+  "new": "                        agent_id, session_id, self.read_guards, self.tenant)\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-1: the scope key leaves out the ACL revision",
+  "file": "inspeximus/core.py",
+  "old": "    return (h.tenant, getattr(h, \"agent\", None), getattr(h, \"_acl_rev\", 0))\n",
+  "new": "    return (h.tenant, getattr(h, \"agent\", None))\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: an edit of an older record is taken as an append",
+  "file": "inspeximus/core.py",
+  "old": "                    if (None not in _moved and _moved <= _tail_ids and len(self._items) == _c[\"n\"] + len(_tail)\n",
+  "new": "                    if (len(self._items) == _c[\"n\"] + len(_tail)\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: the appended records never reach the token index",
+  "file": "inspeximus/core.py",
+  "old": "                if _ix[\"post\"] is not None:\n                    for _i, _r in enumerate(pool, _base):\n",
+  "new": "                if False:\n                    for _i, _r in enumerate(pool, _base):\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: an append rebuilds the whole pool",
+  "file": "inspeximus/core.py",
+  "old": "                elif len(self._items) > _c[\"n\"]:\n",
+  "new": "                elif False:\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: the appended records skip the pool filters",
+  "file": "inspeximus/core.py",
+  "old": "                _rows = [r for r in _rows[_ix[\"vis\"]:] if r.get(\"id\") in _ix_new]\n",
+  "new": "                _rows = list(self._items[_ix[\"n\"]:])\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the entries are not bounded",
+  "file": "inspeximus/core.py",
+  "old": "                while len(_ixd) > _RECALL_IX_ENTRIES:\n",
+  "new": "                while False:\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  }
 ]

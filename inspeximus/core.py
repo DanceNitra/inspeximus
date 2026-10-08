@@ -1906,6 +1906,27 @@ def _plain(v):
 _RECALL_INDEX_ON = (os.environ.get("INSPEXIMUS_RECALL_INDEX") or "").strip().lower() not in ("0", "false", "no", "off")
 
 
+def _view_scope(h) -> tuple:
+    """WHAT DECIDES WHICH RECORDS A HANDLE MAY SEE, in one place: the tenant, the agent and the ACL revision. `items`
+    keys its filtered view on it and recall keys its cached pool on it, so a scope dimension added to one is in the
+    other (AUDIT-A X-1: the pool key had the tenant and not the agent, and agent views were answered from each
+    other's pools). A module function and not a method: a view forwards private names to its parent, so
+    `view._scope()` would read the PARENT's tenant and agent, which is the defect itself."""
+    return (h.tenant, getattr(h, "agent", None), getattr(h, "_acl_rev", 0))
+
+
+def _note_dirty(store, rid) -> None:
+    """Record which record the current content revision moved (`None` when the edit has no id). Recall's cache uses it
+    to tell records appended since an entry was built, which it can add to the entry, from edits, which it cannot."""
+    log = getattr(store, "_ix_log", None)
+    if log is not None and getattr(store, "_recall_ix", None):
+        log[rid or None] = store._rev
+
+
+#: At most this many cached pools per store: one per combination of scope and pool arguments in use.
+_RECALL_IX_ENTRIES = 8
+
+
 class _TrackedDict(dict):
     """A record that says when it changes, so nothing has to compare the store to find out.
 
@@ -1959,6 +1980,7 @@ class _TrackedDict(dict):
         # and is never stored, so it does not move it; every other edit, at any depth, does.
         if not (self._root is None and isinstance(key, str) and key[:1] == "_"):
             store._rev = getattr(store, "_rev", 0) + 1
+            _note_dirty(store, rid)
 
     def _child(self, v):
         root = self._root if self._root is not None else self
@@ -3216,7 +3238,8 @@ class Inspeximus:
         self._decide_depths: dict = {}
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._rev = 0                             # content revision; see _TrackedDict._fire
-        self._recall_ix = None                    # recall's cached pool and token index; see recall()
+        self._recall_ix = {}                      # recall's cached pools and token indexes, by key; see recall()
+        self._ix_log = {}                         # record id -> the revision that last moved it; see _note_dirty
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
         # recall auto-mode: below this many active memories lexical is as good and free; above it the
@@ -11798,7 +11821,7 @@ class Inspeximus:
         if self.tenant is None and getattr(self, "agent", None) is None:
             return self._items
         rev = (len(self._items), id(self._items))
-        ck = (self.tenant, getattr(self, "agent", None), rev, getattr(self, "_acl_rev", 0))
+        ck = _view_scope(self) + (rev,)
         if getattr(self, "_items_view_rev", None) != ck:
             rows = self._items
             if self.tenant is not None:
@@ -15519,16 +15542,31 @@ class Inspeximus:
         # every recall; on a held handle (the prompt daemon, the MCP server) nothing moved since the last one most
         # of the time. Valid while the content revision, the list object, its length and the pool arguments stand;
         # off for the paths that build their own pool, and for stores whose records do not report their edits.
-        _ix, _ix_args = None, None
+        # KEYED BY EVERYTHING THAT DECIDES THE POOL (AUDIT-A X-1). The entries live in one dict on the store, and a
+        # view reads and writes that dict in place, so each scope finds only its own entry: the key holds the view's
+        # tenant, agent and ACL revision (`_view_scope`, the key `items` uses) and every pool argument.
+        _ix, _ix_args, _ix_new = None, None, None
         if (_RECALL_INDEX_ON and _shared is None and not (where or trusted_only or influence_only or reinforce)
-                and not self._objections and self._items and type(self._items[0]) is _TrackedDict):
+                and not self._objections and self._items and type(self._items[0]) is _TrackedDict
+                and isinstance(getattr(self, "_recall_ix", None), dict)):
             _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,
-                        agent_id, session_id, self.read_guards, self.tenant, getattr(self, "_acl_rev", 0))
-            _c = self._recall_ix
-            if (_c is not None and _c["args"] == _ix_args and _c["items"] is self._items
-                    and _c["n"] == len(self._items) and _c["rev"] == self._rev):
-                _ix = _c
-        if _ix is not None:
+                        agent_id, session_id, self.read_guards) + _view_scope(self)
+            _c = self._recall_ix.get(_ix_args)
+            if _c is not None and _c["items"] is self._items:
+                if _c["n"] == len(self._items) and _c["rev"] == self._rev:
+                    _ix = _c
+                elif len(self._items) > _c["n"]:
+                    # RECORDS APPENDED SINCE THE ENTRY, AND NOTHING ELSE (AUDIT-A X-2: one remember between recalls
+                    # rebuilt the whole pool and made the index slower than none). Every revision since the entry
+                    # moved a record that is among the appended ones, and the records before them are the same
+                    # objects in the same places; then only the appended records are filtered, and added.
+                    _tail = self._items[_c["n"]:]
+                    _tail_ids = {r.get("id") for r in _tail}
+                    _moved = {k for k, v in self._ix_log.items() if v > _c["rev"]}
+                    if (None not in _moved and _moved <= _tail_ids and len(self._items) == _c["n"] + len(_tail)
+                            and all(a is b for a, b in zip(self._items, _c["snap"]))):
+                        _ix, _ix_new = _c, set(_tail_ids)
+        if _ix is not None and _ix_new is None:
             pool = list(_ix["pool"])
         elif _shared is not None and _shared.get("key") == _pool_key:
             pool = list(_shared["pool"])
@@ -15536,7 +15574,10 @@ class Inspeximus:
             # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
             # either. Without this, issuing a grant would put "ACL: ... granted agent 'bob' read access ..."
             # into the answer set of every loosely-related query.
-            pool = [r for r in self.items if _eligible(r) and not _is_acl_record(r)]
+            _rows = self.items
+            if _ix_new is not None:
+                _rows = [r for r in _rows[_ix["vis"]:] if r.get("id") in _ix_new]
+            pool = [r for r in _rows if _eligible(r) and not _is_acl_record(r)]
             # HARD TENANT ISOLATION (fail-closed, non-bypassable): a tenant-bound store sees ONLY its own tenant's
             # records, always — this is enforced here on the STORE, not via a caller argument, so no forgotten
             # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
@@ -15623,11 +15664,33 @@ class Inspeximus:
             if _shared is not None:
                 _shared.clear()
                 _shared.update(owner=self, key=_pool_key, pool=tuple(pool), stale={})
-            if _ix_args is not None:
+            if _ix_new is not None:
+                # The appended rows, filtered as a full build filters them, go after the entry's pool; the token index
+                # gets their positions. Same pool, in the same order, as a rebuild (the tests compare the two).
+                _base = len(_ix["pool"])
+                _ix["pool"] = _ix["pool"] + tuple(pool)
+                if _ix["post"] is not None:
+                    for _i, _r in enumerate(pool, _base):
+                        for _t in self._rec_tokens(_r):
+                            _ix["post"].setdefault(_t, []).append(_i)
+                _ix.update(n=len(self._items), rev=self._rev, vis=len(self.items), snap=tuple(self._items))
+                _ix["appends"] = _ix.get("appends", 0) + 1
+                pool = list(_ix["pool"])
+            elif _ix_args is not None:
                 # Keyed AFTER the pool is built: assessing the read guards can edit a record (a stamp it cannot
                 # verify is dropped), and that edit belongs to this pool, not to the next recall's.
-                _ix = self._recall_ix = {"args": _ix_args, "items": self._items, "n": len(self._items),
-                                         "rev": self._rev, "pool": tuple(pool), "post": None}
+                _ix = {"args": _ix_args, "items": self._items, "n": len(self._items), "rev": self._rev,
+                       "vis": len(self.items), "snap": tuple(self._items), "pool": tuple(pool), "post": None}
+                _ixd = self._recall_ix
+                _ixd.pop(_ix_args, None)
+                _ixd[_ix_args] = _ix
+                while len(_ixd) > _RECALL_IX_ENTRIES:
+                    _ixd.pop(next(iter(_ixd)))
+            if _ix_args is not None:
+                # The log only has to reach back to the oldest entry still held.
+                _floor = min(e["rev"] for e in self._recall_ix.values())
+                for _k in [k for k, v in self._ix_log.items() if v <= _floor]:
+                    del self._ix_log[_k]
         # Mode selection. 'hybrid' = lexical (token overlap) + semantic (embedding) fused with Reciprocal
         # Rank Fusion. We MEASURED hybrid robustly beating EITHER channel alone for agent memory on LoCoMo
         # (recall@20 0.61 hybrid vs 0.55 lexical vs 0.53 semantic; +0.057 over the best single channel,
@@ -19643,6 +19706,7 @@ class Inspeximus:
         if rid:
             self._touched.add(rid)
         self._rev = getattr(self, "_rev", 0) + 1             # a declared change moves the content revision
+        _note_dirty(self, rid)
 
     def _save(self, force: bool = False):
         if not self.path:

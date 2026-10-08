@@ -35,13 +35,19 @@ def _has(m, word):
     return any(word in str(h.get("text")) for h in m.recall(word, k=10))
 
 
+def _entry(m):
+    """The most recently built cache entry of the store (views share the store's dict)."""
+    d = m._recall_ix
+    return list(d.values())[-1] if d else None
+
+
 def test_control_the_index_is_built_and_reused(tmp_path):
     m = Inspeximus(path=_store(tmp_path))
     m.recall("deploy window", k=5)
-    ix = m._recall_ix
+    ix = _entry(m)
     assert ix is not None and ix["post"] is not None, "CONTROL: the index was never built, so nothing here is tested"
     m.recall("release train", k=5)
-    assert m._recall_ix is ix, "the cache is rebuilt on every recall: there is nothing held"
+    assert _entry(m) is ix and len(m._recall_ix) == 1, "the cache is rebuilt on every recall: there is nothing held"
 
 
 def test_a_readers_note_does_not_invalidate_it(tmp_path):
