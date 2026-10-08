@@ -67,13 +67,13 @@ def write_atomic(path, data, encoding: str = "utf-8") -> None:
         raise
 
 
-#: How long `os.replace` onto a file that a reader holds open is retried on Windows (3.17.0). A reader holds it for about a
-#: millisecond, and a replace that gave up at once lost a run's `done` mark and a hook's attempt record under load: measured,
-#: 293 of 300 replaces failed with PermissionError while three threads read the target in a loop.
+#: How long a replace onto a file that another process holds open is retried on Windows (3.16.6, AUDIT-B). A reader
+#: holds the file for about a millisecond, and a replace that gave up at once lost the archive run's `done` mark and
+#: the hook's attempt record under load: measured, 293 of 300 replaces failed with PermissionError while three
+#: threads read the target in a loop. After the deadline the error is raised as before.
 REPLACE_RETRY_S = 2.0
 
-
-#: Windows refuses a replace onto a file that is open; POSIX does not, so only Windows retries.
+#: Windows refuses a replace onto an open file; POSIX does not, so only Windows retries.
 RETRY_ON_PERMISSION = os.name == "nt"
 
 

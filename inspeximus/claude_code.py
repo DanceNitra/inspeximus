@@ -716,7 +716,11 @@ def _mark_run_done(state, result) -> None:
         except FileNotFoundError:
             return                                              # no attempt record: nothing to mark
         except (OSError, ValueError):
-            pass                                                # a reader or a torn read: try again until the deadline
+            # A READER OR A TORN READ IS NOT THE END (3.16.6, AUDIT-B). On Windows a write onto the record fails while
+            # another process reads it, and a read can meet the file mid-replace. Returning lost the mark, so the
+            # next hook saw a run that never finished and waited the full interval; the run tries again until the
+            # deadline instead.
+            pass
         if _t.time() >= deadline:
             return
         _t.sleep(0.2)

@@ -10081,8 +10081,8 @@
  {
   "name": "3.17.0: a run gives up its mark at the first blocked write",
   "file": "inspeximus/claude_code.py",
-  "old": "        except (OSError, ValueError):\n            pass                                                # a reader or a torn read: try again until the deadline",
-  "new": "        except (OSError, ValueError):\n            return",
+  "old": "            # deadline instead.\n            pass\n",
+  "new": "            # deadline instead.\n            return\n",
   "tests": [
    "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
   ]
@@ -10221,6 +10221,52 @@
   "new": "",
   "tests": [
    "tests/test_the_receipt_tail_operations_are_operator_only.py"
+  ]
+ },
+ {
+  "name": "3.16.6: write_atomic replaces without the retry",
+  "file": "inspeximus/_safewrite.py",
+  "old": "        _refuse(path)\n        _replace(tmp, path)\n",
+  "new": "        _refuse(path)\n        os.replace(tmp, path)\n",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ]
+ },
+ {
+  "name": "3.16.6: a blocked replace is not retried",
+  "file": "inspeximus/_safewrite.py",
+  "old": "            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:\n                raise\n",
+  "new": "            raise\n",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ]
+ },
+ {
+  "name": "3.16.6: the replace retry is off on Windows",
+  "file": "inspeximus/_safewrite.py",
+  "old": "RETRY_ON_PERMISSION = os.name == \"nt\"\n",
+  "new": "RETRY_ON_PERMISSION = False\n",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ],
+  "platform": "win32"
+ },
+ {
+  "name": "3.16.6: the archive run gives up its mark at the first blocked write",
+  "file": "inspeximus/claude_code.py",
+  "old": "        except (OSError, ValueError):\n            # A READER OR A TORN READ IS NOT THE END",
+  "new": "        except (OSError, ValueError):\n            return\n            # A READER OR A TORN READ IS NOT THE END",
+  "tests": [
+   "tests/test_a_write_that_a_reader_blocks_is_retried.py"
+  ]
+ },
+ {
+  "name": "3.16.7: the probe shadow installs open as a plain function, which binds as a method",
+  "file": "tests/probe_shadow/sitecustomize.py",
+  "old": "    builtins.open = io.open = _Open()\n",
+  "new": "    builtins.open = io.open = guarded_open\n",
+  "tests": [
+   "tests/test_a_probe_under_the_suite_writes_to_a_shadow.py"
   ]
  }
 ]
