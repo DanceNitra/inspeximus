@@ -144,9 +144,13 @@ def test_the_embed_recipe_sidecar_is_not_written_through_a_link(env, tmp_path):
     intact = plant(str(p) + ".embedid", tmp_path)
     m._persist_vectors, m.embed_id = True, "nomic-embed-text|test"
     m.remember("a note with a recipe", key="n1")
-    with pytest.raises(OSError):                      # a refused sidecar is reported by flush, as any sidecar error
-        m.flush()
-    assert intact()
+    m.flush()                                         # 3.17.0 (F-45): the link is replaced, and the writes go on
+    if os.name == "nt":                               # `intact()` also wants the link to still be there: here it is replaced
+        assert sorted(os.listdir(tmp_path / "user_dir")) == ["keep.txt"] and (tmp_path / "user_dir" / "keep.txt").read_text() == VICTIM
+    else:
+        assert (tmp_path / "user_file.json").read_text() == VICTIM, "what the link named must be untouched"
+    assert not _safewrite.is_link(str(p) + ".embedid")
+    assert open(str(p) + ".embedid", encoding="utf-8").read() == "nomic-embed-text|test"
 
 
 def test_the_archive_log_is_not_written_through_a_link(env, tmp_path):
