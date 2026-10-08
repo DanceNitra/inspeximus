@@ -171,3 +171,12 @@ def test_a_value_that_is_not_finite_anywhere_in_the_vector_is_refused():
         assert rows.decode_vec(text) is None, vals[:3]
     ok = base64.b64encode(struct.pack("<3e", 65504.0, 65504.0, -65504.0)).decode("ascii")
     assert rows.decode_vec(ok) == [65504.0, 65504.0, -65504.0], "control: the largest finite halves still decode"
+
+
+def test_the_row_loader_itself_decodes_vec16(tmp_path):
+    """`sqlite_store.load` is read directly by the archive, the audit fixtures and verify_writes, without the
+    library's own load normalisation, so the decode must happen in the loader and not only after it."""
+    p, ids = _seed(tmp_path)
+    assert all(rows.VEC_KEY in d for d in _docs(p).values()), "CONTROL: the rows on disk hold vec16"
+    for r in rows.load(str(p)):
+        assert rows.VEC_KEY not in r and isinstance(r.get("vec"), list) and len(r["vec"]) == DIM, r.keys()

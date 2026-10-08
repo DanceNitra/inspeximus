@@ -19373,6 +19373,7 @@ class Inspeximus:
         can see — instead of implicitly on a load path that might be a short-lived hook process.
         only_missing=False rebuilds the whole space. `batch` caps how many are done in this call, so a large
         store can be worked through incrementally."""
+        self._operator_only("reembed")
         if self.embed is None:
             return {"reembedded": 0, "failed": 0, "remaining": 0, "error": "no embedder configured"}
         todo = [r for r in self.items if r.get("text") is not None and (not only_missing or not r.get("vec"))]
@@ -19438,10 +19439,11 @@ class Inspeximus:
 
     @staticmethod
     def _shelve_vector(rec) -> None:
-        """Take `rec`'s vector out of ranking and keep it, as the text it was stored as (AUDIT-A F-43).
+        """Take `rec`'s vector out of ranking and keep it in `vec16` with its tag (AUDIT-A F-43).
 
         The vector leaves `vec`, so nothing ranks it, and goes back to `vec16` with its tag, a field the
-        row writer passes through unchanged. Any later write of the row -- a supersede, a touch, a retire
+        row writer passes through unchanged. The values are kept exactly; the base64 text is re-encoded, so a
+        non-canonical text a peer wrote comes back canonical. Any later write of the row -- a supersede, a touch, a retire
         or a tag edit -- therefore writes the peer's vector back as it found it, where dropping it lost the
         vector from disk. Works on a tracked record and on a plain dict alike, and declares no edit."""
         tag = dict.get(rec, "vec_recipe")
@@ -19474,6 +19476,12 @@ class Inspeximus:
         # counts only the ones that still have none.
         self._foreign_vec_ids = ids | set(getattr(self, "_foreign_vec_ids", ()))
 
+    def _operator_only(self, name: str) -> None:
+        """Refuse on a tenant- or agent-bound handle: the operation rewrites the whole store (3.17, F-44)."""
+        if self.tenant is not None or getattr(self, "agent", None) is not None:
+            raise AttributeError("%s() rewrites the whole store, every tenant's rows and the file, and is "
+                                 "operator-only; call it from an unbound handle." % name)
+
     def vacuum(self, wait_s: float = 2.0) -> dict:
         """Give a row store's free pages back to the file system, under the store lock (3.17).
 
@@ -19482,6 +19490,7 @@ class Inspeximus:
         When either is not available it does nothing and says so, with the slack, rather than wait for a
         writer or interrupt a reader. `secure_delete` stays on, so an erasure's zeroed pages stay zeroed.
         Returns {"vacuumed", "freed_bytes" or "reason", "file_bytes", "slack_bytes"}."""
+        self._operator_only("vacuum")
         if _rows is None or not self.path or not self.path.exists() or not self._rows_available():
             return {"vacuumed": False, "reason": "not a row store"}
         if self._dirty:
@@ -19518,9 +19527,7 @@ class Inspeximus:
             return {"compacted": 0, "kept_as_list": 0,
                     "error": "persist_vectors=False: this handle writes rows without their vectors. Open the "
                              "store with persist_vectors=True (INSPEXIMUS_PERSIST_VECTORS=1)."}
-        if self.tenant is not None:
-            raise AttributeError("compact_vectors() rewrites rows of every tenant and is operator-only; "
-                                 "call it from an unbound handle.")
+        self._operator_only("compact_vectors")
         snap = self._row_snapshot
         if _rows is None or not isinstance(snap, dict) or not self._rows_available():
             return {"compacted": 0, "kept_as_list": 0,
@@ -20147,12 +20154,7 @@ class _TenantView:
         # anywhere in its inputs or its outputs, so a tenant-bound view has nothing to narrow. It
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
-        "flush", "reload", "reembed", "anchor", "witness",
-        # One file, one layout: VACUUM rewrites the file and reads no record (3.17).
-        "vacuum",
-        # The vector encoding is one per file, like the recipe sidecar `reembed` keeps (3.17). It reads
-        # no record's text and returns two counts.
-        "compact_vectors",
+        "flush", "reload", "anchor", "witness",
         # The receipt chain is one per store file, over every tenant's writes, like `anchor`; a
         # backfill covers the rows the chain does not name, whoever wrote them.
         "enable_receipts",
@@ -20416,6 +20418,15 @@ class _TenantView:
     def read_guard_report(self, *a, **k): return Inspeximus.read_guard_report(self, *a, **k)
     def release_quarantine(self, *a, **k): return Inspeximus.release_quarantine(self, *a, **k)
     def stamp_read_guards(self, *a, **k): return Inspeximus.stamp_read_guards(self, *a, **k)
+    # OPERATOR-ONLY, REBOUND SO THEY CAN REFUSE (3.17, AUDIT-A F-44). Each rewrites rows of every tenant or the whole
+    # file under the store lock. Passed through as store-level they ran on the parent, tenant None, so a tenant's
+    # handle could hold the lock and the file for a full VACUUM and stall every other tenant.
+    # The check itself is private, and a private name is forwarded to the PARENT (tenant None), where it would
+    # never refuse; it is rebound so it reads this view's tenant and agent.
+    def _operator_only(self, *a, **k):      return Inspeximus._operator_only(self, *a, **k)
+    def vacuum(self, *a, **k):              return Inspeximus.vacuum(self, *a, **k)
+    def compact_vectors(self, *a, **k):     return Inspeximus.compact_vectors(self, *a, **k)
+    def reembed(self, *a, **k):             return Inspeximus.reembed(self, *a, **k)
     def _withheld_ids(self, *a, **k):   return Inspeximus._withheld_ids(self, *a, **k)
     def _served_rows(self, *a, **k):    return Inspeximus._served_rows(self, *a, **k)
     def forget_pii(self, *a, **k):      return Inspeximus.forget_pii(self, *a, **k)

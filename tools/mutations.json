@@ -9848,8 +9848,8 @@
  {
   "name": "3.17: the row writer stores the vector as a JSON list again",
   "file": "inspeximus/sqlite_store.py",
-  "old": "    if keep_vec:\n        _v = rec.get(\"vec\")\n",
-  "new": "    if False:\n        _v = rec.get(\"vec\")\n",
+  "old": "    if keep_vec:\n        _v = _field(rec, \"vec\")",
+  "new": "    if False:\n        _v = _field(rec, \"vec\")",
   "tests": [
    "tests/test_vectors_are_stored_as_float16.py",
    "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
@@ -9888,8 +9888,8 @@
  {
   "name": "3.17: a vector that does not fit float16 is written as an empty vec16",
   "file": "inspeximus/sqlite_store.py",
-  "old": "    if _enc is not None:\n        _tag = rec.get(\"vec_recipe\")\n",
-  "new": "    if True:\n        _tag = rec.get(\"vec_recipe\")\n",
+  "old": "    if _enc is not None:\n        _tag = _field(rec, \"vec_recipe\")\n",
+  "new": "    if True:\n        _tag = _field(rec, \"vec_recipe\")\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py",
    "tests/test_an_erased_record_takes_its_float16_vector_with_it.py",
@@ -10138,6 +10138,33 @@
   "file": "inspeximus/core.py",
   "old": "                if _sl[\"free_bytes\"] > (1 << 20) and _sl[\"free_bytes\"] * 4 > _sl[\"file_bytes\"]:",
   "new": "                if False:",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
+  ]
+ },
+ {
+  "name": "3.17 F-44: a bound handle runs a store-wide rewrite",
+  "file": "inspeximus/core.py",
+  "old": "        if self.tenant is not None or getattr(self, \"agent\", None) is not None:\n            raise AttributeError(\"%s() rewrites the whole store",
+  "new": "        if False:\n            raise AttributeError(\"%s() rewrites the whole store",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
+  ]
+ },
+ {
+  "name": "3.17 F-44: an agent-bound handle runs a store-wide rewrite",
+  "file": "inspeximus/core.py",
+  "old": "        if self.tenant is not None or getattr(self, \"agent\", None) is not None:\n            raise AttributeError(\"%s() rewrites the whole store",
+  "new": "        if self.tenant is not None:\n            raise AttributeError(\"%s() rewrites the whole store",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
+  ]
+ },
+ {
+  "name": "3.17 F-44: the view forwards the operator check to the parent",
+  "file": "inspeximus/core.py",
+  "old": "    def _operator_only(self, *a, **k):      return Inspeximus._operator_only(self, *a, **k)\n",
+  "new": "    def _operator_only(self, *a, **k):      return Inspeximus._operator_only(self._parent, *a, **k)\n",
   "tests": [
    "tests/test_a_row_store_gives_back_its_free_pages.py"
   ]

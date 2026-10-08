@@ -349,11 +349,11 @@ def _doc(rec, keep_vec: bool = True) -> str:
     # The recipe tag goes INTO the vec16 text and never stays a field of its own, see VEC_KEY.
     _enc = None
     if keep_vec:
-        _v = rec.get("vec")
+        _v = _field(rec, "vec")          # dict.get: a tracked record counts every `get` it serves
         if isinstance(_v, list) and _v:
             _enc = encode_vec(_v)
     if _enc is not None:
-        _tag = rec.get("vec_recipe")
+        _tag = _field(rec, "vec_recipe")
         rec = {k: v for k, v in rec.items() if k not in ("vec", "vec_recipe")}
         rec[VEC_KEY] = ("%s:%s" % (_tag, _enc)) if isinstance(_tag, str) and _tag else _enc
     elif "vec_recipe" in rec:
