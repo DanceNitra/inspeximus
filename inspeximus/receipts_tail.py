@@ -36,7 +36,7 @@ TAIL_SUFFIX = ".tail.jsonl"          #: appended to `<store>.receipts` to name t
 #: 16 MB chain is about 32 KB per write, against 16 MB per write for the array.
 COMPACT_AT = 500
 
-#: `to_legacy` leaves this file beside the store. While it exists, the switch (`INSPEXIMUS_RECEIPTS_TAIL=1`) does not
+#: `to_legacy` leaves this file beside the store. While it exists, the switch (`receipts.tail` in the user config) does not
 #: convert the store again: a long-lived server that still has the switch on would otherwise undo the downgrade at its
 #: next write. `to_tail` removes it.
 MARKER_SUFFIX = ".receipts.legacy"
@@ -282,7 +282,7 @@ def compact(store_path) -> dict:
     with _StoreLock(m._receipts_path):
         m._reconcile_receipts_with_disk()
         if m._rc_mode != "tail":
-            # Converting is the switch's job (INSPEXIMUS_RECEIPTS_TAIL=1), or `to_tail`'s. A compaction that converts
+            # Converting is the switch's job (`receipts.tail` in the user config), or `to_tail`'s. A compaction that converts
             # would leave a store that no released version can extend, without anyone having asked for that.
             raise ValueError("this store's receipt sidecar is the array, not the snapshot-plus-tail format, so there "
                              "is nothing to compact; `inspeximus receipts to-tail` converts it. Nothing was changed.")
@@ -319,7 +319,7 @@ def to_legacy(store_path) -> dict:
 
 def to_tail(store_path) -> dict:
     """Convert an array store to the snapshot-plus-tail format and remove the downgrade marker. The explicit form of
-    what `INSPEXIMUS_RECEIPTS_TAIL=1` does at the next receipted write."""
+    what `receipts.tail` in the user config does at the next receipted write."""
     from .core import SidecarMalformed, _StoreLock
     m = _open(store_path)
     path = m._receipts_path

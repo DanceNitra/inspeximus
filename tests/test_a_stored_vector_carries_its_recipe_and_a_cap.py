@@ -252,16 +252,64 @@ def test_v3_the_realign_does_not_drop_vectors_that_already_carry_the_current_rec
     assert ic["recipe_match"] is True and any("sidecar names" in x for x in ic["problems"]), ic
 
 
-def test_control_an_untagged_vector_is_still_realigned_from_the_sidecar(tmp_path):
-    """Rows written before 3.17, or without an embed_id, carry no tag; the sidecar still decides for them."""
+def test_an_untagged_vector_under_another_sidecar_is_held_back_and_nothing_is_changed_on_disk(tmp_path):
+    """Rows written before 3.17, or without an embed_id, carry no tag; the sidecar still decides for them. It no
+    longer decides by re-embedding at open (P-1): the vector is not ranked, the disk is untouched, reembed replaces it."""
     p = tmp_path / "s.json"
     m = Inspeximus(path=str(p), embed=_seeded_emb("A"), persist_vectors=True)
     rid = m.remember("an untagged note", key="u")
     m.flush()
     (tmp_path / "s.json.embedid").write_text("model-A")
-    m2 = _open_as(p, "B", "model-B")
+    before = (p.read_bytes(), (tmp_path / "s.json.embedid").read_text())
+    calls = []
+    emb_b = _seeded_emb("B")
+    m2 = Inspeximus(path=str(p), embed=lambda t: calls.append(t) or emb_b(t), embed_id="model-B", persist_vectors=True)
     rec = next(x for x in m2._items if x["id"] == rid)
-    assert rec["vec"] == _seeded_emb("B")("an untagged note"), "the untagged vector was not realigned"
+    assert not rec.get("vec"), "the untagged vector of another recipe is ranked"
+    assert calls == [], "opening the store embedded"
+    assert (p.read_bytes(), (tmp_path / "s.json.embedid").read_text()) == before, "opening the store changed the disk"
+    ic = m2.index_coherence()
+    assert ic["foreign_recipe_vecs"] == 1 and ic["recipe_match"] is False, ic
+    m2.remember("a write beside it", key="w")
+    m2.flush()
+    assert (tmp_path / "s.json.embedid").read_text() == "model-A", "a save rewrote the sidecar under an untagged vector"
+    assert m2.reembed()["reembedded"] == 1
+    m2.flush()
+    assert (tmp_path / "s.json.embedid").read_text() == "model-B"
+    rec = next(x for x in m2._items if x["id"] == rid)
+    assert rec["vec"] == emb_b("an untagged note")
+
+
+def test_p1_a_changed_model_over_the_cap_drops_nothing_and_embeds_nothing(tmp_path):
+    """AUDIT-A P-1: 300 vectors under one model, the server started with another model in its environment. Before: the
+    open dropped all 300 from disk and rewrote the sidecar. Now: the disk is byte-identical after the open."""
+    p = tmp_path / "s.json"
+    m = _open_as(p, "A", "model-A")
+    for i in range(300):
+        m.remember("note %d about the plan" % i, key="n%d" % i)
+    m.flush()
+    before = (p.read_bytes(), (tmp_path / "s.json.embedid").read_text())
+    calls = []
+    emb_b = _seeded_emb("B")
+    m2 = Inspeximus(path=str(p), embed=lambda t: calls.append(t) or emb_b(t), embed_id="model-B", persist_vectors=True)
+    assert calls == [], "the open sent record text to the embedder"
+    assert (p.read_bytes(), (tmp_path / "s.json.embedid").read_text()) == before
+    assert sum(1 for x in m2._items if x.get("vec")) == 0 and m2.index_coherence()["foreign_recipe_vecs"] == 300
+    m3 = _open_as(p, "A", "model-A")                      # the user's next project, with the original model
+    assert sum(1 for x in m3._items if x.get("vec")) == 300, "the vectors did not survive the other model's open"
+
+
+def test_p1_forty_records_are_not_re_embedded_at_open(tmp_path):
+    p = tmp_path / "s.json"
+    m = _open_as(p, "A", "model-A")
+    for i in range(40):
+        m.remember("note %d about the plan" % i, key="n%d" % i)
+    m.flush()
+    before = p.read_bytes()
+    calls = []
+    emb_b = _seeded_emb("B")
+    Inspeximus(path=str(p), embed=lambda t: calls.append(t) or emb_b(t), embed_id="model-B", persist_vectors=True)
+    assert calls == [] and p.read_bytes() == before
 
 
 # ── F-43: a write to a row taken out of ranking keeps the peer's vector on disk ──────────────────────
@@ -273,6 +321,7 @@ def _a_holding_foreign_rows(tmp_path):
         a.remember("note %d about the plan" % i, key="n%d" % i)
     a.flush()
     b = _open_as(p, "B", "model-B")
+    b.reembed()                                  # the explicit way to replace them: an open does not (3.17.0, P-1)
     b.remember("peer record under model B", key="peerB")
     b.flush()
     a.remember("a later write by A", key="late")

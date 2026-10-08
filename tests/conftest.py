@@ -263,14 +263,58 @@ def _no_test_writes_the_real_home(request):
 
 
 @pytest.fixture(autouse=True, scope="session")
-def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory):
+def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory, request):
     """Every store with receipts writes its chain head to the config home. One suite run left 6,102
     heads in the real one (measured 2026-09-16); the suite gets its own. Tests that need a specific
     home set INSPEXIMUS_KEY_HOME themselves and override this."""
     import os
     if not os.environ.get("INSPEXIMUS_KEY_HOME"):
         os.environ["INSPEXIMUS_KEY_HOME"] = str(tmp_path_factory.mktemp("config-home"))
+    if request.config.getoption("--receipts-tail"):
+        tail_config(True)                       # the tail-on gate: every test starts with the tail switched on
     yield
+
+
+def tail_config(on=True):
+    """Switch the receipt tail on or off in the user's config, the only place that switches it (3.17.0).
+
+    The environment variable INSPEXIMUS_RECEIPTS_TAIL is ignored: a project's settings can set it. The change lasts for
+    the test; `_user_config_is_restored` puts the file back."""
+    import json
+    from inspeximus import _userconfig
+    path = _userconfig.path()
+    cfg = _userconfig.read()
+    rc = dict(cfg.get("receipts") or {})
+    if on:
+        rc["tail"] = True
+    else:
+        rc.pop("tail", None)
+    cfg["receipts"] = rc
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(cfg, fh)
+
+
+@pytest.fixture(autouse=True)
+def _user_config_is_restored():
+    """A test that writes the user's config (the receipt tail, the store format) does not leave it for the next one."""
+    from inspeximus import _userconfig
+    path = _userconfig.path()
+    try:
+        with open(path, "rb") as fh:
+            before = fh.read()
+    except OSError:
+        before = None
+    yield
+    try:
+        if before is None:
+            if os.path.exists(path):
+                os.remove(path)
+        else:
+            with open(path, "wb") as fh:
+                fh.write(before)
+    except OSError:
+        pass
 
 
 # ── sharding: one suite, split across parallel CI jobs ───────────────────────────────────────────────
@@ -291,6 +335,8 @@ def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory):
 # is the whole suite and no test is in two; tests/test_the_shards_partition_the_suite.py checks both.
 def pytest_addoption(parser):
     parser.addoption("--shard", default=None, help="run bucket i of n, written i/n (0-based)")
+    parser.addoption("--receipts-tail", action="store_true", default=False,
+                     help="run the suite with receipts.tail switched on in the session's user config (the tail-on gate)")
 
 
 SHARD_DURATIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "shard_durations.json")

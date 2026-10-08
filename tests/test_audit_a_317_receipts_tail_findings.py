@@ -18,6 +18,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import receipts_tail as rt  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
+from conftest import tail_config  # noqa: E402
 
 
 @pytest.fixture
@@ -38,7 +39,7 @@ def test_f18_to_legacy_does_not_hold_while_a_server_with_the_switch_on_is_alive(
     """The server that converted the store still has INSPEXIMUS_RECEIPTS_TAIL=1 in its environment, which is how it
     converted the store. The operator runs `receipts to-legacy` from a shell, and the server's next write converts the
     store back (measured with two processes: array 4,008 bytes after to-legacy, object plus tail after the write)."""
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     live = Inspeximus(env, receipts=True)
     live.remember("first", key="k1")
     rt.to_legacy(env)
@@ -67,9 +68,9 @@ def test_f19_compact_does_not_convert_a_legacy_store(env):
 
 
 def test_f20_a_record_without_a_receipt_on_a_tail_store_names_the_likely_cause(env, monkeypatch):
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     Inspeximus(env, receipts=True).remember("first", key="k1")
-    monkeypatch.delenv("INSPEXIMUS_RECEIPTS_TAIL")
+    tail_config(False)
     Inspeximus(env).remember("saved by a writer that could not extend the receipts", key="k2")   # no receipts: stands for the pinned server
     ok, problems = Inspeximus(env, receipts=True).verify_writes()
     text = " ".join(problems)
@@ -78,7 +79,7 @@ def test_f20_a_record_without_a_receipt_on_a_tail_store_names_the_likely_cause(e
 
 
 def test_f18_the_marker_to_legacy_leaves_is_a_sidecar_and_to_tail_removes_it(env, monkeypatch):
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     m = Inspeximus(env, receipts=True)
     m.remember("first", key="k1")
     rt.to_legacy(env)
@@ -96,7 +97,7 @@ def test_f19_compact_refuses_on_an_array_and_still_compacts_a_tail_store(env, mo
     m.remember("first", key="k1")
     with pytest.raises(ValueError, match="to-tail"):
         rt.compact(env)
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     m2 = Inspeximus(env, receipts=True)
     m2.remember("second", key="k2")
     assert rt.compact(env)["entries"] == 2

@@ -9980,15 +9980,6 @@
   ]
  },
  {
-  "name": "3.17 F-42: the realign counts rows stamped with the current recipe as stale",
-  "file": "inspeximus/core.py",
-  "old": "                      and self._recipe_of(r) is not True]\n",
-  "new": "                      ]\n",
-  "tests": [
-   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
-  ]
- },
- {
   "name": "3.17: verify_writes reads a foreign vector on disk as ranked",
   "file": "inspeximus/core.py",
   "old": "                    if self._recipe_of(r) is False:             # as the load took it out of ranking (3.17)\n",
@@ -10357,6 +10348,87 @@
   "file": "inspeximus/core.py",
   "old": "                (\"run reembed() or `inspeximus reembed` once to embed them; at the 85 ms a record measured with \"\n",
   "new": "                (\"run reembed() or `inspeximus reembed` once to embed them; \"\n",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-1: an open does not hold back an untagged vector under another sidecar",
+  "file": "inspeximus/core.py",
+  "old": "                         and self._recipe_of(r) is None]",
+  "new": "                         and False]",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-1: a save rewrites the recipe sidecar under an untagged vector",
+  "file": "inspeximus/core.py",
+  "old": "        if getattr(self, \"_legacy_shelved\", None):\n            return False",
+  "new": "        if False:\n            return False",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-1: an open re-embeds a foreign vector",
+  "file": "inspeximus/core.py",
+  "old": "                    Inspeximus._shelve_vector(r)\n                    ids.add(dict.get(r, \"id\"))",
+  "new": "                    self._set_vec(r, list(self.embed(r[\"text\"])))\n                    ids.add(dict.get(r, \"id\"))",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-1: reembed leaves the held-back set standing",
+  "file": "inspeximus/core.py",
+  "old": "        self._legacy_shelved.difference_update(dict.get(r, \"id\") for r in todo if dict.get(r, \"vec\"))\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the environment turns the receipt tail on",
+  "file": "inspeximus/core.py",
+  "old": "        _userconfig.env_ignored(\"INSPEXIMUS_RECEIPTS_TAIL\", \"receipts.tail to true\")\n    return False",
+  "new": "        return True\n    return False",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the user's config does not turn the receipt tail on",
+  "file": "inspeximus/core.py",
+  "old": "    if _userconfig.get(\"receipts\", \"tail\") is True:\n        return True",
+  "new": "    if False:\n        return True",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the ignored environment value is not reported",
+  "file": "inspeximus/core.py",
+  "old": "        _userconfig.env_ignored(\"INSPEXIMUS_RECEIPTS_TAIL\", \"receipts.tail to true\")\n    return False",
+  "new": "        pass\n    return False",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the hook embedder takes its model from the repository",
+  "file": "inspeximus/claude_code.py",
+  "old": "model = (os.environ.get(\"INSPEXIMUS_EMBED_MODEL\") or uc.get(\"model\") or \"nomic-embed-text\").strip()",
+  "new": "model = (os.environ.get(\"INSPEXIMUS_EMBED_MODEL\") or uc.get(\"model\") or rc.get(\"model\") or \"nomic-embed-text\").strip()",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the hooks embed without being switched on",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if not (env_hooks or uc.get(\"hooks\") is True):\n        return None, None, None",
+  "new": "    if False:\n        return None, None, None",
   "tests": [
    "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
   ]

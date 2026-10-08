@@ -808,32 +808,53 @@ def w_remember_receipted(n):
     return run
 
 
+import contextlib
+
+
+@contextlib.contextmanager
+def _tail_switched_on():
+    """`receipts.tail` true in the user's config for the duration (3.17.0: the environment variable is ignored)."""
+    import json as _json
+    from inspeximus import _userconfig
+    if not os.environ.get("INSPEXIMUS_KEY_HOME"):
+        raise RuntimeError("the gate writes the user config only inside its temporary key home")
+    path = _userconfig.path()
+    try:
+        with open(path, "rb") as fh:
+            before = fh.read()
+    except OSError:
+        before = None
+    cfg = _userconfig.read()
+    cfg["receipts"] = dict(cfg.get("receipts") or {}, tail=True)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        _json.dump(cfg, fh)
+    try:
+        yield
+    finally:
+        if before is None:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+        else:
+            with open(path, "wb") as fh:
+                fh.write(before)
+
+
 def w_remember_receipted_tail(n):
     """`w_remember_receipted` with the receipt sidecar in the snapshot-plus-tail format
-    (`INSPEXIMUS_RECEIPTS_TAIL=1`, 3.17.0 candidate). The five measured writes append five tail lines:
+    (`receipts.tail` in the user config, 3.17.0). The five measured writes append five tail lines:
     `replace_receipts` is 0 where the array format replaces the sidecar five times, and `receipt_bytes_written` is
     five receipts where the array's is five whole chains. The tail holds 6 entries at that point, below
     `COMPACT_AT`, so no snapshot is rewritten inside the counted region."""
-    prev = os.environ.get("INSPEXIMUS_RECEIPTS_TAIL")
-    os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = "1"
-    try:
+    inner_run = None
+    with _tail_switched_on():
         inner_run = w_remember_receipted(n)
-    finally:
-        if prev is None:
-            os.environ.pop("INSPEXIMUS_RECEIPTS_TAIL", None)
-        else:
-            os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = prev
 
     def run():
-        prev2 = os.environ.get("INSPEXIMUS_RECEIPTS_TAIL")
-        os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = "1"
-        try:
+        with _tail_switched_on():
             inner_run()
-        finally:
-            if prev2 is None:
-                os.environ.pop("INSPEXIMUS_RECEIPTS_TAIL", None)
-            else:
-                os.environ["INSPEXIMUS_RECEIPTS_TAIL"] = prev2
         run.inner = inner_run.inner
     return run
 

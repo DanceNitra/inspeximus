@@ -23,6 +23,7 @@ import pytest
 from _store_io import load_receipts
 from inspeximus import Inspeximus
 from inspeximus.core import StoreChangedOnDisk, new_receipt_keypair
+from conftest import tail_config  # noqa: E402
 
 
 def _sidecar(p):
@@ -97,7 +98,7 @@ def test_two_signed_handles_with_one_key_leave_one_verifiable_chain(tmp_path, mo
 
 
 def test_a_rechained_receipt_keeps_its_binding_and_names_its_old_hash(tmp_path, monkeypatch):
-    monkeypatch.delenv("INSPEXIMUS_RECEIPTS_TAIL", raising=False)   # the array format: it forces a divergence by stubbing the reconcile
+    tail_config(False)   # the array format: it forces a divergence by stubbing the reconcile
     """The divergent case: both handles chained on the same prev. The disk chain wins the common part;
     this handle's entry is moved after it with a fresh seq, prev, hash, and the old hash recorded."""
     monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "rows")

@@ -139,7 +139,7 @@ def _repo_embed_url(url, cfg_file) -> str:
     return ""
 
 
-_REPO_EMBED_KEYS = ("hooks", "key", "timeout")
+_REPO_EMBED_KEYS = ("hooks", "key", "timeout", "model")
 _REPO_EMBED_KEYS_NOTICE = []
 
 
@@ -151,7 +151,7 @@ def _repo_embed_keys_notice(rc, cfg_file):
     _REPO_EMBED_KEYS_NOTICE.append(cfg_file)
     try:
         sys.stderr.write("[inspeximus] %s sets embed %s: ignored, because only your own config or the environment "
-                         "turns hook embedding on or sets its key. Put them in %s.%s"
+                         "turns hook embedding on, sets its key, or names its model. Put them in %s.%s"
                          % (cfg_file, ", ".join(found), user_config_path(), chr(10)))
     except Exception:                                           # noqa: BLE001
         pass
@@ -194,8 +194,9 @@ def _make_embedder(cwd):
         url = _repo_embed_url(rc.get("url"), _cfg_file(cwd))
     if not url:
         return None, None, None
-    model = (os.environ.get("INSPEXIMUS_EMBED_MODEL") or uc.get("model") or rc.get("model")
-             or "nomic-embed-text").strip()
+    # THE MODEL IS THE RECIPE, SO A REPOSITORY'S FILE DOES NOT CHOOSE IT (3.17.0). Only the environment (the user's own
+    # MCP or hook entry) and the user's config name the model; `rc.get("model")` came from the repository.
+    model = (os.environ.get("INSPEXIMUS_EMBED_MODEL") or uc.get("model") or "nomic-embed-text").strip()
     key = env_key("INSPEXIMUS_EMBED_KEY", url, uc) or (uc.get("key") if isinstance(uc.get("key"), str) else "").strip()
     try:
         timeout = float(uc.get("timeout", 10))

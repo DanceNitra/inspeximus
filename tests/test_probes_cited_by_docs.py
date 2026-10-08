@@ -24,6 +24,7 @@ import subprocess
 import sys
 
 import pytest
+from conftest import tail_config  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: These tests each spawn a subprocess with a wall-clock budget, so running several at once is
@@ -517,7 +518,7 @@ def _run_probe(probe, extra_env=None):
            "PYTHONPATH": ROOT + os.pathsep + PROBES + os.pathsep + os.environ.get("PYTHONPATH", "")}
     # A cited probe reproduces a claim the docs make about the DEFAULT configuration, and three of them read the
     # receipt sidecar as the array. The snapshot-plus-tail switch is not part of that claim.
-    env.pop("INSPEXIMUS_RECEIPTS_TAIL", None)
+    tail_config(False)
     env.update(extra_env or {})
     try:
         return subprocess.run([sys.executable, os.path.join("probes", probe)],

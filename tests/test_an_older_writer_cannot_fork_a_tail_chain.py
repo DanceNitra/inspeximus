@@ -30,6 +30,7 @@ sys.path.insert(0, ROOT)
 import inspeximus.core as core  # noqa: E402
 from inspeximus import receipts_tail as rt  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
+from conftest import tail_config  # noqa: E402
 
 TAGS = ["v3.16.1", "v3.16.2", "v3.16.3"]
 
@@ -98,7 +99,7 @@ def _new_store(tmp_path, n=6, tail=True):
     mp = pytest.MonkeyPatch()
     try:
         if tail:
-            mp.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+            tail_config(True)
         m = Inspeximus(p, receipts=True)
         for i in range(n):
             m.remember(f"fact number {i}", key=f"k{i}")
@@ -187,7 +188,7 @@ def test_an_old_writer_stopped_mid_write_leaves_a_store_the_new_writer_converts_
     old_view = _run_old(frozen[tag], "m = Inspeximus(P, receipts=True)\nok, pr = m.verify_writes()\n"
                                      "print('OK', ok, len(pr))\n", p).stdout
     assert "OK False" in old_view, old_view                  # a row without its receipt: named
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     m2 = Inspeximus(p, receipts=True)
     m2.remember("the new writer converts", key="k-new")
     m2.flush()
@@ -213,7 +214,7 @@ def test_to_legacy_gives_older_writers_their_array_and_a_new_writer_converts_aga
     assert "WROTE" in r.stdout, (r.stdout, r.stderr[-400:])
     assert [x["hash"] for x in json.load(open(p + ".receipts.json"))][:6] == chain
     assert Inspeximus(p, receipts=True).verify_writes()[0]
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     Inspeximus(p, receipts=True).remember("with the switch on and the downgrade marker present", key="k-marked")
     assert _pair(p)["mode"] == "list", "the marker keeps the switch from converting the store again"
     rt.to_tail(p)

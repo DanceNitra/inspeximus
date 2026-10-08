@@ -14,6 +14,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import Inspeximus  # noqa: E402
 from inspeximus import receipts_tail  # noqa: E402
+from conftest import tail_config  # noqa: E402
 
 OPS = ("receipts_compact", "receipts_to_legacy", "receipts_to_tail")
 
@@ -24,7 +25,7 @@ def env(tmp_path, monkeypatch):
         monkeypatch.delenv(k)
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "kh"))
     monkeypatch.setenv("INSPEXIMUS_NO_UPDATE_CHECK", "1")
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     return tmp_path
 
 

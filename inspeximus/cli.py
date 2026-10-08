@@ -628,7 +628,7 @@ def main(argv=None):
     rcc.add_argument("--json", action="store_true")
     rcl = rcsub.add_parser("to-legacy", help="write the receipt chain back as the array that every released "
                                              "version reads, and remove the tail. A downgrade needs it. Stop every "
-                                             "server that runs with INSPEXIMUS_RECEIPTS_TAIL=1 first")
+                                             "server whose user config sets receipts.tail first")
     rcl.add_argument("--json", action="store_true")
     rct = rcsub.add_parser("to-tail", help="convert an array receipt sidecar to the snapshot-plus-tail format and "
                                            "remove the marker `to-legacy` leaves")
@@ -775,8 +775,9 @@ def main(argv=None):
     sub.add_parser("vacuum", help="give a row store's free pages back to the file system (after compact or "
                                   "erasure); waits at most 2 s for the store lock and readers, then reports")
 
-    re_ = sub.add_parser("reembed", help="rebuild embeddings for records that have none (after an embed-recipe "
-                                         "change dropped them); needs an embedder configured")
+    re_ = sub.add_parser("reembed", help="embed the records that have no vector, and replace vectors made under another "
+                                         "embed recipe; always stores the vectors it makes, whatever "
+                                         "INSPEXIMUS_PERSIST_VECTORS says; needs an embedder configured")
     re_.add_argument("--all", action="store_true", help="re-embed EVERY record, not just the ones missing a vector")
     re_.add_argument("--batch", type=int, default=None, help="cap how many records this run re-embeds")
     re_.add_argument("--compact-only", action="store_true",

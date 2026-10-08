@@ -24,6 +24,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 import inspeximus.claude_code as cc  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
+from conftest import tail_config  # noqa: E402
 
 WRAP = r"""
 import json, os, sys
@@ -188,7 +189,7 @@ def test_the_attempt_record_is_whole_and_the_detached_run_outlives_the_hook(proj
 
 
 def test_the_prompt_hook_writes_no_receipt_and_leaves_the_receipt_files_as_they_were(proj, tmp_path, monkeypatch):
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     p = os.path.join(proj, ".inspeximus", "coding_memory.json")
     m = Inspeximus(p, receipts=True)
     for i in range(3):

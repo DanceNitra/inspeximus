@@ -19,6 +19,7 @@ sys.path.insert(0, ROOT)
 import inspeximus.core as core  # noqa: E402
 from inspeximus import receipts_tail as rt  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
+from conftest import tail_config  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -27,7 +28,7 @@ def _env(monkeypatch, tmp_path_factory):
         monkeypatch.delenv(k)
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path_factory.mktemp("key-home")))
     monkeypatch.setenv("INSPEXIMUS_NO_UPDATE_CHECK", "1")
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
 
 
 def _pair(p):
@@ -182,7 +183,8 @@ def test_concurrent_writers_lose_no_receipt_across_a_compaction(tmp_path, monkey
     seed = Inspeximus(p, receipts=True)
     seed.remember("seed", key="seed")
     seed.flush()
-    env = dict(os.environ, PYTHONPATH=ROOT, INSPEXIMUS_RECEIPTS_TAIL="1", INSPEXIMUS_NO_UPDATE_CHECK="1")
+    tail_config(True)
+    env = dict(os.environ, PYTHONPATH=ROOT, INSPEXIMUS_NO_UPDATE_CHECK="1")
     code = "import sys; sys.modules['inspeximus.receipts_tail'] = __import__('inspeximus.receipts_tail', fromlist=['x']); " \
            "import inspeximus.receipts_tail as r; r.COMPACT_AT = 20\n" + CONCURRENT
     procs = [subprocess.Popen([sys.executable, "-c", code, p, str(w), "12"], env=env, stdout=subprocess.PIPE,

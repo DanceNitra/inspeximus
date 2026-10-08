@@ -33,6 +33,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from conftest import tail_config  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
 DOC = REPO / "docs" / "ERASURE.md"
@@ -111,7 +112,7 @@ def run_doc(workdir: Path) -> list[tuple]:
     # does not ship in this commit.
     env["PYTHONPATH"] = str(REPO) + os.pathsep + env.get("PYTHONPATH", "")
     env.pop("INSPEXIMUS_PATH", None)
-    env.pop("INSPEXIMUS_RECEIPTS_TAIL", None)       # the page documents the default format
+    tail_config(False)       # the page documents the default format
     env.pop("INSPEXIMUS_RECEIPT_KEY_FILE", None)
     env.pop("INSPEXIMUS_RECEIPT_KEY", None)
 
@@ -267,7 +268,7 @@ def test_the_doc_harness_can_fail(tmp_path):
     env = dict(os.environ)
     env["PYTHONPATH"] = str(REPO) + os.pathsep + env.get("PYTHONPATH", "")
     env.pop("INSPEXIMUS_PATH", None)
-    env.pop("INSPEXIMUS_RECEIPTS_TAIL", None)       # the page documents the default format
+    tail_config(False)       # the page documents the default format
     proc = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", "./s.json", "stats"],
                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, cwd=str(tmp_path))
     out = (proc.stdout or "") + (proc.stderr or "")
@@ -302,7 +303,7 @@ def test_the_example_script_runs_and_checks_both_halves():
     env = dict(os.environ)
     env["PYTHONPATH"] = str(REPO) + os.pathsep + env.get("PYTHONPATH", "")
     env.pop("INSPEXIMUS_PATH", None)
-    env.pop("INSPEXIMUS_RECEIPTS_TAIL", None)       # the page documents the default format
+    tail_config(False)       # the page documents the default format
     proc = subprocess.run([sys.executable, str(EXAMPLE)], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     out = (proc.stdout or "") + (proc.stderr or "")
     assert proc.returncode == 0, out
@@ -328,7 +329,7 @@ def test_an_unsigned_certificate_says_so_instead_of_reporting_valid_signatures(t
     env = dict(os.environ)
     env["PYTHONPATH"] = str(REPO) + os.pathsep + env.get("PYTHONPATH", "")
     env.pop("INSPEXIMUS_PATH", None)
-    env.pop("INSPEXIMUS_RECEIPTS_TAIL", None)       # the page documents the default format
+    tail_config(False)       # the page documents the default format
     env.pop("INSPEXIMUS_RECEIPT_KEY_FILE", None)
     env.pop("INSPEXIMUS_RECEIPT_KEY", None)
 

@@ -647,10 +647,19 @@ def _receipt_texts(entries, cache: dict) -> list:
 
 
 def _receipts_tail_on() -> bool:
-    """INSPEXIMUS_RECEIPTS_TAIL=1 converts a store's receipt sidecar to the snapshot-plus-tail format at its next
-    receipted write. Off by default. A store that is already in that format stays in it whatever this says: the
-    sidecar is no longer an array, and no released version can extend it."""
-    return os.environ.get("INSPEXIMUS_RECEIPTS_TAIL", "").strip().lower() in ("1", "true", "yes", "on")
+    """`{"receipts": {"tail": true}}` in `<key home>/inspeximus/config.json` converts a store's receipt sidecar to the
+    snapshot-plus-tail format at its next receipted write. Off by default. A store that is already in that format
+    stays in it whatever this says: the sidecar is no longer an array, and no released version can extend it.
+
+    ONLY THE USER'S CONFIG TURNS IT ON (3.17.0, AUDIT-A). The environment variable INSPEXIMUS_RECEIPTS_TAIL=1 is
+    ignored, with one stderr line, because a project's settings reach the MCP server's environment and one write from
+    a project converted the user's sidecar to a format that releases before 3.17 cannot extend."""
+    from . import _userconfig
+    if _userconfig.get("receipts", "tail") is True:
+        return True
+    if os.environ.get("INSPEXIMUS_RECEIPTS_TAIL", "").strip().lower() in ("1", "true", "yes", "on"):
+        _userconfig.env_ignored("INSPEXIMUS_RECEIPTS_TAIL", "receipts.tail to true")
+    return False
 
 
 def new_receipt_keypair():
@@ -3644,63 +3653,37 @@ class Inspeximus:
         # What a crashed save left beside the store is a copy of its records (A-08); remove it now,
         # if no writer is busy. What is still there is kept for the erasure paths to report.
         self._interrupted_saves = self._sweep_save_temps()
-        # EMBED-RECIPE GUARD (persist_vectors only): persisted vectors are only comparable to a query embedded the
-        # SAME way. If the store was written with a different embed recipe than the one now in use — most importantly
-        # an ASYMMETRIC upgrade (e.g. adding nomic's search_document:/search_query: prefixes) — a query in the new
-        # space would silently mis-match the old stored vectors and DEGRADE recall. When embed_id changes, we drop
-        # the stale vectors and re-embed with the current document embedder (once, on load) so the spaces realign.
-        # RAM-only stores (persist_vectors=False) strip vectors on save, so they never hit this. Sidecar: <path>.embedid.
+        # EMBED-RECIPE GUARD (persist_vectors only): a persisted vector is only comparable to a query embedded the SAME
+        # way. OPENING THE STORE CHANGES NOTHING ON DISK AND EMBEDS NOTHING (3.17.0, AUDIT-A P-1). Until 3.16 an open
+        # whose recipe differed from the sidecar re-embedded up to INSPEXIMUS_REALIGN_MAX vectors, or dropped them all,
+        # and rewrote the sidecar. A project's settings reach the MCP server's environment, and with vectors kept by
+        # default one `INSPEXIMUS_EMBED_MODEL=other` made the user's server send up to 256 record texts to the embedder
+        # and rewrite every vector, or drop 300 of 300 from disk; the next project realigned back. Now a vector stamped
+        # with another recipe is taken out of ranking in memory (`_drop_foreign_vectors`), and so is a vector with no stamp
+        # while the sidecar names another recipe. Both rank lexically, `index_coherence()` counts them, and
+        # `reembed()` is the one way to replace them. Sidecar: <path>.embedid, written by a save, see `_embedid_may_change`.
         self._embedid_path = (self.path.parent / (self.path.name + ".embedid")) if self.path else None
-        self._realigned = False
-        if self._persist_vectors and self._embedid_path is not None:
+        self._legacy_shelved = set()
+        if self._persist_vectors and self._embedid_path is not None and self.embed is not None and self.embed_id:
             _prev = None
             if self._embedid_path.exists():
                 try:
                     _prev = self._embedid_path.read_text(encoding="utf-8").strip()
                 except Exception:
                     _prev = None
-            _cur = self.embed_id or ""
-            # ONLY records that carry a vec are in the old space, so they are the only ones to realign.
-            # Re-embedding vec-less records here would (a) make a load cost one network call per record —
-            # an unbounded stall, and (b) silently ADD vectors the store never had.
-            # A ROW ALREADY STAMPED WITH THE CURRENT RECIPE IS NOT STALE, whatever the sidecar says (AUDIT-A
-            # F-42). The sidecar is one line for the whole store and can be out of step with the rows: an
-            # older release rewrites it after re-embedding some of them. Trusted alone, it made vectors flap
-            # between recipes, and over the cap it dropped every vector, the correctly stamped ones too.
-            # Only rows this handle cannot vouch for count against the cap.
-            _stale = [r for r in self.items if r.get("vec") and r.get("text") is not None
-                      and self._recipe_of(r) is not True]
-            if _prev is not None and _prev != _cur and self.embed is not None and _stale:
-                try:
-                    _cap = int(os.environ.get("INSPEXIMUS_REALIGN_MAX", "256"))
-                except Exception:
-                    _cap = 256
-                if len(_stale) > _cap:
-                    # BOUNDED: past the cap we DROP the stale vectors instead of re-embedding them. A dropped
-                    # vec degrades that record to lexical recall and is re-embedded on its next write; a
-                    # synchronous re-embed of a large store on the load path would hang the caller for
-                    # minutes-to-hours (and every hook-style short-lived process would pay it again).
-                    sys.stderr.write(f"[inspeximus] embed recipe changed ({_prev!r} -> {_cur!r}); {len(_stale)} persisted "
-                                     f"vectors exceed INSPEXIMUS_REALIGN_MAX={_cap} -> dropping them (recall degrades to "
-                                     f"lexical for those records; each is re-embedded on its next write). Rebuild "
-                                     f"the space deliberately with reembed() / `inspeximus reembed`, or raise the cap.\n")
-                    for r in _stale:
-                        self._set_vec(r, None)
-                        self._touch(r)                              # a row store writes what is declared
-                else:
-                    sys.stderr.write(f"[inspeximus] embed recipe changed ({_prev!r} -> {_cur!r}); re-embedding "
-                                     f"{len(_stale)} persisted vectors to realign the space\n")
-                    for r in _stale:
-                        try:
-                            self._set_vec(r, list(self.embed(r["text"])))
-                        except Exception:
-                            self._set_vec(r, None)
-                        self._touch(r)                              # a row store writes what is declared
-                self._mat = None                                    # invalidate the cached matrix
-                self._realigned = True                              # -> persisted ONCE at the end of __init__
-        # AFTER the store-wide realign, which re-embeds a whole space whose recipe changed (up to the cap) and
-        # stamps what it re-embeds. What still carries another recipe's stamp is a single row an older
-        # release left behind; it is taken out of ranking, not re-embedded on the load path (3.17).
+            if _prev is not None and _prev != (self.embed_id or ""):
+                _held = [r for r in self._items if dict.get(r, "vec") and r.get("text") is not None
+                         and self._recipe_of(r) is None]
+                for r in _held:
+                    self._legacy_shelved.add(dict.get(r, "id"))
+                    Inspeximus._shelve_vector(r)
+                if _held:
+                    self._mat = None
+                    self._foreign_vec_ids = {dict.get(r, "id") for r in _held} | set(getattr(self, "_foreign_vec_ids", ()))
+                    sys.stderr.write(f"[inspeximus] embed recipe differs from the one that made the stored vectors "
+                                     f"({_prev!r} -> {self.embed_id!r}); {len(_held)} vectors are not ranked and nothing "
+                                     f"was changed on disk. `inspeximus reembed` replaces them.\n")
+        # What carries another recipe's stamp is taken out of ranking, not re-embedded on the load path (3.17).
         self._drop_foreign_vectors()
         # OPT-IN write receipts (default OFF -> zero behavior change; no sidecar created)
         self.receipts_enabled = bool(receipts or receipt_key or receipt_signer)
@@ -3778,14 +3761,6 @@ class Inspeximus:
             except Exception:
                 self._objections = []
         self._objections_sig = Inspeximus._sidecar_sig(self._objections_path)
-        # PERSIST A REALIGNMENT EXACTLY ONCE. The realigned vectors and the recipe sidecar must land together:
-        # the sidecar is written only inside _save(), so a caller that never saves (a READ-ONLY path — recall(),
-        # a session-digest, any short-lived hook process) would redo the whole realignment on EVERY open, turning
-        # one migration into a permanent per-open network storm. Saving here ends it after the first open.
-        # It must NOT be done by writing the sidecar alone: that would leave the OLD vectors on disk labelled
-        # with the NEW recipe — precisely the silent mismatch this guard exists to prevent.
-        if self._realigned:
-            self._save(force=True)
 
     # ── capture ──────────────────────────────────────────────────────────────
     # A THREAD-LOCAL MADE THE STORE UNCOPYABLE, and copying it is something callers legitimately do.
@@ -5342,7 +5317,7 @@ class Inspeximus:
         THE ARRAY FORMAT rewrites the whole file (atomic replace + fsync), as it always did. THE TAIL FORMAT
         (`receipts_tail`) appends the receipts the pair does not hold yet, one line each, and fsyncs the tail; the
         snapshot is rewritten when the tail passes `COMPACT_AT` entries, and on conversion. A store converts when
-        `INSPEXIMUS_RECEIPTS_TAIL=1` at its next receipted write; once converted it stays in the tail format.
+        `{"receipts": {"tail": true}}` in the user config at its next receipted write; once converted it stays in the tail format.
 
         UNDER THE STORE LOCK, with the state looked at again: the reconcile that ran before the receipt was built is
         not under the lock, so a peer can append between it and this write. The array format lost that peer's receipt
@@ -13017,6 +12992,8 @@ class Inspeximus:
                 sidecar_stale = True
             else:
                 recipe_match = False
+        if sidecar is not None and (self.embed_id or "") != sidecar and getattr(self, "_legacy_shelved", None):
+            recipe_match, sidecar_stale = False, False        # untagged vectors are held back, the sidecar still decides
         out = {"coherent": (missing == 0 and recipe_match),
                "embedder_configured": has_embedder,
                "active_text_records": len(act_text), "vectors": vectors, "missing_vecs": missing,
@@ -19384,13 +19361,15 @@ class Inspeximus:
                 "note": "encryption key destroyed; the store at rest (and its backups) is now unrecoverable"}
 
     def reembed(self, only_missing: bool = True, batch: int | None = None) -> dict:
-        """Re-embed records that carry no vector, then persist. The EXPLICIT counterpart to the bounded
-        embed-recipe guard: when a recipe change finds more than INSPEXIMUS_REALIGN_MAX stale vectors, the guard
-        DROPS them (those records fall back to lexical recall) rather than making every open pay one network
-        call per record. This is how you deliberately pay that cost once — a foreground call with a count you
-        can see — instead of implicitly on a load path that might be a short-lived hook process.
-        only_missing=False rebuilds the whole space. `batch` caps how many are done in this call, so a large
-        store can be worked through incrementally."""
+        """Re-embed records that carry no vector, then persist. The ONE way to replace vectors made under another
+        embed recipe (3.17.0): opening a store embeds nothing and changes nothing on disk, and a vector with
+        another recipe's stamp is only held out of ranking until this call replaces it. This is how you pay the
+        cost once, deliberately, as a foreground call with a count you can see.
+        only_missing=False rebuilds the whole space (embeds every record). `batch` caps how many are done in
+        this call, so a large store can be worked through incrementally.
+
+        THIS CALL ALWAYS STORES THE VECTORS IT MAKES, whatever INSPEXIMUS_PERSIST_VECTORS says: that variable
+        governs the MCP server, and a re-embed that kept nothing would be wasted work (AUDIT-A P-3)."""
         self._operator_only("reembed")
         if self.embed is None:
             return {"reembedded": 0, "failed": 0, "remaining": 0, "error": "no embedder configured"}
@@ -19405,6 +19384,7 @@ class Inspeximus:
                 self._set_vec(r, None); failed += 1
             self._touch(r)                                          # a row store writes what is declared
         self._mat = None
+        self._legacy_shelved.difference_update(dict.get(r, "id") for r in todo if dict.get(r, "vec"))
         self._save(force=True)
         out = {"reembedded": done, "failed": failed,
                "remaining": sum(1 for r in self.items if r.get("text") is not None and not r.get("vec"))}
@@ -19493,6 +19473,31 @@ class Inspeximus:
         # Ids found by an earlier pass stay counted until reembed() gives them a vector; index_coherence
         # counts only the ones that still have none.
         self._foreign_vec_ids = ids | set(getattr(self, "_foreign_vec_ids", ()))
+
+    def _embedid_may_change(self) -> bool:
+        """Whether a save may write the recipe sidecar (3.17.0, AUDIT-A P-1).
+
+        Always when the file is absent or already names this recipe. When it names another recipe it is rewritten only
+        if no vector in the store depends on it: a vector with no stamp is judged by the sidecar alone, so rewriting the
+        sidecar under it would make the old vector read as made by the new recipe. `reembed()` stamps what it embeds,
+        and the next save then writes the sidecar."""
+        path = getattr(self, "_embedid_path", None)
+        if path is None or not path.exists():
+            return True
+        try:
+            if path.read_text(encoding="utf-8").strip() == (self.embed_id or ""):
+                return True
+        except OSError:
+            return True
+        if getattr(self, "_legacy_shelved", None):
+            return False
+        for r in self._items:
+            if dict.get(r, "vec") and not dict.get(r, "vec_recipe"):
+                return False
+            enc = dict.get(r, _rows.VEC_KEY) if _rows is not None else None
+            if isinstance(enc, str) and enc and ":" not in enc[:16]:
+                return False
+        return True
 
     def _operator_only(self, name: str) -> None:
         """Refuse on a tenant- or agent-bound handle: the operation rewrites the whole store (3.17, F-44)."""
@@ -19799,7 +19804,7 @@ class Inspeximus:
             # the persisted vectors keep whatever recipe made them, so the sidecar must stay untouched:
             # blanking it here would make the next semantic open see ''->recipe and realign for nothing.
             if self._persist_vectors and getattr(self, "_embedid_path", None) is not None \
-                    and self.embed_id is not None:
+                    and self.embed_id is not None and self._embedid_may_change():
                 try:
                     from ._safewrite import LinkRefused, write_atomic                 # F-24: no link
                     try:

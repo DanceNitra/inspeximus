@@ -22,6 +22,7 @@ sys.path.insert(0, ROOT)
 import inspeximus.core as core  # noqa: E402
 from inspeximus import receipts_tail as rt  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
+from conftest import tail_config  # noqa: E402
 
 
 class Stop(Exception):
@@ -34,7 +35,7 @@ def _env(monkeypatch, tmp_path_factory):
         monkeypatch.delenv(k)
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path_factory.mktemp("key-home")))
     monkeypatch.setenv("INSPEXIMUS_NO_UPDATE_CHECK", "1")
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
 
 
 def _store(tmp_path, n=5):
@@ -207,13 +208,13 @@ def test_a_stop_while_converting_leaves_a_readable_array_or_a_readable_pair(tmp_
     """Conversion writes the snapshot object, then the tail header. Stopped between the two, the object has no tail
     beside it, which `read` takes as an empty tail."""
     p = str(tmp_path / "s.json")
-    monkeypatch.delenv("INSPEXIMUS_RECEIPTS_TAIL")
+    tail_config(False)
     m = Inspeximus(p, receipts=True)
     for i in range(3):
         m.remember(f"fact number {i}", key=f"k{i}")
     m.flush()
     assert isinstance(json.load(open(p + ".receipts.json")), list)
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS_TAIL", "1")
+    tail_config(True)
     real = core._durable_replace
 
     def tail_header_stops(path, payload, *a, **k):
@@ -276,7 +277,7 @@ def test_old_chain_read_through_the_new_reader_equals_the_array(tmp_path, monkey
     import shutil
     shutil.copy(p, q)
     json.dump(pair, open(q + ".receipts.json", "w"))                  # the array form of the same chain
-    monkeypatch.delenv("INSPEXIMUS_RECEIPTS_TAIL")
+    tail_config(False)
     a, b = Inspeximus(p, receipts=True), Inspeximus(q, receipts=True)
     assert [r["hash"] for r in a._receipts] == [r["hash"] for r in b._receipts]
     assert a.verify_writes()[0] and b.verify_writes()[0]
@@ -393,7 +394,7 @@ def test_a_store_in_the_tail_format_stays_in_it_when_the_switch_is_off(tmp_path,
     """The sidecar is no longer an array, so a writer without the switch must append to the tail. Writing the array
     would drop every receipt the tail holds."""
     p, m = _store(tmp_path, n=5)
-    monkeypatch.delenv("INSPEXIMUS_RECEIPTS_TAIL")
+    tail_config(False)
     m2 = Inspeximus(p, receipts=True)
     m2.remember("written without the switch", key="k-off")
     m2.flush()
