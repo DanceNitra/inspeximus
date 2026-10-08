@@ -914,6 +914,9 @@ def _read_archive_state(store_path):
             return {}                                           # planted, or not a record we wrote
         from ._safewrite import write_atomic
         migrated = {"last_attempt": float(last), "migrated_from": "beside the store"}
+        pid = old.get("pid")
+        if isinstance(pid, int) and not isinstance(pid, bool):
+            migrated["pid"] = pid                             # a killed run is still told from a live one
         try:
             write_atomic(new, json.dumps(migrated))
         except OSError:

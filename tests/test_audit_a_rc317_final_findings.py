@@ -104,7 +104,7 @@ def test_f46_a_genuine_old_record_is_copied_into_the_key_home_once_and_never_rea
         json.dump({"last_attempt": stamp, "pid": 999999, "done": 1, "result": "ok"}, fh)
     assert cc.maybe_archive_in_background(str(proj)) == "recent", "a run 3.16 started a moment ago still counts"
     moved = json.load(open(cc._archive_state_path(path), encoding="utf-8"))
-    assert moved["last_attempt"] == stamp and "pid" not in moved, "only the time is carried over: not a pid, not a result"
+    assert moved["last_attempt"] == stamp and moved["pid"] == 999999 and "result" not in moved and "done" not in moved, "the time and the pid are carried over (a killed run stays distinguishable), not a result or a done mark"
     os.remove(old)
     assert cc.maybe_archive_in_background(str(proj)) == "recent", "the key home's copy now decides"
     with open(old, "w", encoding="utf-8") as fh:                    # planted AFTER the move: the old place is not read any more
