@@ -50,7 +50,8 @@ def robustness_evidence(probes_dir: str | None = None) -> dict:
     if probes_dir is None:
         # an operator who keeps the receipts elsewhere points at them; the coverage probe has no
         # argument of its own, so this is also how a test hands it a mutated copy
-        probes_dir = _os.environ.get("INSPEXIMUS_PROBES_DIR") or None
+        from . import _envpolicy
+        probes_dir = _envpolicy.raw("INSPEXIMUS_PROBES_DIR") or None
     if probes_dir is None:
         cand = _os.path.join(_os.path.dirname(here), "probes")
         probes_dir = cand if _os.path.isdir(cand) else None
@@ -553,7 +554,7 @@ Anchor STH: <code>{esc((s.get('anchor_sth') or '')[:32])}...</code></footer>
 
 
 def _cli(argv=None):
-    import argparse, os, json
+    import argparse, json
     from .core import Inspeximus
     ap = argparse.ArgumentParser(prog="inspeximus compliance",
                                  description="Article-labelled agent-memory compliance EVIDENCE report.")
@@ -562,7 +563,9 @@ def _cli(argv=None):
     ap.add_argument("--json", action="store_true", help="print the report as JSON")
     ap.add_argument("--expected-pubkey", default=None)
     a = ap.parse_args(argv)
-    p = a.path or os.environ.get("INSPEXIMUS_PATH") or "inspeximus_memory.json"
+    # The vetted resolver, as every other surface (3.18, AUDIT-A EC-5): INSPEXIMUS_PATH was read here unvetted.
+    from ._surface import resolve_path
+    p = a.path or resolve_path()
     store = Inspeximus(path=p, receipts=True)
     rep = compliance_report(store, expected_pubkey=a.expected_pubkey)
     if a.json:

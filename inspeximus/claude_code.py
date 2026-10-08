@@ -52,6 +52,7 @@ or the user's config, <key home>/inspeximus/config.json: {"embed": {"url": "http
 index and fails open (a down endpoint silently degrades to lexical, never drops a capture).
 """
 import sys, os, re, json, hashlib, io, datetime
+from . import _envpolicy
 from pathlib import Path as _Path
 
 
@@ -166,8 +167,8 @@ def _make_embedder(cwd):
     Fail-open on the write path: inspeximus stores the record with vec=None if a call raises, so a down
     embedder degrades recall to lexical but never drops a capture.
 
-    HOOKS ARE LEXICAL BY DEFAULT (opt in with INSPEXIMUS_EMBED_HOOKS=1 or {"embed": {"hooks": true}} in the user's
-    config; a repository's config cannot turn them on, F-11).
+    HOOKS ARE LEXICAL BY DEFAULT (opt in with {"embed": {"hooks": true}} in the user's config; a repository's config
+    cannot turn them on, F-11, and since 3.18 neither can INSPEXIMUS_EMBED_HOOKS in the environment, EC-6).
     The hooks run in the agent's hot path — PostToolUse after EVERY Edit/Write/Bash, UserPromptSubmit
     blocking the prompt — and with a local GPU embedder each capture costs one embedding call (~2s on an
     idle GPU, unbounded on a busy one: this plugin's own dogfood machine runs a 21GB LLM on the same card).
@@ -183,8 +184,10 @@ def _make_embedder(cwd):
     # had configured and left off for the hooks. `key` and `timeout` come from the user's config only, too. A
     # repository file that sets any of the three is ignored for them, with one stderr line.
     _repo_embed_keys_notice(rc, _cfg_file(cwd))
-    env_hooks = os.environ.get("INSPEXIMUS_EMBED_HOOKS", "").strip().lower() in ("1", "true", "yes")
-    if not (env_hooks or uc.get("hooks") is True):
+    # embed.hooks is the user's config only (3.18, AUDIT-A EC-6): it sends record text to the embedder and writes
+    # vectors under its recipe. INSPEXIMUS_EMBED_HOOKS in the environment is ignored with one stderr line.
+    if uc.get("hooks") is not True:
+        _envpolicy.notice_if_set("INSPEXIMUS_EMBED_HOOKS", lambda v: v in ("1", "true", "yes", "on"))
         return None, None, None
     # An environment URL to another host needs the user's config to name it, and so does an environment key
     # (3.16.4, F-12): a project's settings can set both. See inspeximus/_http.py.
@@ -196,7 +199,7 @@ def _make_embedder(cwd):
         return None, None, None
     # THE MODEL IS THE RECIPE, SO A REPOSITORY'S FILE DOES NOT CHOOSE IT (3.17.0). Only the environment (the user's own
     # MCP or hook entry) and the user's config name the model; `rc.get("model")` came from the repository.
-    model = (os.environ.get("INSPEXIMUS_EMBED_MODEL") or uc.get("model") or "nomic-embed-text").strip()
+    model = (_envpolicy.raw("INSPEXIMUS_EMBED_MODEL") or uc.get("model") or "nomic-embed-text").strip()
     key = env_key("INSPEXIMUS_EMBED_KEY", url, uc) or (uc.get("key") if isinstance(uc.get("key"), str) else "").strip()
     try:
         timeout = float(uc.get("timeout", 10))
@@ -214,7 +217,7 @@ def _make_embedder(cwd):
     # correctness fix shipped for the MCP in 1.15.0, now applied to the Claude Code plugin too). Returns
     # SEPARATE document/query embedders + an embed_id so the recipe guard re-embeds on a recipe change.
     # Opt out with INSPEXIMUS_NOMIC_PREFIX=0. Symmetric models -> (embed, None, model).
-    if "nomic" in model.lower() and os.environ.get("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":
+    if "nomic" in model.lower() and _envpolicy.raw("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":
         return (lambda t: _embed(t, "search_document: ")), (lambda t: _embed(t, "search_query: ")), f"{model}|nomic-sd-sq"
     return _embed, None, model
 
@@ -252,7 +255,7 @@ def agent_id(ev=None) -> str:
             return "codex"
         if "/.claude/" in tp:
             return "claude-code"
-    explicit = (os.environ.get("INSPEXIMUS_AGENT_ID") or "").strip()
+    explicit = (_envpolicy.raw("INSPEXIMUS_AGENT_ID") or "").strip()
     if explicit:
         return explicit[:40]
     if os.environ.get("CODEX_HOME") or os.environ.get("CODEX_CLI_PATH"):
@@ -454,7 +457,7 @@ def injection_enabled(cwd=None):
     nothing for the injection itself. INSPEXIMUS_SESSION_DIGEST already gated the digest, but not the
     file list beside it and not the recall block at all, so no single variable silenced the plugin.
     """
-    env = os.environ.get("INSPEXIMUS_NO_INJECT", "").strip().lower()
+    env = _envpolicy.raw("INSPEXIMUS_NO_INJECT", "").strip().lower()
     if env in ("1", "true", "yes"):
         return False
     c = _cfg(cwd).get("inject", {})
@@ -499,14 +502,14 @@ def _session_cfg(cwd):
         for k in cfg:
             if k in fc:
                 cfg[k] = fc[k]
-    env = os.environ.get("INSPEXIMUS_SESSION_DIGEST", "").strip().lower()
+    env = _envpolicy.raw("INSPEXIMUS_SESSION_DIGEST", "").strip().lower()
     if env:
         cfg["enabled"] = env not in _OFF
-    for key, var, cast in (("max_chars", "INSPEXIMUS_SESSION_MAX_CHARS", int),
-                           ("max_items", "INSPEXIMUS_SESSION_MAX_ITEMS", int),
-                           ("max_sessions", "INSPEXIMUS_SESSION_MAX_SESSIONS", int),
-                           ("salience", "INSPEXIMUS_SESSION_SALIENCE", float)):
-        raw = os.environ.get(var, "").strip()
+    for key, raw, cast in (("max_chars", _envpolicy.raw("INSPEXIMUS_SESSION_MAX_CHARS", ""), int),
+                           ("max_items", _envpolicy.raw("INSPEXIMUS_SESSION_MAX_ITEMS", ""), int),
+                           ("max_sessions", _envpolicy.raw("INSPEXIMUS_SESSION_MAX_SESSIONS", ""), int),
+                           ("salience", _envpolicy.raw("INSPEXIMUS_SESSION_SALIENCE", ""), float)):
+        raw = raw.strip()
         if raw:
             try:
                 cfg[key] = cast(raw)
@@ -590,8 +593,8 @@ _REPO_ARCHIVE_NOTICE = []
 
 
 def archive_policy(cwd=None) -> dict:
-    """The archive policy: defaults <- the user's config {"archive": {...}} <- env INSPEXIMUS_ARCHIVE_AUTO (1 or 0),
-    then the floors. A value of the wrong type falls back to its default.
+    """The archive policy: defaults <- the user's config {"archive": {...}} <- env INSPEXIMUS_ARCHIVE_AUTO=0 when the
+    user's config does not set `auto` (3.18: the environment may switch it off, never on), then the floors. A value of the wrong type falls back to its default.
 
     NEVER FROM THE REPOSITORY (3.16.3, AUDIT-A F-9). The store the policy archives is `coding_store_path(cwd)`,
     which is the user's shared store for every project once `install --all` recorded one. Read from the
@@ -618,11 +621,11 @@ def archive_policy(cwd=None) -> dict:
                 pol[k] = list(v)
             elif k in ("trigger_mb", "older_than_days", "min_interval_s") and isinstance(v, (int, float))                     and not isinstance(v, bool) and v >= 0:
                 pol[k] = float(v)
-    env = os.environ.get("INSPEXIMUS_ARCHIVE_AUTO", "").strip().lower()
-    if env in ("1", "true", "yes"):
-        pol["auto"] = True
-    elif env in ("0", "false", "no"):
-        pol["auto"] = False
+    # THE ENVIRONMENT MAY SWITCH IT OFF, NEVER ON (3.18, AUDIT-A EC-1). INSPEXIMUS_ARCHIVE_AUTO=1 switched the archive
+    # on over `archive.auto: false` in the user's config: the 3.16.3 F-9 effect through a project's settings.
+    _said = _envpolicy.switch_off_only("INSPEXIMUS_ARCHIVE_AUTO", c.get("auto") if isinstance(c, dict) else None)
+    if _said is not None:
+        pol["auto"] = _said
     pol["min_interval_s"] = max(pol["min_interval_s"], AUTO_ARCHIVE_MIN_INTERVAL_S)
     pol["older_than_days"] = max(pol["older_than_days"], AUTO_ARCHIVE_MIN_OLDER_THAN_DAYS)
     return pol
@@ -841,7 +844,7 @@ STAMP_HEAL_MIN_INTERVAL_S = 3600.0
 def stamp_heal_enabled() -> bool:
     """The environment, then the USER's config (`user_config_path()`, outside every repository), else on. A repository's
     own `.inspeximus/config.json` is not read."""
-    env = os.environ.get("INSPEXIMUS_STAMP_AUTO", "").strip().lower()
+    env = _envpolicy.raw("INSPEXIMUS_STAMP_AUTO", "").strip().lower()
     if env in ("0", "false", "no"):
         return False
     if env in ("1", "true", "yes"):
@@ -1221,7 +1224,7 @@ def _star_ask(cwd):
     user_prompt_submit.rs and engine/output_parser.rs, 2026-09-28). Claude Code fell back to injecting
     the raw JSON as text. The ask now travels as the envelope's `systemMessage`: shown to the user by
     both hosts, and never part of the model's context."""
-    if os.environ.get("INSPEXIMUS_NO_NUDGE", "").strip() in ("1", "true", "yes"):
+    if _envpolicy.raw("INSPEXIMUS_NO_NUDGE", "").strip() in ("1", "true", "yes"):
         return None
     try:
         st = _nudge_state(cwd)
@@ -1520,7 +1523,7 @@ def _decision_store_too_big(path) -> bool:
     # The limit is parsed apart from the stat (3.16.3, AUDIT-B): a value that is not a number, for example "abc",
     # fell into the same `except ValueError` as an unreadable size and turned the guard off. It now means the
     # default limit.
-    raw = (os.environ.get("INSPEXIMUS_DECISION_STORE_MAX_MB") or "").strip()
+    raw = (_envpolicy.raw("INSPEXIMUS_DECISION_STORE_MAX_MB") or "").strip()
     try:
         limit = float(raw) if raw else DECISION_STORE_MAX_MB
     except ValueError:
@@ -1624,7 +1627,7 @@ def recall(ev):
     # DECISIONS ONLY, and read-only: the second store is somebody else's memory, so its mechanics stay
     # out of this prompt and nothing here writes to it. Fail-open, like every other read on this path --
     # a hook that raises costs the user their turn.
-    ext = (os.environ.get("INSPEXIMUS_DECISION_STORE") or "").strip()
+    ext = _envpolicy.decision_store().strip()          # not inside a repository, unless the config names it (3.18)
     if ext and decisions is not None and _decision_store_too_big(ext):
         ext = ""
     if ext and decisions is not None:
@@ -1776,7 +1779,7 @@ def session_start(ev):
     try:
         from inspeximus.memory_index_receipt import receipt_for, DEFAULT_MAX_POINTERS
         try:
-            cap = int(os.environ.get("INSPEXIMUS_RECEIPT_MAX_POINTERS", DEFAULT_MAX_POINTERS))
+            cap = int(_envpolicy.raw("INSPEXIMUS_RECEIPT_MAX_POINTERS", DEFAULT_MAX_POINTERS))
         except ValueError:
             cap = DEFAULT_MAX_POINTERS
         note = receipt_for(cwd, max_pointers=cap)
@@ -2370,7 +2373,7 @@ def main():
             recall(ev)
             maybe_archive_in_background(ev.get("cwd") or os.getcwd())
             maybe_restamp_after_recall(ev.get("cwd") or os.getcwd())
-            _FAST_EXIT[0] = os.environ.get("INSPEXIMUS_HOOK_FAST_EXIT", "").strip().lower() not in ("0", "false", "no")
+            _FAST_EXIT[0] = _envpolicy.raw("INSPEXIMUS_HOOK_FAST_EXIT", "").strip().lower() not in ("0", "false", "no")
         elif name == "SessionStart":
             session_start(ev)
         elif name == "SessionEnd":

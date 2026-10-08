@@ -34,7 +34,9 @@ def mod(monkeypatch):
     """A fresh MCP module on a temp store with receipts on. Function-scoped: these tests tamper."""
     d = tempfile.mkdtemp()
     monkeypatch.setenv("INSPEXIMUS_PATH", os.path.join(d, "mcp.json"))
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS", "1")
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _userconfig_env import RECEIPTS_ON, key_home_with
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", key_home_with(RECEIPTS_ON))     # receipts on: the user's config (3.18)
     return importlib.reload(importlib.import_module("inspeximus.mcp_server"))
 
 

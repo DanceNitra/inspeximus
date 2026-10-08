@@ -336,10 +336,12 @@ The LangChain callback digests a chat-model call as every message's role, conten
 that value with `inspeximus.integrations.langchain.context_messages(messages)` before calling `matches`.
 MCP: `INSPEXIMUS_ACTIONS=1` records every tool call; tools `actions_verify`, `what_it_knew`. Every ledger tool
 writes through one handle, signed with the store's receipt key when the server holds one, else the writer key.
-The server takes the receipt key from the user's config `receipts.key_file`, `INSPEXIMUS_RECEIPT_KEY_FILE`,
-`INSPEXIMUS_RECEIPT_KEY`, or the file `receipt_key_for(path)` keeps in the key home, and refuses to start with a key
-that would break the store's chain. Since 3.18 a key file named by the environment is ignored when it is inside a git
-work tree or the store's project, and an unreadable one is ignored with one stderr line instead of stopping the server.
+The server takes the receipt key from the user's config `receipts.key_file` or `receipts.key`,
+`INSPEXIMUS_RECEIPT_KEY_FILE`, a path in `INSPEXIMUS_RECEIPT_KEY`, or the file `receipt_key_for(path)` keeps in the key
+home, and refuses to start with a key that would break the store's chain. Since 3.18 a key file named by the
+environment is ignored when it is inside a git work tree, the store's project, or the project the server runs in, and an
+unreadable one is ignored with one stderr line instead of stopping the server. A 64-hex key in `INSPEXIMUS_RECEIPT_KEY`
+is ignored: put it in `receipts.key`.
 A ledger file that exists and cannot be read fails `verify()` and raises `LedgerUnreadable` on every write.
 LangChain: `inspeximus.integrations.langchain.InspeximusActionCallback(led)` in `config={"callbacks": [...]}`.
 Probe: `probes/what_the_agent_knew_when_it_acted.py` (three tamper controls).

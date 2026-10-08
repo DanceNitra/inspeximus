@@ -8,7 +8,6 @@ That is how the value is named however it is read (`os.environ.get`, `env.get` o
 from __future__ import annotations
 
 import ast
-import glob
 import json
 import os
 import re
@@ -24,8 +23,9 @@ from inspeximus.core import Inspeximus  # noqa: E402
 
 
 def _names():
+    import _env_read_scan
     seen = set()
-    for f in glob.glob(os.path.join(ROOT, "inspeximus", "*.py")):
+    for f in _env_read_scan.shipped_files():
         for node in ast.walk(ast.parse(open(f, encoding="utf-8").read())):
             if isinstance(node, ast.Constant) and isinstance(node.value, str) and re.fullmatch(
                     r"INSPEXIMUS_[A-Z0-9_]+", node.value):

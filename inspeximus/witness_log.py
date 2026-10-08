@@ -170,7 +170,8 @@ def watch(a) -> int:
     if a.key_file:
         with open(a.key_file, encoding="utf-8") as fh:
             secret = fh.read().strip()
-    secret = secret or (os.environ.get("INSPEXIMUS_WITNESS_SECRET") or "").strip() or None
+    from . import _envpolicy
+    secret = secret or (_envpolicy.raw("INSPEXIMUS_WITNESS_SECRET") or "").strip() or None
 
     try:
         head, mtl = read_log(a.url, a.timeout)

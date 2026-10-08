@@ -38,8 +38,10 @@ POLICY = {
     # B. how it writes: format, guards, identity
     "INSPEXIMUS_STORE_FORMAT": (CONFIG_ONLY, "store.format", "converts the user's row store (3.17.0)"),
     "INSPEXIMUS_RECEIPTS_TAIL": (CONFIG_ONLY, "receipts.tail", "converts the receipt sidecar (3.17.0)"),
-    "INSPEXIMUS_RECEIPTS": (ENV_SAFE, None, "opt-in: starts a sidecar on a store that has none; changes no record"),
-    "INSPEXIMUS_RECEIPT_KEY": (ENV_SAFE, None, "a flag: the key is the one in the user's key home"),
+    "INSPEXIMUS_RECEIPTS": (ENV_GUARD, "receipts.enabled", "starts a chain only when the user's config names a signing "
+                            "key; an unsigned chain from a project left the user's key unable to sign the store"),
+    "INSPEXIMUS_RECEIPT_KEY": (ENV_GUARD, "receipts.key", "a 64-hex key from the environment is ignored (a project "
+                               "chose the key that signed a new chain); a path follows the key-file rule"),
     "INSPEXIMUS_RECEIPT_KEY_FILE": (ENV_GUARD, "receipts.key_file", "not a file inside a git work tree or the store's "
                                     "project, and an unreadable one is ignored rather than stopping the server; a "
                                     "project named the key that signed a new store's chain, and stopped the server"),
@@ -56,8 +58,10 @@ POLICY = {
     "INSPEXIMUS_OBSERVE_RECALL": (CONFIG_ONLY, "recall.observe", "each recall writes into the user's store"),
     "INSPEXIMUS_KEEP_CONVERSION_BACKUP": (CONFIG_ONLY, "store.keep_conversion_backup",
                                           "keeps a full copy that an erasure does not reach"),
-    "INSPEXIMUS_BUSY_TIMEOUT_S": (ENV_GUARD, "store.busy_timeout_s", "the environment may raise it, never lower it"),
-    "INSPEXIMUS_SAVE_RETRIES": (ENV_GUARD, "store.save_retries", "the environment may raise it, never lower it"),
+    "INSPEXIMUS_BUSY_TIMEOUT_S": (ENV_GUARD, "store.busy_timeout_s", "the environment may set 10 to 120 s: never lower, "
+                                  "never without bound"),
+    "INSPEXIMUS_SAVE_RETRIES": (ENV_GUARD, "store.save_retries", "the environment may set 2 to 20: never lower, never "
+                                "without bound"),
     # C. which vectors it writes
     "INSPEXIMUS_EMBED_URL": (ENV_GUARD, None, "another host only when the user's config names it (3.16.x, F-12)"),
     "INSPEXIMUS_EMBED_KEY": (ENV_GUARD, None, "sent only to a host the user's config allows (F-12)"),
@@ -71,12 +75,15 @@ POLICY = {
     "INSPEXIMUS_MAX_K": (ENV_SAFE, None, "read side only"),
     "INSPEXIMUS_SNIPPET_CHARS": (ENV_SAFE, None, "read side only"),
     "INSPEXIMUS_READ_RESOLVER": (ENV_SAFE, None, "read side only"),
-    "INSPEXIMUS_TRUST_SEEDS": (ENV_SAFE, None, "read side only: narrows what trusted_only returns"),
+    "INSPEXIMUS_TRUST_SEEDS": (CONFIG_ONLY, "recall.trust_seeds", "a seed adds trust to every record its key signed"),
     # E. hook only, or the hook's own switches
-    "INSPEXIMUS_ARCHIVE_AUTO": (ENV_SAFE, None, "hook only; the archive policy is the user's config (3.16.x)"),
-    "INSPEXIMUS_DECISION_STORE": (ENV_SAFE, None, "hook only, read-only"),
+    "INSPEXIMUS_ARCHIVE_AUTO": (ENV_GUARD, "archive.auto", "the environment may switch the archive off, never on, and "
+                                "the user's config wins (the 3.16.3 F-9 effect through the environment)"),
+    "INSPEXIMUS_DECISION_STORE": (ENV_GUARD, "hook.decision_store", "not a file inside a git work tree or the project, "
+                                  "unless the user's config names it: its text reaches the model"),
     "INSPEXIMUS_DECISION_STORE_MAX_MB": (ENV_SAFE, None, "hook only, read side"),
-    "INSPEXIMUS_EMBED_HOOKS": (ENV_SAFE, None, "hook only; embedding in hooks is the user's config (embed.hooks)"),
+    "INSPEXIMUS_EMBED_HOOKS": (CONFIG_ONLY, "embed.hooks", "sends record text to an embedder and writes vectors under "
+                               "its recipe"),
     "INSPEXIMUS_NO_INJECT": (ENV_SAFE, None, "hook only: injects less"),
     "INSPEXIMUS_NO_NUDGE": (ENV_SAFE, None, "hook only: prints less"),
     "INSPEXIMUS_SESSION_DIGEST": (ENV_SAFE, None, "hook only"),
@@ -162,9 +169,10 @@ def guard_on(var: str) -> bool:
     return True
 
 
-def at_least(var: str, default, cast):
+def at_least(var: str, default, cast, ceiling=None):
     """ENV_GUARD for a number with a safe floor: the user's config sets any value; the environment may raise it above
-    `default` and is ignored below it."""
+    `default`, up to `ceiling` (AUDIT-A EC-4: `inf` and 1e12 were accepted, so a write could wait without limit), and
+    is ignored outside that range."""
     key = POLICY[var][1]
     v = _cfg(key)
     if isinstance(v, (int, float)) and not isinstance(v, bool):
@@ -175,9 +183,9 @@ def at_least(var: str, default, cast):
             x = cast(raw)
         except (TypeError, ValueError):
             return default
-        if x >= default:
+        if default <= x <= (x if ceiling is None else ceiling):
             return x
-        _ignored(var, "%s (the environment may raise it above %s, never lower it)" % (key, default))
+        _ignored(var, "%s (the environment may set it from %s to %s)" % (key, default, ceiling))
     return default
 
 
@@ -197,25 +205,23 @@ def switch_on_only(var: str, default: bool) -> bool:
 
 
 def key_file(var: str, store_path=None):
-    """ENV_GUARD for a key file. The user's config may name any file. The environment may name a file that is not inside
-    a git work tree and not inside the project of `store_path`: a repository controls the files inside it, so a key it
-    ships is a key it chose (the F-13 rule for INSPEXIMUS_KEY_HOME, applied to the file's folder). Returns
-    (path or None, source), where source is "config <key>", the variable's name, or None."""
+    """ENV_GUARD for a key file. The user's config may name any file. The environment may name a file whose folder passes
+    the F-13 rule for the key home (`_keyhome.refusal`): not inside a git work tree, not inside the project of
+    `store_path`, and not inside the project the process runs in (a project delivered without .git, AUDIT-A EC-3). A
+    repository controls the files inside it, so a key it ships is a key it chose. Returns (path or None, source)."""
     key = POLICY[var][1]
     v = _cfg(key)
     if isinstance(v, str) and v.strip():
         return v.strip(), "config " + key
-    raw = _env(var)
-    if not raw:
+    raw_v = _env(var)
+    if not raw_v:
         return None, None
-    from ._keyhome import _git_work_tree, _inside, _norm, _project_of
-    folder = _norm(os.path.dirname(os.path.abspath(raw)))
-    tree = _git_work_tree(folder)
-    proj = _project_of(store_path) if store_path else None
-    if tree or (proj and _inside(folder, proj)):
-        _ignored(var, "%s (the environment may not name a key file inside %s)" % (key, tree or proj))
+    from ._keyhome import refusal
+    why = refusal(os.path.dirname(os.path.abspath(raw_v)), store_path)
+    if why:
+        _ignored(var, "%s (the environment may not name this key file: %s)" % (key, why))
         return None, None
-    return raw, var
+    return raw_v, var
 
 
 def project_name(raw: str, cwd=None):
@@ -231,3 +237,142 @@ def project_name(raw: str, cwd=None):
     _ignored("INSPEXIMUS_PROJECT", "project.names to a list that includes %r (or run from a folder named %r)"
              % (raw, raw))
     return None
+
+
+# ── THE ONE READ (AUDIT-A EC-5) ─────────────────────────────────────────────────────────────────────────────────
+# Every INSPEXIMUS_* value the package reads comes through this module. `tests/test_every_environment_variable_has_a_
+# policy.py` fails on a direct read of such a name anywhere else (os.environ, os.getenv, a mapping's `.get`), on a name
+# built at run time, and on a scan of the environment by prefix, so a new reader cannot skip the rule by its shape.
+
+def raw(var: str, default=None, env=None):
+    """The value of an env-safe or env-with-guard variable, as the environment holds it, or `default` when it is unset.
+    The caller applies the guard its POLICY entry names (the vetted resolver for INSPEXIMUS_PATH, F-13 for the key home).
+    A config-only variable is never read here: it raises, because the read would be the defect."""
+    if not var.startswith("INSPEXIMUS_"):
+        rule = ENV_SAFE                                 # another program's variable; an unlisted name of ours raises
+    else:
+        rule = POLICY[var][0]
+    if rule == CONFIG_ONLY:
+        raise ValueError("%s is config-only; read %s from the user's config" % (var, POLICY[var][1]))
+    src = os.environ if env is None else env
+    v = src.get(var)
+    return default if v is None else v
+
+
+def host(var: str, mapping):
+    """A value from a host's own configuration entry (an agent's MCP `env` block in the user's host config file), which
+    the user wrote and a project's settings do not reach. Any rule; never the process environment."""
+    if mapping is os.environ:
+        raise ValueError("host() reads a host config entry, not the process environment")
+    v = (mapping or {}).get(var)
+    return "" if v is None else str(v)
+
+
+def notice_if_set(var: str, when=None) -> None:
+    """For a config-only variable: say once that the environment's value is ignored, when it is set (and `when(value)`
+    holds). Reads nothing for the caller."""
+    v = _env(var)
+    if v and (when is None or when(v.lower())):
+        _ignored(var, POLICY[var][1])
+
+
+def snapshot(env=None) -> dict:
+    """Every INSPEXIMUS_* entry of `env` (default: the process environment), for a fingerprint or a child's environment.
+    The one prefix scan the package has."""
+    src = os.environ if env is None else env
+    return {k: v for k, v in src.items() if k.startswith("INSPEXIMUS_")}
+
+
+def switch_off_only(var: str, config_value):
+    """ENV_GUARD for a switch whose `on` is the harmful direction (AUDIT-A EC-1). The user's config wins when it says
+    either; otherwise the environment may switch it off and is ignored, with the stderr line, when it asks for on.
+    Returns True, False, or None (nothing said)."""
+    if isinstance(config_value, bool):
+        return config_value
+    v = _env(var).lower()
+    if v in _OFF:
+        return False
+    if v in ("1", "true", "yes", "on"):
+        _ignored(var, POLICY[var][1] + " to true")
+    return None
+
+
+def receipts_from_env() -> bool:
+    """INSPEXIMUS_RECEIPTS=1 starts a receipt chain only when the user's config names a signing key (`receipts.key_file`
+    or `receipts.key`); `receipts.enabled: true` starts one in any case (AUDIT-A EC-2). A project started an unsigned
+    chain on a store with none, and the user's key then could not sign that store without the chain reading as
+    tampered."""
+    if _cfg("receipts.enabled") is True:
+        return True
+    if _env("INSPEXIMUS_RECEIPTS").lower() in ("1", "true", "yes", "on"):
+        kf, kk = _cfg("receipts.key_file"), _cfg("receipts.key")
+        if (isinstance(kf, str) and kf.strip()) or (isinstance(kk, str) and kk.strip()):
+            return True
+        _ignored("INSPEXIMUS_RECEIPTS", "receipts.enabled to true, or receipts.key_file (the environment starts a chain "
+                 "only when your config names a signing key)")
+    return False
+
+
+def trust_seeds() -> set:
+    """The trust root, from the user's config `recall.trust_seeds` (a list, or a comma-separated string) only (AUDIT-A
+    EC-6): a seed adds trust to every record its key signed, so a project must not name one."""
+    v = _cfg("recall.trust_seeds")
+    if isinstance(v, str):
+        v = v.split(",")
+    if isinstance(v, list):
+        return {str(s).strip() for s in v if str(s).strip()}
+    if _env("INSPEXIMUS_TRUST_SEEDS"):
+        _ignored("INSPEXIMUS_TRUST_SEEDS", "recall.trust_seeds")
+    return set()
+
+
+def receipt_key_value():
+    """The receipt key the user gave as a value: the user's config `receipts.key` (64 hex), else None. A 64-hex
+    INSPEXIMUS_RECEIPT_KEY in the environment is ignored with the stderr line (Builder EC-7): it signed a new store's
+    chain with a key a project chose. A path in that variable is a key file and follows `key_file`'s rule."""
+    v = _cfg("receipts.key")
+    if isinstance(v, str) and _hexkey(v.strip()):
+        return v.strip().lower()
+    e = _env("INSPEXIMUS_RECEIPT_KEY")
+    if e and _hexkey(e):
+        _ignored("INSPEXIMUS_RECEIPT_KEY", "receipts.key")
+    return None
+
+
+def decision_store() -> str:
+    """INSPEXIMUS_DECISION_STORE (AUDIT-A EC-6): the user's config `hook.decision_store` names any file; the environment
+    a file that is not inside a git work tree or the project the hook runs in, because the hook puts its text into the
+    model's context. Returns the path or ''."""
+    v = _cfg("hook.decision_store")
+    if isinstance(v, str) and v.strip():
+        return v.strip()
+    raw_v = _env("INSPEXIMUS_DECISION_STORE")
+    if not raw_v:
+        return ""
+    from ._keyhome import refusal
+    why = refusal(os.path.dirname(os.path.abspath(raw_v)))
+    if why:
+        _ignored("INSPEXIMUS_DECISION_STORE", "hook.decision_store (the environment may not name this file: %s)" % why)
+        return ""
+    return raw_v
+
+
+def _hexkey(v: str) -> bool:
+    return len(v) == 64 and all(c in "0123456789abcdefABCDEF" for c in v)
+
+
+def receipt_key_path(store_path=None):
+    """INSPEXIMUS_RECEIPT_KEY when it holds a path rather than a 64-hex key: the path when its folder passes the
+    key-file rule (`key_file`), else None with the stderr line. A path that does not exist is ignored the same way
+    (Builder EC-7): a project named a missing file to stop every write. Returns None for a hex value or no value."""
+    e = _env("INSPEXIMUS_RECEIPT_KEY")
+    if not e or _hexkey(e):
+        return None
+    from ._keyhome import refusal
+    why = refusal(os.path.dirname(os.path.abspath(e)), store_path)
+    if not why and not os.path.isfile(e):
+        why = "no such file"
+    if why:
+        _ignored("INSPEXIMUS_RECEIPT_KEY", "receipts.key_file (the environment may not name this key file: %s)" % why)
+        return None
+    return e

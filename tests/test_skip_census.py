@@ -107,7 +107,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: client session, the server's project scope, and the server's reload-and-retry wrap. The same rule
 #: without the SDK is test_recommit_from_the_shell_needs_named_ids_or_all.py, which the base job runs.
 #: Exactly +3, no slack: 260 + 3 = 263.
-MAX_HIDDEN_IN_BASE_ENV = 263
+#: +2 in 3.18 for test_the_mcp_server_signs_with_the_stores_key.py: a key file the environment names that cannot be
+#: read no longer stops the server (the user's config still does), and one inside a git work tree is never used. Both
+#: start the MCP server, so they need the SDK and run in the `integrations` job; the policy itself without the SDK is
+#: test_every_environment_variable_has_a_policy.py. Exactly +2, no slack: 263 + 2 = 265.
+MAX_HIDDEN_IN_BASE_ENV = 265
 
 
 def _base_env_census():

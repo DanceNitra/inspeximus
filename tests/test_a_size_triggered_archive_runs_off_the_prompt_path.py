@@ -95,7 +95,11 @@ def test_the_policy_is_off_by_default_and_reads_config_and_env(tmp_path, monkeyp
     pol = cc.archive_policy(proj)
     assert pol["auto"] and pol["trigger_mb"] == 12.0 and pol["older_than_days"] == 3.0
     assert pol["classes"] == ["cmd", "file"] and pol["min_interval_s"] == 3600.0
+    # 3.18 (AUDIT-A EC-1): the user's config wins in both directions; the environment may switch the archive off
+    # only where the config does not say, and never on.
     monkeypatch.setenv("INSPEXIMUS_ARCHIVE_AUTO", "0")
+    assert cc.archive_policy(proj)["auto"] is True
+    _user_config({"archive": {"auto": None, "trigger_mb": 12}})
     assert cc.archive_policy(proj)["auto"] is False
 
 

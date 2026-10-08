@@ -59,9 +59,9 @@ checkout. Everything happens in one directory so the residue scan has a root to 
 
 ```console
 $ mkdir dsar
-$ python -c "from inspeximus import new_receipt_keypair; sk, pk = new_receipt_keypair(); open('receipt.key','w').write(sk); open('receipt.key.pub','w').write(pk); print('public key:', pk)"
+$ python -c "from inspeximus import new_receipt_keypair; sk, pk = new_receipt_keypair(); open('../receipt.key','w').write(sk); open('../receipt.key.pub','w').write(pk); print('public key:', pk)"
 public key: 046f6596e0b68293fcf1b8f66d20ad06b4223b43aa19e413cfb9cf40be43587d
-$ export INSPEXIMUS_RECEIPT_KEY_FILE=receipt.key
+$ export INSPEXIMUS_RECEIPT_KEY_FILE=../receipt.key
 ```
 
 The key is minted by **you**. The secret half signs the tombstones; the public half is what an auditor
@@ -70,6 +70,10 @@ output, in shell history and in CI logs, and a signing key that leaks makes ever
 signed forgeable — the one property the certificate sells. Pass a file, or set
 `$INSPEXIMUS_RECEIPT_KEY_FILE`. In production that file comes from your KMS and the secret half never
 sits on the memory host.
+
+The key sits one folder up, outside the folder you work in. Since 3.18 a key file that the environment names is
+ignored when it is inside a git work tree, the store's project, or the folder the command runs in, because a
+project's settings can set the variable. `receipts.key_file` in your own config names any file.
 
 Now four records about two people. The third is the one a naive text-match delete misses: a summary
 built **from** Alice's record, which names neither her nor her address.
@@ -122,7 +126,7 @@ wrote erasure certificate -> cert.json  (3 erasure(s) attested, scoped to DSAR-2
 `cert.json` is self-contained: the full signed tombstone chain (so it re-derives from genesis), the
 request-scoped erased ids, the public key, a Certificate-Transparency-style anchor over the whole
 history, and the certificate's own statement of what it does not certify. It carries no personal data.
-Hand it to the auditor; hand them `receipt.key.pub` separately.
+Hand it to the auditor; hand them `../receipt.key.pub` separately.
 
 ## 3. Verify the residue
 
@@ -191,7 +195,7 @@ Without the pin, the signatures show that the issuer held a key, not whose; `--r
 certificate that carries no signature at all:
 
 ```console
-$ inspeximus erasure-verify cert.json --store ./dsar/store.json --expected-pubkey-file receipt.key.pub
+$ inspeximus erasure-verify cert.json --store ./dsar/store.json --expected-pubkey-file ../receipt.key.pub
   OK   chain_intact
   OK   signatures_valid
   OK   signed
@@ -237,7 +241,7 @@ used to be free text nobody compared. Rewrite it into something flattering:
 
 ```console
 $ python -c "import json; c=json.load(open('cert.json',encoding='utf-8')); c['scope']='Full GDPR compliance certification, all systems.'; json.dump(c, open('cert-tampered.json','w',encoding='utf-8'), ensure_ascii=False, indent=2)"
-$ inspeximus erasure-verify cert-tampered.json --store ./dsar/store.json --expected-pubkey-file receipt.key.pub
+$ inspeximus erasure-verify cert-tampered.json --store ./dsar/store.json --expected-pubkey-file ../receipt.key.pub
   FAIL scope_intact
   FAIL the `scope` statement does not match the one this library issues ...
 VERDICT: FAIL  (3 erasure(s) attested, absence checked)

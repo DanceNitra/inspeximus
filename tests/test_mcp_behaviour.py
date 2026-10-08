@@ -22,14 +22,16 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 pytest.importorskip("mcp")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _userconfig_env import RECEIPTS_ON, key_home_with  # noqa: E402
 
 
 @pytest.fixture(scope="module")
 def mod():
     """A fresh MCP module on a temp store, with the environment restored afterwards."""
-    saved = {k: os.environ.get(k) for k in ("INSPEXIMUS_PATH", "INSPEXIMUS_RECEIPTS")}
+    saved = {k: os.environ.get(k) for k in ("INSPEXIMUS_PATH", "INSPEXIMUS_KEY_HOME")}
     os.environ["INSPEXIMUS_PATH"] = os.path.join(tempfile.mkdtemp(), "mcp.json")
-    os.environ["INSPEXIMUS_RECEIPTS"] = "1"
+    os.environ["INSPEXIMUS_KEY_HOME"] = key_home_with(RECEIPTS_ON)        # receipts on: the user's config (3.18)
     m = importlib.reload(importlib.import_module("inspeximus.mcp_server"))
     try:
         yield m

@@ -211,7 +211,8 @@ def _witness_secret(a):
         print("WARNING: --secret puts this witness's SIGNING KEY in the process table, readable by "
               "any local user. Use --secret-file or INSPEXIMUS_WITNESS_SECRET.", file=sys.stderr)
         return a.secret
-    return (os.environ.get("INSPEXIMUS_WITNESS_SECRET") or "").strip() or None
+    from . import _envpolicy
+    return (_envpolicy.raw("INSPEXIMUS_WITNESS_SECRET") or "").strip() or None
 
 
 def main(argv=None):

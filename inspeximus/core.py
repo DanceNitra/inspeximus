@@ -657,8 +657,8 @@ def _receipts_tail_on() -> bool:
     from . import _userconfig
     if _userconfig.get("receipts", "tail") is True:
         return True
-    if os.environ.get("INSPEXIMUS_RECEIPTS_TAIL", "").strip().lower() in ("1", "true", "yes", "on"):
-        _userconfig.env_ignored("INSPEXIMUS_RECEIPTS_TAIL", "receipts.tail to true")
+    from . import _envpolicy
+    _envpolicy.notice_if_set("INSPEXIMUS_RECEIPTS_TAIL", lambda v: v in ("1", "true", "yes", "on"))
     return False
 
 
@@ -892,10 +892,14 @@ def receipt_key_for(store_path, create: bool = True) -> str:
 
     `create=False` returns "" instead of minting, for a caller that wants to know rather than act.
     """
-    env = os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip()
+    # 3.18 (Builder EC-7): a 64-hex key comes from the user's config `receipts.key` only, since a project chose the key
+    # that signed a new store's chain; a path in the environment follows the key-file rule, and a missing one is ignored.
+    from . import _envpolicy
+    hexkey = _envpolicy.receipt_key_value()
+    if hexkey:
+        return hexkey                                            # the key itself
+    env = _envpolicy.receipt_key_path(store_path)
     if env:
-        if len(env) == 64 and all(c in "0123456789abcdefABCDEF" for c in env):
-            return env.lower()                                   # the key itself
         if os.path.exists(env):
             # THE SAME GUARD AS THE DEFAULT ROUTE. It only covered the directory this function
             # chooses, so `INSPEXIMUS_RECEIPT_KEY=<a path inside the store dir>` walked straight past
@@ -10932,7 +10936,10 @@ class Inspeximus:
         from . import _userconfig
         if _userconfig.get("store", "format") == "json":
             return True
-        if (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() != "json":
+        from . import _envpolicy
+        # Config-only, with the 3.17.0 exception kept: the environment still picks json for a store that is not a
+        # row store yet, so `raw` (which refuses a config-only name) is not the read here.
+        if _envpolicy._env("INSPEXIMUS_STORE_FORMAT").lower() != "json":
             return False
         if _rows is not None and self.path and self.path.exists() and _rows.looks_like_sqlite(self.path):
             _userconfig.env_ignored("INSPEXIMUS_STORE_FORMAT", "store.format to \"json\"")
@@ -19898,7 +19905,7 @@ class Inspeximus:
         """
         import sqlite3 as _sq
         from . import _envpolicy
-        _tries = max(0, _envpolicy.at_least("INSPEXIMUS_SAVE_RETRIES", 2, int))   # never lowered by a project (3.18)
+        _tries = max(0, _envpolicy.at_least("INSPEXIMUS_SAVE_RETRIES", 2, int, 20))   # never lowered by a project (3.18)
         _last = None
         for _n in range(_tries + 1):
             try:
@@ -20996,7 +21003,8 @@ def default_distiller(url=None, model=None, key=None, timeout=60):
     if not url:
         raise RuntimeError("default_distiller needs INSPEXIMUS_LLM_URL (an OpenAI-compatible /chat/completions endpoint) "
                            "or explicit url= ; the core stays zero-LLM, so a distiller is opt-in.")
-    model = (model or os.environ.get("INSPEXIMUS_LLM_MODEL", "gpt-4o-mini")).strip()
+    from . import _envpolicy
+    model = (model or _envpolicy.raw("INSPEXIMUS_LLM_MODEL", "gpt-4o-mini")).strip()
     key = (key or env_key("INSPEXIMUS_LLM_KEY", url)).strip()
 
     def distiller(prompt, text):

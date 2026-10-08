@@ -279,7 +279,8 @@ def _coding_store_location(cwd=None, env=None):
     file the check saw."""
     from ._storelink import vet
     env = os.environ if env is None else env
-    override = (env.get("INSPEXIMUS_CODING_STORE") or "").strip()
+    from . import _envpolicy
+    override = (_envpolicy.raw("INSPEXIMUS_CODING_STORE", env=env) or "").strip()
     if override:
         return vet(override, CODING_STORE_FILENAME, cwd, named_by_env=True)
     shared = shared_store_path()                 # `inspeximus install --all` (3.14.0): the user's own record
@@ -326,10 +327,11 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
     env = os.environ if env is None else env
     if path:
         return path
-    from_env = env.get("INSPEXIMUS_PATH")
+    from . import _envpolicy
+    from_env = _envpolicy.raw("INSPEXIMUS_PATH", env=env)
     if from_env:
         return _vet_path_link(from_env, cwd)
-    scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
+    scope = (_envpolicy.raw("INSPEXIMUS_SCOPE", env=env) or "").strip().lower()
     if scope == "":
         # THE SHARED STORE, WHEN `install --all` RECORDED ONE (3.14.3). The hooks already read the record
         # (coding_store_path); this function, which every CLI command and the MCP server go through, did
@@ -382,11 +384,11 @@ def _vet_path_link(path, cwd=None) -> str:
 def resolved_path_source(path=None, env=None) -> str:
     """WHICH rule `resolve_path` applied, in words. Reported by the MCP `where_am_i` tool, so a store
     chosen by the shared record is never mistaken for one chosen by the working directory."""
-    env = os.environ if env is None else env
-    scope = (env.get("INSPEXIMUS_SCOPE") or "").strip().lower()
+    from . import _envpolicy
+    scope = (_envpolicy.raw("INSPEXIMUS_SCOPE", env=env) or "").strip().lower()
     if path:
         return "--path"
-    if env.get("INSPEXIMUS_PATH"):
+    if _envpolicy.raw("INSPEXIMUS_PATH", env=env):
         if scope in ("project", "claude-code"):
             return f"INSPEXIMUS_PATH (explicit path OUTRANKS INSPEXIMUS_SCOPE={scope})"
         return "INSPEXIMUS_PATH"

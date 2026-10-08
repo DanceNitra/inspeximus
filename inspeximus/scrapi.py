@@ -271,7 +271,8 @@ def _service_secret(a):
         print("WARNING: --secret puts this service's SIGNING KEY in the process table, readable by "
               "any local user. Use --secret-file or INSPEXIMUS_SERVICE_SECRET.", file=sys.stderr)
         return a.secret
-    return (os.environ.get("INSPEXIMUS_SERVICE_SECRET") or "").strip() or None
+    from . import _envpolicy
+    return (_envpolicy.raw("INSPEXIMUS_SERVICE_SECRET") or "").strip() or None
 
 
 def policy_from_args(a) -> RegistrationPolicy:

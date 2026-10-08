@@ -143,10 +143,10 @@ def test_the_loopback_check(url, loop):
 def test_the_environment_still_overrides_and_reaches_another_host(tmp_path, monkeypatch, sent):
     _shared_store(tmp_path, monkeypatch, rows=1)
     repo = _repo(tmp_path, {"hooks": True, "url": REMOTE})
-    monkeypatch.setenv("INSPEXIMUS_EMBED_HOOKS", "1")
     monkeypatch.setenv("INSPEXIMUS_EMBED_URL", "http://env-embedder.example.test/v1/embeddings")
-    # 3.16.4, F-12: an environment URL to another host needs the user's config to name the host.
-    _user_config({"embed": {"allowed_hosts": ["env-embedder.example.test"]}})
+    # 3.16.4, F-12: an environment URL to another host needs the user's config to name the host; 3.18 (EC-6): the
+    # hooks embed only when the user's config says so.
+    _user_config({"embed": {"allowed_hosts": ["env-embedder.example.test"], "hooks": True}})
     s = cc._store(repo)
     s.remember("ran: ENV-UNIQUE", key="cmd:e", tags=["bash"], mtype="episodic")
     assert [u for u, _ in sent] == ["http://env-embedder.example.test/v1/embeddings"]

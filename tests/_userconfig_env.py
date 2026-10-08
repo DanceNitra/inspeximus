@@ -17,7 +17,14 @@ def _value(var: str, raw: str):
         return [raw]
     if var in ("INSPEXIMUS_ECHO_GUARD", "INSPEXIMUS_READ_GUARDS", "INSPEXIMUS_HEADS"):
         return raw.strip().lower() not in ("0", "off", "false", "no")
-    if var in ("INSPEXIMUS_OBSERVE_RECALL", "INSPEXIMUS_PII_DETECT", "INSPEXIMUS_KEEP_CONVERSION_BACKUP"):
+    if var in ("INSPEXIMUS_OBSERVE_RECALL", "INSPEXIMUS_PII_DETECT", "INSPEXIMUS_KEEP_CONVERSION_BACKUP",
+               "INSPEXIMUS_RECEIPTS", "INSPEXIMUS_EMBED_HOOKS"):
+        return raw.strip().lower() in _ON
+    if var == "INSPEXIMUS_ARCHIVE_AUTO":                 # unknown spellings say nothing, as in the hook
+        v = raw.strip().lower()
+        return True if v in _ON else (False if v in ("0", "off", "false", "no") else None)
+    if var == "INSPEXIMUS_RECEIPT_KEY":
+        return raw.strip().lower()
         return raw.strip().lower() in _ON
     if var == "INSPEXIMUS_BUSY_TIMEOUT_S":
         return float(raw)
@@ -31,8 +38,12 @@ def config_settings(env: dict) -> tuple:
     cfg, rest = {}, {}
     for var, raw in env.items():
         rule = _envpolicy.POLICY.get(var)
-        if rule and rule[1] and var not in ("INSPEXIMUS_STORE_FORMAT", "INSPEXIMUS_RECEIPTS_TAIL",
-                                            "INSPEXIMUS_RECEIPT_KEY_FILE", "INSPEXIMUS_WRITER_KEY_FILE"):
+        # A key path stays in the environment (the key-file rule applies there); a 64-hex RECEIPT_KEY is a value, and
+        # values come from the user's config only (3.18, EC-7).
+        path_key = var == "INSPEXIMUS_RECEIPT_KEY" and not _envpolicy._hexkey(raw.strip())
+        if rule and rule[1] and not path_key and var not in ("INSPEXIMUS_STORE_FORMAT", "INSPEXIMUS_RECEIPTS_TAIL",
+                                                             "INSPEXIMUS_RECEIPT_KEY_FILE",
+                                                             "INSPEXIMUS_WRITER_KEY_FILE"):
             cur = cfg
             parts = rule[1].split(".")
             for p in parts[:-1]:
@@ -66,3 +77,17 @@ def write_user_config(key_home: str, cfg: dict) -> None:
     with open(p, "w", encoding="utf-8") as fh:
         json.dump(cur, fh)
     _userconfig._CACHE.clear()
+
+
+def key_home_with(cfg: dict) -> str:
+    """A new temporary key home whose user config holds `cfg`, for a test or fixture that cannot take `user_config` (a
+    module-scoped fixture, a helper outside pytest). Point INSPEXIMUS_KEY_HOME at it and restore the old value after:
+    the session's shared key home must never carry a setting one test needs, such as `receipts.enabled` (3.18, EC-2:
+    INSPEXIMUS_RECEIPTS=1 alone no longer starts a chain)."""
+    import tempfile
+    kh = tempfile.mkdtemp(prefix="user-config-key-home-")
+    write_user_config(kh, cfg)
+    return kh
+
+
+RECEIPTS_ON = {"receipts": {"enabled": True}}

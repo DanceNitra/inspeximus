@@ -38,8 +38,9 @@ cryptographically tamper-evident logs or AI-Act alignment. Send us a correction 
   an auditor re-verifies from genesis **offline** (`audit-verify`) — no live store, no key.
 
   **Receipts are OPT-IN, and off by default on the MCP server and the CLI.** Enable them with
-  `receipts=True` in Python, or `INSPEXIMUS_RECEIPTS=1` for the server and `--receipts` for the CLI; a store
-  that already has a `.receipts.json` sidecar keeps them on. The default is off because enabling them
+  `receipts=True` in Python, `{"receipts": {"enabled": true}}` in your config for the server, and `--receipts` for
+  the CLI; a store that already has a `.receipts.json` sidecar keeps them on. Since 3.18, `INSPEXIMUS_RECEIPTS=1`
+  starts the server's chain only when your config also names a signing key (`receipts.key_file`). The default is off because enabling them
   creates that sidecar next to your store, and a memory server should not grow files in your directory
   unasked — but it means **a fresh store has no chain, and this section's guarantee does not hold until you
   turn it on**. `verify_writes()` says so rather than reporting clean: *"write receipts are DISABLED: N
@@ -92,8 +93,8 @@ exercised here), or `needs receipts`.
 
 The same surface is callable **over MCP** — `compliance_report`, `compliance_check`, `retention`,
 `audit_bundle`, `verify_audit_bundle` — so an agent (Claude Code, Cursor, any MCP client) can produce and check
-its own AI-Act evidence. Start the server with `INSPEXIMUS_RECEIPTS=1` to keep the tamper-evident chain those
-tools evidence.
+its own AI-Act evidence. Set `{"receipts": {"enabled": true}}` in your config to keep the tamper-evident chain
+those tools evidence.
 
 Two of those take the argument that makes the check adversarial, and until 1.86.0 the MCP wrappers dropped
 both: pass `compliance_check(prior_anchor=…)` with an anchor you pinned earlier out of band, or

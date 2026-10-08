@@ -50,11 +50,11 @@ def _receipt_key(key_file=None):
     p = key_file
     if not p:
         from . import _envpolicy                 # a file inside the user's key home only, from the environment (3.18)
-        p, _src = _envpolicy.key_file("INSPEXIMUS_RECEIPT_KEY_FILE")
+        p, _src = _envpolicy.key_file("INSPEXIMUS_RECEIPT_KEY_FILE")   # F-13 incl. the cwd's project (EC-3)   # F-13 incl. the cwd's project (EC-3)   # F-13 incl. the cwd's project (EC-3)
     if p:
         with open(p, encoding="utf-8") as fh:
             return fh.read().strip()
-    return os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip() or None
+    return _envpolicy.receipt_key_value()                # the user's config only, as a value (3.18, EC-7)
 
 
 def _store(path, persist_vectors: bool = False, receipts: bool = False, receipt_key=None):

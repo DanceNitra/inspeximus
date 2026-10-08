@@ -31,6 +31,7 @@ import sys
 import time
 
 from . import install as _i
+from . import _envpolicy
 
 #: The one sentence a rules file carries. `inspeximus:recall` marks it, so a second run finds it.
 RULE_LINE = ("At the start of each task, call the inspeximus MCP tool `recall` with the task's topic, and "
@@ -142,8 +143,7 @@ def _existing_store(host):
             entry = (tomllib.loads(path.read_text(encoding="utf-8")).get("mcp_servers") or {}).get(_i.SERVER_NAME)
     except Exception:                                        # noqa: BLE001 -- unreadable: plan() reports it
         return None
-    env = (entry or {}).get("env") or {}
-    return env.get("INSPEXIMUS_PATH")
+    return _envpolicy.host("INSPEXIMUS_PATH", (entry or {}).get("env")) or None
 
 
 def choose_store(hosts, store=None):
@@ -756,16 +756,19 @@ def git_bash_misread(path):
 
 def _writer_key(hosts, store):
     """The writer key the MCP server would sign with, or None: INSPEXIMUS_WRITER_KEY_FILE or
-    INSPEXIMUS_WRITER_KEY in this process, else the key file named in an agent's entry for this store."""
-    files = [os.environ.get("INSPEXIMUS_WRITER_KEY_FILE", "").strip()]
+    INSPEXIMUS_WRITER_KEY in this process, else the key file named in an agent's entry for this store.
+    This process's environment follows the MCP server's rule (3.18, AUDIT-A EC-5): a key file from it passes the
+    key-file rule, and a raw key comes from the user's config only. An agent's entry is the user's own host config."""
+    files = [_envpolicy.key_file("INSPEXIMUS_WRITER_KEY_FILE", store)[0] or ""]
     for h in hosts:
         try:
             _, entry, _ = _i.read_entry(h)
         except Exception:                                    # noqa: BLE001
             continue
         env = (entry or {}).get("env") or {}
-        if env.get("INSPEXIMUS_WRITER_KEY_FILE") and _same_file(env.get("INSPEXIMUS_PATH") or "", store):
-            files.append(str(env["INSPEXIMUS_WRITER_KEY_FILE"]).strip())
+        kf = _envpolicy.host("INSPEXIMUS_WRITER_KEY_FILE", env).strip()
+        if kf and _same_file(_envpolicy.host("INSPEXIMUS_PATH", env), store):
+            files.append(kf)
     for f in files:
         if f:
             try:
@@ -774,7 +777,7 @@ def _writer_key(hosts, store):
                     return k
             except OSError:
                 continue
-    return os.environ.get("INSPEXIMUS_WRITER_KEY", "").strip() or None
+    return _envpolicy.config_string("INSPEXIMUS_WRITER_KEY")
 
 
 def store_is_signed(store):
@@ -1009,7 +1012,7 @@ def entry_status(entry, store):
         reasons.append(f"pin {pin}, this is {_version()}")
     elif not pin and not (cmd and (_which_safe(cmd) or os.path.exists(cmd))):
         reasons.append(f"command not found: {cmd or '(none)'}")
-    path = ((entry.get("env") or {}).get("INSPEXIMUS_PATH"))
+    path = _envpolicy.host("INSPEXIMUS_PATH", entry.get("env")) or None
     if not path:
         reasons.append("no INSPEXIMUS_PATH")
     elif store and not _same_file(path, store):
@@ -1034,8 +1037,8 @@ def check(store=None, only=None, out=print):
     if store:
         want = str(pathlib.Path(store).expanduser().resolve())
     else:
-        named = sorted({(e or {}).get("env", {}).get("INSPEXIMUS_PATH") for _, e, _ in entries.values()
-                        if e and (e.get("env") or {}).get("INSPEXIMUS_PATH")})
+        named = sorted({_envpolicy.host("INSPEXIMUS_PATH", e.get("env")) for _, e, _ in entries.values()
+                        if e and _envpolicy.host("INSPEXIMUS_PATH", e.get("env"))})
         want = shared_store_path() or (named[0] if len(named) == 1 else None)
     rows, bad = [], 0
     for h in hosts:
@@ -1046,7 +1049,7 @@ def check(store=None, only=None, out=print):
             status = "-"
         flagged = status.startswith(("DIFFERS", "ERROR")) or (only and status == "not wired")
         bad += bool(flagged)
-        store_now = ((entry or {}).get("env") or {}).get("INSPEXIMUS_PATH") or "-"
+        store_now = _envpolicy.host("INSPEXIMUS_PATH", (entry or {}).get("env")) or "-"
         rows.append((_i.HOSTS[h]["label"], "yes" if found else "no", _pin(entry) or ("-" if not entry else "python"),
                      store_now, status))
     if with_hermes:

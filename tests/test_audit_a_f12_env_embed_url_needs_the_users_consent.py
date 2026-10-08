@@ -37,7 +37,7 @@ def test_f12_an_environment_url_to_another_host_is_not_enough(tmp_path, monkeypa
 def test_control_the_same_url_is_used_when_the_users_config_names_the_host(tmp_path, monkeypatch):
     repo = _clean(tmp_path, monkeypatch)
     (tmp_path / "keyhome" / "inspeximus" / "config.json").write_text(json.dumps(
-        {"embed": {"allowed_hosts": ["192.168.0.99"]}}))
+        {"embed": {"allowed_hosts": ["192.168.0.99"], "hooks": True}}))      # hooks: the user's config (3.18)
     monkeypatch.setenv("INSPEXIMUS_EMBED_HOOKS", "1")
     monkeypatch.setenv("INSPEXIMUS_EMBED_URL", "http://192.168.0.99:18765/v1/embeddings")
     emb = cc._make_embedder(str(repo))
@@ -46,6 +46,6 @@ def test_control_the_same_url_is_used_when_the_users_config_names_the_host(tmp_p
 
 def test_control_a_loopback_environment_url_still_works(tmp_path, monkeypatch):
     repo = _clean(tmp_path, monkeypatch)
-    monkeypatch.setenv("INSPEXIMUS_EMBED_HOOKS", "1")
+    (tmp_path / "keyhome" / "inspeximus" / "config.json").write_text(json.dumps({"embed": {"hooks": True}}))
     monkeypatch.setenv("INSPEXIMUS_EMBED_URL", "http://127.0.0.1:11434/v1/embeddings")
     assert cc._make_embedder(str(repo))[0] is not None

@@ -1491,7 +1491,7 @@
  {
   "name": "the recall hook stops reading the external decision store",
   "file": "inspeximus/claude_code.py",
-  "old": "    ext = (os.environ.get(\"INSPEXIMUS_DECISION_STORE\") or \"\").strip()",
+  "old": "    ext = _envpolicy.decision_store().strip()",
   "new": "    ext = \"\"",
   "tests": [
    "tests/test_claude_code_recall_surfaces_decisions.py"
@@ -7996,8 +7996,8 @@
  {
   "name": "a repository's embed hooks switch the hooks on again",
   "file": "inspeximus/claude_code.py",
-  "old": "    if not (env_hooks or uc.get(\"hooks\") is True):\n",
-  "new": "    if not (env_hooks or uc.get(\"hooks\") is True or rc.get(\"hooks\") is True):\n",
+  "old": "    if uc.get(\"hooks\") is not True:\n        _envpolicy.notice_if_set(\"INSPEXIMUS_EMBED_HOOKS\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))",
+  "new": "    if uc.get(\"hooks\") is not True and rc.get(\"hooks\") is not True:\n        _envpolicy.notice_if_set(\"INSPEXIMUS_EMBED_HOOKS\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))",
   "tests": [
    "tests/test_a_repo_config_cannot_send_text_to_another_host.py"
   ]
@@ -9681,7 +9681,7 @@
  {
   "name": "the prompt hook never marks itself finished for the fast exit",
   "file": "inspeximus/claude_code.py",
-  "old": "            _FAST_EXIT[0] = os.environ.get(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")",
+  "old": "            _FAST_EXIT[0] = _envpolicy.raw(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")",
   "new": "            _FAST_EXIT[0] = False",
   "tests": [
    "tests/test_the_prompt_hook_exits_without_interpreter_teardown.py"
@@ -9736,7 +9736,7 @@
  {
   "name": "perf gate: the prompt hook never takes the fast exit",
   "file": "inspeximus/claude_code.py",
-  "old": "            _FAST_EXIT[0] = os.environ.get(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")\n        elif name == \"SessionStart\":",
+  "old": "            _FAST_EXIT[0] = _envpolicy.raw(\"INSPEXIMUS_HOOK_FAST_EXIT\", \"\").strip().lower() not in (\"0\", \"false\", \"no\")\n        elif name == \"SessionStart\":",
   "new": "            _FAST_EXIT[0] = False\n        elif name == \"SessionStart\":",
   "tests": [
    "tests/test_the_prompt_hook_arm_goes_red.py"
@@ -10373,8 +10373,8 @@
  {
   "name": "3.17.0: the environment turns the receipt tail on",
   "file": "inspeximus/core.py",
-  "old": "        _userconfig.env_ignored(\"INSPEXIMUS_RECEIPTS_TAIL\", \"receipts.tail to true\")\n    return False",
-  "new": "        return True\n    return False",
+  "old": "    _envpolicy.notice_if_set(\"INSPEXIMUS_RECEIPTS_TAIL\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))\n    return False",
+  "new": "    if _envpolicy._env(\"INSPEXIMUS_RECEIPTS_TAIL\"):\n        return True\n    return False",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
   ]
@@ -10391,8 +10391,8 @@
  {
   "name": "3.17.0: the ignored environment value is not reported",
   "file": "inspeximus/core.py",
-  "old": "        _userconfig.env_ignored(\"INSPEXIMUS_RECEIPTS_TAIL\", \"receipts.tail to true\")\n    return False",
-  "new": "        pass\n    return False",
+  "old": "    _envpolicy.notice_if_set(\"INSPEXIMUS_RECEIPTS_TAIL\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))\n    return False",
+  "new": "    pass\n    return False",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
   ]
@@ -10400,8 +10400,8 @@
  {
   "name": "3.17.0: the hook embedder takes its model from the repository",
   "file": "inspeximus/claude_code.py",
-  "old": "model = (os.environ.get(\"INSPEXIMUS_EMBED_MODEL\") or uc.get(\"model\") or \"nomic-embed-text\").strip()",
-  "new": "model = (os.environ.get(\"INSPEXIMUS_EMBED_MODEL\") or uc.get(\"model\") or rc.get(\"model\") or \"nomic-embed-text\").strip()",
+  "old": "model = (_envpolicy.raw(\"INSPEXIMUS_EMBED_MODEL\") or uc.get(\"model\") or \"nomic-embed-text\").strip()",
+  "new": "model = (_envpolicy.raw(\"INSPEXIMUS_EMBED_MODEL\") or uc.get(\"model\") or rc.get(\"model\") or \"nomic-embed-text\").strip()",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
   ]
@@ -10409,7 +10409,7 @@
  {
   "name": "3.17.0: the hooks embed without being switched on",
   "file": "inspeximus/claude_code.py",
-  "old": "    if not (env_hooks or uc.get(\"hooks\") is True):\n        return None, None, None",
+  "old": "    if uc.get(\"hooks\") is not True:\n        _envpolicy.notice_if_set(\"INSPEXIMUS_EMBED_HOOKS\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))\n        return None, None, None",
   "new": "    if False:\n        return None, None, None",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
@@ -10445,7 +10445,7 @@
  {
   "name": "3.17.0: the environment no longer pins a new store to JSON",
   "file": "inspeximus/core.py",
-  "old": "        if (os.environ.get(\"INSPEXIMUS_STORE_FORMAT\") or \"\").strip().lower() != \"json\":\n            return False\n        if _rows is not None and self.path",
+  "old": "        if _envpolicy._env(\"INSPEXIMUS_STORE_FORMAT\").lower() != \"json\":\n            return False\n        if _rows is not None and self.path",
   "new": "        if True:\n            return False\n        if _rows is not None and self.path",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
@@ -10490,7 +10490,7 @@
  {
   "name": "3.18 env: the environment lowers a wait below its floor",
   "file": "inspeximus/_envpolicy.py",
-  "old": "        if x >= default:\n",
+  "old": "        if default <= x <= (x if ceiling is None else ceiling):\n",
   "new": "        if True:\n",
   "tests": [
    "tests/test_every_environment_variable_has_a_policy.py"
@@ -10499,8 +10499,8 @@
  {
   "name": "3.18 env: a key file inside a git work tree is used",
   "file": "inspeximus/_envpolicy.py",
-  "old": "    if tree or (proj and _inside(folder, proj)):\n",
-  "new": "    if False:\n",
+  "old": "    why = refusal(os.path.dirname(os.path.abspath(raw_v)), store_path)\n    if why:\n        _ignored(var, \"%s (the environment",
+  "new": "    why = None\n    if why:\n        _ignored(var, \"%s (the environment",
   "tests": [
    "tests/test_every_environment_variable_has_a_policy.py",
    "tests/test_the_mcp_server_signs_with_the_stores_key.py"
@@ -10575,7 +10575,7 @@
  {
   "name": "3.18 env: SAVE_RETRIES from the environment lowers the retries",
   "file": "inspeximus/core.py",
-  "old": "        _tries = max(0, _envpolicy.at_least(\"INSPEXIMUS_SAVE_RETRIES\", 2, int))   # never lowered by a project (3.18)\n",
+  "old": "        _tries = max(0, _envpolicy.at_least(\"INSPEXIMUS_SAVE_RETRIES\", 2, int, 20))   # never lowered by a project (3.18)\n",
   "new": "        _tries = max(0, int(os.environ.get(\"INSPEXIMUS_SAVE_RETRIES\", \"2\")))\n",
   "tests": [
    "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
@@ -10642,6 +10642,214 @@
   "new": "    return True\n\n\n_PERSIST_VECTORS",
   "tests": [
    "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-1: the environment switches the archive on",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if v in (\"1\", \"true\", \"yes\", \"on\"):\n        _ignored(var, POLICY[var][1] + \" to true\")\n    return None",
+  "new": "    if v in (\"1\", \"true\", \"yes\", \"on\"):\n        return True\n    return None",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-1: the environment outranks the user's archive.auto",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if isinstance(config_value, bool):\n        return config_value\n    v = _env(var).lower()",
+  "new": "    v = _env(var).lower()",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-1: the hook reads ARCHIVE_AUTO in both directions",
+  "file": "inspeximus/claude_code.py",
+  "old": "    _said = _envpolicy.switch_off_only(\"INSPEXIMUS_ARCHIVE_AUTO\", c.get(\"auto\") if isinstance(c, dict) else None)",
+  "new": "    _said = {\"1\": True, \"0\": False}.get(_envpolicy.raw(\"INSPEXIMUS_ARCHIVE_AUTO\", \"\"))",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-2: RECEIPTS from the environment starts a chain with no key",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "        kf, kk = _cfg(\"receipts.key_file\"), _cfg(\"receipts.key\")\n        if (isinstance(kf, str) and kf.strip()) or (isinstance(kk, str) and kk.strip()):",
+  "new": "        if True:",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-2: the server reads RECEIPTS as a plain flag",
+  "file": "inspeximus/mcp_server.py",
+  "old": "_RECEIPTS = _envpolicy.receipts_from_env()",
+  "new": "_RECEIPTS = _flag_from_env(\"INSPEXIMUS_RECEIPTS\")",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-3: the key-file rule is the git work tree only",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    from ._keyhome import refusal\n    why = refusal(os.path.dirname(os.path.abspath(raw_v)), store_path)\n    if why:\n        _ignored(var, \"%s (the environment may not name this key file: %s)\" % (key, why))",
+  "new": "    from ._keyhome import _git_work_tree, _norm\n    why = _git_work_tree(_norm(os.path.dirname(os.path.abspath(raw_v))))\n    if why:\n        _ignored(var, \"%s (the environment may not name this key file: %s)\" % (key, why))",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py",
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-3: the key-file rule forgets the store's project",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    why = refusal(os.path.dirname(os.path.abspath(raw_v)), store_path)\n    if why:\n        _ignored(var, \"%s (the environment may not name this key file: %s)\" % (key, why))",
+  "new": "    why = refusal(os.path.dirname(os.path.abspath(raw_v)), None)\n    if why:\n        _ignored(var, \"%s (the environment may not name this key file: %s)\" % (key, why))",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-3: the server's writer key file ignores the store",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    f, _src = _envpolicy.key_file(\"INSPEXIMUS_WRITER_KEY_FILE\", _PATH)",
+  "new": "    f, _src = _envpolicy.key_file(\"INSPEXIMUS_WRITER_KEY_FILE\")",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-4: the environment sets a wait without bound",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "        if default <= x <= (x if ceiling is None else ceiling):",
+  "new": "        if default <= x:",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-4: the busy timeout has no ceiling",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "_ep.at_least(\"INSPEXIMUS_BUSY_TIMEOUT_S\", BUSY_TIMEOUT_S, float, 120.0)",
+  "new": "_ep.at_least(\"INSPEXIMUS_BUSY_TIMEOUT_S\", BUSY_TIMEOUT_S, float)",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-4: the save retries have no ceiling",
+  "file": "inspeximus/core.py",
+  "old": "_envpolicy.at_least(\"INSPEXIMUS_SAVE_RETRIES\", 2, int, 20)",
+  "new": "_envpolicy.at_least(\"INSPEXIMUS_SAVE_RETRIES\", 2, int)",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-5: install_all reads the writer key from the environment",
+  "file": "inspeximus/install_all.py",
+  "old": "    return _envpolicy.config_string(\"INSPEXIMUS_WRITER_KEY\")\n\n\ndef store_is_signed(store):",
+  "new": "    return os.environ.get(\"INSPEXIMUS_WRITER_KEY\", \"\").strip() or None\n\n\ndef store_is_signed(store):",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-5: compliance reads INSPEXIMUS_PATH unvetted",
+  "file": "inspeximus/compliance.py",
+  "old": "    p = a.path or resolve_path()",
+  "new": "    p = a.path or os.environ.get(\"INSPEXIMUS_PATH\") or \"inspeximus_memory.json\"",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-5: a probe reads the embed URL directly",
+  "file": "inspeximus/probes/a_contradiction_one_channel_cannot_see.py",
+  "old": "EMBED_URL = _envpolicy.raw(\"INSPEXIMUS_EMBED_URL\", \"http://127.0.0.1:11434/api/embed\")",
+  "new": "EMBED_URL = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"http://127.0.0.1:11434/api/embed\")",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-5: raw reads a config-only variable",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if rule == CONFIG_ONLY:\n        raise ValueError(\"%s is config-only; read %s from the user's config\" % (var, POLICY[var][1]))",
+  "new": "    if rule == \"never\":\n        raise ValueError(\"%s is config-only; read %s from the user's config\" % (var, POLICY[var][1]))",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-6: trust seeds come from the environment",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _env(\"INSPEXIMUS_TRUST_SEEDS\"):\n        _ignored(\"INSPEXIMUS_TRUST_SEEDS\", \"recall.trust_seeds\")\n    return set()",
+  "new": "    return {s.strip() for s in _env(\"INSPEXIMUS_TRUST_SEEDS\").split(\",\") if s.strip()}",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-6: the server reads trust seeds from the environment",
+  "file": "inspeximus/mcp_server.py",
+  "old": "_TRUST_SEEDS = _envpolicy.trust_seeds()",
+  "new": "_TRUST_SEEDS = {s.strip() for s in _envpolicy.raw(\"INSPEXIMUS_RECEIPT_PUBKEY\", \"\").split(\",\") if s.strip()}",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-6: a decision store inside a repository is used",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    why = refusal(os.path.dirname(os.path.abspath(raw_v)))\n    if why:\n        _ignored(\"INSPEXIMUS_DECISION_STORE\",",
+  "new": "    why = None\n    if why:\n        _ignored(\"INSPEXIMUS_DECISION_STORE\",",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-6: the environment switches embedding in hooks on",
+  "file": "inspeximus/claude_code.py",
+  "old": "    if uc.get(\"hooks\") is not True:\n        _envpolicy.notice_if_set(\"INSPEXIMUS_EMBED_HOOKS\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))",
+  "new": "    if uc.get(\"hooks\") is not True and not _envpolicy._env(\"INSPEXIMUS_EMBED_HOOKS\"):\n        _envpolicy.notice_if_set(\"INSPEXIMUS_EMBED_HOOKS\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-7: a hex receipt key from the environment signs",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if e and _hexkey(e):\n        _ignored(\"INSPEXIMUS_RECEIPT_KEY\", \"receipts.key\")\n    return None",
+  "new": "    if e and _hexkey(e):\n        return e.lower()\n    return None",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-7: a missing receipt key path is returned",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if not why and not os.path.isfile(e):\n        why = \"no such file\"\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-7: a receipt key path skips the key-file rule",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    why = refusal(os.path.dirname(os.path.abspath(e)), store_path)\n    if not why and",
+  "new": "    why = None\n    if not why and",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-7: receipt_key_for reads the environment's hex key",
+  "file": "inspeximus/core.py",
+  "old": "    hexkey = _envpolicy.receipt_key_value()",
+  "new": "    hexkey = _envpolicy.receipt_key_value() or (_envpolicy.raw(\"INSPEXIMUS_RECEIPT_KEY\") or \"\").lower() or None",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
   ]
  }
 ]

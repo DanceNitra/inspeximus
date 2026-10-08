@@ -169,8 +169,8 @@ def _notice(var, url, what):
 def env_url(var, embed_cfg=None, what="ignored, recall stays lexical"):
     """The URL in environment variable `var` when its host is allowed (`host_allowed`), else "" and one stderr
     line naming the variable and the host."""
-    import os
-    url = (os.environ.get(var) or "").strip()
+    from . import _envpolicy
+    url = (_envpolicy.raw(var) or "").strip()
     if not url or host_allowed(url, embed_cfg):
         return url
     _notice(var, url, what)
@@ -179,8 +179,8 @@ def env_url(var, embed_cfg=None, what="ignored, recall stays lexical"):
 
 def env_key(var, url, embed_cfg=None):
     """The key in environment variable `var` when `url`'s host is allowed, else "" and one stderr line."""
-    import os
-    key = (os.environ.get(var) or "").strip()
+    from . import _envpolicy
+    key = (_envpolicy.raw(var) or "").strip()
     if not key or not url or host_allowed(url, embed_cfg):
         return key
     _notice(var, url, "the key is not sent")
@@ -194,17 +194,17 @@ def embedders_from_env():
     embed_id: `reembed` stamped no recipe, wrote no sidecar, and could not tell a vector of another model from its own.
     For nomic-embed-text (asymmetric, trained with task prefixes) the document and query embedders prefix
     `search_document: ` / `search_query: `; for symmetric models embed_query is None."""
-    import os
     url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
     if not url:
         return None, None, None
-    model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
+    from . import _envpolicy
+    model = _envpolicy.raw("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
     key = env_key("INSPEXIMUS_EMBED_KEY", url)
 
     def _embed(text: str, prefix: str = ""):
         headers = {"Authorization": f"Bearer {key}"} if key else {}
         return embedding_from(post_json(url, {"model": model, "input": prefix + text}, headers, 20))
 
-    if "nomic" in model.lower() and os.environ.get("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":
+    if "nomic" in model.lower() and _envpolicy.raw("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":
         return (lambda t: _embed(t, "search_document: ")), (lambda t: _embed(t, "search_query: ")), f"{model}|nomic-sd-sq"
     return _embed, None, model

@@ -1,6 +1,6 @@
 """The EU AI Act compliance surface (compliance_report/check, retention, audit_bundle/verify) is callable over
 MCP — so any MCP client (Claude Code, Cursor) gets it. Tools delegate to the free modules on the server's _MEM;
-INSPEXIMUS_RECEIPTS=1 turns on the tamper-evident chain the record-keeping tools evidence."""
+{"receipts": {"enabled": true}} in the user's config turns on the tamper-evident chain the record-keeping tools evidence."""
 import sys, os, tempfile, importlib
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -14,11 +14,27 @@ except ImportError:                         # running standalone without pytest
         print("SKIP: MCP SDK not installed"); sys.exit(0)
 
 
+_SAVED_KEY_HOME = []
+
+
 def _fresh_server(receipts):
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _userconfig_env import key_home_with
     os.environ["INSPEXIMUS_PATH"] = os.path.join(tempfile.mkdtemp(), "m.json")
-    os.environ["INSPEXIMUS_RECEIPTS"] = "1" if receipts else "0"
+    _SAVED_KEY_HOME.append(os.environ.get("INSPEXIMUS_KEY_HOME"))
+    # Receipts are the user's config since 3.18 (EC-2): a key home of this server's own carries the setting.
+    os.environ["INSPEXIMUS_KEY_HOME"] = key_home_with({"receipts": {"enabled": bool(receipts)}})
     import inspeximus.mcp_server as m
     return importlib.reload(m)
+
+
+def _restore():
+    os.environ.pop("INSPEXIMUS_PATH", None)
+    kh = _SAVED_KEY_HOME.pop() if _SAVED_KEY_HOME else None
+    if kh is None:
+        os.environ.pop("INSPEXIMUS_KEY_HOME", None)
+    else:
+        os.environ["INSPEXIMUS_KEY_HOME"] = kh
 
 
 def test_mcp_compliance_surface_with_receipts():
@@ -35,8 +51,7 @@ def test_mcp_compliance_surface_with_receipts():
         assert m.verify_audit_bundle(b)["ok"]
         assert m.retention(0, pii_only=False)["eligible"] == 1              # dry-run, nothing erased
     finally:
-        os.environ.pop("INSPEXIMUS_RECEIPTS", None)
-        os.environ.pop("INSPEXIMUS_PATH", None)
+        _restore()
 
 
 def test_mcp_check_flags_missing_receipts():
@@ -46,8 +61,7 @@ def test_mcp_check_flags_missing_receipts():
         m._MEM.remember("x", key="k", object="1")
         assert not m.compliance_check()["ok"]                               # records but no receipts -> violation
     finally:
-        os.environ.pop("INSPEXIMUS_RECEIPTS", None)
-        os.environ.pop("INSPEXIMUS_PATH", None)
+        _restore()
 
 
 if __name__ == "__main__":

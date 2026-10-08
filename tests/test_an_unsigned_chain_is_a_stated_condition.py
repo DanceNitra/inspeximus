@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import tempfile
 import time
 
@@ -109,7 +110,9 @@ def test_the_mcp_surface_states_the_signature_state_as_a_field(monkeypatch):
     pytest.importorskip("mcp", reason="the MCP SDK is an optional extra; `integrations` covers this")
     d = tempfile.mkdtemp()
     monkeypatch.setenv("INSPEXIMUS_PATH", os.path.join(d, "s.json"))
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS", "1")
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _userconfig_env import RECEIPTS_ON, key_home_with
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", key_home_with(RECEIPTS_ON))     # receipts on: the user's config (3.18)
     import inspeximus.mcp_server as m
     m = importlib.reload(m)
     m._MEM.remember("x", key="k", object="v")
@@ -150,18 +153,26 @@ def test_it_refuses_to_put_the_key_beside_the_store(monkeypatch):
         receipt_key_for(os.path.join(d, "s.json"))
 
 
-def test_a_misconfigured_env_var_raises_rather_than_guessing(monkeypatch):
-    """Silently minting a different key than the operator configured would produce a chain signed by
-    two keys -- which now reads as an attack."""
+def test_a_misconfigured_env_var_is_ignored_and_says_so(monkeypatch, capsys):
+    """3.18 (EC-7): a value that is neither a key file that passes the key-file rule nor anything else is ignored with
+    one stderr line. It used to raise, so a project could stop every signed write by naming a missing file. The key
+    the user configured (`receipts.key`, `receipts.key_file`) still wins, and an unreadable `receipts.key_file`
+    still refuses."""
+    from inspeximus import _userconfig
+    _userconfig._SAID.discard("INSPEXIMUS_RECEIPT_KEY")
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", tempfile.mkdtemp())
     monkeypatch.setenv("INSPEXIMUS_RECEIPT_KEY", "neither-hex-nor-a-path")
-    with pytest.raises(ValueError, match="Refusing to guess"):
-        receipt_key_for(os.path.join(tempfile.mkdtemp(), "s.json"))
+    assert receipt_key_for(os.path.join(tempfile.mkdtemp(), "s.json"), create=False) == ""
+    assert "INSPEXIMUS_RECEIPT_KEY is set in the environment and is ignored" in capsys.readouterr().err
 
 
-def test_the_env_var_accepts_a_raw_key_and_a_path(monkeypatch):
+def test_the_env_var_accepts_a_path_and_the_users_config_a_raw_key(monkeypatch, user_config):
+    """3.18 (EC-7): a 64-hex key in the environment chose the key of a new chain, so it comes from the user's config
+    (`receipts.key`) only. A path in the variable follows the key-file rule."""
     d = tempfile.mkdtemp()
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", tempfile.mkdtemp())
     monkeypatch.setenv("INSPEXIMUS_RECEIPT_KEY", SK)
-    assert receipt_key_for(os.path.join(d, "s.json")) == SK
+    assert receipt_key_for(os.path.join(d, "s.json"), create=False) != SK, "a hex key from the environment was used"
     # OUTSIDE the store's directory, because that is the only correct place for it. The first
     # version of this test wrote `elsewhere.key` next to the store and passed -- the location guard
     # covered only the directory the helper CHOOSES, so the env-path route walked straight past the
@@ -171,6 +182,9 @@ def test_the_env_var_accepts_a_raw_key_and_a_path(monkeypatch):
     kf = os.path.join(elsewhere, "receipt.key")
     open(kf, "w", encoding="utf-8").write(SK + "\n")
     monkeypatch.setenv("INSPEXIMUS_RECEIPT_KEY", kf)
+    assert receipt_key_for(os.path.join(d, "s.json")) == SK
+    monkeypatch.delenv("INSPEXIMUS_RECEIPT_KEY")
+    user_config(INSPEXIMUS_RECEIPT_KEY=SK)
     assert receipt_key_for(os.path.join(d, "s.json")) == SK
 
 

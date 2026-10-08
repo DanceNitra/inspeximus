@@ -148,11 +148,13 @@ def _flag_from_env(name: str, env: dict | None = None) -> bool:
     an operator who writes INSPEXIMUS_PERSIST_VECTORS=0 must not get persistence because the string is
     non-empty. Anything outside the listed spellings is off.
     """
-    env = os.environ if env is None else env
-    return (env.get(name, "") or "").strip().lower() in ("1", "true", "yes", "on")
+    from inspeximus import _envpolicy
+    return (_envpolicy.raw(name, "", env=env) or "").strip().lower() in ("1", "true", "yes", "on")
 
 
-_RECEIPTS = _flag_from_env("INSPEXIMUS_RECEIPTS")
+# 3.18 (AUDIT-A EC-2): the environment starts a chain only when the user's config names a signing key.
+from inspeximus import _envpolicy  # noqa: E402
+_RECEIPTS = _envpolicy.receipts_from_env()
 # The PUBLIC key the receipts are expected to carry. verify_writes(expected_pubkey=...) is the check that a
 # receipt was signed by the key you expect rather than by A key; the MCP tools took no arguments at all, so
 # every MCP caller got the unpinned verdict. MEASURED (probes/audit_mcp_verify_writes_key.py): a store whose
@@ -160,7 +162,7 @@ _RECEIPTS = _flag_from_env("INSPEXIMUS_RECEIPTS")
 # zero problems, while serving a wire-transfer limit inflated 100x; pinned, the same store reports "signed by
 # an unexpected key" on every receipt. This is the same defect already fixed one surface over in
 # verify_erasure_certificate (see core.py: swapping `pubkey` for zeros used to change nothing).
-_RECEIPT_PUBKEY = os.environ.get("INSPEXIMUS_RECEIPT_PUBKEY", "").strip() or None
+_RECEIPT_PUBKEY = _envpolicy.raw("INSPEXIMUS_RECEIPT_PUBKEY", "").strip() or None
 
 
 # ── PROJECT / WORKSPACE SCOPE ────────────────────────────────────────────────────────────────────────────
@@ -194,7 +196,8 @@ def resolve_project(cli_value: str | None = None, env: dict | None = None, cwd: 
             raise ProjectScopeError("--project was given an empty name; pass a real project name, or omit "
                                     "the flag entirely for the unscoped (shared) store")
     else:
-        raw = (env.get("INSPEXIMUS_PROJECT") or "").strip()
+        from inspeximus import _envpolicy
+        raw = (_envpolicy.raw("INSPEXIMUS_PROJECT", env=env) or "").strip()
         if not raw:
             return None
         # ONLY THIS PROJECT'S NAME FROM THE ENVIRONMENT (3.18): a project's settings could otherwise stamp the user's
@@ -256,7 +259,7 @@ def _writer_key_from_env():
     # 3.18: the identity stamped on the user's records is the user's choice. A key file from the environment is ignored
     # inside a git work tree, and a raw key comes only from the user's config (`writer.key_file`, `writer.key`).
     from inspeximus import _envpolicy
-    f, _src = _envpolicy.key_file("INSPEXIMUS_WRITER_KEY_FILE")
+    f, _src = _envpolicy.key_file("INSPEXIMUS_WRITER_KEY_FILE", _PATH)   # the store's and the cwd's project (EC-3)
     if f:
         try:
             return Path(f).read_text(encoding="utf-8").strip() or None
@@ -285,8 +288,8 @@ _WRITER_KEY = _writer_key_from_env()
 # old behaviour, and any other value is read as before. Without an embedder there is nothing to keep. Nothing
 # is embedded at start: the vectors a store lacks come from `inspeximus reembed`, which the start line names.
 def _persist_default(env: dict | None = None, has_embedder: bool = False) -> bool:
-    env = os.environ if env is None else env
-    if not (env.get("INSPEXIMUS_PERSIST_VECTORS") or "").strip():
+    from inspeximus import _envpolicy
+    if not (_envpolicy.raw("INSPEXIMUS_PERSIST_VECTORS", env=env) or "").strip():
         return bool(has_embedder)
     return _flag_from_env("INSPEXIMUS_PERSIST_VECTORS", env)
 
@@ -390,7 +393,8 @@ def _receipt_key_from_env(path) -> tuple:
                                       f"start unsigned when a signing key was configured.") from None
         if f:
             return key or None, src
-    if os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip():
+    # A 64-hex key comes from the user's config only, and a path in the environment follows the key-file rule (EC-7).
+    if _envpolicy.receipt_key_value() or _envpolicy.receipt_key_path(path):
         return receipt_key_for(path, create=False) or None, "INSPEXIMUS_RECEIPT_KEY"
     if path and os.path.exists(_receipt_key_file(path)):
         return receipt_key_for(path, create=False) or None, "key home"
@@ -444,7 +448,8 @@ _SIGNING = _receipt_signing(_PATH, _RECEIPTS or os.path.exists(str(_PATH) + ".re
 # way to set it, so the first always answered [] and the second always said "no trust root configured"
 # (mcp-tools-review R3). INSPEXIMUS_TRUST_SEEDS is a comma-separated list of canonical source strings
 # and/or "key:<attested pubkey hex>" entries, the same form as the library's `trust_seeds`.
-_TRUST_SEEDS = {s.strip() for s in (os.environ.get("INSPEXIMUS_TRUST_SEEDS") or "").split(",") if s.strip()}
+# 3.18 (AUDIT-A EC-6): the user's config `recall.trust_seeds` only; a seed adds trust to every record its key signed.
+_TRUST_SEEDS = _envpolicy.trust_seeds()
 class _RefusedStore:
     """What `_MEM` is when the store path was refused (3.15.3, AUDIT-A A-11): every use raises the reason.
 
@@ -687,7 +692,7 @@ def _ledger_key_candidates() -> list:
 def _action_ledger():
     """The ledger when INSPEXIMUS_ACTIONS is set to 1, true or yes, else None. The SAME handle every other
     ledger tool uses (`_ledger()`): this function decides only whether each tool call is recorded."""
-    if os.environ.get("INSPEXIMUS_ACTIONS", "").strip().lower() not in ("1", "true", "yes"):
+    if _envpolicy.raw("INSPEXIMUS_ACTIONS", "").strip().lower() not in ("1", "true", "yes"):
         return None
     return _ledger()
 
@@ -737,8 +742,8 @@ if _inner is not None:
 # Snippet truncation is OPT-IN (snippet_chars>0), NOT default: truncating a recall hit can cut off a corrected/
 # current value that sits past the boundary, which would silently defeat inspeximus's own supersession/echo-guard —
 # so the default never truncates; opt in only when you accept that tradeoff and will get(id) for full text.
-_MAX_K = int(os.environ.get("INSPEXIMUS_MAX_K", "50"))                 # hard ceiling on any recall k
-_SNIPPET = int(os.environ.get("INSPEXIMUS_SNIPPET_CHARS", "0"))       # opt-in truncation; 0 = keep full text (default)
+_MAX_K = int(_envpolicy.raw("INSPEXIMUS_MAX_K", "50"))                 # hard ceiling on any recall k
+_SNIPPET = int(_envpolicy.raw("INSPEXIMUS_SNIPPET_CHARS", "0"))       # opt-in truncation; 0 = keep full text (default)
 
 
 def _snip(text: str, n: int) -> tuple[str, bool]:
@@ -1076,7 +1081,7 @@ def recall(query: str, k: int = 6, full: bool = False, snippet_chars: int = 0,
     k = max(1, min(int(k), _MAX_K))
     _require_trust_root(trusted_only)
     if resolve_conflicts is None:                     # env default: INSPEXIMUS_READ_RESOLVER=1 turns it on server-wide
-        resolve_conflicts = os.environ.get("INSPEXIMUS_READ_RESOLVER", "0").strip() == "1"
+        resolve_conflicts = _envpolicy.raw("INSPEXIMUS_READ_RESOLVER", "0").strip() == "1"
     hits = _MEM.recall(query, k=k, mmr=mmr, trusted_only=trusted_only,
                        user_id=user_id, agent_id=agent_id, session_id=session_id, rerank_by=rerank_by,
                        resolve_conflicts=resolve_conflicts, with_warrant=with_warrant,
@@ -1196,7 +1201,7 @@ def where_am_i() -> dict:
     return {"store_path": str(p.resolve() if p.exists() else p.absolute()),
             "store_exists": p.exists(),
             "path_source": _path_source(),
-            "store_scope": (os.environ.get("INSPEXIMUS_SCOPE") or "user").strip().lower() or "user",
+            "store_scope": (_envpolicy.raw("INSPEXIMUS_SCOPE") or "user").strip().lower() or "user",
             "project": _PROJECT,
             "project_source": ("--project / INSPEXIMUS_PROJECT" if _PROJECT else
                                "unscoped — this server sees every project in the store"),

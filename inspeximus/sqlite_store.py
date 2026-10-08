@@ -216,7 +216,7 @@ BUSY_TIMEOUT_S = 10
 # the user's config `store.busy_timeout_s` sets any value.
 try:
     from . import _envpolicy as _ep
-    BUSY_TIMEOUT_S = _ep.at_least("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S, float)
+    BUSY_TIMEOUT_S = _ep.at_least("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S, float, 120.0)   # EC-4: bounded
 except Exception:                                               # noqa: BLE001 -- the constant stands
     pass
 

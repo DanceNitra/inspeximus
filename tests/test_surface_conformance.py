@@ -143,7 +143,9 @@ def test_art12_write_receipts_verify_once_ENABLED(monkeypatch, tmp_path):
     """The guarantee itself, with the precondition the document now names."""
     pytest.importorskip("mcp")
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "r.json"))
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS", "1")
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _userconfig_env import RECEIPTS_ON, key_home_with
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", key_home_with(RECEIPTS_ON))     # receipts on: the user's config (3.18)
     m = importlib.reload(sys.modules.get("inspeximus.mcp_server")
                          or importlib.import_module("inspeximus.mcp_server"))
     m.remember("revenue is 100M", key="rev", object="100M", source="finance")
@@ -157,7 +159,9 @@ def test_art12_a_tampered_record_is_caught_through_MCP(monkeypatch, tmp_path):
     without ever exercising the chain."""
     pytest.importorskip("mcp")
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "t.json"))
-    monkeypatch.setenv("INSPEXIMUS_RECEIPTS", "1")
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from _userconfig_env import RECEIPTS_ON, key_home_with
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", key_home_with(RECEIPTS_ON))     # receipts on: the user's config (3.18)
     m = importlib.reload(sys.modules.get("inspeximus.mcp_server")
                          or importlib.import_module("inspeximus.mcp_server"))
     rid = m.remember("revenue is 100M", key="rev", object="100M", source="finance")["id"]

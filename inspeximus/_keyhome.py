@@ -121,7 +121,8 @@ def refusal(env_home, store_path=None):
 
 def key_home(store_path=None) -> str:
     """The key home to use for `store_path` (or for no particular store)."""
-    env = (os.environ.get("INSPEXIMUS_KEY_HOME") or "").strip()
+    from . import _envpolicy
+    env = (_envpolicy.raw("INSPEXIMUS_KEY_HOME") or "").strip()
     if not env:
         return default_home()
     why = refusal(env, store_path)

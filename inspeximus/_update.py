@@ -50,7 +50,8 @@ def _is_newer(latest, current):
 
 def check_for_update(current_version, cache_dir=None, timeout=1.5):
     """Return a one-line notice if a newer inspeximus is on PyPI, else None. Fully fail-open."""
-    if os.environ.get("INSPEXIMUS_NO_UPDATE_CHECK", "").strip().lower() in ("1", "true", "yes"):
+    from . import _envpolicy
+    if _envpolicy.raw("INSPEXIMUS_NO_UPDATE_CHECK", "").strip().lower() in ("1", "true", "yes"):
         return None
     try:
         cache_dir = cache_dir or os.path.join(os.path.expanduser("~"), ".inspeximus")
@@ -95,7 +96,8 @@ def cached_notice(current_version, cache_dir=None):
     hook checked first and Codex, Gemini and Cursor never heard of a new version. The MCP server's
     handshake and the hook read this instead, so the throttle stays on the network, not on telling the
     user."""
-    if os.environ.get("INSPEXIMUS_NO_UPDATE_CHECK", "").strip().lower() in ("1", "true", "yes"):
+    from . import _envpolicy
+    if _envpolicy.raw("INSPEXIMUS_NO_UPDATE_CHECK", "").strip().lower() in ("1", "true", "yes"):
         return None
     try:
         cache = os.path.join(cache_dir or os.path.join(os.path.expanduser("~"), ".inspeximus"),

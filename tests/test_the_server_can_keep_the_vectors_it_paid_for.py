@@ -104,4 +104,5 @@ def test_the_pii_flag_defaults_to_off():
     sweep removes. (Vector persistence defaulted to off here too until 3.17.0; its default now depends on
     the embedder, see test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py.)
     """
-    assert _flag_from_env("INSPEXIMUS_PII_DETECT", {}) is False
+    from inspeximus import _envpolicy
+    assert _envpolicy.config_flag("INSPEXIMUS_PII_DETECT") is False      # the user's config only (3.18)

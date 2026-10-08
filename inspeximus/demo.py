@@ -161,7 +161,9 @@ def run_demo(keep: str | None = None, *, echo_policy: str = "safe", forget: bool
         raise RuntimeError(why)
     t0 = time.time()
     root = tempfile.mkdtemp(prefix="inspeximus-demo-")
-    saved = {k: os.environ.get(k) for k in ("INSPEXIMUS_KEY_HOME", "INSPEXIMUS_NO_UPDATE_CHECK")}
+    from . import _envpolicy
+    saved = {"INSPEXIMUS_KEY_HOME": _envpolicy.raw("INSPEXIMUS_KEY_HOME"),
+             "INSPEXIMUS_NO_UPDATE_CHECK": _envpolicy.raw("INSPEXIMUS_NO_UPDATE_CHECK")}
     # A temporary key home, so the chain heads the stores keep outside their directories never land in
     # the user's real config directory, and no update check, so it makes no network request.
     os.environ["INSPEXIMUS_KEY_HOME"] = os.path.join(root, "keys")
