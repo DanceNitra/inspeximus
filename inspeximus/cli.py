@@ -22,20 +22,18 @@ import sys
 import time
 
 
+def _embedders():
+    """`(embed_doc, embed_query, embed_id)` from the environment, built the way the MCP server builds them (3.17.0, AUDIT-A
+    P-4): `inspeximus reembed` is the action the release asks of every user with an embedder, and it used to build its
+    own embedder with no `embed_id`, so its vectors carried no recipe stamp, `<store>.embedid` was never written, nomic
+    models got no task prefixes, and a plain run replaced nothing after a model change."""
+    from ._embedders import make_embedders
+    return make_embedders()
+
+
 def _embedder():
-    """Optional embedder (urllib, zero-dep) — enabled only if INSPEXIMUS_EMBED_URL is set. Fail-open."""
-    from ._http import embedding_from, env_key, env_url, post_json   # no redirect, no proxy for loopback (3.16.4)
-    url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
-    if not url:
-        return None
-    model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
-    key = env_key("INSPEXIMUS_EMBED_KEY", url)
-
-    def embed(text: str):
-        headers = {"Authorization": f"Bearer {key}"} if key else {}
-        return embedding_from(post_json(url, {"model": model, "input": text}, headers, 20))
-
-    return embed
+    """The document embedder alone, or None. Kept for callers that want only that; the store gets all three."""
+    return _embedders()[0]
 
 
 def _receipt_key(key_file=None):
@@ -85,7 +83,8 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False, receipt_
     # signature nothing will ever read. Inspeximus() already treats receipt_key as turning receipts on;
     # passing it here too keeps the sidecar-detection branch in open_store from deciding otherwise.
     extra = {"receipt_key": receipt_key} if receipt_key else {}
-    return open_store(path, embed=_embedder(), persist_vectors=persist_vectors,
+    doc, query, recipe = _embedders()
+    return open_store(path, embed=doc, embed_query=query, embed_id=recipe, persist_vectors=persist_vectors,
                       receipts=receipts or bool(receipt_key), **extra)
 
 

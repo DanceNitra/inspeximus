@@ -168,3 +168,40 @@ def test_the_users_config_can_pin_json_for_a_row_store(env):
     m2.remember("two", key="b")
     m2.flush()
     assert not _is_rows(p), "store.format in the user's config did not pin JSON"
+
+
+# ── the stat cache of the user's config (AUDIT-A P-6) ───────────────────────────────────────────────────────────────────
+def test_a_same_size_replace_with_the_mtime_put_back_is_seen(env):
+    """The cache keyed on size and mtime only. A rewrite of the same size whose mtime was restored read as unchanged."""
+    path = _userconfig.path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump({"receipts": {"tail": False}}, fh)
+    assert _userconfig.get("receipts", "tail") is False
+    st = os.stat(path)
+    tmp = path + ".new"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump({"receipts": {"tail": True}}, fh)                  # "false" and "true" differ in length: pad to the same size
+    data = open(tmp, encoding="utf-8").read()
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(data.replace("true", "true ", 1) if len(data) < st.st_size else data)
+    assert os.stat(tmp).st_size == st.st_size, (os.stat(tmp).st_size, st.st_size)
+    os.utime(tmp, ns=(st.st_atime_ns, st.st_mtime_ns))
+    os.replace(tmp, path)
+    os.utime(path, ns=(st.st_atime_ns, st.st_mtime_ns))
+    assert os.stat(path).st_mtime_ns == st.st_mtime_ns and os.stat(path).st_size == st.st_size
+    assert _userconfig.get("receipts", "tail") is True, "a same-size replace with the mtime restored was not seen"
+
+
+def test_an_unchanged_file_is_not_parsed_again(env, monkeypatch):
+    path = _userconfig.path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump({"a": 1}, fh)
+    _userconfig.read()
+    calls = []
+    real = json.load
+    monkeypatch.setattr(json, "load", lambda fh: calls.append(1) or real(fh))
+    for _ in range(5):
+        _userconfig.read()
+    assert calls == [], "the cache re-parsed an unchanged file"

@@ -8385,24 +8385,6 @@
   ]
  },
  {
-  "name": "the CLI reads the env URL without the allow rule",
-  "file": "inspeximus/cli.py",
-  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
-  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
-  "tests": [
-   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
-  ]
- },
- {
-  "name": "the MCP server reads the env URL without the allow rule",
-  "file": "inspeximus/mcp_server.py",
-  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
-  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
-  "tests": [
-   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
-  ]
- },
- {
   "name": "the distiller reads the env URL without the allow rule",
   "file": "inspeximus/core.py",
   "old": "    url = (url or env_url(\"INSPEXIMUS_LLM_URL\", what=\"ignored\")).strip()\n",
@@ -10456,6 +10438,60 @@
   "file": "inspeximus/core.py",
   "old": "        if (os.environ.get(\"INSPEXIMUS_STORE_FORMAT\") or \"\").strip().lower() != \"json\":\n            return False\n        if _rows is not None and self.path",
   "new": "        if True:\n            return False\n        if _rows is not None and self.path",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "the shared embedder (CLI and MCP server) reads the env URL without the allow rule",
+  "file": "inspeximus/_embedders.py",
+  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
+  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the CLI opens the store without the embed recipe",
+  "file": "inspeximus/cli.py",
+  "old": "embed=doc, embed_query=query, embed_id=recipe, persist_vectors=persist_vectors,",
+  "new": "embed=doc, embed_query=query, persist_vectors=persist_vectors,",
+  "tests": [
+   "tests/test_the_cli_reembed_builds_the_recipe_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the CLI opens the store without the query embedder",
+  "file": "inspeximus/cli.py",
+  "old": "embed=doc, embed_query=query, embed_id=recipe, persist_vectors=persist_vectors,",
+  "new": "embed=doc, embed_id=recipe, persist_vectors=persist_vectors,",
+  "tests": [
+   "tests/test_the_cli_reembed_builds_the_recipe_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the shared embedder drops the nomic task prefixes",
+  "file": "inspeximus/_embedders.py",
+  "old": "if \"nomic\" in model.lower() and os.environ.get(\"INSPEXIMUS_NOMIC_PREFIX\", \"1\") != \"0\":",
+  "new": "if False:",
+  "tests": [
+   "tests/test_the_cli_reembed_builds_the_recipe_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the MCP server builds no embedder",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    from ._embedders import make_embedders\n    return make_embedders()",
+  "new": "    from ._embedders import make_embedders\n    return None, None, None",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-6: the config cache ignores the change time and the inode",
+  "file": "inspeximus/_userconfig.py",
+  "old": "key = (p, st.st_size, st.st_mtime_ns, st.st_ctime_ns, st.st_ino)",
+  "new": "key = (p, st.st_size, st.st_mtime_ns)",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
   ]
