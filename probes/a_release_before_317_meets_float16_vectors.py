@@ -96,14 +96,45 @@ def run(cmd, step, path, tree=None):
     env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
     env.update(INSPEXIMUS_KEY_HOME=KEY_HOME, INSPEXIMUS_NO_UPDATE_CHECK="1", PYTHONIOENCODING="utf-8")
     args = cmd + ["-E", "-c", STEP, step, path] + ([tree] if tree else [])
-    r = subprocess.run(args, cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True,
-                       encoding="utf-8", timeout=600)
+    # NOT FROM THE TEMP DIRECTORY (AUDIT-A, 2026-10-08). Run from tempfile.gettempdir(), each step's key home, a folder
+    # under it, was inside the project the step ran in; the F-13 rule ignored it with one stderr line, which this probe
+    # discarded, and every step wrote its key and chain head into the owner's real key home (6 pairs on 10-07 and
+    # 10-08). The steps run from WORK, a sibling of KEY_HOME, and a refusal line fails the probe.
+    r = subprocess.run(args, cwd=WORK, env=env, capture_output=True, text=True, encoding="utf-8", timeout=600)
+    if "INSPEXIMUS_KEY_HOME" in r.stderr and "is ignored" in r.stderr:
+        raise SystemExit("step %s: the key home was refused, so the step wrote into the real one:\n%s"
+                         % (step, r.stderr[-800:]))
     if "STEP" not in r.stdout:
         raise SystemExit("step %s failed under %s:\n%s" % (step, " ".join(cmd), r.stderr[-1500:]))
     return json.loads(r.stdout.split("STEP", 1)[1])
 
 
+def _real_key_home_names() -> set:
+    """Every file under the owner's key home, in both views: the real folder, and the Microsoft Store Python's redirected
+    copy, which a Store Python merges into the real one and Git Bash cannot see."""
+    import glob
+    sys.path.insert(0, ROOT)
+    from inspeximus._keyhome import default_home
+    roots = [os.path.join(default_home(), "inspeximus")]
+    local = os.environ.get("LOCALAPPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Local")
+    roots += glob.glob(os.path.join(local, "Packages", "PythonSoftwareFoundation.Python.*", "LocalCache", "Roaming",
+                                    "inspeximus"))
+    names = set()
+    for root in roots:
+        for dp, _d, files in os.walk(root):
+            names |= {os.path.join(dp, f) for f in files}
+    return names
+
+
+def _ours(name, stores) -> bool:
+    """A key or head file is named by a hash of its store's path. Is `name` one of this probe's stores'?"""
+    import hashlib
+    tags = {hashlib.sha256(os.path.abspath(p).encode("utf-8", "replace")).hexdigest()[:16] for p in stores}
+    return os.path.basename(name)[:16] in tags
+
+
 def main():
+    real_before = _real_key_home_names()
     old = shlex.split(sys.argv[sys.argv.index("--old") + 1] if "--old" in sys.argv else DEFAULT_OLD)
     new = [sys.executable]
     log = []
@@ -152,12 +183,20 @@ def main():
            "older_release_ranks_float16_rows_lexically": o["vectors_in_memory"] == 0,
            "older_release_reembed_writes_a_list_beside_vec16": "both" in o3["disk"].values(),
            "b_final_vectors_seen_by_older_release": o4["vectors_in_memory"]}
+    # NOTHING IN THE REAL KEY HOME. A new file there that this probe's stores name fails it; a new file of another
+    # writer (a live hook beside the run) is printed, not failed, because its name does not hash from our stores.
+    new_in_real = sorted(_real_key_home_names() - real_before)
+    ours = [n for n in new_in_real if _ours(n, (a, b))]
+    assert not ours, "the probe wrote into the real key home: %s" % ours[:5]
+    if new_in_real:
+        print("  note: %d new file(s) in the real key home from other writers during the run" % len(new_in_real))
     path = os.path.splitext(os.path.abspath(__file__))[0] + ".result.json"
     open(path, "w", encoding="utf-8", newline="\n").write(json.dumps(out, indent=1, sort_keys=True))
     print("\n  every assertion held; receipt: %s" % os.path.basename(path))
     return 0
 
 
-KEY_HOME = tempfile.mkdtemp()
+KEY_HOME = tempfile.mkdtemp(prefix="vec16-keys-")
+WORK = tempfile.mkdtemp(prefix="vec16-work-")             # the steps' working directory; KEY_HOME is not under it
 if __name__ == "__main__":
     raise SystemExit(main())
