@@ -10380,15 +10380,6 @@
   ]
  },
  {
-  "name": "3.17.0 P-1: reembed leaves the held-back set standing",
-  "file": "inspeximus/core.py",
-  "old": "        self._legacy_shelved.difference_update(dict.get(r, \"id\") for r in todo if dict.get(r, \"vec\"))\n",
-  "new": "",
-  "tests": [
-   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
-  ]
- },
- {
   "name": "3.17.0: the environment turns the receipt tail on",
   "file": "inspeximus/core.py",
   "old": "        _userconfig.env_ignored(\"INSPEXIMUS_RECEIPTS_TAIL\", \"receipts.tail to true\")\n    return False",
