@@ -114,7 +114,9 @@ def test_compact_vectors_rewrites_every_list_row_and_only_those(tmp_path):
     d["vec"] = _emb(d["text"])
     _set_doc(p, ids[1], d)
     m = _open(p)
-    assert m.compact_vectors() == {"compacted": 1, "kept_as_list": 0}
+    out = m.compact_vectors()
+    assert (out["compacted"], out["kept_as_list"]) == (1, 0), out
+    assert out["vacuum"]["vacuumed"] is True, "a compaction that rewrote rows ends with a vacuum"
     docs = _docs(p)
     assert all(rows.VEC_KEY in docs[i] and "vec" not in docs[i] for i in ids), docs
     assert _open(p).compact_vectors() == {"compacted": 0, "kept_as_list": 0}, "a second run found work"

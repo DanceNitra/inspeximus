@@ -361,6 +361,42 @@ def _doc(rec, keep_vec: bool = True) -> str:
     return json.dumps(rec, sort_keys=True, default=str, allow_nan=False, ensure_ascii=False)
 
 
+def slack(path) -> dict:
+    """The free pages inside the file: space a row that shrank or was deleted left behind (3.17).
+
+    SQLite does not give that space back to the file system by itself. Measured on a 13,489-record store:
+    after `compact_vectors` rewrote every vector as float16, the file stayed at 254 MB with 140 MB of it
+    free pages. `secure_delete` has zeroed them, so they hold no erased content; they are only size."""
+    con = _connect(path)
+    try:
+        ps = con.execute("PRAGMA page_size").fetchone()[0]
+        pages = con.execute("PRAGMA page_count").fetchone()[0]
+        free = con.execute("PRAGMA freelist_count").fetchone()[0]
+    finally:
+        con.close()
+    return {"file_bytes": os.path.getsize(str(path)), "free_pages": free, "free_bytes": free * ps,
+            "used_bytes": (pages - free) * ps}
+
+
+def vacuum(path, wait_s: float = 2.0) -> dict:
+    """Rewrite the file without its free pages (3.17). Waits at most `wait_s` for readers to finish, then
+    gives up and reports the slack instead: a VACUUM needs the file to itself, and a reader holding it is
+    never interrupted. `secure_delete` stays on for the rewrite, as it is for every connection."""
+    before = slack(path)
+    con = sqlite3.connect(str(path), timeout=wait_s, isolation_level=None)
+    try:
+        con.execute("PRAGMA secure_delete=ON")
+        con.execute("VACUUM")
+    except sqlite3.OperationalError as e:
+        return {"vacuumed": False, "reason": str(e), "slack_bytes": before["free_bytes"],
+                "file_bytes": before["file_bytes"]}
+    finally:
+        con.close()
+    after = slack(path)
+    return {"vacuumed": True, "freed_bytes": before["file_bytes"] - after["file_bytes"],
+            "file_bytes": after["file_bytes"], "slack_bytes": after["free_bytes"]}
+
+
 def doc_format(path) -> int:
     """The doc_format the store on disk was written with. 1 for a store that predates the marker."""
     if not os.path.exists(str(path)):

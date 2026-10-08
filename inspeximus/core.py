@@ -12804,6 +12804,18 @@ class Inspeximus:
             problems.append("persisted vectors were made by embed recipe %r and the current recipe is %r, so "
                             "they cannot be ranked against fresh queries; run reembed(only_missing=False)"
                             % (sidecar, self.embed_id or None))
+        # THE SLACK OF A ROW STORE (3.17): free pages a VACUUM would give back. Reported always, and named as a
+        # problem when it is a large part of the file, so a store that `compact_vectors` could not vacuum
+        # does not keep its old size unnoticed.
+        if _rows is not None and self.path and self.path.exists() and self._rows_available():
+            try:
+                _sl = _rows.slack(self.path)
+                out["slack_bytes"] = _sl["free_bytes"]
+                if _sl["free_bytes"] > (1 << 20) and _sl["free_bytes"] * 4 > _sl["file_bytes"]:
+                    problems.append("%.1f MB of the %.1f MB store file are free pages; `inspeximus vacuum` gives "
+                                    "them back" % (_sl["free_bytes"] / 1e6, _sl["file_bytes"] / 1e6))
+            except Exception:                                   # noqa: BLE001 -- a report, never a failure
+                pass
         out["problems"] = problems
         if not has_embedder:
             out["note"] = "lexical-only store: no derived index to drift; coherent by construction"
@@ -19135,6 +19147,12 @@ class Inspeximus:
         self._save(force=True)
         out = {"reembedded": done, "failed": failed,
                "remaining": sum(1 for r in self.items if r.get("text") is not None and not r.get("vec"))}
+        if done and self._persist_vectors:
+            # A ROW WHOSE NEW VECTOR EQUALS ITS OLD LIST IS NOT REWRITTEN: the writer compares the record, not
+            # its encoding, so it stays a list. The compaction writes those as float16, then vacuums (3.17).
+            _c = self.compact_vectors()
+            out["compacted"] = _c.get("compacted", 0)
+            out["vacuum"] = _c.get("vacuum") or self.vacuum()
         if not self._persist_vectors:
             # _save strips vectors on a RAM-only store, so this warmed the cache for THIS process only.
             out["warning"] = ("persist_vectors=False: vectors are not written to disk, so the next open "
@@ -19214,6 +19232,35 @@ class Inspeximus:
         # counts only the ones that still have none.
         self._foreign_vec_ids = ids | set(getattr(self, "_foreign_vec_ids", ()))
 
+    def vacuum(self, wait_s: float = 2.0) -> dict:
+        """Give a row store's free pages back to the file system, under the store lock (3.17).
+
+        A row that shrank or was deleted leaves free pages inside the file; `compact_vectors` left 140 MB of
+        them in a 254 MB store. This takes the store lock and a moment with no reader, each within `wait_s`.
+        When either is not available it does nothing and says so, with the slack, rather than wait for a
+        writer or interrupt a reader. `secure_delete` stays on, so an erasure's zeroed pages stay zeroed.
+        Returns {"vacuumed", "freed_bytes" or "reason", "file_bytes", "slack_bytes"}."""
+        if _rows is None or not self.path or not self.path.exists() or not self._rows_available():
+            return {"vacuumed": False, "reason": "not a row store"}
+        if self._dirty:
+            self.flush()
+        deadline = time.monotonic() + max(0.0, float(wait_s))
+        while True:
+            lock = _StoreLock(self.path, try_only=True)
+            with lock:
+                if lock.held:
+                    out = _rows.vacuum(self.path, wait_s=max(0.1, deadline - time.monotonic()))
+                    # The file was rewritten by this handle, so its signature is this handle's to keep;
+                    # a peer sees the new signature and merges, which finds nothing new.
+                    self._file_sig = self._stat_sig()
+                    self._file_hash = None
+                    return out
+            if time.monotonic() >= deadline:
+                sl = _rows.slack(self.path)
+                return {"vacuumed": False, "reason": "another writer holds the store lock",
+                        "file_bytes": sl["file_bytes"], "slack_bytes": sl["free_bytes"]}
+            time.sleep(0.05)
+
     def compact_vectors(self) -> dict:
         """Re-encode every vector a row store still holds as a JSON list into the float16 form, then persist.
 
@@ -19254,7 +19301,11 @@ class Inspeximus:
             n += 1
         if n:
             self._save(force=True)
-        return {"compacted": n, "kept_as_list": kept}
+        out = {"compacted": n, "kept_as_list": kept}
+        if n:
+            # THE FILE KEEPS ITS SIZE UNTIL SOMETHING VACUUMS IT: every rewritten row left its old pages free.
+            out["vacuum"] = self.vacuum()
+        return out
 
     def _touch(self, rec) -> None:
         """Note that one record changed, so a row store can write that row and nothing else.
@@ -19855,6 +19906,8 @@ class _TenantView:
         # is still swept by the tenant and agent leak tests rather than exempted from them.
         "commitment_supports",
         "flush", "reload", "reembed", "anchor", "witness",
+        # One file, one layout: VACUUM rewrites the file and reads no record (3.17).
+        "vacuum",
         # The vector encoding is one per file, like the recipe sidecar `reembed` keeps (3.17). It reads
         # no record's text and returns two counts.
         "compact_vectors",
