@@ -54,7 +54,7 @@ def test_a_head_of_another_process_temp_store_is_reported_not_failed(tmp_path):
 
 def test_a_head_of_a_store_under_this_runs_temp_root_fails(tmp_path):
     fail, info = _classify(tmp_path, lambda run, other: os.path.join(run, "tmpxyz", "s.json"))
-    assert fail and any("leaked heads" in x for x in fail), (fail, info)
+    assert fail and any("new files in the real key home" in x for x in fail), (fail, info)
 
 
 def test_a_head_the_guard_cannot_read_fails(tmp_path):
@@ -77,3 +77,47 @@ def test_every_test_and_its_children_use_this_runs_temp_root():
         assert os.path.normcase(os.path.realpath(v)).startswith(r), (name, v, root)
     assert os.path.normcase(os.path.realpath(tempfile.gettempdir())).startswith(r)
     assert os.path.normcase(os.path.realpath(tempfile.mkdtemp())).startswith(r)
+
+
+# ── the whole key home, in both views (AUDIT-A, 2026-10-08) ─────────────────────────────────────────────────────
+KEYS = os.path.join("AppData", "Roaming", "inspeximus", "keys")
+PKG = os.path.join("AppData", "Local", "Packages", "PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0", "LocalCache",
+                   "Roaming", "inspeximus")
+
+
+def _new_file_fails(tmp_path, rel, name):
+    home = _home(tmp_path)
+    os.makedirs(os.path.join(home, rel), exist_ok=True)
+    before = _home_guard.snapshot(home)
+    with open(os.path.join(home, rel, name), "w", encoding="utf-8") as fh:
+        fh.write("00" * 32)
+    after = _home_guard.snapshot(home)
+    return _home_guard.classify(before, after, home, temp_roots=[str(tmp_path / "this-run")])
+
+
+def test_control_a_key_written_into_the_real_keys_folder_fails_the_run(tmp_path):
+    """The float16 probe wrote keys here and the guard, which listed only heads, saw nothing."""
+    fail, _ = _new_file_fails(tmp_path, KEYS, "6cf7868f990c36a8.guards.key")
+    assert fail and any("6cf7868f990c36a8.guards.key" in x for x in fail), fail
+
+
+def test_a_file_in_any_folder_of_the_key_home_fails_the_run(tmp_path):
+    fail, _ = _new_file_fails(tmp_path, os.path.join("AppData", "Roaming", "inspeximus", "salts"), "x.salt")
+    assert fail, fail
+
+
+def test_a_key_in_the_store_pythons_package_copy_fails_the_run(tmp_path):
+    """A Store Python redirects writes under APPDATA into its package folder; that view is listed as well."""
+    fail, _ = _new_file_fails(tmp_path, os.path.join(PKG, "keys"), "abc.guards.key")
+    assert fail and any("Packages" in x for x in fail), fail
+
+
+def test_a_live_head_in_the_package_copy_is_reported_not_failed(tmp_path):
+    home = _home(tmp_path)
+    os.makedirs(os.path.join(home, PKG, "heads"))
+    before = _home_guard.snapshot(home)
+    with open(os.path.join(home, PKG, "heads", "h.json"), "w", encoding="utf-8") as fh:
+        json.dump({"path": str(tmp_path / "elsewhere" / "s.json")}, fh)
+    fail, info = _home_guard.classify(before, _home_guard.snapshot(home), home,
+                                      temp_roots=[str(tmp_path / "this-run")])
+    assert not fail and info, (fail, info)

@@ -27,7 +27,16 @@ HOST_CONFIGS = (
     os.path.join("AppData", "Roaming", "Claude", "claude_desktop_config.json"),
 )
 #: Directories whose file NAMES are compared: a new file there during a run is the suite's.
-FILE_SETS = (".inspeximus", os.path.join("AppData", "Roaming", "inspeximus", "heads"))
+#:
+#: THE WHOLE KEY HOME, IN BOTH VIEWS (AUDIT-A, 2026-10-08). This listed only `heads`, so a key written into the real
+#: `keys` folder passed unnoticed: the float16 probe wrote 6 key and head pairs there on 10-07 and 10-08. A Microsoft
+#: Store Python also redirects every write under %APPDATA% into its package folder (`LocalCache\Roaming`), which it
+#: reads merged with the real one and which Git Bash and every other program cannot see; that view is listed too. A
+#: name with `*` is a glob, relative to the home.
+KEY_HOME_VIEWS = (os.path.join("AppData", "Roaming", "inspeximus"),
+                  os.path.join("AppData", "Local", "Packages", "PythonSoftwareFoundation.Python.*", "LocalCache",
+                               "Roaming", "inspeximus"))
+FILE_SETS = (".inspeximus",) + KEY_HOME_VIEWS
 #: Transient names a live writer creates and removes by itself.
 _TRANSIENT = ("-journal", "-wal", "-shm", ".lock", ".tmp")
 #: In ~/.claude.json only these subtrees are configuration. The rest is session state, and a prompt
@@ -79,7 +88,14 @@ def snapshot(home: str) -> dict:
     snap = {}
     for rel in HOST_CONFIGS:
         snap[rel] = _config_parts(os.path.join(home, rel), rel)
+    import glob
+    rels = []
     for rel in FILE_SETS:
+        if "*" in rel:
+            rels += [os.path.relpath(p, home) for p in sorted(glob.glob(os.path.join(home, rel)))]
+        else:
+            rels.append(rel)
+    for rel in rels:
         root = os.path.join(home, rel)
         if not os.path.isdir(root):
             snap[rel] = None
@@ -93,12 +109,21 @@ def snapshot(home: str) -> dict:
     return snap
 
 
+def _is_key_home(rel: str) -> bool:
+    """`rel` is one of the views of the key home, the real folder or a Store Python's package copy."""
+    return os.path.normcase(rel).endswith(os.path.normcase(os.path.join("Roaming", "inspeximus")))
+
+
+def _is_head(rel: str, name: str) -> bool:
+    return _is_key_home(rel) and name.split(os.sep)[0] == "heads"
+
+
 def _writer(home, rel: str, name: str) -> str:
     """For a new chain head: the store it records, which names the writer. A head's file name is a hash
     of that path, so the name alone says nothing. Measured 2026-09-28: a run that exited 1 on this guard
     had 15 new heads; reading their `path` by hand showed 13 temp stores of claims_audit.py and
     governance_audit.py (a concurrent release_check), one pytest temp store and one live MCP store."""
-    if home is None or not rel.endswith("heads"):
+    if home is None or not _is_head(rel, name):
         return ""
     try:
         with open(os.path.join(home, rel, name), encoding="utf-8") as fh:
@@ -131,25 +156,29 @@ def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
     import tempfile
     roots = [os.path.normcase(os.path.realpath(r)) for r in (temp_roots or [tempfile.gettempdir()])]
     fail, info = [], []
-    heads = [r for r in FILE_SETS if r.endswith("heads")]
-    for rel in sorted(set(before) | set(after)):
+    views = [r for r in set(before) | set(after) if _is_key_home(r)]
+    for rel in sorted(views):
         b, a = before.get(rel), after.get(rel)
-        if b == a or rel not in heads:
+        if b == a:
             continue
         added, removed = sorted(set(a or []) - set(b or [])), sorted(set(b or []) - set(a or []))
-        stores = {n: _head_store(home, rel, n) for n in added}
-        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]
-        leaked = [n for n in added if n not in live]       # this run's stores, and every head it cannot read
+        # A HEAD names its store, so a head another process wrote during the run is told from a leak. A key, a salt or
+        # any other file does not: its name is a hash of the store's path. Every such new name fails the run.
+        heads = [n for n in added if _is_head(rel, n)]
+        stores = {n: _head_store(home, rel, n) for n in heads}
+        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]
+        leaked = [n for n in added if n not in live]       # this run's heads, unreadable heads, and every other file
         if live:
             info.append(f"{rel}: {len(live)} new head(s) for stores outside this run's temp root, written "
                         f"by another process during the run:")
             info += [f"    new {n} (store {stores[n]})" for n in live[:20]]
         if leaked or removed:
-            fail.append(f"{rel}: +{len(leaked)} -{len(removed)} (leaked heads of temp stores), "
+            fail.append(f"{rel}: +{len(leaked)} -{len(removed)} (new files in the real key home), "
                         f"first +{leaked[:3]} -{removed[:3]}")
-            fail += [f"    new {n} (store {stores[n] or 'unreadable'})" for n in leaked[:20]]
-    fail = diff({k: v for k, v in before.items() if k not in heads},
-                {k: v for k, v in after.items() if k not in heads}, home) + fail
+            fail += [f"    new {n}" + (f" (store {stores[n] or 'unreadable'})" if n in stores else "")
+                     for n in leaked[:20]]
+    fail = diff({k: v for k, v in before.items() if k not in views},
+                {k: v for k, v in after.items() if k not in views}, home) + fail
     return fail, info
 
 
