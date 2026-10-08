@@ -1546,7 +1546,12 @@ def _renderable(records):
     return out
 
 
-def recall(ev):
+def recall(ev, store=None, decision_store=None, count_foreign=None):
+    """The prompt hook's block for `ev`. The three callables default to this module's own and exist for the prompt daemon,
+    which passes its held handles (3.18 prototype): `store(cwd)` the project store, `decision_store(path)` the
+    INSPEXIMUS_DECISION_STORE, read-only, and `count_foreign(m)` the stamps of another guard set."""
+    store = store or _store
+    count_foreign = count_foreign or foreign_stamp_count
     cwd = ev.get("cwd") or os.getcwd()
     if not injection_enabled(cwd):
         return
@@ -1557,9 +1562,9 @@ def recall(ev):
     # recalled is the DECISIONS/RULES relevant to what it's about to do ("what did we decide, and why"). So we
     # surface decision-typed memories ahead of the command/file mechanics — otherwise the useful signal drowns
     # in 'ran: ...' noise. Decisions are stored with the "decision" tag by remember_decision().
-    m = _store(cwd)
+    m = store(cwd)
     # Counted BEFORE the recall: assessing a row drops the stamp it cannot verify from the handle.
-    _LAST_STORES[:] = [(str(getattr(m, "path", "") or ""), False, foreign_stamp_count(m))]   # the project store only
+    _LAST_STORES[:] = [(str(getattr(m, "path", "") or ""), False, count_foreign(m))]   # the project store only
     hits = _read(m, lambda h: h.recall(q, k=16))
     def has(h, tag):
         return tag in (h.get("tags") or [])
@@ -1606,8 +1611,11 @@ def recall(ev):
     if ext and decisions is not None:
         try:
             if os.path.abspath(ext) != os.path.abspath(getattr(m, "path", "") or ""):
-                from ._surface import open_store
-                em = open_store(ext, resolve=False)
+                if decision_store is not None:
+                    em = decision_store(ext)
+                else:
+                    from ._surface import open_store
+                    em = open_store(ext, resolve=False)
                 extra, ranked = _read(em, lambda h: (list(h.decisions_in_force(limit=4)), h.recall(q, k=8)))
                 extra += [h for h in ranked if has(h, "decision")]
                 have = {d.get("id") for d in decisions}
@@ -2349,19 +2357,22 @@ def main():
             _cwd = ev.get("cwd") or os.getcwd()
             # THE PROMPT DAEMON FIRST, TODAY'S PATH ON ANYTHING ELSE (3.18 prototype, opt-in). `hookd.ask` returns the
             # block only after a verified, timely, matching answer; None means run recall() here, exactly as before.
-            _served = None
-            if os.environ.get("INSPEXIMUS_HOOK_DAEMON"):
-                from . import hookd
+            _served, _sp = None, None
+            from . import hookd
+            _daemon_on = hookd.enabled()                        # the user's config only (AUDIT-A D-3)
+            if _daemon_on:
                 from ._surface import coding_store_path
                 try:
                     _sp = coding_store_path(_cwd)               # the hook's own resolution; the daemon repeats it
                 except Exception:                               # noqa: BLE001 -- recall() below reports a refusal
                     _sp = None
-                if _sp is not None and hookd.enabled():
+                if _sp is not None:
                     _served = hookd.ask(ev, _sp)
                     if os.environ.get("INSPEXIMUS_HOOK_DAEMON_TRACE"):
                         sys.stderr.write("[inspeximus] hookd %s" % json.dumps(hookd.LAST) + chr(10))
             if _served is not None:
+                if hookd.LAST.get("err"):
+                    sys.stderr.write(hookd.LAST["err"])       # what today's path prints there (AUDIT-A D-7)
                 if _served:
                     sys.stdout.write(_served)
             else:
@@ -2372,7 +2383,7 @@ def main():
                     maybe_restamp_in_background(_cwd, foreign=hookd.LAST["foreign"])
             else:
                 maybe_restamp_after_recall(_cwd)
-                if os.environ.get("INSPEXIMUS_HOOK_DAEMON") and _sp is not None:
+                if _daemon_on and _sp is not None:
                     hookd.maybe_start(_cwd, _sp)
             _FAST_EXIT[0] = os.environ.get("INSPEXIMUS_HOOK_FAST_EXIT", "").strip().lower() not in ("0", "false", "no")
         elif name == "SessionStart":

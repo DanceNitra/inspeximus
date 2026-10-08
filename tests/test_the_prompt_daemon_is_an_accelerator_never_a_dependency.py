@@ -6,6 +6,8 @@ output is today's whenever the daemon is absent, slow, of another code, or wrong
 """
 from __future__ import annotations
 
+import contextlib
+import hashlib
 import io
 import json
 import os
@@ -38,6 +40,35 @@ def project(tmp_path):
         m.remember("we decided the deploy window is Tuesday %d" % i, key="decision::deploy%d" % i, tags=["decision"])
     m.flush()
     return str(proj), sp
+
+
+@contextlib.contextmanager
+def switch_on():
+    """`{"hook": {"daemon": true}}` in the user's config inside the block; the previous file is restored after it."""
+    from inspeximus import _userconfig
+    p = _userconfig.path()
+    old = open(p, "rb").read() if os.path.exists(p) else None
+    cfg = dict(_userconfig.read())
+    cfg["hook"] = dict(cfg.get("hook") or {}, daemon=True)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    with open(p, "w", encoding="utf-8") as fh:
+        json.dump(cfg, fh)
+    _userconfig._CACHE.clear()
+    try:
+        yield p
+    finally:
+        if old is None:
+            os.unlink(p)
+        else:
+            with open(p, "wb") as fh:
+                fh.write(old)
+        _userconfig._CACHE.clear()
+
+
+@pytest.fixture
+def switched_on():
+    with switch_on() as p:
+        yield p
 
 
 def _ev(proj):
@@ -89,7 +120,11 @@ def test_a_served_answer_is_byte_identical_to_todays_path(project, daemon):
 def test_a_daemon_without_the_token_is_not_believed(project, daemon, monkeypatch):
     """A squatted endpoint: whatever answers must prove it holds the token in the key home."""
     proj, sp = project
-    monkeypatch.setattr(hookd, "_read_token", lambda kh, t: b"x" * 32)
+    fake = b"x" * 32
+    monkeypatch.setattr(hookd, "_read_token", lambda kh, t: fake)
+    real = hookd._read_record
+    monkeypatch.setattr(hookd, "_read_record", lambda kh, t: dict(
+        real(kh, t), token_sha=hashlib.sha256(fake).hexdigest()[:32]))   # past the record check, onto the proof
     assert hookd.ask(_ev(proj), sp, timeout=2.0) is None and hookd.LAST["outcome"] == "bad-reply"
 
 
@@ -131,11 +166,20 @@ def test_the_daemon_answers_only_for_the_store_it_resolves_itself(project, daemo
     assert daemon.answer(_req(daemon, proj))["ok"] is True, "control: its own store is answered"
 
 
-def test_another_version_is_refused_and_the_daemon_exits(project, daemon):
+def test_a_newer_version_is_refused_and_the_daemon_exits(project, daemon):
     proj, sp = project
-    code = dict(hookd.code_identity(), version="0.0.0")
+    code = dict(hookd.code_identity(), version="999.0.0")
     assert daemon.answer(_req(daemon, proj, code=code))["reason"] == "code"
     assert daemon.stop is True
+
+
+def test_an_older_or_other_build_is_refused_without_an_exit(project, daemon):
+    """AUDIT-A D-6: two sessions pinning different builds of one store took turns stopping each other's daemon."""
+    proj, sp = project
+    for code in (dict(hookd.code_identity(), version="0.0.0"), dict(hookd.code_identity(), python="elsewhere"),
+                 dict(hookd.code_identity(), guard_set="other")):
+        assert daemon.answer(_req(daemon, proj, code=code))["reason"] == "code"
+        assert daemon.stop is False, code
 
 
 def test_another_environment_is_refused_without_an_exit(project, daemon):
@@ -208,17 +252,22 @@ def _hook(proj, env_extra, keyhome):
     return r.stdout, r.returncode
 
 
-def test_the_hook_prints_todays_output_with_the_daemon_absent(project, monkeypatch):
+def test_the_hook_prints_todays_output_with_the_daemon_absent(project, monkeypatch, switched_on):
     proj, sp = project
     off, rc1 = _hook(proj, {}, None)
-    on, rc2 = _hook(proj, {"INSPEXIMUS_HOOK_DAEMON": "1", "INSPEXIMUS_HOOK_DAEMON_NOSTART": "1"}, None)
+    on, rc2 = _hook(proj, {"INSPEXIMUS_HOOK_DAEMON_NOSTART": "1"}, None)
     assert rc1 == rc2 == 0 and off == on and "deploy window" in off
 
 
 def test_the_hook_prints_the_daemons_answer_when_it_is_up(project, daemon):
     proj, sp = project
-    off, _ = _hook(proj, {}, None)
-    on, rc = _hook(proj, {"INSPEXIMUS_HOOK_DAEMON": "1"}, None)
+    off, _ = _hook(proj, {}, None)                              # switched off: today's path
+    with switch_on():
+        r = subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(_ev(proj)), cwd=ROOT,
+                           env=dict(os.environ, INSPEXIMUS_HOOK_DAEMON_TRACE="1"), capture_output=True, text=True,
+                           encoding="utf-8", timeout=120)
+    on, rc = r.stdout, r.returncode
+    assert '"outcome": "served"' in r.stderr, "CONTROL: the daemon answered this hook"
     assert rc == 0 and on == off, "the hook through the daemon printed something other than today's output"
 
 
@@ -233,13 +282,12 @@ def test_an_idle_daemon_exits(project):
     assert hookd._read_token(d.kh, d.tag) is None, "an exited daemon left its token"
 
 
-def test_the_start_follows_the_launch_rules_and_is_rate_limited(project, monkeypatch):
+def test_the_start_follows_the_launch_rules_and_is_rate_limited(project, monkeypatch, switched_on):
     proj, sp = project
     seen = []
 
     class P:
         pid = 4242
-    monkeypatch.setenv("INSPEXIMUS_HOOK_DAEMON", "1")
     monkeypatch.setattr(cc, "_start_detached", lambda args, cwd, log: (seen.append((args, cwd, log)), P())[1])
     assert hookd.maybe_start(proj, sp) == "started"
     assert seen and seen[0][0] == ["--serve", "--expect-store", sp] and seen[0][1] == proj
@@ -269,7 +317,11 @@ def test_a_squatted_endpoint_never_receives_the_prompt(project):
     kh = hookd.key_home_for(sp)
     t = hookd.tag(sp, kh)
     os.makedirs(hookd.state_dir(kh), exist_ok=True)
-    write_atomic(hookd._token_path(kh, t), os.urandom(32))      # the real token, which the squatter does not hold
+    token = os.urandom(32)
+    write_atomic(hookd._token_path(kh, t), token)               # the real token, which the squatter does not hold
+    write_atomic(hookd._pid_path(kh, t), json.dumps({          # and a live record naming it: the endpoint is what is squatted
+        "pid": os.getpid(), "proc_start": hookd._proc_start(os.getpid()),
+        "token_sha": hashlib.sha256(token).hexdigest()[:32]}))
     addr = hookd.address(kh, t)
     lst = Listener(addr, family="AF_PIPE" if os.name == "nt" else "AF_UNIX")
     received = []
@@ -294,3 +346,4 @@ def test_a_squatted_endpoint_never_receives_the_prompt(project):
     finally:
         lst.close()
         os.unlink(hookd._token_path(kh, t))
+        os.unlink(hookd._pid_path(kh, t))

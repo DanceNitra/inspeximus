@@ -9564,7 +9564,7 @@
  {
   "name": "the hook does not count foreign stamps before its recall",
   "file": "inspeximus/claude_code.py",
-  "old": "False, foreign_stamp_count(m))]",
+  "old": "False, count_foreign(m))]",
   "new": "False, 0)]",
   "tests": [
    "tests/test_the_hook_heals_stamps_made_under_another_python.py"
@@ -9573,7 +9573,7 @@
  {
   "name": "the hook never starts the restamp after its recall",
   "file": "inspeximus/claude_code.py",
-  "old": "            maybe_restamp_after_recall(ev.get(\"cwd\") or os.getcwd())\n",
+  "old": "                maybe_restamp_after_recall(_cwd)\n",
   "new": "",
   "tests": [
    "tests/test_the_hook_heals_stamps_made_under_another_python.py"
@@ -10290,7 +10290,7 @@
  {
   "name": "3.18 daemon: the client uses a reply it cannot verify",
   "file": "inspeximus/hookd.py",
-  "old": "            if not hmac.compare_digest(str(msg.get(\"mac\", \"\")), _mac(token, b\"R|\", nc, rep)):\n",
+  "old": "            if not hmac.compare_digest(str(msg.get(\"mac\", \"\")), _mac(token, b\"R|\", nc, _sha(req), rep)):\n",
   "new": "            if False:\n",
   "tests": [
    "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
@@ -10317,8 +10317,8 @@
  {
   "name": "3.18 daemon: another version is answered",
   "file": "inspeximus/hookd.py",
-  "old": "        if code != self.code:\n            self.stop = True",
-  "new": "        if False:\n            self.stop = True",
+  "old": "        if code != self.code:\n",
+  "new": "        if False:\n",
   "tests": [
    "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
   ]
@@ -10366,6 +10366,251 @@
   "new": "        if False:\n            return \"recent\"\n",
   "tests": [
    "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-1: the client asks without a live record naming the token",
+  "file": "inspeximus/hookd.py",
+  "old": "        if (rec is None or rec.get(\"token_sha\") != hashlib.sha256(token).hexdigest()[:32]\n                or not _record_is_live(rec)):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-1: a starting daemon keeps a token it did not write",
+  "file": "inspeximus/hookd.py",
+  "old": "    for p in (_token_path(kh, t), _pid_path(kh, t), _fails_path(kh, t)):\n        try:\n            os.unlink(p)\n",
+  "new": "    for p in ():\n        try:\n            os.unlink(p)\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-1: the client accepts a reply MAC that does not cover the request",
+  "file": "inspeximus/hookd.py",
+  "old": "            if not hmac.compare_digest(str(msg.get(\"mac\", \"\")), _mac(token, b\"R|\", nc, _sha(req), rep)):\n",
+  "new": "            if not (hmac.compare_digest(str(msg.get(\"mac\", \"\")), _mac(token, b\"R|\", nc, _sha(req), rep))\n                    or hmac.compare_digest(str(msg.get(\"mac\", \"\")), _mac(token, b\"R|\", nc, rep))):\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-1: the pipe descriptor also grants Everyone read",
+  "file": "inspeximus/hookd.py",
+  "old": "            \"D:P(A;;GA;;;%s)(A;;GA;;;SY)\" % sid, 1, ctypes.byref(psd), None):\n",
+  "new": "            \"D:P(A;;GA;;;%s)(A;;GA;;;SY)(A;;GR;;;WD)\" % sid, 1, ctypes.byref(psd), None):\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ],
+  "platform": "win32"
+ },
+ {
+  "name": "3.18 daemon D-5: a record is live by its pid alone",
+  "file": "inspeximus/hookd.py",
+  "old": "    return want is None or now is None or want == now\n",
+  "new": "    return True\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-2: the client never backs off",
+  "file": "inspeximus/hookd.py",
+  "old": "        if _backing_off(kh, t):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-2: a served answer leaves the timeout count",
+  "file": "inspeximus/hookd.py",
+  "old": "        if not timed_out:\n            if os.path.exists(p):\n                os.unlink(p)\n            return\n",
+  "new": "        if not timed_out:\n            return\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-2: a request whose client gave up is worked",
+  "file": "inspeximus/hookd.py",
+  "old": "        if late:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-3: no limit on live daemons per key home",
+  "file": "inspeximus/hookd.py",
+  "old": "        if live_daemon_count(key_home_for(store_path)) >= MAX_LIVE_DAEMONS:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-4: the daemon keeps the repository as its working directory",
+  "file": "inspeximus/hookd.py",
+  "old": "    os.chdir(state_dir(kh))\n",
+  "new": "    pass\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-6: any other build stops the daemon",
+  "file": "inspeximus/hookd.py",
+  "old": "            if _version_key(code.get(\"version\")) > _version_key(self.code.get(\"version\")):\n",
+  "new": "            if True:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-6: a newer client does not stop the daemon",
+  "file": "inspeximus/hookd.py",
+  "old": "            if _version_key(code.get(\"version\")) > _version_key(self.code.get(\"version\")):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-7: the daemon drops what the answer wrote to stderr",
+  "file": "inspeximus/hookd.py",
+  "old": "        return {\"ok\": True, \"out\": out.getvalue(), \"err\": err.getvalue(), \"foreign\": foreign}\n",
+  "new": "        return {\"ok\": True, \"out\": out.getvalue(), \"err\": \"\", \"foreign\": foreign}\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-7: the hook does not print the daemon's stderr",
+  "file": "inspeximus/claude_code.py",
+  "old": "                    sys.stderr.write(hookd.LAST[\"err\"])       # what today's path prints there (AUDIT-A D-7)\n",
+  "new": "                    pass\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-8: a silent connection holds the daemon for 2 s",
+  "file": "inspeximus/hookd.py",
+  "old": "SERVER_READ_TIMEOUT_S = 0.5\n",
+  "new": "SERVER_READ_TIMEOUT_S = 2.0\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-9: the SQLite change counter is not in the signature",
+  "file": "inspeximus/hookd.py",
+  "old": "            counter = int.from_bytes(head[24:28], \"big\")\n",
+  "new": "            counter = None\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-9: journal files are not in the signature",
+  "file": "inspeximus/hookd.py",
+  "old": "        names = sorted(n for n in os.listdir(d) if n == base or n.startswith(base + \".\") or n.startswith(base + \"-\"))\n",
+  "new": "        names = sorted(n for n in os.listdir(d) if n == base or n.startswith(base + \".\"))\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-9: the key files are not in the signature",
+  "file": "inspeximus/hookd.py",
+  "old": "        files += [_guard_key_file(path), _receipt_key_file(path)]\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-10: the listener binds before the state directory exists",
+  "file": "inspeximus/hookd.py",
+  "old": "        self._make_state_dir()\n        try:\n            self.warm(warm_cwd)\n",
+  "new": "        try:\n            self.warm(warm_cwd)\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 daemon: an exception in the answer leaves the streams redirected",
+  "file": "inspeximus/hookd.py",
+  "old": "        finally:\n            sys.stdout, sys.stderr = saved\n",
+  "new": "        finally:\n            pass\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: a daemon removes files another daemon owns",
+  "file": "inspeximus/hookd.py",
+  "old": "                    if json.load(fh).get(\"pid\") != os.getpid():\n",
+  "new": "                    if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: foreign stamps are recounted on every answer",
+  "file": "inspeximus/hookd.py",
+  "old": "            if hit is None or hit[0] is not m:\n",
+  "new": "            if True:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the daemon switches are part of the environment fingerprint",
+  "file": "inspeximus/hookd.py",
+  "old": "                   if k.startswith(\"INSPEXIMUS_\") and not k.startswith(\"INSPEXIMUS_HOOK_DAEMON\"))\n",
+  "new": "                   if k.startswith(\"INSPEXIMUS_\"))\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: NOSTART is ignored",
+  "file": "inspeximus/hookd.py",
+  "old": "        if not enabled() or os.environ.get(\"INSPEXIMUS_HOOK_DAEMON_NOSTART\"):\n",
+  "new": "        if not enabled():\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the decision store is reopened on every answer",
+  "file": "inspeximus/hookd.py",
+  "old": "            return self.handle_for(p, lambda: _surface.open_store(p, resolve=False))\n",
+  "new": "            return _surface.open_store(p, resolve=False)\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the request size is not bounded before authentication",
+  "file": "inspeximus/hookd.py",
+  "old": "    return json.loads(conn.recv_bytes(1 << 24).decode(\"utf-8\"))\n",
+  "new": "    return json.loads(conn.recv_bytes().decode(\"utf-8\"))\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-3: the environment switches the daemon on",
+  "file": "inspeximus/hookd.py",
+  "old": "        _userconfig.env_ignored(\"INSPEXIMUS_HOOK_DAEMON\", \"hook.daemon to true\")\n",
+  "new": "        return True\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
  }
 ]
