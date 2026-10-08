@@ -8491,8 +8491,8 @@
  {
   "name": "the embed recipe sidecar is written through a link",
   "file": "inspeximus/core.py",
-  "old": "                    write_atomic(self._embedid_path, self.embed_id)\n",
-  "new": "                    self._embedid_path.write_text(self.embed_id, encoding=\"utf-8\")\n",
+  "old": "                        write_atomic(self._embedid_path, self.embed_id)\n                    except LinkRefused:",
+  "new": "                        self._embedid_path.write_text(self.embed_id, encoding=\"utf-8\")\n                    except LinkRefused:",
   "tests": [
    "tests/test_3164_f24_no_write_follows_a_link.py"
   ],
@@ -9779,24 +9779,6 @@
   ]
  },
  {
-  "name": "3.17.0: the archive state is not read from the old place for one release",
-  "file": "inspeximus/claude_code.py",
-  "old": "    for p in (_archive_state_path(store_path), str(store_path) + \".archive-auto.json\"):",
-  "new": "    for p in (_archive_state_path(store_path),):",
-  "tests": [
-   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
-  ]
- },
- {
-  "name": "3.17.0: the old archive record outranks the key home's",
-  "file": "inspeximus/claude_code.py",
-  "old": "    for p in (_archive_state_path(store_path), str(store_path) + \".archive-auto.json\"):",
-  "new": "    for p in (str(store_path) + \".archive-auto.json\", _archive_state_path(store_path)):",
-  "tests": [
-   "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
-  ]
- },
- {
   "name": "3.17.0: the run's mark is written beside the store",
   "file": "inspeximus/claude_code.py",
   "old": "    _mark_run_done(_archive_state_path(path), result)",
@@ -10072,8 +10054,8 @@
  {
   "name": "3.17.0: a replace that a reader blocks is not retried",
   "file": "inspeximus/_safewrite.py",
-  "old": "            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:",
-  "new": "            if True:",
+  "old": "            os.replace(tmp, path)\n            return\n        except PermissionError:\n            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:",
+  "new": "            os.replace(tmp, path)\n            return\n        except PermissionError:\n            if True:",
   "tests": [
    "tests/test_run_state_and_migration_files_use_the_safe_helpers.py"
   ]
@@ -10235,8 +10217,8 @@
  {
   "name": "3.16.6: a blocked replace is not retried",
   "file": "inspeximus/_safewrite.py",
-  "old": "            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:\n                raise\n",
-  "new": "            raise\n",
+  "old": "            os.replace(tmp, path)\n            return\n        except PermissionError:\n            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:\n                raise\n",
+  "new": "            os.replace(tmp, path)\n            return\n        except PermissionError:\n            raise\n",
   "tests": [
    "tests/test_a_write_that_a_reader_blocks_is_retried.py"
   ]
@@ -10267,6 +10249,78 @@
   "new": "    builtins.open = io.open = guarded_open\n",
   "tests": [
    "tests/test_a_probe_under_the_suite_writes_to_a_shadow.py"
+  ]
+ },
+ {
+  "name": "3.17.0: a link at the embedid sidecar stops every write",
+  "file": "inspeximus/core.py",
+  "old": "                    except LinkRefused:\n",
+  "new": "                    except ZeroDivisionError:\n",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: a link at the embedid sidecar is followed in silence",
+  "file": "inspeximus/core.py",
+  "old": "                        _say_once((\"embedid-link\", str(self._embedid_path)),",
+  "new": "                        (lambda *a: None)((\"embedid-link\", str(self._embedid_path)),",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: an old archive record dated in the future decides",
+  "file": "inspeximus/claude_code.py",
+  "old": "or not (0 < last <= time.time() + 60):",
+  "new": "or False:",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: an old archive record is not carried into the key home",
+  "file": "inspeximus/claude_code.py",
+  "old": "            write_atomic(new, json.dumps(migrated))",
+  "new": "            pass",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the old archive record is read after the key home has one",
+  "file": "inspeximus/claude_code.py",
+  "old": "        with open(new, encoding=\"utf-8\") as fh:\n            st = json.load(fh)\n        return st if isinstance(st, dict) else {}\n    except (OSError, ValueError):\n        pass\n    try:\n        with open(str(store_path) + \".archive-auto.json\"",
+  "new": "        with open(new + \".none\", encoding=\"utf-8\") as fh:\n            st = json.load(fh)\n        return st if isinstance(st, dict) else {}\n    except (OSError, ValueError):\n        pass\n    try:\n        with open(str(store_path) + \".archive-auto.json\"",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: copy_file replaces without the retry",
+  "file": "inspeximus/_safewrite.py",
+  "old": "        _refuse(dst)\n        _replace(tmp, dst)",
+  "new": "        _refuse(dst)\n        os.replace(tmp, dst)",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: fresh_file unlinks without the retry",
+  "file": "inspeximus/_safewrite.py",
+  "old": "    try:\n        _unlink(path)\n    except FileNotFoundError:",
+  "new": "    try:\n        os.unlink(path)\n    except FileNotFoundError:",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the unlink retry has no bound",
+  "file": "inspeximus/_safewrite.py",
+  "old": "            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:\n                raise\n            time.sleep(0.01)\n\n\ndef fresh_file",
+  "new": "            if not RETRY_ON_PERMISSION:\n                raise\n            time.sleep(0.01)\n\n\ndef fresh_file",
+  "tests": [
+   "tests/test_audit_a_rc317_final_findings.py"
   ]
  }
 ]

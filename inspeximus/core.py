@@ -939,6 +939,20 @@ def _guard_canon(v) -> str:
     return repr(v)
 
 
+_SAID_ONCE: set = set()
+
+
+def _say_once(key, text) -> None:
+    """One stderr line per key and per process. Never raises."""
+    if key in _SAID_ONCE:
+        return
+    _SAID_ONCE.add(key)
+    try:
+        sys.stderr.write(text + chr(10))
+    except Exception:                                           # noqa: BLE001
+        pass
+
+
 def _guard_env_tag() -> str:
     """Where a stamp was made: `<python version>/ucd<unicode version>`. Informational: it is not in the MAC, so it can
     be edited without a key and decides nothing. It lets a report say WHY stamps are foreign: the guard-set hash holds
@@ -19783,8 +19797,19 @@ class Inspeximus:
             if self._persist_vectors and getattr(self, "_embedid_path", None) is not None \
                     and self.embed_id is not None:
                 try:
-                    from ._safewrite import write_atomic                              # F-24: no link
-                    write_atomic(self._embedid_path, self.embed_id)
+                    from ._safewrite import LinkRefused, write_atomic                 # F-24: no link
+                    try:
+                        write_atomic(self._embedid_path, self.embed_id)
+                    except LinkRefused:
+                        # A LINK AT THE SIDECAR'S NAME IS REPLACED, NOT FOLLOWED AND NOT FATAL (3.17.0, AUDIT-A F-45). The recipe
+                        # file is derived data. Refusing the link was right, and raising from flush() on every write stopped
+                        # the whole project's memory. Removing a link removes the link, never its target, as the receipt and
+                        # tombstone sidecars are already replaced; one stderr line says so.
+                        os.unlink(self._embedid_path)
+                        write_atomic(self._embedid_path, self.embed_id)
+                        _say_once(("embedid-link", str(self._embedid_path)),
+                                  "[inspeximus] %s was a link: it was replaced by a real file, and what the link named was not "
+                                  "touched." % self._embedid_path)
                 except Exception as e:
                     self._sidecar_errors['embedid'] = f"{type(e).__name__}: {e}"
             self._last_save = now

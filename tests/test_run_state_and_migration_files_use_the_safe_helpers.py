@@ -82,7 +82,7 @@ def test_for_one_release_the_state_3_16_kept_beside_the_store_is_still_read(env,
         json.dump({"last_attempt": time.time(), "hot_bytes": 1}, fh)
     assert cc.maybe_archive_in_background(str(proj)) == "recent", "a run 3.16 started a moment ago still counts"
     os.remove(path + ".archive-auto.json")
-    assert cc.maybe_archive_in_background(str(proj)) == "started"
+    assert cc.maybe_archive_in_background(str(proj)) == "recent", "its time was carried into the key home (F-46)"
     assert not os.path.exists(path + ".archive-auto.json"), "nothing is written to the old place any more"
 
 

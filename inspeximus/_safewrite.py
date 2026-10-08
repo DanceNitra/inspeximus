@@ -90,13 +90,27 @@ def _replace(tmp, path) -> None:
             time.sleep(0.01)
 
 
+def _unlink(path) -> None:
+    """`os.unlink` that retries a PermissionError for the same bound as `_replace` (Windows holds a file that is open)."""
+    import time
+    deadline = time.monotonic() + REPLACE_RETRY_S
+    while True:
+        try:
+            os.unlink(path)
+            return
+        except PermissionError:
+            if not RETRY_ON_PERMISSION or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.01)
+
+
 def fresh_file(path) -> str:
     """An empty file at `path`, created exclusively (3.17.0): whatever was at that name, a leftover or a link, is removed first, and
     removing a link removes the link and not its target. The caller then hands the name to a writer that opens it by name, such
     as SQLite, which would otherwise follow a link a repository shipped at that name."""
     path = os.fspath(path)
     try:
-        os.unlink(path)
+        _unlink(path)
     except FileNotFoundError:
         pass
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0), 0o600)
@@ -117,7 +131,7 @@ def copy_file(src, dst) -> None:
             shutil.copyfileobj(inp, out, 1 << 20)
         shutil.copystat(src, tmp)
         _refuse(dst)
-        os.replace(tmp, dst)
+        _replace(tmp, dst)
     except BaseException:
         try:
             os.unlink(tmp)

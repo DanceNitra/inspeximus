@@ -891,16 +891,36 @@ def _archive_state_path(store_path, suffix=".json") -> str:
 
 
 def _read_archive_state(store_path):
-    """The archive run's attempt record: the key home's, and for ONE RELEASE the file that 3.16 kept beside the store
-    (`<store>.archive-auto.json`), read only when the key home has none. Nothing is written to the old place any more."""
-    for p in (_archive_state_path(store_path), str(store_path) + ".archive-auto.json"):
+    """The archive run's attempt record: the key home's. For ONE RELEASE the file that 3.16 kept beside the store
+    (`<store>.archive-auto.json`) is read once when the key home has none, and its `last_attempt` is copied into the key
+    home; after that the old place is never read again. Nothing is written to the old place.
+
+    A REPOSITORY CAN PLANT THE OLD FILE (3.17.0, AUDIT-A F-46). A `last_attempt` in the future, or one that is not a number, is
+    ignored and not copied: read as it was, it kept the archive switched off for that project for good, because nothing ever
+    created the key-home record that would replace it. A genuine old record can at most delay a run by one interval."""
+    import time
+    new = _archive_state_path(store_path)
+    try:
+        with open(new, encoding="utf-8") as fh:
+            st = json.load(fh)
+        return st if isinstance(st, dict) else {}
+    except (OSError, ValueError):
+        pass
+    try:
+        with open(str(store_path) + ".archive-auto.json", encoding="utf-8") as fh:
+            old = json.load(fh)
+        last = old.get("last_attempt") if isinstance(old, dict) else None
+        if isinstance(last, bool) or not isinstance(last, (int, float)) or not (0 < last <= time.time() + 60):
+            return {}                                           # planted, or not a record we wrote
+        from ._safewrite import write_atomic
+        migrated = {"last_attempt": float(last), "migrated_from": "beside the store"}
         try:
-            with open(p, encoding="utf-8") as fh:
-                st = json.load(fh)
-            return st if isinstance(st, dict) else {}
-        except (OSError, ValueError):
-            continue
-    return {}
+            write_atomic(new, json.dumps(migrated))
+        except OSError:
+            pass
+        return migrated
+    except (OSError, ValueError, AttributeError):
+        return {}
 
 
 def _mark_stamp_run(store_path, result) -> None:
