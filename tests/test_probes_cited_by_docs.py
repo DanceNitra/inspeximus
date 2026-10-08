@@ -301,6 +301,11 @@ def _optional_third_party():
     # where no install helps, because it also needs a live endpoint -- and that reasoning does not
     # transfer. CI caught it: three probes that run on this box (torch is installed) failed there.
     names |= {"torch", "transformers"}
+    # 3.16.7. `mem0`: the concurrent-writer probe measures it with infer=False and a local embedder, and
+    # skips its own arm when the embedder is absent, so installing mem0 is all it needs. It failed on a fresh
+    # 3.9 and 3.10 venv as "a module of ours never committed". `haystack`: our own extra, declared as
+    # `haystack-ai`, whose IMPORT name the extras parser above cannot derive.
+    names |= {"mem0", "haystack"}
     return names
 
 
@@ -372,6 +377,10 @@ KNOWN_THIRD_PARTY = OPTIONAL_THIRD_PARTY | {
     # third-party as anything here -- and mistaking one for an uncommitted module of ours would send
     # somebody hunting for a file that was never meant to exist.
     "mem0", "graphiti_core", "zep_python", "letta", "chromadb", "qdrant_client", "faiss",
+    # 3.16.7: two more that probes import and this set did not name. `hindsight` is a competitor's memory
+    # server (integrity_bench_*), and `agmi` is the benchmark of a project we work with. Neither is in
+    # OPTIONAL_THIRD_PARTY: nothing measured shows that installing it alone makes its probe runnable.
+    "hindsight", "agmi",
     "requests", "httpx", "tqdm", "matplotlib", "seaborn", "sklearn", "scipy",
     # certifi: pip ships it and requests depends on it, so it is on nearly every machine, but it is
     # nobody's stdlib. The hosted-log acceptance probe uses its CA bundle because the Windows Store
