@@ -60,6 +60,10 @@ _STORE_WIDE_PRIVATE = {
     # leave another tenant's foreign vectors ranked in the shared items list. It returns nothing, and
     # changes no record's text, key or status.
     "_drop_foreign_vectors",
+    # THE RECIPE SIDECAR IS ONE LINE FOR THE FILE (3.17.0). `_embedid_may_change` asks whether any vector in the shared items
+    # list depends on the sidecar before a save rewrites it; scoped to one tenant it would rewrite the sidecar under another
+    # tenant's untagged vectors. It returns a bool and changes no record.
+    "_embedid_may_change",
     # THE TOMBSTONE SIDECAR IS ONE CHAIN PER FILE (3.9.7). `_reconcile_tombstones_with_disk` adopts
     # what another PROCESS appended, and `_seal_tombstone` chains onto the file's tip: scoped to one
     # tenant, either would fork the chain the way `_merge_with_disk` would drop rows. The tenant stamp

@@ -124,7 +124,7 @@ def test_control_the_same_url_in_the_users_config_is_used_on_both_paths(tmp_path
 def test_a_loopback_url_from_the_repo_still_works(tmp_path, monkeypatch, sent, capsys):
     _shared_store(tmp_path, monkeypatch)
     _user_config({"embed": {"hooks": True}})
-    repo = _repo(tmp_path, {"url": LOOPBACK, "model": "x"})
+    repo = _repo(tmp_path, {"url": LOOPBACK})
     _write_and_prompt(repo)
     assert any("PROMPT-UNIQUE" in b for u, b in sent if u == LOOPBACK)
     assert any("CAPTURE-UNIQUE" in b for u, b in sent if u == LOOPBACK)
