@@ -181,3 +181,19 @@ def test_reembed_ends_with_a_vacuum(tmp_path):
     out = _open(p).reembed(only_missing=False)
     assert out["reembedded"] == 120 and out["vacuum"]["vacuumed"] is True, out
     assert os.path.getsize(p) < before * 0.6 and S.slack(p)["free_pages"] == 0
+
+
+# ── F-44: a tenant- or agent-bound handle cannot run a store-wide rewrite ────────────────────────────
+import pytest  # noqa: E402
+
+
+def test_v5_a_tenant_bound_handle_cannot_vacuum_the_whole_store(tmp_path):
+    """AUDIT-A's check, in-tree, extended to every 3.17 operation that rewrites the whole store."""
+    p = _bloated(tmp_path, n=20)
+    m = _open(p)
+    for view in (m.for_tenant("tenant-a"), m.as_agent("agent-a")):
+        for op in ("vacuum", "compact_vectors", "reembed"):
+            with pytest.raises(AttributeError, match="operator-only"):
+                getattr(view, op)()
+    assert S.slack(p)["file_bytes"] == os.path.getsize(p)
+    assert m.vacuum()["vacuumed"] is True, "control: the unbound handle still vacuums"
