@@ -461,7 +461,7 @@ Two things to know before you upgrade:
   `INSPEXIMUS_KEEP_CONVERSION_BACKUP=1`: the certificate then declares the backup as data the erasure
   did not reach, which is the trade you are making.
 
-`INSPEXIMUS_STORE_FORMAT=json` keeps the old format, for a store that other tooling reads directly.
+`INSPEXIMUS_STORE_FORMAT=json` keeps the old format, for a store that other tooling reads directly. Since 3.17.0 it applies to a new store and to a store that is JSON already; for a row store it is ignored, with one line on stderr, and `{"store": {"format": "json"}}` in `<key home>/inspeximus/config.json` pins any store.
 
 `provenance(key=...)` answers the rest in one call: every value the key has held and the policy that
 retired each one, where the current value came from including taint inherited through summaries,
