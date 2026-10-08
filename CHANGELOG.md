@@ -1,3 +1,59 @@
+## 3.16.6 - UPGRADE IF you set an embedder: when your recall has been lexical although INSPEXIMUS_EMBED_URL is set, this release says so and names the switch. ACTION if it does: set INSPEXIMUS_PERSIST_VECTORS=1 and run `inspeximus reembed` once
+
+### An embedder with no vectors now says so
+
+Opening a store embeds nothing, and nothing fills in missing vectors later. A record gets a vector only when the process that writes it has an embedder. With `INSPEXIMUS_PERSIST_VECTORS` off, which is the default, that vector is dropped when the process exits. So a store used through the MCP server with an embedder configured can hold no vectors at all, and then every recall is lexical. Before 3.16.6 the signs were `coherent: false` and a short note in `index_coherence()`, which nothing else read.
+
+We measured this on our own shared store: 13,489 records, an embedder configured, and 0 vectors on disk.
+
+In 3.16.6:
+
+- `index_coherence()` returns `vectors`, the number of active records that carry one, and `problems`, a list of sentences. When an embedder is configured and records have no vector, the first sentence gives the count, and the second gives the fix.
+- The MCP server prints one line on stderr at start when an embedder is configured and records have no vector.
+- `where_am_i` returns `semantic_index`: `vectors`, `active_text_records`, `persist_vectors`, and `problem`.
+
+### If your recall has been lexical although an embedder is set
+
+This is why. To fix it:
+
+1. Set `INSPEXIMUS_PERSIST_VECTORS=1` in the environment of every MCP server that uses the store, with the same `INSPEXIMUS_EMBED_URL` and `INSPEXIMUS_EMBED_MODEL` in each. A server without the embedder writes records that have no vector.
+2. Restart those servers.
+3. Run `inspeximus reembed` once.
+
+The cost, measured on a copy of our 13,489-record store with `bge-m3` (1,024 dimensions) on a local Ollama:
+
+| | Before | After |
+|---|---|---|
+| Store file | 53.7 MB | 254.1 MB |
+| Open, fresh process | 2.5 s | 5.7 s |
+| One write, median of 5 | 0.235 s | 0.247 s |
+| `inspeximus reembed` | | 1,153 s, 85 ms per record |
+
+On 8 questions written from real records, recall found 2 of the 8 answering records before (both at rank 5) and all 8 in the top 3 after. A fresh process read the vectors from disk and gave the same ranks.
+
+### Corrected texts
+
+- The help for `INSPEXIMUS_PERSIST_VECTORS` said that with the variable off, every open re-embeds every record. It does not. It now says that opening embeds nothing, only records the server writes get a vector, and those are dropped at exit.
+- The `index_coherence()` note promised a backfill that does not exist. The `reembed()` warning said the next open would re-embed. Both now say what happens.
+
+### A state write is retried while another process reads the file (Windows)
+
+On Windows, a state or log write could fail while another process had the same file open, for example a second session's hook reading it at that moment. The automatic archive run could then lose the record that it had finished, and the next prompt waited the full interval (`min_interval_s`) before it started another run.
+
+In 3.16.6, a write that replaces a state file is retried for up to 2 seconds on Windows, and then fails as before. The archive run keeps trying to record that it finished until its own deadline. Other systems do not refuse such a write and are unchanged.
+
+### Tests
+
+- The probe `three_reasons_a_hook_can_look_installed_and_never_run.py` reports its read-only arm as not reachable when it runs as root, because root ignores file modes. It still judges that arm on every other run.
+
+Release record, 2026-10-08, on the tree of this release (52e93b7f before this version bump):
+- Windows, full suite, 2 processes: 6,524 passed, 0 failed, 503 skipped, 12 xfailed, 19 errors. The 19 errors are the openai-agents tests, as in 3.16.5.
+- WSL (Ubuntu 24.04, fresh clone), full suite, 2 processes: 6,013 passed, 762 skipped, 9 xfailed, and 1 timed out under CPU contention: a probe subprocess (`reopen_interval_readpath.py`) reached its 180 s limit after 6 of its 8 seeds. It passed alone in 57.7 s. Linux CI on the release branch runs the full suite again before main.
+- Python 3.9 and 3.10 on Linux, the 3 test files changed since 3.16.5: 13 passed, 0 failed on each.
+- Perf gate, run alone: no regression.
+- The mutation entries added since 3.16.5: 9 of 9 killed on Windows; on Linux 7 of 7 that run there (the server-start entry needs the `mcp` package, and one entry is Windows only).
+- AUDIT-B found the replace failure on Windows and wrote the fix this release carries.
+
 ## 3.16.5 - UPGRADE IF you open repositories you did not write: a store reached through a link is followed only when you allow it, and one bad record can no longer stop the prompt hook. ACTION if you point INSPEXIMUS_CODING_STORE at a directory outside the project: run `inspeximus link <directory>` once
 
 ### A store reached through a link is followed only when you allow it
