@@ -174,6 +174,24 @@ def _modified(home, rel: str, name: str) -> str:
         return "unknown"
 
 
+def run_tags(roots) -> set:
+    """The store tag (`sha256(abspath)[:16]`, what a key, a salt, a head and a run-state record are named by) of every file
+    and folder under `roots`, so a key-home file for a store this run created is found without a head to read it from
+    (G-1a). Walks each root as given and as its real path."""
+    import hashlib
+    tags, seen = set(), set()
+    for root in roots:
+        for base in {str(root), os.path.realpath(str(root))}:
+            if base in seen or not os.path.isdir(base):
+                continue
+            seen.add(base)
+            for dp, dirs, files in os.walk(base):
+                for n in dirs + files:
+                    tags.add(hashlib.sha256(os.path.abspath(os.path.join(dp, n)).encode("utf-8", "replace")).hexdigest()[:16])
+            tags.add(hashlib.sha256(os.path.abspath(base).encode("utf-8", "replace")).hexdigest()[:16])
+    return tags
+
+
 def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
     """(failing lines, information lines). ATTRIBUTION BY STORE PATH (3.17.0, EM's decision of 2026-10-09).
 
@@ -185,10 +203,13 @@ def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
     conftest passes this run's own temporary root (3.16.3), which TEMP, TMP and TMPDIR point at for every test and child.
 
     Not seen, by design (G-2): a file the run overwrote with the same name, and a file the run created and deleted again
-    inside the run. Both leave the set of names as it was."""
+    inside the run. Both leave the set of names as it was. Not handled yet (G-1c, for 3.18): a file REMOVED by a live daemon
+    at its idle exit still fails the run; the daemon is not in 3.17.0."""
     import tempfile
-    roots = [os.path.normcase(os.path.realpath(r)) for r in (temp_roots or [tempfile.gettempdir()])]
+    raw_roots = list(temp_roots or [tempfile.gettempdir()])
+    roots = [os.path.normcase(os.path.realpath(r)) for r in raw_roots]
     fail, info = [], []
+    tags = None
     views = [r for r in set(before) | set(after) if _is_key_home(r)]
     for rel in sorted(views):
         b, a = before.get(rel), after.get(rel)
@@ -208,12 +229,19 @@ def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
             return _record_store(home, _rel, n) or _by.get(_tag(n))
 
         stores = {n: store_of(n) for n in added}
-        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]
+        if tags is None and added:
+            tags = run_tags(raw_roots)
+        # THIS RUN'S: a store under its temp root (G-1); a tag that is the hash of a path under it, with or without a head
+        # (G-1a: a harness key of a temp store has no head); a head that is unreadable or names no store (G-1b: a foreign
+        # head is written atomically, so a half-written one is not a live writer's).
+        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)
+                or (_is_head(rel, n) and not stores[n])]
         other = [n for n in added if n not in mine]
         if mine or removed:
             fail.append(f"{rel}: +{len(mine)} -{len(removed)} (new files in the real key home for this run's temp stores), "
                         f"first +{mine[:3]} -{removed[:3]}")
-            fail += [f"    new {n} (store {stores[n]})" for n in mine[:20]]
+            fail += [f"    new {n} ({'store ' + stores[n] if stores[n] else 'no readable store; tag ' + _tag(n)})"
+                     for n in mine[:20]]
         if other:
             info.append(f"{rel}: {len(other)} new file(s) not attributed to this run (no store under this run's temp root), "
                         f"written by another process during the run:")

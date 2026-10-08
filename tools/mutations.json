@@ -6104,18 +6104,20 @@
  {
   "name": "home guard: a live session's first head fails the run again",
   "file": "tests/_home_guard.py",
-  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
-  "new": "        mine = list(added)",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = list(added) or [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
   "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
  {
   "name": "home guard: an unreadable head is not counted as a leak",
   "file": "tests/_home_guard.py",
-  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
-  "new": "        mine = [n for n in added if not stores[n] or _inside(stores[n], roots)]",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = [n for n in added if False or (tags and _tag(n) in tags)",
   "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
@@ -7699,19 +7701,21 @@
  {
   "name": "the home guard excuses a head it cannot read",
   "file": "tests/_home_guard.py",
-  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
-  "new": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots) and not n.endswith(\".json\")]",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots) and not n.endswith(\".json\")) or (tags and _tag(n) in tags)",
   "tests": [
-   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
+   "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
  {
   "name": "the home guard counts another process's temp store as this run's",
   "file": "tests/_home_guard.py",
-  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
-  "new": "        mine = [n for n in added if stores[n]]",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = [n for n in added if (stores[n]) or (tags and _tag(n) in tags)",
   "tests": [
-   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
+   "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
  {
@@ -10537,6 +10541,42 @@
   "file": "tests/_home_guard.py",
   "old": "    if not name.endswith(\".json\"):\n        return None\n    try:\n        with open(os.path.join(home, rel, name)",
   "new": "    return None\n    try:\n        with open(os.path.join(home, rel, name)",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a key of a run temp store with no head is not found",
+  "file": "tests/_home_guard.py",
+  "old": "or (tags and _tag(n) in tags)",
+  "new": "or False",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: the tree walk skips the folders of the run",
+  "file": "tests/_home_guard.py",
+  "old": "for n in dirs + files:",
+  "new": "for n in files:",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: an unreadable head is excused again",
+  "file": "tests/_home_guard.py",
+  "old": "\n                or (_is_head(rel, n) and not stores[n])]",
+  "new": "]",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: the walk hashes a path relative to nothing",
+  "file": "tests/_home_guard.py",
+  "old": "hashlib.sha256(os.path.abspath(os.path.join(dp, n)).encode",
+  "new": "hashlib.sha256(os.path.join('x', n).encode",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]

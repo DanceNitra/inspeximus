@@ -161,10 +161,9 @@ def test_a_head_is_a_leak_only_when_its_store_is_a_temp_store(tmp_path):
                                      encoding="utf-8")
     (heads / "garbled.json").write_text("not json", encoding="utf-8")
     fail, info = _home_guard.classify(before, _home_guard.snapshot(str(home)), str(home), [temp_root])
-    assert any(": +1 -0" in ln for ln in fail), fail
-    assert any("leak.json" in ln for ln in fail), fail
-    assert not any("live.json" in ln or "garbled.json" in ln for ln in fail), fail
-    assert any("garbled.json" in ln and "no store recorded" in ln for ln in info), info
+    assert any(": +2 -0" in ln for ln in fail), fail
+    assert any("leak.json" in ln for ln in fail) and any("garbled.json" in ln for ln in fail), fail
+    assert not any("live.json" in ln for ln in fail), fail
     assert any("live.json" in ln and "mcp_memory_chain" in ln for ln in info), info
 
 

@@ -57,16 +57,15 @@ def test_a_head_of_a_store_under_this_runs_temp_root_fails(tmp_path):
     assert fail and any("new files in the real key home" in x for x in fail), (fail, info)
 
 
-def test_a_head_the_guard_cannot_read_is_reported_not_failed(tmp_path):
-    """EM's decision of 2026-10-09: a file is this run's only when it names a store under this run's temp root. A head that
-    names none cannot be attributed, so it is information with its name and time."""
-    fail, info = _classify(tmp_path, lambda run, other: None)
-    assert not fail and any("h1.json" in x and "no store recorded" in x for x in info), (fail, info)
+def test_a_head_the_guard_cannot_read_fails(tmp_path):
+    """G-1b: a foreign head is written atomically, so an unreadable one is not a live writer's."""
+    fail, _ = _classify(tmp_path, lambda run, other: None)
+    assert fail and any("h1.json" in x for x in fail), fail
 
 
-def test_a_head_that_names_no_store_is_reported_not_failed(tmp_path):
-    fail, info = _classify(tmp_path, lambda run, other: "")
-    assert not fail and any("h1.json" in x for x in info), (fail, info)
+def test_a_head_that_names_no_store_fails(tmp_path):
+    fail, _ = _classify(tmp_path, lambda run, other: "")
+    assert fail and any("h1.json" in x for x in fail), fail
 
 
 def test_every_test_and_its_children_use_this_runs_temp_root():
@@ -176,4 +175,43 @@ def test_a_live_head_in_the_package_copy_is_reported_not_failed(tmp_path):
         json.dump({"path": str(tmp_path / "elsewhere" / "s.json")}, fh)
     fail, info = _home_guard.classify(before, _home_guard.snapshot(home), home,
                                       temp_roots=[str(tmp_path / "this-run")])
+    assert not fail and info, (fail, info)
+
+
+# ── G-1a: a key of a temp store with no head is found by hashing the run's temp tree ─────────────────────────────────────
+def _tag_of(path):
+    import hashlib
+    return hashlib.sha256(os.path.abspath(path).encode("utf-8")).hexdigest()[:16]
+
+
+def _key_for(tmp_path, make_store=True, as_dir=False):
+    home = _home(tmp_path)
+    run = tmp_path / "this-run"
+    store = run / "tmpq" / ("coding" if as_dir else "s.json")
+    store.parent.mkdir(parents=True)
+    if as_dir:
+        store.mkdir()
+    elif make_store:
+        store.write_text("[]")
+    keys = os.path.join(home, KEYS)
+    os.makedirs(keys, exist_ok=True)
+    before = _home_guard.snapshot(home)
+    with open(os.path.join(keys, _tag_of(str(store)) + ".guards.key"), "w", encoding="utf-8") as fh:
+        fh.write("00" * 32)
+    return _home_guard.classify(before, _home_guard.snapshot(home), home, temp_roots=[str(run)])
+
+
+def test_a_key_of_a_run_temp_store_with_no_head_fails(tmp_path):
+    """AUDIT-A's head-less harness keys: their tag is the hash of a path the run created."""
+    fail, info = _key_for(tmp_path)
+    assert fail and any(".guards.key" in x for x in fail), (fail, info)
+
+
+def test_a_key_of_a_run_temp_folder_fails_too(tmp_path):
+    fail, _ = _key_for(tmp_path / "d", as_dir=True)
+    assert fail, fail
+
+
+def test_a_key_whose_tag_matches_nothing_under_the_run_is_still_information(tmp_path):
+    fail, info = _new_file(tmp_path, KEYS, "0123456789abcdef.guards.key")
     assert not fail and info, (fail, info)
