@@ -6104,7 +6104,7 @@
  {
   "name": "home guard: a live session's first head fails the run again",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
+  "old": "        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]",
   "new": "        live = []",
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
@@ -6122,8 +6122,8 @@
  {
   "name": "home guard: classify drops every change outside the heads directory",
   "file": "tests/_home_guard.py",
-  "old": "    fail = diff({k: v for k, v in before.items() if k not in heads},",
-  "new": "    fail = [] and diff({k: v for k, v in before.items() if k not in heads},",
+  "old": "    fail = diff({k: v for k, v in before.items() if k not in views},",
+  "new": "    fail = [] and diff({k: v for k, v in before.items() if k not in views},",
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
@@ -7699,8 +7699,8 @@
  {
   "name": "the home guard excuses a head it cannot read",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
-  "new": "        live = [n for n in added if not stores[n] or not _inside(stores[n], roots)]",
+  "old": "        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]",
+  "new": "        live = [n for n in heads if not stores[n] or not _inside(stores[n], roots)]",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]
@@ -7708,7 +7708,7 @@
  {
   "name": "the home guard counts another process's temp store as this run's",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
+  "old": "        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]",
   "new": "        live = []",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
