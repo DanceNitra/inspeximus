@@ -10430,7 +10430,7 @@
   "old": "    if not (env_hooks or uc.get(\"hooks\") is True):\n        return None, None, None",
   "new": "    if False:\n        return None, None, None",
   "tests": [
-   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
   ]
  }
 ]
