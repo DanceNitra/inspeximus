@@ -28,6 +28,7 @@ import base64
 import hashlib
 import hmac
 import json
+import math
 import os
 import sqlite3
 import struct
@@ -132,9 +133,11 @@ def decode_vec(text):
     if not raw or len(raw) % 2:
         return None
     vals = struct.unpack("<%de" % (len(raw) // 2), raw)
-    for x in vals:
-        if x != x or x in (float("inf"), float("-inf")):
-            return None
+    # ONE PASS IN C, NOT A PYTHON LOOP OVER EVERY VALUE (3.17). A sum of finite half floats is finite (at most
+    # 16,384 x 65,504), and a NaN or an infinity anywhere makes it non-finite, inf + -inf included. The loop it
+    # replaces cost about a second on every open of a 13,494-vector store, more than the decode itself.
+    if not math.isfinite(sum(vals)):
+        return None
     return list(vals)
 
 

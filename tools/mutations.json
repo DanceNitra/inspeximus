@@ -9270,8 +9270,8 @@
  {
   "name": "3.17: decode_vec accepts a value that is not finite",
   "file": "inspeximus/sqlite_store.py",
-  "old": "        if x != x or x in (float(\"inf\"), float(\"-inf\")):\n",
-  "new": "        if False:\n",
+  "old": "    if not math.isfinite(sum(vals)):\n        return None\n",
+  "new": "    if False:\n        return None\n",
   "tests": [
    "tests/test_vectors_are_stored_as_float16.py",
    "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
