@@ -59,7 +59,12 @@ def load_server(monkeypatch, tmp_path, **env: str):
     # the developer's config directory. BESIDE tmp_path, not in it: the store lives in tmp_path, and a
     # read-guard key is refused inside the store's own directory (A-30), so a key home there makes every
     # release fail with "no read-guard key".
-    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path.parent / (tmp_path.name + "-key_home")))
+    kh = str(tmp_path.parent / (tmp_path.name + "-key_home"))
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", kh)
+    # 3.18: the settings a project's environment may no longer choose go into the user's config, in this test's key home.
+    from _userconfig_env import config_settings, write_user_config
+    cfg, env = config_settings(env)
+    write_user_config(kh, cfg)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
     return importlib.reload(importlib.import_module("inspeximus.mcp_server"))

@@ -168,13 +168,17 @@ def test_records_written_before_the_guards_are_assessed_at_first_recall(tmp_path
     assert m.read_guard_report()["quarantined_active"] == 1
 
 
-def test_the_guards_are_off_by_argument_and_by_environment(tmp_path, monkeypatch):
+def test_the_guards_are_off_by_argument_and_by_the_users_config(tmp_path, monkeypatch, user_config):
+    """3.18: the user's config `guards.read` switches them off; a project's environment cannot."""
     monkeypatch.setenv("INSPEXIMUS_READ_GUARDS", "0")
+    assert Inspeximus(str(tmp_path / "env.json")).read_guards is True, "a project's environment switched them off"
+    user_config(INSPEXIMUS_READ_GUARDS="0")
     m = Inspeximus(str(tmp_path / "mem.json"))
     assert m.read_guards is False
     m.remember(INJECTION, user_id="victim")
     assert len(m.recall("summarise my recent meetings", k=5, user_id="victim")) == 1
     monkeypatch.delenv("INSPEXIMUS_READ_GUARDS")
+    user_config(INSPEXIMUS_READ_GUARDS="1")
     assert Inspeximus(str(tmp_path / "on.json")).read_guards is True
     assert Inspeximus(str(tmp_path / "off.json"), read_guards=False).read_guards is False
 

@@ -1408,12 +1408,12 @@ NON_CLAIM_TOKENS = {
         "5": (2, "twice, both parameters a reader changes rather than results we claim: the --n 5 "
               "argument in the offered local-judge command, and k=5 in the next-five-minutes recall "
               "snippet"),
-        "0": (18, "One more since 2026-09-28: the INSPEXIMUS_HEADS=0 switch in the archive section. One more since 2026-09-23: `ots verify` exit code 0 for ANCHORED. 16 since 3.1.0: the retire example reads history(\"on-call\")[0]. 15 since 3.0.0: the enable_receipts example reads verify_writes()[1][0], split(':', 1)[0] and verify_writes()[0]. One more [0] in the quickstart snippet on the first screen (2026-09-17). Python list indices [0] in the code examples, not measurements. Was 3 until the "
+        "0": (17, "One fewer since 3.18: the INSPEXIMUS_HEADS=0 switch left the archive section for the config key guards.heads. One more since 2026-09-28: the INSPEXIMUS_HEADS=0 switch in the archive section. One more since 2026-09-23: `ots verify` exit code 0 for ANCHORED. 16 since 3.1.0: the retire example reads history(\"on-call\")[0]. 15 since 3.0.0: the enable_receipts example reads verify_writes()[1][0], split(':', 1)[0] and verify_writes()[0]. One more [0] in the quickstart snippet on the first screen (2026-09-17). Python list indices [0] in the code examples, not measurements. Was 3 until the "
               "tamper-detection example landed, which reads verify_writes()[0] and [1][0]; 6 since "
               "the audit-trail example, whose transparent_statement(0, ...) names the record's "
               "position in the log; 11 since the action-ledger example (2.29.0): recall()[0] twice, "
               "what_it_knew(0), recalled_now[0] twice"),
-        "1": (13, "One more since 2026-09-23: `ots verify` exit code 1 for MISMATCH. 12 since 2026-09-21: agmi#1, the pull request number of the adapter the agmi maintainer merged (gh pr view 1 --repo tech4biz-yasha/agmi), an identifier. 11 since 3.0.0: the enable_receipts example has [1][0], split(':', 1) and the documented result 1. The INSPEXIMUS_KEEP_CONVERSION_BACKUP=1 example, index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
+        "1": (12, "One fewer since 3.18: the INSPEXIMUS_KEEP_CONVERSION_BACKUP=1 example became the config key store.keep_conversion_backup. One more since 2026-09-23: `ots verify` exit code 1 for MISMATCH. 12 since 2026-09-21: agmi#1, the pull request number of the adapter the agmi maintainer merged (gh pr view 1 --repo tech4biz-yasha/agmi), an identifier. 11 since 3.0.0: the enable_receipts example has [1][0], split(':', 1) and the documented result 1. The INSPEXIMUS_KEEP_CONVERSION_BACKUP=1 example, index [1] twice and the maxsplit argument in split(\": \", 1), all in the "
               "tamper-detection example; 6 since the action-ledger example (2.29.0): what_it_knew(1) and "
               "INSPEXIMUS_ACTIONS=1; 7 since 2.30.0: the paragraph digit in Art. 27(1); 8 since 2.36.0: "
               "--max-age-days 1 in the partitions example. None is a measurement"),
@@ -1485,7 +1485,7 @@ NON_CLAIM_TOKENS = {
         "04": (1, "the `04_encryption` example filename in the quickstart"),
         "06": (1, "the `06_gdpr_erasure_receipt` example filename in the quickstart"),
         "07": (1, "the `07_witness_pool` example filename in the quickstart"),
-        "0": (8, "exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
+        "0": (7, "One fewer since 3.18: INSPEXIMUS_ECHO_GUARD=0 became the config key guards.echo. exit codes (0 = PASS), env-var settings (INSPEXIMUS_ECHO_GUARD=0, INSPEXIMUS_NOMIC_PREFIX=0, "
                  "snippet_chars>0), the bias limit h->0 and the weight ~0 in the threat model, and the "
                  "'0/18' after-column of the 1.90.0 chain-binding table"),
         "1": (15, "ordinals for the three numbered demos and the five numbered rules, exit codes in shell "

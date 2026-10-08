@@ -47,7 +47,10 @@ def _receipt_key(key_file=None):
     signed as they are created. Passing it only to `erasure-certificate` yields an unsigned chain, and
     `erasure-verify` then reports `signatures_valid: null` with an UNSIGNED limit rather than pretending.
     """
-    p = key_file or os.environ.get("INSPEXIMUS_RECEIPT_KEY_FILE", "").strip()
+    p = key_file
+    if not p:
+        from . import _envpolicy                 # a file inside the user's key home only, from the environment (3.18)
+        p, _src = _envpolicy.key_file("INSPEXIMUS_RECEIPT_KEY_FILE")
     if p:
         with open(p, encoding="utf-8") as fh:
             return fh.read().strip()
@@ -782,6 +785,10 @@ def main(argv=None):
                                          "INSPEXIMUS_PERSIST_VECTORS says; needs an embedder configured")
     re_.add_argument("--all", action="store_true", help="re-embed EVERY record, not just the ones missing a vector")
     re_.add_argument("--batch", type=int, default=None, help="cap how many records this run re-embeds")
+    re_.add_argument("--replace-recipe", action="store_true",
+                     help="also replace the vectors made under another embed recipe; without it a store that holds "
+                          "such vectors is refused, because the recipe can come from a project's environment or "
+                          "config (3.18)")
     re_.add_argument("--compact-only", action="store_true",
                      help="re-encode vectors stored as JSON lists into float16 (3.17); no embedder needed")
 
@@ -2553,6 +2560,18 @@ def main(argv=None):
                   file=sys.stderr)
             return 2
         m = _store(a.path, persist_vectors=True)      # re-open so the rebuilt vectors actually reach disk
+        # THE RECIPE MAY BE A PROJECT'S CHOICE (3.18). INSPEXIMUS_EMBED_MODEL, INSPEXIMUS_NOMIC_PREFIX and the
+        # repository's .inspeximus/config.json reach this command, and reembed replaces every vector made under another
+        # recipe: run inside such a project, it moved the user's whole store to the project's model. Replacing them is
+        # now the user's typed choice; filling vectors a record never had is not affected.
+        foreign = [r for r in m.items if not r.get("vec") and (
+            dict.get(r, "id") in getattr(m, "_foreign_vec_ids", ()) or
+            dict.get(r, "id") in getattr(m, "_legacy_shelved", ()))]
+        if (foreign or a.all) and not a.replace_recipe:
+            print("reembed: %s; this run's recipe is %s. Pass --replace-recipe to replace them with it."
+                  % ("%d record(s) hold a vector made under another embed recipe" % len(foreign) if foreign
+                     else "--all re-embeds every record", m.embed_id or "unknown"), file=sys.stderr)
+            return 2
         res = m.reembed(only_missing=not a.all, batch=a.batch)
         # The vectors this run did not touch are re-encoded too, so one command leaves the whole store
         # in the float16 form (3.17).

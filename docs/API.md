@@ -109,6 +109,8 @@ outranked looks different from a scope that did not work.
 
 ```bash
 inspeximus-mcp --project web-app          # or INSPEXIMUS_PROJECT=web-app; 'auto' derives it from the cwd basename
+# 3.18: from the environment, only 'auto', the name of the folder the server runs in, or a name in the user's
+# <key home>/inspeximus/config.json {"project": {"names": [...]}} is honoured; any other name is ignored.
 ```
 
 Writes are stamped with the project; recalls return that project's memories **plus every memory carrying no
@@ -298,8 +300,9 @@ led.matches(2, inputs=prompt, output=answer)   # {"inputs": True, "output": True
 
 With receipts on, the store also keeps the chain's head outside its own directory (the config home the
 signing keys use), so `verify_writes()` reports a tail cut that took its receipts with it: `m.head_path()`,
-`m.read_head()`, and `m.reanchor_head()` to accept a deliberate restore from backup. `INSPEXIMUS_HEADS=0`
-turns it off. An attacker with the whole user account can remove the head; that case needs `anchor()`
+`m.read_head()`, and `m.reanchor_head()` to accept a deliberate restore from backup. `{"guards": {"heads": false}}`
+in the user's `<key home>/inspeximus/config.json` turns it off; since 3.18 `INSPEXIMUS_HEADS=0` in the environment
+is ignored, because a project's settings reach the server's environment. An attacker with the whole user account can remove the head; that case needs `anchor()`
 held off the machine and `verify_consistency()`.
 
 **Receipt tail (prototype, 3.17.0 candidate).** By default every receipted write replaces the whole
@@ -333,8 +336,10 @@ The LangChain callback digests a chat-model call as every message's role, conten
 that value with `inspeximus.integrations.langchain.context_messages(messages)` before calling `matches`.
 MCP: `INSPEXIMUS_ACTIONS=1` records every tool call; tools `actions_verify`, `what_it_knew`. Every ledger tool
 writes through one handle, signed with the store's receipt key when the server holds one, else the writer key.
-The server takes the receipt key from `INSPEXIMUS_RECEIPT_KEY_FILE`, `INSPEXIMUS_RECEIPT_KEY`, or the file
-`receipt_key_for(path)` keeps in the key home, and refuses to start with a key that would break the store's chain.
+The server takes the receipt key from the user's config `receipts.key_file`, `INSPEXIMUS_RECEIPT_KEY_FILE`,
+`INSPEXIMUS_RECEIPT_KEY`, or the file `receipt_key_for(path)` keeps in the key home, and refuses to start with a key
+that would break the store's chain. Since 3.18 a key file named by the environment is ignored when it is inside a git
+work tree or the store's project, and an unreadable one is ignored with one stderr line instead of stopping the server.
 A ledger file that exists and cannot be read fails `verify()` and raises `LedgerUnreadable` on every write.
 LangChain: `inspeximus.integrations.langchain.InspeximusActionCallback(led)` in `config={"callbacks": [...]}`.
 Probe: `probes/what_the_agent_knew_when_it_acted.py` (three tamper controls).
@@ -943,8 +948,11 @@ practice nobody did, and the distinct-verified-key rail had no input. A store op
 (hex secret) signs its own writes: records carry `attested_key`, and now also `attested_sig`, so the
 attestation stays **re-verifiable** instead of being checked once at write time and discarded.
 
-    inspeximus writer-key --new --out .writer.key     # mint one (keep it out of git)
-    INSPEXIMUS_WRITER_KEY_FILE=.writer.key            # the MCP server picks it up
+    inspeximus writer-key --new --out ~/.inspeximus/writer.key     # mint one, outside every repository
+    INSPEXIMUS_WRITER_KEY_FILE=~/.inspeximus/writer.key            # the MCP server picks it up
+
+Since 3.18 the server ignores a writer key file inside a git work tree (a repository ships the files in it), and a raw
+key comes only from the user's config `writer.key`, never from `INSPEXIMUS_WRITER_KEY` in the environment.
 
 An explicit `remember(attestation=...)` always wins — a claim signed by its real source is never
 relabelled with the local writer's key, and a forged signature is still rejected loudly.
@@ -1004,9 +1012,11 @@ A genuine reversal back to a superseded value needs `remember(..., reaffirm=True
 un-supersede on its own), and the call reports what happened: `store.last_write["blocked"]` is `True` with
 a `note` naming that remedy, so a retired write is never mistaken for one that landed.
 
-**Default ON since 1.87.0.** `Inspeximus(echo_guard=False)` — or `INSPEXIMUS_ECHO_GUARD=0` in the
-environment, which the constructor now honours as well as the surfaces do — restores byte-identical legacy
-keyed supersession. An explicit argument always wins over the env var.
+**Default ON since 1.87.0.** `Inspeximus(echo_guard=False)` — or `{"guards": {"echo": false}}` in the user's
+`<key home>/inspeximus/config.json`, which the constructor honours as well as the surfaces do — restores byte-identical
+legacy keyed supersession. An explicit argument always wins over the config. Since 3.18 `INSPEXIMUS_ECHO_GUARD=0` in
+the environment is ignored: a project's settings reach the server's environment, and switching the guard off is the
+user's choice.
 
 ### Close the retrieval loop: `propagate_outcome()` (0.6.10)
 The un-self-gradable earned-outcome signal (`credit()`) is what the influence gate and `echo_guard` ride on

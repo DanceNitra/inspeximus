@@ -761,7 +761,8 @@ is re-stated later — the failure mode a plain keyed store shows on the ECHO-RE
 Those three figures come from RAMR, a **separate** repository; no script here produces them. This repo's own
 cross-system cell measures a different quantity — *resurrection rate* — and finds no system systematically
 resurrects the stale value ([`probes/INTEGRITY_BENCHMARK.md`](../probes/INTEGRITY_BENCHMARK.md), Cell 2: inspeximus
-0.00, mem0 0.05, Graphiti 0.00). Read both before quoting either. Set `INSPEXIMUS_ECHO_GUARD=0` to disable.
+0.00, mem0 0.05, Graphiti 0.00). Read both before quoting either. Set `{"guards": {"echo": false}}` in your `<key home>/inspeximus/config.json` to disable (the environment
+variable is ignored).
 Since **1.86.0 every SURFACE shares that posture** — the CLI, the MCP server, the Claude Code hook and all
 nine framework adapters — because until then the adapters inherited the library default (OFF), and one
 restatement through an adapter undid a correction and then wedged the store against being put right. The

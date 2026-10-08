@@ -24,7 +24,7 @@ def _path():
 
 # ── one posture across the surfaces that share a store ──────────────────────────────────────────────
 @pytest.mark.parametrize("env,expected", [(None, True), ("0", False), ("1", True)])
-def test_the_cli_and_the_mcp_server_agree_on_the_echo_guard(env, expected, monkeypatch):
+def test_the_cli_and_the_mcp_server_agree_on_the_echo_guard(env, expected, monkeypatch, user_config):
     """They are documented as sharing one store and they disagreed: the MCP turned the guard ON, the CLI left
     the library's legacy default OFF. So one CLI write could resurrect a value the MCP had retired — undoing
     the measured 0.00 -> 1.00 echo-resistance on the very store that advertises it.
@@ -40,10 +40,9 @@ def test_the_cli_and_the_mcp_server_agree_on_the_echo_guard(env, expected, monke
     from inspeximus import cli
 
     monkeypatch.setenv("INSPEXIMUS_PATH", _path())
-    if env is None:
-        monkeypatch.delenv("INSPEXIMUS_ECHO_GUARD", raising=False)
-    else:
-        monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", env)
+    monkeypatch.delenv("INSPEXIMUS_ECHO_GUARD", raising=False)
+    if env is not None:
+        user_config(INSPEXIMUS_ECHO_GUARD=env)          # the user's config `guards.echo` (3.18)
 
     mcp = importlib.reload(importlib.import_module("inspeximus.mcp_server"))
     assert cli._store(None).echo_guard is expected

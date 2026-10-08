@@ -212,9 +212,12 @@ BUSY_TIMEOUT_S = 10
 # `INSPEXIMUS_BUSY_TIMEOUT_S` overrides it (3.5.2) for an operator who has measured a longer
 # foreign hold and for tests that need a short one; the constraint above still applies, and
 # `Inspeximus._save_rows_retrying` multiplies it by the retry count.
+# 3.18: the environment may raise it and never lower it (a project could make every write fail fast under contention);
+# the user's config `store.busy_timeout_s` sets any value.
 try:
-    BUSY_TIMEOUT_S = float(os.environ.get("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S))
-except ValueError:
+    from . import _envpolicy as _ep
+    BUSY_TIMEOUT_S = _ep.at_least("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S, float)
+except Exception:                                               # noqa: BLE001 -- the constant stands
     pass
 
 

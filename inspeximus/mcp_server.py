@@ -197,6 +197,13 @@ def resolve_project(cli_value: str | None = None, env: dict | None = None, cwd: 
         raw = (env.get("INSPEXIMUS_PROJECT") or "").strip()
         if not raw:
             return None
+        # ONLY THIS PROJECT'S NAME FROM THE ENVIRONMENT (3.18): a project's settings could otherwise stamp the user's
+        # records with another project's name and read that project's namespace. `auto`, the folder the server runs
+        # in, or a name in the user's config `project.names`; anything else is ignored and the store is unscoped.
+        from inspeximus import _envpolicy
+        raw = _envpolicy.project_name(raw, cwd)
+        if raw is None:
+            return None
     if raw == "auto":
         # Derive from the working directory's basename. Refuse a root/blank directory rather than stamping
         # every record with "" -- that would look scoped and isolate nothing.
@@ -230,7 +237,12 @@ _EMB_DOC, _EMB_QUERY, _EMB_ID = _make_embedders()
 # THIS is the surface where the flow is real: one module-level store for the whole process, so a `recall`
 # call followed by a `remember`/`remember_decision` call is the same agent, causally linked. The library
 # feature shipped with no consumer for exactly one release.
-_OBSERVE_RECALL = _flag_from_env("INSPEXIMUS_OBSERVE_RECALL")
+def _observe_recall() -> bool:
+    from inspeximus import _envpolicy
+    return _envpolicy.config_flag("INSPEXIMUS_OBSERVE_RECALL")   # writes into the user's store: config only (3.18)
+
+
+_OBSERVE_RECALL = _observe_recall()
 # WRITER IDENTITY. `INSPEXIMUS_WRITER_KEY_FILE` (preferred — a secret belongs in a gitignored file, not
 # in the process environment) or `INSPEXIMUS_WRITER_KEY` (hex). With one set, this server signs its own
 # writes, so `attested_key` is populated by ordinary use.
@@ -241,13 +253,16 @@ _OBSERVE_RECALL = _flag_from_env("INSPEXIMUS_OBSERVE_RECALL")
 # through this server. That is the same failure the note above records for observe_recall: a library
 # feature with no consumer. Mint one with `python -m inspeximus.cli writer-key --new`.
 def _writer_key_from_env():
-    f = os.environ.get("INSPEXIMUS_WRITER_KEY_FILE", "").strip()
+    # 3.18: the identity stamped on the user's records is the user's choice. A key file from the environment is ignored
+    # inside a git work tree, and a raw key comes only from the user's config (`writer.key_file`, `writer.key`).
+    from inspeximus import _envpolicy
+    f, _src = _envpolicy.key_file("INSPEXIMUS_WRITER_KEY_FILE")
     if f:
         try:
             return Path(f).read_text(encoding="utf-8").strip() or None
         except OSError:
             return None                       # absent/unreadable key file: run unattested, never crash
-    return os.environ.get("INSPEXIMUS_WRITER_KEY", "").strip() or None
+    return _envpolicy.config_string("INSPEXIMUS_WRITER_KEY")
 
 
 _WRITER_KEY = _writer_key_from_env()
@@ -282,7 +297,12 @@ _PERSIST_VECTORS = _persist_default(has_embedder=_EMB_DOC is not None)
 # and reports zero exposure over a store where nobody looked. Off by default, because tagging is
 # stamped at WRITE time and `forget_pii()` hard-deletes what carries the tag: turning it on changes
 # what a later data-minimization sweep removes, which is an operator's decision and not a default.
-_PII_DETECT = _flag_from_env("INSPEXIMUS_PII_DETECT")
+def _pii_detect() -> bool:
+    from inspeximus import _envpolicy
+    return _envpolicy.config_flag("INSPEXIMUS_PII_DETECT")      # changes what forget_pii deletes: config only (3.18)
+
+
+_PII_DETECT = _pii_detect()
 
 
 # ── RECEIPT SIGNING ─────────────────────────────────────────────────────────────────────────────────────
@@ -350,15 +370,26 @@ def _chain_on_disk(path) -> tuple:
 def _receipt_key_from_env(path) -> tuple:
     """(secret key hex, where it came from), or (None, None) when nothing supplies one."""
     from inspeximus.core import _receipt_key_file, receipt_key_for
-    f = os.environ.get("INSPEXIMUS_RECEIPT_KEY_FILE", "").strip()
+    from inspeximus import _envpolicy
+    # 3.18: a project named the key that signed a new store's chain, and named an unreadable file to keep the server from
+    # starting. A key file from the environment is now ignored when it is inside a git work tree or the store's project,
+    # and an unreadable one is ignored with one stderr line instead of stopping the server. The user's config
+    # `receipts.key_file` names any file, and an unreadable one there still stops the server, as before.
+    f, src = _envpolicy.key_file("INSPEXIMUS_RECEIPT_KEY_FILE", path)
     if f:
         try:
             with open(f, encoding="utf-8") as fh:
                 key = fh.read().strip()
         except OSError as e:
-            raise ReceiptKeyError(f"INSPEXIMUS_RECEIPT_KEY_FILE={f!r} cannot be read ({e}). Refusing to "
-                                  f"start unsigned when a signing key was configured.") from None
-        return key or None, "INSPEXIMUS_RECEIPT_KEY_FILE"
+            if src == "INSPEXIMUS_RECEIPT_KEY_FILE":
+                from inspeximus import _userconfig
+                _userconfig.env_ignored(src, "receipts.key_file (%s cannot be read: %s)" % (f, type(e).__name__))
+                f = None
+            else:
+                raise ReceiptKeyError(f"{src}={f!r} cannot be read ({e}). Refusing to "
+                                      f"start unsigned when a signing key was configured.") from None
+        if f:
+            return key or None, src
     if os.environ.get("INSPEXIMUS_RECEIPT_KEY", "").strip():
         return receipt_key_for(path, create=False) or None, "INSPEXIMUS_RECEIPT_KEY"
     if path and os.path.exists(_receipt_key_file(path)):
@@ -596,7 +627,12 @@ class _TextKeepingFuncMetadata(_FuncMetadata):
         return {k: (data[k] if k in keep else parsed[k]) for k in data}
 
 
-_ACTOR = os.environ.get("INSPEXIMUS_ACTOR") or None
+def _actor():
+    from inspeximus import _envpolicy
+    return _envpolicy.config_string("INSPEXIMUS_ACTOR")          # the user's config `actions.actor` (3.18)
+
+
+_ACTOR = _actor()
 _LED = None
 
 

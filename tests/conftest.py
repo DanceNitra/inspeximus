@@ -533,3 +533,27 @@ def pytest_sessionfinish(session):
 def pytest_unconfigure(config):
     _restore_home(config)
     _restore_temp_root(config)
+
+
+@pytest.fixture
+def user_config(monkeypatch, tmp_path_factory):
+    """The user's config for one test (3.18): a key home of its own, beside the test's temp folders, and a setter that
+    writes the config key of an INSPEXIMUS_* variable (inspeximus/_envpolicy.POLICY) the way the user would. A project's
+    environment no longer sets these, so a test that means "the user chose this" writes it here.
+
+        user_config(INSPEXIMUS_ECHO_GUARD="0")      # guards.echo = false
+    """
+    import _userconfig_env
+
+    def setter(**env):
+        # The key home the test set itself (a `home` fixture); never the session's shared one, which every test in
+        # the worker reads; else one of its own.
+        kh = os.environ.get("INSPEXIMUS_KEY_HOME") or ""
+        if not kh or os.path.basename(kh.rstrip("/\\")).startswith("config-home"):
+            kh = str(tmp_path_factory.mktemp("user-config-key-home"))
+            monkeypatch.setenv("INSPEXIMUS_KEY_HOME", kh)
+        cfg, rest = _userconfig_env.config_settings(env)
+        assert not [k for k in rest if k != "INSPEXIMUS_PROJECT"], "not a config setting: %s" % sorted(rest)
+        _userconfig_env.write_user_config(kh, cfg)
+        return kh
+    return setter

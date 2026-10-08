@@ -773,7 +773,8 @@ def _head_path(store_path) -> "str | None":
     HONEST SCOPE: it closes the cell for an attacker with write access to the store's directory. An
     attacker with the whole user account writes here too; for that the anchor has to leave the machine
     (`anchor()` given to a witness, `verify_consistency()`, RFC 3161)."""
-    if not store_path or os.environ.get("INSPEXIMUS_HEADS", "1").strip().lower() in ("0", "off", "false", "no"):
+    from . import _envpolicy
+    if not store_path or not _envpolicy.guard_on("INSPEXIMUS_HEADS"):     # off from the user's config only (3.18)
         return None
     from ._keyhome import key_home
     home = key_home(store_path)                  # a repository-chosen key home is refused (3.16.4, F-13)
@@ -2174,7 +2175,10 @@ def _resolve_supersession(explicit: str | None = None) -> str:
     Same shape as `_resolve_echo_guard`, for the same reason: a default re-declared at each entry
     point is a default one of them misses. `INSPEXIMUS_SUPERSESSION=authority` reaches the CLI, the
     MCP server and every adapter without each of them growing a flag."""
-    v = explicit if explicit is not None else os.environ.get("INSPEXIMUS_SUPERSESSION", "lww")
+    if explicit is None:
+        from . import _envpolicy                 # the user's config, never a project's environment (3.18)
+        explicit = _envpolicy.config_choice("INSPEXIMUS_SUPERSESSION", "lww", _SUPERSESSION_POLICIES)
+    v = explicit
     v = str(v).strip().lower()
     if v not in _SUPERSESSION_POLICIES:
         raise ValueError(f"supersession must be one of {sorted(_SUPERSESSION_POLICIES)}, got {v!r}")
@@ -2182,6 +2186,13 @@ def _resolve_supersession(explicit: str | None = None) -> str:
 
 
 _SUPERSESSION_POLICIES = frozenset({"lww", "authority"})
+
+
+def _keep_conversion_backup() -> bool:
+    """`store.keep_conversion_backup` in the user's config: the full pre-conversion copy that an erasure does not reach
+    is kept only when the user asked for it, never because a project's environment did (3.18)."""
+    from . import _envpolicy
+    return _envpolicy.config_flag("INSPEXIMUS_KEEP_CONVERSION_BACKUP")
 
 
 def _declared_authority(source) -> float | None:
@@ -2215,7 +2226,8 @@ def _resolve_echo_guard(explicit: bool | None = None) -> bool:
     """
     if explicit is not None:
         return bool(explicit)
-    return os.environ.get("INSPEXIMUS_ECHO_GUARD", "1") != "0"
+    from . import _envpolicy
+    return _envpolicy.guard_on("INSPEXIMUS_ECHO_GUARD")      # off from the user's config only (3.18)
 
 
 def _resolve_read_guards(explicit: bool | None = None) -> bool:
@@ -2223,7 +2235,8 @@ def _resolve_read_guards(explicit: bool | None = None) -> bool:
     as the echo guard, for the same reason: a switch that is re-declared per entry point gets missed."""
     if explicit is not None:
         return bool(explicit)
-    return os.environ.get("INSPEXIMUS_READ_GUARDS", "1") != "0"
+    from . import _envpolicy
+    return _envpolicy.guard_on("INSPEXIMUS_READ_GUARDS")     # off from the user's config only (3.18)
 
 
 #: Instruction-shaped text: content that is benign as data but reads as an instruction to the model
@@ -10807,7 +10820,7 @@ class Inspeximus:
         try:
             if not backup.exists():
                 state = {"state": "none"}
-            elif (os.environ.get("INSPEXIMUS_KEEP_CONVERSION_BACKUP") or "").strip() in ("1", "true", "yes"):
+            elif _keep_conversion_backup():
                 state = {"state": "kept", "path": str(backup),
                          "erasure_reached_it": False,
                          "note": "INSPEXIMUS_KEEP_CONVERSION_BACKUP is set, so the pre-conversion "
@@ -19884,11 +19897,8 @@ class Inspeximus:
         busy timeout, which was never the defect.
         """
         import sqlite3 as _sq
-        _tries = 2
-        try:
-            _tries = max(0, int(os.environ.get("INSPEXIMUS_SAVE_RETRIES", "2")))
-        except ValueError:
-            _tries = 2
+        from . import _envpolicy
+        _tries = max(0, _envpolicy.at_least("INSPEXIMUS_SAVE_RETRIES", 2, int))   # never lowered by a project (3.18)
         _last = None
         for _n in range(_tries + 1):
             try:

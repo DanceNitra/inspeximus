@@ -28,12 +28,25 @@ except ImportError:                         # standalone, without pytest
         print("SKIP: MCP SDK not installed"); sys.exit(0)
 
 
-def _fresh_server(observe):
+_SAVED = {}
+
+
+def _fresh_server(observe, via="config"):
+    """3.18: the switch is the user's config `recall.observe`; the environment's value is ignored."""
+    import json
     os.environ["INSPEXIMUS_PATH"] = os.path.join(tempfile.mkdtemp(), "m.json")
-    if observe is None:
-        os.environ.pop("INSPEXIMUS_OBSERVE_RECALL", None)
-    else:
+    kh = tempfile.mkdtemp(prefix="observe-kh-")
+    _SAVED.setdefault("kh", os.environ.get("INSPEXIMUS_KEY_HOME"))
+    os.environ["INSPEXIMUS_KEY_HOME"] = kh
+    os.environ.pop("INSPEXIMUS_OBSERVE_RECALL", None)
+    if observe is not None and via == "env":
         os.environ["INSPEXIMUS_OBSERVE_RECALL"] = observe
+    elif observe is not None:
+        os.makedirs(os.path.join(kh, "inspeximus"))
+        with open(os.path.join(kh, "inspeximus", "config.json"), "w", encoding="utf-8") as fh:
+            json.dump({"recall": {"observe": observe.strip().lower() in ("1", "true", "yes", "on")}}, fh)
+    from inspeximus import _userconfig
+    _userconfig._CACHE.clear()
     import inspeximus.mcp_server as m
     return importlib.reload(m)
 
@@ -41,6 +54,11 @@ def _fresh_server(observe):
 def _clean():
     os.environ.pop("INSPEXIMUS_OBSERVE_RECALL", None)
     os.environ.pop("INSPEXIMUS_PATH", None)
+    kh = _SAVED.pop("kh", None)
+    if kh is None:
+        os.environ.pop("INSPEXIMUS_KEY_HOME", None)
+    else:
+        os.environ["INSPEXIMUS_KEY_HOME"] = kh
 
 
 def test_the_flag_reaches_the_store_and_a_write_after_a_recall_carries_the_window():
@@ -101,17 +119,17 @@ def test_default_is_off_and_writes_are_unstamped():
         _clean()
 
 
-def test_the_env_var_accepts_the_same_spellings_as_the_other_switches():
-    """`_RECEIPTS` accepts 1/true/yes/on; a switch that silently ignores "true" is a support ticket."""
+def test_no_spelling_in_the_environment_switches_it_on():
+    """3.18: each recall writes into the user's store, so the switch is the user's config `recall.observe`, and no
+    value of INSPEXIMUS_OBSERVE_RECALL in a project's environment turns it on."""
     for on in ("1", "true", "TRUE", "yes", "on"):
-        m = _fresh_server(on)
+        m = _fresh_server(on, via="env")
         try:
-            assert m._MEM.observe_recall is True, f"{on!r} did not enable it"
+            assert m._MEM.observe_recall is False, f"{on!r} from the environment enabled it"
         finally:
             _clean()
-    for off in ("0", "false", "no", "", "off"):
-        m = _fresh_server(off)
-        try:
-            assert m._MEM.observe_recall is False, f"{off!r} did not leave it off"
-        finally:
-            _clean()
+    m = _fresh_server("0")
+    try:
+        assert m._MEM.observe_recall is False, "the user's config false did not leave it off"
+    finally:
+        _clean()

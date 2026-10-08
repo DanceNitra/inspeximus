@@ -40,7 +40,7 @@ def _cut_tail_with_receipts(path: str, n: int) -> None:
     save_receipts(path, rec[:-n])
 
 
-def test_a_tail_cut_with_its_receipts_is_reported_and_the_head_is_what_reports_it(tmp_path, home, monkeypatch):
+def test_a_tail_cut_with_its_receipts_is_reported_and_the_head_is_what_reports_it(tmp_path, home, monkeypatch, user_config):
     sk, pk = new_receipt_keypair()
     m = _store(tmp_path, sk)
     for i in range(5):
@@ -52,8 +52,8 @@ def test_a_tail_cut_with_its_receipts_is_reported_and_the_head_is_what_reports_i
     _cut_tail_with_receipts(str(m.path), 2)
     ok, problems = Inspeximus(m.path, receipts=True, receipt_key=sk).verify_writes(expected_pubkey=pk)
     assert ok is False and any("shrank below the head kept outside the store: 3 < 5" in p for p in problems), problems
-    # CONTROL: the head is the only thing that sees it
-    monkeypatch.setenv("INSPEXIMUS_HEADS", "0")
+    # CONTROL: the head is the only thing that sees it (switched off in the user's config, 3.18)
+    user_config(INSPEXIMUS_HEADS="0")
     assert Inspeximus(m.path, receipts=True, receipt_key=sk).verify_writes(expected_pubkey=pk)[0] is True
 
 
@@ -130,8 +130,8 @@ def test_a_head_that_cannot_be_written_never_fails_a_write(tmp_path, monkeypatch
     assert m.verify_writes(expected_pubkey=pk) == (True, []), "no head, no head check; everything else as before"
 
 
-def test_heads_off_writes_nothing(tmp_path, home, monkeypatch):
-    monkeypatch.setenv("INSPEXIMUS_HEADS", "0")
+def test_heads_off_writes_nothing(tmp_path, home, monkeypatch, user_config):
+    user_config(INSPEXIMUS_HEADS="0")
     sk, pk = new_receipt_keypair()
     m = _store(tmp_path, sk)
     m.remember("x", key="k")
@@ -165,3 +165,12 @@ def test_the_agents_next_write_does_not_lower_the_head_after_a_cut(tmp_path, hom
     for i in range(3):
         n.remember(f"h {i}", key=f"h::{i}")
     assert n.read_head()["n_writes"] == 3 and n.head_error is None
+
+
+def test_a_projects_environment_cannot_stop_the_heads(tmp_path, home, monkeypatch):
+    """3.18: INSPEXIMUS_HEADS=0 in the environment is ignored; only the user's config `guards.heads` stops them."""
+    monkeypatch.setenv("INSPEXIMUS_HEADS", "0")
+    sk, pk = new_receipt_keypair()
+    m = _store(tmp_path, sk)
+    m.remember("x", key="k")
+    assert m.head_path() is not None and (home / "inspeximus" / "heads").exists()

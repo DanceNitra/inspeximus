@@ -44,12 +44,20 @@ _PROG = (
 ).format(repo=REPO)
 
 
-def _subproc(value):
-    """The env var is read at construction; only a fresh process measures it honestly."""
+def _subproc(value, via="config"):
+    """The setting is read at construction; only a fresh process measures it honestly. 3.18: the user's config
+    (`guards.echo`) switches it; the environment can no longer switch it off."""
     env = dict(os.environ)
     env.pop("INSPEXIMUS_ECHO_GUARD", None)
-    if value is not None:
+    if value is not None and via == "env":
         env["INSPEXIMUS_ECHO_GUARD"] = value
+    elif value is not None:
+        import json
+        kh = tempfile.mkdtemp(prefix="echo-kh-")
+        os.makedirs(os.path.join(kh, "inspeximus"))
+        with open(os.path.join(kh, "inspeximus", "config.json"), "w", encoding="utf-8") as fh:
+            json.dump({"guards": {"echo": value != "0"}}, fh)
+        env["INSPEXIMUS_KEY_HOME"] = kh
     out = subprocess.run([sys.executable, "-c", _PROG], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     assert out.returncode == 0, out.stderr[-400:]
     return out.stdout.strip()
@@ -68,9 +76,14 @@ def _echo_lands(st):
             if r.get("key") == "k" and r.get("status") == "active"] == ["A"]
 
 
-def test_the_env_var_reaches_library_code():
+def test_the_users_config_reaches_library_code():
     """THE defect: this was 'True [...]' -- identical to the guarded arms."""
     assert _subproc("0") == "False ['A']"
+
+
+def test_a_projects_environment_cannot_switch_the_guard_off():
+    """3.18: INSPEXIMUS_ECHO_GUARD=0 from a project's settings is ignored."""
+    assert _subproc("0", via="env") == "True ['B']"
 
 
 def test_the_env_var_is_not_the_only_thing_that_matters():
@@ -87,14 +100,14 @@ def test_the_constructor_takes_an_explicit_posture():
     assert _echo_lands(st_on) is False, "the two arms must disagree, else the argument does nothing"
 
 
-def test_an_explicit_argument_beats_the_environment(monkeypatch):
-    """A caller who names a posture gets it. Otherwise a deployment-wide env var would silently
+def test_an_explicit_argument_beats_the_users_config(monkeypatch, user_config):
+    """A caller who names a posture gets it. Otherwise a deployment-wide setting would silently
     override a store that was constructed to be strict on purpose."""
-    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "0")
+    user_config(INSPEXIMUS_ECHO_GUARD="0")
     assert _resolve_echo_guard(True) is True
     assert _resolve_echo_guard(False) is False
-    assert _resolve_echo_guard(None) is False, "with no explicit argument the env var decides"
-    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "1")
+    assert _resolve_echo_guard(None) is False, "with no explicit argument the user's config decides"
+    user_config(INSPEXIMUS_ECHO_GUARD="1")
     assert _resolve_echo_guard(False) is False
     assert _resolve_echo_guard(None) is True
 
@@ -105,10 +118,10 @@ def test_the_default_is_on_with_no_environment_at_all(monkeypatch):
     assert _store().echo_guard is True
 
 
-def test_the_surface_and_the_library_cannot_drift_apart(monkeypatch):
+def test_the_surface_and_the_library_cannot_drift_apart(monkeypatch, user_config):
     """They already had. The surface honoured the env var while the library ignored it, and nothing
     in the suite compared the two."""
     for val, want in (("0", False), ("1", True)):
-        monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", val)
+        user_config(INSPEXIMUS_ECHO_GUARD=val)
         assert _surface.echo_guard_default() is want
         assert _resolve_echo_guard() is want, "the surface and the library must resolve identically"

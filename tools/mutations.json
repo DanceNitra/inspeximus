@@ -595,9 +595,9 @@
  },
  {
   "name": "the surface default flips to OFF unless asked",
-  "file": "inspeximus/core.py",
-  "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
-  "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"0\") != \"0\"",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "        _ignored(var, \"%s to false\" % key)\n    return True\n",
+  "new": "        _ignored(var, \"%s to false\" % key)\n    return False\n",
   "tests": [
    "tests/test_surface_parity.py",
    "tests/test_echo_guard_posture.py"
@@ -868,8 +868,8 @@
  {
   "name": "the echo-guard resolver ignores an explicit argument in favour of the environment",
   "file": "inspeximus/core.py",
-  "old": "    if explicit is not None:\n        return bool(explicit)\n    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
-  "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
+  "old": "    if explicit is not None:\n        return bool(explicit)\n    from . import _envpolicy\n    return _envpolicy.guard_on(\"INSPEXIMUS_ECHO_GUARD\")",
+  "new": "    from . import _envpolicy\n    return _envpolicy.guard_on(\"INSPEXIMUS_ECHO_GUARD\")",
   "tests": [
    "tests/test_echo_guard_posture.py"
   ]
@@ -877,8 +877,8 @@
  {
   "name": "the echo-guard resolver ignores the environment, reviving the dead off-switch",
   "file": "inspeximus/core.py",
-  "old": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"",
-  "new": "    return True",
+  "old": "    return _envpolicy.guard_on(\"INSPEXIMUS_ECHO_GUARD\")      # off from the user's config only (3.18)\n",
+  "new": "    return True\n",
   "tests": [
    "tests/test_echo_guard_posture.py"
   ]
@@ -2167,8 +2167,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "the authority rule runs on the default store",
-  "old": "    v = explicit if explicit is not None else os.environ.get(\"INSPEXIMUS_SUPERSESSION\", \"lww\")",
-  "new": "    v = explicit if explicit is not None else os.environ.get(\"INSPEXIMUS_SUPERSESSION\", \"authority\")",
+  "old": "        explicit = _envpolicy.config_choice(\"INSPEXIMUS_SUPERSESSION\", \"lww\", _SUPERSESSION_POLICIES)\n",
+  "new": "        explicit = \"authority\"\n",
   "tests": [
    "tests/test_authority_supersession_holds_a_lower_authority_write.py"
   ]
@@ -2483,8 +2483,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "the environment switch is ignored",
-  "old": "    return os.environ.get(\"INSPEXIMUS_READ_GUARDS\", \"1\") != \"0\"",
-  "new": "    return True",
+  "old": "    return _envpolicy.guard_on(\"INSPEXIMUS_READ_GUARDS\")     # off from the user's config only (3.18)\n",
+  "new": "    return True\n",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
@@ -10317,15 +10317,6 @@
   ]
  },
  {
-  "name": "3.17.0: INSPEXIMUS_PERSIST_VECTORS=0 no longer turns persistence off",
-  "file": "inspeximus/mcp_server.py",
-  "old": "    return _flag_from_env(\"INSPEXIMUS_PERSIST_VECTORS\", env)\n\n\n_PERSIST_VECTORS",
-  "new": "    return True\n\n\n_PERSIST_VECTORS",
-  "tests": [
-   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
-  ]
- },
- {
   "name": "3.17.0: the server's persistence default ignores the embedder",
   "file": "inspeximus/mcp_server.py",
   "old": "_PERSIST_VECTORS = _persist_default(has_embedder=_EMB_DOC is not None)\n",
@@ -10458,6 +10449,199 @@
   "new": "        if True:\n            return False\n        if _rows is not None and self.path",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.18 env: the environment switches a guard off",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _env(var).lower() in _OFF:\n        _ignored(var, \"%s to false\" % key)\n    return True\n",
+  "new": "    if _env(var).lower() in _OFF:\n        return False\n    return True\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: a config-only flag is read from the environment",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _env(var):\n        _ignored(var, \"%s to true or false\" % key)\n    return default\n",
+  "new": "    if _env(var):\n        return _env(var).lower() in (\"1\", \"true\", \"yes\", \"on\")\n    return default\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: a config-only choice is read from the environment",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _env(var) and _env(var).lower() != default:\n        _ignored(var, \"%s to one of %s\" % (key, \", \".join(sorted(allowed))))\n    return default\n",
+  "new": "    if _env(var) and _env(var).lower() in allowed:\n        return _env(var).lower()\n    return default\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: a config-only string is read from the environment",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _env(var):\n        _ignored(var, key)\n    return None\n",
+  "new": "    if _env(var):\n        return _env(var)\n    return None\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: the environment lowers a wait below its floor",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "        if x >= default:\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: a key file inside a git work tree is used",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if tree or (proj and _inside(folder, proj)):\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py",
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
+  ]
+ },
+ {
+  "name": "3.18 env: any project name from the environment is used",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if raw == \"auto\" or raw == here or raw in names:\n",
+  "new": "    if True:\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py",
+   "tests/test_project_scope.py"
+  ]
+ },
+ {
+  "name": "3.18 env: the user's config cannot switch a guard off",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _cfg(key) is False:\n        return False\n",
+  "new": "    if False:\n        return False\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: HEADS=0 in the environment stops the heads",
+  "file": "inspeximus/core.py",
+  "old": "    if not store_path or not _envpolicy.guard_on(\"INSPEXIMUS_HEADS\"):     # off from the user's config only (3.18)\n",
+  "new": "    if not store_path or os.environ.get(\"INSPEXIMUS_HEADS\", \"1\") == \"0\":\n",
+  "tests": [
+   "tests/test_a_head_kept_outside_the_store_reports_a_tail_cut_with_its_receipts.py"
+  ]
+ },
+ {
+  "name": "3.18 env: SUPERSESSION from the environment decides",
+  "file": "inspeximus/core.py",
+  "old": "        explicit = _envpolicy.config_choice(\"INSPEXIMUS_SUPERSESSION\", \"lww\", _SUPERSESSION_POLICIES)\n",
+  "new": "        explicit = os.environ.get(\"INSPEXIMUS_SUPERSESSION\", \"lww\")\n",
+  "tests": [
+   "tests/test_authority_supersession_holds_a_lower_authority_write.py",
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: ECHO_GUARD=0 in the environment switches the guard off",
+  "file": "inspeximus/core.py",
+  "old": "    return _envpolicy.guard_on(\"INSPEXIMUS_ECHO_GUARD\")      # off from the user's config only (3.18)\n",
+  "new": "    return os.environ.get(\"INSPEXIMUS_ECHO_GUARD\", \"1\") != \"0\"\n",
+  "tests": [
+   "tests/test_echo_guard_posture.py",
+   "tests/test_surface_parity.py"
+  ]
+ },
+ {
+  "name": "3.18 env: READ_GUARDS=0 in the environment switches the guards off",
+  "file": "inspeximus/core.py",
+  "old": "    return _envpolicy.guard_on(\"INSPEXIMUS_READ_GUARDS\")     # off from the user's config only (3.18)\n",
+  "new": "    return os.environ.get(\"INSPEXIMUS_READ_GUARDS\", \"1\") != \"0\"\n",
+  "tests": [
+   "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
+  ]
+ },
+ {
+  "name": "3.18 env: KEEP_CONVERSION_BACKUP from the environment keeps the copy",
+  "file": "inspeximus/core.py",
+  "old": "    return _envpolicy.config_flag(\"INSPEXIMUS_KEEP_CONVERSION_BACKUP\")\n",
+  "new": "    return (os.environ.get(\"INSPEXIMUS_KEEP_CONVERSION_BACKUP\") or \"\").strip() in (\"1\", \"true\", \"yes\")\n",
+  "tests": [
+   "tests/test_an_erasure_reaches_every_copy_the_library_made.py"
+  ]
+ },
+ {
+  "name": "3.18 env: SAVE_RETRIES from the environment lowers the retries",
+  "file": "inspeximus/core.py",
+  "old": "        _tries = max(0, _envpolicy.at_least(\"INSPEXIMUS_SAVE_RETRIES\", 2, int))   # never lowered by a project (3.18)\n",
+  "new": "        _tries = max(0, int(os.environ.get(\"INSPEXIMUS_SAVE_RETRIES\", \"2\")))\n",
+  "tests": [
+   "tests/test_a_write_the_store_could_not_persist_says_so_and_a_foreign_lock_is_retried.py"
+  ]
+ },
+ {
+  "name": "3.18 env: an unreadable key file from the environment stops the server",
+  "file": "inspeximus/mcp_server.py",
+  "old": "            if src == \"INSPEXIMUS_RECEIPT_KEY_FILE\":\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_mcp_server_signs_with_the_stores_key.py"
+  ]
+ },
+ {
+  "name": "3.18 env: OBSERVE_RECALL from the environment switches it on",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    return _envpolicy.config_flag(\"INSPEXIMUS_OBSERVE_RECALL\")   # writes into the user's store: config only (3.18)\n",
+  "new": "    return _flag_from_env(\"INSPEXIMUS_OBSERVE_RECALL\")\n",
+  "tests": [
+   "tests/test_mcp_observe_recall.py"
+  ]
+ },
+ {
+  "name": "3.18 env: PROJECT from the environment is not checked",
+  "file": "inspeximus/mcp_server.py",
+  "old": "        raw = _envpolicy.project_name(raw, cwd)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_project_scope.py"
+  ]
+ },
+ {
+  "name": "3.18 env: reembed replaces another recipe without --replace-recipe",
+  "file": "inspeximus/cli.py",
+  "old": "        if (foreign or a.all) and not a.replace_recipe:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env P-4: the CLI opens its store without the embed recipe",
+  "file": "inspeximus/cli.py",
+  "old": "    if eid:\n        extra.update(embed_id=eid)\n",
+  "new": "    if False:\n        extra.update(embed_id=eid)\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.18 env: the user's config cannot set a supersession policy",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if isinstance(v, str) and v.strip().lower() in allowed:\n        return v.strip().lower()\n",
+  "new": "    if False:\n        return v.strip().lower()\n",
+  "tests": [
+   "tests/test_every_environment_variable_has_a_policy.py"
+  ]
+ },
+ {
+  "name": "3.17.0: INSPEXIMUS_PERSIST_VECTORS=0 no longer turns persistence off",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    return _flag_from_env(\"INSPEXIMUS_PERSIST_VECTORS\", env)\n\n\n_PERSIST_VECTORS",
+  "new": "    return True\n\n\n_PERSIST_VECTORS",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
   ]
  }
 ]

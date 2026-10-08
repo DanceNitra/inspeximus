@@ -115,7 +115,7 @@ def test_the_stores_own_sidecars_are_never_named(tmp_path):
     assert cert["self_check"]["verified"] is True, cert["self_check"]
 
 
-def test_a_conversion_backup_kept_on_purpose_is_named(tmp_path, monkeypatch):
+def test_a_conversion_backup_kept_on_purpose_is_named(tmp_path, monkeypatch, user_config):
     path = str(tmp_path / "m.json")
     monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
     _alice(path)
@@ -123,7 +123,7 @@ def test_a_conversion_backup_kept_on_purpose_is_named(tmp_path, monkeypatch):
     m = Inspeximus(path, receipts=True)                   # converts to rows, leaving .pre-rows.bak
     if not os.path.exists(path + ".pre-rows.bak"):
         pytest.fail("control: the conversion left no backup")
-    monkeypatch.setenv("INSPEXIMUS_KEEP_CONVERSION_BACKUP", "1")
+    user_config(INSPEXIMUS_KEEP_CONVERSION_BACKUP="1")       # the user's choice, never a project's (3.18)
     out = m.forget_subject("crm/alice")
     assert out["residue_in_store"]["ok"] is False, "a kept copy holding the erased value was called clean"
     cert = m.erasure_certificate()

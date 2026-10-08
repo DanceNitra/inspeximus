@@ -177,8 +177,37 @@ def test_a_key_the_pin_rejects_is_refused(monkeypatch, tmp_path):
              INSPEXIMUS_RECEIPT_PUBKEY=other_pk)
 
 
-def test_an_unreadable_key_file_is_refused(monkeypatch, tmp_path):
-    _refused(monkeypatch, tmp_path, "cannot be read", INSPEXIMUS_RECEIPT_KEY_FILE=str(tmp_path / "missing.key"))
+def test_an_unreadable_key_file_from_the_users_config_is_refused(monkeypatch, tmp_path):
+    """The user's config named the key, so an unreadable one stops the server, as before 3.18."""
+    import _userconfig_env
+    kh = str(tmp_path.parent / (tmp_path.name + "-key_home"))
+    _userconfig_env.write_user_config(kh, {"receipts": {"key_file": str(tmp_path / "missing.key")}})
+    _refused(monkeypatch, tmp_path, "cannot be read")
+
+
+def test_an_unreadable_key_file_from_the_environment_does_not_stop_the_server(monkeypatch, tmp_path, capsys):
+    """3.18: a project named an unreadable file to keep the server from starting. Now it is ignored with one line."""
+    from inspeximus import _userconfig
+    _userconfig._SAID.discard("INSPEXIMUS_RECEIPT_KEY_FILE")
+    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_KEY_FILE=str(tmp_path / "missing.key"))
+    assert call(mod, "where_am_i").data["receipt_signing"]["signed"] is False
+    assert "INSPEXIMUS_RECEIPT_KEY_FILE is set in the environment and is ignored" in capsys.readouterr().err
+
+
+def test_a_key_file_inside_a_git_work_tree_is_never_used(monkeypatch, tmp_path, capsys):
+    """3.18: a repository ships the files inside it, so a key it names there is a key it chose."""
+    import subprocess
+    from inspeximus import _userconfig
+    sk, _pk = new_receipt_keypair()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    (repo / "receipt.key").write_text(sk, encoding="utf-8")
+    _userconfig._SAID.discard("INSPEXIMUS_RECEIPT_KEY_FILE")
+    mod = load_server(monkeypatch, tmp_path, INSPEXIMUS_RECEIPT_KEY_FILE=str(repo / "receipt.key"),
+                      INSPEXIMUS_RECEIPTS="1")
+    assert call(mod, "where_am_i").data["receipt_signing"]["signed"] is False, "a key the repository ships signed"
+    assert "inside" in capsys.readouterr().err
 
 
 def test_a_configured_key_on_a_new_store_signs_it_from_the_start(monkeypatch, tmp_path):

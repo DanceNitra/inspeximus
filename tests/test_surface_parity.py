@@ -200,10 +200,17 @@ def test_every_adapter_site_opens_through_the_surface(modname, dep, build, tmp_p
 
 # ── the rules the opener holds ────────────────────────────────────────────────────────────────────────
 
-def test_the_env_var_can_turn_the_guard_off(tmp_path, monkeypatch):
-    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "0")
+def test_the_users_config_can_turn_the_guard_off(tmp_path, monkeypatch, user_config):
+    user_config(INSPEXIMUS_ECHO_GUARD="0")
     assert _surface.echo_guard_default() is False
     assert _surface.open_store(str(tmp_path / "m.json")).echo_guard is False
+
+
+def test_a_projects_environment_cannot_turn_the_guard_off(tmp_path, monkeypatch):
+    """3.18: a project's settings reach the server's environment; switching the guard off is the user's choice."""
+    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "0")
+    assert _surface.echo_guard_default() is True
+    assert _surface.open_store(str(tmp_path / "m.json")).echo_guard is True
 
 
 def test_any_other_value_leaves_the_guard_on(tmp_path, monkeypatch):
@@ -297,7 +304,7 @@ def test_no_surface_constructs_the_store_itself(path):
     assert lines == [], f"{os.path.basename(path)} constructs Inspeximus directly at line(s) {lines}"
 
 
-def test_the_editor_hook_opens_through_the_surface(tmp_path, monkeypatch):
+def test_the_editor_hook_opens_through_the_surface(tmp_path, monkeypatch, user_config):
     """The Claude Code hook writes more often than any other surface and had neither rule by reference.
 
     It set `echo_guard = True` by hand (so INSPEXIMUS_ECHO_GUARD never reached it) and never looked for a
@@ -319,7 +326,7 @@ def test_the_editor_hook_opens_through_the_surface(tmp_path, monkeypatch):
     st = claude_code._store(str(d))
     assert st.receipts_enabled is True, "a hook write would have punched a hole in the evidence chain"
 
-    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "0")
+    user_config(INSPEXIMUS_ECHO_GUARD="0")
     assert claude_code._store(str(d)).echo_guard is False, "the shared posture must reach the hook too"
 
 

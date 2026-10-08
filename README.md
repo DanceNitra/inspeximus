@@ -458,8 +458,9 @@ Two things to know before you upgrade:
   remove it, because a copy this library made without being asked is not somewhere personal data gets
   to survive a deletion request. `erasure_certificate()` reports what happened to that file by name,
   so the end of your rollback window is recorded rather than silent. To keep the copy, set
-  `INSPEXIMUS_KEEP_CONVERSION_BACKUP=1`: the certificate then declares the backup as data the erasure
-  did not reach, which is the trade you are making.
+  `{"store": {"keep_conversion_backup": true}}` in your `<key home>/inspeximus/config.json` (not the
+  environment): the certificate then declares the backup as data the erasure did not reach, which is the trade you
+  are making.
 
 `INSPEXIMUS_STORE_FORMAT=json` keeps the old format, for a store that other tooling reads directly. Since 3.17.0 it applies to a new store and to a store that is JSON already; for a row store it is ignored, with one line on stderr, and `{"store": {"format": "json"}}` in `<key home>/inspeximus/config.json` pins any store.
 
@@ -747,7 +748,7 @@ python -P -m inspeximus.claude_code --archive --older-than 7 --apply # move it
   that was truncated or replaced on its own fails verification and blocks erasure until it is
   restored. This catches an accident or a single edited file. Someone who edits both the store and
   the log can make them agree again. A second copy of the head sits outside the store's directory,
-  where the receipt chain's head has been kept since 2.38.0 (`INSPEXIMUS_HEADS=0` turns both off), and
+  where the receipt chain's head has been kept since 2.38.0 (`guards.heads: false` in your config turns both off), and
   catches that edit unless the same person can also write there; write receipts (a signed log) are the
   check for that case.
 

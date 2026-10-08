@@ -35,8 +35,9 @@ def _hold(path, seconds, started):
     con.close()
 
 
-def test_a_foreign_lock_that_outlasts_the_retries_is_reported_on_last_write_and_the_result(tmp_path, short_busy, monkeypatch):
-    monkeypatch.setenv("INSPEXIMUS_SAVE_RETRIES", "1")
+def test_a_foreign_lock_that_outlasts_the_retries_is_reported_on_last_write_and_the_result(tmp_path, short_busy, monkeypatch,
+                                                                                            user_config):
+    user_config(INSPEXIMUS_SAVE_RETRIES="1")             # below the default: the user's config only (3.18)
     path = str(tmp_path / "s.json")
     m = Inspeximus(path)
     m.remember("seed", key="crew::seed", object="v1")
@@ -100,11 +101,11 @@ def test_the_store_lock_key_ignores_the_case_of_the_path(tmp_path):
         assert a != b
 
 
-def test_the_mcp_write_result_carries_persisted(tmp_path, monkeypatch, short_busy):
+def test_the_mcp_write_result_carries_persisted(tmp_path, monkeypatch, short_busy, user_config):
     pytest.importorskip("mcp")
     import importlib
     monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "mcp.json"))
-    monkeypatch.setenv("INSPEXIMUS_SAVE_RETRIES", "0")
+    user_config(INSPEXIMUS_SAVE_RETRIES="0")
     srv = importlib.reload(importlib.import_module("inspeximus.mcp_server"))
     ok = srv.remember("seed", key="crew::seed", object="v1")
     assert ok["persisted"] is True and "persist_error" not in ok
@@ -122,7 +123,7 @@ def test_the_mcp_write_result_carries_persisted(tmp_path, monkeypatch, short_bus
     t.join()
 
 
-def test_the_cli_exits_4_when_the_store_could_not_persist(tmp_path, monkeypatch):
+def test_the_cli_exits_4_when_the_store_could_not_persist(tmp_path, monkeypatch, user_config):
     import json
     import subprocess
     import sys
@@ -133,7 +134,8 @@ def test_the_cli_exits_4_when_the_store_could_not_persist(tmp_path, monkeypatch)
     m.flush()
     if not _rows(path):
         pytest.skip("row store only")
-    env = {**os.environ, "INSPEXIMUS_SAVE_RETRIES": "0", "INSPEXIMUS_BUSY_TIMEOUT_S": "0.2"}
+    user_config(INSPEXIMUS_SAVE_RETRIES="0", INSPEXIMUS_BUSY_TIMEOUT_S="0.2")   # both below the default (3.18)
+    env = dict(os.environ)
     started = threading.Event()
     t = threading.Thread(target=_hold, args=(path, 4.0, started), daemon=True)
     t.start()
@@ -146,3 +148,14 @@ def test_the_cli_exits_4_when_the_store_could_not_persist(tmp_path, monkeypatch)
     out = json.loads(r.stdout)
     assert out["persisted"] is False and "locked" in out["persist_error"]
     assert "NOT PERSISTED" in r.stderr
+
+
+def test_a_projects_environment_can_raise_the_retries_and_never_lower_them(monkeypatch):
+    """3.18: 0 from a project's environment made every write fail fast under contention."""
+    from inspeximus import _envpolicy
+    monkeypatch.setenv("INSPEXIMUS_SAVE_RETRIES", "0")
+    assert _envpolicy.at_least("INSPEXIMUS_SAVE_RETRIES", 2, int) == 2
+    monkeypatch.setenv("INSPEXIMUS_SAVE_RETRIES", "5")
+    assert _envpolicy.at_least("INSPEXIMUS_SAVE_RETRIES", 2, int) == 5
+    monkeypatch.setenv("INSPEXIMUS_BUSY_TIMEOUT_S", "0.01")
+    assert _envpolicy.at_least("INSPEXIMUS_BUSY_TIMEOUT_S", 10.0, float) == 10.0

@@ -185,10 +185,14 @@ def test_the_held_write_survives_a_reopen_the_l1_and_the_receipt_chain():
     assert again.verify_writes() == (True, [])
 
 
-def test_the_policy_resolves_explicit_then_env_then_lww(monkeypatch):
+def test_the_policy_resolves_explicit_then_env_then_lww(monkeypatch, user_config):
+    """Explicit, then the user's config, then lww (3.18: a project's environment no longer decides which value of a
+    key is current)."""
     monkeypatch.delenv("INSPEXIMUS_SUPERSESSION", raising=False)
     assert _resolve_supersession() == "lww"
     monkeypatch.setenv("INSPEXIMUS_SUPERSESSION", "authority")
+    assert _resolve_supersession() == "lww", "a project's environment chose the supersession policy"
+    user_config(INSPEXIMUS_SUPERSESSION="authority")
     assert _resolve_supersession() == "authority"
     assert _resolve_supersession("lww") == "lww"
     p, ix = _mk()

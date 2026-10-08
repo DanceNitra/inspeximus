@@ -182,9 +182,10 @@ def test_the_certificate_says_what_happened_to_the_rollback_copy(monkeypatch):
     assert backup in cert["conversion_backup"]["path"], "the certificate does not name the file"
 
 
-def test_an_operator_can_keep_the_rollback_and_the_certificate_declares_it(monkeypatch):
-    """The opt-out is an honest scope reduction: the file stays, and the certificate says so."""
-    monkeypatch.setenv("INSPEXIMUS_KEEP_CONVERSION_BACKUP", "1")
+def test_an_operator_can_keep_the_rollback_and_the_certificate_declares_it(monkeypatch, user_config):
+    """The opt-out is an honest scope reduction: the file stays, and the certificate says so. The operator's choice
+    is the user's config (3.18); a project's environment cannot keep the copy."""
+    user_config(INSPEXIMUS_KEEP_CONVERSION_BACKUP="1")
     m, _p, backup = _converted_store_with_a_backup()
     assert os.path.exists(backup), "the fixture never produced a conversion backup"
 
@@ -195,3 +196,11 @@ def test_an_operator_can_keep_the_rollback_and_the_certificate_declares_it(monke
     assert cert["conversion_backup"]["state"] == "kept", cert["conversion_backup"]
     assert cert["conversion_backup"]["erasure_reached_it"] is False, (
         "the certificate claims the erasure reached a file that still holds the records")
+
+
+def test_a_projects_environment_cannot_keep_the_rollback(monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_KEEP_CONVERSION_BACKUP", "1")
+    m, _p, backup = _converted_store_with_a_backup()
+    assert os.path.exists(backup), "CONTROL: the fixture produced a conversion backup"
+    m.forget_subject("ada-src", request_id="DSAR-2")
+    assert not os.path.exists(backup), "a project's environment kept a copy the erasure does not reach"

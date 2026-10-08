@@ -50,11 +50,17 @@ def _texts(store_path):
 # ── step 1: a correction holds ─────────────────────────────────────────────────────────────────────────
 
 def test_CONFIRMED_echo_guard_off_fails_step_1(monkeypatch):
-    """The guard is what holds the correction: off, the keyless restatement outranks it in recall."""
-    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "0")
-    step = run_demo()["steps"][0]
+    """The guard is what holds the correction: off, the keyless restatement outranks it in recall. The demo runs in a
+    key home of its own, so its negative control is the argument, not a setting."""
+    step = run_demo(echo_policy="trusting")["steps"][0]
     assert not step["ok"]
     assert OLD in step["recall_answers"]
+
+
+def test_a_projects_environment_cannot_switch_the_demos_guard_off(monkeypatch):
+    """3.18: INSPEXIMUS_ECHO_GUARD=0 from a project's settings no longer reaches the guard."""
+    monkeypatch.setenv("INSPEXIMUS_ECHO_GUARD", "0")
+    assert run_demo()["steps"][0]["ok"]
 
 
 def test_CONFIRMED_keyed_supersession_off_fails_step_1(monkeypatch):

@@ -191,10 +191,17 @@ def _mcp():
     return m
 
 
-def test_resolve_project_precedence_flag_beats_env():
+def test_resolve_project_precedence_flag_beats_env(tmp_path, user_config):
+    """3.18: the environment names the folder the server runs in, `auto`, or a name the user's config lists."""
     mcp_server = _mcp()
     assert mcp_server.resolve_project("flagname", env={"INSPEXIMUS_PROJECT": "envname"}) == "flagname"
-    assert mcp_server.resolve_project(None, env={"INSPEXIMUS_PROJECT": "envname"}) == "envname"
+    here = tmp_path / "envname"
+    here.mkdir()
+    assert mcp_server.resolve_project(None, env={"INSPEXIMUS_PROJECT": "envname"}, cwd=str(here)) == "envname"
+    assert mcp_server.resolve_project(None, env={"INSPEXIMUS_PROJECT": "othername"}, cwd=str(here)) is None, \
+        "a project's environment named another project's namespace"
+    user_config(INSPEXIMUS_PROJECT="othername")
+    assert mcp_server.resolve_project(None, env={"INSPEXIMUS_PROJECT": "othername"}, cwd=str(here)) == "othername"
     assert mcp_server.resolve_project(None, env={}) is None, "no flag and no env must mean UNSCOPED"
 
 

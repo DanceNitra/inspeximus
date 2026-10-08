@@ -267,14 +267,14 @@ def _cut_log_and_the_stores_record(p):
     con.close()
 
 
-def test_the_head_kept_outside_the_store_catches_a_cut_the_store_was_edited_to_match(tmp_path, monkeypatch):
+def test_the_head_kept_outside_the_store_catches_a_cut_the_store_was_edited_to_match(tmp_path, monkeypatch, user_config):
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
     p = _two_entry_store(tmp_path / "a", monkeypatch)
     _cut_log_and_the_stores_record(p)
     assert any("head kept outside the store" in x for x in Inspeximus(p).verify_writes()[1])
     with pytest.raises(archive.SegmentsUnreachable, match="head kept outside"):
         Inspeximus(p).forget_subject("hr/alice")
-    monkeypatch.setenv("INSPEXIMUS_HEADS", "0")
+    user_config(INSPEXIMUS_HEADS="0")
     q = _two_entry_store(tmp_path / "b", monkeypatch)
     _cut_log_and_the_stores_record(q)
     assert not any("archive log" in x for x in Inspeximus(q).verify_writes()[1]), \
