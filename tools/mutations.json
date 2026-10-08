@@ -10258,7 +10258,8 @@
   "new": "                    except ZeroDivisionError:\n",
   "tests": [
    "tests/test_audit_a_rc317_final_findings.py"
-  ]
+  ],
+  "platform": "posix"
  },
  {
   "name": "3.17.0: a link at the embedid sidecar is followed in silence",
@@ -10267,7 +10268,8 @@
   "new": "                        (lambda *a: None)((\"embedid-link\", str(self._embedid_path)),",
   "tests": [
    "tests/test_audit_a_rc317_final_findings.py"
-  ]
+  ],
+  "platform": "posix"
  },
  {
   "name": "3.17.0: an old archive record dated in the future decides",
