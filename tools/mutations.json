@@ -9878,8 +9878,8 @@
  {
   "name": "3.17: decode_vec accepts a value that is not finite",
   "file": "inspeximus/sqlite_store.py",
-  "old": "        if x != x or x in (float(\"inf\"), float(\"-inf\")):\n",
-  "new": "        if False:\n",
+  "old": "    if not math.isfinite(sum(vals)):\n        return None\n",
+  "new": "    if False:\n        return None\n",
   "tests": [
    "tests/test_vectors_are_stored_as_float16.py",
    "tests/test_an_erased_record_takes_its_float16_vector_with_it.py"
@@ -10095,6 +10095,51 @@
   "tests": [
    "tests/test_run_state_and_migration_files_use_the_safe_helpers.py",
    "tests/test_3164_key_home_embedding_and_directory_rules.py"
+  ]
+ },
+ {
+  "name": "3.17: compact_vectors does not vacuum",
+  "file": "inspeximus/core.py",
+  "old": "        if n:\n            # THE FILE KEEPS ITS SIZE UNTIL SOMETHING VACUUMS IT",
+  "new": "        if False:\n            # THE FILE KEEPS ITS SIZE UNTIL SOMETHING VACUUMS IT",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
+  ]
+ },
+ {
+  "name": "3.17: reembed neither compacts nor vacuums",
+  "file": "inspeximus/core.py",
+  "old": "        if done and self._persist_vectors:\n            # A ROW WHOSE NEW VECTOR EQUALS ITS OLD LIST",
+  "new": "        if False:\n            # A ROW WHOSE NEW VECTOR EQUALS ITS OLD LIST",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
+  ]
+ },
+ {
+  "name": "3.17: vacuum runs without the store lock",
+  "file": "inspeximus/core.py",
+  "old": "            with lock:\n                if lock.held:\n                    out = _rows.vacuum(",
+  "new": "            with lock:\n                if True:\n                    out = _rows.vacuum(",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
+  ]
+ },
+ {
+  "name": "3.17: vacuum waits the full busy timeout for a reader",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    con = sqlite3.connect(str(path), timeout=wait_s, isolation_level=None)\n    try:\n        con.execute(\"PRAGMA secure_delete=ON\")\n        con.execute(\"VACUUM\")",
+  "new": "    con = sqlite3.connect(str(path), timeout=30, isolation_level=None)\n    try:\n        con.execute(\"PRAGMA secure_delete=ON\")\n        con.execute(\"VACUUM\")",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
+  ]
+ },
+ {
+  "name": "3.17: index_coherence does not name a large slack",
+  "file": "inspeximus/core.py",
+  "old": "                if _sl[\"free_bytes\"] > (1 << 20) and _sl[\"free_bytes\"] * 4 > _sl[\"file_bytes\"]:",
+  "new": "                if False:",
+  "tests": [
+   "tests/test_a_row_store_gives_back_its_free_pages.py"
   ]
  }
 ]

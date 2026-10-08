@@ -114,7 +114,9 @@ def test_compact_vectors_rewrites_every_list_row_and_only_those(tmp_path):
     d["vec"] = _emb(d["text"])
     _set_doc(p, ids[1], d)
     m = _open(p)
-    assert m.compact_vectors() == {"compacted": 1, "kept_as_list": 0}
+    out = m.compact_vectors()
+    assert (out["compacted"], out["kept_as_list"]) == (1, 0), out
+    assert out["vacuum"]["vacuumed"] is True, "a compaction that rewrote rows ends with a vacuum"
     docs = _docs(p)
     assert all(rows.VEC_KEY in docs[i] and "vec" not in docs[i] for i in ids), docs
     assert _open(p).compact_vectors() == {"compacted": 0, "kept_as_list": 0}, "a second run found work"
@@ -159,3 +161,13 @@ def test_an_unchanged_row_writes_nothing_on_the_next_save(tmp_path):
     con = sqlite3.connect(str(p))
     assert con.execute("SELECT count(*) FROM rewrites WHERE id=?", (ids[0],)).fetchone()[0] >= 1
     con.close()
+
+
+def test_a_value_that_is_not_finite_anywhere_in_the_vector_is_refused():
+    """The check is one sum, so it must see a NaN in the middle, and an infinity of each sign that would
+    cancel in a careless check."""
+    for vals in ([0.5, float("nan"), 0.25], [float("inf"), float("-inf"), 0.5], [0.1] * 500 + [float("-inf")]):
+        text = base64.b64encode(struct.pack("<%de" % len(vals), *vals)).decode("ascii")
+        assert rows.decode_vec(text) is None, vals[:3]
+    ok = base64.b64encode(struct.pack("<3e", 65504.0, 65504.0, -65504.0)).decode("ascii")
+    assert rows.decode_vec(ok) == [65504.0, 65504.0, -65504.0], "control: the largest finite halves still decode"

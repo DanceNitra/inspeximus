@@ -28,6 +28,7 @@ import base64
 import hashlib
 import hmac
 import json
+import math
 import os
 import sqlite3
 import struct
@@ -132,9 +133,11 @@ def decode_vec(text):
     if not raw or len(raw) % 2:
         return None
     vals = struct.unpack("<%de" % (len(raw) // 2), raw)
-    for x in vals:
-        if x != x or x in (float("inf"), float("-inf")):
-            return None
+    # ONE PASS IN C, NOT A PYTHON LOOP OVER EVERY VALUE (3.17). A sum of finite half floats is finite (at most
+    # 16,384 x 65,504), and a NaN or an infinity anywhere makes it non-finite, inf + -inf included. The loop it
+    # replaces cost about a second on every open of a 13,494-vector store, more than the decode itself.
+    if not math.isfinite(sum(vals)):
+        return None
     return list(vals)
 
 
@@ -356,6 +359,42 @@ def _doc(rec, keep_vec: bool = True) -> str:
     elif "vec_recipe" in rec:
         rec = {k: v for k, v in rec.items() if k != "vec_recipe"}
     return json.dumps(rec, sort_keys=True, default=str, allow_nan=False, ensure_ascii=False)
+
+
+def slack(path) -> dict:
+    """The free pages inside the file: space a row that shrank or was deleted left behind (3.17).
+
+    SQLite does not give that space back to the file system by itself. Measured on a 13,489-record store:
+    after `compact_vectors` rewrote every vector as float16, the file stayed at 254 MB with 140 MB of it
+    free pages. `secure_delete` has zeroed them, so they hold no erased content; they are only size."""
+    con = _connect(path)
+    try:
+        ps = con.execute("PRAGMA page_size").fetchone()[0]
+        pages = con.execute("PRAGMA page_count").fetchone()[0]
+        free = con.execute("PRAGMA freelist_count").fetchone()[0]
+    finally:
+        con.close()
+    return {"file_bytes": os.path.getsize(str(path)), "free_pages": free, "free_bytes": free * ps,
+            "used_bytes": (pages - free) * ps}
+
+
+def vacuum(path, wait_s: float = 2.0) -> dict:
+    """Rewrite the file without its free pages (3.17). Waits at most `wait_s` for readers to finish, then
+    gives up and reports the slack instead: a VACUUM needs the file to itself, and a reader holding it is
+    never interrupted. `secure_delete` stays on for the rewrite, as it is for every connection."""
+    before = slack(path)
+    con = sqlite3.connect(str(path), timeout=wait_s, isolation_level=None)
+    try:
+        con.execute("PRAGMA secure_delete=ON")
+        con.execute("VACUUM")
+    except sqlite3.OperationalError as e:
+        return {"vacuumed": False, "reason": str(e), "slack_bytes": before["free_bytes"],
+                "file_bytes": before["file_bytes"]}
+    finally:
+        con.close()
+    after = slack(path)
+    return {"vacuumed": True, "freed_bytes": before["file_bytes"] - after["file_bytes"],
+            "file_bytes": after["file_bytes"], "slack_bytes": after["free_bytes"]}
 
 
 def doc_format(path) -> int:

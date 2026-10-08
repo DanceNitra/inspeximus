@@ -772,6 +772,9 @@ def main(argv=None):
                                      "it produces are attributable to nothing, so forget-subject cannot "
                                      "reach them")
 
+    sub.add_parser("vacuum", help="give a row store's free pages back to the file system (after compact or "
+                                  "erasure); waits at most 2 s for the store lock and readers, then reports")
+
     re_ = sub.add_parser("reembed", help="rebuild embeddings for records that have none (after an embed-recipe "
                                          "change dropped them); needs an embedder configured")
     re_.add_argument("--all", action="store_true", help="re-embed EVERY record, not just the ones missing a vector")
@@ -2521,6 +2524,16 @@ def main(argv=None):
               "superseded": superseded, "keyed": keyed}
         _out(st, a.json) or print(
             f"{st['path']}: {st['total']} total ({active} active, {superseded} superseded, {keyed} keyed)")
+
+    elif a.cmd == "vacuum":
+        res = m.vacuum()
+        _out(res, a.json) or print(
+            ("freed %.1f MB; the store file is %.1f MB" % (res["freed_bytes"] / 1e6, res["file_bytes"] / 1e6))
+            if res.get("vacuumed") else
+            ("not vacuumed: %s" % res.get("reason"))
+            + (" (%.1f MB of free pages remain)" % (res["slack_bytes"] / 1e6) if res.get("slack_bytes") else ""))
+        if not res.get("vacuumed") and res.get("reason") != "not a row store":
+            return 1
 
     elif a.cmd == "reembed" and a.compact_only:
         m = _store(a.path, persist_vectors=True)
