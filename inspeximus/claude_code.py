@@ -2282,6 +2282,9 @@ def main():
             print("\nDry run. Add --apply to move %d record(s) into %d segment(s); nothing is deleted."
                   % (r["moving"], len(r.get("segments") or [])))
         return
+    if "--serve" in sys.argv:                                # the prompt daemon (3.18 prototype): see hookd.py
+        from . import hookd
+        sys.exit(hookd.serve_main(sys.argv))
     if "--maintain" in sys.argv:
         from .archive import ArchiveRefused  # noqa: F401
         argv = sys.argv
@@ -2343,9 +2346,34 @@ def main():
         elif name == "PostToolUse":
             capture(ev)
         elif name == "UserPromptSubmit":
-            recall(ev)
-            maybe_archive_in_background(ev.get("cwd") or os.getcwd())
-            maybe_restamp_after_recall(ev.get("cwd") or os.getcwd())
+            _cwd = ev.get("cwd") or os.getcwd()
+            # THE PROMPT DAEMON FIRST, TODAY'S PATH ON ANYTHING ELSE (3.18 prototype, opt-in). `hookd.ask` returns the
+            # block only after a verified, timely, matching answer; None means run recall() here, exactly as before.
+            _served = None
+            if os.environ.get("INSPEXIMUS_HOOK_DAEMON"):
+                from . import hookd
+                from ._surface import coding_store_path
+                try:
+                    _sp = coding_store_path(_cwd)               # the hook's own resolution; the daemon repeats it
+                except Exception:                               # noqa: BLE001 -- recall() below reports a refusal
+                    _sp = None
+                if _sp is not None and hookd.enabled():
+                    _served = hookd.ask(ev, _sp)
+                    if os.environ.get("INSPEXIMUS_HOOK_DAEMON_TRACE"):
+                        sys.stderr.write("[inspeximus] hookd %s" % json.dumps(hookd.LAST) + chr(10))
+            if _served is not None:
+                if _served:
+                    sys.stdout.write(_served)
+            else:
+                recall(ev)                                      # today's path, unchanged
+            maybe_archive_in_background(_cwd)
+            if _served is not None:
+                if hookd.LAST.get("foreign"):
+                    maybe_restamp_in_background(_cwd, foreign=hookd.LAST["foreign"])
+            else:
+                maybe_restamp_after_recall(_cwd)
+                if os.environ.get("INSPEXIMUS_HOOK_DAEMON") and _sp is not None:
+                    hookd.maybe_start(_cwd, _sp)
             _FAST_EXIT[0] = os.environ.get("INSPEXIMUS_HOOK_FAST_EXIT", "").strip().lower() not in ("0", "false", "no")
         elif name == "SessionStart":
             session_start(ev)

@@ -10268,5 +10268,104 @@
   "tests": [
    "tests/test_a_probe_under_the_suite_writes_to_a_shadow.py"
   ]
+ },
+ {
+  "name": "3.18 daemon: the client believes a daemon that does not hold the token",
+  "file": "inspeximus/hookd.py",
+  "old": "            if not hmac.compare_digest(str(hi.get(\"mac\", \"\")), _mac(token, b\"S|\", nc)):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the daemon answers a caller without the token",
+  "file": "inspeximus/hookd.py",
+  "old": "        if not hmac.compare_digest(str(msg.get(\"mac\", \"\")), _mac(self.token, b\"C|\", ns, req_s)):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the client uses a reply it cannot verify",
+  "file": "inspeximus/hookd.py",
+  "old": "            if not hmac.compare_digest(str(msg.get(\"mac\", \"\")), _mac(token, b\"R|\", nc, rep)):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the daemon answers for a store it did not resolve itself",
+  "file": "inspeximus/hookd.py",
+  "old": "        if mine != self.store or req.get(\"store\") != self.store:\n",
+  "new": "        if req.get(\"store\") != self.store:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the daemon trusts the store the client names",
+  "file": "inspeximus/hookd.py",
+  "old": "        if mine != self.store or req.get(\"store\") != self.store:\n",
+  "new": "        if mine != self.store:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: another version is answered",
+  "file": "inspeximus/hookd.py",
+  "old": "        if code != self.code:\n            self.stop = True",
+  "new": "        if False:\n            self.stop = True",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: another environment is answered",
+  "file": "inspeximus/hookd.py",
+  "old": "        if req.get(\"env\") != self.env:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: a moved store is served from the held handle",
+  "file": "inspeximus/hookd.py",
+  "old": "        if cur is None or cur[0] != sig:\n",
+  "new": "        if cur is None:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the client waits without a bound",
+  "file": "inspeximus/hookd.py",
+  "old": "    if left <= 0 or not conn.poll(left):\n",
+  "new": "    if not conn.poll(None):\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the daemon never exits when idle",
+  "file": "inspeximus/hookd.py",
+  "old": "            if time.monotonic() - self.last_request > self.idle_exit_s or not os.path.exists(self.store) \\\n",
+  "new": "            if False and not os.path.exists(self.store) \\\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the start is not rate-limited",
+  "file": "inspeximus/hookd.py",
+  "old": "        if now - last < START_MIN_INTERVAL_S:\n            return \"recent\"\n",
+  "new": "        if False:\n            return \"recent\"\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
  }
 ]
