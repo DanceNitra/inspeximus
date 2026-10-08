@@ -15551,6 +15551,11 @@ class Inspeximus:
                 and isinstance(getattr(self, "_recall_ix", None), dict)):
             _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,
                         agent_id, session_id, self.read_guards) + _view_scope(self)
+            # READ BEFORE THE POOL IS BUILT (AUDIT-A Y-1). Keyed with what was current at the end, an entry built while
+            # another thread wrote carried that write's revision and a pool that predates it, and was served as current.
+            # Keyed with what was current at the start, such an entry is stale at the next recall and rebuilt. An edit
+            # this recall makes itself (the read guards drop a stamp they cannot verify) costs one extra rebuild.
+            _ix_at = (self._rev, len(self._items), tuple(self._items))
             _c = self._recall_ix.get(_ix_args)
             if _c is not None and _c["items"] is self._items:
                 if _c["n"] == len(self._items) and _c["rev"] == self._rev:
@@ -15673,14 +15678,14 @@ class Inspeximus:
                     for _i, _r in enumerate(pool, _base):
                         for _t in self._rec_tokens(_r):
                             _ix["post"].setdefault(_t, []).append(_i)
-                _ix.update(n=len(self._items), rev=self._rev, vis=len(self.items), snap=tuple(self._items))
+                _ix.update(rev=_ix_at[0], n=_ix_at[1], snap=_ix_at[2], vis=_ix["vis"] + len(_rows))
                 _ix["appends"] = _ix.get("appends", 0) + 1
                 pool = list(_ix["pool"])
             elif _ix_args is not None:
                 # Keyed AFTER the pool is built: assessing the read guards can edit a record (a stamp it cannot
                 # verify is dropped), and that edit belongs to this pool, not to the next recall's.
-                _ix = {"args": _ix_args, "items": self._items, "n": len(self._items), "rev": self._rev,
-                       "vis": len(self.items), "snap": tuple(self._items), "pool": tuple(pool), "post": None}
+                _ix = {"args": _ix_args, "items": self._items, "n": _ix_at[1], "rev": _ix_at[0],
+                       "vis": len(_rows), "snap": _ix_at[2], "pool": tuple(pool), "post": None}
                 _ixd = self._recall_ix
                 _ixd.pop(_ix_args, None)
                 _ixd[_ix_args] = _ix

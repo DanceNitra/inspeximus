@@ -10507,5 +10507,15 @@
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py"
   ]
+ },
+ {
+  "name": "3.18 index Y-1: the entry is keyed with the revision after the build",
+  "file": "inspeximus/core.py",
+  "old": "                _ix = {\"args\": _ix_args, \"items\": self._items, \"n\": _ix_at[1], \"rev\": _ix_at[0],\n",
+  "new": "                _ix = {\"args\": _ix_args, \"items\": self._items, \"n\": _ix_at[1], \"rev\": self._rev,\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
  }
 ]

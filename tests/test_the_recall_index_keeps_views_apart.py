@@ -183,3 +183,29 @@ def test_the_entries_are_bounded(tmp_path):
     for p in range(core._RECALL_IX_ENTRIES + 4):
         m.recall("deploy window", k=5, project="p%d" % p)
     assert len(m._recall_ix) == core._RECALL_IX_ENTRIES
+
+
+def test_a_write_made_while_the_pool_is_built_is_never_served_stale(tmp_path):
+    """AUDIT-A Y-1. A writer thread edits a record after the build has read it and before the entry is keyed; the entry
+    must not be taken as current at the next recall. The write is placed inside the build, deterministically."""
+    import threading
+    m = _store(tmp_path)
+    m.read_guards = True
+    victim = next(r for r in m._items if r.get("key") == "k5")
+    real = m._assess_read_guards
+    fired = []
+
+    def assess(r):
+        if not fired:
+            fired.append(1)
+            t = threading.Thread(target=lambda: victim.__setitem__("status", "superseded"))
+            t.start()
+            t.join()
+        return real(r)
+    m._assess_read_guards = assess
+    m.recall("deploy window", k=40)
+    assert fired, "CONTROL: the write ran inside the build"
+    del m._assess_read_guards
+    got = [h["id"] for h in m.recall("note 5 about the deploy window", k=40)]
+    assert victim["id"] not in got, "a record superseded during the build is still served"
+    assert _ranked(m, "deploy window", k=40) == _ranked(m, "deploy window", k=40, on=False)
