@@ -70,7 +70,7 @@ def test_the_flag_is_on_exactly_on_windows():
 def test_the_archive_run_marks_itself_through_blocked_writes(tmp_path, monkeypatch):
     """The helper gives up at once here, so the RUN must go on trying until its own deadline."""
     path = str(tmp_path / "coding_memory.json")
-    state = path + ".archive-auto.json"
+    state = cc._archive_state_path(path)                 # 3.17.0: the run's record is in the key home
     with open(state, "w", encoding="utf-8") as fh:
         json.dump({"last_attempt": time.time() - 100, "pid": 7}, fh)
     real = os.replace
