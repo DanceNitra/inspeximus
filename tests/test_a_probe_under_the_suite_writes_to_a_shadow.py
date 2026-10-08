@@ -77,3 +77,35 @@ def test_the_suite_turns_the_shadow_on_for_its_children():
     for k in ("INSPEXIMUS_PROBE_ROOT", "INSPEXIMUS_PROBE_SHADOW", "INSPEXIMUS_PROBE_TRACKED"):
         assert os.environ.get(k), k
     assert "probes/_receipt.py" in open(os.environ["INSPEXIMUS_PROBE_TRACKED"], encoding="utf-8").read()
+
+
+CLASS_SCRIPT = r'''
+import io, os, sys
+root = sys.argv[1]
+class Accessor:
+    open = io.open                     # what Python 3.10's pathlib does with io.open, after the shim loaded
+a = Accessor()
+with a.open(os.path.join(root, "probes", "x.result.json"), "w", encoding="utf-8") as fh:
+    fh.write('{"n": 3}')
+import builtins
+class Other:
+    opener = builtins.open
+with Other().opener(os.path.join(root, "data", "bench.json"), "w") as fh:
+    fh.write("via a class attribute")
+print("ok")
+'''
+
+
+def test_open_read_from_a_class_attribute_is_called_with_its_own_arguments(tmp_path):
+    """3.16.7: a function stored on a class becomes a method, so `Accessor().open(path, "w")` handed the shim
+    the accessor as `file` and the path as `mode`. Python 3.10's pathlib does exactly that, and 25 probe tests
+    failed there with "open() argument mode must be str, not WindowsPath". Reproduced here on every version."""
+    root, listing = _layout(tmp_path)
+    probe = root / "probes" / "c.py"
+    probe.write_text(CLASS_SCRIPT, encoding="utf-8")
+    shadow = tmp_path / "shadow"
+    r = _run(probe, root, listing, shadow)
+    assert r.returncode == 0 and "ok" in r.stdout, r.stderr[-800:]
+    assert (shadow / "probes" / "x.result.json").read_text() == '{"n": 3}', "the write did not reach the shadow"
+    assert (shadow / "data" / "bench.json").read_text() == "via a class attribute"
+    assert (root / "probes" / "x.result.json").read_text() == '{"n": 1}', "the committed file changed"

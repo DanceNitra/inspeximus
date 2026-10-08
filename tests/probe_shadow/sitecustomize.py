@@ -86,8 +86,18 @@ def _install():
             return real_fn(src, dst, *args, **kwargs)
         return move
 
-    builtins.open = guarded_open
-    io.open = guarded_open
+    # A CALLABLE OBJECT, NOT A FUNCTION, because a function placed on a class becomes a method. Python 3.10's
+    # pathlib reads `open = io.open` into its accessor class when it is imported, after this module, and calls
+    # `self._accessor.open(path, mode, ...)`: with a function there, the accessor arrived as `file` and the path
+    # as `mode`, and 25 probe tests failed on 3.10 with "open() argument mode must be str, not WindowsPath".
+    # An instance with __call__ is not a descriptor, so it is called with open's own arguments everywhere.
+    class _Open(object):
+        __slots__ = ()
+
+        def __call__(self, file, mode="r", *args, **kwargs):
+            return guarded_open(file, mode, *args, **kwargs)
+
+    builtins.open = io.open = _Open()
     os.replace = guarded_move(real_replace)
     os.rename = guarded_move(real_rename)
 

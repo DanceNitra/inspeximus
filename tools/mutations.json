@@ -9273,5 +9273,14 @@
   "tests": [
    "tests/test_a_write_that_a_reader_blocks_is_retried.py"
   ]
+ },
+ {
+  "name": "3.16.7: the probe shadow installs open as a plain function, which binds as a method",
+  "file": "tests/probe_shadow/sitecustomize.py",
+  "old": "    builtins.open = io.open = _Open()\n",
+  "new": "    builtins.open = io.open = guarded_open\n",
+  "tests": [
+   "tests/test_a_probe_under_the_suite_writes_to_a_shadow.py"
+  ]
  }
 ]
