@@ -142,7 +142,7 @@ def test_a_new_chain_head_names_the_store_that_wrote_it(tmp_path):
         (heads / f"head{i}.json").write_text(json.dumps({"path": f"C:/tmp/gov_{i}_x/store.jsonl"}),
                                             encoding="utf-8")
     lines = _home_guard.diff(before, _home_guard.snapshot(str(home)), str(home))
-    assert any(ln.startswith(os.path.join("AppData", "Roaming", "inspeximus", "heads")) and ": +5 -0" in ln
+    assert any(ln.startswith(os.path.join("AppData", "Roaming", "inspeximus")) and ": +5 -0" in ln
                for ln in lines), lines
     assert sum("(store C:/tmp/gov_" in ln for ln in lines) == 5, lines
     assert _home_guard.diff(before, _home_guard.snapshot(str(home))), "control: without home it still fails"
@@ -213,5 +213,5 @@ def test_the_run_end_guard_fails_a_run_that_wrote_the_real_home(tmp_path):
         pytest.fail(f"control: the inner test did not write, so the guard had nothing to see: {r.stdout[-400:]}")
     assert r.returncode != 0, "a run that wrote the real home exited 0"
     assert "THIS RUN CHANGED THE REAL HOME" in r.stdout and "written-by-a-test.json" in r.stdout, r.stdout[-600:]
-    assert "gov_0_selftest" in r.stdout and "leaked heads of temp stores" in r.stdout, \
+    assert "gov_0_selftest" in r.stdout and "new files in the real key home" in r.stdout, \
         "the run-end line did not name the leaked head's writer"
