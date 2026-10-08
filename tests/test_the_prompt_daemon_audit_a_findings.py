@@ -420,8 +420,11 @@ def test_the_daemon_process_does_not_hold_the_project_directory(project):
     """D-4: started from the repository, the daemon kept it as its working directory."""
     proj, sp = project
     env = dict(os.environ, PYTHONPATH=ROOT)
-    p = subprocess.Popen([sys.executable, "-m", "inspeximus.claude_code", "--serve", "--expect-store", sp], cwd=proj,
-                         env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    kh = hookd.key_home_for(sp)
+    os.makedirs(hookd.state_dir(kh), exist_ok=True)
+    p = subprocess.Popen([sys.executable, "-m", "inspeximus.claude_code", "--serve", "--expect-store", sp,
+                          "--project", proj], cwd=hookd.state_dir(kh), env=env,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)   # as maybe_start starts it
     try:
         for _ in range(300):
             if hookd.live_daemon(sp):
@@ -461,7 +464,7 @@ def test_no_more_than_the_limit_of_daemons_per_key_home(project, tmp_path, monke
     kh = str(tmp_path / "limit-key-home")
     monkeypatch.setattr(hookd, "key_home_for", lambda s: kh)
     assert hookd.live_daemon_count(kh) == 0, "CONTROL: the key home starts empty"
-    live = json.dumps({"pid": os.getpid(), "proc_start": hookd._proc_start(os.getpid())})
+    live = json.dumps({"pid": os.getpid(), "proc_start": hookd._proc_start(os.getpid()), "token_sha": "0" * 32})
     made = [hookd._pid_path(kh, "%016x" % (i + 1)) for i in range(hookd.MAX_LIVE_DAEMONS)]
     for p in made:
         _write(p, live)

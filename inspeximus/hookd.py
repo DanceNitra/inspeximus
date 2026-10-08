@@ -34,6 +34,7 @@ import os
 import sys
 import threading
 import time
+import warnings
 
 PROTOCOL = 1
 CONNECT_TIMEOUT_S = 0.1          #: a daemon that does not take the connection within this is treated as absent
@@ -46,6 +47,7 @@ START_MIN_INTERVAL_S = 60.0      #: at most one start attempt per store in this 
 BACKOFF_AFTER = 3                #: this many timeouts in a row and the hook stops asking ...
 BACKOFF_S = 300.0                #: ... for this long, so a slow daemon costs at most BACKOFF_AFTER x REPLY_TIMEOUT_S
 MAX_LIVE_DAEMONS = 4             #: at most this many live daemons per key home; a fifth store gets none (AUDIT-A D-3)
+MAX_CONNECTIONS = 16             #: handshakes in flight at once; one more is closed at accept (AUDIT-A E-4)
 
 
 # ── names: one daemon per (store, key home) ────────────────────────────────────────────────────────────────────
@@ -112,8 +114,11 @@ def _record_is_live(rec):
     pid = rec.get("pid")
     if not _pid_alive(pid):
         return False
+    # A record without a start time is stale (AUDIT-A E-5): a record from a03da444, or one written where the start
+    # time cannot be read, was live by its pid alone, and a reused pid then blocked every start. On such a platform no
+    # daemon is ever live, and every hook runs today's path.
     want, now = rec.get("proc_start"), _proc_start(pid)
-    return want is None or now is None or want == now
+    return want is not None and now is not None and want == now
 
 
 def _read_record(kh, t):
@@ -208,12 +213,57 @@ def _mac(token, label, *parts):
     return h.hexdigest()
 
 
+#: Module state a hook process starts without and the daemon would keep from answer to answer: the once-per-process
+#: notices, and the git calls remembered as failed. `test_every_once_per_process_set_is_reset` scans the package for
+#: module-level sets and lists and fails on one that is neither here nor in its list of caches.
+PROCESS_STATE = (("_isolate", "_SAID"), ("_http", "_ENV_NOTICE"), ("_keyhome", "_NOTICE"), ("_userconfig", "_SAID"),
+                 ("claude_code", "_REPO_EMBED_NOTICE"), ("claude_code", "_REPO_EMBED_KEYS_NOTICE"),
+                 ("claude_code", "_REPO_ARCHIVE_NOTICE"), ("_storelink", "_GIT_FAILED"))
+
+
+def reset_process_state():
+    """Empty every container in PROCESS_STATE in place. Never raises."""
+    import importlib
+    for mod, name in PROCESS_STATE:
+        try:
+            getattr(importlib.import_module("inspeximus." + mod), name).clear()
+        except Exception:                                       # noqa: BLE001
+            pass
+
+
 def _version_key(v):
     """A version string as a tuple of ints for ordering; anything unreadable sorts lowest."""
     try:
         return tuple(int(x) for x in str(v).split("+")[0].split("."))
     except (TypeError, ValueError):
         return ()
+
+
+#: The INSPEXIMUS_* variables whose value names a file or a folder. A relative value is resolved by each process against
+#: its own working directory, and the daemon's is not the hook's (AUDIT-A E-1: a relative decision store was silently
+#: missing from a served answer). Every variable the package reads as a path is here; the test
+#: `test_every_path_variable_is_listed` fails when one that is read with a filesystem call is not.
+PATH_VARS = ("INSPEXIMUS_PATH", "INSPEXIMUS_DECISION_STORE", "INSPEXIMUS_KEY_HOME", "INSPEXIMUS_RECEIPT_KEY",
+             "INSPEXIMUS_RECEIPT_KEY_FILE", "INSPEXIMUS_WRITER_KEY_FILE", "INSPEXIMUS_PROBES_DIR")
+
+
+def _hexkey(v):
+    return len(v) == 64 and all(c in "0123456789abcdefABCDEF" for c in v)
+
+
+def path_values(env=None):
+    """{variable: value} for the path variables that are set, or None when one of them is relative. A 64-hex
+    INSPEXIMUS_RECEIPT_KEY is the key itself, not a path."""
+    env = os.environ if env is None else env
+    out = {}
+    for k in PATH_VARS:
+        v = (env.get(k) or "").strip()
+        if not v or (k == "INSPEXIMUS_RECEIPT_KEY" and _hexkey(v)):
+            continue
+        if not os.path.isabs(v):
+            return None
+        out[k] = _real(v)
+    return out
 
 
 def _sha(s):
@@ -339,6 +389,10 @@ def ask(ev, store_path, timeout=REPLY_TIMEOUT_S):
                 or not _record_is_live(rec)):
             LAST["outcome"] = "absent"
             return None
+        paths = path_values()
+        if paths is None:
+            LAST["outcome"] = "relative"                        # a relative path variable: today's path (E-1)
+            return None
         conn = _connect(address(kh, t), min(deadline, time.monotonic() + CONNECT_TIMEOUT_S))
         if conn is None:
             LAST["outcome"] = "absent"
@@ -354,7 +408,7 @@ def ask(ev, store_path, timeout=REPLY_TIMEOUT_S):
             t_id = time.perf_counter()
             # `until` is wall-clock: the daemon drops a request it reaches after the client has given up (D-2).
             req = json.dumps({"ev": ev, "cwd": ev.get("cwd") or os.getcwd(), "store": _real(store_path),
-                              "code": code_identity(), "env": env_fingerprint(),
+                              "code": code_identity(), "env": env_fingerprint(), "paths": paths,
                               "until": time.time() + max(0.0, deadline - time.monotonic())}, sort_keys=True)
             LAST["identity_ms"] = round(1000 * (time.perf_counter() - t_id), 1)
             _send(conn, {"req": req, "mac": _mac(token, b"C|", ns, req)})
@@ -424,8 +478,13 @@ def maybe_start(cwd, store_path) -> str:
             return "limit"
         record = {"last_attempt": now, "interpreter": sys.executable}
         write_atomic(state, json.dumps(record))
-        proc = cc._start_detached(["--serve", "--expect-store", store_path], cwd,
-                                  cc._state_path(store_path, "hookd", ".log"))
+        # The state directory is the daemon's working directory, so it holds no project folder open (AUDIT-A D-4); the
+        # project is an argument. Started there and never moved: a chdir after start resolved a relative path variable
+        # against the wrong folder (E-1).
+        kh = key_home_for(store_path)
+        os.makedirs(state_dir(kh), mode=0o700, exist_ok=True)
+        proc = cc._start_detached(["--serve", "--expect-store", store_path, "--project", os.path.abspath(cwd)],
+                                  state_dir(kh), cc._state_path(store_path, "hookd", ".log"))
         record["pid"] = getattr(proc, "pid", None)
         write_atomic(state, json.dumps(record))
         return "started"
@@ -451,6 +510,8 @@ class Daemon:
         self.token = os.urandom(32)
         self.reopens = 0
         self.counts = {}               # id(handle) -> (handle, foreign stamps counted when it was opened)
+        self.answering = threading.Lock()  # one answer at a time: the stores and the redirected streams are shared
+        self.conns = threading.BoundedSemaphore(MAX_CONNECTIONS)
 
     # -- holding the stores -----------------------------------------------------------------------------------------
     def handle_for(self, path, opener):
@@ -484,6 +545,14 @@ class Daemon:
             late = False
         if late:
             return {"ok": False, "reason": "late"}              # the client gave up; do not spend the work (D-2)
+        # THE SAME FILES, BY ABSOLUTE PATH (AUDIT-A E-1). The environment fingerprint compares the values as written, and a
+        # relative value names another file in this process. A relative value here, or absolute paths that differ from
+        # the hook's, is refused, and the hook runs today's path.
+        mine_paths = path_values()
+        if mine_paths is None:
+            return {"ok": False, "reason": "relative-path"}
+        if req.get("paths") != mine_paths:
+            return {"ok": False, "reason": "paths"}
         ev = req.get("ev") or {}
         cwd = req.get("cwd") or ""
         from . import claude_code as cc
@@ -518,7 +587,12 @@ class Daemon:
         saved = sys.stdout, sys.stderr
         try:
             sys.stdout, sys.stderr = out, err
-            cc.recall(ev, store=held_store, decision_store=held_decisions, count_foreign=counted_once)
+            # A FRESH HOOK IS A FRESH PROCESS (AUDIT-A E-2). The notices the library prints once per process, and the
+            # warnings Python shows once per place, were spent by the first answer or the warm-up and never reached a
+            # later hook. They are reset here, so every answer prints what a fresh process would.
+            reset_process_state()
+            with warnings.catch_warnings():                     # entering resets the shown-once registries
+                cc.recall(ev, store=held_store, decision_store=held_decisions, count_foreign=counted_once)
         finally:
             sys.stdout, sys.stderr = saved
         foreign = sum(n for _p, _e, n in cc._LAST_STORES)
@@ -541,12 +615,25 @@ class Daemon:
         self.last_request = time.monotonic()
         t0 = time.perf_counter()
         try:
-            rep = self.answer(json.loads(req_s))
+            with self.answering:
+                rep = self.answer(json.loads(req_s))
             rep["answer_ms"] = round(1000 * (time.perf_counter() - t0), 1)
         except Exception as e:                                  # noqa: BLE001
             rep = {"ok": False, "reason": "error: %s" % type(e).__name__}
         rep_s = json.dumps(rep)
         _send(conn, {"rep": rep_s, "mac": _mac(self.token, b"R|", nc, _sha(req_s), rep_s)})
+
+    def _serve_thread(self, conn):
+        try:
+            self._serve_one(conn)
+        except Exception:                                       # noqa: BLE001
+            pass
+        finally:
+            try:
+                conn.close()
+            except Exception:                                   # noqa: BLE001
+                pass
+            self.conns.release()
 
     def _make_state_dir(self):
         """Before the listener binds: on POSIX the socket lives in it (AUDIT-A D-10), and it is 0700 from its creation."""
@@ -612,10 +699,16 @@ class Daemon:
         from multiprocessing.connection import Listener
         warm_cwd = warm_cwd or os.getcwd()
         self._make_state_dir()
+        saved = sys.stdout, sys.stderr
         try:
+            # What the warm-up prints is nobody's answer: discarded, and the once-per-process state it spent is reset
+            # before every answer (E-2).
+            sys.stdout = sys.stderr = io.StringIO()
             self.warm(warm_cwd)
         except Exception:                                       # noqa: BLE001 -- a cold first answer is only slower
             pass
+        finally:
+            sys.stdout, sys.stderr = saved
         if os.name == "nt":
             listener = _OwnerPipeListener(self.addr)
         else:
@@ -638,15 +731,13 @@ class Daemon:
                 if self.stop:
                     conn.close()
                     break
-                try:
-                    self._serve_one(conn)
-                except Exception:                               # noqa: BLE001
-                    pass
-                finally:
-                    try:
-                        conn.close()
-                    except Exception:                           # noqa: BLE001
-                        pass
+                # A THREAD PER CONNECTION (AUDIT-A E-4). The handshake was read on the accept loop, so a connection that
+                # said nothing held the next hook past its 0.3 s bound, and three of them started the back-off. Now a
+                # silent connection holds only its own thread, for SERVER_READ_TIMEOUT_S; the answers stay serial.
+                if not self.conns.acquire(blocking=False):
+                    conn.close()                                # MAX_CONNECTIONS handshakes in flight: refuse this one
+                    continue
+                threading.Thread(target=self._serve_thread, args=(conn,), daemon=True).start()
         finally:
             listener.close()
             self._remove_files()
@@ -674,7 +765,9 @@ def live_daemon_count(kh):
     for name in names:
         if name.endswith(".json") and len(name) == 21:
             rec = _read_record(kh, name[:16])
-            if rec is not None and _record_is_live(rec):
+            # Only a daemon's own record carries `token_sha`; `maybe_start`'s attempt record sits in the same folder
+            # under the same kind of name, and counting it made one daemon two (AUDIT-A E-3).
+            if rec is not None and rec.get("token_sha") and _record_is_live(rec):
                 n += 1
     return n
 
@@ -699,9 +792,13 @@ def serve_main(argv):
     if i < 0:
         return 2
     store_path = argv[i + 1]
+    j = argv.index("--project") if "--project" in argv[:-1] else -1
+    project = argv[j + 1] if j >= 0 else os.getcwd()
+    if path_values() is None:
+        return 2                                                # a relative path variable: no daemon (E-1)
     from . import _surface
     try:
-        if _real(_surface.coding_store_path(os.getcwd())) != _real(store_path):
+        if _real(_surface.coding_store_path(project)) != _real(store_path):
             return 2                                            # the started-for store is not what this directory resolves
     except Exception:                                           # noqa: BLE001
         return 2
@@ -709,14 +806,7 @@ def serve_main(argv):
         return 0                                                # one per (store, key home)
     kh = key_home_for(store_path)
     _clear_stale(kh, tag(store_path, kh))
-    d = Daemon(store_path)
-    cwd = os.getcwd()
-    d._make_state_dir()
-    # NOT THE REPOSITORY'S DIRECTORY (AUDIT-A D-4): on Windows a process's working directory cannot be deleted, so a
-    # daemon that kept it held the project folder for up to IDLE_EXIT_S. Every path it uses after this is absolute.
-    # Here and not in serve(): serve() also runs inside a test process, whose directory is not the daemon's to move.
-    os.chdir(state_dir(kh))
-    d.serve(warm_cwd=cwd)
+    Daemon(store_path).serve(warm_cwd=project)
     return 0
 
 

@@ -102,7 +102,8 @@ def daemon(project):
 
 
 def _req(d, proj, **over):
-    r = {"ev": _ev(proj), "cwd": proj, "store": d.store, "code": hookd.code_identity(), "env": hookd.env_fingerprint()}
+    r = {"ev": _ev(proj), "cwd": proj, "store": d.store, "code": hookd.code_identity(), "env": hookd.env_fingerprint(),
+         "paths": hookd.path_values()}
     r.update(over)
     return r
 
@@ -290,7 +291,9 @@ def test_the_start_follows_the_launch_rules_and_is_rate_limited(project, monkeyp
         pid = 4242
     monkeypatch.setattr(cc, "_start_detached", lambda args, cwd, log: (seen.append((args, cwd, log)), P())[1])
     assert hookd.maybe_start(proj, sp) == "started"
-    assert seen and seen[0][0] == ["--serve", "--expect-store", sp] and seen[0][1] == proj
+    kh = hookd.key_home_for(sp)
+    assert seen and seen[0][0] == ["--serve", "--expect-store", sp, "--project", os.path.abspath(proj)]
+    assert seen[0][1] == hookd.state_dir(kh), "the daemon is started in the project folder (AUDIT-A D-4)"
     rec = json.load(open(cc._state_path(sp, "hookd"), encoding="utf-8"))
     assert rec["pid"] == 4242 and rec["last_attempt"] > 0, "the attempt is not recorded"
     assert hookd.maybe_start(proj, sp) == "recent", "a second start within the interval"

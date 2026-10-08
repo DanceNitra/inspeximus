@@ -10408,7 +10408,7 @@
  {
   "name": "3.18 daemon D-5: a record is live by its pid alone",
   "file": "inspeximus/hookd.py",
-  "old": "    return want is None or now is None or want == now\n",
+  "old": "    return want is not None and now is not None and want == now\n",
   "new": "    return True\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
@@ -10446,15 +10446,6 @@
   "file": "inspeximus/hookd.py",
   "old": "        if live_daemon_count(key_home_for(store_path)) >= MAX_LIVE_DAEMONS:\n",
   "new": "        if False:\n",
-  "tests": [
-   "tests/test_the_prompt_daemon_audit_a_findings.py"
-  ]
- },
- {
-  "name": "3.18 daemon D-4: the daemon keeps the repository as its working directory",
-  "file": "inspeximus/hookd.py",
-  "old": "    os.chdir(state_dir(kh))\n",
-  "new": "    pass\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -10534,8 +10525,8 @@
  {
   "name": "3.18 daemon D-10: the listener binds before the state directory exists",
   "file": "inspeximus/hookd.py",
-  "old": "        self._make_state_dir()\n        try:\n            self.warm(warm_cwd)\n",
-  "new": "        try:\n            self.warm(warm_cwd)\n",
+  "old": "        self._make_state_dir()\n        saved = sys.stdout, sys.stderr\n",
+  "new": "        saved = sys.stdout, sys.stderr\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ],
@@ -10544,8 +10535,8 @@
  {
   "name": "3.18 daemon: an exception in the answer leaves the streams redirected",
   "file": "inspeximus/hookd.py",
-  "old": "        finally:\n            sys.stdout, sys.stderr = saved\n",
-  "new": "        finally:\n            pass\n",
+  "old": "count_foreign=counted_once)\n        finally:\n            sys.stdout, sys.stderr = saved\n",
+  "new": "count_foreign=counted_once)\n        finally:\n            pass\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -10611,6 +10602,88 @@
   "new": "        return True\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-1: the client asks under a relative path variable",
+  "file": "inspeximus/hookd.py",
+  "old": "        if paths is None:\n            LAST[\"outcome\"] = \"relative\"",
+  "new": "        if False:\n            LAST[\"outcome\"] = \"relative\"",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-1: the daemon answers under a relative path variable",
+  "file": "inspeximus/hookd.py",
+  "old": "        if mine_paths is None:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-1: the daemon answers for other absolute paths",
+  "file": "inspeximus/hookd.py",
+  "old": "        if req.get(\"paths\") != mine_paths:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-1: serve starts a daemon under a relative path variable",
+  "file": "inspeximus/hookd.py",
+  "old": "    if path_values() is None:\n        return 2  ",
+  "new": "    if False:\n        return 2  ",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon D-4: the daemon is started in the project folder",
+  "file": "inspeximus/hookd.py",
+  "old": "                                  state_dir(kh), cc._state_path(store_path, \"hookd\", \".log\"))\n",
+  "new": "                                  os.path.abspath(cwd), cc._state_path(store_path, \"hookd\", \".log\"))\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-2: once-per-process notices are not reset per answer",
+  "file": "inspeximus/hookd.py",
+  "old": "            reset_process_state()\n            with warnings",
+  "new": "            with warnings",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-3: an attempt record counts as a daemon",
+  "file": "inspeximus/hookd.py",
+  "old": "            if rec is not None and rec.get(\"token_sha\") and _record_is_live(rec):\n",
+  "new": "            if rec is not None and _record_is_live(rec):\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py",
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-4: the handshake is read on the accept loop",
+  "file": "inspeximus/hookd.py",
+  "old": "                threading.Thread(target=self._serve_thread, args=(conn,), daemon=True).start()\n",
+  "new": "                self._serve_thread(conn)\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon E-5: a record without a start time is live by its pid",
+  "file": "inspeximus/hookd.py",
+  "old": "    return want is not None and now is not None and want == now\n",
+  "new": "    return want is None or now is None or want == now\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
   ]
  }
 ]
