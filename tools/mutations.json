@@ -6104,8 +6104,8 @@
  {
   "name": "home guard: a live session's first head fails the run again",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]",
-  "new": "        live = []",
+  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
+  "new": "        mine = list(added)",
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
@@ -6113,8 +6113,8 @@
  {
   "name": "home guard: an unreadable head is not counted as a leak",
   "file": "tests/_home_guard.py",
-  "old": "        leaked = [n for n in added if n not in live]",
-  "new": "        leaked = [n for n in added if n not in live and stores[n]]",
+  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
+  "new": "        mine = [n for n in added if not stores[n] or _inside(stores[n], roots)]",
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
@@ -7699,8 +7699,8 @@
  {
   "name": "the home guard excuses a head it cannot read",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]",
-  "new": "        live = [n for n in heads if not stores[n] or not _inside(stores[n], roots)]",
+  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
+  "new": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots) and not n.endswith(\".json\")]",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]
@@ -7708,8 +7708,8 @@
  {
   "name": "the home guard counts another process's temp store as this run's",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]",
-  "new": "        live = []",
+  "old": "        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]",
+  "new": "        mine = [n for n in added if stores[n]]",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]
@@ -10494,6 +10494,51 @@
   "new": "key = (p, st.st_size, st.st_mtime_ns)",
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "home guard: a key pairs with no head, so it is never this run's",
+  "file": "tests/_home_guard.py",
+  "old": "        return _record_store(home, _rel, n) or _by.get(_tag(n))",
+  "new": "        return _record_store(home, _rel, n)",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a file that is not this run's fails the run",
+  "file": "tests/_home_guard.py",
+  "old": "        other = [n for n in added if n not in mine]",
+  "new": "        other = []\n        mine = list(added)",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a removal no longer fails the run",
+  "file": "tests/_home_guard.py",
+  "old": "        if mine or removed:",
+  "new": "        if mine:",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: the information line drops the time",
+  "file": "tests/_home_guard.py",
+  "old": "), modified \"",
+  "new": "), \"",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a record that names a run store is not read",
+  "file": "tests/_home_guard.py",
+  "old": "    if not name.endswith(\".json\"):\n        return None\n    try:\n        with open(os.path.join(home, rel, name)",
+  "new": "    return None\n    try:\n        with open(os.path.join(home, rel, name)",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]
  }
 ]

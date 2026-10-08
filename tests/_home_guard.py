@@ -145,14 +145,47 @@ def _inside(path: str, roots: list) -> bool:
     return any(p == r or p.startswith(r.rstrip(os.sep) + os.sep) for r in roots)
 
 
+def _tag(name: str) -> str:
+    """The store tag in a key-home file name: `heads/<tag>.json`, `keys/<tag>.guards.key`, `stamp-auto/<tag>.json`."""
+    return os.path.basename(name).split(".")[0]
+
+
+def _record_store(home, rel: str, name: str):
+    """The store a JSON record in the key home names (`path` or `store`), or None."""
+    if not name.endswith(".json"):
+        return None
+    try:
+        with open(os.path.join(home, rel, name), encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError):
+        return None
+    if isinstance(data, dict):
+        for k in ("path", "store", "store_path"):
+            if isinstance(data.get(k), str) and data[k]:
+                return data[k]
+    return None
+
+
+def _modified(home, rel: str, name: str) -> str:
+    import time
+    try:
+        return time.strftime("%H:%M:%S", time.localtime(os.path.getmtime(os.path.join(home, rel, name))))
+    except OSError:
+        return "unknown"
+
+
 def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
-    """(failing lines, information lines). A new chain head is attributed by the store it records: a
-    store inside `temp_roots` is a LEAK and fails the run; a store outside them was written by another
-    process during the run (a live session, another session's tests), reported and not failed. A head
-    that cannot be read, or names no store, counts as a leak: what the guard cannot attribute is never
-    excused. The conftest passes this run's own temporary root (3.16.3), which TEMP, TMP and TMPDIR point
-    at for every test and child; without it the root is the system temp dir, as before. Measured 2026-09-28: of 15 heads one run caught, 14 were temp
-    stores and one was ~/.inspeximus/mcp_memory_chain.json, a live MCP server."""
+    """(failing lines, information lines). ATTRIBUTION BY STORE PATH (3.17.0, EM's decision of 2026-10-09).
+
+    A new file in the real key home is this run's, and fails the run, only when it names a store under `temp_roots`:
+    a new head, or a record that names its store, by the path it records; a key, a salt or a stamp-auto or hookd record
+    by the head with the same tag. Every other new file gets one information line with its name and time and does not
+    fail: a live hook, a live session's lazy heal or a daemon writes such files while a suite runs (measured
+    2026-10-08: a key appeared two minutes into a run that had written none). A file that is REMOVED still fails. The
+    conftest passes this run's own temporary root (3.16.3), which TEMP, TMP and TMPDIR point at for every test and child.
+
+    Not seen, by design (G-2): a file the run overwrote with the same name, and a file the run created and deleted again
+    inside the run. Both leave the set of names as it was."""
     import tempfile
     roots = [os.path.normcase(os.path.realpath(r)) for r in (temp_roots or [tempfile.gettempdir()])]
     fail, info = [], []
@@ -162,21 +195,30 @@ def classify(before: dict, after: dict, home: str, temp_roots=None) -> tuple:
         if b == a:
             continue
         added, removed = sorted(set(a or []) - set(b or [])), sorted(set(b or []) - set(a or []))
-        # A HEAD names its store, so a head another process wrote during the run is told from a leak. A key, a salt or
-        # any other file does not: its name is a hash of the store's path. Every such new name fails the run.
-        heads = [n for n in added if _is_head(rel, n)]
-        stores = {n: _head_store(home, rel, n) for n in heads}
-        live = [n for n in heads if stores[n] and not _inside(stores[n], roots)]
-        leaked = [n for n in added if n not in live]       # this run's heads, unreadable heads, and every other file
-        if live:
-            info.append(f"{rel}: {len(live)} new head(s) for stores outside this run's temp root, written "
-                        f"by another process during the run:")
-            info += [f"    new {n} (store {stores[n]})" for n in live[:20]]
-        if leaked or removed:
-            fail.append(f"{rel}: +{len(leaked)} -{len(removed)} (new files in the real key home), "
-                        f"first +{leaked[:3]} -{removed[:3]}")
-            fail += [f"    new {n}" + (f" (store {stores[n] or 'unreadable'})" if n in stores else "")
-                     for n in leaked[:20]]
+        by_tag = {}
+        for n in (a or []):
+            if _is_head(rel, n):
+                st = _head_store(home, rel, n)
+                if st:
+                    by_tag[_tag(n)] = st
+
+        def store_of(n, _rel=rel, _by=by_tag):
+            if _is_head(_rel, n):
+                return _by.get(_tag(n))
+            return _record_store(home, _rel, n) or _by.get(_tag(n))
+
+        stores = {n: store_of(n) for n in added}
+        mine = [n for n in added if stores[n] and _inside(stores[n], roots)]
+        other = [n for n in added if n not in mine]
+        if mine or removed:
+            fail.append(f"{rel}: +{len(mine)} -{len(removed)} (new files in the real key home for this run's temp stores), "
+                        f"first +{mine[:3]} -{removed[:3]}")
+            fail += [f"    new {n} (store {stores[n]})" for n in mine[:20]]
+        if other:
+            info.append(f"{rel}: {len(other)} new file(s) not attributed to this run (no store under this run's temp root), "
+                        f"written by another process during the run:")
+            info += [f"    new {n} ({'store ' + stores[n] if stores[n] else 'no store recorded'}), modified "
+                     f"{_modified(home, rel, n)}" for n in other[:20]]
     fail = diff({k: v for k, v in before.items() if k not in views},
                 {k: v for k, v in after.items() if k not in views}, home) + fail
     return fail, info
