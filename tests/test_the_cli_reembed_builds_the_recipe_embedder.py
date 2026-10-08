@@ -114,3 +114,15 @@ def test_the_cli_and_the_server_build_the_same_recipe(env, monkeypatch):
 def test_without_a_url_there_is_no_embedder(monkeypatch):
     monkeypatch.delenv("INSPEXIMUS_EMBED_URL", raising=False)
     assert cli._embedders() == (None, None, None) and cli._embedder() is None
+
+
+def test_the_cli_store_embeds_the_query_with_the_query_prefix(env, monkeypatch, capsys):
+    tmp, sent = env
+    p = tmp / "s.json"
+    _seed(p)
+    monkeypatch.setenv("INSPEXIMUS_EMBED_MODEL", "nomic-embed-text")
+    cli.main(["--path", str(p), "reembed"])
+    del sent[:]
+    cli._store(str(p)).recall("deploy window", mode="semantic")     # a store this small is lexical under mode=auto
+    queries = [t for (_m, t) in sent]
+    assert queries and all(t.startswith("search_query: ") for t in queries), queries
