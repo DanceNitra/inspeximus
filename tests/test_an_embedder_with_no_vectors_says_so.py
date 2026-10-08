@@ -115,7 +115,8 @@ def test_the_server_says_it_at_start_and_in_where_am_i(tmp_path):
     wai, err = _start_server(tmp_path, "http://127.0.0.1:9/v1/embeddings")
     lines = [ln for ln in err.splitlines() if "none of the 4 active records has a vector" in ln]
     assert len(lines) == 1, err[-800:]
-    assert wai["vectors"] == 0 and wai["active_text_records"] == 4 and wai["persist_vectors"] is False, wai
+    # persist_vectors is True since 3.17.0: on by default when an embedder is configured.
+    assert wai["vectors"] == 0 and wai["active_text_records"] == 4 and wai["persist_vectors"] is True, wai
     assert "none of the 4 active records" in (wai["problem"] or ""), wai
 
 

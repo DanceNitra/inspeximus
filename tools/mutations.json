@@ -10324,5 +10324,41 @@
   "tests": [
    "tests/test_audit_a_rc317_final_findings.py"
   ]
+ },
+ {
+  "name": "3.17.0: unset persistence stays off with an embedder",
+  "file": "inspeximus/mcp_server.py",
+  "old": "        return bool(has_embedder)\n",
+  "new": "        return False\n",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0: INSPEXIMUS_PERSIST_VECTORS=0 no longer turns persistence off",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    return _flag_from_env(\"INSPEXIMUS_PERSIST_VECTORS\", env)\n\n\n_PERSIST_VECTORS",
+  "new": "    return True\n\n\n_PERSIST_VECTORS",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the server's persistence default ignores the embedder",
+  "file": "inspeximus/mcp_server.py",
+  "old": "_PERSIST_VECTORS = _persist_default(has_embedder=_EMB_DOC is not None)\n",
+  "new": "_PERSIST_VECTORS = _persist_default(has_embedder=False)\n",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the reembed remedy names no cost",
+  "file": "inspeximus/core.py",
+  "old": "                (\"run reembed() or `inspeximus reembed` once to embed them; at the 85 ms a record measured with \"\n",
+  "new": "                (\"run reembed() or `inspeximus reembed` once to embed them; \"\n",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
  }
 ]

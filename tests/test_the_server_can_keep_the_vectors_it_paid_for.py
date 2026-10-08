@@ -98,11 +98,10 @@ def test_the_pii_flag_reaches_the_store_too():
         "open_store is called without pii_detect, so the flag changes nothing: %r" % call)
 
 
-def test_both_new_flags_default_to_off():
-    """Neither may change a store that was written before them.
-
-    `pii_detect` especially: the tag is stamped at write time and `forget_pii()` hard-deletes every
-    record carrying one, so a default-on flag would change what a later sweep removes.
+def test_the_pii_flag_defaults_to_off():
+    """`pii_detect` may not change a store that was written before it: the tag is stamped at write time and
+    `forget_pii()` hard-deletes every record carrying one, so a default-on flag would change what a later
+    sweep removes. (Vector persistence defaulted to off here too until 3.17.0; its default now depends on
+    the embedder, see test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py.)
     """
-    assert _flag_from_env("INSPEXIMUS_PERSIST_VECTORS", {}) is False
     assert _flag_from_env("INSPEXIMUS_PII_DETECT", {}) is False
