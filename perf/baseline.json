@@ -692,7 +692,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 36288,
+   "tracked_gets": 35688,
    "token_builds": 1202
   },
   "seconds_median": 0.0888,
@@ -793,7 +793,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 43288,
+   "tracked_gets": 42088,
    "foreign_stamps": 0,
    "token_builds": 1402,
    "rows_parsed": 1400,
