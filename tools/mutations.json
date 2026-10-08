@@ -10364,8 +10364,8 @@
  {
   "name": "3.17.0 P-1: a save rewrites the recipe sidecar under an untagged vector",
   "file": "inspeximus/core.py",
-  "old": "        if getattr(self, \"_legacy_shelved\", None):\n            return False",
-  "new": "        if False:\n            return False",
+  "old": "            if isinstance(enc, str) and enc and \":\" not in enc[:16]:\n                return False",
+  "new": "            if False:\n                return False",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]

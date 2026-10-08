@@ -19489,8 +19489,6 @@ class Inspeximus:
                 return True
         except OSError:
             return True
-        if getattr(self, "_legacy_shelved", None):
-            return False
         for r in self._items:
             if dict.get(r, "vec") and not dict.get(r, "vec_recipe"):
                 return False

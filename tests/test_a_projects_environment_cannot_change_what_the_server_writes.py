@@ -98,6 +98,17 @@ def test_the_hook_embedder_does_not_take_its_model_from_the_repository(env, monk
     assert "model" in capfd.readouterr().err, "the repository's model is ignored with a line, like its key"
 
 
+def test_the_hooks_embed_only_when_the_user_switches_them_on(env, monkeypatch):
+    """The server's persistence default does not reach the hooks: with a loopback URL configured and no switch, the hook
+    embedder is absent; the user's `embed.hooks` turns it on."""
+    os.makedirs(os.path.dirname(_userconfig.path()), exist_ok=True)
+    monkeypatch.setenv("INSPEXIMUS_EMBED_URL", "http://127.0.0.1:9/v1/embeddings")
+    assert cc._make_embedder(str(env)) == (None, None, None), "the hooks embed without being switched on"
+    with open(_userconfig.path(), "w", encoding="utf-8") as fh:
+        json.dump({"embed": {"hooks": True}}, fh)
+    assert cc._make_embedder(str(env))[0] is not None, "control: embed.hooks does turn them on"
+
+
 def test_without_a_user_model_the_default_is_used_not_the_repositorys(env):
     repo = env / "repo"
     (repo / ".inspeximus").mkdir(parents=True)
