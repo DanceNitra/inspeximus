@@ -24,18 +24,14 @@ import time
 
 def _embedder():
     """Optional embedder (urllib, zero-dep) — enabled only if INSPEXIMUS_EMBED_URL is set. Fail-open."""
-    from ._http import embedding_from, env_key, env_url, post_json   # no redirect, no proxy for loopback (3.16.4)
-    url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
-    if not url:
-        return None
-    model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
-    key = env_key("INSPEXIMUS_EMBED_KEY", url)
+    from ._http import embedders_from_env
+    return embedders_from_env()[0]
 
-    def embed(text: str):
-        headers = {"Authorization": f"Bearer {key}"} if key else {}
-        return embedding_from(post_json(url, {"model": model, "input": text}, headers, 20))
 
-    return embed
+def _embed_id():
+    """The recipe of `_embedder()`, the same id the MCP server uses, or None (3.18, AUDIT-A P-4)."""
+    from ._http import embedders_from_env
+    return embedders_from_env()[2]
 
 
 def _receipt_key(key_file=None):
@@ -85,7 +81,13 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False, receipt_
     # signature nothing will ever read. Inspeximus() already treats receipt_key as turning receipts on;
     # passing it here too keeps the sidecar-detection branch in open_store from deciding otherwise.
     extra = {"receipt_key": receipt_key} if receipt_key else {}
-    return open_store(path, embed=_embedder(), persist_vectors=persist_vectors,
+    from ._http import embedders_from_env
+    doc, query, eid = embedders_from_env()
+    if eid:
+        extra.update(embed_id=eid)
+        if query is not None:
+            extra.update(embed_query=query)
+    return open_store(path, embed=doc, persist_vectors=persist_vectors,
                       receipts=receipts or bool(receipt_key), **extra)
 
 

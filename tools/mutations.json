@@ -8385,19 +8385,10 @@
   ]
  },
  {
-  "name": "the CLI reads the env URL without the allow rule",
-  "file": "inspeximus/cli.py",
-  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
-  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
-  "tests": [
-   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
-  ]
- },
- {
-  "name": "the MCP server reads the env URL without the allow rule",
-  "file": "inspeximus/mcp_server.py",
-  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
-  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
+  "name": "the embedder builder reads the env URL without the allow rule",
+  "file": "inspeximus/_http.py",
+  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host only when the user's config allows it (F-12)\n    if not url:\n        return None, None, None\n",
+  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()\n    if not url:\n        return None, None, None\n",
   "tests": [
    "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
   ]

@@ -113,21 +113,8 @@ def _make_embedders():
     For nomic-embed-text (asymmetric, trained with task prefixes) it returns SEPARATE document/query
     embedders that prefix `search_document: ` / `search_query: ` — measured on LoCoMo (n=1536) to lift
     recall_any@1 from 0.19 to 0.29. For symmetric models it returns (embed, None). (None, None) if unconfigured."""
-    from ._http import embedding_from, env_key, env_url, post_json   # no redirect, no proxy for loopback (3.16.4)
-    url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
-    if not url:
-        return None, None, None
-    model = os.environ.get("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
-    key = env_key("INSPEXIMUS_EMBED_KEY", url)
-
-    def _embed(text: str, prefix: str = ""):
-        headers = {"Authorization": f"Bearer {key}"} if key else {}
-        return embedding_from(post_json(url, {"model": model, "input": prefix + text}, headers, 20))
-
-    # nomic-embed-text is asymmetric; task prefixes are REQUIRED for good retrieval. Opt out with INSPEXIMUS_NOMIC_PREFIX=0.
-    if "nomic" in model.lower() and os.environ.get("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":
-        return (lambda t: _embed(t, "search_document: ")), (lambda t: _embed(t, "search_query: ")), f"{model}|nomic-sd-sq"
-    return _embed, None, model
+    from ._http import embedders_from_env           # one builder with the CLI (3.18, AUDIT-A P-4)
+    return embedders_from_env()
 
 
 def _path_source(env: dict | None = None) -> str:
