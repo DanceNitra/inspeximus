@@ -10525,8 +10525,8 @@
  {
   "name": "3.18 daemon D-10: the listener binds before the state directory exists",
   "file": "inspeximus/hookd.py",
-  "old": "        self._make_state_dir()\n        saved = sys.stdout, sys.stderr\n",
-  "new": "        saved = sys.stdout, sys.stderr\n",
+  "old": "        warm_cwd = warm_cwd or os.getcwd()\n        self._make_state_dir()\n",
+  "new": "        warm_cwd = warm_cwd or os.getcwd()\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ],
@@ -10659,13 +10659,12 @@
   ]
  },
  {
-  "name": "3.18 daemon E-3: an attempt record counts as a daemon",
+  "name": "3.18 daemon E-3: a slot claim of a dead process counts as a daemon",
   "file": "inspeximus/hookd.py",
-  "old": "            if rec is not None and rec.get(\"token_sha\") and _record_is_live(rec):\n",
-  "new": "            if rec is not None and _record_is_live(rec):\n",
+  "old": "        if rec and _record_is_live(rec):\n            n += 1\n",
+  "new": "        if rec:\n            n += 1\n",
   "tests": [
-   "tests/test_the_prompt_daemon_audit_a_delta.py",
-   "tests/test_the_prompt_daemon_audit_a_findings.py"
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
   ]
  },
  {
@@ -10682,6 +10681,52 @@
   "file": "inspeximus/hookd.py",
   "old": "    return want is not None and now is not None and want == now\n",
   "new": "    return want is None or now is None or want == now\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon F-1: maybe_start starts where no start time can be read",
+  "file": "inspeximus/hookd.py",
+  "old": "        if _proc_start(os.getpid()) is None:\n            return \"unsupported\"",
+  "new": "        if False:\n            return \"unsupported\"",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon F-1: serve runs where no start time can be read",
+  "file": "inspeximus/hookd.py",
+  "old": "    if _proc_start(os.getpid()) is None:\n        return 2  ",
+  "new": "    if False:\n        return 2  ",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon F-2: no slot is claimed before the warm-up",
+  "file": "inspeximus/hookd.py",
+  "old": "        if slot is None:\n            return \"limit\"\n",
+  "new": "        if False:\n            return \"limit\"\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py",
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon F-2: a second start of the same store is not refused",
+  "file": "inspeximus/hookd.py",
+  "old": "        if mine is None:\n            release_slot(slot)\n",
+  "new": "        if False:\n            release_slot(slot)\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon F-3: INSPEXIMUS_CODING_STORE is not a path variable",
+  "file": "inspeximus/hookd.py",
+  "old": "             \"INSPEXIMUS_CODING_STORE\")",
+  "new": "             )",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_delta.py"
   ]

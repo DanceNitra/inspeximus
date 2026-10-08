@@ -42,6 +42,30 @@ def project(tmp_path):
     return str(proj), sp
 
 
+@pytest.fixture(autouse=True)
+def _stop_started_daemons():
+    """Every daemon process a test started, by a hook that ran maybe_start or by a direct --serve, is stopped when the
+    test ends (AUDIT-A, 2026-10-08: a daemon from a mutated hook test, pid 54996, outlived the run). Only a process
+    named by a record or claim in the sandboxed key home, whose pid AND start time still match, and which is not this
+    process; never by name, and never a pid that may have been reused."""
+    yield
+    import glob
+    import signal
+    from inspeximus._keyhome import key_home
+    try:
+        d = hookd.state_dir(key_home())
+    except Exception:                                           # noqa: BLE001
+        return
+    for p in glob.glob(os.path.join(d, "*.json")) + glob.glob(os.path.join(d, "*.claim")):
+        rec = hookd._claim_owner(p)
+        if not rec or rec.get("pid") in (None, os.getpid()) or not hookd._record_is_live(rec):
+            continue
+        try:
+            os.kill(int(rec["pid"]), signal.SIGTERM)
+        except OSError:
+            pass
+
+
 @contextlib.contextmanager
 def switch_on():
     """`{"hook": {"daemon": true}}` in the user's config inside the block; the previous file is restored after it."""

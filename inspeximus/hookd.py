@@ -244,7 +244,8 @@ def _version_key(v):
 #: missing from a served answer). Every variable the package reads as a path is here; the test
 #: `test_every_path_variable_is_listed` fails when one that is read with a filesystem call is not.
 PATH_VARS = ("INSPEXIMUS_PATH", "INSPEXIMUS_DECISION_STORE", "INSPEXIMUS_KEY_HOME", "INSPEXIMUS_RECEIPT_KEY",
-             "INSPEXIMUS_RECEIPT_KEY_FILE", "INSPEXIMUS_WRITER_KEY_FILE", "INSPEXIMUS_PROBES_DIR")
+             "INSPEXIMUS_RECEIPT_KEY_FILE", "INSPEXIMUS_WRITER_KEY_FILE", "INSPEXIMUS_PROBES_DIR",
+             "INSPEXIMUS_CODING_STORE")
 
 
 def _hexkey(v):
@@ -474,6 +475,8 @@ def maybe_start(cwd, store_path) -> str:
             last = 0.0
         if now - last < START_MIN_INTERVAL_S:
             return "recent"
+        if _proc_start(os.getpid()) is None:
+            return "unsupported"                                # no start time here: no daemon is ever live (F-1)
         if live_daemon_count(key_home_for(store_path)) >= MAX_LIVE_DAEMONS:
             return "limit"
         record = {"last_attempt": now, "interpreter": sys.executable}
@@ -486,6 +489,7 @@ def maybe_start(cwd, store_path) -> str:
         proc = cc._start_detached(["--serve", "--expect-store", store_path, "--project", os.path.abspath(cwd)],
                                   state_dir(kh), cc._state_path(store_path, "hookd", ".log"))
         record["pid"] = getattr(proc, "pid", None)
+        record["proc_start"] = _proc_start(record["pid"]) if record["pid"] else None
         write_atomic(state, json.dumps(record))
         return "started"
     except Exception:                                           # noqa: BLE001
@@ -699,6 +703,24 @@ class Daemon:
         from multiprocessing.connection import Listener
         warm_cwd = warm_cwd or os.getcwd()
         self._make_state_dir()
+        # A SLOT AND THE STORE, CLAIMED BEFORE THE WARM-UP (AUDIT-A F-2). The record is written after the warm-up, so a
+        # burst of starts saw no daemon and no count, and six starts made six daemons. Both claims are O_EXCL files.
+        slot = claim_slot(self.kh, self.tag)
+        if slot is None:
+            return "limit"
+        mine = _claim_store(self.kh, self.tag)
+        if mine is None:
+            release_slot(slot)
+            return "taken"
+        try:
+            return self._serve_claimed(warm_cwd)
+        finally:
+            release_slot(mine)
+            release_slot(slot)
+
+    def _serve_claimed(self, warm_cwd):
+        from multiprocessing.connection import Listener
+        _clear_stale(self.kh, self.tag)
         saved = sys.stdout, sys.stderr
         try:
             # What the warm-up prints is nobody's answer: discarded, and the once-per-process state it spent is reset
@@ -755,21 +777,89 @@ def live_daemon(store_path):
         return None
 
 
-def live_daemon_count(kh):
-    """How many daemons are alive for this key home, by their pid records."""
-    n = 0
+def _slot_path(kh, i):
+    return os.path.join(state_dir(kh), "slot-%d.claim" % i)
+
+
+def _claim_owner(p):
     try:
-        names = os.listdir(state_dir(kh))
-    except OSError:
-        return 0
-    for name in names:
-        if name.endswith(".json") and len(name) == 21:
-            rec = _read_record(kh, name[:16])
-            # Only a daemon's own record carries `token_sha`; `maybe_start`'s attempt record sits in the same folder
-            # under the same kind of name, and counting it made one daemon two (AUDIT-A E-3).
-            if rec is not None and rec.get("token_sha") and _record_is_live(rec):
-                n += 1
+        with open(p, encoding="utf-8") as fh:
+            rec = json.load(fh)
+        return rec if isinstance(rec, dict) else {}
+    except (OSError, ValueError):
+        return None
+
+
+def live_daemon_count(kh):
+    """How many daemons hold a slot in this key home. A slot is claimed with O_EXCL before the warm-up, so a burst of
+    starts sees each other's claims at once (AUDIT-A F-2: the record was written after the warm-up, and six starts made
+    six daemons). A claim whose process is gone is not counted. Only claims are counted, so `maybe_start`'s attempt
+    record, which sits in the same folder, is never a daemon (E-3)."""
+    n = 0
+    for i in range(MAX_LIVE_DAEMONS):
+        rec = _claim_owner(_slot_path(kh, i))
+        if rec and _record_is_live(rec):
+            n += 1
     return n
+
+
+def claim_slot(kh, t):
+    """Take a free slot for the daemon of tag `t`, atomically, or return None when all MAX_LIVE_DAEMONS are held by live
+    processes. A slot held by a dead process is taken over. The claim names the pid, its start time and the tag."""
+    os.makedirs(state_dir(kh), mode=0o700, exist_ok=True)
+    me = {"pid": os.getpid(), "proc_start": _proc_start(os.getpid()), "tag": t}
+    for _ in range(2):                                          # a second pass after clearing dead claims
+        for i in range(MAX_LIVE_DAEMONS):
+            p = _slot_path(kh, i)
+            try:
+                fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            except FileExistsError:
+                continue
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                json.dump(me, fh)
+            return p
+        for i in range(MAX_LIVE_DAEMONS):
+            p = _slot_path(kh, i)
+            rec = _claim_owner(p)
+            if rec is not None and not (rec and _record_is_live(rec)):
+                try:
+                    os.unlink(p)                                # its process is gone
+                except OSError:
+                    pass
+    return None
+
+
+def _claim_store(kh, t):
+    """The per-store twin of the slot claim: one daemon per (store, key home), also in a burst. None when a live
+    process holds it."""
+    p = os.path.join(state_dir(kh), t + ".claim")
+    me = {"pid": os.getpid(), "proc_start": _proc_start(os.getpid())}
+    for _ in range(2):
+        try:
+            fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
+            rec = _claim_owner(p)
+            if rec and _record_is_live(rec):
+                return None
+            try:
+                os.unlink(p)
+            except OSError:
+                pass
+            continue
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(me, fh)
+        return p
+    return None
+
+
+def release_slot(p):
+    """Remove a slot claim this process holds. Never raises."""
+    try:
+        rec = _claim_owner(p)
+        if rec and rec.get("pid") == os.getpid():
+            os.unlink(p)
+    except OSError:
+        pass
 
 
 def _clear_stale(kh, t):
@@ -802,10 +892,10 @@ def serve_main(argv):
             return 2                                            # the started-for store is not what this directory resolves
     except Exception:                                           # noqa: BLE001
         return 2
+    if _proc_start(os.getpid()) is None:
+        return 2                                                # no start time here: this daemon could never be live (F-1)
     if live_daemon(store_path):
         return 0                                                # one per (store, key home)
-    kh = key_home_for(store_path)
-    _clear_stale(kh, tag(store_path, kh))
     Daemon(store_path).serve(warm_cwd=project)
     return 0
 

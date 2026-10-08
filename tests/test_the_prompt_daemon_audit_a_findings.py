@@ -23,7 +23,7 @@ from inspeximus import claude_code as cc  # noqa: E402
 from inspeximus import hookd  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
 from test_the_prompt_daemon_is_an_accelerator_never_a_dependency import (  # noqa: E402,F401
-    _ev, _req, _today, daemon, project, switch_on, switched_on)
+    _ev, _req, _stop_started_daemons, _today, daemon, project, switch_on, switched_on)
 
 
 def _start(sp, proj, **kw):
@@ -464,8 +464,8 @@ def test_no_more_than_the_limit_of_daemons_per_key_home(project, tmp_path, monke
     kh = str(tmp_path / "limit-key-home")
     monkeypatch.setattr(hookd, "key_home_for", lambda s: kh)
     assert hookd.live_daemon_count(kh) == 0, "CONTROL: the key home starts empty"
-    live = json.dumps({"pid": os.getpid(), "proc_start": hookd._proc_start(os.getpid()), "token_sha": "0" * 32})
-    made = [hookd._pid_path(kh, "%016x" % (i + 1)) for i in range(hookd.MAX_LIVE_DAEMONS)]
+    live = json.dumps({"pid": os.getpid(), "proc_start": hookd._proc_start(os.getpid()), "tag": "x"})
+    made = [hookd._slot_path(kh, i) for i in range(hookd.MAX_LIVE_DAEMONS)]   # every slot held by a live process
     for p in made:
         _write(p, live)
     monkeypatch.setattr(cc, "_start_detached", lambda *a: pytest.fail("started past the limit"))
