@@ -327,3 +327,18 @@ def test_a_changeset_carries_no_vector_in_either_form(tmp_path):
     p, a = _a_holding_foreign_rows(tmp_path)
     rows = a.export_changeset()["records"]
     assert not any(k in r for r in rows for k in ("vec", "vec16", "vec_recipe")), "a vector left in a changeset"
+
+
+def test_verify_writes_reads_a_foreign_row_as_it_is_stored_on_a_handle_without_persistence(tmp_path):
+    """The disk side of verify_writes takes a foreign vector out of ranking the way the load did. It matters on a
+    handle with an embedder and persistence off, which is the MCP server's default: that comparison drops `vec`,
+    so a foreign row left as a vector reads as having none on disk, while memory keeps it shelved as `vec16`."""
+    p = tmp_path / "s.json"
+    b = _open_as(p, "B", "model-B", receipts=True)
+    rid = b.remember("peer record under model B", key="peerB")
+    b.flush()
+    a = Inspeximus(path=str(p), embed=_seeded_emb("A"), embed_id="model-A", persist_vectors=False, receipts=True)
+    assert a.index_coherence()["foreign_recipe_vecs"] == 1, "CONTROL: A holds the peer's row out of ranking"
+    assert S.VEC_KEY in next(r for r in a._items if r["id"] == rid), "CONTROL: the vector is shelved, not dropped"
+    _ok, probs = a.verify_writes()
+    assert not [x for x in probs if "differs" in x], probs
