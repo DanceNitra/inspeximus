@@ -153,9 +153,10 @@ def test_the_retry_is_bounded_for_both_helpers(env, monkeypatch):
     monkeypatch.setattr(_safewrite, "REPLACE_RETRY_S", 0.1)
     monkeypatch.setattr(os, "replace", lambda a, b: (_ for _ in ()).throw(PermissionError(13, "open")))
     seen = []
+    t0 = time.monotonic()
     def blocked(p, *a, **k):
         seen.append(1)
-        assert len(seen) < 200000, "the retry has no bound"      # a missing bound fails here, it does not hang the run
+        assert time.monotonic() - t0 < 3, "the retry has no bound"      # a missing bound fails here, it does not hang the run
         raise PermissionError(13, "open")
     monkeypatch.setattr(os, "unlink", blocked)
     monkeypatch.setattr(_safewrite.time if hasattr(_safewrite, "time") else __import__("time"), "sleep", lambda s: None)
