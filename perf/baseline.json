@@ -280,8 +280,9 @@
    "store_hash_reads": 0,
    "guard_key_lookups": 3,
    "decision_syncs": 3,
+   "partition_registry_reads": 0,
    "guard_shape_scans": 3,
-   "tracked_gets": 36075
+   "tracked_gets": 36078
   },
   "seconds_median": 0.1844,
   "seconds_min": 0.1838,
@@ -689,8 +690,9 @@
    "store_hash_reads": 0,
    "guard_key_lookups": 2,
    "decision_syncs": 0,
+   "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 36296,
+   "tracked_gets": 36288,
    "token_builds": 1202
   },
   "seconds_median": 0.0888,
