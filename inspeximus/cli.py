@@ -1678,7 +1678,7 @@ def main(argv=None):
     if a.cmd == "receipts" and a.receipts_cmd in ("compact", "to-legacy", "to-tail"):
         from . import receipts_tail as _rtail
         try:
-            res = {"compact": _rtail.compact, "to-legacy": _rtail.to_legacy, "to-tail": _rtail.to_tail}[a.receipts_cmd](a.path)
+            res = {"compact": _rtail.compact, "to-legacy": _rtail.to_legacy, "to-tail": _rtail.to_tail}[a.receipts_cmd](a.path)   # an operator command: its own unbound handle
         except ValueError as exc:
             print(f"receipts {a.receipts_cmd}: {exc}", file=sys.stderr)
             return 2

@@ -19482,6 +19482,27 @@ class Inspeximus:
             raise AttributeError("%s() rewrites the whole store, every tenant's rows and the file, and is "
                                  "operator-only; call it from an unbound handle." % name)
 
+    def receipts_compact(self) -> dict:
+        """Empty the receipt tail into the snapshot (3.17). Operator-only: it rewrites the store-wide receipt sidecar, which holds
+        every tenant's receipts, under the store lock (the class of AUDIT-A F-44). The same operation as
+        `inspeximus receipts compact`; a store whose sidecar is still the array is refused, not converted."""
+        self._operator_only("receipts_compact")
+        from . import receipts_tail
+        return receipts_tail.compact(self.path)
+
+    def receipts_to_legacy(self) -> dict:
+        """Write the receipt chain back as the array every released version reads, and remove the tail (3.17). Operator-only."""
+        self._operator_only("receipts_to_legacy")
+        from . import receipts_tail
+        return receipts_tail.to_legacy(self.path)
+
+    def receipts_to_tail(self) -> dict:
+        """Convert the receipt sidecar to the snapshot-plus-tail format (3.17). Operator-only: a store in that format can no
+        longer be extended by 3.16.1 to 3.16.3."""
+        self._operator_only("receipts_to_tail")
+        from . import receipts_tail
+        return receipts_tail.to_tail(self.path)
+
     def vacuum(self, wait_s: float = 2.0) -> dict:
         """Give a row store's free pages back to the file system, under the store lock (3.17).
 
@@ -20425,6 +20446,9 @@ class _TenantView:
     # never refuse; it is rebound so it reads this view's tenant and agent.
     def _operator_only(self, *a, **k):      return Inspeximus._operator_only(self, *a, **k)
     def vacuum(self, *a, **k):              return Inspeximus.vacuum(self, *a, **k)
+    def receipts_compact(self, *a, **k):    return Inspeximus.receipts_compact(self, *a, **k)
+    def receipts_to_legacy(self, *a, **k):  return Inspeximus.receipts_to_legacy(self, *a, **k)
+    def receipts_to_tail(self, *a, **k):    return Inspeximus.receipts_to_tail(self, *a, **k)
     def compact_vectors(self, *a, **k):     return Inspeximus.compact_vectors(self, *a, **k)
     def reembed(self, *a, **k):             return Inspeximus.reembed(self, *a, **k)
     def _withheld_ids(self, *a, **k):   return Inspeximus._withheld_ids(self, *a, **k)

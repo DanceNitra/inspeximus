@@ -10168,5 +10168,59 @@
   "tests": [
    "tests/test_a_row_store_gives_back_its_free_pages.py"
   ]
+ },
+ {
+  "name": "3.17: receipts_compact runs on a tenant- or agent-bound handle",
+  "file": "inspeximus/core.py",
+  "old": "        self._operator_only(\"receipts_compact\")\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_receipt_tail_operations_are_operator_only.py"
+  ]
+ },
+ {
+  "name": "3.17: a tenant view forwards receipts_compact to the parent",
+  "file": "inspeximus/core.py",
+  "old": "    def receipts_compact(self, *a, **k):    return Inspeximus.receipts_compact(self, *a, **k)\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_receipt_tail_operations_are_operator_only.py"
+  ]
+ },
+ {
+  "name": "3.17: receipts_to_legacy runs on a tenant- or agent-bound handle",
+  "file": "inspeximus/core.py",
+  "old": "        self._operator_only(\"receipts_to_legacy\")\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_receipt_tail_operations_are_operator_only.py"
+  ]
+ },
+ {
+  "name": "3.17: a tenant view forwards receipts_to_legacy to the parent",
+  "file": "inspeximus/core.py",
+  "old": "    def receipts_to_legacy(self, *a, **k):  return Inspeximus.receipts_to_legacy(self, *a, **k)\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_receipt_tail_operations_are_operator_only.py"
+  ]
+ },
+ {
+  "name": "3.17: receipts_to_tail runs on a tenant- or agent-bound handle",
+  "file": "inspeximus/core.py",
+  "old": "        self._operator_only(\"receipts_to_tail\")\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_receipt_tail_operations_are_operator_only.py"
+  ]
+ },
+ {
+  "name": "3.17: a tenant view forwards receipts_to_tail to the parent",
+  "file": "inspeximus/core.py",
+  "old": "    def receipts_to_tail(self, *a, **k):    return Inspeximus.receipts_to_tail(self, *a, **k)\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_receipt_tail_operations_are_operator_only.py"
+  ]
  }
 ]
