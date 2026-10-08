@@ -13022,8 +13022,12 @@ class Inspeximus:
                  "on this store is lexical only" % len(act_text)) if vectors == 0 else
                 ("an embedder is configured and %d of %d active records have no vector, so recall ranks "
                  "those lexically" % (missing, len(act_text))))
+            # THE COST IS NAMED, SO THE CHOICE IS INFORMED (3.17.0): measured 85 ms a record with bge-m3 on a
+            # local Ollama (1,073 s for 13,488 records). A remote endpoint differs; the figure says which it is.
             problems.append(
-                "run reembed() or `inspeximus reembed` to embed them" +
+                ("run reembed() or `inspeximus reembed` once to embed them; at the 85 ms a record measured with "
+                 "a local bge-m3 that is about %d minute(s) for %d records" % (max(1, round(missing * 0.085 / 60)),
+                                                                             missing)) +
                 ("" if self._persist_vectors else
                  ", and open the store with persist_vectors=True (INSPEXIMUS_PERSIST_VECTORS=1 for the MCP "
                  "server), or the vectors are dropped when this process exits"))

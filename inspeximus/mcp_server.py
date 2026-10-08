@@ -30,11 +30,11 @@ Config (environment):
     INSPEXIMUS_EMBED_KEY   bearer key for that endpoint. A URL to another machine, and this key, are used only
                            when <key home>/inspeximus/config.json names the host in embed.url or
                            embed.allowed_hosts (3.16.4); a loopback URL needs no entry.
-    INSPEXIMUS_PERSIST_VECTORS  write the embedding vectors to disk instead of holding them for the
-                           life of the process. Off by default. With an embedder configured and this
-                           off, opening the store embeds nothing: only records this server writes get a
-                           vector, those are dropped at exit, and recall on older records is lexical.
-                           Run `inspeximus reembed` with this on to embed the existing records once.
+    INSPEXIMUS_PERSIST_VECTORS  keep the embedding vectors on disk, as float16, instead of only for the
+                           life of the process. Since 3.17.0 on by default when an embedder is
+                           configured; 0 turns it off. Opening the store embeds nothing either way:
+                           records written before have no vector until `inspeximus reembed` runs once,
+                           and the start line says how many.
     INSPEXIMUS_PII_DETECT  tag records that match the PII detector as they are written, so pii_report
                            counts real exposure. Off by default: the tag is stamped at write time and
                            forget_pii() hard-deletes every record carrying one, so turning this on
@@ -274,9 +274,22 @@ _WRITER_KEY = _writer_key_from_env()
 # The store had been saying so. `index_coherence` returns the note "persist_vectors=False: vectors
 # are a RAM-only cache rebuilt per process", and `reembed` returns a warning naming the remedy --
 # "Open the store with persist_vectors=True to keep them" -- which pointed at a constructor argument
-# the server did not expose. Default stays off, so a store written before this is byte-identical to
-# one written after.
-_PERSIST_VECTORS = _flag_from_env("INSPEXIMUS_PERSIST_VECTORS")
+# the server did not expose.
+#
+# ON BY DEFAULT WITH AN EMBEDDER (3.17.0). Off, a server with an embedder ranks only what it wrote since it
+# started: a 13,489-record store behind such a server held 0 vectors. Measured on a copy of it (bge-m3, 1,024
+# dimensions), keeping them as float16 costs about 42 MB and 0.9 s at open, and 8 of 8 real questions found
+# their answer in the top 3, against 0 of 8. Unset means the default; INSPEXIMUS_PERSIST_VECTORS=0 keeps the
+# old behaviour, and any other value is read as before. Without an embedder there is nothing to keep. Nothing
+# is embedded at start: the vectors a store lacks come from `inspeximus reembed`, which the start line names.
+def _persist_default(env: dict | None = None, has_embedder: bool = False) -> bool:
+    env = os.environ if env is None else env
+    if not (env.get("INSPEXIMUS_PERSIST_VECTORS") or "").strip():
+        return bool(has_embedder)
+    return _flag_from_env("INSPEXIMUS_PERSIST_VECTORS", env)
+
+
+_PERSIST_VECTORS = _persist_default(has_embedder=_EMB_DOC is not None)
 # THE SAME GAP AS THE ONE ABOVE, found while closing it. The store takes `pii_detect` and the server
 # had no way to set it, so `pii_report` on a server-backed store counts a column nothing ever fills
 # and reports zero exposure over a store where nobody looked. Off by default, because tagging is
