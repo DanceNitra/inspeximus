@@ -323,7 +323,11 @@ def test_a_silent_connection_gives_its_slot_back_within_the_read_timeout(project
     try:
         time.sleep(0.1)
         assert daemon.conns._value == hookd.MAX_CONNECTIONS - 1, "CONTROL: the silent connection holds a slot"
-        time.sleep(hookd.SERVER_READ_TIMEOUT_S + 0.4)
-        assert daemon.conns._value == hookd.MAX_CONNECTIONS, "a silent connection kept its slot"
+        # An absolute bound, not one read from the constant: the documented 0.5 s plus 0.6 s of scheduling slack. A
+        # bound computed from SERVER_READ_TIMEOUT_S grows with it, so a longer timeout would pass unseen.
+        t0 = time.monotonic()
+        while daemon.conns._value != hookd.MAX_CONNECTIONS and time.monotonic() - t0 < 1.1:
+            time.sleep(0.02)
+        assert daemon.conns._value == hookd.MAX_CONNECTIONS,             "a silent connection kept its slot for over 1.1 s (the read timeout is documented as 0.5 s)"
     finally:
         silent.close()

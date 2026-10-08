@@ -287,12 +287,17 @@ def test_the_hook_prints_todays_output_with_the_daemon_absent(project, monkeypat
 def test_the_hook_prints_the_daemons_answer_when_it_is_up(project, daemon):
     proj, sp = project
     off, _ = _hook(proj, {}, None)                              # switched off: today's path
+    # Up to two asks: the hook's own bound is 0.3 s, and a loaded machine can miss it once. Two timeouts stay below
+    # BACKOFF_AFTER, so the second ask is a real one; the output compared is the served one's.
     with switch_on():
-        r = subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(_ev(proj)), cwd=ROOT,
-                           env=dict(os.environ, INSPEXIMUS_HOOK_DAEMON_TRACE="1"), capture_output=True, text=True,
-                           encoding="utf-8", timeout=120)
+        for _attempt in range(2):
+            r = subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(_ev(proj)),
+                               cwd=ROOT, env=dict(os.environ, INSPEXIMUS_HOOK_DAEMON_TRACE="1"), capture_output=True,
+                               text=True, encoding="utf-8", timeout=120)
+            if '"outcome": "served"' in r.stderr:
+                break
     on, rc = r.stdout, r.returncode
-    assert '"outcome": "served"' in r.stderr, "CONTROL: the daemon answered this hook"
+    assert '"outcome": "served"' in r.stderr, "CONTROL: the daemon answered this hook: %s" % r.stderr[-300:]
     assert rc == 0 and on == off, "the hook through the daemon printed something other than today's output"
 
 

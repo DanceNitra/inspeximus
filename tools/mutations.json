@@ -10492,7 +10492,7 @@
   "old": "SERVER_READ_TIMEOUT_S = 0.5\n",
   "new": "SERVER_READ_TIMEOUT_S = 2.0\n",
   "tests": [
-   "tests/test_the_prompt_daemon_audit_a_findings.py"
+   "tests/test_the_prompt_daemon_audit_a_findings.py", "tests/test_the_prompt_daemon_audit_a_delta.py"
   ]
  },
  {
