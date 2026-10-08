@@ -10367,5 +10367,68 @@
   "tests": [
    "tests/test_the_prompt_daemon_is_an_accelerator_never_a_dependency.py"
   ]
+ },
+ {
+  "name": "3.18 index: an edit does not move the content revision",
+  "file": "inspeximus/core.py",
+  "old": "            store._rev = getattr(store, \"_rev\", 0) + 1\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: a reader's note moves the content revision",
+  "file": "inspeximus/core.py",
+  "old": "        if not (self._root is None and isinstance(key, str) and key[:1] == \"_\"):\n            store._rev",
+  "new": "        if True:\n            store._rev",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: a declared change does not move the content revision",
+  "file": "inspeximus/core.py",
+  "old": "        self._rev = getattr(self, \"_rev\", 0) + 1             # a declared change moves the content revision\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the cached pool ignores the content revision",
+  "file": "inspeximus/core.py",
+  "old": "                    and _c[\"n\"] == len(self._items) and _c[\"rev\"] == self._rev):\n",
+  "new": "                    and _c[\"n\"] == len(self._items)):\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the cached pool ignores the pool arguments",
+  "file": "inspeximus/core.py",
+  "old": "            if (_c is not None and _c[\"args\"] == _ix_args and _c[\"items\"] is self._items\n",
+  "new": "            if (_c is not None and _c[\"items\"] is self._items\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the cache is never reused",
+  "file": "inspeximus/core.py",
+  "old": "        if _ix is not None:\n            pool = list(_ix[\"pool\"])\n",
+  "new": "        if False:\n            pool = list(_ix[\"pool\"])\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the status edit through pop is not tracked",
+  "file": "inspeximus/core.py",
+  "old": "        self._fire(a[0] if a else None)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
  }
 ]

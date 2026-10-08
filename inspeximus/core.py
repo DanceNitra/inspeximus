@@ -1902,6 +1902,10 @@ def _plain(v):
     return v
 
 
+#: The held-handle recall index (3.18 prototype). INSPEXIMUS_RECALL_INDEX=0 turns it off, for an A/B in one build.
+_RECALL_INDEX_ON = (os.environ.get("INSPEXIMUS_RECALL_INDEX") or "").strip().lower() not in ("0", "false", "no", "off")
+
+
 class _TrackedDict(dict):
     """A record that says when it changes, so nothing has to compare the store to find out.
 
@@ -1940,7 +1944,7 @@ class _TrackedDict(dict):
         # at load turned opening a 30,000-record store from 0.5 s into 6.2 s, and this library is
         # opened once per tool call by its own hook.
 
-    def _fire(self):
+    def _fire(self, key=None):
         root = self._root if self._root is not None else self
         ref = root._store if isinstance(root, _TrackedDict) else None
         store = ref() if ref is not None else None
@@ -1950,6 +1954,11 @@ class _TrackedDict(dict):
         if rid:
             store._touched.add(rid)
         store._dirty = True
+        # THE CONTENT REVISION (3.18 prototype). Recall's cached pool and token index are valid while it stands.
+        # A top-level `_` key is a reader's note (`_stale_derived`, written on every candidate of every recall)
+        # and is never stored, so it does not move it; every other edit, at any depth, does.
+        if not (self._root is None and isinstance(key, str) and key[:1] == "_"):
+            store._rev = getattr(store, "_rev", 0) + 1
 
     def _child(self, v):
         root = self._root if self._root is not None else self
@@ -1979,11 +1988,11 @@ class _TrackedDict(dict):
         return v
 
     def __setitem__(self, k, v):
-        self._fire()
+        self._fire(k)
         super().__setitem__(k, self._child(v))
 
     def __delitem__(self, k):
-        self._fire()
+        self._fire(k)
         super().__delitem__(k)
 
     def update(self, *a, **kw):
@@ -1998,7 +2007,7 @@ class _TrackedDict(dict):
         return self[k]
 
     def pop(self, *a):
-        self._fire()
+        self._fire(a[0] if a else None)
         return super().pop(*a)
 
     def popitem(self):
@@ -3206,6 +3215,8 @@ class Inspeximus:
         # and raced the first thread's write (the LangGraph checkpointer's thread pool hit it).
         self._decide_depths: dict = {}
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
+        self._rev = 0                             # content revision; see _TrackedDict._fire
+        self._recall_ix = None                    # recall's cached pool and token index; see recall()
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
         # recall auto-mode: below this many active memories lexical is as good and free; above it the
@@ -15504,7 +15515,22 @@ class Inspeximus:
                       user_id, agent_id, session_id, self.read_guards, len(self._items), id(self._items),
                       getattr(self, "_acl_rev", 0), len(self._objections or ()))
                      if _shared is not None else None)
-        if _shared is not None and _shared.get("key") == _pool_key:
+        # A HELD HANDLE KEEPS ITS POOL AND A TOKEN INDEX (3.18 prototype). The pool is rebuilt from every record on
+        # every recall; on a held handle (the prompt daemon, the MCP server) nothing moved since the last one most
+        # of the time. Valid while the content revision, the list object, its length and the pool arguments stand;
+        # off for the paths that build their own pool, and for stores whose records do not report their edits.
+        _ix, _ix_args = None, None
+        if (_RECALL_INDEX_ON and _shared is None and not (where or trusted_only or influence_only or reinforce)
+                and not self._objections and self._items and type(self._items[0]) is _TrackedDict):
+            _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,
+                        agent_id, session_id, self.read_guards, self.tenant, getattr(self, "_acl_rev", 0))
+            _c = self._recall_ix
+            if (_c is not None and _c["args"] == _ix_args and _c["items"] is self._items
+                    and _c["n"] == len(self._items) and _c["rev"] == self._rev):
+                _ix = _c
+        if _ix is not None:
+            pool = list(_ix["pool"])
+        elif _shared is not None and _shared.get("key") == _pool_key:
             pool = list(_shared["pool"])
         else:
             # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
@@ -15597,6 +15623,11 @@ class Inspeximus:
             if _shared is not None:
                 _shared.clear()
                 _shared.update(owner=self, key=_pool_key, pool=tuple(pool), stale={})
+            if _ix_args is not None:
+                # Keyed AFTER the pool is built: assessing the read guards can edit a record (a stamp it cannot
+                # verify is dropped), and that edit belongs to this pool, not to the next recall's.
+                _ix = self._recall_ix = {"args": _ix_args, "items": self._items, "n": len(self._items),
+                                         "rev": self._rev, "pool": tuple(pool), "post": None}
         # Mode selection. 'hybrid' = lexical (token overlap) + semantic (embedding) fused with Reciprocal
         # Rank Fusion. We MEASURED hybrid robustly beating EITHER channel alone for agent memory on LoCoMo
         # (recall@20 0.61 hybrid vs 0.55 lexical vs 0.53 semantic; +0.057 over the best single channel,
@@ -15674,7 +15705,21 @@ class Inspeximus:
                 for i, (r, sem, bx) in enumerate(scn):
                     cands.append(_candrec(r, rrf[i] / mx))    # normalize the fused rank score to a [0,1] relevance
         else:
-            for r in pool:
+            _scan = pool
+            if sel == "lexical" and _ix is not None and qtok:
+                # ONLY RECORDS THAT SHARE A TOKEN WITH THE QUERY CAN SCORE: the lexical similarity of any other
+                # is 0 and is dropped below. Same records, same scores, visited in pool order, so ties keep it.
+                if _ix["post"] is None:
+                    _post = {}
+                    for _i, _r in enumerate(_ix["pool"]):
+                        for _t in self._rec_tokens(_r):
+                            _post.setdefault(_t, []).append(_i)
+                    _ix["post"] = _post
+                _hit = set()
+                for _t in qtok:
+                    _hit.update(_ix["post"].get(_t, ()))
+                _scan = [pool[_i] for _i in sorted(_hit)]
+            for r in _scan:
                 sim = _semsim(r) if sel == "semantic" else _lexsim(r)
                 if sim <= 0 or sim < min_relevance:
                     continue
@@ -19597,6 +19642,7 @@ class Inspeximus:
             rid = None
         if rid:
             self._touched.add(rid)
+        self._rev = getattr(self, "_rev", 0) + 1             # a declared change moves the content revision
 
     def _save(self, force: bool = False):
         if not self.path:
