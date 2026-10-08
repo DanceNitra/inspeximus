@@ -824,7 +824,7 @@ def _tail_switched_on():
             before = fh.read()
     except OSError:
         before = None
-    cfg = _userconfig.read()
+    cfg = dict(_userconfig.read())
     cfg["receipts"] = dict(cfg.get("receipts") or {}, tail=True)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as fh:

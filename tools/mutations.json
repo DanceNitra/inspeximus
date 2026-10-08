@@ -10432,5 +10432,41 @@
   "tests": [
    "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
   ]
+ },
+ {
+  "name": "3.17.0: the environment converts a row store to JSON",
+  "file": "inspeximus/core.py",
+  "old": "        if _rows is not None and self.path and self.path.exists() and _rows.looks_like_sqlite(self.path):\n            _userconfig.env_ignored(\"INSPEXIMUS_STORE_FORMAT\", \"store.format to \\\"json\\\"\")\n            return False\n        return True",
+  "new": "        return True",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the user's config does not pin the JSON format",
+  "file": "inspeximus/core.py",
+  "old": "        if _userconfig.get(\"store\", \"format\") == \"json\":\n            return True",
+  "new": "        if False:\n            return True",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the ignored store format variable is not reported",
+  "file": "inspeximus/core.py",
+  "old": "            _userconfig.env_ignored(\"INSPEXIMUS_STORE_FORMAT\", \"store.format to \\\"json\\\"\")\n            return False",
+  "new": "            return False",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "3.17.0: the environment no longer pins a new store to JSON",
+  "file": "inspeximus/core.py",
+  "old": "        if (os.environ.get(\"INSPEXIMUS_STORE_FORMAT\") or \"\").strip().lower() != \"json\":\n            return False\n        if _rows is not None and self.path",
+  "new": "        if True:\n            return False\n        if _rows is not None and self.path",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
  }
 ]

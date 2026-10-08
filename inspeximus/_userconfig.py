@@ -22,14 +22,31 @@ def path() -> str:
     return user_config_file()
 
 
+_CACHE: dict = {}
+
+
 def read() -> dict:
-    """The user's config as a dict; `{}` when the file is absent, unreadable, or not an object."""
+    """The user's config as a dict; `{}` when the file is absent, unreadable, or not an object.
+
+    Cached by the file's path, size and modification time, so a caller on a hot path (`_rows_available` asks once per
+    save) pays one `stat` and not one open and parse."""
+    p = path()
     try:
-        with open(path(), encoding="utf-8") as fh:
+        st = os.stat(p)
+        key = (p, st.st_size, st.st_mtime_ns)
+    except OSError:
+        return {}
+    hit = _CACHE.get(p)
+    if hit is not None and hit[0] == key:
+        return hit[1]
+    try:
+        with open(p, encoding="utf-8") as fh:
             cfg = json.load(fh)
     except (OSError, ValueError):
-        return {}
-    return cfg if isinstance(cfg, dict) else {}
+        cfg = {}
+    cfg = cfg if isinstance(cfg, dict) else {}
+    _CACHE[p] = (key, cfg)
+    return cfg
 
 
 def get(*keys, default=None):

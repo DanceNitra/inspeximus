@@ -283,7 +283,7 @@ def tail_config(on=True):
     import json
     from inspeximus import _userconfig
     path = _userconfig.path()
-    cfg = _userconfig.read()
+    cfg = dict(_userconfig.read())
     rc = dict(cfg.get("receipts") or {})
     if on:
         rc["tail"] = True

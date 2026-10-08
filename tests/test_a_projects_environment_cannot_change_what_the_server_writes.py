@@ -118,3 +118,53 @@ def test_without_a_user_model_the_default_is_used_not_the_repositorys(env):
         json.dump({"embed": {"hooks": True, "url": "http://127.0.0.1:9/v1/embeddings"}}, fh)
     _doc, _query, embed_id = cc._make_embedder(str(repo))
     assert "repo-chosen-model" not in embed_id and "nomic-embed-text" in embed_id, embed_id
+
+
+# ── INSPEXIMUS_STORE_FORMAT=json: pins a JSON or new store, converts no row store ───────────────────────────────────────
+def _is_rows(p):
+    from inspeximus import sqlite_store
+    return sqlite_store.looks_like_sqlite(p)
+
+
+def test_the_environment_does_not_turn_a_row_store_into_json(env, monkeypatch, capfd):
+    p = str(env / "s.json")
+    m = Inspeximus(p)
+    m.remember("one", key="a")
+    m.flush()
+    assert _is_rows(p), "CONTROL: a new store is rows"
+    monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    m2 = Inspeximus(p)
+    m2.remember("two", key="b")
+    m2.flush()
+    assert _is_rows(p), "a project's environment converted the user's row store to JSON"
+    err = capfd.readouterr().err
+    assert "INSPEXIMUS_STORE_FORMAT" in err and "store.format" in err, err
+    assert os.path.join(os.environ["INSPEXIMUS_KEY_HOME"], "inspeximus", "config.json") in err
+
+
+def test_the_documented_use_still_works_for_a_new_store_and_for_a_json_store(env, monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_STORE_FORMAT", "json")
+    p = str(env / "tooling.json")
+    m = Inspeximus(p)
+    m.remember("read by other tooling", key="a")
+    m.flush()
+    assert not _is_rows(p), "a new store with the variable set is not JSON"
+    m2 = Inspeximus(p)
+    m2.remember("again", key="b")
+    m2.flush()
+    assert not _is_rows(p) and len(json.load(open(p, encoding="utf-8"))) == 2
+
+
+def test_the_users_config_can_pin_json_for_a_row_store(env):
+    p = str(env / "s.json")
+    m = Inspeximus(p)
+    m.remember("one", key="a")
+    m.flush()
+    assert _is_rows(p)
+    os.makedirs(os.path.dirname(_userconfig.path()), exist_ok=True)
+    with open(_userconfig.path(), "w", encoding="utf-8") as fh:
+        json.dump({"store": {"format": "json"}}, fh)
+    m2 = Inspeximus(p)
+    m2.remember("two", key="b")
+    m2.flush()
+    assert not _is_rows(p), "store.format in the user's config did not pin JSON"

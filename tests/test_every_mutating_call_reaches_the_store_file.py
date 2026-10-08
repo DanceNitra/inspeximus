@@ -145,13 +145,12 @@ def test_the_public_surface_has_not_grown_past_this_sweep():
         sorted(named - public))
 
 
-def test_a_recipe_change_persists_the_vectors_it_rebuilds(monkeypatch):
-    """Opening a store with a different embed recipe re-embeds it, and that has to reach disk.
+def test_a_recipe_change_persists_the_vectors_reembed_rebuilds(monkeypatch):
+    """After a recipe change, `reembed()` rebuilds the vectors, and that has to reach disk.
 
-    The realignment happens inside `__init__`, so the sweep above cannot reach it: it rewrites every
-    stale vector in place and nothing declared the change, so on a row store the rebuilt vectors
-    stayed in memory and the next open realigned all over again. Three probes cited by the docs
-    caught it. `reembed()` had the same hole one function away, which is the usual shape.
+    Until 3.17.0 the open did the rebuilding, inside `__init__`, and a change made there declared nothing, so on a row
+    store the rebuilt vectors stayed in memory. The open now changes nothing (AUDIT-A P-1); `reembed()` is the one way,
+    and it has the same obligation: what it rebuilds is on disk when it returns.
     """
     monkeypatch.delenv("INSPEXIMUS_STORE_FORMAT", raising=False)
     d = tempfile.mkdtemp()
@@ -160,10 +159,11 @@ def test_a_recipe_change_persists_the_vectors_it_rebuilds(monkeypatch):
     a.remember("a record that carries a vector", key="k")
     a.flush()
     assert ss.looks_like_sqlite(p), "the fixture is not a row store"
-    assert [r for r in ss.load(p) if r.get("vec") == [1.0, 0.0, 0.0]], \
-        "the control failed: the first recipe's vector is not on disk"
+    assert [r for r in ss.load(p) if r.get("vec") == [1.0, 0.0, 0.0]],         "the control failed: the first recipe's vector is not on disk"
 
-    Inspeximus(path=p, embed=lambda t: [0.0, 1.0, 0.0], persist_vectors=True, embed_id="B")
+    b = Inspeximus(path=p, embed=lambda t: [0.0, 1.0, 0.0], persist_vectors=True, embed_id="B")
+    assert [r.get("vec") for r in ss.load(p)] == [[1.0, 0.0, 0.0]], "opening under another recipe changed the disk"
+    b.reembed(only_missing=False)
     on_disk = [r.get("vec") for r in ss.load(p)]
     assert on_disk == [[0.0, 1.0, 0.0]], (
-        "the realigned vector never reached disk, so the next open realigns again: %r" % on_disk)
+        "the rebuilt vector never reached disk: %r" % on_disk)

@@ -10901,11 +10901,30 @@ class Inspeximus:
         """
         if _rows is None or self._encrypted or not self.path:
             return False
-        if (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() == "json":
+        if self._json_pinned():
             return False
         if self.path.exists():
             return _rows.looks_like_sqlite(self.path)
         return True                       # a store that does not exist yet is created as rows
+
+    def _json_pinned(self) -> bool:
+        """Whether the store is pinned to the JSON format (3.17.0, AUDIT-A inventory).
+
+        `{"store": {"format": "json"}}` in `<key home>/inspeximus/config.json` pins it, for any store. The environment
+        variable INSPEXIMUS_STORE_FORMAT=json still pins a store that is JSON already or does not exist yet, which is
+        what the documented use needs (a file other tooling reads directly). It no longer CONVERTS a row store: a
+        project's settings reach the MCP server's environment, and one write from a project turned the user's row store
+        into JSON, and the user's own server turned it back at its next write, on every write. For a row store the
+        environment value is ignored, with one stderr line."""
+        from . import _userconfig
+        if _userconfig.get("store", "format") == "json":
+            return True
+        if (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() != "json":
+            return False
+        if _rows is not None and self.path and self.path.exists() and _rows.looks_like_sqlite(self.path):
+            _userconfig.env_ignored("INSPEXIMUS_STORE_FORMAT", "store.format to \"json\"")
+            return False
+        return True
 
     def _save_temps(self) -> list:
         """Files beside this store that an interrupted save or migration left behind, each a full copy
@@ -11255,7 +11274,7 @@ class Inspeximus:
         # `raw` is set only when the open above found a plaintext file, so the format question is
         # already answered; asking `exists()` and the header again here reopened the file twice more.
         if (raw is not None and not self._encrypted and _rows is not None
-                and (os.environ.get("INSPEXIMUS_STORE_FORMAT") or "").strip().lower() != "json"):
+                and not self._json_pinned()):
             self._migration = self._migrate_json_store()
             if self._migration:
                 self._items = _rows.load(self.path)
