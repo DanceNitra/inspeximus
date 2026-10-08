@@ -1923,8 +1923,10 @@ def _note_dirty(store, rid) -> None:
         log[rid or None] = store._rev
 
 
-#: At most this many cached pools per store: one per combination of scope and pool arguments in use.
-_RECALL_IX_ENTRIES = 8
+#: At most this many cached pools per store: one per combination of scope and pool arguments in use. Measured
+#: (AUDIT-A Y-2) on copies of the live stores: 5.7 MB an entry on the 23,126-row project store and 13.4 MB on the
+#: MCP store, so 4 entries hold at most 23 MB and 54 MB.
+_RECALL_IX_ENTRIES = 4
 
 
 class _TrackedDict(dict):
