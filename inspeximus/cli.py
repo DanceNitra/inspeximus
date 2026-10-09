@@ -52,7 +52,7 @@ def _receipt_key(key_file=None):
     p = key_file
     if not p:
         from . import _envpolicy                 # a file inside the user's key home only, from the environment (3.18)
-        p, _src = _envpolicy.key_file("INSPEXIMUS_RECEIPT_KEY_FILE")   # F-13 incl. the cwd's project (EC-3)   # F-13 incl. the cwd's project (EC-3)   # F-13 incl. the cwd's project (EC-3)
+        p, _src = _envpolicy.key_file("INSPEXIMUS_RECEIPT_KEY_FILE")   # F-13 incl. the cwd's project (EC-3)
     if p:
         with open(p, encoding="utf-8") as fh:
             return fh.read().strip()
