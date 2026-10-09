@@ -1,3 +1,94 @@
+## 3.17.1 - UPGRADE IF you run more than one process on a store (an MCP server beside hooks, a second session, an agent): a process that held the store open could write its old copy of a record back over another process's retire, edit, credit or in-place redaction. ACTION: upgrade, then restart every process that holds the store, such as the MCP server, and re-stamp a decision store if your prompt hook reads one (see Read-guard stamps)
+
+### A long-lived handle no longer writes a record back over another process's change
+
+Present since at least 3.16.0. AUDIT-A measured it on 3.16.0, 3.16.6 and 3.17.0.
+
+A read marked records as edited by the handle that read it, in two ways:
+
+- `recall` writes a note on each record it returns (`_stale_derived`, a top-level `_` key that is never stored). The note went through the record's change tracking.
+- The read guard, on every record without a valid stamp, removed the stamp field, removed a stale `read_guards_v` marker, and assigned the quarantine verdict again when it had not changed.
+
+A record without a valid stamp is one that this store did not write at this path under the same Python: an older record, a record written with no guard key, a record in a copied store, or one stamped under another Python. On a copy of our MCP store, 10 of 13,602 records carried a read-guard stamp at all (AUDIT-A, counting the stamp field, not its validity).
+
+When a handle merges the file from disk, it keeps its own copy of every record it marked as edited. So a handle that stays open, such as the MCP server, kept serving its old copy after `refresh()`. Its next write then put that copy back on disk. What was lost:
+
+- A retire by another process: the retired record was active again.
+- An edit or a credit by another process.
+- An in-place redaction by another process: the original text was written back into the store file.
+
+What was not lost: `forget`, `forget_subject`, `apply_retention` and `forget_pii`. Their tombstone wins over the old copy (AUDIT-A).
+
+The row store, which new stores use by default, was affected. A store in the JSON format lost none of these changes in our tests on 3.17.0: AUDIT-A's probe kept the other process's change in 16 of 16 cases with the held handle's write succeeding, and our own test had the held handle's write refused with `StoreChangedOnDisk` in 4 of 4 cases, with the change on disk.
+
+3.17.1 does not find or restore a change that an earlier version reverted.
+
+### Changed
+
+- **A read marks a record only when it changes it.** Assigning a top-level `_` key, directly or through `setdefault`, does not mark the record; `update` and `del` of such a key still do. A `pop` of a key that is not there does not mark the record. The read guard assigns a verdict only when it differs from the stored one.
+- **A read leaves an invalid stamp and a stale `read_guards_v` in place on a record it does not flag.** 3.17.0 removed them on a read and saved the removal. On a record the read flags, the stamp is still removed. Neither is trusted: a stamp counts only when its MAC verifies under this store's key, and the marker sits on a record with no flag. The write path replaces them when it stamps the record, for example `stamp_read_guards()`.
+
+A read still writes, and saves, a flag it finds for the first time: a quarantine verdict for instruction-shaped text, and a stuffing flag.
+
+### Read-guard stamps made by 3.17.0 are re-made once
+
+A read-guard stamp is valid only under the guard set that made it, and the guard set includes the code of the read guard, which this release changes. So under 3.17.1 every stamp made by 3.17.0 reads as made under another guard set, and the prompt hook assesses those records again on each prompt until they are stamped again.
+
+- **The project store re-stamps itself.** On the first prompt that meets such stamps, the hook starts one background run that stamps the store again, as it does for stamps made under another Python. AUDIT-B measured it on a copy of a project store with 17,922 stamps: the hook took 0.39 s longer for the first one to three prompts, the background run took about 4.3 s, and the hook then took as long as on 3.17.0 (1.683 s against 1.695 s). The run is off when `INSPEXIMUS_STAMP_AUTO=0` is set or `{"stamp": {"auto": false}}` is in your config, and it needs the store's guard key.
+- **A decision store is not re-stamped by the hook.** If your hook reads one (`INSPEXIMUS_DECISION_STORE` or `hook.decision_store`), stamp it once with the interpreter the hook uses, for example with the hook's own `uvx` pin: `uvx --from inspeximus==3.17.1 python -m inspeximus.claude_code --stamp-guards --apply --store <decision store path>`. Without `--apply` the command reports what it would stamp and writes nothing. Until then the hook spends the same extra time on that store on every prompt.
+- **The MCP server is not re-stamped by the hook.** A stamp saves the same assessment there as in the hook. On our MCP store 10 of 13,602 records carried a stamp before the upgrade, so the change added no work there.
+
+### Measured
+
+| What | 3.17.0 | 3.17.1 | Method |
+|---|---|---|---|
+| Records a read marked as edited, 8 recalls | 8,523 | 0 | copy of our MCP store, 13,624 records, one held handle |
+| Another process's retire, edit, credit and in-place redaction kept after the held handle wrote | 0 of 4 | 4 of 4 | same copy |
+| Copies of the redacted text in the store file afterwards | 1 | 0 | same copy, a byte search for a 60-character prefix that was in one record before |
+| Reads that marked a record, row store, 5 record states, 15 read methods | 39 of 75 | 0 of 75 | AUDIT-A probe set, part A |
+| The same, JSON format | 0 of 75 | 0 of 75 | AUDIT-A probe set, part A |
+| Another process's change lost, row store, including the redaction in the file bytes | 112 of 120 | 0 of 120 | AUDIT-A probe set, part B |
+| The same, JSON format | 0 of 120 | 0 of 120 | AUDIT-A probe set, part B |
+| An in-memory change that did not reach the file, 150 write cases | 0 of 150 | 0 of 150 | AUDIT-A probe set, part D |
+| `tests/test_a_read_marks_no_record_touched.py` | 131 of 162 fail | 162 pass | 5 record states, JSON and row store, 20 read methods |
+| Mutation entries for the rules | | 6 of 6 killed | `tools/mutation_check_parallel.py` |
+
+The figures are from Windows, Python 3.12.
+
+Checks on the code of the release head, beside the measurements above. The full suites ran one commit before it; that commit differs only in `perf/baseline.json`, whose exact-match test failed there on lower counters and passes on the release head, on Windows and Linux.
+
+| Check | Result |
+|---|---|
+| Full suite, Windows, Python 3.12, receipt tail off | 6,957 passed; 19 tests of the OpenAI Agents example end in an error, because a module they import (`agents.testing`) is not installed on the test machine; 3.17.0 gives the same 19 errors there |
+| Full suite, Windows, Python 3.12, receipt tail on | the same |
+| Full suite, Linux (WSL2, Ubuntu, Python 3.12.3), against 3.17.0 in the same environment | no failure that 3.17.0 does not also have |
+| `tests/test_a_read_marks_no_record_touched.py` on Python 3.9.25 and 3.10.20 | 162 of 162 passed on each |
+| Work counters (`perf/gate.py`) | no counter grew; every counter that changed went down, for example rows rewritten by a save in `session_n500`, 1,099 to 600 |
+
+Cost, measured by AUDIT-B in 7 alternating pairs per store on copies of our stores, row store, lexical recall, k=16, with every record unstamped. The machine ran other test suites at the time: CPU 19 to 98 %, median about 50 %.
+
+| Store (rows) | Measure | 3.17.0 | 3.17.1 | Paired median difference |
+|---|---|---|---|---|
+| MCP copy (13,602) | held recall, median of 30 | 0.0692 s | 0.0690 s | -0.0002 s |
+| MCP copy | first recall | 3.710 s | 3.634 s | -0.012 s |
+| MCP copy | `remember` and `flush` | 0.130 s | 0.129 s | -0.001 s |
+| Project copy (23,707) | held recall | 0.185 s | 0.164 s | -0.013 s |
+| Project copy | first recall | 1.280 s | 1.209 s | -0.112 s |
+| Project copy | `remember` and `flush` | 0.206 s | 0.204 s | +0.004 s |
+
+Recall returns the same set of records on both versions. Records with an equal score can come back in another order between two runs of the same version, because the order of ties depends on the process's hash seed; with a fixed seed (`PYTHONHASHSEED=0`) the two versions return identical lists.
+
+### Known limits
+
+- **A record that a read flags for the first time is still marked, and so still written back.** The flag has to be saved, so the record counts as edited by the handle that read it. If another process retires or credits that record before the held handle's next write, the write puts the old copy back: measured on 3.17.0 and on 3.17.1. It affects only instruction-shaped or stuffed records that carry no flag yet, for example imported records or records written with the read guards off.
+
+### Not measured
+
+- macOS.
+- Versions before 3.16.0.
+- How many changes a reverted write affected on any store before the upgrade. 3.17.1 has no tool that finds them.
+- Speed on a quiet machine, and on Linux. The work counters were checked; wall-clock time on Linux was not measured.
+
 ## 3.17.0 - UPGRADE IF you use the MCP server with an embedder: it now keeps its vectors by default, so recall ranks the records that have a vector by meaning. ACTION if you have an embedder: run `inspeximus reembed` once, expect a larger store file and a slower open, and set `INSPEXIMUS_PERSIST_VECTORS=0` to keep the old behaviour
 
 ### The MCP server keeps its vectors by default when it has an embedder
