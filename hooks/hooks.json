@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.16.6 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
+            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.17.0 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.16.6 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
+            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.17.0 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.16.6 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
+            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.17.0 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
           }
         ]
       }
@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.16.6 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
+            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.17.0 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code"
           }
         ]
       }
@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.16.6 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code",
+            "command": "uvx --default-index https://pypi.org/simple --from inspeximus==3.17.0 python -E -c \"import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];runpy._run_module_as_main(sys.argv.pop(1))\" inspeximus.claude_code",
             "timeout": 15
           }
         ]

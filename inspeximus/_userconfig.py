@@ -28,12 +28,15 @@ _CACHE: dict = {}
 def read() -> dict:
     """The user's config as a dict; `{}` when the file is absent, unreadable, or not an object.
 
-    Cached by the file's path, size and modification time, so a caller on a hot path (`_rows_available` asks once per
-    save) pays one `stat` and not one open and parse."""
+    Cached by the file's path, size, modification time, change time and inode, so a caller on a hot path
+    (`_rows_available` asks once per save) pays one `stat` and not one open and parse. A rewrite of the same size with
+    the modification time put back is seen through the change time (POSIX) or the inode (a replaced file, on every
+    platform). Known limit: on Windows the change time is the creation time, so an in-place rewrite of the same size
+    with the modification time restored is not seen until the file is replaced."""
     p = path()
     try:
         st = os.stat(p)
-        key = (p, st.st_size, st.st_mtime_ns)
+        key = (p, st.st_size, st.st_mtime_ns, st.st_ctime_ns, st.st_ino)
     except OSError:
         return {}
     hit = _CACHE.get(p)

@@ -22,16 +22,18 @@ import sys
 import time
 
 
+def _embedders():
+    """`(embed_doc, embed_query, embed_id)` from the environment, built the way the MCP server builds them (3.17.0, AUDIT-A
+    P-4): `inspeximus reembed` is the action the release asks of every user with an embedder, and it used to build its
+    own embedder with no `embed_id`, so its vectors carried no recipe stamp, `<store>.embedid` was never written, nomic
+    models got no task prefixes, and a plain run replaced nothing after a model change."""
+    from ._embedders import make_embedders
+    return make_embedders()
+
+
 def _embedder():
-    """Optional embedder (urllib, zero-dep) — enabled only if INSPEXIMUS_EMBED_URL is set. Fail-open."""
-    from ._http import embedders_from_env
-    return embedders_from_env()[0]
-
-
-def _embed_id():
-    """The recipe of `_embedder()`, the same id the MCP server uses, or None (3.18, AUDIT-A P-4)."""
-    from ._http import embedders_from_env
-    return embedders_from_env()[2]
+    """The document embedder alone, or None. Kept for callers that want only that; the store gets all three."""
+    return _embedders()[0]
 
 
 def _receipt_key(key_file=None):
@@ -84,13 +86,8 @@ def _store(path, persist_vectors: bool = False, receipts: bool = False, receipt_
     # signature nothing will ever read. Inspeximus() already treats receipt_key as turning receipts on;
     # passing it here too keeps the sidecar-detection branch in open_store from deciding otherwise.
     extra = {"receipt_key": receipt_key} if receipt_key else {}
-    from ._http import embedders_from_env
-    doc, query, eid = embedders_from_env()
-    if eid:
-        extra.update(embed_id=eid)
-        if query is not None:
-            extra.update(embed_query=query)
-    return open_store(path, embed=doc, persist_vectors=persist_vectors,
+    doc, query, recipe = _embedders()
+    return open_store(path, embed=doc, embed_query=query, embed_id=recipe, persist_vectors=persist_vectors,
                       receipts=receipts or bool(receipt_key), **extra)
 
 

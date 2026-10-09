@@ -109,12 +109,13 @@ except ImportError as e:  # pragma: no cover
 
 
 def _make_embedders():
-    """Optional OpenAI-compatible embedder (zero extra deps — urllib). Returns (embed_doc, embed_query).
+    """Optional OpenAI-compatible embedder (zero extra deps — urllib). Returns (embed_doc, embed_query, embed_id).
     For nomic-embed-text (asymmetric, trained with task prefixes) it returns SEPARATE document/query
     embedders that prefix `search_document: ` / `search_query: ` — measured on LoCoMo (n=1536) to lift
-    recall_any@1 from 0.19 to 0.29. For symmetric models it returns (embed, None). (None, None) if unconfigured."""
-    from ._http import embedders_from_env           # one builder with the CLI (3.18, AUDIT-A P-4)
-    return embedders_from_env()
+    recall_any@1 from 0.19 to 0.29. For symmetric models it returns (embed, None, model). (None, None, None) if
+    unconfigured. The code lives in `_embedders.make_embedders`, which `inspeximus reembed` uses too (3.17.0, P-4)."""
+    from ._embedders import make_embedders
+    return make_embedders()
 
 
 def _path_source(env: dict | None = None) -> str:

@@ -189,7 +189,38 @@ NOT_STANDALONE = {
         "needs --store, a copy of a live store with thousands of active records; the docstring gives the command",
     "two_read_guards_measured_on_agmi.py":
         "needs --agmi, a checkout of tech4biz-yasha/agmi with its attacks and adapter importable; the docstring gives the command",
+    # Runs a released inspeximus (3.16.5 by default) through uvx, which installs it from PyPI: a network install and an
+    # executable a test runner need not carry. The 3.17.0 release CI failed on it (test (3.9), no uvx on the runner).
+    "a_release_before_317_meets_float16_vectors.py":
+        "needs uvx and network to install a pre-3.17 release (--old); run it by hand",
 }
+
+
+# A PROBE THAT INSTALLS A PACKAGE IS NEVER RUN BY THE SUITE (3.17.0). One that runs uvx, uv, pipx or `pip install` needs
+# the network and that executable, so it fails only on a runner without them and passes everywhere else, which is how
+# it reached the release CI unnoticed. Its source is read at collection, so the omission fails on every runner.
+_INSTALLER = re.compile(r"""(?:^|[\s"'\[(,])(?:uvx|uv|pipx)\s+(?:--|run\b|tool\b|pip\b|[a-z])|"""
+                        r"""[\[(,]\s*["'](?:uvx|uv|pipx)["']|["']-m["']\s*,\s*["']pip["']\s*,\s*["']install["']""",
+                        re.M)
+
+
+def _installing_probes():
+    out = []
+    for f in sorted(os.listdir(PROBES)):
+        if not f.endswith(".py") or f in NOT_STANDALONE:
+            continue
+        src = open(os.path.join(PROBES, f), encoding="utf-8", errors="replace").read()
+        code = "\n".join(ln for ln in src.splitlines() if not ln.lstrip().startswith("#"))
+        if _INSTALLER.search(code):
+            out.append(f)
+    return out
+
+
+_UNLISTED_INSTALLERS = _installing_probes()
+if _UNLISTED_INSTALLERS:
+    pytest.fail("these probes install a package (uvx, uv, pipx or pip install) and are not in NOT_STANDALONE: %s. "
+                "List each with the reason, for example 'needs uvx and network to install <what>; run it by hand'."
+                % _UNLISTED_INSTALLERS, pytrace=False)
 
 
 _URL = re.compile(r"https?://\S+")
@@ -729,3 +760,12 @@ def test_the_stdlib_fallback_used_on_39_is_itself_correct():
         assert name in derived, f"{name} is standard library and the fallback missed it"
     for name in ("mem0", "torch", "echo_attack_probe", "agentpoison_multiretriever_check"):
         assert name not in derived, f"{name} is not standard library and the fallback claimed it was"
+
+
+def test_the_installer_check_sees_the_probes_that_install():
+    """CONTROL for the collection-time check above: it finds both probes that install a package today, so an empty
+    result means none is unlisted, not that the pattern stopped matching."""
+    for f in ("a_release_before_317_meets_float16_vectors.py", "time_to_first_success.py"):
+        assert _INSTALLER.search(open(os.path.join(PROBES, f), encoding="utf-8").read()), f
+        assert f in NOT_STANDALONE, f
+    assert not _INSTALLER.search('raise SystemExit("--dense needs torch:  pip install torch transformers")')

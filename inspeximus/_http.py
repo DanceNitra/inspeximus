@@ -185,26 +185,3 @@ def env_key(var, url, embed_cfg=None):
         return key
     _notice(var, url, "the key is not sent")
     return ""
-
-
-def embedders_from_env():
-    """(embed_doc, embed_query, embed_id) from INSPEXIMUS_EMBED_URL, _MODEL, _KEY and _NOMIC_PREFIX, or (None, None, None).
-
-    ONE builder for the MCP server and the CLI (3.18, AUDIT-A P-4). The CLI built only the callable, so its stores had no
-    embed_id: `reembed` stamped no recipe, wrote no sidecar, and could not tell a vector of another model from its own.
-    For nomic-embed-text (asymmetric, trained with task prefixes) the document and query embedders prefix
-    `search_document: ` / `search_query: `; for symmetric models embed_query is None."""
-    url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
-    if not url:
-        return None, None, None
-    from . import _envpolicy
-    model = _envpolicy.raw("INSPEXIMUS_EMBED_MODEL", "text-embedding-3-small").strip()
-    key = env_key("INSPEXIMUS_EMBED_KEY", url)
-
-    def _embed(text: str, prefix: str = ""):
-        headers = {"Authorization": f"Bearer {key}"} if key else {}
-        return embedding_from(post_json(url, {"model": model, "input": prefix + text}, headers, 20))
-
-    if "nomic" in model.lower() and _envpolicy.raw("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":
-        return (lambda t: _embed(t, "search_document: ")), (lambda t: _embed(t, "search_query: ")), f"{model}|nomic-sd-sq"
-    return _embed, None, model

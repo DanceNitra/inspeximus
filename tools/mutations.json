@@ -6104,26 +6104,28 @@
  {
   "name": "home guard: a live session's first head fails the run again",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
-  "new": "        live = []",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = list(added) or [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
   "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
  {
   "name": "home guard: an unreadable head is not counted as a leak",
   "file": "tests/_home_guard.py",
-  "old": "        leaked = [n for n in added if n not in live]",
-  "new": "        leaked = [n for n in added if n not in live and stores[n]]",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = [n for n in added if False or (tags and _tag(n) in tags)",
   "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
  {
   "name": "home guard: classify drops every change outside the heads directory",
   "file": "tests/_home_guard.py",
-  "old": "    fail = diff({k: v for k, v in before.items() if k not in heads},",
-  "new": "    fail = [] and diff({k: v for k, v in before.items() if k not in heads},",
+  "old": "    fail = diff({k: v for k, v in before.items() if k not in views},",
+  "new": "    fail = [] and diff({k: v for k, v in before.items() if k not in views},",
   "tests": [
    "tests/test_the_suite_never_writes_the_real_home.py"
   ]
@@ -7699,19 +7701,21 @@
  {
   "name": "the home guard excuses a head it cannot read",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
-  "new": "        live = [n for n in added if not stores[n] or not _inside(stores[n], roots)]",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots) and not n.endswith(\".json\")) or (tags and _tag(n) in tags)",
   "tests": [
-   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
+   "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
  {
   "name": "the home guard counts another process's temp store as this run's",
   "file": "tests/_home_guard.py",
-  "old": "        live = [n for n in added if stores[n] and not _inside(stores[n], roots)]",
-  "new": "        live = []",
+  "old": "        mine = [n for n in added if (stores[n] and _inside(stores[n], roots)) or (tags and _tag(n) in tags)",
+  "new": "        mine = [n for n in added if (stores[n]) or (tags and _tag(n) in tags)",
   "tests": [
-   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py",
+   "tests/test_the_suite_never_writes_the_real_home.py"
   ]
  },
  {
@@ -8386,9 +8390,9 @@
  },
  {
   "name": "the embedder builder reads the env URL without the allow rule",
-  "file": "inspeximus/_http.py",
+  "file": "inspeximus/_embedders.py",
   "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host only when the user's config allows it (F-12)\n    if not url:\n        return None, None, None\n",
-  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()\n    if not url:\n        return None, None, None\n",
+  "new": "    url = __import__(\"os\").environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()\n    if not url:\n        return None, None, None\n",
   "tests": [
    "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
   ]
@@ -10362,15 +10366,6 @@
   ]
  },
  {
-  "name": "3.17.0 P-1: reembed leaves the held-back set standing",
-  "file": "inspeximus/core.py",
-  "old": "        self._legacy_shelved.difference_update(dict.get(r, \"id\") for r in todo if dict.get(r, \"vec\"))\n",
-  "new": "",
-  "tests": [
-   "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
-  ]
- },
- {
   "name": "3.17.0: the environment turns the receipt tail on",
   "file": "inspeximus/core.py",
   "old": "    _envpolicy.notice_if_set(\"INSPEXIMUS_RECEIPTS_TAIL\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))\n    return False",
@@ -10613,15 +10608,6 @@
   "file": "inspeximus/cli.py",
   "old": "        if (foreign or a.all) and not a.replace_recipe:\n",
   "new": "        if False:\n",
-  "tests": [
-   "tests/test_every_environment_variable_has_a_policy.py"
-  ]
- },
- {
-  "name": "3.18 env P-4: the CLI opens its store without the embed recipe",
-  "file": "inspeximus/cli.py",
-  "old": "    if eid:\n        extra.update(embed_id=eid)\n",
-  "new": "    if False:\n        extra.update(embed_id=eid)\n",
   "tests": [
    "tests/test_every_environment_variable_has_a_policy.py"
   ]
@@ -11706,6 +11692,141 @@
   "new": "        r = __import__(\"subprocess\").run([\"git\", \"check-ignore\", \"-q\", str(path)], cwd=str(Path(path).parent),",
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "the shared embedder (CLI and MCP server) reads the env URL without the allow rule",
+  "file": "inspeximus/_embedders.py",
+  "old": "    url = env_url(\"INSPEXIMUS_EMBED_URL\")             # another host",
+  "new": "    url = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"\").strip()             # another host",
+  "tests": [
+   "tests/test_3164_f12_an_env_url_needs_the_users_config.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the CLI opens the store without the embed recipe",
+  "file": "inspeximus/cli.py",
+  "old": "embed=doc, embed_query=query, embed_id=recipe, persist_vectors=persist_vectors,",
+  "new": "embed=doc, embed_query=query, persist_vectors=persist_vectors,",
+  "tests": [
+   "tests/test_the_cli_reembed_builds_the_recipe_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the CLI opens the store without the query embedder",
+  "file": "inspeximus/cli.py",
+  "old": "embed=doc, embed_query=query, embed_id=recipe, persist_vectors=persist_vectors,",
+  "new": "embed=doc, embed_id=recipe, persist_vectors=persist_vectors,",
+  "tests": [
+   "tests/test_the_cli_reembed_builds_the_recipe_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the shared embedder drops the nomic task prefixes",
+  "file": "inspeximus/_embedders.py",
+  "old": "if \"nomic\" in model.lower() and _envpolicy.raw(\"INSPEXIMUS_NOMIC_PREFIX\", \"1\") != \"0\":",
+  "new": "if False:",
+  "tests": [
+   "tests/test_the_cli_reembed_builds_the_recipe_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-4: the MCP server builds no embedder",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    from ._embedders import make_embedders\n    return make_embedders()",
+  "new": "    from ._embedders import make_embedders\n    return None, None, None",
+  "tests": [
+   "tests/test_the_mcp_server_keeps_vectors_by_default_with_an_embedder.py"
+  ]
+ },
+ {
+  "name": "3.17.0 P-6: the config cache ignores the change time and the inode",
+  "file": "inspeximus/_userconfig.py",
+  "old": "key = (p, st.st_size, st.st_mtime_ns, st.st_ctime_ns, st.st_ino)",
+  "new": "key = (p, st.st_size, st.st_mtime_ns)",
+  "tests": [
+   "tests/test_a_projects_environment_cannot_change_what_the_server_writes.py"
+  ]
+ },
+ {
+  "name": "home guard: a key pairs with no head, so it is never this run's",
+  "file": "tests/_home_guard.py",
+  "old": "        return _record_store(home, _rel, n) or _by.get(_tag(n))",
+  "new": "        return _record_store(home, _rel, n)",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a file that is not this run's fails the run",
+  "file": "tests/_home_guard.py",
+  "old": "        other = [n for n in added if n not in mine]",
+  "new": "        other = []\n        mine = list(added)",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a removal no longer fails the run",
+  "file": "tests/_home_guard.py",
+  "old": "        if mine or removed:",
+  "new": "        if mine:",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: the information line drops the time",
+  "file": "tests/_home_guard.py",
+  "old": "), modified \"",
+  "new": "), \"",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a record that names a run store is not read",
+  "file": "tests/_home_guard.py",
+  "old": "    if not name.endswith(\".json\"):\n        return None\n    try:\n        with open(os.path.join(home, rel, name)",
+  "new": "    return None\n    try:\n        with open(os.path.join(home, rel, name)",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: a key of a run temp store with no head is not found",
+  "file": "tests/_home_guard.py",
+  "old": "or (tags and _tag(n) in tags)",
+  "new": "or False",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: the tree walk skips the folders of the run",
+  "file": "tests/_home_guard.py",
+  "old": "for n in dirs + files:",
+  "new": "for n in files:",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: an unreadable head is excused again",
+  "file": "tests/_home_guard.py",
+  "old": "\n                or (_is_head(rel, n) and not stores[n])]",
+  "new": "]",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "home guard: the walk hashes a path relative to nothing",
+  "file": "tests/_home_guard.py",
+  "old": "hashlib.sha256(os.path.abspath(os.path.join(dp, n)).encode",
+  "new": "hashlib.sha256(os.path.join('x', n).encode",
+  "tests": [
+   "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]
  }
 ]

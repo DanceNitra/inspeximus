@@ -132,8 +132,8 @@ def test_host_reads_the_env_block_of_a_host_entry():
 #: S-2: every caller of `raw` for an env-with-guard name, or for a name it does not know, with the guard it applies.
 #: A new caller fails the test below until it is listed here with its guard.
 RAW_GUARDED_CALLERS = {
-    ("inspeximus/_http.py", "embedders_from_env", "INSPEXIMUS_EMBED_MODEL"): "the recipe: an open embeds nothing",
-    ("inspeximus/_http.py", "embedders_from_env", "INSPEXIMUS_NOMIC_PREFIX"): "the recipe, as EMBED_MODEL",
+    ("inspeximus/_embedders.py", "make_embedders", "INSPEXIMUS_EMBED_MODEL"): "the recipe: an open embeds nothing",
+    ("inspeximus/_embedders.py", "make_embedders", "INSPEXIMUS_NOMIC_PREFIX"): "the recipe, as EMBED_MODEL",
     ("inspeximus/_http.py", "env_url", "<var>"): "host_allowed: another host needs the user's config",
     ("inspeximus/_http.py", "env_key", "<var>"): "host_allowed for the URL in use",
     ("inspeximus/_keyhome.py", "key_home", "INSPEXIMUS_KEY_HOME"): "refusal(): git tree, store project, cwd project",
