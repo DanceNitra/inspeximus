@@ -185,10 +185,15 @@ def store_signature(path):
         files += _answer_files(path)
     except Exception:                                           # noqa: BLE001
         pass
+    # THE INODE CHANGE TIME AND THE INODE ON POSIX (3.18, AUDIT-B R-1). An in-place patch of the same length that puts
+    # the modification time back leaves the size, the mtime and SQLite's change counter as they were; the kernel moves
+    # st_ctime_ns on any write and no tool can set it, and a replace moves st_ino. On Windows st_ctime is the creation
+    # time and nothing cheap stands in for it, so that patch is not seen there (a known limit of 3.18).
+    posix = os.name != "nt"
     for f in files:
         try:
             st = os.stat(f)
-            parts.append((f, st.st_mtime_ns, st.st_size))
+            parts.append((f, st.st_mtime_ns, st.st_size) + ((st.st_ctime_ns, st.st_ino) if posix else ()))
         except OSError:
             parts.append((f, None, None))
     counter = None

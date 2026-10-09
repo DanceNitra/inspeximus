@@ -488,8 +488,9 @@ def test_another_program_gets_none_of_our_variables(monkeypatch):
 #: and applies the rule to what it reads.
 OWN_LAUNCHES = {("inspeximus/claude_code.py", "maybe_archive_in_background"),
                 ("inspeximus/claude_code.py", "_start_detached")}
-#: Not a process start of ours: the user's own command opens a file in the user's browser (`inspeximus browse --open`).
-ALLOWED_OTHER = {("inspeximus/cli.py", "webbrowser")}
+#: Nothing is exempt by name (3.18, AUDIT-B R-2): `webbrowser` was, for `browse --open`, and on POSIX it runs the command
+#: in $BROWSER with this process's environment. The browser opens through `_envpolicy.open_in_browser` now.
+ALLOWED_OTHER = set()
 _OS_STARTS = {"system", "popen", "startfile", "fork", "forkpty", "posix_spawn", "posix_spawnp", "getoutput",
               "getstatusoutput"}
 _STARTING_MODULES = {"subprocess", "pty", "commands", "popen2", "webbrowser"}
@@ -527,7 +528,7 @@ def _start_violations(path, source=None):
             if (n.attr in _OS_STARTS and on_os) or n.attr.startswith(("execv", "execl", "spawnv", "spawnl")) \
                     or n.attr.startswith("create_subprocess"):
                 out.append((n.lineno, "." + n.attr))
-        elif isinstance(n, ast.Constant) and n.value in _STARTING_MODULES and rel != "inspeximus/cli.py":
+        elif isinstance(n, ast.Constant) and n.value in _STARTING_MODULES:
             p = None
             for q in ast.walk(t):
                 if isinstance(q, ast.Call) and n in q.args and isinstance(q.func, (ast.Attribute, ast.Name)) and \
@@ -555,6 +556,7 @@ def test_every_process_starts_through_envpolicy():
     "import os\nos.startfile('x')", "import os as _o\n_o.system('x')", "import os\nos.posix_spawn('x', [], {})", "from os import system",
     "import asyncio\nasyncio.create_subprocess_exec('x')", "import multiprocessing", "from multiprocessing import Process",
     "import importlib\nimportlib.import_module('subprocess')", "__import__('subprocess')", "import pty",
+    "import webbrowser", "from webbrowser import open", "import importlib\nimportlib.import_module('webbrowser')",
 ])
 def test_the_start_check_catches_every_shape(src):
     assert _start_violations(os.path.join(ROOT, "inspeximus", "x.py"), src), src
@@ -626,3 +628,51 @@ def test_the_archive_asks_git_through_start(tmp_path):
     (repo / ".gitignore").write_text("ignored.json\n", encoding="utf-8")
     assert archive._git_ignored(str(repo / "ignored.json")) is True
     assert archive._git_ignored(str(repo / "kept.json")) is False
+
+
+def test_the_browser_opens_without_browser_and_by_absolute_path(monkeypatch, tmp_path):
+    """AUDIT-B R-2: `browse --open` ran `webbrowser.open`, which on POSIX runs the command in $BROWSER. The opener is
+    fixed and absolute, and its environment carries no BROWSER and none of our variables."""
+    started = []
+    monkeypatch.setenv("BROWSER", str(tmp_path / "evil.sh"))
+    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "secret")
+    monkeypatch.setattr(_envpolicy.os, "name", "posix")
+    monkeypatch.setattr(_envpolicy.os.path, "isfile", lambda p: p == "/usr/bin/xdg-open")
+    monkeypatch.setattr(_envpolicy.os, "access", lambda p, m: True)
+    monkeypatch.setattr(_envpolicy, "start", lambda args, **kw: started.append((args, kw)))
+    monkeypatch.setattr(sys, "platform", "linux")
+    assert _envpolicy.open_in_browser(str(tmp_path / "b.html")) is True
+    (args, kw), = started
+    assert args[0] == "/usr/bin/xdg-open" and os.path.isabs(args[1])
+    env = kw["env"]
+    assert isinstance(env, dict) and "PATH" in {k.upper() for k in env}, "CONTROL: the opener gets an environment"
+    assert "BROWSER" not in {k.upper() for k in env}, "the opener can run the command in $BROWSER"
+    assert not [k for k in env if k.upper().startswith("INSPEXIMUS_")]
+
+
+def test_no_opener_is_reported_not_guessed(monkeypatch, tmp_path):
+    monkeypatch.setattr(_envpolicy.os, "name", "posix")
+    monkeypatch.setattr(_envpolicy.os.path, "isfile", lambda p: False)
+    monkeypatch.setattr(_envpolicy, "start", lambda *a, **k: pytest.fail("started a program it did not find"))
+    assert _envpolicy.open_in_browser(str(tmp_path / "b.html")) is False
+
+
+@pytest.mark.skipif(os.name == "nt", reason="webbrowser reads $BROWSER on POSIX only")
+def test_control_webbrowser_runs_the_command_in_browser(monkeypatch, tmp_path):
+    """CONTROL for the two tests above: the call `browse --open` used to make runs $BROWSER."""
+    import webbrowser
+    mark = tmp_path / "ran"
+    script = tmp_path / "b.sh"
+    script.write_text("#!/bin/sh\ntouch %s\n" % mark)
+    script.chmod(0o755)
+    monkeypatch.setenv("BROWSER", str(script))
+    monkeypatch.setattr(webbrowser, "_tryorder", None, raising=False)
+    monkeypatch.setattr(webbrowser, "_browsers", {}, raising=False)
+    webbrowser.open("file:///x")
+    import time
+    for _ in range(50):
+        if mark.exists():
+            break
+        time.sleep(0.1)
+    assert mark.exists(), "CONTROL: webbrowser no longer runs $BROWSER, so the tests above prove less"
+
