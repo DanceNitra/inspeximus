@@ -741,7 +741,7 @@ def maybe_archive_in_background(cwd=None) -> str:
         pol = archive_policy(cwd)
         if not pol["auto"]:
             return "off"
-        import subprocess                       # imported only once the policy is on: the hook's import time is measured
+        from . import _envpolicy                # the one place a process starts (3.18, AUDIT-A I-4)
         import time
         from ._surface import coding_store_path
         path = coding_store_path(cwd)
@@ -790,9 +790,9 @@ def maybe_archive_in_background(cwd=None) -> str:
         try:
             log = open_for_write(_archive_state_path(path, ".log"))
         except LinkRefused:
-            log = subprocess.DEVNULL                         # the run still starts; its output goes nowhere
-        kw = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
-              "close_fds": True}
+            log = _envpolicy.DEVNULL                         # the run still starts; its output goes nowhere
+        kw = {"cwd": cwd or os.getcwd(), "stdin": _envpolicy.DEVNULL, "stdout": log, "stderr": _envpolicy.STDOUT,
+              "close_fds": True, "env": _envpolicy.INHERIT, "wait": False}      # our own run: it applies the rule
         if os.name == "nt":
             kw["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000   # DETACHED, NEW_PROCESS_GROUP, NO_WINDOW
         else:
@@ -801,13 +801,13 @@ def maybe_archive_in_background(cwd=None) -> str:
             # LEAVE THE HOOK'S JOB (3.16.4, AUDIT-A F-14): a host that runs hooks inside a job object which
             # ends with the hook ended this run too. CREATE_BREAKAWAY_FROM_JOB asks to leave it; a job that
             # does not allow breakaway refuses the start, and the run then starts without the flag.
-            proc = subprocess.Popen(argv, **dict(kw, creationflags=kw["creationflags"] | 0x01000000)) \
-                if os.name == "nt" else subprocess.Popen(argv, **kw)
+            proc = _envpolicy.start(argv, **dict(kw, creationflags=kw["creationflags"] | 0x01000000)) \
+                if os.name == "nt" else _envpolicy.start(argv, **kw)
         except OSError:
             if os.name != "nt":
                 raise
-            proc = subprocess.Popen(argv, **kw)
-        if log is not subprocess.DEVNULL:
+            proc = _envpolicy.start(argv, **kw)
+        if log is not _envpolicy.DEVNULL:
             log.close()
         # MERGED, NEVER OVER A FINISHED RUN'S MARK (3.16.4, AUDIT-B): a fast run has written `done` and `result` by
         # now, and writing `record` over it made a finished run look dead (see _mark_archive_run_done).
@@ -949,22 +949,21 @@ def _start_detached(args, cwd, log_path):
     the prompt hook: `-E` and the shim (no working directory and no PYTHON* variable on the import path, this checkout first),
     DETACHED_PROCESS and a new process group on Windows with CREATE_BREAKAWAY_FROM_JOB tried first, a new session elsewhere,
     stdin closed, output to `log_path`. Returns the process."""
-    import subprocess
     parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     prog = ("import runpy,sys;sys.path[:]=[p for p in sys.path if p not in (str(),chr(46))];"
             "sys.path.insert(0,%r);runpy._run_module_as_main(sys.argv.pop(1))" % parent)
     command = [sys.executable, "-E", "-c", prog, "inspeximus.claude_code"] + list(args)
     from ._safewrite import open_for_write
     with open_for_write(log_path) as log:
-        opts = {"cwd": cwd or os.getcwd(), "stdin": subprocess.DEVNULL, "stdout": log, "stderr": subprocess.STDOUT,
-                "close_fds": True}
+        opts = {"cwd": cwd or os.getcwd(), "stdin": _envpolicy.DEVNULL, "stdout": log, "stderr": _envpolicy.STDOUT,
+                "close_fds": True, "env": _envpolicy.INHERIT, "wait": False}    # our own run: it applies the rule
         if os.name != "nt":
-            return subprocess.Popen(command, start_new_session=True, **opts)
+            return _envpolicy.start(command, start_new_session=True, **opts)
         flags = 0x00000008 | 0x00000200 | 0x08000000          # DETACHED_PROCESS, NEW_PROCESS_GROUP, CREATE_NO_WINDOW
         try:
-            return subprocess.Popen(command, creationflags=flags | 0x01000000, **opts)    # CREATE_BREAKAWAY_FROM_JOB
+            return _envpolicy.start(command, creationflags=flags | 0x01000000, **opts)    # CREATE_BREAKAWAY_FROM_JOB
         except OSError:                                        # the job does not allow breakaway
-            return subprocess.Popen(command, creationflags=flags, **opts)
+            return _envpolicy.start(command, creationflags=flags, **opts)
 
 
 def maybe_restamp_in_background(cwd=None, foreign=0) -> str:
@@ -1308,12 +1307,11 @@ def _capture_commit(m, raw_cmd, cwd, sid):
     return False silently rather than costing the agent its tool call.
     """
     import shlex
-    import subprocess
     if not _invokes_commit(raw_cmd):
         return False
     try:
         from ._storelink import _git_env                  # the variables git sees, and none of ours (AUDIT-A)
-        out = subprocess.run(
+        out = _envpolicy.start(
             ["git", "log", "-1", "--format=%H%x00%ct%x00%s%x00%b"],
             cwd=cwd, capture_output=True, timeout=10, env=_git_env(),
         ).stdout.decode("utf-8", "replace")
@@ -1326,7 +1324,7 @@ def _capture_commit(m, raw_cmd, cwd, sid):
         import time as _t
         if abs(_t.time() - float(ct or 0)) > 300:      # not this event's commit
             return False
-        files = subprocess.run(
+        files = _envpolicy.start(
             ["git", "show", "--name-only", "--format=", sha],
             cwd=cwd, capture_output=True, timeout=10, env=_git_env(),
         ).stdout.decode("utf-8", "replace").split()

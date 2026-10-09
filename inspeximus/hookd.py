@@ -178,9 +178,11 @@ def store_signature(path):
     except OSError:
         names = []
     files = [os.path.join(d, n) for n in names]
+    # EVERY FILE THE ANSWER DEPENDS ON (3.18, AUDIT-A I-2), not only the store's: the user's config, which the handle read
+    # at open (guards, supersession), and the store's files in the key home. `core._answer_files` names them in one place.
     try:
-        from .core import _guard_key_file, _receipt_key_file
-        files += [_guard_key_file(path), _receipt_key_file(path)]
+        from .core import _answer_files
+        files += _answer_files(path)
     except Exception:                                           # noqa: BLE001
         pass
     for f in files:

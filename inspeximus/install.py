@@ -775,7 +775,8 @@ def read_entry(host, scope=None, project=None, name=SERVER_NAME):
         if spec["format"] == "json":
             data = json.loads(text or "{}")
             servers = data.get(spec["root_key"]) if isinstance(data, dict) else None
-            return path, (servers or {}).get(name) if isinstance(servers, dict) else None, None
+            from . import _envpolicy
+            return path, (_envpolicy.host_entry(servers.get(name)) if isinstance(servers, dict) else None), None
         try:
             import tomllib
         except ImportError:
@@ -783,7 +784,8 @@ def read_entry(host, scope=None, project=None, name=SERVER_NAME):
                 import tomli as tomllib
             except ImportError:
                 return path, None, "reading TOML needs Python 3.11 or later, or the tomli package"
-        return path, (tomllib.loads(text).get("mcp_servers") or {}).get(name), None
+        from . import _envpolicy
+        return path, _envpolicy.host_entry((tomllib.loads(text).get("mcp_servers") or {}).get(name)), None
     except Exception as e:                                   # noqa: BLE001 -- a report, never a crash
         return path, None, f"unreadable ({str(e)[:120]})"
 

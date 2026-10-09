@@ -155,14 +155,14 @@ def _git_env() -> dict:
 
 def _git_tracks(root, rel) -> "bool | None":
     """True when git tracks `rel` in the work tree at `root`, False when it does not, None when git cannot say."""
-    import subprocess                           # imported here: the hook's import time is measured, and git runs rarely
+    from . import _envpolicy                    # the one place a process starts (3.18, AUDIT-A I-4)
     # No repository config may run a program: no fsmonitor hook, no hooks path, no untracked cache. `--literal-pathspecs`
     # keeps a link named like a glob from matching a tracked sibling.
     cmd = ["git", "--no-optional-locks", "--literal-pathspecs", "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false",
            "-c", "core.hooksPath=" + os.devnull, "-C", root, "ls-files", "--error-unmatch", "--", rel]
     try:
-        r = subprocess.run(cmd, capture_output=True, env=_git_env(), timeout=GIT_TIMEOUT_S, stdin=subprocess.DEVNULL)
-    except (OSError, subprocess.SubprocessError):
+        r = _envpolicy.start(cmd, capture_output=True, env=_git_env(), timeout=GIT_TIMEOUT_S, stdin=_envpolicy.DEVNULL)
+    except (OSError, _envpolicy.SubprocessError):
         return None
     if r.returncode == 0:
         return True

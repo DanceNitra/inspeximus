@@ -34,7 +34,6 @@ import hashlib
 import os
 import secrets
 import shutil
-import subprocess
 import tempfile
 import urllib.request
 
@@ -195,7 +194,8 @@ def verify_with_openssl(token: bytes, digest: bytes, ca_file: str | None = None,
             fh.write(bytes(token))
         with open(dp, "wb") as fh:
             fh.write(bytes(digest))
-        r = subprocess.run([exe, "ts", "-verify", "-digest", bytes(digest).hex(),
+        from . import _envpolicy
+        r = _envpolicy.start([exe, "ts", "-verify", "-digest", bytes(digest).hex(),
                             "-in", tp, "-CAfile", ca_file],
                            capture_output=True, text=True, encoding="utf-8", errors="replace",
                            timeout=60, env=_tool_env())

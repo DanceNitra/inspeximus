@@ -9609,8 +9609,8 @@
  {
   "name": "the re-stamp run does not ask to leave the hook's job",
   "file": "inspeximus/claude_code.py",
-  "old": "            return subprocess.Popen(command, creationflags=flags | 0x01000000, **opts)    # CREATE_BREAKAWAY_FROM_JOB",
-  "new": "            return subprocess.Popen(command, creationflags=flags, **opts)    # CREATE_BREAKAWAY_FROM_JOB",
+  "old": "            return _envpolicy.start(command, creationflags=flags | 0x01000000, **opts)    # CREATE_BREAKAWAY_FROM_JOB",
+  "new": "            return _envpolicy.start(command, creationflags=flags, **opts)    # CREATE_BREAKAWAY_FROM_JOB",
   "tests": [
    "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
   ]
@@ -10889,24 +10889,6 @@
   ]
  },
  {
-  "name": "3.18 env S-2: host() reads the environment when it is passed as the entry",
-  "file": "inspeximus/_envpolicy.py",
-  "old": "    if _is_env(entry):\n        raise ValueError(\"host() reads a host config entry, not the process environment\")",
-  "new": "    if entry is os.environ:\n        raise ValueError(\"host() reads a host config entry, not the process environment\")",
-  "tests": [
-   "tests/test_the_environment_reads_through_one_accessor.py"
-  ]
- },
- {
-  "name": "3.18 env S-2: host() reads a copy of the environment as an entry's env block",
-  "file": "inspeximus/_envpolicy.py",
-  "old": "    if _is_env(env) or not isinstance(env, dict):",
-  "new": "    if not isinstance(env, dict):",
-  "tests": [
-   "tests/test_the_environment_reads_through_one_accessor.py"
-  ]
- },
- {
   "name": "3.18 env S-2: a guarded name is read through raw without its guard",
   "file": "inspeximus/mcp_server.py",
   "old": "    f, _src = _envpolicy.key_file(\"INSPEXIMUS_WRITER_KEY_FILE\", _PATH)",
@@ -10965,15 +10947,6 @@
   "file": "inspeximus/_envpolicy.py",
   "old": "    if keep is not None and any(_ours(k) for k in out):",
   "new": "    if False:",
-  "tests": [
-   "tests/test_the_environment_reads_through_one_accessor.py"
-  ]
- },
- {
-  "name": "3.18 env S-2: an env block that mirrors the environment is read",
-  "file": "inspeximus/_envpolicy.py",
-  "old": "        return bool(ours) and all(os.environ.get(k) == v for k, v in ours)",
-  "new": "        return False",
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py"
   ]
@@ -11253,7 +11226,7 @@
  {
   "name": "3.18 daemon D-9: the key files are not in the signature",
   "file": "inspeximus/hookd.py",
-  "old": "        files += [_guard_key_file(path), _receipt_key_file(path)]\n",
+  "old": "        files += _answer_files(path)\n",
   "new": "        pass\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
@@ -11661,6 +11634,78 @@
   "new": "        self._l1_reset()",
   "tests": [
    "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
+  ]
+ },
+ {
+  "name": "3.18 I-1: host() reads a plain dict",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if not isinstance(entry, HostEntry):\n        raise ValueError",
+  "new": "    if not isinstance(entry, dict):\n        raise ValueError",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 I-1: read_entry returns a plain dict",
+  "file": "inspeximus/install.py",
+  "old": "            return path, (_envpolicy.host_entry(servers.get(name)) if isinstance(servers, dict) else None), None",
+  "new": "            return path, (servers.get(name) if isinstance(servers, dict) else None), None",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 I-2: the user's config is not in the daemon's signature",
+  "file": "inspeximus/core.py",
+  "old": "    out = [_userconfig.path()]",
+  "new": "    out = []",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 I-2: the stamp-env file is not an answer file",
+  "file": "inspeximus/core.py",
+  "old": "    for f in (_head_path, _receipt_key_file, _guard_key_file, _stamp_env_file):",
+  "new": "    for f in (_head_path, _receipt_key_file, _guard_key_file):",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
+ },
+ {
+  "name": "3.18 I-3: the record list is a plain list",
+  "file": "inspeximus/core.py",
+  "old": "        if isinstance(value, list) and not isinstance(value, _RecordList):\n            value = _RecordList(value, self)",
+  "new": "        if False:\n            value = _RecordList(value, self)",
+  "tests": [
+   "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
+  ]
+ },
+ {
+  "name": "3.18 I-3: a removal through an alias prunes nothing",
+  "file": "inspeximus/core.py",
+  "old": "    def _pruned(self):\n        o = self._owner() if self._owner is not None else None",
+  "new": "    def _pruned(self):\n        o = None",
+  "tests": [
+   "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
+  ]
+ },
+ {
+  "name": "3.18 I-4: start() runs without an explicit environment",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    elif not isinstance(env, dict):\n        raise ValueError(\"a process starts with an explicit environment",
+  "new": "    elif False:\n        raise ValueError(\"a process starts with an explicit environment",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 I-4: git in the archive starts outside start()",
+  "file": "inspeximus/archive.py",
+  "old": "        r = _envpolicy.start([\"git\", \"check-ignore\", \"-q\", str(path)], cwd=str(Path(path).parent),",
+  "new": "        r = __import__(\"subprocess\").run([\"git\", \"check-ignore\", \"-q\", str(path)], cwd=str(Path(path).parent),",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
   ]
  }
 ]

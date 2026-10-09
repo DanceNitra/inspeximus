@@ -263,31 +263,28 @@ def raw(var: str, default=None, env=None):
     return default if v is None else v
 
 
-def host(var: str, entry):
-    """A value from a host's own configuration ENTRY (an agent's MCP server entry in the user's host config file, whose
-    `env` block the user wrote and a project's settings do not reach). Any rule; never the process environment: an
-    entry that is the environment, or whose `env` is the environment or a copy of it, raises (AUDIT-A S-2)."""
-    def _is_env(m):
-        if m is os.environ or isinstance(m, (type(os.environ), _EnvCopy)):
-            return True
-        if not isinstance(m, dict) or not m:
-            return False
-        return len(m) == len(os.environ) and all(os.environ.get(k) == v for k, v in m.items())
+class HostEntry(dict):
+    """A host's inspeximus entry as the host's own config file holds it (an agent's MCP server entry, whose `env` block the
+    user wrote). Made only by `host_entry`, which the readers of those files call (`install.read_entry`, and
+    `install_all`'s own reader); host() reads nothing else (3.18, AUDIT-A I-1)."""
 
-    def _mirrors_env(m):
-        # A FILTERED COPY (AUDIT-A delta S-2): every INSPEXIMUS_* entry it has is the environment's own value. Its values
-        # are refused (read as absent) rather than raised on, because a host entry the user wrote can match the shell it
-        # runs from by coincidence, and `install --all` must still run there.
-        ours = [(k, v) for k, v in m.items() if _ours(k)]
-        return bool(ours) and all(os.environ.get(k) == v for k, v in ours)
-    if _is_env(entry):
-        raise ValueError("host() reads a host config entry, not the process environment")
-    env = (entry or {}).get("env") if isinstance(entry, dict) else None
-    if env is None:
+
+def host_entry(value):
+    """The entry a host's config file holds, as a HostEntry, or None when it is not a mapping."""
+    return HostEntry(value) if isinstance(value, dict) else None
+
+
+def host(var: str, entry):
+    """A value from the `env` block of a HostEntry. Any rule applies, because the user wrote the host's config file and a
+    project's settings do not reach it. Anything that is not a HostEntry raises: the environment, a copy of it
+    (`snapshot()`, `child_env()`, `dict(os.environ)`), or a plain dict. The test is the type, not the values (AUDIT-A
+    I-1: comparing values with the environment called a correct entry a copy when the shell exported the same path)."""
+    if entry is None:
         return ""
-    if _is_env(env) or not isinstance(env, dict):
-        raise ValueError("host() reads the `env` block of a host config entry, not the process environment")
-    if _mirrors_env(env):
+    if not isinstance(entry, HostEntry):
+        raise ValueError("host() reads a HostEntry from a host's config file, not %s" % type(entry).__name__)
+    env = entry.get("env")
+    if not isinstance(env, dict):
         return ""
     v = env.get(var)
     return "" if v is None else str(v)
@@ -486,3 +483,36 @@ def set_for_this_process(var: str, value) -> None:
         os.environ.pop(var, None)
     else:
         os.environ[var] = str(value)
+
+
+
+# -- THE ONLY PLACE A PROCESS STARTS (3.18, AUDIT-A I-4) ------------------------------------------------------------
+# `tests/test_the_environment_reads_through_one_accessor.py` refuses `subprocess`, `os.system`, `os.popen`, the `exec*`
+# and `spawn*` families, `os.startfile`, `getoutput`, asyncio's subprocesses and `multiprocessing` (its `connection`
+# module, which only moves bytes, excepted) anywhere else in shipped code, so a start cannot skip the environment rule.
+
+#: The environment of our own launch (`python -m inspeximus...`), which inherits this process's environment and applies
+#: the rule to what it reads itself.
+INHERIT = object()
+
+
+def start(args, *, env, wait=True, **kw):
+    """Start `args`: `subprocess.run` when `wait`, else `subprocess.Popen`. `env` is required: a mapping from
+    `tool_env`, `child_env` or `_storelink._git_env` for another program, or INHERIT for our own launch."""
+    import subprocess
+    if env is INHERIT:
+        env = None
+    elif not isinstance(env, dict):
+        raise ValueError("a process starts with an explicit environment (tool_env, child_env, _git_env, or INHERIT)")
+    return (subprocess.run if wait else subprocess.Popen)(args, env=env, **kw)
+
+
+_FROM_SUBPROCESS = ("DEVNULL", "STDOUT", "PIPE", "SubprocessError", "TimeoutExpired", "CalledProcessError")
+
+
+def __getattr__(name):
+    """`subprocess`'s constants and exceptions, loaded when first named, so `import _envpolicy` loads no subprocess."""
+    if name in _FROM_SUBPROCESS:
+        import subprocess
+        return getattr(subprocess, name)
+    raise AttributeError(name)

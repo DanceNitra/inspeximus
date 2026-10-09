@@ -26,7 +26,6 @@ import re
 import os
 import pathlib
 import shutil
-import subprocess
 import sys
 import time
 
@@ -143,7 +142,7 @@ def _existing_store(host):
             entry = (tomllib.loads(path.read_text(encoding="utf-8")).get("mcp_servers") or {}).get(_i.SERVER_NAME)
     except Exception:                                        # noqa: BLE001 -- unreadable: plan() reports it
         return None
-    return _envpolicy.host("INSPEXIMUS_PATH", entry) or None
+    return _envpolicy.host("INSPEXIMUS_PATH", _envpolicy.host_entry(entry)) or None
 
 
 def choose_store(hosts, store=None):
@@ -390,7 +389,7 @@ def _installer_env():
     return _envpolicy.tool_env(keep=_envpolicy.INSTALLER_ENV_KEEP, prefixes=_envpolicy.INSTALLER_ENV_PREFIXES)
 
 
-def _hermes_python(py, code, runner=subprocess.run):
+def _hermes_python(py, code, runner=_envpolicy.start):
     root = hermes_root(py)
     # Hermes' own interpreter is another program: it gets what it needs to start and find its home, and none of our
     # variables (AUDIT-A delta: the whole environment carried INSPEXIMUS_EMBED_KEY and SERVICE_SECRET to it).
@@ -401,17 +400,17 @@ def _hermes_python(py, code, runner=subprocess.run):
     try:
         r = runner([str(py), "-c", code], capture_output=True, text=True, encoding="utf-8",
                    errors="replace", timeout=180, cwd=str(root) if root else None, env=env)
-    except (OSError, subprocess.SubprocessError) as e:
+    except (OSError, _envpolicy.SubprocessError) as e:
         return False, repr(e)[:200]
     return r.returncode == 0, ((r.stdout or "").strip() or (r.stderr or "")[-200:])
 
 
-def hermes_version(py, runner=subprocess.run):
+def hermes_version(py, runner=_envpolicy.start):
     ok, out = _hermes_python(py, "import importlib.metadata as m; print(m.version('hermes-agent'))", runner)
     return out.splitlines()[-1] if ok and out else "unknown version"
 
 
-def hermes_loads_provider(py, runner=subprocess.run):
+def hermes_loads_provider(py, runner=_envpolicy.start):
     """Ask Hermes' OWN loader, in its own venv, whether it lists the inspeximus provider. A behaviour
     check rather than a version check: a build either discovers the package or it does not."""
     ok, out = _hermes_python(py, "from plugins.memory import list_memory_provider_names as f; "
@@ -444,7 +443,7 @@ def _stale_uv_index(r):
     return "no version of inspeximus" in text
 
 
-def warm_uvx(exe, runner=subprocess.run):
+def warm_uvx(exe, runner=_envpolicy.start):
     """Run the pin every agent entry now launches, once, so uv resolves and caches it here.
 
     A STALE INDEX IS REFRESHED ONCE (3.15.6). On PC1 on 2026-09-28 uvx answered "no version of
@@ -463,7 +462,7 @@ def warm_uvx(exe, runner=subprocess.run):
                            % (_version(), (r.stderr or r.stdout or "").strip()[-200:]))
         r = runner([str(exe), "--refresh-package", "inspeximus"] + cmd[1:], capture_output=True, text=True,
                    timeout=300, env=_installer_env())
-    except (OSError, subprocess.SubprocessError) as e:
+    except (OSError, _envpolicy.SubprocessError) as e:
         return False, "uvx could not be run: %s" % e
     if r.returncode == 0:
         return True, ("uv's cached package index did not know inspeximus %s yet; it was refreshed "
@@ -472,7 +471,7 @@ def warm_uvx(exe, runner=subprocess.run):
                    "and hooks will not start until it does: %s" % (_version(), (r.stderr or "").strip()[-200:]))
 
 
-def install_into_hermes(py, runner=subprocess.run, spec=None):
+def install_into_hermes(py, runner=_envpolicy.start, spec=None):
     """Install this version of inspeximus (or `spec`) into Hermes' own venv. Hermes ships uv, and its
     interpreter can refuse `pip install` (PEP 668), so uv is tried first.
 
@@ -497,7 +496,7 @@ def install_into_hermes(py, runner=subprocess.run, spec=None):
     return False, (" | ".join(errors) if errors else "no installer found")
 
 
-def uninstall_from_hermes(py, runner=subprocess.run):
+def uninstall_from_hermes(py, runner=_envpolicy.start):
     """Undo install_into_hermes() when the build cannot load the provider, so "cannot load" leaves Hermes
     as it was."""
     uv = _uv_for(py)

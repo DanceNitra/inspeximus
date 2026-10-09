@@ -538,3 +538,76 @@ def test_a_replaced_held_handle_keeps_nothing_of_the_store(project, monkeypatch)
     assert new is not old and new._items, "CONTROL: the moved signature opened a new handle"
     assert old._items == [] and not old._tok_cache and not old._sig_cache and not old._tc_cache, \
         "the replaced handle still holds records"
+
+
+# -- AUDIT-A I-2: every file the answer depends on is in the signature ----------------------------------------------
+def _answer_files(sp):
+    from inspeximus.core import _answer_files as f
+    return f(sp)
+
+
+def test_every_answer_file_moves_the_signature(project):
+    """The user's config and each key-home file of the store: a change to any of them reopens the held handle."""
+    proj, sp = project
+    files = _answer_files(sp)
+    from inspeximus import _userconfig
+    assert _userconfig.path() in files and len(files) >= 4, ("CONTROL: the config and the key-home files are named", files)
+    for f in files:
+        existed = os.path.exists(f)
+        old = open(f, "rb").read() if existed else None
+        base = hookd.store_signature(sp)
+        os.makedirs(os.path.dirname(f), exist_ok=True)
+        with open(f, "ab") as fh:
+            fh.write(b" " if existed else b"{}")
+        try:
+            assert hookd.store_signature(sp) != base, "%s is not in the signature" % f
+        finally:
+            if existed:
+                with open(f, "wb") as fh:
+                    fh.write(old)
+            else:
+                os.remove(f)
+
+
+def test_a_change_to_the_users_config_reopens_the_held_handle(project):
+    """AUDIT-A's repro, at the handle: a daemon opened under one config served under it after the user changed it."""
+    from inspeximus import _userconfig
+    proj, sp = project
+    d = hookd.Daemon(sp, idle_exit_s=60)
+    first = d.handle_for(sp, lambda: Inspeximus(sp))
+    p = _userconfig.path()
+    old = open(p, "rb").read() if os.path.exists(p) else None
+    cfg = dict(_userconfig.read())
+    cfg["guards"] = dict(cfg.get("guards") or {}, read=True)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    with open(p, "w", encoding="utf-8") as fh:
+        json.dump(cfg, fh)
+    try:
+        assert d.handle_for(sp, lambda: Inspeximus(sp)) is not first, "the held handle outlived a change to the config"
+    finally:
+        if old is None:
+            os.remove(p)
+        else:
+            with open(p, "wb") as fh:
+                fh.write(old)
+        _userconfig._CACHE.clear()
+
+
+def test_every_key_home_file_is_an_answer_file():
+    """A function in core that names a file in the key home for a store (it calls key_home) is in _answer_files, so a
+    new one cannot be read by a held handle without moving the daemon's signature."""
+    import ast
+    src = open(os.path.join(ROOT, "inspeximus", "core.py"), encoding="utf-8").read()
+    t = ast.parse(src)
+    named, listed = set(), set()
+    for f in t.body:
+        if isinstance(f, ast.FunctionDef):
+            calls = {n.func.id for n in ast.walk(f) if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
+            args = [a.arg for a in f.args.args]
+            if "key_home" in calls and args[:1] == ["store_path"] and f.name != "_answer_files":
+                named.add(f.name)
+            if f.name == "_answer_files":
+                listed = {n.id for n in ast.walk(f) if isinstance(n, ast.Name)}
+    assert {"_head_path", "_receipt_key_file", "_guard_key_file", "_stamp_env_file"} <= named, ("CONTROL", named)
+    assert named <= listed, "key-home files a held handle reads but the daemon's signature does not: %s" % (
+        sorted(named - listed))

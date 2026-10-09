@@ -217,3 +217,28 @@ def test_the_setter_prunes(tmp_path):
     held = [n for n in _residue(m) if n in ("_tok_cache", "_sig_cache", "_tc_cache", "_recall_ix", "_ix_log")]
     assert held == [], "replacing the list left the dropped record in a derived cache: %s" % held
     assert "_tc_cache" not in _residue(m)
+
+
+@pytest.mark.parametrize("how", ["remove", "pop", "del", "slice", "items_remove", "replace_other"])
+def test_a_removal_through_an_alias_leaves_no_term(tmp_path, how):
+    """AUDIT-A I-3: an alias of the record list skipped the setter, so its removals pruned nothing. The list's own
+    mutating methods prune now."""
+    m = Inspeximus(str(tmp_path / "s.json"), embed=_embed)
+    x = _warm(m)
+    a = m._items
+    i = next(n for n, r in enumerate(a) if r["id"] == x)
+    if how == "remove":
+        a.remove(a[i])
+    elif how == "pop":
+        a.pop(i)
+    elif how == "del":
+        del a[i]
+    elif how == "slice":
+        a[:] = [r for r in a if r["id"] != x]
+    elif how == "items_remove":
+        m.items.remove(m.items[i])
+    else:
+        a[i] = dict(a[0])                                  # another record in its place
+    assert x not in {r["id"] for r in m._items}, "CONTROL: the record left the list"
+    held = [n for n in _residue(m) if n in ("_tok_cache", "_sig_cache", "_tc_cache", "_recall_ix", "_ix_log")]
+    assert held == [], "a removal through an alias left the record in %s" % held

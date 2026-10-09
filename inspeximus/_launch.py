@@ -16,7 +16,6 @@ module named 'inspeximus'" in every hook and in the MCP server (F-22).
     (`runpy._run_module_as_main`, the function `-m` itself calls). It holds no quote character, so it survives
     bash, cmd and a single-quoted `sh -c` unchanged.
 """
-import subprocess
 import sys
 
 #: The package index every uvx command names (3.16.4, AUDIT-A F-23). A host applies a project's settings `env`
@@ -97,10 +96,10 @@ def interpreter_version(exe):
             v = tuple(sys.version_info[:2])
         else:
             from . import _envpolicy
-            out = subprocess.run([str(exe), "-c", "import sys;print(sys.version_info[0],sys.version_info[1])"],
+            out = _envpolicy.start([str(exe), "-c", "import sys;print(sys.version_info[0],sys.version_info[1])"],
                                  capture_output=True, text=True, timeout=30, env=_envpolicy.tool_env()).stdout.split()
             v = (int(out[0]), int(out[1])) if len(out) == 2 else None
-    except (OSError, ValueError, subprocess.SubprocessError):
+    except (OSError, ValueError, _envpolicy.SubprocessError):
         v = None
     _VERSIONS[exe] = v
     return v

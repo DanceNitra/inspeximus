@@ -975,6 +975,25 @@ def _guard_env_tag() -> str:
     return "%d.%d.%d/ucd%s" % (sys.version_info[0], sys.version_info[1], sys.version_info[2], unicodedata.unidata_version)
 
 
+def _answer_files(store_path) -> list:
+    """Every file outside the store's own directory that a handle on `store_path` reads and keeps what it read: the
+    user's config (the guards, the supersession policy and the other settings a handle takes at open) and the store's
+    files in the key home. A process that holds a handle (the prompt daemon) reopens it when one of these moves
+    (3.18, AUDIT-A I-2: a daemon started under `guards.read: false` served an instruction-shaped record after the
+    user turned the guards back on). `test_every_key_home_file_is_an_answer_file` fails when a function that names a
+    key-home file for a store is missing here."""
+    from . import _userconfig
+    out = [_userconfig.path()]
+    for f in (_head_path, _receipt_key_file, _guard_key_file, _stamp_env_file):
+        try:
+            p = f(store_path)
+        except Exception:                                       # noqa: BLE001 -- a refused key home names nothing
+            p = None
+        if p:
+            out.append(p)
+    return out
+
+
 def _stamp_env_file(store_path) -> str:
     from ._keyhome import key_home
     tag = hashlib.sha256(os.path.abspath(str(store_path)).encode("utf-8", "replace")).hexdigest()[:16]
@@ -1965,6 +1984,56 @@ def _note_dirty(store, rid) -> None:
 #: (AUDIT-A Y-2) on copies of the live stores: 5.7 MB an entry on the 23,126-row project store and 13.4 MB on the
 #: MCP store, so 4 entries hold at most 23 MB and 54 MB.
 _RECALL_IX_ENTRIES = 4
+
+
+class _RecordList(list):
+    """The store's record list. Every method that removes or replaces records in place prunes the store's derived caches
+    after it (3.18, AUDIT-A I-3), so a removal through an alias of the list (`a = m._items; a.remove(r)`, the unbound
+    `m.items`, `del a[i]`, `a[:] = ...`) leaves nothing of the record in the handle, as a replacement through the
+    `_items` setter does. Appends and in-place sorts remove nothing and are left as they are."""
+    __slots__ = ("_owner",)
+
+    def __init__(self, data=(), owner=None):
+        super().__init__(data)
+        self._owner = _weakref.ref(owner) if owner is not None else None
+
+    def _pruned(self):
+        o = self._owner() if self._owner is not None else None
+        if o is not None:
+            o._l1_reset()
+            o._prune_derived_caches()
+
+    def remove(self, x):
+        super().remove(x)
+        self._pruned()
+
+    def pop(self, *a):
+        r = super().pop(*a)
+        self._pruned()
+        return r
+
+    def clear(self):
+        super().clear()
+        self._pruned()
+
+    def __delitem__(self, i):
+        super().__delitem__(i)
+        self._pruned()
+
+    def __setitem__(self, i, v):
+        if isinstance(i, slice):
+            super().__setitem__(i, v)
+            self._pruned()
+            return
+        old = list.__getitem__(self, i)
+        super().__setitem__(i, v)
+        # One record replaced by another version of itself (a peer's copy at a reload) removes nothing: no prune, which
+        # a merge loop would otherwise pay once per record.
+        if (old.get("id") if isinstance(old, dict) else old) != (v.get("id") if isinstance(v, dict) else v):
+            self._pruned()
+
+    def __reduce_ex__(self, protocol):              # copies and pickles are plain lists: the owner is this handle's
+        return (list, (list(self),))
 
 
 class _TrackedDict(dict):
@@ -5050,6 +5119,8 @@ class Inspeximus:
         # index until the next recall. Pruning here covers every path that replaces the list, including
         # one written later; tests/test_an_erasure_holds_in_every_handle_on_the_store.py fails on a path
         # that removes records in place instead.
+        if isinstance(value, list) and not isinstance(value, _RecordList):
+            value = _RecordList(value, self)          # a store that parsed to something else stays as it is: the load refuses it
         self.__dict__["_Inspeximus__items"] = value
         self._l1_reset()
         self._prune_derived_caches()

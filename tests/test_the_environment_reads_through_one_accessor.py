@@ -12,6 +12,7 @@ EC-7 RECEIPT_KEY: a 64-hex value from the environment is ignored; a path follows
 """
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -120,9 +121,12 @@ def test_host_refuses_the_environment_and_any_copy_of_it(make, monkeypatch):
 
 
 def test_host_reads_the_env_block_of_a_host_entry():
-    assert _envpolicy.host("INSPEXIMUS_PATH", {"command": "uvx", "env": {"INSPEXIMUS_PATH": "p"}}) == "p"
-    assert _envpolicy.host("INSPEXIMUS_PATH", {"command": "uvx"}) == ""
+    he = _envpolicy.host_entry
+    assert _envpolicy.host("INSPEXIMUS_PATH", he({"command": "uvx", "env": {"INSPEXIMUS_PATH": "p"}})) == "p"
+    assert _envpolicy.host("INSPEXIMUS_PATH", he({"command": "uvx"})) == ""
     assert _envpolicy.host("INSPEXIMUS_PATH", None) == ""
+    with pytest.raises(ValueError):                    # a plain dict is not a host's config entry (AUDIT-A I-1)
+        _envpolicy.host("INSPEXIMUS_PATH", {"command": "uvx", "env": {"INSPEXIMUS_PATH": "p"}})
 
 
 #: S-2: every caller of `raw` for an env-with-guard name, or for a name it does not know, with the guard it applies.
@@ -436,12 +440,26 @@ def test_host_refuses_a_snapshot_or_a_filtered_copy(make, monkeypatch):
         _envpolicy.host("INSPEXIMUS_WRITER_KEY", make())
 
 
-def test_host_reads_nothing_from_an_env_block_that_mirrors_the_environment(monkeypatch):
-    """A hand-filtered copy is a plain dict: every INSPEXIMUS_* entry in it is the environment's own value. Its values
-    are read as absent; an entry the user wrote with a different value is read."""
-    monkeypatch.setenv("INSPEXIMUS_WRITER_KEY", "ab" * 32)
-    assert _envpolicy.host("INSPEXIMUS_WRITER_KEY", {"env": {"INSPEXIMUS_WRITER_KEY": "ab" * 32}}) == ""
-    assert _envpolicy.host("INSPEXIMUS_WRITER_KEY", {"env": {"INSPEXIMUS_WRITER_KEY": "cd" * 32}}) == "cd" * 32
+def test_a_host_entry_that_matches_the_shell_is_read(monkeypatch):
+    """AUDIT-A I-1: the value heuristic called a correct entry a copy when the shell exported the same path, and
+    `install --all --check` then reported DIFFERS. The test is the type: a HostEntry is read whatever its values, and a
+    plain dict with the same values is refused."""
+    monkeypatch.setenv("INSPEXIMUS_PATH", "/same/store.json")
+    entry = {"command": "uvx", "env": {"INSPEXIMUS_PATH": "/same/store.json"}}
+    assert _envpolicy.host("INSPEXIMUS_PATH", _envpolicy.host_entry(entry)) == "/same/store.json"
+    with pytest.raises(ValueError):
+        _envpolicy.host("INSPEXIMUS_PATH", entry)
+
+
+def test_read_entry_returns_a_host_entry(tmp_path, monkeypatch):
+    from inspeximus import install as _i
+    cfg = tmp_path / "claude.json"
+    cfg.write_text(json.dumps({"mcpServers": {_i.SERVER_NAME: {"command": "uvx", "env": {"INSPEXIMUS_PATH": "/s"}}}}))
+    host = next(h for h, spec in _i.HOSTS.items() if spec["format"] == "json" and spec.get("root_key") == "mcpServers")
+    monkeypatch.setitem(_i.HOSTS, host, dict(_i.HOSTS[host], paths=lambda project: {"user": cfg}))
+    _, entry, err = _i.read_entry(host)
+    assert err is None and isinstance(entry, _envpolicy.HostEntry), (type(entry), err)
+    assert _envpolicy.host("INSPEXIMUS_PATH", entry) == "/s"
 
 
 def test_child_env_refuses_a_keep_that_selects_our_names(monkeypatch):
@@ -466,20 +484,104 @@ def test_another_program_gets_none_of_our_variables(monkeypatch):
     assert not [k for k in _git_env() if k.upper().startswith("INSPEXIMUS_")]
 
 
-#: Our own processes, which inherit the environment on purpose: each is `python -m inspeximus...` and applies the rule
-#: to the INSPEXIMUS_* entries it reads.
+#: Our own processes, which inherit the environment on purpose (`env=_envpolicy.INHERIT`): each is `python -m inspeximus...`
+#: and applies the rule to what it reads.
 OWN_LAUNCHES = {("inspeximus/claude_code.py", "maybe_archive_in_background"),
                 ("inspeximus/claude_code.py", "_start_detached")}
+#: Not a process start of ours: the user's own command opens a file in the user's browser (`inspeximus browse --open`).
+ALLOWED_OTHER = {("inspeximus/cli.py", "webbrowser")}
+_OS_STARTS = {"system", "popen", "startfile", "fork", "forkpty", "posix_spawn", "posix_spawnp", "getoutput",
+              "getstatusoutput"}
+_STARTING_MODULES = {"subprocess", "pty", "commands", "popen2", "webbrowser"}
 
 
-def test_every_child_process_gets_an_explicit_environment():
-    """AUDIT-A delta: git, openssl, uv, pip and Hermes' interpreter were started with no env=, so they inherited
-    INSPEXIMUS_EMBED_KEY and INSPEXIMUS_SERVICE_SECRET. Every start of a process in shipped code passes env=, except our
-    own launches listed above."""
+def _start_violations(path, source=None):
     import ast
-    found, bad = set(), []
+    rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+    if rel == "inspeximus/_envpolicy.py":
+        return []
+    t = ast.parse(source if source is not None else open(path, encoding="utf-8").read())
+    os_names = {"os", "nt", "posix"} | {a.asname for n in ast.walk(t) if isinstance(n, ast.Import) for a in n.names
+                                        if a.name in ("os", "nt", "posix") and a.asname}
+    out = []
+    for n in ast.walk(t):
+        if isinstance(n, ast.Import):
+            for a in n.names:
+                top = a.name.split(".")[0]
+                if (top in _STARTING_MODULES or (top == "multiprocessing" and a.name != "multiprocessing.connection")) \
+                        and (rel, top) not in ALLOWED_OTHER:
+                    out.append((n.lineno, "import " + a.name))
+        elif isinstance(n, ast.ImportFrom):
+            mod = n.module or ""
+            top = mod.split(".")[0]
+            if (top in _STARTING_MODULES or (top == "multiprocessing" and mod != "multiprocessing.connection")
+                    or (top == "os" and any(a.name in _OS_STARTS or a.name.startswith(("exec", "spawn"))
+                                           for a in n.names))
+                    or (top == "asyncio" and any("subprocess" in a.name for a in n.names))) \
+                    and (rel, top) not in ALLOWED_OTHER:
+                out.append((n.lineno, "from %s import ..." % mod))
+        elif isinstance(n, ast.Attribute):
+            # `system` and `popen` are common names (platform.system(), a keyword `system=`): they count on the os module
+            # under any name it is bound to here. The exec, spawn and asyncio names are unambiguous anywhere.
+            on_os = isinstance(n.value, ast.Name) and n.value.id in os_names
+            if (n.attr in _OS_STARTS and on_os) or n.attr.startswith(("execv", "execl", "spawnv", "spawnl")) \
+                    or n.attr.startswith("create_subprocess"):
+                out.append((n.lineno, "." + n.attr))
+        elif isinstance(n, ast.Constant) and n.value in _STARTING_MODULES and rel != "inspeximus/cli.py":
+            p = None
+            for q in ast.walk(t):
+                if isinstance(q, ast.Call) and n in q.args and isinstance(q.func, (ast.Attribute, ast.Name)) and \
+                        getattr(q.func, "attr", getattr(q.func, "id", "")) in ("import_module", "__import__"):
+                    p = q
+            if p is not None:
+                out.append((n.lineno, "imports %s by name" % n.value))
+    return out
+
+
+def test_every_process_starts_through_envpolicy():
+    """AUDIT-A I-4: one function starts a process (_envpolicy.start), and it requires the environment. subprocess,
+    os.system, os.popen, the exec and spawn families, os.startfile, getoutput, asyncio's subprocesses and multiprocessing
+    (its `connection` module, which only moves bytes, excepted) appear nowhere else in shipped code, under any alias."""
+    bad = []
+    for f in scan.shipped_files():
+        for line, what in _start_violations(f):
+            bad.append("%s:%d: %s" % (os.path.relpath(f, ROOT), line, what))
+    assert bad == [], "a process start outside _envpolicy.start: %s" % bad
+
+
+@pytest.mark.parametrize("src", [
+    "import subprocess", "import subprocess as sp", "from subprocess import run", "from subprocess import Popen as P",
+    "import os\nos.system('x')", "import os\nos.popen('x')", "import os\nos.execv('x', [])", "import os\nos.spawnl(0, 'x')",
+    "import os\nos.startfile('x')", "import os as _o\n_o.system('x')", "import os\nos.posix_spawn('x', [], {})", "from os import system",
+    "import asyncio\nasyncio.create_subprocess_exec('x')", "import multiprocessing", "from multiprocessing import Process",
+    "import importlib\nimportlib.import_module('subprocess')", "__import__('subprocess')", "import pty",
+])
+def test_the_start_check_catches_every_shape(src):
+    assert _start_violations(os.path.join(ROOT, "inspeximus", "x.py"), src), src
+
+
+def test_the_start_check_passes_the_pipe_module_and_the_accessor():
+    for src in ("from multiprocessing.connection import Listener", "from . import _envpolicy\n_envpolicy.start(['x'], env={})"):
+        assert _start_violations(os.path.join(ROOT, "inspeximus", "x.py"), src) == [], src
+
+
+def test_start_requires_an_environment():
+    with pytest.raises(TypeError):
+        _envpolicy.start(["x"])
+    with pytest.raises(ValueError):
+        _envpolicy.start(["x"], env=None)
+    r = _envpolicy.start([sys.executable, "-c", "import os,sys;sys.stdout.write(os.environ.get('INSPEXIMUS_EMBED_KEY','-'))"],
+                         env=_envpolicy.tool_env(), capture_output=True, text=True, timeout=60)
+    assert r.stdout == "-", "CONTROL: the tool environment carries none of our variables"
+
+
+def test_only_our_own_launches_inherit_the_environment():
+    import ast
+    found = set()
     for f in scan.shipped_files():
         rel = os.path.relpath(f, ROOT).replace(os.sep, "/")
+        if rel == "inspeximus/_envpolicy.py":
+            continue
         t = ast.parse(open(f, encoding="utf-8").read())
         fn = {}
         for d in ast.walk(t):
@@ -487,23 +589,11 @@ def test_every_child_process_gets_an_explicit_environment():
                 for n in ast.walk(d):
                     fn[id(n)] = d.name
         for n in ast.walk(t):
-            if not isinstance(n, ast.Call):
-                continue
-            f_ = n.func
-            name = f_.attr if isinstance(f_, ast.Attribute) else (f_.id if isinstance(f_, ast.Name) else "")
-            spawn = (isinstance(f_, ast.Attribute) and isinstance(f_.value, ast.Name) and f_.value.id == "subprocess"
-                     and name in ("run", "Popen", "call", "check_call", "check_output")) or name == "runner"
-            if not spawn:
-                continue
-            found.add(rel)
-            if any(k.arg == "env" for k in n.keywords):
-                continue
-            if (rel, fn.get(id(n))) in OWN_LAUNCHES:
-                continue
-            bad.append((rel, n.lineno, fn.get(id(n))))
-    assert "inspeximus/archive.py" in found and "inspeximus/install_all.py" in found, "CONTROL: the scan finds them"
-    assert bad == [], "a child process inherits the whole environment: %s" % bad
-
+            if isinstance(n, ast.Attribute) and n.attr == "INHERIT" and isinstance(n.value, ast.Name) \
+                    and n.value.id == "_envpolicy":
+                found.add((rel, fn.get(id(n))))
+    assert found == OWN_LAUNCHES, "a process inherits the whole environment outside our own launches: %s" % (
+        sorted(found - OWN_LAUNCHES))
 
 def test_hermes_and_the_installers_get_none_of_our_variables(monkeypatch, tmp_path):
     from inspeximus import install_all
