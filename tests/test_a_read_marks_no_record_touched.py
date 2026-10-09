@@ -228,3 +228,17 @@ def test_a_read_still_writes_a_new_flag(tmp_path, monkeypatch):
     m.recall("instructions api keys", k=10)
     assert Inspeximus._is_quarantined(inj), "a read no longer flags an instruction-shaped record"
     assert inj["id"] in m._touched, "a new flag did not mark the record, so it would never be saved"
+
+
+def test_a_pop_that_removes_nothing_is_not_an_edit(tmp_path, monkeypatch):
+    """The container rule under the call sites: `rec.pop(k, None)` for an absent key changed nothing and still marked the
+    record. A pop that removes a key still does."""
+    m = Inspeximus(path=_store(tmp_path, monkeypatch, "db", "unstamped"))
+    rec = _deploy(m)
+    rec["meta"].pop("not_there", None)
+    rec.pop("not_there_either", None)
+    assert not m._touched, "a pop of an absent key marked the record touched"
+    rec["meta"]["x"] = 1
+    m._touched.clear()
+    rec["meta"].pop("x", None)
+    assert rec["id"] in m._touched, "CONTROL: a real pop marks the record"

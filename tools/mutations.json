@@ -11500,8 +11500,8 @@
  {
   "name": "3.18 index: the status edit through pop is not tracked",
   "file": "inspeximus/core.py",
-  "old": "        self._fire(a[0] if a else None)\n",
-  "new": "        pass\n",
+  "old": "            self._fire(a[0])\n",
+  "new": "            pass\n",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py"
@@ -11980,6 +11980,15 @@
   "file": "inspeximus/core.py",
   "old": "            if detached and meta:\n                rec[\"meta\"] = meta\n",
   "new": "            if False:\n                rec[\"meta\"] = meta\n",
+  "tests": [
+   "tests/test_a_read_marks_no_record_touched.py"
+  ]
+ },
+ {
+  "name": "3.18 D-1: a pop that removes nothing marks the record",
+  "file": "inspeximus/core.py",
+  "old": "        if a and a[0] in self:                        # a pop that removes nothing changes nothing (AUDIT-A D-1)\n            self._fire(a[0])\n",
+  "new": "        self._fire(a[0] if a else None)\n",
   "tests": [
    "tests/test_a_read_marks_no_record_touched.py"
   ]

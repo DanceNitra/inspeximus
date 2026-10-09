@@ -2173,7 +2173,8 @@ class _TrackedDict(dict):
         return self[k]
 
     def pop(self, *a):
-        self._fire(a[0] if a else None)
+        if a and a[0] in self:                        # a pop that removes nothing changes nothing (AUDIT-A D-1)
+            self._fire(a[0])
         return super().pop(*a)
 
     def popitem(self):
