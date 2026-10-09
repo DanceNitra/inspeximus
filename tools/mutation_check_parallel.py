@@ -95,10 +95,52 @@ def _parse(stdout: str) -> dict:
     return {"totals": totals, "survived": survived, "skipped": skipped, "killed_clipped": killed_names}
 
 
+#: More than this share of the entries red before mutating is a broken run, not a set of skips (2026-10-09: a run with
+#: two workers that shared one APPDATA skipped 60 of 155, and the summary read like a result).
+BROKEN_RUN_SHARE = 0.10
+
+
+def worker_env(home: str, wt: str, base: str, environ=None) -> dict:
+    """The environment of one worker: every place a test or the package writes per user is under `home`, which is the
+    worker's own (2026-10-09: HOME and USERPROFILE were, APPDATA was not, so two workers shared one user config and one
+    worker's `hook.daemon: true` turned the other's daemon tests red). INSPEXIMUS_* from the caller's shell is dropped:
+    a run measures the code, not the machine's settings."""
+    environ = dict(os.environ if environ is None else environ)
+    env = {k: v for k, v in environ.items() if not k.upper().startswith("INSPEXIMUS_")}
+    roaming = os.path.join(home, "AppData", "Roaming")
+    local = os.path.join(home, "AppData", "Local")
+    tmp = os.path.join(home, "tmp")
+    for d in (roaming, local, tmp, os.path.join(home, ".config"), os.path.join(home, ".cache"),
+              os.path.join(home, ".local", "share"), os.path.join(home, "keyhome")):
+        os.makedirs(d, exist_ok=True)
+    # USERPROFILE WHERE SAFE. A Microsoft Store Python (an app-execution alias under a WindowsApps folder) resolves its
+    # own sys.executable under USERPROFILE: with the worker's home there, every test that starts `sys.executable` fails
+    # with "The system cannot find the file specified" (measured 2026-10-09). On that interpreter the worker keeps the
+    # caller's USERPROFILE; everything the package and the suite write per user is still the worker's own below.
+    store_python = "windowsapps" in os.path.normcase(sys.executable)
+    env.update({"HOME": home, "USERPROFILE": environ.get("USERPROFILE", home) if store_python else home,
+                "APPDATA": roaming, "LOCALAPPDATA": local,
+                "XDG_CONFIG_HOME": os.path.join(home, ".config"), "XDG_CACHE_HOME": os.path.join(home, ".cache"),
+                "XDG_DATA_HOME": os.path.join(home, ".local", "share"),
+                "INSPEXIMUS_KEY_HOME": os.path.join(home, "keyhome"),
+                "TMP": tmp, "TEMP": tmp, "TMPDIR": tmp,
+                # A red pre-flight's full output must outlive the worktree, which is removed below.
+                "MUTATION_PREFLIGHT_DIR": os.path.join(base, "preflight"),
+                "PYTHONPATH": wt + os.pathsep + environ.get("PYTHONPATH", ""),
+                "PYTHONIOENCODING": "utf-8", "PYTHONUNBUFFERED": "1",
+                # THE INTERPRETER, BY THE PATH THAT STARTS. A Microsoft Store Python resolves its own sys.executable
+                # under USERPROFILE, so a worker whose USERPROFILE is its sandbox could not start pytest at all
+                # ("The system cannot find the file specified"). The worker runs this path instead.
+                "MUTATION_PYTHON": sys.executable})
+    return env
+
+
 def _run_worker(idx: int, mutations: list[dict], base: str, keep: bool) -> dict:
     wt = os.path.join(base, f"w{idx}")
-    home = os.path.join(base, f"home{idx}")
-    os.makedirs(home, exist_ok=True)
+    # OUTSIDE THE REPOSITORY: `base` is inside the work tree, where a key home from the environment is refused (F-13),
+    # so every test would read the caller's default key home and print the refusal.
+    import tempfile
+    home = tempfile.mkdtemp(prefix=f"mutw{idx}-")
     with _GIT_LOCK:
         r = _git("worktree", "add", "--detach", "--force", wt, "HEAD")
     if r.returncode != 0:
@@ -109,12 +151,7 @@ def _run_worker(idx: int, mutations: list[dict], base: str, keep: bool) -> dict:
     with open(spec, "w", encoding="utf-8") as fh:
         json.dump(mutations, fh)
 
-    env = {**os.environ,
-           "HOME": home, "USERPROFILE": home,
-           # A red pre-flight's full output must outlive the worktree, which is removed below.
-           "MUTATION_PREFLIGHT_DIR": os.path.join(base, "preflight"),
-           "PYTHONPATH": wt + os.pathsep + os.environ.get("PYTHONPATH", ""),
-           "PYTHONIOENCODING": "utf-8", "PYTHONUNBUFFERED": "1"}
+    env = worker_env(home, wt, base)
     t0 = time.time()
     p = subprocess.run([sys.executable, "-X", "utf8", os.path.join("tools", "mutation_check.py"),
                         os.path.join("tools", "_mut_shard.json")],
@@ -255,6 +292,12 @@ def main() -> int:
             if "error" in r or r.get("totals") is None:
                 print(f"   worker {r['idx']} stderr: {r.get('stderr_tail', '')[:300]}")
         return 1
+    red = [s for r in results for s in r.get("preflight_red", [])]
+    if len(red) > BROKEN_RUN_SHARE * len(mutations):
+        print("\n!! BROKEN RUN: %d of %d entries were red before mutating (more than %d%%). That is the run's "
+              "environment or a red suite, not a set of skips: read the pre-flight output, fix it, run again. "
+              "NOT a pass, and NOT a mutation score." % (len(red), len(mutations), int(BROKEN_RUN_SHARE * 100)))
+        return 3
     return 1 if (survived or skipped) else 0
 
 

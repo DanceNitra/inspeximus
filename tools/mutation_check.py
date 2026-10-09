@@ -72,7 +72,7 @@ def _pytest(tests: list[str], env: dict, tb: str = "no") -> subprocess.Completed
     # and a re-run is exactly what failed to reproduce PC2's two red pre-flights. The mutant run keeps
     # `--tb=no`; only its summary lines are read.
     return subprocess.run(
-        [sys.executable, "-m", "pytest", *tests, "-q", "--no-header", f"--tb={tb}", "-rfEs", "-p", "no:randomly",
+        [os.environ.get("MUTATION_PYTHON") or sys.executable, "-m", "pytest", *tests, "-q", "--no-header", f"--tb={tb}", "-rfEs", "-p", "no:randomly",
          *extra],
         cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
 
