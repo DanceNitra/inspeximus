@@ -497,6 +497,19 @@ def maybe_start(cwd, store_path) -> str:
 
 
 # ── the daemon ─────────────────────────────────────────────────────────────────────────────────────────────────
+def _drop_handle(m) -> None:
+    """Empty a replaced held handle (AUDIT-A R-2). The handle can sit in a reference cycle until the collector runs, and
+    with it every record it held, an erased one included. Its list goes through the setter, which prunes the derived
+    caches against it; the row snapshot goes too. The records then go by reference count, without a full collection on
+    the answer path. Answers are serialized, so nothing else is using the handle."""
+    try:
+        m._items = []
+        m._prune_derived_caches()                               # the setter does it from 3.18 on; this branch, here
+        m._row_snapshot = None
+    except Exception:                                           # noqa: BLE001 -- a failure here costs memory only
+        pass
+
+
 class Daemon:
     """Holds the stores the prompt hook reads, and answers one request type: the hook's recall block for an event."""
 
@@ -527,6 +540,8 @@ class Daemon:
             m = opener()
             self.held[key] = (sig, m)
             self.reopens += 1
+            if cur is not None:
+                _drop_handle(cur[1])
             return m
         return cur[1]
 

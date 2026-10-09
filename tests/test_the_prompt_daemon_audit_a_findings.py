@@ -518,3 +518,20 @@ def test_with_the_daemon_off_the_hook_imports_no_daemon_code(project):
     assert "inspeximus.hookd" not in imported(), "the hook imported the daemon with the daemon switched off"
     assert "inspeximus.hookd" in imported({"INSPEXIMUS_HOOK_DAEMON": "1"}), \
         "CONTROL: -X importtime shows hookd when the hook loads it"
+
+
+def test_a_replaced_held_handle_keeps_nothing_of_the_store(project, monkeypatch):
+    """AUDIT-A R-2: when a store's signature moves, the daemon opens a new handle. The old one could stay in a reference
+    cycle, with every record it held, until the collector ran. It is emptied on replacement."""
+    proj, sp = project
+    d = hookd.Daemon(sp, idle_exit_s=60)
+    old = d.handle_for(sp, lambda: Inspeximus(sp))
+    old.recall("deploy window", k=5)                            # warm the derived caches
+    assert old._items and old._tok_cache, "CONTROL: the held handle holds records and caches"
+    peer = Inspeximus(sp)
+    peer.remember("a peer write moves the signature", key="peer")
+    peer.flush()
+    new = d.handle_for(sp, lambda: Inspeximus(sp))
+    assert new is not old and new._items, "CONTROL: the moved signature opened a new handle"
+    assert old._items == [] and not old._tok_cache and not old._sig_cache and not old._tc_cache, \
+        "the replaced handle still holds records"

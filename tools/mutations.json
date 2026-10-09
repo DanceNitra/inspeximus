@@ -10740,5 +10740,14 @@
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
+ },
+ {
+  "name": "3.18 R-2: a replaced held handle keeps its records",
+  "file": "inspeximus/hookd.py",
+  "old": "            if cur is not None:\n                _drop_handle(cur[1])",
+  "new": "            if False:\n                _drop_handle(cur[1])",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
+  ]
  }
 ]
