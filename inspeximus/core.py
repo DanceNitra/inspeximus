@@ -10193,11 +10193,9 @@ class Inspeximus:
         stamp, and 6 of 6 for one stamped under another path or Python. Now a read (`stamp=False`)
         assigns a verdict only when it differs, and leaves an invalid stamp and a stale `read_guards_v`
         where they are: neither is trusted here, and only the write path (`stamp=True`) replaces or
-        removes them. A loaded record always has `meta` (the load adds it), so the `setdefault` below
-        writes only on a record built in memory without one."""
-        meta = rec.get("meta")
-        if not isinstance(meta, dict):
-            meta = rec.setdefault("meta", {})
+        removes them. `setdefault` is not an edit when `meta` is there (every loaded record has it): it
+        reads, and it writes only on a record built in memory without one."""
+        meta = rec.setdefault("meta", {})
         rid = rec.get("id") or id(rec)
         if rid in self._guard_seen:
             return meta
