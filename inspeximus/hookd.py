@@ -150,9 +150,9 @@ def address(kh, t):
 # ── what must match between the hook and the daemon ────────────────────────────────────────────────────────────
 def env_fingerprint(env=None):
     """The INSPEXIMUS_* environment, hashed. The daemon answers only a hook started with the same one."""
-    env = os.environ if env is None else env
-    items = sorted((k, v) for k, v in env.items()
-                   if k.startswith("INSPEXIMUS_") and not k.startswith("INSPEXIMUS_HOOK_DAEMON"))
+    from . import _envpolicy
+    items = sorted(_envpolicy.snapshot(env, without=("INSPEXIMUS_HOOK_DAEMON", "INSPEXIMUS_HOOK_DAEMON_NOSTART",
+                                                     "INSPEXIMUS_HOOK_DAEMON_TRACE")).items())
     return hashlib.sha256(json.dumps(items).encode("utf-8")).hexdigest()[:16]
 
 
@@ -243,9 +243,7 @@ def _version_key(v):
 #: its own working directory, and the daemon's is not the hook's (AUDIT-A E-1: a relative decision store was silently
 #: missing from a served answer). Every variable the package reads as a path is here; the test
 #: `test_every_path_variable_is_listed` fails when one that is read with a filesystem call is not.
-PATH_VARS = ("INSPEXIMUS_PATH", "INSPEXIMUS_DECISION_STORE", "INSPEXIMUS_KEY_HOME", "INSPEXIMUS_RECEIPT_KEY",
-             "INSPEXIMUS_RECEIPT_KEY_FILE", "INSPEXIMUS_WRITER_KEY_FILE", "INSPEXIMUS_PROBES_DIR",
-             "INSPEXIMUS_CODING_STORE")
+from ._envpolicy import PATH_VARS  # noqa: E402  (the list lives with the rules, 3.18)
 
 
 def _hexkey(v):
@@ -255,10 +253,10 @@ def _hexkey(v):
 def path_values(env=None):
     """{variable: value} for the path variables that are set, or None when one of them is relative. A 64-hex
     INSPEXIMUS_RECEIPT_KEY is the key itself, not a path."""
-    env = os.environ if env is None else env
+    from . import _envpolicy
     out = {}
     for k in PATH_VARS:
-        v = (env.get(k) or "").strip()
+        v = (_envpolicy.raw(k, env=env) or "").strip()
         if not v or (k == "INSPEXIMUS_RECEIPT_KEY" and _hexkey(v)):
             continue
         if not os.path.isabs(v):
@@ -451,8 +449,8 @@ def enabled():
     from . import _userconfig
     if _userconfig.get("hook", "daemon") is True:
         return True
-    if (os.environ.get("INSPEXIMUS_HOOK_DAEMON") or "").strip().lower() in ("1", "true", "yes", "on"):
-        _userconfig.env_ignored("INSPEXIMUS_HOOK_DAEMON", "hook.daemon to true")
+    from . import _envpolicy
+    _envpolicy.notice_if_set("INSPEXIMUS_HOOK_DAEMON", lambda v: v in ("1", "true", "yes", "on"))
     return False
 
 
@@ -460,7 +458,8 @@ def maybe_start(cwd, store_path) -> str:
     """Start a daemon for `store_path` when none answers. Rate-limited per store, the attempt recorded before the start,
     the pid merged after it, through `claude_code._start_detached` (3.16.4's launch rules). Never raises."""
     try:
-        if not enabled() or os.environ.get("INSPEXIMUS_HOOK_DAEMON_NOSTART"):
+        from . import _envpolicy
+        if not enabled() or _envpolicy.raw("INSPEXIMUS_HOOK_DAEMON_NOSTART"):
             return "off"
         if not os.path.exists(store_path):
             return "missing"
@@ -708,7 +707,8 @@ class Daemon:
         from ._surface import open_store
         m = self.handle_for(self.store, lambda: cc._store(cwd))
         m.recall("warm", k=1)
-        ext = (os.environ.get("INSPEXIMUS_DECISION_STORE") or "").strip()
+        from . import _envpolicy
+        ext = _envpolicy.decision_store().strip()           # the hook's rule (3.18, EC-6)
         if ext and os.path.exists(ext) and _real(ext) != self.store:
             e = self.handle_for(ext, lambda: open_store(ext, resolve=False))
             e.recall("warm", k=1)

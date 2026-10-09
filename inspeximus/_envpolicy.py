@@ -82,6 +82,10 @@ POLICY = {
     "INSPEXIMUS_DECISION_STORE": (ENV_GUARD, "hook.decision_store", "not a file inside a git work tree or the project, "
                                   "unless the user's config names it: its text reaches the model"),
     "INSPEXIMUS_DECISION_STORE_MAX_MB": (ENV_SAFE, None, "hook only, read side"),
+    "INSPEXIMUS_HOOK_DAEMON": (CONFIG_ONLY, "hook.daemon", "holds the user's store in memory between prompts"),
+    "INSPEXIMUS_HOOK_DAEMON_NOSTART": (ENV_SAFE, None, "only keeps a daemon from starting"),
+    "INSPEXIMUS_HOOK_DAEMON_TRACE": (ENV_SAFE, None, "one stderr line per prompt hook"),
+    "INSPEXIMUS_RECALL_INDEX": (ENV_SAFE, None, "the index serves the records a scan serves; off only slows recall"),
     "INSPEXIMUS_EMBED_HOOKS": (CONFIG_ONLY, "embed.hooks", "sends record text to an embedder and writes vectors under "
                                "its recipe"),
     "INSPEXIMUS_NO_INJECT": (ENV_SAFE, None, "hook only: injects less"),
@@ -302,11 +306,19 @@ class _EnvCopy(dict):
     pass for a host's own config entry."""
 
 
-def snapshot(env=None) -> dict:
-    """Every INSPEXIMUS_* entry of `env` (default: the process environment), for a fingerprint. The one prefix scan the
-    package has. The copy is an `_EnvCopy`, which host() refuses."""
+def snapshot(env=None, without=()) -> dict:
+    """Every INSPEXIMUS_* entry of `env` (default: the process environment) except the names in `without`, for a
+    fingerprint. The one prefix scan the package has. The copy is an `_EnvCopy`, which host() refuses."""
     src = os.environ if env is None else env
-    return _EnvCopy((k, v) for k, v in src.items() if k.startswith("INSPEXIMUS_"))
+    return _EnvCopy((k, v) for k, v in src.items() if k.startswith("INSPEXIMUS_") and k not in without)
+
+
+#: The INSPEXIMUS_* variables whose value names a file or a folder (the prompt daemon compares them with the hook's,
+#: AUDIT-A E-1). Every variable the package reads as a path is here; `test_every_path_variable_is_listed` fails when one
+#: read with a filesystem call is not.
+PATH_VARS = ("INSPEXIMUS_PATH", "INSPEXIMUS_DECISION_STORE", "INSPEXIMUS_KEY_HOME", "INSPEXIMUS_RECEIPT_KEY",
+             "INSPEXIMUS_RECEIPT_KEY_FILE", "INSPEXIMUS_WRITER_KEY_FILE", "INSPEXIMUS_PROBES_DIR",
+             "INSPEXIMUS_CODING_STORE")
 
 
 def switch_off_only(var: str, config_value):

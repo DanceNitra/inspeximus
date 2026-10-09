@@ -1931,7 +1931,17 @@ def _plain(v):
 
 
 #: The held-handle recall index (3.18 prototype). INSPEXIMUS_RECALL_INDEX=0 turns it off, for an A/B in one build.
-_RECALL_INDEX_ON = (os.environ.get("INSPEXIMUS_RECALL_INDEX") or "").strip().lower() not in ("0", "false", "no", "off")
+#: None until the first recall reads it, so `import inspeximus` loads no policy module.
+_RECALL_INDEX_ON = None
+
+
+def _recall_index_on() -> bool:
+    global _RECALL_INDEX_ON
+    if _RECALL_INDEX_ON is None:
+        from . import _envpolicy
+        _RECALL_INDEX_ON = (_envpolicy.raw("INSPEXIMUS_RECALL_INDEX") or "").strip().lower() not in (
+            "0", "false", "no", "off")
+    return _RECALL_INDEX_ON
 
 
 def _view_scope(h) -> tuple:
@@ -15602,7 +15612,7 @@ class Inspeximus:
         # view reads and writes that dict in place, so each scope finds only its own entry: the key holds the view's
         # tenant, agent and ACL revision (`_view_scope`, the key `items` uses) and every pool argument.
         _ix, _ix_args, _ix_new = None, None, None
-        if (_RECALL_INDEX_ON and _shared is None and not (where or trusted_only or influence_only or reinforce)
+        if (_recall_index_on() and _shared is None and not (where or trusted_only or influence_only or reinforce)
                 and not self._objections and self._items and type(self._items[0]) is _TrackedDict
                 and isinstance(getattr(self, "_recall_ix", None), dict)):
             _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,

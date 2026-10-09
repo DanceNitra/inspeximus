@@ -10954,8 +10954,8 @@
  {
   "name": "3.18 env S-2: a snapshot is a plain dict",
   "file": "inspeximus/_envpolicy.py",
-  "old": "    return _EnvCopy((k, v) for k, v in src.items() if k.startswith(\"INSPEXIMUS_\"))",
-  "new": "    return dict((k, v) for k, v in src.items() if k.startswith(\"INSPEXIMUS_\"))",
+  "old": "    return _EnvCopy((k, v) for k, v in src.items() if k.startswith(\"INSPEXIMUS_\") and k not in without)",
+  "new": "    return dict((k, v) for k, v in src.items() if k.startswith(\"INSPEXIMUS_\") and k not in without)",
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py"
   ]
@@ -11299,8 +11299,8 @@
  {
   "name": "3.18 daemon: the daemon switches are part of the environment fingerprint",
   "file": "inspeximus/hookd.py",
-  "old": "                   if k.startswith(\"INSPEXIMUS_\") and not k.startswith(\"INSPEXIMUS_HOOK_DAEMON\"))\n",
-  "new": "                   if k.startswith(\"INSPEXIMUS_\"))\n",
+  "old": "    items = sorted(_envpolicy.snapshot(env, without=(\"INSPEXIMUS_HOOK_DAEMON\", \"INSPEXIMUS_HOOK_DAEMON_NOSTART\",\n                                                     \"INSPEXIMUS_HOOK_DAEMON_TRACE\")).items())",
+  "new": "    items = sorted(_envpolicy.snapshot(env).items())",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -11308,8 +11308,8 @@
  {
   "name": "3.18 daemon: NOSTART is ignored",
   "file": "inspeximus/hookd.py",
-  "old": "        if not enabled() or os.environ.get(\"INSPEXIMUS_HOOK_DAEMON_NOSTART\"):\n",
-  "new": "        if not enabled():\n",
+  "old": "        if not enabled() or _envpolicy.raw(\"INSPEXIMUS_HOOK_DAEMON_NOSTART\"):",
+  "new": "        if not enabled():",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -11335,8 +11335,8 @@
  {
   "name": "3.18 daemon D-3: the environment switches the daemon on",
   "file": "inspeximus/hookd.py",
-  "old": "        _userconfig.env_ignored(\"INSPEXIMUS_HOOK_DAEMON\", \"hook.daemon to true\")\n",
-  "new": "        return True\n",
+  "old": "    _envpolicy.notice_if_set(\"INSPEXIMUS_HOOK_DAEMON\", lambda v: v in (\"1\", \"true\", \"yes\", \"on\"))\n    return False",
+  "new": "    return bool(_envpolicy._env(\"INSPEXIMUS_HOOK_DAEMON\"))",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -11461,7 +11461,7 @@
  },
  {
   "name": "3.18 daemon F-3: INSPEXIMUS_CODING_STORE is not a path variable",
-  "file": "inspeximus/hookd.py",
+  "file": "inspeximus/_envpolicy.py",
   "old": "             \"INSPEXIMUS_CODING_STORE\")",
   "new": "             )",
   "tests": [
@@ -11471,8 +11471,8 @@
  {
   "name": "3.18 daemon: the hook imports hookd with the daemon off",
   "file": "inspeximus/claude_code.py",
-  "old": "            if _userconfig.get(\"hook\", \"daemon\") is True or os.environ.get(\"INSPEXIMUS_HOOK_DAEMON\"):",
-  "new": "            if True:",
+  "old": "            if _userconfig.get(\"hook\", \"daemon\") is True:\n                from . import hookd",
+  "new": "            if True:\n                from . import hookd",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]

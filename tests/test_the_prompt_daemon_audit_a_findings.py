@@ -516,8 +516,11 @@ def test_with_the_daemon_off_the_hook_imports_no_daemon_code(project):
         assert r.returncode == 0, r.stderr[-400:]
         return r.stderr
     assert "inspeximus.hookd" not in imported(), "the hook imported the daemon with the daemon switched off"
-    assert "inspeximus.hookd" in imported({"INSPEXIMUS_HOOK_DAEMON": "1"}), \
-        "CONTROL: -X importtime shows hookd when the hook loads it"
+    assert "inspeximus.hookd" not in imported({"INSPEXIMUS_HOOK_DAEMON": "1"}), \
+        "the environment's switch, which is ignored, loaded the daemon"
+    with switch_on():
+        assert "inspeximus.hookd" in imported({"INSPEXIMUS_HOOK_DAEMON_NOSTART": "1"}), \
+            "CONTROL: -X importtime shows hookd when the user's config switches the daemon on"
 
 
 def test_a_replaced_held_handle_keeps_nothing_of_the_store(project, monkeypatch):

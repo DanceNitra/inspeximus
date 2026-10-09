@@ -144,6 +144,7 @@ RAW_GUARDED_CALLERS = {
     ("inspeximus/mcp_server.py", "resolve_project", "INSPEXIMUS_PROJECT"): "_envpolicy.project_name",
     ("inspeximus/mcp_server.py", "_flag_from_env", "<name>"): "its callers pass env-safe names only (checked below)",
     ("inspeximus/mcp_server.py", "where_am_i", "INSPEXIMUS_SCOPE"): "a label only; opens nothing",
+    ("inspeximus/hookd.py", "path_values", "<k>"): "compares the hook's path values with the daemon's; opens nothing",
     ("inspeximus/probes/a_contradiction_one_channel_cannot_see.py", "<module>", "INSPEXIMUS_EMBED_MODEL"):
         "a probe on its own temporary store",
 }

@@ -76,8 +76,12 @@ def _allowed_place(node, parent):
         return isinstance(p.ctx, (ast.Store, ast.Del))
     if isinstance(p, ast.Compare):
         return all(isinstance(o, (ast.Eq, ast.NotEq)) for o in p.ops)
-    if isinstance(p, ast.Tuple):
+    if isinstance(p, (ast.Tuple, ast.List)):
         p = parent.get(id(p))
+        if isinstance(p, ast.keyword):                # without=("INSPEXIMUS_A", ...) in a call to _envpolicy
+            p = parent.get(id(p))
+        if isinstance(p, ast.Call):
+            return _is_envpolicy_call(p)
     return isinstance(p, ast.Return)
 
 
