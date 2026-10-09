@@ -18,6 +18,10 @@ sys.path.insert(0, ROOT)
 import inspeximus.core as core  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
 
+#: The shipped thresholds, read before the autouse fixture below sets both to 1 for every test.
+_SHIPPED = {"_RECALL_IX_BUILD_AFTER": core._RECALL_IX_BUILD_AFTER,
+            "_RECALL_IX_BUILD_AFTER_HELD": core._RECALL_IX_BUILD_AFTER_HELD}
+
 
 @pytest.fixture(autouse=True)
 def _index_from_the_first_recall(monkeypatch):
@@ -199,8 +203,8 @@ def test_an_untracked_edit_declared_through_touch_is_seen(tmp_path):
 def test_a_held_handle_builds_on_its_second_recall_and_any_other_on_its_third(tmp_path, monkeypatch, held, builds_on):
     """EM, after AUDIT-B: a caller that recalls exactly twice paid the build and never used it. Only a handle a
     long-lived process holds (the daemon, the MCP server) builds on its second recall."""
-    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 3)
-    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER_HELD", 2)
+    for name, value in _SHIPPED.items():                           # the shipped values, not this file's
+        monkeypatch.setattr(core, name, value)
     m = Inspeximus(path=_store(tmp_path))
     m._ix_held = held
     for n in range(1, 4):
