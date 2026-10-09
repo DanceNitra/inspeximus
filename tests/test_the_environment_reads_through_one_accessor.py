@@ -419,3 +419,107 @@ def test_the_pages_show_the_config_line_and_not_a_key_file_in_the_work_folder():
         text = open(os.path.join(ROOT, page), encoding="utf-8").read()
         assert "INSPEXIMUS_WRITER_KEY_FILE=key.txt" not in text, page
         assert "point the server at it: in " in text, page
+
+
+# -- AUDIT-A delta on 9fd972ae: S-2 copies, and the environment of other programs ----------------------------------
+def test_the_scan_catches_a_piece_in_a_comparison():
+    assert scan.violations(os.path.join(ROOT, "inspeximus", "x.py"), 'def f(k):\n    return k[:11] == "INSPEXIMUS_"')
+
+
+@pytest.mark.parametrize("make", [
+    lambda: _envpolicy.snapshot(), lambda: {"env": _envpolicy.snapshot()}, lambda: {"env": _envpolicy.child_env()},
+])
+def test_host_refuses_a_snapshot_or_a_filtered_copy(make, monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_WRITER_KEY", "ab" * 32)
+    with pytest.raises(ValueError):
+        _envpolicy.host("INSPEXIMUS_WRITER_KEY", make())
+
+
+def test_host_reads_nothing_from_an_env_block_that_mirrors_the_environment(monkeypatch):
+    """A hand-filtered copy is a plain dict: every INSPEXIMUS_* entry in it is the environment's own value. Its values
+    are read as absent; an entry the user wrote with a different value is read."""
+    monkeypatch.setenv("INSPEXIMUS_WRITER_KEY", "ab" * 32)
+    assert _envpolicy.host("INSPEXIMUS_WRITER_KEY", {"env": {"INSPEXIMUS_WRITER_KEY": "ab" * 32}}) == ""
+    assert _envpolicy.host("INSPEXIMUS_WRITER_KEY", {"env": {"INSPEXIMUS_WRITER_KEY": "cd" * 32}}) == "cd" * 32
+
+
+def test_child_env_refuses_a_keep_that_selects_our_names(monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "k")
+    with pytest.raises(ValueError):
+        _envpolicy.child_env(keep=lambda k: k.startswith("INSPEX"))
+    assert "INSPEXIMUS_EMBED_KEY" not in _envpolicy.child_env(keep=lambda k: k == "PATH")
+
+
+def test_another_program_gets_none_of_our_variables(monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "secret")
+    monkeypatch.setenv("INSPEXIMUS_SERVICE_SECRET", "secret")
+    monkeypatch.setenv("UV_INDEX_URL", "https://example.test/simple")
+    monkeypatch.setenv("SOME_VENDOR_API_TOKEN", "not for git")       # an allowlist: a name it does not list stays out
+    for env in (_envpolicy.tool_env(), _envpolicy.tool_env(keep=_envpolicy.INSTALLER_ENV_KEEP,
+                                                           prefixes=_envpolicy.INSTALLER_ENV_PREFIXES)):
+        assert not [k for k in env if k.upper().startswith("INSPEXIMUS_")], env.keys()
+        assert "PATH" in {k.upper() for k in env}, "CONTROL: the tool still finds its programs"
+        assert "SOME_VENDOR_API_TOKEN" not in env, "the tool got a variable the allowlist does not name"
+    assert _envpolicy.tool_env(prefixes=("UV_",))["UV_INDEX_URL"] == "https://example.test/simple"
+    from inspeximus._storelink import _git_env
+    assert not [k for k in _git_env() if k.upper().startswith("INSPEXIMUS_")]
+
+
+#: Our own processes, which inherit the environment on purpose: each is `python -m inspeximus...` and applies the rule
+#: to the INSPEXIMUS_* entries it reads.
+OWN_LAUNCHES = {("inspeximus/claude_code.py", "maybe_archive_in_background"),
+                ("inspeximus/claude_code.py", "_start_detached")}
+
+
+def test_every_child_process_gets_an_explicit_environment():
+    """AUDIT-A delta: git, openssl, uv, pip and Hermes' interpreter were started with no env=, so they inherited
+    INSPEXIMUS_EMBED_KEY and INSPEXIMUS_SERVICE_SECRET. Every start of a process in shipped code passes env=, except our
+    own launches listed above."""
+    import ast
+    found, bad = set(), []
+    for f in scan.shipped_files():
+        rel = os.path.relpath(f, ROOT).replace(os.sep, "/")
+        t = ast.parse(open(f, encoding="utf-8").read())
+        fn = {}
+        for d in ast.walk(t):
+            if isinstance(d, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                for n in ast.walk(d):
+                    fn[id(n)] = d.name
+        for n in ast.walk(t):
+            if not isinstance(n, ast.Call):
+                continue
+            f_ = n.func
+            name = f_.attr if isinstance(f_, ast.Attribute) else (f_.id if isinstance(f_, ast.Name) else "")
+            spawn = (isinstance(f_, ast.Attribute) and isinstance(f_.value, ast.Name) and f_.value.id == "subprocess"
+                     and name in ("run", "Popen", "call", "check_call", "check_output")) or name == "runner"
+            if not spawn:
+                continue
+            found.add(rel)
+            if any(k.arg == "env" for k in n.keywords):
+                continue
+            if (rel, fn.get(id(n))) in OWN_LAUNCHES:
+                continue
+            bad.append((rel, n.lineno, fn.get(id(n))))
+    assert "inspeximus/archive.py" in found and "inspeximus/install_all.py" in found, "CONTROL: the scan finds them"
+    assert bad == [], "a child process inherits the whole environment: %s" % bad
+
+
+def test_hermes_and_the_installers_get_none_of_our_variables(monkeypatch, tmp_path):
+    from inspeximus import install_all
+    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "secret")
+    monkeypatch.setenv("INSPEXIMUS_SERVICE_SECRET", "secret")
+    seen = []
+
+    class R:
+        returncode, stdout, stderr = 0, "True", ""
+
+    def runner(cmd, **kw):
+        seen.append(kw.get("env"))
+        return R()
+    monkeypatch.setattr(install_all, "_uv_for", lambda py: None)
+    install_all.hermes_loads_provider(str(tmp_path / "python"), runner=runner)
+    install_all.install_into_hermes(str(tmp_path / "python"), runner=runner, spec="inspeximus")
+    install_all.uninstall_from_hermes(str(tmp_path / "python"), runner=runner)
+    assert len(seen) >= 3 and all(e is not None for e in seen), "CONTROL: every start passed an environment"
+    leaked = sorted({k for e in seen for k in e if k.upper().startswith("INSPEXIMUS_")})
+    assert leaked == [], "another program got our variables: %s" % leaked

@@ -264,9 +264,18 @@ def host(var: str, entry):
     `env` block the user wrote and a project's settings do not reach). Any rule; never the process environment: an
     entry that is the environment, or whose `env` is the environment or a copy of it, raises (AUDIT-A S-2)."""
     def _is_env(m):
-        return m is os.environ or isinstance(m, type(os.environ)) or (
-            isinstance(m, dict) and len(m) > 0 and len(m) == len(os.environ) and all(
-                os.environ.get(k) == v for k, v in m.items()))
+        if m is os.environ or isinstance(m, (type(os.environ), _EnvCopy)):
+            return True
+        if not isinstance(m, dict) or not m:
+            return False
+        return len(m) == len(os.environ) and all(os.environ.get(k) == v for k, v in m.items())
+
+    def _mirrors_env(m):
+        # A FILTERED COPY (AUDIT-A delta S-2): every INSPEXIMUS_* entry it has is the environment's own value. Its values
+        # are refused (read as absent) rather than raised on, because a host entry the user wrote can match the shell it
+        # runs from by coincidence, and `install --all` must still run there.
+        ours = [(k, v) for k, v in m.items() if _ours(k)]
+        return bool(ours) and all(os.environ.get(k) == v for k, v in ours)
     if _is_env(entry):
         raise ValueError("host() reads a host config entry, not the process environment")
     env = (entry or {}).get("env") if isinstance(entry, dict) else None
@@ -274,6 +283,8 @@ def host(var: str, entry):
         return ""
     if _is_env(env) or not isinstance(env, dict):
         raise ValueError("host() reads the `env` block of a host config entry, not the process environment")
+    if _mirrors_env(env):
+        return ""
     v = env.get(var)
     return "" if v is None else str(v)
 
@@ -286,11 +297,16 @@ def notice_if_set(var: str, when=None) -> None:
         _ignored(var, POLICY[var][1])
 
 
+class _EnvCopy(dict):
+    """A copy of this process's environment, or part of it. host() refuses one (AUDIT-A delta S-2), so a copy cannot
+    pass for a host's own config entry."""
+
+
 def snapshot(env=None) -> dict:
-    """Every INSPEXIMUS_* entry of `env` (default: the process environment), for a fingerprint or a child's environment.
-    The one prefix scan the package has."""
+    """Every INSPEXIMUS_* entry of `env` (default: the process environment), for a fingerprint. The one prefix scan the
+    package has. The copy is an `_EnvCopy`, which host() refuses."""
     src = os.environ if env is None else env
-    return {k: v for k, v in src.items() if k.startswith("INSPEXIMUS_")}
+    return _EnvCopy((k, v) for k, v in src.items() if k.startswith("INSPEXIMUS_"))
 
 
 def switch_off_only(var: str, config_value):
@@ -417,9 +433,39 @@ def other_names(prefix: str) -> list:
 
 
 def child_env(keep=None) -> dict:
-    """A copy of this process's environment for a child process, with only the names `keep(name)` accepts when it is
-    given. INSPEXIMUS_* entries pass through unread: the child applies its own rule to them."""
-    return {k: v for k, v in os.environ.items() if keep is None or keep(k)}
+    """A copy of this process's environment for a child process that is OURS (an inspeximus process that applies its
+    own rule to the INSPEXIMUS_* entries it inherits), with only the names `keep(name)` accepts when it is given. A
+    `keep` that accepts an INSPEXIMUS_* name raises (AUDIT-A delta S-2): selecting our names is a read of them. Another
+    program gets `tool_env`, which carries none of them."""
+    out = _EnvCopy((k, v) for k, v in os.environ.items() if keep is None or keep(k))
+    if keep is not None and any(_ours(k) for k in out):
+        raise ValueError("child_env(keep=...) selected INSPEXIMUS_* names; a child that needs them inherits them all")
+    return out
+
+
+#: What another program needs from this process's environment to start and find its files (AUDIT-A delta, children).
+TOOL_ENV_KEEP = ("PATH", "PATHEXT", "SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "COMSPEC", "HOME", "USERPROFILE", "TEMP",
+                 "TMP", "TMPDIR", "LANG", "LC_ALL")
+#: What a package installer (uv, uvx, pip) also needs: its caches and settings, and the network's proxies and CAs.
+INSTALLER_ENV_KEEP = ("APPDATA", "LOCALAPPDATA", "XDG_CACHE_HOME", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "HTTP_PROXY",
+                      "HTTPS_PROXY", "NO_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "no_proxy", "all_proxy",
+                      "SSL_CERT_FILE", "SSL_CERT_DIR", "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE")
+INSTALLER_ENV_PREFIXES = ("UV_", "PIP_")
+
+
+def tool_env(keep=(), prefixes=()) -> dict:
+    """The environment for another program (git, openssl, uv, pip, Hermes' interpreter): TOOL_ENV_KEEP, the names in
+    `keep`, and the names that start with one of `prefixes`, from this process's environment. Never an INSPEXIMUS_*
+    name: a key or a secret (INSPEXIMUS_EMBED_KEY, INSPEXIMUS_SERVICE_SECRET) is ours, and another program has no use
+    for it."""
+    names = {n.upper() for n in TOOL_ENV_KEEP + tuple(keep)}
+    out = _EnvCopy()
+    for k, v in os.environ.items():
+        if _ours(k):
+            continue
+        if k.upper() in names or any(k.startswith(p) for p in prefixes):
+            out[k] = v
+    return out
 
 
 def set_for_this_process(var: str, value) -> None:

@@ -16,7 +16,11 @@ pieces. So the rule is about touching, not reading:
      copy from `child_env()`: `child_env().get("INSPEXIMUS_PATH")` holds the name in a `.get`.
 
   C. No string that starts with "INSPEXIMUS_" and is not a whole name is used to build or match one: an f-string, `+`,
-     `%`, `.format`, `.join`, or `.startswith`.
+     `%`, `.format`, `.join`, `.startswith`, or a comparison (`k[:11] == "INSPEXIMUS_"`).
+
+  Out of scope, on purpose (AUDIT-A delta): deliberate evasion, such as `os.__dict__`, `vars(os)`, `operator.attrgetter`,
+  `ctypes`, `exec` or `eval`, or a name built with `chr()`. The check guards against accidents in our own code, not
+  against our own code turning hostile.
 """
 from __future__ import annotations
 
@@ -108,6 +112,7 @@ def violations(path, source=None):
         if _prefix_piece(n):
             p = parent.get(id(n))
             built = isinstance(p, (ast.JoinedStr, ast.BinOp)) or (
+                isinstance(p, ast.Compare) and n.value.startswith("INSPEXIMUS_")) or (
                 isinstance(p, ast.Attribute) and p.attr in ("format", "join")) or (
                 isinstance(p, ast.Call) and isinstance(p.func, ast.Attribute) and p.func.attr == "startswith") or (
                 isinstance(p, ast.Tuple) and isinstance(parent.get(id(p)), ast.Call)

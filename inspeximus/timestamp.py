@@ -59,6 +59,11 @@ class TimestampError(Exception):
 
 # ── minimal DER, only what a TimeStampReq needs ────────────────────────────────────────────────────
 
+def _tool_env():
+    from . import _envpolicy
+    return _envpolicy.tool_env(keep=("OPENSSL_CONF", "OPENSSL_MODULES"))
+
+
 def _which_safe(name):
     """shutil.which without the working directory (inspeximus._launch.which, 3.16.4)."""
     from ._launch import which
@@ -193,7 +198,7 @@ def verify_with_openssl(token: bytes, digest: bytes, ca_file: str | None = None,
         r = subprocess.run([exe, "ts", "-verify", "-digest", bytes(digest).hex(),
                             "-in", tp, "-CAfile", ca_file],
                            capture_output=True, text=True, encoding="utf-8", errors="replace",
-                           timeout=60)
+                           timeout=60, env=_tool_env())
         out.update(ran=True, returncode=r.returncode,
                    output=((r.stdout or "") + (r.stderr or "")).strip()[:2000])
         out["verified"] = (r.returncode == 0)

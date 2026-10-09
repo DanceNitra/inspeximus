@@ -752,8 +752,9 @@ def git_work_tree(path) -> str | None:
 def _git_ignored(path) -> bool | None:
     """Whether git would ignore `path`; None when git cannot say (no executable, not a work tree)."""
     try:
+        from ._storelink import _git_env                  # the variables git sees, and none of ours (AUDIT-A)
         r = subprocess.run(["git", "check-ignore", "-q", str(path)], cwd=str(Path(path).parent),
-                           capture_output=True, timeout=10)
+                           capture_output=True, timeout=10, env=_git_env())
     except (OSError, subprocess.SubprocessError):
         return None
     return {0: True, 1: False}.get(r.returncode)

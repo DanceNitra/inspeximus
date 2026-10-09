@@ -96,8 +96,9 @@ def interpreter_version(exe):
         if exe and str(exe) == sys.executable:
             v = tuple(sys.version_info[:2])
         else:
+            from . import _envpolicy
             out = subprocess.run([str(exe), "-c", "import sys;print(sys.version_info[0],sys.version_info[1])"],
-                                 capture_output=True, text=True, timeout=30).stdout.split()
+                                 capture_output=True, text=True, timeout=30, env=_envpolicy.tool_env()).stdout.split()
             v = (int(out[0]), int(out[1])) if len(out) == 2 else None
     except (OSError, ValueError, subprocess.SubprocessError):
         v = None

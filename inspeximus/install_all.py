@@ -385,9 +385,17 @@ def hermes_installs():
     return out
 
 
+def _installer_env():
+    """uv, uvx and pip are other programs: their caches, settings and the network's proxies, and none of our variables."""
+    return _envpolicy.tool_env(keep=_envpolicy.INSTALLER_ENV_KEEP, prefixes=_envpolicy.INSTALLER_ENV_PREFIXES)
+
+
 def _hermes_python(py, code, runner=subprocess.run):
     root = hermes_root(py)
-    env = _envpolicy.child_env()
+    # Hermes' own interpreter is another program: it gets what it needs to start and find its home, and none of our
+    # variables (AUDIT-A delta: the whole environment carried INSPEXIMUS_EMBED_KEY and SERVICE_SECRET to it).
+    env = _envpolicy.tool_env(keep=("APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME",
+                                    "PYTHONIOENCODING", "PYTHONUTF8"), prefixes=("HERMES_",))
     if root:
         env["PYTHONPATH"] = os.pathsep.join(p for p in (str(root), env.get("PYTHONPATH")) if p)
     try:
@@ -447,14 +455,14 @@ def warm_uvx(exe, runner=subprocess.run):
     from ._launch import UVX_INDEX_ARGS      # the same index the hooks and the server use (F-23)
     cmd = [str(exe)] + UVX_INDEX_ARGS + ["--from", "inspeximus[mcp]==%s" % _version(), "python", "-c", "import inspeximus"]
     try:
-        r = runner(cmd, capture_output=True, text=True, timeout=300)
+        r = runner(cmd, capture_output=True, text=True, timeout=300, env=_installer_env())
         if r.returncode == 0:
             return True, ""
         if not _stale_uv_index(r):
             return False, ("uvx could not start inspeximus %s here: %s"
                            % (_version(), (r.stderr or r.stdout or "").strip()[-200:]))
         r = runner([str(exe), "--refresh-package", "inspeximus"] + cmd[1:], capture_output=True, text=True,
-                   timeout=300)
+                   timeout=300, env=_installer_env())
     except (OSError, subprocess.SubprocessError) as e:
         return False, "uvx could not be run: %s" % e
     if r.returncode == 0:
@@ -478,11 +486,11 @@ def install_into_hermes(py, runner=subprocess.run, spec=None):
         [[str(py), "-m", "pip", "install", "-q", spec]]
     errors = []
     for cmd in cmds:
-        r = runner(cmd, capture_output=True, text=True)
+        r = runner(cmd, capture_output=True, text=True, env=_installer_env())
         if r.returncode != 0 and uv and cmd[0] == uv and _stale_uv_index(r):
             errors.append("%s: %s" % (" ".join(cmd[:3]), (r.stderr or r.stdout or "").strip()[-300:]))
             cmd = cmd[:3] + ["--refresh-package", "inspeximus"] + cmd[3:]
-            r = runner(cmd, capture_output=True, text=True)
+            r = runner(cmd, capture_output=True, text=True, env=_installer_env())
         if r.returncode == 0:
             return True, " ".join(cmd[:2] + ["...", spec])
         errors.append("%s: %s" % (" ".join(cmd[:3]), (r.stderr or r.stdout or "").strip()[-300:]))
@@ -495,7 +503,7 @@ def uninstall_from_hermes(py, runner=subprocess.run):
     uv = _uv_for(py)
     for cmd in ([[uv, "pip", "uninstall", "--python", str(py), "inspeximus"]] if uv else []) + \
             [[str(py), "-m", "pip", "uninstall", "-y", "-q", "inspeximus"]]:
-        if runner(cmd, capture_output=True, text=True).returncode == 0:
+        if runner(cmd, capture_output=True, text=True, env=_installer_env()).returncode == 0:
             return True
     return False
 

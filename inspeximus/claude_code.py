@@ -1312,9 +1312,10 @@ def _capture_commit(m, raw_cmd, cwd, sid):
     if not _invokes_commit(raw_cmd):
         return False
     try:
+        from ._storelink import _git_env                  # the variables git sees, and none of ours (AUDIT-A)
         out = subprocess.run(
             ["git", "log", "-1", "--format=%H%x00%ct%x00%s%x00%b"],
-            cwd=cwd, capture_output=True, timeout=10,
+            cwd=cwd, capture_output=True, timeout=10, env=_git_env(),
         ).stdout.decode("utf-8", "replace")
         parts = out.split("\x00")
         if len(parts) < 4:
@@ -1327,7 +1328,7 @@ def _capture_commit(m, raw_cmd, cwd, sid):
             return False
         files = subprocess.run(
             ["git", "show", "--name-only", "--format=", sha],
-            cwd=cwd, capture_output=True, timeout=10,
+            cwd=cwd, capture_output=True, timeout=10, env=_git_env(),
         ).stdout.decode("utf-8", "replace").split()
     except Exception:
         return False
