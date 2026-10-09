@@ -676,3 +676,69 @@ def test_control_webbrowser_runs_the_command_in_browser(monkeypatch, tmp_path):
         time.sleep(0.1)
     assert mark.exists(), "CONTROL: webbrowser no longer runs $BROWSER, so the tests above prove less"
 
+
+
+def _cmd_handler(tmp_path, name):
+    """A `.cmd` file that writes the environment it was started with beside itself. Opened like a page, it stands in
+    for a browser that is not yet running: the shell starts it the same way."""
+    out = tmp_path / (name + ".env.txt")
+    cmd = tmp_path / (name + ".cmd")
+    cmd.write_text('@echo off\r\nset > "%s"\r\n' % out, encoding="ascii")
+    return cmd, out
+
+
+def _wait_for(path, seconds=20.0):
+    import time
+    end = time.monotonic() + seconds
+    while time.monotonic() < end:
+        if path.exists() and path.stat().st_size:
+            time.sleep(0.2)
+            return path.read_text(encoding="mbcs", errors="replace")
+        time.sleep(0.1)
+    pytest.fail("the handler did not run within %.0f s" % seconds)
+
+
+def _names(dump):
+    return {line.split("=", 1)[0].upper() for line in dump.splitlines() if "=" in line}
+
+
+@pytest.mark.skipif(os.name != "nt", reason="the Windows opener")
+def test_the_windows_opener_starts_the_handler_without_our_variables(monkeypatch, tmp_path):
+    """AUDIT-A D-2: `os.startfile` started the handler with this process's whole environment. rundll32 by absolute
+    path with `tool_env()` starts it with none of our variables and no BROWSER."""
+    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "secret-key")
+    monkeypatch.setenv("INSPEXIMUS_SERVICE_SECRET", "s2")
+    monkeypatch.setenv("BROWSER", str(tmp_path / "evil.cmd"))
+    cmd, out = _cmd_handler(tmp_path, "rundll")
+    assert _envpolicy.open_in_browser(str(cmd)) is True
+    names = _names(_wait_for(out))
+    assert "PATH" in names, "CONTROL: the handler ran and wrote its environment"
+    assert not {"INSPEXIMUS_EMBED_KEY", "INSPEXIMUS_SERVICE_SECRET", "BROWSER"} & names, sorted(names)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="the Windows opener")
+def test_control_startfile_hands_the_handler_our_variables(monkeypatch, tmp_path):
+    """CONTROL for the test above: the call `browse --open` made before, with the same handler, leaks both."""
+    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "secret-key")
+    monkeypatch.setenv("INSPEXIMUS_SERVICE_SECRET", "s2")
+    cmd, out = _cmd_handler(tmp_path, "startfile")
+    getattr(os, "startfile")(str(cmd))
+    names = _names(_wait_for(out))
+    assert {"INSPEXIMUS_EMBED_KEY", "INSPEXIMUS_SERVICE_SECRET"} <= names, "CONTROL: os.startfile no longer leaks"
+
+
+@pytest.mark.skipif(os.name != "nt", reason="the Windows opener")
+def test_the_windows_opener_ignores_systemroot(monkeypatch, tmp_path):
+    """The program comes from GetSystemWindowsDirectoryW: a SystemRoot or WINDIR that a project sets does not choose
+    the rundll32 we start."""
+    fake = tmp_path / "fakewin"
+    (fake / "System32").mkdir(parents=True)
+    (fake / "System32" / "rundll32.exe").write_bytes(b"MZ")
+    monkeypatch.setenv("SystemRoot", str(fake))
+    monkeypatch.setenv("WINDIR", str(fake))
+    started = []
+    monkeypatch.setattr(_envpolicy, "start", lambda args, **kw: started.append(args))
+    assert _envpolicy.open_in_browser(str(tmp_path / "b.html")) is True
+    (args,), = [started]
+    assert os.path.isabs(args[0]) and not args[0].lower().startswith(str(fake).lower()), args[0]
+    assert args[1:] == ["url.dll,FileProtocolHandler", str(tmp_path / "b.html")]

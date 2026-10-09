@@ -516,20 +516,39 @@ OPENER_ENV_KEEP = ("DISPLAY", "WAYLAND_DISPLAY", "XAUTHORITY", "DBUS_SESSION_BUS
 OPENERS = {"darwin": ("/usr/bin/open",), "posix": ("/usr/bin/xdg-open", "/usr/local/bin/xdg-open", "/bin/xdg-open")}
 
 
+def _windows_dir() -> str:
+    """The Windows directory, from the system call and never from SystemRoot or WINDIR, which a project's settings
+    can set to choose the program we start."""
+    import ctypes
+    buf = ctypes.create_unicode_buffer(1024)
+    n = ctypes.windll.kernel32.GetSystemWindowsDirectoryW(buf, len(buf))
+    if not n or n >= len(buf):
+        raise OSError("GetSystemWindowsDirectoryW failed")
+    return buf.value
+
+
 def open_in_browser(path) -> bool:
-    """Open a local file in the user's browser (`inspeximus browse --open`). Windows: `os.startfile`, which reads no
-    variable to choose the program. macOS and other POSIX systems: `open` or `xdg-open` by absolute path, started with
-    `tool_env(OPENER_ENV_KEEP)`, which carries no BROWSER. Returns False when no opener exists."""
+    """Open a local file in the user's browser (`inspeximus browse --open`). Returns False when no opener exists.
+
+    Windows: `rundll32.exe url.dll,FileProtocolHandler <file>`, by absolute path under the Windows directory, started
+    with `tool_env()`. Not `os.startfile` (AUDIT-A D-2): it starts the handler with this process's whole environment,
+    and measured with a `.cmd` handler, INSPEXIMUS_EMBED_KEY, INSPEXIMUS_SERVICE_SECRET and BROWSER all reached it.
+    macOS and other POSIX systems: `open` or `xdg-open` by absolute path, started with `tool_env(OPENER_ENV_KEEP)`,
+    which carries no BROWSER and none of our variables. It does carry PATH, HOME and the XDG directories, which
+    `xdg-open` reads to choose the browser: an accepted limit, the same as for every other program we start."""
     import subprocess
     import sys
     target = os.path.abspath(path)
+    quiet = dict(stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if os.name == "nt":
-        os.startfile(target)
+        rundll = os.path.join(_windows_dir(), "System32", "rundll32.exe")
+        if not os.path.isfile(rundll):
+            return False
+        start([rundll, "url.dll,FileProtocolHandler", target], env=tool_env(), wait=False, **quiet)
         return True
     for exe in OPENERS["darwin" if sys.platform == "darwin" else "posix"]:
         if os.path.isfile(exe) and os.access(exe, os.X_OK):
-            start([exe, target], env=tool_env(OPENER_ENV_KEEP), wait=False, stdin=subprocess.DEVNULL,
-                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            start([exe, target], env=tool_env(OPENER_ENV_KEEP), wait=False, **quiet)
             return True
     return False
 
