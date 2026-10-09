@@ -10182,8 +10182,27 @@ class Inspeximus:
         `stamp` is set by the write path (remember): only a write stamps a clean verdict, because a read
         such as the prompt hook never saves, and a record without a stamp costs a read nothing beyond
         the assessment it always had. The text hash and the guard set are computed only when a stamp or
-        a release is there to check."""
-        meta = rec.setdefault("meta", {})
+        a release is there to check.
+
+        A READ WRITES ONLY A CHANGED VERDICT (3.18, AUDIT-A D-1, AUDIT-B CL-1). This used to run
+        `setdefault("meta")`, `pop("read_guards")` and `pop("read_guards_v")` on every record it
+        assessed, and to re-assign an equal quarantine verdict. On a live record each of those marks the
+        record touched, so `refresh()` kept the held copy and the held handle's next write put it back on
+        disk over a peer's retire, edit or credit. Measured: lost 12 of 12 times for a record with no
+        stamp, and 6 of 6 for one stamped under another path or Python. Now a read (`stamp=False`) adds
+        `meta` only when it writes a flag, assigns a verdict only when it differs, and leaves an invalid
+        stamp and a stale `read_guards_v` where they are: neither is trusted here, and only the write
+        path (`stamp=True`) replaces or removes them."""
+        meta = rec.get("meta")
+        detached = meta is None and "meta" not in rec
+        if detached:
+            meta = {}                                     # attached below only if a verdict is written
+
+        def _out():
+            if detached and meta:
+                rec["meta"] = meta
+                return rec["meta"]
+            return meta
         rid = rec.get("id") or id(rec)
         if rid in self._guard_seen:
             return meta
@@ -10209,19 +10228,24 @@ class Inspeximus:
                 th = th or hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
                 if _guard_mac_ok(q.get("release_mac"), key, "release", rid, th):
                     nq["released"], nq["release_mac"] = q["released"], q["release_mac"]
-            meta["quarantined"] = nq
+            if meta.get("quarantined") != nq:
+                meta["quarantined"] = nq
         if stuffed and not meta.get("stuffed"):
             meta["stuffed"] = stuffed
-        meta.pop("read_guards", None)
-        if meta.get("quarantined") or meta.get("stuffed"):
-            meta["read_guards_v"] = 1
-            return meta
-        meta.pop("read_guards_v", None)
+        flagged = bool(meta.get("quarantined") or meta.get("stuffed"))
+        if "read_guards" in meta and (stamp or flagged):
+            meta.pop("read_guards", None)
+        if flagged:
+            if meta.get("read_guards_v") != 1:
+                meta["read_guards_v"] = 1
+            return _out()
+        if stamp and "read_guards_v" in meta:
+            meta.pop("read_guards_v", None)
         gset = _guard_set_hash() if (stamp and key) else None
         if gset:
             th = th or hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
             meta["read_guards"] = {"set": gset, "mac": _guard_mac(key, "clean", rid, th, gset)}
-        return meta
+        return _out()
 
     @staticmethod
     def _is_quarantined(rec: dict) -> bool:
