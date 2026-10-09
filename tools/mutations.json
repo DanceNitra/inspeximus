@@ -11439,21 +11439,22 @@
  {
   "name": "3.18 index: an edit does not move the content revision",
   "file": "inspeximus/core.py",
-  "old": "            store._rev = getattr(store, \"_rev\", 0) + 1\n",
-  "new": "            pass\n",
+  "old": "        store._rev = getattr(store, \"_rev\", 0) + 1\n        _note_dirty(store, rid)\n",
+  "new": "        _note_dirty(store, rid)\n",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py"
   ]
  },
  {
-  "name": "3.18 index: a reader's note moves the content revision",
+  "name": "3.18 R-5: a reader's note counts as an edit",
   "file": "inspeximus/core.py",
-  "old": "        if not (self._root is None and isinstance(key, str) and key[:1] == \"_\"):\n            store._rev",
-  "new": "        if True:\n            store._rev",
+  "old": "        if self._root is None and isinstance(key, str) and key[:1] == \"_\":\n            return\n",
+  "new": "",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py",
-   "tests/test_the_recall_index_keeps_views_apart.py"
+   "tests/test_the_recall_index_keeps_views_apart.py",
+   "tests/test_a_held_handle_sees_every_change_to_a_record.py"
   ]
  },
  {
@@ -11855,6 +11856,33 @@
   "new": "",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 R-5: an edit keeps the record's cached tokens",
+  "file": "inspeximus/core.py",
+  "old": "    if rid:\n        _drop_derived(store, rid)\n",
+  "new": "",
+  "tests": [
+   "tests/test_a_held_handle_sees_every_change_to_a_record.py"
+  ]
+ },
+ {
+  "name": "3.18 R-3: a same-id replacement is not declared",
+  "file": "inspeximus/core.py",
+  "old": "                o._rev = getattr(o, \"_rev\", 0) + 1\n                _note_dirty(o, old_id)\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_a_held_handle_sees_every_change_to_a_record.py"
+  ]
+ },
+ {
+  "name": "3.18 R-5: a merge keeps the cached tokens of a record the disk edited",
+  "file": "inspeximus/core.py",
+  "old": "                        _drop_derived(self, _r[\"id\"])\n",
+  "new": "                        pass\n",
+  "tests": [
+   "tests/test_a_held_handle_sees_every_change_to_a_record.py"
   ]
  }
 ]

@@ -25,7 +25,8 @@ READ = "from inspeximus import _userconfig; print(_userconfig.get('hook', 'daemo
 
 def _py(code, env):
     env = dict(env, PYTHONPATH=ROOT)
-    r = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, timeout=120)
+    r = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, encoding="utf-8",
+                       errors="replace", timeout=120)
     assert r.returncode == 0, r.stderr[-400:]
     return r.stdout.strip()
 
@@ -96,7 +97,7 @@ def test_a_test_in_a_worker_can_start_sys_executable(tmp_path):
     which worker_env keeps there; a run where they cannot start is red before mutating on every such test."""
     env = mcp.worker_env(str(tmp_path / "h"), ROOT, str(tmp_path))
     inner = ("import subprocess, sys; r = subprocess.run([sys.executable, '-c', 'print(8)'], capture_output=True, "
-             "text=True); print(r.stdout.strip())")
+             "text=True, encoding='utf-8', errors='replace'); print(r.stdout.strip())")
     assert _py(inner, env) == "8"
 
 
@@ -105,5 +106,6 @@ def test_a_worker_can_start_its_own_pytest(tmp_path):
     USERPROFILE, a Microsoft Store Python resolves sys.executable inside the sandbox, where nothing can be started."""
     env = mcp.worker_env(str(tmp_path / "h"), ROOT, str(tmp_path))
     inner = ("import os, subprocess, sys; r = subprocess.run([os.environ.get('MUTATION_PYTHON') or sys.executable, "
-             "'-c', 'print(7)'], capture_output=True, text=True); print(r.stdout.strip())")
+             "'-c', 'print(7)'], capture_output=True, text=True, encoding='utf-8', errors='replace'); "
+             "print(r.stdout.strip())")
     assert _py(inner, env) == "7"

@@ -433,6 +433,7 @@ _PRIVATE_UNREBOUND_BY_DECISION = {
     # would drop the other tenants' rows exactly as that bug did.
     "_save",
     "_merge_with_disk",
+    "_merge_union",                 # the union inside _merge_with_disk (3.18, AUDIT-B R-5): store-wide for its reason
     "_merge_rows_from_disk",
     # The lock and the merge that every deciding operation runs first (3.15.6): about the file, for
     # the reason above. The operation inside the hold is the rebound, tenant-bound one.

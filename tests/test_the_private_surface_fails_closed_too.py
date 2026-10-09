@@ -51,7 +51,7 @@ _STORE_WIDE_PRIVATE = {
     # has one format. `_track_all` attaches the change-declaring wrapper to the records that were
     # loaded, and hands each one back unchanged. `_migrate_json_store_locked` is the same conversion
     # under the store lock (2.27.6); it is store-wide for the reason its caller is.
-    "_merge_with_disk", "_migrate_json_store", "_migrate_json_store_locked", "_track_all",
+    "_merge_with_disk", "_merge_union", "_migrate_json_store", "_migrate_json_store_locked", "_track_all",
     # `_open_store_bytes` is the loader's file read, retried across a peer's replace (2.27.8); it
     # returns the bytes of the one file and is store-wide for the reason `_load_from_disk` is.
     "_open_store_bytes",

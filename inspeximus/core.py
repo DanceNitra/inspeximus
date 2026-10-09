@@ -1978,6 +1978,18 @@ def _note_dirty(store, rid) -> None:
     log = getattr(store, "_ix_log", None)
     if log is not None and getattr(store, "_recall_ix", None):
         log[rid or None] = store._rev
+    # THE PER-ID CACHES GO WITH THE EDIT (3.18, AUDIT-B R-5). They were filled once per id and never invalidated, so a
+    # held handle went on matching the words a record had before an in-place edit, and missed its new ones.
+    if rid:
+        _drop_derived(store, rid)
+
+
+def _drop_derived(store, rid) -> None:
+    """Forget what the store derived from one record's text: its token set, signature and term counts."""
+    for name in ("_tok_cache", "_sig_cache", "_tc_cache"):
+        c = getattr(store, name, None)
+        if c:
+            c.pop(rid, None)
 
 
 #: At most this many cached pools per store: one per combination of scope and pool arguments in use. Measured
@@ -2034,10 +2046,21 @@ class _RecordList(list):
             return
         old = list.__getitem__(self, i)
         super().__setitem__(i, v)
-        # One record replaced by another version of itself (a peer's copy at a reload) removes nothing: no prune, which
-        # a merge loop would otherwise pay once per record.
-        if (old.get("id") if isinstance(old, dict) else old) != (v.get("id") if isinstance(v, dict) else v):
-            self._pruned()
+        old_id = old.get("id") if isinstance(old, dict) else None
+        new_id = v.get("id") if isinstance(v, dict) else None
+        if old_id is not None and old_id == new_id:
+            # ANOTHER VERSION OF THE SAME RECORD IS STILL A REPLACEMENT (3.18, AUDIT-B R-3). It removes no id, so the
+            # full prune has nothing to drop, and it was skipped; but the record's cached tokens and every recall index
+            # entry still held the old version, so a retired or redacted record went on answering in a held handle.
+            # The replacement is declared as an edit: the content revision moves (the index rebuilds the entry) and the
+            # record's per-id caches go. One record's worth of work, so a merge loop does not pay a scan per record.
+            o = self._owner() if self._owner is not None else None
+            if o is not None:
+                o._l1_reset()
+                o._rev = getattr(o, "_rev", 0) + 1
+                _note_dirty(o, old_id)
+            return
+        self._pruned()
 
     def __reduce_ex__(self, protocol):              # copies and pickles are plain lists: the owner is this handle's
         return (list, (list(self),))
@@ -2087,16 +2110,21 @@ class _TrackedDict(dict):
         store = ref() if ref is not None else None
         if store is None:                             # the store is gone; nothing to declare to
             return
+        # A READER'S NOTE IS NOT AN EDIT (3.18, AUDIT-B R-5). A top-level `_` key (`_stale_derived`, written on every
+        # candidate of every recall) is never stored. It used to mark the record touched, and a merge keeps this
+        # handle's copy of a touched record over the disk's: after one recall, refresh() kept serving a record a peer
+        # had retired, credited or edited. It moves nothing now: not the touched set, not the dirty flag, not the
+        # content revision.
+        if self._root is None and isinstance(key, str) and key[:1] == "_":
+            return
         rid = dict.get(root, "id")
         if rid:
             store._touched.add(rid)
         store._dirty = True
-        # THE CONTENT REVISION (3.18 prototype). Recall's cached pool and token index are valid while it stands.
-        # A top-level `_` key is a reader's note (`_stale_derived`, written on every candidate of every recall)
-        # and is never stored, so it does not move it; every other edit, at any depth, does.
-        if not (self._root is None and isinstance(key, str) and key[:1] == "_"):
-            store._rev = getattr(store, "_rev", 0) + 1
-            _note_dirty(store, rid)
+        # THE CONTENT REVISION (3.18 prototype). Recall's cached pool and token index are valid while it stands;
+        # every edit, at any depth, moves it.
+        store._rev = getattr(store, "_rev", 0) + 1
+        _note_dirty(store, rid)
 
     def _child(self, v):
         root = self._root if self._root is not None else self
@@ -11675,7 +11703,24 @@ class Inspeximus:
             return None                       # unreadable: the caller decides (see `_merge_with_disk`)
 
     def _merge_with_disk(self, receipts_for_readded: bool = False, adopt_disk_loss: bool = False) -> dict:
-        """The union `reload()` performs, without the save. Both callers use THIS, and only this.
+        """The union `reload()` performs, without the save; see `_merge_union`. Both callers use THIS, and only this.
+
+        A PEER'S IN-PLACE EDIT IS AN EDIT HERE TOO (3.18, AUDIT-B R-5). The per-id caches are keyed by id, and the
+        merge brings the disk's version under the same id, so a held handle matched a record by its old words after
+        refresh() and reload() alike. Records whose indexed text moved lose their cached tokens, signature and term
+        counts; the recall index rebuilds its entries anyway, because the merge replaces the list."""
+        mine = {r.get("id"): r for r in self._items} if (self._tok_cache or self._sig_cache or self._tc_cache) else None
+        try:
+            return self._merge_union(receipts_for_readded, adopt_disk_loss)
+        finally:
+            if mine:
+                for _r in self._items:
+                    _o = mine.get(_r.get("id"))
+                    if _o is not None and _o is not _r and _index_text(_o) != _index_text(_r):
+                        _drop_derived(self, _r["id"])
+
+    def _merge_union(self, receipts_for_readded: bool = False, adopt_disk_loss: bool = False) -> dict:
+        """The union itself.
 
         `receipts_for_readded` is True only from `reload()`: there a re-added record is one whose
         save was refused and whose receipt was therefore never emitted. From the save path the
