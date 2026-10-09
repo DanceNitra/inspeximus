@@ -11992,5 +11992,41 @@
   "tests": [
    "tests/test_a_read_marks_no_record_touched.py"
   ]
+ },
+ {
+  "name": "3.18 CL-7: the watchdog ignores a stop request",
+  "file": "inspeximus/hookd.py",
+  "old": " or stop_requested(self.kh, self.started_at):\n",
+  "new": ":\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_stops_on_request.py"
+  ]
+ },
+ {
+  "name": "3.18 CL-7: an old stop request ends a new daemon",
+  "file": "inspeximus/hookd.py",
+  "old": "        return isinstance(at, (int, float)) and at >= since\n",
+  "new": "        return isinstance(at, (int, float))\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_stops_on_request.py"
+  ]
+ },
+ {
+  "name": "3.18 D-2: the Windows opener inherits the whole environment",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "        start([rundll, \"url.dll,FileProtocolHandler\", target], env=tool_env(), wait=False, **quiet)\n",
+  "new": "        start([rundll, \"url.dll,FileProtocolHandler\", target], env=dict(os.environ), wait=False, **quiet)\n",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 D-2: the Windows opener is found through SystemRoot",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "        rundll = os.path.join(_windows_dir(), \"System32\", \"rundll32.exe\")\n",
+  "new": "        rundll = os.path.join(os.environ.get(\"SystemRoot\", \"C:\\Windows\"), \"System32\", \"rundll32.exe\")\n",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
  }
 ]

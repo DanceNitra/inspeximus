@@ -24,7 +24,8 @@ WHAT THE DAEMON TRUSTS, AND WHAT IT DOES NOT
 
 LIFETIME. Started by a hook that found none (opt-in: `{"hook": {"daemon": true}}` in the user's config), as a detached run
 with the 3.16.4 launch rules (`_start_detached`: -E and the shim, breakaway, a new session), with the attempt
-recorded. It exits after IDLE_EXIT_S without a request, when the store disappears, or on `--hookd-stop`.
+recorded. It exits after IDLE_EXIT_S without a request, when the store disappears, or when `inspeximus hookd stop` asks
+every daemon of the key home to exit (`request_stop`).
 """
 import hashlib
 import hmac
@@ -67,6 +68,10 @@ def tag(store_path, kh):
 
 def state_dir(kh):
     return os.path.join(kh, "inspeximus", "hookd")
+
+
+def _stop_path(kh):
+    return os.path.join(state_dir(kh), "stop.request")
 
 
 def _token_path(kh, t):
@@ -529,6 +534,7 @@ class Daemon:
         self.idle_exit_s = idle_exit_s
         self.held = {}                 # real path -> (signature, handle)
         self.last_request = time.monotonic()
+        self.started_at = time.time()      # a stop request older than this is not for this daemon
         self.stop = False
         self.token = os.urandom(32)
         self.reopens = 0
@@ -695,7 +701,7 @@ class Daemon:
         while not self.stop:
             time.sleep(min(1.0, self.idle_exit_s / 4))
             if time.monotonic() - self.last_request > self.idle_exit_s or not os.path.exists(self.store) \
-                    or not os.path.isdir(self.kh):
+                    or not os.path.isdir(self.kh) or stop_requested(self.kh, self.started_at):
                 self.stop = True
         self._wake()
 
@@ -798,6 +804,36 @@ def live_daemon(store_path):
         return rec if rec is not None and _record_is_live(rec) else None
     except Exception:                                           # noqa: BLE001
         return None
+
+
+def stop_requested(kh, since) -> bool:
+    """Whether `inspeximus hookd stop` asked the daemons of this key home to exit at or after `since` (wall time)."""
+    try:
+        with open(_stop_path(kh), encoding="utf-8") as fh:
+            at = json.load(fh).get("at")
+        return isinstance(at, (int, float)) and at >= since
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
+def request_stop(kh, wait_s=5.0) -> dict:
+    """Ask every daemon of key home `kh` to exit, and wait up to `wait_s` for them to go (CL-7). The request is a file
+    in the daemons' own folder, which only this user can write; each daemon's watchdog reads it within a second,
+    closes its endpoint and removes its files. No process is signalled. A daemon that starts after the request is
+    not affected. Returns {"key_home", "running_before", "stopped", "still_running"}."""
+    before = live_daemon_count(kh)
+    os.makedirs(state_dir(kh), mode=0o700, exist_ok=True)
+    tmp = _stop_path(kh) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump({"at": time.time(), "pid": os.getpid()}, fh)
+    os.replace(tmp, _stop_path(kh))
+    end = time.monotonic() + max(0.0, wait_s)
+    left = before
+    while left and time.monotonic() < end:
+        time.sleep(0.2)
+        left = live_daemon_count(kh)
+    left = live_daemon_count(kh)
+    return {"key_home": kh, "running_before": before, "stopped": max(0, before - left), "still_running": left}
 
 
 def _slot_path(kh, i):

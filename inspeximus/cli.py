@@ -774,6 +774,9 @@ def main(argv=None):
                                      "it produces are attributable to nothing, so forget-subject cannot "
                                      "reach them")
 
+    hk = sub.add_parser("hookd", help="the prompt daemon: `inspeximus hookd stop` asks every daemon of this key home to "
+                                      "exit and waits up to 5 s for them")
+    hk.add_argument("action", choices=["stop"])
     sub.add_parser("vacuum", help="give a row store's free pages back to the file system (after compact or "
                                   "erasure); waits at most 2 s for the store lock and readers, then reports")
 
@@ -1635,6 +1638,15 @@ def main(argv=None):
 
     if a.cmd == "timestamp":
         return _timestamp_cmd(a)
+
+    if a.cmd == "hookd":                       # opens no store: the daemons are found by their files in the key home
+        from . import hookd
+        from ._keyhome import key_home
+        res = hookd.request_stop(key_home(a.path))
+        _out(res, a.json) or print(
+            "stopped %d prompt daemon(s) of %s" % (res["stopped"], res["key_home"])
+            + ("; %d still running" % res["still_running"] if res["still_running"] else ""))
+        return 1 if res["still_running"] else 0
 
     # `anchor` joins the forced-receipts list: the signed head commitment IS the receipt+tombstone chain's
     # commitment, so opening the store with receipts off would emit a head over an empty chain.
