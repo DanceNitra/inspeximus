@@ -11877,15 +11877,6 @@
   ]
  },
  {
-  "name": "3.18 R-5: a merge keeps the cached tokens of a record the disk edited",
-  "file": "inspeximus/core.py",
-  "old": "                        _drop_derived(self, _r[\"id\"])\n",
-  "new": "                        pass\n",
-  "tests": [
-   "tests/test_a_held_handle_sees_every_change_to_a_record.py"
-  ]
- },
- {
   "name": "3.18 R-2: the opener inherits the whole environment",
   "file": "inspeximus/_envpolicy.py",
   "old": "            start([exe, target], env=tool_env(OPENER_ENV_KEEP), wait=False,",
@@ -11931,15 +11922,6 @@
   ]
  },
  {
-  "name": "3.18 D-1: a read adds meta to a record that has none",
-  "file": "inspeximus/core.py",
-  "old": "        meta = rec.get(\"meta\")\n        detached = meta is None and \"meta\" not in rec\n",
-  "new": "        meta = rec.setdefault(\"meta\", {})\n        detached = False\n",
-  "tests": [
-   "tests/test_a_read_marks_no_record_touched.py"
-  ]
- },
- {
   "name": "3.18 D-1: a read re-assigns an equal quarantine verdict",
   "file": "inspeximus/core.py",
   "old": "            if meta.get(\"quarantined\") != nq:\n                meta[\"quarantined\"] = nq\n",
@@ -11971,15 +11953,6 @@
   "file": "inspeximus/core.py",
   "old": "        if stamp and \"read_guards_v\" in meta:\n",
   "new": "        if \"read_guards_v\" in meta:\n",
-  "tests": [
-   "tests/test_a_read_marks_no_record_touched.py"
-  ]
- },
- {
-  "name": "3.18 D-1: a flag written on a record without meta is never attached",
-  "file": "inspeximus/core.py",
-  "old": "            if detached and meta:\n                rec[\"meta\"] = meta\n",
-  "new": "            if False:\n                rec[\"meta\"] = meta\n",
   "tests": [
    "tests/test_a_read_marks_no_record_touched.py"
   ]

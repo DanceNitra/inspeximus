@@ -10190,20 +10190,14 @@ class Inspeximus:
         assessed, and to re-assign an equal quarantine verdict. On a live record each of those marks the
         record touched, so `refresh()` kept the held copy and the held handle's next write put it back on
         disk over a peer's retire, edit or credit. Measured: lost 12 of 12 times for a record with no
-        stamp, and 6 of 6 for one stamped under another path or Python. Now a read (`stamp=False`) adds
-        `meta` only when it writes a flag, assigns a verdict only when it differs, and leaves an invalid
-        stamp and a stale `read_guards_v` where they are: neither is trusted here, and only the write
-        path (`stamp=True`) replaces or removes them."""
+        stamp, and 6 of 6 for one stamped under another path or Python. Now a read (`stamp=False`)
+        assigns a verdict only when it differs, and leaves an invalid stamp and a stale `read_guards_v`
+        where they are: neither is trusted here, and only the write path (`stamp=True`) replaces or
+        removes them. A loaded record always has `meta` (the load adds it), so the `setdefault` below
+        writes only on a record built in memory without one."""
         meta = rec.get("meta")
-        detached = meta is None and "meta" not in rec
-        if detached:
-            meta = {}                                     # attached below only if a verdict is written
-
-        def _out():
-            if detached and meta:
-                rec["meta"] = meta
-                return rec["meta"]
-            return meta
+        if not isinstance(meta, dict):
+            meta = rec.setdefault("meta", {})
         rid = rec.get("id") or id(rec)
         if rid in self._guard_seen:
             return meta
@@ -10239,14 +10233,14 @@ class Inspeximus:
         if flagged:
             if meta.get("read_guards_v") != 1:
                 meta["read_guards_v"] = 1
-            return _out()
+            return meta
         if stamp and "read_guards_v" in meta:
             meta.pop("read_guards_v", None)
         gset = _guard_set_hash() if (stamp and key) else None
         if gset:
             th = th or hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
             meta["read_guards"] = {"set": gset, "mac": _guard_mac(key, "clean", rid, th, gset)}
-        return _out()
+        return meta
 
     @staticmethod
     def _is_quarantined(rec: dict) -> bool:
@@ -11730,19 +11724,11 @@ class Inspeximus:
     def _merge_with_disk(self, receipts_for_readded: bool = False, adopt_disk_loss: bool = False) -> dict:
         """The union `reload()` performs, without the save; see `_merge_union`. Both callers use THIS, and only this.
 
-        A PEER'S IN-PLACE EDIT IS AN EDIT HERE TOO (3.18, AUDIT-B R-5). The per-id caches are keyed by id, and the
-        merge brings the disk's version under the same id, so a held handle matched a record by its old words after
-        refresh() and reload() alike. Records whose indexed text moved lose their cached tokens, signature and term
-        counts; the recall index rebuilds its entries anyway, because the merge replaces the list."""
-        mine = {r.get("id"): r for r in self._items} if (self._tok_cache or self._sig_cache or self._tc_cache) else None
-        try:
-            return self._merge_union(receipts_for_readded, adopt_disk_loss)
-        finally:
-            if mine:
-                for _r in self._items:
-                    _o = mine.get(_r.get("id"))
-                    if _o is not None and _o is not _r and _index_text(_o) != _index_text(_r):
-                        _drop_derived(self, _r["id"])
+        A PEER'S IN-PLACE EDIT IS SEEN BY ITS NEW WORDS (3.18, AUDIT-B R-5) without work here: the union starts with
+        `self._items = []`, and the list setter prunes every per-id cache against an empty store, so no cached token,
+        signature or term count outlives a merge. A drop of the edited records' caches after the union was removed
+        in review: a mutant that disabled it survived, because it never had anything left to drop."""
+        return self._merge_union(receipts_for_readded, adopt_disk_loss)
 
     def _merge_union(self, receipts_for_readded: bool = False, adopt_disk_loss: bool = False) -> dict:
         """The union itself.
