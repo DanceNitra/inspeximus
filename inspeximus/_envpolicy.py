@@ -507,6 +507,33 @@ def start(args, *, env, wait=True, **kw):
     return (subprocess.run if wait else subprocess.Popen)(args, env=env, **kw)
 
 
+#: What a desktop opener needs to reach the user's session. BROWSER is not among them: `webbrowser` and `xdg-open` both
+#: run the command it names, and a project's settings can set it (AUDIT-B R-2, verified on WSL).
+OPENER_ENV_KEEP = ("DISPLAY", "WAYLAND_DISPLAY", "XAUTHORITY", "DBUS_SESSION_BUS_ADDRESS", "XDG_RUNTIME_DIR",
+                   "XDG_CURRENT_DESKTOP", "XDG_SESSION_TYPE", "XDG_SESSION_DESKTOP", "DESKTOP_SESSION", "XDG_DATA_DIRS",
+                   "XDG_CONFIG_DIRS", "XDG_DATA_HOME", "XDG_CONFIG_HOME")
+#: The openers, by absolute path, so PATH does not choose the program either.
+OPENERS = {"darwin": ("/usr/bin/open",), "posix": ("/usr/bin/xdg-open", "/usr/local/bin/xdg-open", "/bin/xdg-open")}
+
+
+def open_in_browser(path) -> bool:
+    """Open a local file in the user's browser (`inspeximus browse --open`). Windows: `os.startfile`, which reads no
+    variable to choose the program. macOS and other POSIX systems: `open` or `xdg-open` by absolute path, started with
+    `tool_env(OPENER_ENV_KEEP)`, which carries no BROWSER. Returns False when no opener exists."""
+    import subprocess
+    import sys
+    target = os.path.abspath(path)
+    if os.name == "nt":
+        os.startfile(target)
+        return True
+    for exe in OPENERS["darwin" if sys.platform == "darwin" else "posix"]:
+        if os.path.isfile(exe) and os.access(exe, os.X_OK):
+            start([exe, target], env=tool_env(OPENER_ENV_KEEP), wait=False, stdin=subprocess.DEVNULL,
+                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return True
+    return False
+
+
 _FROM_SUBPROCESS = ("DEVNULL", "STDOUT", "PIPE", "SubprocessError", "TimeoutExpired", "CalledProcessError")
 
 

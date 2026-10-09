@@ -11884,5 +11884,50 @@
   "tests": [
    "tests/test_a_held_handle_sees_every_change_to_a_record.py"
   ]
+ },
+ {
+  "name": "3.18 R-2: the opener inherits the whole environment",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "            start([exe, target], env=tool_env(OPENER_ENV_KEEP), wait=False,",
+  "new": "            start([exe, target], env=INHERIT, wait=False,",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 R-2: the opener keeps BROWSER",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "                   \"XDG_CONFIG_DIRS\", \"XDG_DATA_HOME\", \"XDG_CONFIG_HOME\")\n",
+  "new": "                   \"XDG_CONFIG_DIRS\", \"XDG_DATA_HOME\", \"XDG_CONFIG_HOME\", \"BROWSER\")\n",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 R-2: browse --open goes back to webbrowser",
+  "file": "inspeximus/cli.py",
+  "old": "            opened = _envpolicy.open_in_browser(path)\n",
+  "new": "            import webbrowser\n            opened = webbrowser.open(path)\n",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 R-2: an opener is started without being found",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "        if os.path.isfile(exe) and os.access(exe, os.X_OK):\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 R-1: the POSIX signature leaves out ctime and inode",
+  "file": "inspeximus/hookd.py",
+  "old": "            parts.append((f, st.st_mtime_ns, st.st_size) + ((st.st_ctime_ns, st.st_ino) if posix else ()))\n",
+  "new": "            parts.append((f, st.st_mtime_ns, st.st_size))\n",
+  "tests": [
+   "tests/test_the_daemon_sees_an_in_place_patch_on_posix.py"
+  ]
  }
 ]

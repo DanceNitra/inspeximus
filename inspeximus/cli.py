@@ -2592,12 +2592,15 @@ def main(argv=None):
     elif a.cmd == "browse":
         from inspeximus.browser import write_html
         path = write_html(m, a.out)
+        opened = False
         if a.open:
-            import webbrowser, pathlib
-            # as_uri(), not "file://" + abspath: on Windows the latter yields file://C:\... (backslashes,
-            # missing third slash) and it mangles spaces/non-ASCII in the path.
-            webbrowser.open(pathlib.Path(path).resolve().as_uri())
-        _out({"written": path}, a.json) or print(f"wrote memory browser -> {path}" + ("  (opened)" if a.open else ""))
+            # Through _envpolicy with a fixed opener, not `webbrowser`, which runs the command in $BROWSER on POSIX
+            # (3.18, AUDIT-B R-2).
+            from inspeximus import _envpolicy
+            opened = _envpolicy.open_in_browser(path)
+        _out({"written": path, **({"opened": opened} if a.open else {})}, a.json) or print(
+            f"wrote memory browser -> {path}" + (("  (opened)" if opened else "  (no opener found: open it yourself)")
+                                                 if a.open else ""))
 
     elif a.cmd == "decision":
         mid = m.remember_decision(a.decision, because=a.because, topic=a.topic,
