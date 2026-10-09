@@ -2358,8 +2358,14 @@ def main():
             # THE PROMPT DAEMON FIRST, TODAY'S PATH ON ANYTHING ELSE (3.18 prototype, opt-in). `hookd.ask` returns the
             # block only after a verified, timely, matching answer; None means run recall() here, exactly as before.
             _served, _sp = None, None
-            from . import hookd
-            _daemon_on = hookd.enabled()                        # the user's config only (AUDIT-A D-3)
+            # NOTHING MORE THAN 3.17 WHEN THE DAEMON IS OFF (AUDIT-B, 3.18 speed check). hookd and what it imports are
+            # loaded only when the user's config switches the daemon on, or when INSPEXIMUS_HOOK_DAEMON is set, so that
+            # hookd.enabled() can print its stderr line. The rule itself stays in hookd.enabled().
+            from . import _userconfig
+            _daemon_on = False
+            if _userconfig.get("hook", "daemon") is True or os.environ.get("INSPEXIMUS_HOOK_DAEMON"):
+                from . import hookd
+                _daemon_on = hookd.enabled()                    # the user's config only (AUDIT-A D-3)
             if _daemon_on:
                 from ._surface import coding_store_path
                 try:

@@ -10492,7 +10492,8 @@
   "old": "SERVER_READ_TIMEOUT_S = 0.5\n",
   "new": "SERVER_READ_TIMEOUT_S = 2.0\n",
   "tests": [
-   "tests/test_the_prompt_daemon_audit_a_findings.py", "tests/test_the_prompt_daemon_audit_a_delta.py"
+   "tests/test_the_prompt_daemon_audit_a_findings.py",
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
   ]
  },
  {
@@ -10729,6 +10730,15 @@
   "new": "             )",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the hook imports hookd with the daemon off",
+  "file": "inspeximus/claude_code.py",
+  "old": "            if _userconfig.get(\"hook\", \"daemon\") is True or os.environ.get(\"INSPEXIMUS_HOOK_DAEMON\"):",
+  "new": "            if True:",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
  }
 ]

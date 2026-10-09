@@ -499,3 +499,22 @@ def test_a_request_reached_after_its_client_gave_up_is_not_worked(project, daemo
     proj, sp = project
     monkeypatch.setattr(cc, "recall", lambda ev, **kw: pytest.fail("worked a request whose client had gone"))
     assert daemon.answer(_req(daemon, proj, until=time.time() - 1))["reason"] == "late"
+
+
+def test_with_the_daemon_off_the_hook_imports_no_daemon_code(project):
+    """AUDIT-B, 3.18 speed check: with the switch off, the 3.18 hook was about 0.10 s slower than the 3.17 hook. It now
+    imports hookd only when the user's config switches the daemon on (or INSPEXIMUS_HOOK_DAEMON is set, for its notice).
+    `-X importtime` lists every module the hook process imports."""
+    proj, sp = project
+    env = {k: v for k, v in os.environ.items() if k not in ("INSPEXIMUS_HOOK_DAEMON", "INSPEXIMUS_HOOK_DAEMON_TRACE")}
+    env["PYTHONPATH"] = ROOT
+
+    def imported(extra=None):
+        r = subprocess.run([sys.executable, "-X", "importtime", "-m", "inspeximus.claude_code"],
+                           input=json.dumps(_ev(proj)), cwd=proj, env=dict(env, **(extra or {})), capture_output=True,
+                           text=True, encoding="utf-8", timeout=120)
+        assert r.returncode == 0, r.stderr[-400:]
+        return r.stderr
+    assert "inspeximus.hookd" not in imported(), "the hook imported the daemon with the daemon switched off"
+    assert "inspeximus.hookd" in imported({"INSPEXIMUS_HOOK_DAEMON": "1"}), \
+        "CONTROL: -X importtime shows hookd when the hook loads it"
