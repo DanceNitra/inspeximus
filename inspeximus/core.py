@@ -1985,6 +1985,10 @@ def _note_dirty(store, rid) -> None:
 #: MCP store, so 4 entries hold at most 23 MB and 54 MB.
 _RECALL_IX_ENTRIES = 4
 
+#: The recall under a key that builds its entry and token index. The ones before only count the key and run the 3.17
+#: path, so a one-shot handle (the CLI, a hook the daemon does not serve) does no index work (AUDIT-B, 3.18).
+_RECALL_IX_BUILD_AFTER = 2
+
 
 class _RecordList(list):
     """The store's record list. Every method that removes or replaces records in place prunes the store's derived caches
@@ -15699,7 +15703,7 @@ class Inspeximus:
                 _uses[_ix_args] = _uses.get(_ix_args, 0) + 1
                 if len(_uses) > 64:
                     _uses.clear()
-                if _uses.get(_ix_args, 0) < 2 and _ix_args not in self._recall_ix:
+                if _uses.get(_ix_args, 0) < _RECALL_IX_BUILD_AFTER and _ix_args not in self._recall_ix:
                     _ix_args = None
         if _ix_args is not None:
             # READ BEFORE THE POOL IS BUILT (AUDIT-A Y-1). Keyed with what was current at the end, an entry built while

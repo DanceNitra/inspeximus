@@ -9,12 +9,22 @@ of them would pass on a cache that is rebuilt each time.
 from __future__ import annotations
 
 import os
+
+import pytest
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import inspeximus.core as core  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _index_from_the_first_recall(monkeypatch):
+    """These tests check what the cached entry serves after an edit, an append or a scope change, so the entry has to
+    exist when they edit: it is built on the first recall here. A one-shot handle's behaviour (nothing until the second
+    recall) is tested with the real threshold in test_a_one_shot_handle_builds_no_token_index."""
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 1)
 
 
 def _store(tmp_path, n=30):
@@ -55,6 +65,7 @@ def test_a_one_shot_handle_builds_no_token_index(tmp_path, monkeypatch):
     """AUDIT-B, 3.18 speed check: the first recall on a fresh handle (the CLI, a hook the daemon does not serve) built the
     token index and cost 0.33 s more than the scan it replaces on the MCP store. It scans, as 3.17 did; the index comes
     with the second recall on the same handle, and both answer the same."""
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 2)          # the shipped threshold, not this file's
     p = _store(tmp_path)
     m = Inspeximus(path=p)
     calls = []

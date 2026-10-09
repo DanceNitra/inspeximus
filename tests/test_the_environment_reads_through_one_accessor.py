@@ -614,3 +614,15 @@ def test_hermes_and_the_installers_get_none_of_our_variables(monkeypatch, tmp_pa
     assert len(seen) >= 3 and all(e is not None for e in seen), "CONTROL: every start passed an environment"
     leaked = sorted({k for e in seen for k in e if k.upper().startswith("INSPEXIMUS_")})
     assert leaked == [], "another program got our variables: %s" % leaked
+
+
+def test_the_archive_asks_git_through_start(tmp_path):
+    """The archive's git check-ignore runs through _envpolicy.start with git's own environment: it answers for a
+    file in a work tree, and a start without an environment would raise here instead."""
+    from inspeximus import archive
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    (repo / ".gitignore").write_text("ignored.json\n", encoding="utf-8")
+    assert archive._git_ignored(str(repo / "ignored.json")) is True
+    assert archive._git_ignored(str(repo / "kept.json")) is False

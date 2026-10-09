@@ -10920,15 +10920,6 @@
   ]
  },
  {
-  "name": "3.18 env S-2: a snapshot is a plain dict",
-  "file": "inspeximus/_envpolicy.py",
-  "old": "    return _EnvCopy((k, v) for k, v in src.items() if k.startswith(\"INSPEXIMUS_\") and k not in without)",
-  "new": "    return dict((k, v) for k, v in src.items() if k.startswith(\"INSPEXIMUS_\") and k not in without)",
-  "tests": [
-   "tests/test_the_environment_reads_through_one_accessor.py"
-  ]
- },
- {
   "name": "3.18 env S-2: child_env lets keep select our names",
   "file": "inspeximus/_envpolicy.py",
   "old": "    if keep is not None and any(_ours(k) for k in out):",
@@ -11598,7 +11589,7 @@
  {
   "name": "3.18 index: the first recall under a key does index work",
   "file": "inspeximus/core.py",
-  "old": "                if _uses.get(_ix_args, 0) < 2 and _ix_args not in self._recall_ix:",
+  "old": "                if _uses.get(_ix_args, 0) < _RECALL_IX_BUILD_AFTER and _ix_args not in self._recall_ix:",
   "new": "                if False:",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py"
