@@ -45,9 +45,29 @@ def test_control_the_index_is_built_and_reused(tmp_path):
     m = Inspeximus(path=_store(tmp_path))
     m.recall("deploy window", k=5)
     ix = _entry(m)
-    assert ix is not None and ix["post"] is not None, "CONTROL: the index was never built, so nothing here is tested"
+    assert ix is not None, "CONTROL: no entry was built, so nothing here is tested"
     m.recall("release train", k=5)
     assert _entry(m) is ix and len(m._recall_ix) == 1, "the cache is rebuilt on every recall: there is nothing held"
+    assert ix["post"] is not None, "CONTROL: a held handle never built the token index, so nothing here is tested"
+
+
+def test_a_one_shot_handle_builds_no_token_index(tmp_path, monkeypatch):
+    """AUDIT-B, 3.18 speed check: the first recall on a fresh handle (the CLI, a hook the daemon does not serve) built the
+    token index and cost 0.33 s more than the scan it replaces on the MCP store. It scans, as 3.17 did; the index comes
+    with the second recall on the same handle, and both answer the same."""
+    p = _store(tmp_path)
+    m = Inspeximus(path=p)
+    calls = []
+    real = m._rec_tokens
+    monkeypatch.setattr(m, "_rec_tokens", lambda r: calls.append(1) or real(r))
+    first = _ids(m, "deploy window")
+    assert _entry(m)["post"] is None, "the first recall built the token index"
+    n_first = len(calls)
+    second = _ids(m, "deploy window")
+    assert _entry(m)["post"] is not None, "CONTROL: the second recall builds it"
+    assert len(calls) > n_first, "CONTROL: building it tokenizes the pool, so the count above measures the build"
+    monkeypatch.setattr(core, "_RECALL_INDEX_ON", False)
+    assert first == second == _ids(Inspeximus(path=p), "deploy window"), "the answer depends on the index"
 
 
 def test_a_readers_note_does_not_invalidate_it(tmp_path):

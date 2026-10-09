@@ -10517,5 +10517,23 @@
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py"
   ]
+ },
+ {
+  "name": "3.18 index: the first recall on a fresh handle builds the token index",
+  "file": "inspeximus/core.py",
+  "old": "            if sel == \"lexical\" and _ix is not None and qtok and not _ix_fresh:",
+  "new": "            if sel == \"lexical\" and _ix is not None and qtok:",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: an erasure leaves the erased record in the recall index",
+  "file": "inspeximus/core.py",
+  "old": "        ixd = getattr(self, \"_recall_ix\", None)\n        if ixd:",
+  "new": "        ixd = None\n        if ixd:",
+  "tests": [
+   "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
+  ]
  }
 ]

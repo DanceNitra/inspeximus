@@ -15248,6 +15248,15 @@ class Inspeximus:
         for cache in (self._tok_cache, self._sig_cache, self._tc_cache):
             for rid in [k for k in cache if k not in live]:
                 del cache[rid]
+        # The recall index (3.18) holds records in its pool and snapshot, and their tokens in its postings: an entry
+        # that holds an erased record goes whole, and the next recall builds it from the live rows.
+        ixd = getattr(self, "_recall_ix", None)
+        if ixd:
+            for k in [k for k, e in ixd.items() if any(r.get("id") not in live for r in e["snap"])
+                      or any(r.get("id") not in live for r in e["pool"])]:
+                del ixd[k]
+            if not ixd:
+                self._ix_log.clear()
 
     def _bm25_scores(self, qtok: set, pool: list, k1: float = 1.5, b: float = 0.75) -> list:
         """Okapi BM25 score of `query` (token set) against every record in `pool` — the strong lexical
@@ -15547,7 +15556,7 @@ class Inspeximus:
         # KEYED BY EVERYTHING THAT DECIDES THE POOL (AUDIT-A X-1). The entries live in one dict on the store, and a
         # view reads and writes that dict in place, so each scope finds only its own entry: the key holds the view's
         # tenant, agent and ACL revision (`_view_scope`, the key `items` uses) and every pool argument.
-        _ix, _ix_args, _ix_new = None, None, None
+        _ix, _ix_args, _ix_new, _ix_fresh = None, None, None, False
         if (_RECALL_INDEX_ON and _shared is None and not (where or trusted_only or influence_only or reinforce)
                 and not self._objections and self._items and type(self._items[0]) is _TrackedDict
                 and isinstance(getattr(self, "_recall_ix", None), dict)):
@@ -15688,6 +15697,7 @@ class Inspeximus:
                 # verify is dropped), and that edit belongs to this pool, not to the next recall's.
                 _ix = {"args": _ix_args, "items": self._items, "n": _ix_at[1], "rev": _ix_at[0],
                        "vis": len(_rows), "snap": _ix_at[2], "pool": tuple(pool), "post": None}
+                _ix_fresh = True
                 _ixd = self._recall_ix
                 _ixd.pop(_ix_args, None)
                 _ixd[_ix_args] = _ix
@@ -15776,7 +15786,10 @@ class Inspeximus:
                     cands.append(_candrec(r, rrf[i] / mx))    # normalize the fused rank score to a [0,1] relevance
         else:
             _scan = pool
-            if sel == "lexical" and _ix is not None and qtok:
+            # NOT ON THE RECALL THAT BUILT THE ENTRY (AUDIT-B, 3.18 speed check). A one-shot handle (the CLI, a hook
+            # the daemon does not serve) recalls once: building the token index there cost 0.33 s more than the scan
+            # it replaces on the MCP store. A held handle (the MCP server, the daemon) builds it on its second recall.
+            if sel == "lexical" and _ix is not None and qtok and not _ix_fresh:
                 # ONLY RECORDS THAT SHARE A TOKEN WITH THE QUERY CAN SCORE: the lexical similarity of any other
                 # is 0 and is dropped below. Same records, same scores, visited in pool order, so ties keep it.
                 if _ix["post"] is None:
