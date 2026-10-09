@@ -25,6 +25,7 @@ def _index_from_the_first_recall(monkeypatch):
     exist when they edit: it is built on the first recall here. A one-shot handle's behaviour (nothing until the second
     recall) is tested with the real threshold in test_a_one_shot_handle_builds_no_token_index."""
     monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 1)
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER_HELD", 1)
 
 
 def _store(tmp_path, n=30):
@@ -65,9 +66,11 @@ def test_a_one_shot_handle_builds_no_token_index(tmp_path, monkeypatch):
     """AUDIT-B, 3.18 speed check: the first recall on a fresh handle (the CLI, a hook the daemon does not serve) built the
     token index and cost 0.33 s more than the scan it replaces on the MCP store. It scans, as 3.17 did; the index comes
     with the second recall on the same handle, and both answer the same."""
-    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 2)          # the shipped threshold, not this file's
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER_HELD", 2)     # the shipped thresholds, not this file's
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 3)
     p = _store(tmp_path)
     m = Inspeximus(path=p)
+    m._ix_held = True                                              # the daemon's and the server's handles
     calls = []
     real = m._rec_tokens
     monkeypatch.setattr(m, "_rec_tokens", lambda r: calls.append(1) or real(r))
@@ -190,3 +193,31 @@ def test_an_untracked_edit_declared_through_touch_is_seen(tmp_path):
     dict.__setitem__(rec, "status", "superseded")
     m._touch(rec)
     assert not _has(m, "zanzibar")
+
+
+@pytest.mark.parametrize("held,builds_on", [(False, 3), (True, 2)])
+def test_a_held_handle_builds_on_its_second_recall_and_any_other_on_its_third(tmp_path, monkeypatch, held, builds_on):
+    """EM, after AUDIT-B: a caller that recalls exactly twice paid the build and never used it. Only a handle a
+    long-lived process holds (the daemon, the MCP server) builds on its second recall."""
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 3)
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER_HELD", 2)
+    m = Inspeximus(path=_store(tmp_path))
+    m._ix_held = held
+    for n in range(1, 4):
+        m.recall("deploy window", k=5)
+        assert bool(m._recall_ix) == (n >= builds_on), (held, n, len(m._recall_ix))
+
+
+def test_the_daemon_and_the_server_mark_their_handles_held(tmp_path):
+    import ast
+    from inspeximus import hookd
+    sp = _store(tmp_path)
+    d = hookd.Daemon(sp, idle_exit_s=60)
+    assert d.handle_for(sp, lambda: Inspeximus(sp))._ix_held is True, "the daemon's handle is not held"
+    src = open(os.path.join(ROOT, "inspeximus", "mcp_server.py"), encoding="utf-8").read()
+    assigns = [n for n in ast.walk(ast.parse(src)) if isinstance(n, ast.Assign) and any(
+        isinstance(t, ast.Attribute) and t.attr == "_ix_held" and isinstance(t.value, ast.Name) and t.value.id == "_MEM"
+        for t in n.targets)]
+    assert assigns and all(isinstance(a.value, ast.Constant) and a.value.value is True for a in assigns), \
+        "the MCP server does not mark its handle held"
+    assert Inspeximus(sp)._ix_held is False, "CONTROL: a plain handle is not held"

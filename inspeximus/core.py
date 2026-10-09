@@ -1986,8 +1986,11 @@ def _note_dirty(store, rid) -> None:
 _RECALL_IX_ENTRIES = 4
 
 #: The recall under a key that builds its entry and token index. The ones before only count the key and run the 3.17
-#: path, so a one-shot handle (the CLI, a hook the daemon does not serve) does no index work (AUDIT-B, 3.18).
-_RECALL_IX_BUILD_AFTER = 2
+#: path. A handle a long-lived process holds (`_ix_held`: the prompt daemon, the MCP server) builds on its second recall;
+#: any other handle on its third, so the CLI, an unserved hook and a caller that recalls exactly twice do no index work
+#: (AUDIT-B, 3.18: a two-recall caller paid the build, 0.35 s on the MCP store, and never used it).
+_RECALL_IX_BUILD_AFTER = 3
+_RECALL_IX_BUILD_AFTER_HELD = 2
 
 
 class _RecordList(list):
@@ -3364,7 +3367,8 @@ class Inspeximus:
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._rev = 0                             # content revision; see _TrackedDict._fire
         self._recall_ix = {}                      # recall's cached pools and token indexes, by key; see recall()
-        self._ix_uses = {}                        # recalls per cache key; the index is built from the second
+        self._ix_uses = {}                        # recalls per cache key; see _RECALL_IX_BUILD_AFTER
+        self._ix_held = False                     # set by a process that holds this handle (the daemon, the MCP server)
         self._ix_log = {}                         # record id -> the revision that last moved it; see _note_dirty
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -15703,7 +15707,8 @@ class Inspeximus:
                 _uses[_ix_args] = _uses.get(_ix_args, 0) + 1
                 if len(_uses) > 64:
                     _uses.clear()
-                if _uses.get(_ix_args, 0) < _RECALL_IX_BUILD_AFTER and _ix_args not in self._recall_ix:
+                _after = _RECALL_IX_BUILD_AFTER_HELD if getattr(self, "_ix_held", False) else _RECALL_IX_BUILD_AFTER
+                if _uses.get(_ix_args, 0) < _after and _ix_args not in self._recall_ix:
                     _ix_args = None
         if _ix_args is not None:
             # READ BEFORE THE POOL IS BUILT (AUDIT-A Y-1). Keyed with what was current at the end, an entry built while

@@ -539,6 +539,7 @@ class Daemon:
         cur = self.held.get(key)
         if cur is None or cur[0] != sig:
             m = opener()
+            m._ix_held = True                                   # held: the recall index from its second recall (3.18)
             self.held[key] = (sig, m)
             self.reopens += 1
             if cur is not None:

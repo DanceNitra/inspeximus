@@ -26,6 +26,7 @@ def _index_from_the_first_recall(monkeypatch):
     exist when they edit: it is built on the first recall here. A one-shot handle's behaviour (nothing until the second
     recall) is tested with the real threshold in test_a_one_shot_handle_builds_no_token_index."""
     monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER", 1)
+    monkeypatch.setattr(core, "_RECALL_IX_BUILD_AFTER_HELD", 1)
 
 
 def _texts(v, q=Q, k=10, on=True):

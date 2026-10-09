@@ -11589,7 +11589,7 @@
  {
   "name": "3.18 index: the first recall under a key does index work",
   "file": "inspeximus/core.py",
-  "old": "                if _uses.get(_ix_args, 0) < _RECALL_IX_BUILD_AFTER and _ix_args not in self._recall_ix:",
+  "old": "                if _uses.get(_ix_args, 0) < _after and _ix_args not in self._recall_ix:",
   "new": "                if False:",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py"
@@ -11818,6 +11818,43 @@
   "new": "hashlib.sha256(os.path.join('x', n).encode",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
+  ]
+ },
+ {
+  "name": "3.18 index: a held handle waits for the third recall",
+  "file": "inspeximus/core.py",
+  "old": "                _after = _RECALL_IX_BUILD_AFTER_HELD if getattr(self, \"_ix_held\", False) else _RECALL_IX_BUILD_AFTER",
+  "new": "                _after = _RECALL_IX_BUILD_AFTER",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: every handle builds on its second recall",
+  "file": "inspeximus/core.py",
+  "old": "_RECALL_IX_BUILD_AFTER = 3\n",
+  "new": "_RECALL_IX_BUILD_AFTER = 2\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_perf_gate_can_fail.py"
+  ]
+ },
+ {
+  "name": "3.18 daemon: the daemon's handle is not marked held",
+  "file": "inspeximus/hookd.py",
+  "old": "            m._ix_held = True                                   # held: the recall index from its second recall (3.18)\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 mcp: the server's handle is not marked held",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    _MEM._ix_held = True                  # the server holds its handle: the recall index from its second recall (3.18)\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
   ]
  }
 ]

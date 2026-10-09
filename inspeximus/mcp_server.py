@@ -471,6 +471,7 @@ try:
     _MEM = open_store(_PATH, embed=_EMB_DOC, embed_query=_EMB_QUERY, embed_id=_EMB_ID, receipts=_RECEIPTS,
                       receipt_key=_SIGNING["key"], observe_recall=_OBSERVE_RECALL, writer_key=_WRITER_KEY,
                       persist_vectors=_PERSIST_VECTORS, pii_detect=_PII_DETECT)
+    _MEM._ix_held = True                  # the server holds its handle: the recall index from its second recall (3.18)
 except StoreLocationError as _refused:
     print(f"[inspeximus-mcp] {_refused}", file=sys.stderr)
     _MEM = _RefusedStore(str(_refused))
