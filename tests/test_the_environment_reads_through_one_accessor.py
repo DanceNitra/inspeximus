@@ -64,6 +64,20 @@ def test_no_shipped_code_reads_an_inspeximus_variable_outside_envpolicy():
     'import os\nx = {k: v for k, v in os.environ.items() if k.startswith("INSPEXIMUS_")}',
     'import os\nfor var in ("INSPEXIMUS_A", "INSPEXIMUS_B"):\n    os.environ.get(var)',
     'NAMES = ["INSPEXIMUS_PATH"]',
+    # S-1: touching the environment under any name is the violation, not a list of read shapes.
+    'import os\nE = os.environ',
+    'from os import environ as E\nx = E.get("X")',
+    'import os\ng = os.getenv',
+    'import os\nfor k, v in os.environ.items():\n    pass',
+    'import os\nd = dict(os.environ)',
+    'import os\nd = os.environ.copy()',
+    'import os\nx = os.path.expandvars("$HOME")',
+    'import os\nx = os.environb',
+    'import os\nx = getattr(os, "environ")',
+    'from os import *',
+    'import os as o\no.putenv("X", "1")',
+    'from inspeximus import _envpolicy\nx = _envpolicy.child_env().get("INSPEXIMUS_PATH")',
+    'def f(x):\n    return ("inspeximus_" + x).upper()',
 ])
 def test_the_scan_catches_every_shape_of_read(src):
     assert scan.violations(os.path.join(ROOT, "inspeximus", "x.py"), src), "the scan missed: %s" % src
@@ -71,7 +85,7 @@ def test_the_scan_catches_every_shape_of_read(src):
 
 @pytest.mark.parametrize("src", [
     'from . import _envpolicy\nx = _envpolicy.raw("INSPEXIMUS_PATH")',
-    'import os\nos.environ["INSPEXIMUS_KEY_HOME"] = "k"',
+    'from . import _envpolicy\n_envpolicy.set_for_this_process("INSPEXIMUS_KEY_HOME", "k")',
     'x = {"INSPEXIMUS_PATH": "p"}',
     'def f(src):\n    return src == "INSPEXIMUS_RECEIPT_KEY_FILE"',
     'def f():\n    return "INSPEXIMUS_PATH"',
@@ -79,6 +93,98 @@ def test_the_scan_catches_every_shape_of_read(src):
 ])
 def test_a_write_or_a_read_through_the_accessor_is_not_flagged(src):
     assert scan.violations(os.path.join(ROOT, "inspeximus", "x.py"), src) == []
+
+
+def test_the_passthroughs_refuse_our_own_names(monkeypatch):
+    """S-1: `other` and `other_names` are for other programs' variables; an INSPEXIMUS_* name through them would skip
+    its rule."""
+    monkeypatch.setenv("INSPEXIMUS_PATH", "x")
+    for call in (lambda: _envpolicy.other("INSPEXIMUS_PATH"), lambda: _envpolicy.other("inspeximus_path"),
+                 lambda: _envpolicy.other_names("INSPEXIMUS_"), lambda: _envpolicy.other_names("INSP"),
+                 lambda: _envpolicy.other_names("")):
+        with pytest.raises(ValueError):
+            call()
+    monkeypatch.setenv("CLAUDE_CODE_X", "1")
+    assert "CLAUDE_CODE_X" in _envpolicy.other_names("CLAUDE_CODE_")
+
+
+# -- S-2: host() takes a host config entry, never the environment ------------------------------------------------
+@pytest.mark.parametrize("make", [
+    lambda: os.environ, lambda: dict(os.environ), lambda: os.environ.copy(),
+    lambda: {"env": os.environ}, lambda: {"env": dict(os.environ)}, lambda: {"env": os.environ.copy()},
+])
+def test_host_refuses_the_environment_and_any_copy_of_it(make, monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_PATH", "from-the-environment")
+    with pytest.raises(ValueError):
+        _envpolicy.host("INSPEXIMUS_PATH", make())
+
+
+def test_host_reads_the_env_block_of_a_host_entry():
+    assert _envpolicy.host("INSPEXIMUS_PATH", {"command": "uvx", "env": {"INSPEXIMUS_PATH": "p"}}) == "p"
+    assert _envpolicy.host("INSPEXIMUS_PATH", {"command": "uvx"}) == ""
+    assert _envpolicy.host("INSPEXIMUS_PATH", None) == ""
+
+
+#: S-2: every caller of `raw` for an env-with-guard name, or for a name it does not know, with the guard it applies.
+#: A new caller fails the test below until it is listed here with its guard.
+RAW_GUARDED_CALLERS = {
+    ("inspeximus/_http.py", "embedders_from_env", "INSPEXIMUS_EMBED_MODEL"): "the recipe: an open embeds nothing",
+    ("inspeximus/_http.py", "embedders_from_env", "INSPEXIMUS_NOMIC_PREFIX"): "the recipe, as EMBED_MODEL",
+    ("inspeximus/_http.py", "env_url", "<var>"): "host_allowed: another host needs the user's config",
+    ("inspeximus/_http.py", "env_key", "<var>"): "host_allowed for the URL in use",
+    ("inspeximus/_keyhome.py", "key_home", "INSPEXIMUS_KEY_HOME"): "refusal(): git tree, store project, cwd project",
+    ("inspeximus/_surface.py", "resolve_path", "INSPEXIMUS_PATH"): "_vet_path_link",
+    ("inspeximus/_surface.py", "resolve_path", "INSPEXIMUS_SCOPE"): "the vetted resolver of each scope",
+    ("inspeximus/_surface.py", "resolved_path_source", "INSPEXIMUS_PATH"): "a label only; opens nothing",
+    ("inspeximus/_surface.py", "resolved_path_source", "INSPEXIMUS_SCOPE"): "a label only; opens nothing",
+    ("inspeximus/_surface.py", "_coding_store_location", "INSPEXIMUS_CODING_STORE"): "_storelink.vet",
+    ("inspeximus/claude_code.py", "_make_embedder", "INSPEXIMUS_EMBED_MODEL"): "the recipe, as above",
+    ("inspeximus/claude_code.py", "_make_embedder", "INSPEXIMUS_NOMIC_PREFIX"): "the recipe, as above",
+    ("inspeximus/demo.py", "run_demo", "INSPEXIMUS_KEY_HOME"): "saved to restore after the demo; read for nothing else",
+    ("inspeximus/mcp_server.py", "resolve_project", "INSPEXIMUS_PROJECT"): "_envpolicy.project_name",
+    ("inspeximus/mcp_server.py", "_flag_from_env", "<name>"): "its callers pass env-safe names only (checked below)",
+    ("inspeximus/mcp_server.py", "where_am_i", "INSPEXIMUS_SCOPE"): "a label only; opens nothing",
+    ("inspeximus/probes/a_contradiction_one_channel_cannot_see.py", "<module>", "INSPEXIMUS_EMBED_MODEL"):
+        "a probe on its own temporary store",
+}
+
+
+def _raw_callers():
+    import ast
+    out, flag_args = set(), set()
+    for f in scan.shipped_files():
+        rel = os.path.relpath(f, ROOT).replace(os.sep, "/")
+        if rel == "inspeximus/_envpolicy.py":
+            continue
+        t = ast.parse(open(f, encoding="utf-8").read())
+        fn = {}
+        for d in ast.walk(t):
+            if isinstance(d, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                for n in ast.walk(d):
+                    fn[id(n)] = d.name
+        for n in ast.walk(t):
+            if not isinstance(n, ast.Call) or not n.args:
+                continue
+            a = n.args[0]
+            if scan._is_envpolicy_call(n) and n.func.attr == "raw":
+                if isinstance(a, ast.Constant):
+                    if _envpolicy.POLICY[a.value][0] == _envpolicy.ENV_SAFE:
+                        continue
+                    var = a.value
+                else:
+                    var = "<%s>" % ast.unparse(a)
+                out.add((rel, fn.get(id(n), "<module>"), var))
+            elif isinstance(n.func, ast.Name) and n.func.id == "_flag_from_env":
+                flag_args.add(a.value if isinstance(a, ast.Constant) else "<%s>" % ast.unparse(a))
+    return out, flag_args
+
+
+def test_every_raw_read_of_a_guarded_name_is_a_listed_caller_that_applies_the_guard():
+    callers, flag_args = _raw_callers()
+    assert ("inspeximus/_keyhome.py", "key_home", "INSPEXIMUS_KEY_HOME") in callers, "CONTROL: the census finds callers"
+    unlisted = sorted(callers - set(RAW_GUARDED_CALLERS))
+    assert not unlisted, "raw() of a guarded name outside the list; apply its guard and list it: %s" % unlisted
+    assert flag_args and all(_envpolicy.POLICY[v][0] == _envpolicy.ENV_SAFE for v in flag_args), flag_args
 
 
 def test_raw_refuses_a_config_only_variable(monkeypatch):
@@ -146,6 +252,16 @@ def test_receipts_from_the_environment_need_a_signing_key_in_the_users_config(tm
     assert _envpolicy.receipts_from_env() is True
 
 
+def test_only_a_64_hex_receipts_key_counts_as_a_signing_key(monkeypatch):
+    """S-3: a receipts.key that is not a 64-hex key signs nothing, so it does not let the environment start a chain."""
+    import _userconfig_env
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", _userconfig_env.key_home_with({"receipts": {"key": "not-a-key"}}))
+    monkeypatch.setenv("INSPEXIMUS_RECEIPTS", "1")
+    assert _envpolicy.receipts_from_env() is False
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", _userconfig_env.key_home_with({"receipts": {"key": "ab" * 32}}))
+    assert _envpolicy.receipts_from_env() is True
+
+
 # ── EC-3 the cwd's project ───────────────────────────────────────────────────────────────────────────────────
 def test_a_key_file_inside_the_project_the_process_runs_in_is_refused_without_git(tmp_path, monkeypatch):
     home = tmp_path / "home"
@@ -193,6 +309,7 @@ def test_the_read_sites_pass_the_ceilings():
     import inspeximus.core as core
     import inspeximus.sqlite_store as ss
     assert '_ep.at_least("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S, float, 120.0)' in open(ss.__file__).read()
+    assert "timeout=busy_timeout_s()" in open(ss.__file__).read(), "the connect does not read the bounded value"
     assert '_envpolicy.at_least("INSPEXIMUS_SAVE_RETRIES", 2, int, 20)' in open(core.__file__, encoding="utf-8").read()
 
 
@@ -279,3 +396,26 @@ def test_the_mcp_server_binds_receipts_trust_seeds_and_key_files_through_the_pol
     calls = _calls("inspeximus/mcp_server.py")
     assert "_envpolicy.key_file('INSPEXIMUS_WRITER_KEY_FILE', _PATH)" in calls, "the writer key file ignores the store"
     assert "_envpolicy.key_file('INSPEXIMUS_RECEIPT_KEY_FILE', path)" in calls
+
+
+# -- C-2: the writer-key hint names the user's config, never a key file the server would ignore -------------------
+def test_writer_key_points_at_the_users_config_and_says_when_the_file_is_in_the_project(tmp_path):
+    work = tmp_path / "work"
+    work.mkdir()
+    kh = tmp_path / "kh"
+    env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
+    env.update(INSPEXIMUS_KEY_HOME=str(kh), INSPEXIMUS_NO_UPDATE_CHECK="1", PYTHONPATH=ROOT,
+               USERPROFILE=str(tmp_path / "home"), HOME=str(tmp_path / "home"))
+    r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "writer-key", "--new", "--out", "key.txt"], cwd=str(work),
+                       env=env, capture_output=True, text=True, encoding="utf-8", timeout=120)
+    assert r.returncode == 0, r.stderr[-400:]
+    assert "INSPEXIMUS_WRITER_KEY_FILE=" not in r.stdout, "the hint names a key file the server would ignore"
+    assert '"key_file": ' in r.stdout and "config.json" in r.stdout, r.stdout
+    assert "INSPEXIMUS_WRITER_KEY_FILE cannot name this file" in r.stdout, "CONTROL: key.txt is in the folder it ran in"
+
+
+def test_the_pages_show_the_config_line_and_not_a_key_file_in_the_work_folder():
+    for page in ("audit-trail.html", "erasure.html", "migrate-from-mem0.html"):
+        text = open(os.path.join(ROOT, page), encoding="utf-8").read()
+        assert "INSPEXIMUS_WRITER_KEY_FILE=key.txt" not in text, page
+        assert "point the server at it: in " in text, page

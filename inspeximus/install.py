@@ -61,10 +61,12 @@ def _home():
 
 def _appdata():
     if platform.system() == "Windows":
-        return pathlib.Path(os.environ.get("APPDATA") or (_home() / "AppData" / "Roaming"))
+        from . import _envpolicy
+        return pathlib.Path(_envpolicy.other("APPDATA") or (_home() / "AppData" / "Roaming"))
     if platform.system() == "Darwin":
         return _home() / "Library" / "Application Support"
-    return pathlib.Path(os.environ.get("XDG_CONFIG_HOME") or (_home() / ".config"))
+    from . import _envpolicy
+    return pathlib.Path(_envpolicy.other("XDG_CONFIG_HOME") or (_home() / ".config"))
 
 
 def _read_json(path):
@@ -406,7 +408,8 @@ def devin_dir():
     from the home directory, not from APPDATA, so a sandboxed home is never escaped through the environment."""
     if os.name == "nt":
         return _home() / "AppData" / "Roaming" / "devin"
-    xdg = os.environ.get("XDG_CONFIG_HOME")
+    from . import _envpolicy
+    xdg = _envpolicy.other("XDG_CONFIG_HOME")
     return (pathlib.Path(xdg) if xdg else _home() / ".config") / "devin"
 
 
@@ -422,7 +425,8 @@ def _devin_paths(project):
 
 def _codex_paths(project):
     # CODEX_HOME defaults to ~/.codex on every platform (no OS branch in codex's own home-dir code).
-    home = pathlib.Path(os.environ.get("CODEX_HOME") or (_home() / ".codex"))
+    from . import _envpolicy
+    home = pathlib.Path(_envpolicy.other("CODEX_HOME") or (_home() / ".codex"))
     return {"user": home / "config.toml",
             "project": pathlib.Path(project or os.getcwd()) / ".codex" / "config.toml"}
 
@@ -431,11 +435,12 @@ def _cline_paths(project):
     """Cline moved its settings out of the VS Code globalStorage path into a shared client-agnostic
     one. The globalStorage location that most guides still quote is LEGACY -- Cline migrates it on
     startup -- so writing there would land in a file the app is trying to move away from."""
-    explicit = os.environ.get("CLINE_MCP_SETTINGS_PATH")
+    from . import _envpolicy
+    explicit = _envpolicy.other("CLINE_MCP_SETTINGS_PATH")
     if explicit:
         return {"user": pathlib.Path(explicit)}
-    base = pathlib.Path(os.environ.get("CLINE_DATA_DIR")
-                        or (pathlib.Path(os.environ["CLINE_DIR"]) / "data" if os.environ.get("CLINE_DIR")
+    base = pathlib.Path(_envpolicy.other("CLINE_DATA_DIR")
+                        or (pathlib.Path(_envpolicy.other("CLINE_DIR")) / "data" if _envpolicy.other("CLINE_DIR")
                             else _home() / ".cline" / "data"))
     return {"user": base / "settings" / "cline_mcp_settings.json"}
 

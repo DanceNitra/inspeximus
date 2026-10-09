@@ -166,18 +166,15 @@ def run_demo(keep: str | None = None, *, echo_policy: str = "safe", forget: bool
              "INSPEXIMUS_NO_UPDATE_CHECK": _envpolicy.raw("INSPEXIMUS_NO_UPDATE_CHECK")}
     # A temporary key home, so the chain heads the stores keep outside their directories never land in
     # the user's real config directory, and no update check, so it makes no network request.
-    os.environ["INSPEXIMUS_KEY_HOME"] = os.path.join(root, "keys")
-    os.environ["INSPEXIMUS_NO_UPDATE_CHECK"] = "1"
+    _envpolicy.set_for_this_process("INSPEXIMUS_KEY_HOME", os.path.join(root, "keys"))
+    _envpolicy.set_for_this_process("INSPEXIMUS_NO_UPDATE_CHECK", "1")
     try:
         steps = [_step_correction(root, echo_policy), _step_erasure(root, forget), _step_tamper(root, tamper)]
         if keep:
             shutil.copytree(root, keep, dirs_exist_ok=True, ignore=shutil.ignore_patterns("keys"))
     finally:
         for k, v in saved.items():
-            if v is None:
-                os.environ.pop(k, None)
-            else:
-                os.environ[k] = v
+            _envpolicy.set_for_this_process(k, v)
         shutil.rmtree(root, ignore_errors=True)
     return {"ok": all(s["ok"] for s in steps), "seconds": round(time.time() - t0, 2), "steps": steps,
             "kept_in": keep}

@@ -321,8 +321,9 @@
 secret written to key.txt (0600)
 public key: 7c4e59dc326515ba066f820357b96d6e98becead7160e0eb5b7e8a02307e11da
 
-point the server at it:  INSPEXIMUS_WRITER_KEY_FILE=key.txt
-pin this writer as trusted with trust_seeds={&#x27;key:7c4e59dc326515ba066f820357b96d6e98becead7160e0eb5b7e8a02307e11da&#x27;}
+point the server at it: in /home/you/.config/inspeximus/config.json, set {&quot;writer&quot;: {&quot;key_file&quot;: &quot;/home/you/demo/key.txt&quot;}}
+(INSPEXIMUS_WRITER_KEY_FILE cannot name this file: it is inside the project this process runs in, /home/you/demo)
+pin this writer as trusted with trust_seeds={&#x27;key:7c4e59dc326515ba066f820357b96d6e98becead7160e0eb5b7e8a02307e11da&#x27;} (the MCP server: recall.trust_seeds)
 KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt remember &#x27;Alice phone is +100&#x27; --key alice::phone --source crm/alice

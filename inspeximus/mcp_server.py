@@ -189,7 +189,6 @@ def resolve_project(cli_value: str | None = None, env: dict | None = None, cwd: 
     quietly evaporates reports safe while isolating nothing. An empty ENV var is treated as unset, because
     exporting a variable to "" is the ordinary way tooling says "not set".
     """
-    env = os.environ if env is None else env
     if cli_value is not None:
         raw = cli_value.strip()
         if not raw:

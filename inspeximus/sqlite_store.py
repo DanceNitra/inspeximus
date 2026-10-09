@@ -212,13 +212,18 @@ BUSY_TIMEOUT_S = 10
 # `INSPEXIMUS_BUSY_TIMEOUT_S` overrides it (3.5.2) for an operator who has measured a longer
 # foreign hold and for tests that need a short one; the constraint above still applies, and
 # `Inspeximus._save_rows_retrying` multiplies it by the retry count.
-# 3.18: the environment may raise it and never lower it (a project could make every write fail fast under contention);
-# the user's config `store.busy_timeout_s` sets any value.
-try:
-    from . import _envpolicy as _ep
-    BUSY_TIMEOUT_S = _ep.at_least("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S, float, 120.0)   # EC-4: bounded
-except Exception:                                               # noqa: BLE001 -- the constant stands
-    pass
+# 3.18: the environment may raise it and never lower it (a project could make every write fail fast under contention),
+# up to 120 s (EC-4); the user's config `store.busy_timeout_s` sets any value. Read at each connect, not at import:
+# reading it at import loaded the policy modules into every `import inspeximus`.
+
+
+def busy_timeout_s() -> float:
+    """BUSY_TIMEOUT_S, or the value the user's config or the environment sets for it."""
+    try:
+        from . import _envpolicy as _ep
+        return _ep.at_least("INSPEXIMUS_BUSY_TIMEOUT_S", BUSY_TIMEOUT_S, float, 120.0)   # EC-4: bounded
+    except Exception:                                           # noqa: BLE001 -- the constant stands
+        return BUSY_TIMEOUT_S
 
 
 def _connect(path):
@@ -236,7 +241,7 @@ def _connect(path):
     # baseline -- which silently disabled DELETES. A GDPR erasure reported "erased 1" and the record
     # stayed in the file.
     _fresh = not os.path.exists(str(path))
-    con = sqlite3.connect(str(path), timeout=BUSY_TIMEOUT_S, isolation_level=None)
+    con = sqlite3.connect(str(path), timeout=busy_timeout_s(), isolation_level=None)
     # NOT WAL, AND THE REASON IS THE FILE. WAL keeps recent writes in a `-wal` sidecar and folds
     # them back when the last connection closes, so it is only fast if a connection stays open --
     # and a held connection means the store cannot be renamed on Windows, which breaks the documented

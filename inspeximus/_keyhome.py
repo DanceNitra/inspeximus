@@ -19,7 +19,8 @@ _CACHE = {}
 
 def default_home() -> str:
     """The per-user config directory, ignoring INSPEXIMUS_KEY_HOME."""
-    return (os.environ.get("APPDATA") or os.environ.get("XDG_CONFIG_HOME")
+    from . import _envpolicy
+    return (_envpolicy.other("APPDATA") or _envpolicy.other("XDG_CONFIG_HOME")
             or os.path.join(os.path.expanduser("~"), ".config"))
 
 

@@ -278,7 +278,6 @@ def _coding_store_location(cwd=None, env=None):
     `_storelink` (3.16.5), and the pair that comes back is the REAL path, so the open, the sidecars and the lock all use the
     file the check saw."""
     from ._storelink import vet
-    env = os.environ if env is None else env
     from . import _envpolicy
     override = (_envpolicy.raw("INSPEXIMUS_CODING_STORE", env=env) or "").strip()
     if override:
@@ -324,7 +323,6 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
     rather than left to be inferred — a scope silently outranked is the same class of defect as a scope
     silently resolved.
     """
-    env = os.environ if env is None else env
     if path:
         return path
     from . import _envpolicy

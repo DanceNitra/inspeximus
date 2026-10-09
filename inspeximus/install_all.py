@@ -67,7 +67,7 @@ def _which_safe(name):
     return which(name)
 
 def _codex_home():
-    return pathlib.Path(os.environ.get("CODEX_HOME") or (_i._home() / ".codex"))
+    return pathlib.Path(_envpolicy.other("CODEX_HOME") or (_i._home() / ".codex"))
 
 
 def _install_markers(host):
@@ -143,7 +143,7 @@ def _existing_store(host):
             entry = (tomllib.loads(path.read_text(encoding="utf-8")).get("mcp_servers") or {}).get(_i.SERVER_NAME)
     except Exception:                                        # noqa: BLE001 -- unreadable: plan() reports it
         return None
-    return _envpolicy.host("INSPEXIMUS_PATH", (entry or {}).get("env")) or None
+    return _envpolicy.host("INSPEXIMUS_PATH", entry) or None
 
 
 def choose_store(hosts, store=None):
@@ -273,11 +273,11 @@ def hermes_candidates():
     """(hermes_home, venv python) pairs that exist. HERMES_HOME first, then the installer's defaults:
     ~/.hermes (Linux, macOS) and %LOCALAPPDATA%\\hermes (the Windows desktop install)."""
     homes = []
-    if os.environ.get("HERMES_HOME"):
-        homes.append(pathlib.Path(os.environ["HERMES_HOME"]))
+    if _envpolicy.other("HERMES_HOME"):
+        homes.append(pathlib.Path(_envpolicy.other("HERMES_HOME")))
     homes.append(_i._home() / ".hermes")
-    if os.environ.get("LOCALAPPDATA"):
-        homes.append(pathlib.Path(os.environ["LOCALAPPDATA"]) / "hermes")
+    if _envpolicy.other("LOCALAPPDATA"):
+        homes.append(pathlib.Path(_envpolicy.other("LOCALAPPDATA")) / "hermes")
     out = []
     for home in dict.fromkeys(homes):
         py = _pm_python(home)
@@ -380,14 +380,14 @@ def hermes_installs():
         inside = any(os.path.normcase(str(d)).startswith(os.path.normcase(str(home))) for home, _, _ in out)
         if not inside:
             py = d / ("python.exe" if os.name == "nt" else "python")
-            home = pathlib.Path(os.environ.get("HERMES_HOME") or (_i._home() / ".hermes"))
+            home = pathlib.Path(_envpolicy.other("HERMES_HOME") or (_i._home() / ".hermes"))
             out.append((home, py if py.exists() else None, "pip install"))
     return out
 
 
 def _hermes_python(py, code, runner=subprocess.run):
     root = hermes_root(py)
-    env = dict(os.environ)
+    env = _envpolicy.child_env()
     if root:
         env["PYTHONPATH"] = os.pathsep.join(p for p in (str(root), env.get("PYTHONPATH")) if p)
     try:
@@ -765,9 +765,8 @@ def _writer_key(hosts, store):
             _, entry, _ = _i.read_entry(h)
         except Exception:                                    # noqa: BLE001
             continue
-        env = (entry or {}).get("env") or {}
-        kf = _envpolicy.host("INSPEXIMUS_WRITER_KEY_FILE", env).strip()
-        if kf and _same_file(_envpolicy.host("INSPEXIMUS_PATH", env), store):
+        kf = _envpolicy.host("INSPEXIMUS_WRITER_KEY_FILE", entry).strip()
+        if kf and _same_file(_envpolicy.host("INSPEXIMUS_PATH", entry), store):
             files.append(kf)
     for f in files:
         if f:
@@ -1012,7 +1011,7 @@ def entry_status(entry, store):
         reasons.append(f"pin {pin}, this is {_version()}")
     elif not pin and not (cmd and (_which_safe(cmd) or os.path.exists(cmd))):
         reasons.append(f"command not found: {cmd or '(none)'}")
-    path = _envpolicy.host("INSPEXIMUS_PATH", entry.get("env")) or None
+    path = _envpolicy.host("INSPEXIMUS_PATH", entry) or None
     if not path:
         reasons.append("no INSPEXIMUS_PATH")
     elif store and not _same_file(path, store):
@@ -1037,8 +1036,8 @@ def check(store=None, only=None, out=print):
     if store:
         want = str(pathlib.Path(store).expanduser().resolve())
     else:
-        named = sorted({_envpolicy.host("INSPEXIMUS_PATH", e.get("env")) for _, e, _ in entries.values()
-                        if e and _envpolicy.host("INSPEXIMUS_PATH", e.get("env"))})
+        named = sorted({_envpolicy.host("INSPEXIMUS_PATH", e) for _, e, _ in entries.values()
+                        if e and _envpolicy.host("INSPEXIMUS_PATH", e)})
         want = shared_store_path() or (named[0] if len(named) == 1 else None)
     rows, bad = [], 0
     for h in hosts:
@@ -1049,7 +1048,7 @@ def check(store=None, only=None, out=print):
             status = "-"
         flagged = status.startswith(("DIFFERS", "ERROR")) or (only and status == "not wired")
         bad += bool(flagged)
-        store_now = _envpolicy.host("INSPEXIMUS_PATH", (entry or {}).get("env")) or "-"
+        store_now = _envpolicy.host("INSPEXIMUS_PATH", entry) or "-"
         rows.append((_i.HOSTS[h]["label"], "yes" if found else "no", _pin(entry) or ("-" if not entry else "python"),
                      store_now, status))
     if with_hermes:

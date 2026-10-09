@@ -58,10 +58,11 @@ def window(text: str) -> str:
 def index_path(project_dir: str | None = None) -> str:
     """Where Claude Code keeps the auto-memory index for a project: the project path with every
     non-alphanumeric character replaced by "-", under ~/.claude/projects. CLAUDE_MEMORY_INDEX overrides."""
-    explicit = os.environ.get("CLAUDE_MEMORY_INDEX")
+    from . import _envpolicy
+    explicit = _envpolicy.other("CLAUDE_MEMORY_INDEX")
     if explicit:
         return explicit
-    project = project_dir or os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+    project = project_dir or _envpolicy.other("CLAUDE_PROJECT_DIR") or os.getcwd()
     slug = re.sub(r"[^A-Za-z0-9]", "-", os.path.abspath(project))
     return os.path.join(os.path.expanduser("~"), ".claude", "projects", slug, "memory", "MEMORY.md")
 
@@ -125,7 +126,8 @@ def receipt_for(project_dir: str | None = None, max_pointers: "int | None" = Non
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     if argv:
-        os.environ["CLAUDE_MEMORY_INDEX"] = argv[0]
+        from . import _envpolicy
+        _envpolicy.set_for_this_process("CLAUDE_MEMORY_INDEX", argv[0])
     out = receipt_for()
     if out:
         sys.stdout.write(out + "\n")

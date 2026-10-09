@@ -147,7 +147,8 @@ _GIT_FAILED = set()
 
 
 def _git_env() -> dict:
-    env = {k: v for k, v in os.environ.items() if k.upper() in _GIT_ENV_KEEP}
+    from . import _envpolicy
+    env = _envpolicy.child_env(keep=lambda k: k.upper() in _GIT_ENV_KEEP)
     env.update(GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0")
     return env
 

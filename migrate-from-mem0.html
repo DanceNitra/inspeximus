@@ -369,8 +369,9 @@ $ inspeximus writer-key --new --out key.txt
 secret written to key.txt (0600)
 public key: 0562f51d421d1868df51114a2986c3bd90e227853872fac76e9eb0af4d2306d7
 
-point the server at it:  INSPEXIMUS_WRITER_KEY_FILE=key.txt
-pin this writer as trusted with trust_seeds={&#x27;key:0562f51d421d1868df51114a2986c3bd90e227853872fac76e9eb0af4d2306d7&#x27;}
+point the server at it: in /home/you/.config/inspeximus/config.json, set {&quot;writer&quot;: {&quot;key_file&quot;: &quot;/home/you/demo/key.txt&quot;}}
+(INSPEXIMUS_WRITER_KEY_FILE cannot name this file: it is inside the project this process runs in, /home/you/demo)
+pin this writer as trusted with trust_seeds={&#x27;key:0562f51d421d1868df51114a2986c3bd90e227853872fac76e9eb0af4d2306d7&#x27;} (the MCP server: recall.trust_seeds)
 KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.
 
 $ inspeximus --path mem.json --receipts --receipt-key-file key.txt import-mem0 mem0_export.json --dry-run

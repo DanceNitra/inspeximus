@@ -8903,8 +8903,8 @@
  {
   "name": "F-30: git keeps every GIT_* variable",
   "file": "inspeximus/_storelink.py",
-  "old": "    env = {k: v for k, v in os.environ.items() if k.upper() in _GIT_ENV_KEEP}",
-  "new": "    env = dict(os.environ)",
+  "old": "    env = _envpolicy.child_env(keep=lambda k: k.upper() in _GIT_ENV_KEEP)",
+  "new": "    env = _envpolicy.child_env()",
   "tests": [
    "tests/test_audit_a_3165_findings.py"
   ]
@@ -10674,7 +10674,7 @@
  {
   "name": "3.18 env EC-2: RECEIPTS from the environment starts a chain with no key",
   "file": "inspeximus/_envpolicy.py",
-  "old": "        kf, kk = _cfg(\"receipts.key_file\"), _cfg(\"receipts.key\")\n        if (isinstance(kf, str) and kf.strip()) or (isinstance(kk, str) and kk.strip()):",
+  "old": "        if (isinstance(kf, str) and kf.strip()) or (isinstance(kk, str) and _hexkey(kk.strip())):",
   "new": "        if True:",
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py"
@@ -10765,8 +10765,8 @@
  {
   "name": "3.18 env EC-5: a probe reads the embed URL directly",
   "file": "inspeximus/probes/a_contradiction_one_channel_cannot_see.py",
-  "old": "EMBED_URL = _envpolicy.raw(\"INSPEXIMUS_EMBED_URL\", \"http://127.0.0.1:11434/api/embed\")",
-  "new": "EMBED_URL = os.environ.get(\"INSPEXIMUS_EMBED_URL\", \"http://127.0.0.1:11434/api/embed\")",
+  "old": "EMBED_URL = (env_url(\"INSPEXIMUS_EMBED_URL\", _userconfig.get(\"embed\") or {}, what=\"ignored; the probe uses the local \"\n                     \"daemon\") or \"http://127.0.0.1:11434/api/embed\")",
+  "new": "EMBED_URL = __import__(\"os\").environ.get(\"INSPEXIMUS_EMBED_URL\", \"http://127.0.0.1:11434/api/embed\")",
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py"
   ]
@@ -10848,6 +10848,105 @@
   "file": "inspeximus/core.py",
   "old": "    hexkey = _envpolicy.receipt_key_value()",
   "new": "    hexkey = _envpolicy.receipt_key_value() or (_envpolicy.raw(\"INSPEXIMUS_RECEIPT_KEY\") or \"\").lower() or None",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-1: a module reads another program's variable from os.environ",
+  "file": "inspeximus/_keyhome.py",
+  "old": "    return (_envpolicy.other(\"APPDATA\") or _envpolicy.other(\"XDG_CONFIG_HOME\")",
+  "new": "    return (os.environ.get(\"APPDATA\") or _envpolicy.other(\"XDG_CONFIG_HOME\")",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-1: a child's environment is copied from os.environ",
+  "file": "inspeximus/_storelink.py",
+  "old": "    env = _envpolicy.child_env(keep=lambda k: k.upper() in _GIT_ENV_KEEP)",
+  "new": "    env = {k: v for k, v in os.environ.items() if k.upper() in _GIT_ENV_KEEP}",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-1: the passthrough reads our own names",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _ours(var):\n        raise ValueError(\"%s is ours; read it through _envpolicy.raw or its rule helper\" % var)",
+  "new": "    if False:\n        raise ValueError(\"%s is ours; read it through _envpolicy.raw or its rule helper\" % var)",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-1: a prefix scan may include our names",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _ours(prefix) or \"INSPEXIMUS_\".startswith(str(prefix).upper()):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-2: host() reads the environment when it is passed as the entry",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _is_env(entry):\n        raise ValueError(\"host() reads a host config entry, not the process environment\")",
+  "new": "    if entry is os.environ:\n        raise ValueError(\"host() reads a host config entry, not the process environment\")",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-2: host() reads a copy of the environment as an entry's env block",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "    if _is_env(env) or not isinstance(env, dict):",
+  "new": "    if not isinstance(env, dict):",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-2: a guarded name is read through raw without its guard",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    f, _src = _envpolicy.key_file(\"INSPEXIMUS_WRITER_KEY_FILE\", _PATH)",
+  "new": "    f, _src = _envpolicy.raw(\"INSPEXIMUS_WRITER_KEY_FILE\"), None",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env S-3: any string in receipts.key counts as a signing key",
+  "file": "inspeximus/_envpolicy.py",
+  "old": "(isinstance(kk, str) and _hexkey(kk.strip()))",
+  "new": "(isinstance(kk, str) and kk.strip())",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env C-2: writer-key points the server at an environment key file",
+  "file": "inspeximus/cli.py",
+  "old": "                  f\"point the server at it: in {_userconfig.path()}, set \"\n                  f\"{_json.dumps({'writer': {'key_file': ap}})}\\n\"",
+  "new": "                  f\"point the server at it:  INSPEXIMUS_WRITER_KEY_FILE={p}\\n\"",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env C-2: writer-key does not say the file is in the project",
+  "file": "inspeximus/cli.py",
+  "old": "                  + (f\"(INSPEXIMUS_WRITER_KEY_FILE cannot name this file: {why})\\n\" if why else \"\")",
+  "new": "                  + \"\"",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 env EC-4: the connect ignores the bounded busy timeout",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "timeout=busy_timeout_s(), isolation_level=None",
+  "new": "timeout=BUSY_TIMEOUT_S, isolation_level=None",
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py"
   ]

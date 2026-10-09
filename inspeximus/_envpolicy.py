@@ -259,12 +259,22 @@ def raw(var: str, default=None, env=None):
     return default if v is None else v
 
 
-def host(var: str, mapping):
-    """A value from a host's own configuration entry (an agent's MCP `env` block in the user's host config file), which
-    the user wrote and a project's settings do not reach. Any rule; never the process environment."""
-    if mapping is os.environ:
+def host(var: str, entry):
+    """A value from a host's own configuration ENTRY (an agent's MCP server entry in the user's host config file, whose
+    `env` block the user wrote and a project's settings do not reach). Any rule; never the process environment: an
+    entry that is the environment, or whose `env` is the environment or a copy of it, raises (AUDIT-A S-2)."""
+    def _is_env(m):
+        return m is os.environ or isinstance(m, type(os.environ)) or (
+            isinstance(m, dict) and len(m) > 0 and len(m) == len(os.environ) and all(
+                os.environ.get(k) == v for k, v in m.items()))
+    if _is_env(entry):
         raise ValueError("host() reads a host config entry, not the process environment")
-    v = (mapping or {}).get(var)
+    env = (entry or {}).get("env") if isinstance(entry, dict) else None
+    if env is None:
+        return ""
+    if _is_env(env) or not isinstance(env, dict):
+        raise ValueError("host() reads the `env` block of a host config entry, not the process environment")
+    v = env.get(var)
     return "" if v is None else str(v)
 
 
@@ -306,7 +316,8 @@ def receipts_from_env() -> bool:
         return True
     if _env("INSPEXIMUS_RECEIPTS").lower() in ("1", "true", "yes", "on"):
         kf, kk = _cfg("receipts.key_file"), _cfg("receipts.key")
-        if (isinstance(kf, str) and kf.strip()) or (isinstance(kk, str) and kk.strip()):
+        # A signing key is a key file, or a 64-hex key: any other string in receipts.key signs nothing (AUDIT-A S-3).
+        if (isinstance(kf, str) and kf.strip()) or (isinstance(kk, str) and _hexkey(kk.strip())):
             return True
         _ignored("INSPEXIMUS_RECEIPTS", "receipts.enabled to true, or receipts.key_file (the environment starts a chain "
                  "only when your config names a signing key)")
@@ -376,3 +387,44 @@ def receipt_key_path(store_path=None):
         _ignored("INSPEXIMUS_RECEIPT_KEY", "receipts.key_file (the environment may not name this key file: %s)" % why)
         return None
     return e
+
+
+# ── THE ONLY MODULE THAT TOUCHES THE ENVIRONMENT (AUDIT-A S-1) ───────────────────────────────────────────────────
+# A scan of read shapes cannot be complete (an alias `E = os.environ`, a loop over `items()`, a copy, `expandvars`,
+# `environb`, a name built from pieces). So the rule is inverted: outside this module no shipped module touches
+# os.environ, os.environb, os.getenv, os.putenv, os.unsetenv or os.path.expandvars at all, under any name, and
+# `tests/_env_read_scan.py` checks exactly that. Other programs' variables, a child process's environment and the few
+# writes go through the functions below, which refuse an INSPEXIMUS_* name where it would bypass its rule.
+
+def _ours(name: str) -> bool:
+    return str(name).upper().startswith("INSPEXIMUS_")
+
+
+def other(var: str, default=None):
+    """Another program's variable (APPDATA, PATH, CODEX_HOME, PYTHONIOENCODING, ...). An INSPEXIMUS_* name raises:
+    read it through `raw` or the rule helper its POLICY entry names."""
+    if _ours(var):
+        raise ValueError("%s is ours; read it through _envpolicy.raw or its rule helper" % var)
+    v = os.environ.get(var)
+    return default if v is None else v
+
+
+def other_names(prefix: str) -> list:
+    """The names in the environment that start with `prefix`, for a prefix that is not ours (CLAUDE_CODE_)."""
+    if _ours(prefix) or "INSPEXIMUS_".startswith(str(prefix).upper()):
+        raise ValueError("a scan by %r would include INSPEXIMUS_* names" % prefix)
+    return [k for k in os.environ if k.startswith(prefix)]
+
+
+def child_env(keep=None) -> dict:
+    """A copy of this process's environment for a child process, with only the names `keep(name)` accepts when it is
+    given. INSPEXIMUS_* entries pass through unread: the child applies its own rule to them."""
+    return {k: v for k, v in os.environ.items() if keep is None or keep(k)}
+
+
+def set_for_this_process(var: str, value) -> None:
+    """Set a variable for this process and its children (a write, never a read). `None` removes it."""
+    if value is None:
+        os.environ.pop(var, None)
+    else:
+        os.environ[var] = str(value)

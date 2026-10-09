@@ -50,8 +50,11 @@ from inspeximus.core import Inspeximus  # noqa: E402
 
 # NEVER `localhost` for the local daemon: the name resolves to ::1 first and the connect fails over
 # to IPv4 before any request is sent, which cost 2 s on every call and 58x on embeddings.
-from inspeximus import _envpolicy  # noqa: E402
-EMBED_URL = _envpolicy.raw("INSPEXIMUS_EMBED_URL", "http://127.0.0.1:11434/api/embed")
+from inspeximus import _envpolicy, _userconfig  # noqa: E402
+from inspeximus._http import env_url  # noqa: E402
+# Another host only when the user's config allows it (F-12), the same rule as every other reader of the variable.
+EMBED_URL = (env_url("INSPEXIMUS_EMBED_URL", _userconfig.get("embed") or {}, what="ignored; the probe uses the local "
+                     "daemon") or "http://127.0.0.1:11434/api/embed")
 EMBED_MODEL = _envpolicy.raw("INSPEXIMUS_EMBED_MODEL", "nomic-embed-text")
 
 STALE = "Production deploys go to the us-east-1 region."

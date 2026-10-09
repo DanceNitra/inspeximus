@@ -258,9 +258,9 @@ def agent_id(ev=None) -> str:
     explicit = (_envpolicy.raw("INSPEXIMUS_AGENT_ID") or "").strip()
     if explicit:
         return explicit[:40]
-    if os.environ.get("CODEX_HOME") or os.environ.get("CODEX_CLI_PATH"):
+    if _envpolicy.other("CODEX_HOME") or _envpolicy.other("CODEX_CLI_PATH"):
         return "codex"
-    if any(k.startswith("CLAUDE_CODE_") for k in os.environ):
+    if _envpolicy.other_names("CLAUDE_CODE_"):
         return "claude-code"
     return "unknown"
 
@@ -2264,8 +2264,8 @@ def main():
     # page instead (measured: "ľ" as c4 be under PYTHONUTF8=1, as be under -E). An encoding cannot import code, so
     # the hook applies the user's choice to its own stdout; the import path stays isolated.
     try:
-        _enc = (os.environ.get("PYTHONIOENCODING") or "").split(":")[0].strip()
-        if not _enc and os.environ.get("PYTHONUTF8", "").strip() == "1":
+        _enc = (_envpolicy.other("PYTHONIOENCODING") or "").split(":")[0].strip()
+        if not _enc and _envpolicy.other("PYTHONUTF8", "").strip() == "1":
             _enc = "utf-8"
         if _enc:
             import codecs

@@ -40,6 +40,7 @@ def which(name):
     A hit in the working directory is set aside and PATH is searched without it."""
     import os
     import shutil
+    from . import _envpolicy
     cand = shutil.which(name)
     if not cand:
         return None
@@ -52,8 +53,8 @@ def which(name):
         return cand
     exts = [""]
     if os.name == "nt":
-        exts += [e for e in os.environ.get("PATHEXT", ".COM;.EXE;.BAT;.CMD").split(os.pathsep) if e]
-    for d in os.environ.get("PATH", "").split(os.pathsep):
+        exts += [e for e in _envpolicy.other("PATHEXT", ".COM;.EXE;.BAT;.CMD").split(os.pathsep) if e]
+    for d in _envpolicy.other("PATH", "").split(os.pathsep):
         if not d or d == os.curdir:
             continue
         try:

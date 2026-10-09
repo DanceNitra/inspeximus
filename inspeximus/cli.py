@@ -2087,9 +2087,20 @@ def main(argv=None):
                 os.chmod(p, 0o600)
             except OSError:
                 pass
+            # THE USER'S CONFIG, NOT AN ENVIRONMENT VARIABLE (3.18, AUDIT-A C-2). The hint printed
+            # INSPEXIMUS_WRITER_KEY_FILE=<the --out path>, and `--out key.txt` puts the file in the folder the command runs
+            # in, where a key file named by the environment is now ignored. The user's config names any file, and the
+            # path is absolute so the line works from any folder.
+            import json as _json
+            from . import _userconfig
+            from ._keyhome import refusal
+            ap = os.path.abspath(str(p))
+            why = refusal(os.path.dirname(ap))
             print(f"secret written to {p} (0600)\npublic key: {pk}\n\n"
-                  f"point the server at it:  INSPEXIMUS_WRITER_KEY_FILE={p}\n"
-                  f"pin this writer as trusted with trust_seeds={{'key:{pk}'}}\n"
+                  f"point the server at it: in {_userconfig.path()}, set "
+                  f"{_json.dumps({'writer': {'key_file': ap}})}\n"
+                  + (f"(INSPEXIMUS_WRITER_KEY_FILE cannot name this file: {why})\n" if why else "")
+                  + f"pin this writer as trusted with trust_seeds={{'key:{pk}'}} (the MCP server: recall.trust_seeds)\n"
                   f"KEEP THE SECRET OUT OF GIT. It attests AUTHORSHIP, not truth.")
         else:
             print(f"secret: {sk}\npublic: {pk}\n\n"
