@@ -3241,6 +3241,7 @@ class Inspeximus:
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
         self._rev = 0                             # content revision; see _TrackedDict._fire
         self._recall_ix = {}                      # recall's cached pools and token indexes, by key; see recall()
+        self._ix_uses = {}                        # recalls per cache key; the index is built from the second
         self._ix_log = {}                         # record id -> the revision that last moved it; see _note_dirty
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
@@ -5025,11 +5026,17 @@ class Inspeximus:
 
     @_items.setter
     def _items(self, value) -> None:
-        # Every replacement of the list -- load, reload, refresh, forget, retention, shred -- comes
-        # through here, so the L1 cannot outlive the records it pointed at. Appends do not, and
-        # remember() invalidates its own key.
+        # Every replacement of the list -- load, reload, refresh, forget, retention, shred, an import's
+        # burial, an archive move -- comes through here, so the L1 cannot outlive the records it pointed
+        # at. Appends do not, and remember() invalidates its own key.
+        # THE DERIVED CACHES TOO (3.18, AUDIT-A R-1). import_changeset dropped buried records and never
+        # pruned, so the erased text stayed in the token, signature and term caches and in the recall
+        # index until the next recall. Pruning here covers every path that replaces the list, including
+        # one written later; tests/test_an_erasure_holds_in_every_handle_on_the_store.py fails on a path
+        # that removes records in place instead.
         self.__dict__["_Inspeximus__items"] = value
         self._l1_reset()
+        self._prune_derived_caches()
 
     def _l1_reset(self) -> None:
         l1 = getattr(self, "_l1", None)           # absent while __init__ is still running
@@ -15244,8 +15251,12 @@ class Inspeximus:
         (measured on 3.9.6: {'courier': 1, 'password': 1, 'zyxwvq': 1} after forget). `shred` reset
         only the token set, and a peer's erasure adopted by a reload popped nothing. Pruning against
         the live rows covers all three paths."""
+        caches = [c for c in (getattr(self, "_tok_cache", None), getattr(self, "_sig_cache", None),
+                              getattr(self, "_tc_cache", None)) if c]
+        if not caches and not getattr(self, "_recall_ix", None):
+            return                                    # nothing derived yet (a load, __init__): nothing to build
         live = {r.get("id") for r in self._items}
-        for cache in (self._tok_cache, self._sig_cache, self._tc_cache):
+        for cache in caches:
             for rid in [k for k in cache if k not in live]:
                 del cache[rid]
         # The recall index (3.18) holds records in its pool and snapshot, and their tokens in its postings: an entry
@@ -15556,12 +15567,26 @@ class Inspeximus:
         # KEYED BY EVERYTHING THAT DECIDES THE POOL (AUDIT-A X-1). The entries live in one dict on the store, and a
         # view reads and writes that dict in place, so each scope finds only its own entry: the key holds the view's
         # tenant, agent and ACL revision (`_view_scope`, the key `items` uses) and every pool argument.
-        _ix, _ix_args, _ix_new, _ix_fresh = None, None, None, False
+        _ix, _ix_args, _ix_new = None, None, None
         if (_RECALL_INDEX_ON and _shared is None and not (where or trusted_only or influence_only or reinforce)
                 and not self._objections and self._items and type(self._items[0]) is _TrackedDict
                 and isinstance(getattr(self, "_recall_ix", None), dict)):
             _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,
                         agent_id, session_id, self.read_guards) + _view_scope(self)
+            # NOTHING ON THE FIRST RECALL UNDER A KEY (AUDIT-B, 3.18 speed check). A one-shot handle (the CLI, a hook
+            # the daemon does not serve) recalls once: it counts the key and runs the 3.17 path, with no snapshot, no
+            # entry and no token index. The second recall under the key builds the entry and its token index, whatever
+            # the first recall's read guards edited; later ones reuse or extend it.
+            _uses = getattr(self, "_ix_uses", None)
+            if _uses is None:
+                _ix_args = None                           # a handle built without __init__ keeps no index
+            else:
+                _uses[_ix_args] = _uses.get(_ix_args, 0) + 1
+                if len(_uses) > 64:
+                    _uses.clear()
+                if _uses.get(_ix_args, 0) < 2 and _ix_args not in self._recall_ix:
+                    _ix_args = None
+        if _ix_args is not None:
             # READ BEFORE THE POOL IS BUILT (AUDIT-A Y-1). Keyed with what was current at the end, an entry built while
             # another thread wrote carried that write's revision and a pool that predates it, and was served as current.
             # Keyed with what was current at the start, such an entry is stale at the next recall and rebuilt. An edit
@@ -15697,7 +15722,6 @@ class Inspeximus:
                 # verify is dropped), and that edit belongs to this pool, not to the next recall's.
                 _ix = {"args": _ix_args, "items": self._items, "n": _ix_at[1], "rev": _ix_at[0],
                        "vis": len(_rows), "snap": _ix_at[2], "pool": tuple(pool), "post": None}
-                _ix_fresh = True
                 _ixd = self._recall_ix
                 _ixd.pop(_ix_args, None)
                 _ixd[_ix_args] = _ix
@@ -15786,10 +15810,8 @@ class Inspeximus:
                     cands.append(_candrec(r, rrf[i] / mx))    # normalize the fused rank score to a [0,1] relevance
         else:
             _scan = pool
-            # NOT ON THE RECALL THAT BUILT THE ENTRY (AUDIT-B, 3.18 speed check). A one-shot handle (the CLI, a hook
-            # the daemon does not serve) recalls once: building the token index there cost 0.33 s more than the scan
-            # it replaces on the MCP store. A held handle (the MCP server, the daemon) builds it on its second recall.
-            if sel == "lexical" and _ix is not None and qtok and not _ix_fresh:
+            # Built with the entry, on the second recall under a key: a one-shot handle never gets here (see above).
+            if sel == "lexical" and _ix is not None and qtok:
                 # ONLY RECORDS THAT SHARE A TOKEN WITH THE QUERY CAN SCORE: the lexical similarity of any other
                 # is 0 and is dropped below. Same records, same scores, visited in pool order, so ties keep it.
                 if _ix["post"] is None:

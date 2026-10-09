@@ -44,11 +44,11 @@ def _entry(m):
 def test_control_the_index_is_built_and_reused(tmp_path):
     m = Inspeximus(path=_store(tmp_path))
     m.recall("deploy window", k=5)
+    m.recall("deploy window", k=5)
     ix = _entry(m)
-    assert ix is not None, "CONTROL: no entry was built, so nothing here is tested"
+    assert ix is not None and ix["post"] is not None, "CONTROL: no entry was built, so nothing here is tested"
     m.recall("release train", k=5)
     assert _entry(m) is ix and len(m._recall_ix) == 1, "the cache is rebuilt on every recall: there is nothing held"
-    assert ix["post"] is not None, "CONTROL: a held handle never built the token index, so nothing here is tested"
 
 
 def test_a_one_shot_handle_builds_no_token_index(tmp_path, monkeypatch):
@@ -61,10 +61,10 @@ def test_a_one_shot_handle_builds_no_token_index(tmp_path, monkeypatch):
     real = m._rec_tokens
     monkeypatch.setattr(m, "_rec_tokens", lambda r: calls.append(1) or real(r))
     first = _ids(m, "deploy window")
-    assert _entry(m)["post"] is None, "the first recall built the token index"
+    assert m._recall_ix == {}, "the first recall did index work: a one-shot handle pays for it"
     n_first = len(calls)
     second = _ids(m, "deploy window")
-    assert _entry(m)["post"] is not None, "CONTROL: the second recall builds it"
+    assert _entry(m) is not None and _entry(m)["post"] is not None, "CONTROL: the second recall builds both"
     assert len(calls) > n_first, "CONTROL: building it tokenizes the pool, so the count above measures the build"
     monkeypatch.setattr(core, "_RECALL_INDEX_ON", False)
     assert first == second == _ids(Inspeximus(path=p), "deploy window"), "the answer depends on the index"

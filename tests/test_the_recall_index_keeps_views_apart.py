@@ -147,6 +147,7 @@ def _store(tmp_path, n=40):
 def test_a_plain_remember_is_appended_to_the_cached_pool(tmp_path):
     m = _store(tmp_path)
     m.recall("deploy window", k=5)
+    m.recall("deploy window", k=5)                     # the second recall under a key builds the entry
     e = list(m._recall_ix.values())[0]
     m.remember("a quokka visited the deploy window", key="q")
     assert any("quokka" in str(h["text"]) for h in m.recall("quokka", k=5)), "the appended record is not found"
@@ -161,6 +162,7 @@ def test_a_plain_remember_is_appended_to_the_cached_pool(tmp_path):
 def test_an_edit_of_an_older_record_is_never_appended(tmp_path):
     """A keyed remember supersedes the older value: that edits an old record, so the entry must be rebuilt."""
     m = _store(tmp_path)
+    m.recall("deploy window", k=5)
     m.recall("deploy window", k=5)
     e = list(m._recall_ix.values())[0]
     m.remember("note 3 now says the deploy window moved to Friday", key="k3")
@@ -181,6 +183,7 @@ def test_an_append_through_a_view_updates_only_that_views_entry(tmp_path):
 def test_the_entries_are_bounded(tmp_path):
     m = _store(tmp_path, n=5)
     for p in range(core._RECALL_IX_ENTRIES + 4):
+        m.recall("deploy window", k=5, project="p%d" % p)
         m.recall("deploy window", k=5, project="p%d" % p)
     assert len(m._recall_ix) == core._RECALL_IX_ENTRIES
 

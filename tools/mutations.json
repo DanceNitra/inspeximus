@@ -10519,10 +10519,10 @@
   ]
  },
  {
-  "name": "3.18 index: the first recall on a fresh handle builds the token index",
+  "name": "3.18 index: the first recall under a key does index work",
   "file": "inspeximus/core.py",
-  "old": "            if sel == \"lexical\" and _ix is not None and qtok and not _ix_fresh:",
-  "new": "            if sel == \"lexical\" and _ix is not None and qtok:",
+  "old": "                if _uses.get(_ix_args, 0) < 2 and _ix_args not in self._recall_ix:",
+  "new": "                if False:",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py"
   ]
@@ -10532,6 +10532,15 @@
   "file": "inspeximus/core.py",
   "old": "        ixd = getattr(self, \"_recall_ix\", None)\n        if ixd:",
   "new": "        ixd = None\n        if ixd:",
+  "tests": [
+   "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
+  ]
+ },
+ {
+  "name": "3.18 R-1: replacing the record list prunes nothing",
+  "file": "inspeximus/core.py",
+  "old": "        self._l1_reset()\n        self._prune_derived_caches()",
+  "new": "        self._l1_reset()",
   "tests": [
    "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
   ]

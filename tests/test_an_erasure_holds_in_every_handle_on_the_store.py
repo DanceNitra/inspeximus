@@ -171,3 +171,49 @@ def test_tenant_stamps_survive_the_merge_of_two_handles(tmp_path):
     fresh = Inspeximus(p)
     assert [e["memory_id"] for e in fresh.for_tenant("acme").erasure_report()["erasures"]] == [x]
     assert [e["memory_id"] for e in fresh.for_tenant("globex").erasure_report()["erasures"]] == [y]
+
+
+def test_an_import_that_buries_a_record_leaves_no_term_of_it_in_the_handle(tmp_path):
+    """AUDIT-A R-1: import_changeset drops records a peer's tombstones bury, and did not prune the derived caches, so
+    the erased text stayed in the token, signature and term maps and in the recall index until the next recall."""
+    a = Inspeximus(str(tmp_path / "a.json"), embed=_embed)
+    x = _warm(a)
+    assert _residue(a), "control: the walk must see the term before the import"
+    b = Inspeximus(str(tmp_path / "b.json"))
+    b.import_changeset(a.export_changeset())
+    b.forget(ids=[x])
+    res = a.import_changeset(b.export_changeset())
+    assert x not in {r["id"] for r in a._items}, ("control: the import buried the record", res)
+    assert _residue(a) == []
+
+
+def test_no_code_removes_records_from_the_list_in_place():
+    """R-1 as a class: every removal replaces `_items`, and the setter prunes. A removal made in place (`remove`, `pop`,
+    `clear`, `del`, a slice assignment) skips the setter, so it is refused here wherever it is written. Replacing one
+    element by index keeps its id (a peer's version of the same record) and is not a removal."""
+    import ast
+    import glob
+    root = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "inspeximus")
+    bad = []
+    for f in glob.glob(os.path.join(root, "**", "*.py"), recursive=True):
+        for n in ast.walk(ast.parse(open(f, encoding="utf-8").read())):
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr in (
+                    "remove", "pop", "clear") and isinstance(n.func.value, ast.Attribute) \
+                    and n.func.value.attr == "_items":
+                bad.append((os.path.basename(f), n.lineno, n.func.attr))
+            elif isinstance(n, (ast.Delete, ast.Assign, ast.AugAssign)):
+                targets = n.targets if isinstance(n, (ast.Delete, ast.Assign)) else [n.target]
+                for t in targets:
+                    if isinstance(t, ast.Subscript) and isinstance(t.value, ast.Attribute) and t.value.attr == "_items"                             and (isinstance(n, ast.Delete) or isinstance(t.slice, ast.Slice)):
+                        bad.append((os.path.basename(f), n.lineno, type(n).__name__))
+    assert bad == [], "records removed from _items in place, past the pruning setter: %s" % bad
+
+
+def test_the_setter_prunes(tmp_path):
+    m = Inspeximus(str(tmp_path / "s.json"), embed=_embed)
+    x = _warm(m)
+    m._items = [r for r in m._items if r["id"] != x]
+    # The row snapshot is the disk's baseline and changes at the save; the derived caches change at the replacement.
+    held = [n for n in _residue(m) if n in ("_tok_cache", "_sig_cache", "_tc_cache", "_recall_ix", "_ix_log")]
+    assert held == [], "replacing the list left the dropped record in a derived cache: %s" % held
+    assert "_tc_cache" not in _residue(m)
