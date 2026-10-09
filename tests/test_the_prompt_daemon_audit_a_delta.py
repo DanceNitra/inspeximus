@@ -34,10 +34,14 @@ def test_a_relative_decision_store_is_never_asked_for(project, daemon, monkeypat
     from the daemon left the decisions out and still read `served`. A relative path variable means today's path."""
     proj, sp = project
     monkeypatch.chdir(proj)
-    e = Inspeximus(os.path.join(proj, "dec.json"))
+    # Outside the project: since 3.18 (EC-6) a decision store the environment names inside the project is ignored, so a
+    # relative name that stays in the project would test that rule and not this one.
+    outside = os.path.join(os.path.dirname(proj), "outside")
+    os.makedirs(outside, exist_ok=True)
+    e = Inspeximus(os.path.join(outside, "dec.json"))
     e.remember("we decided QUOKKARULE governs the deploy window", key="decision::q", tags=["decision"])
     e.flush()
-    monkeypatch.setenv("INSPEXIMUS_DECISION_STORE", "dec.json")
+    monkeypatch.setenv("INSPEXIMUS_DECISION_STORE", os.path.join("..", "outside", "dec.json"))
     assert "QUOKKARULE" in _today(proj), "CONTROL: today's path reads the relative decision store"
     assert hookd.ask(_ev(proj), sp, timeout=2.0) is None and hookd.LAST["outcome"] == "relative"
 

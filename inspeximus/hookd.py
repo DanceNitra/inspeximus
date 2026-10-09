@@ -218,7 +218,7 @@ def _mac(token, label, *parts):
 #: module-level sets and lists and fails on one that is neither here nor in its list of caches.
 PROCESS_STATE = (("_isolate", "_SAID"), ("_http", "_ENV_NOTICE"), ("_keyhome", "_NOTICE"), ("_userconfig", "_SAID"),
                  ("claude_code", "_REPO_EMBED_NOTICE"), ("claude_code", "_REPO_EMBED_KEYS_NOTICE"),
-                 ("claude_code", "_REPO_ARCHIVE_NOTICE"), ("_storelink", "_GIT_FAILED"))
+                 ("claude_code", "_REPO_ARCHIVE_NOTICE"), ("_storelink", "_GIT_FAILED"), ("core", "_SAID_ONCE"))
 
 
 def reset_process_state():
