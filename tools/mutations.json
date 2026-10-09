@@ -10580,5 +10580,59 @@
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]
+ },
+ {
+  "name": "3.17.1: a reader's note marks the record touched",
+  "file": "inspeximus/core.py",
+  "old": "        if not self._note(k):\n            self._fire()\n        super().__setitem__(k, self._child(v))\n",
+  "new": "        self._fire()\n        super().__setitem__(k, self._child(v))\n",
+  "tests": [
+   "tests/test_a_read_marks_no_record_touched.py"
+  ]
+ },
+ {
+  "name": "3.17.1: a pop that removes nothing marks the record",
+  "file": "inspeximus/core.py",
+  "old": "        if a and a[0] in self:\n            self._fire()",
+  "new": "        if a:\n            self._fire()",
+  "tests": [
+   "tests/test_a_read_marks_no_record_touched.py"
+  ]
+ },
+ {
+  "name": "3.17.1: a read re-assigns an equal quarantine verdict",
+  "file": "inspeximus/core.py",
+  "old": "            if meta.get(\"quarantined\") != nq:\n                meta[\"quarantined\"] = nq\n",
+  "new": "            meta[\"quarantined\"] = nq\n",
+  "tests": [
+   "tests/test_a_read_marks_no_record_touched.py"
+  ]
+ },
+ {
+  "name": "3.17.1: a read removes an invalid stamp from a clean record",
+  "file": "inspeximus/core.py",
+  "old": "        if \"read_guards\" in meta and (stamp or flagged):\n",
+  "new": "        if \"read_guards\" in meta:\n",
+  "tests": [
+   "tests/test_a_read_marks_no_record_touched.py"
+  ]
+ },
+ {
+  "name": "3.17.1: a read re-assigns an equal read_guards_v",
+  "file": "inspeximus/core.py",
+  "old": "            if meta.get(\"read_guards_v\") != 1:\n                meta[\"read_guards_v\"] = 1\n",
+  "new": "            meta[\"read_guards_v\"] = 1\n",
+  "tests": [
+   "tests/test_a_read_marks_no_record_touched.py"
+  ]
+ },
+ {
+  "name": "3.17.1: a read removes a stale read_guards_v from a clean record",
+  "file": "inspeximus/core.py",
+  "old": "        if stamp and \"read_guards_v\" in meta:\n",
+  "new": "        if \"read_guards_v\" in meta:\n",
+  "tests": [
+   "tests/test_a_read_marks_no_record_touched.py"
+  ]
  }
 ]

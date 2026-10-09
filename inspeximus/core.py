@@ -2001,8 +2001,15 @@ class _TrackedDict(dict):
             dict.__setitem__(self, k, v)
         return v
 
+    def _note(self, k) -> bool:
+        """A READER'S NOTE IS NOT AN EDIT (3.17.1). A top-level `_` key (`_stale_derived`, written on every candidate of
+        every recall) is never stored. It marked the record touched, and a merge keeps a touched record's local copy
+        over the disk's, so a long-lived handle served, and on its next write put back, a record a peer had changed."""
+        return self._root is None and isinstance(k, str) and k[:1] == "_"
+
     def __setitem__(self, k, v):
-        self._fire()
+        if not self._note(k):
+            self._fire()
         super().__setitem__(k, self._child(v))
 
     def __delitem__(self, k):
@@ -2021,7 +2028,8 @@ class _TrackedDict(dict):
         return self[k]
 
     def pop(self, *a):
-        self._fire()
+        if a and a[0] in self:
+            self._fire()                              # a pop that removes nothing changes nothing (3.17.1)
         return super().pop(*a)
 
     def popitem(self):
@@ -10005,7 +10013,17 @@ class Inspeximus:
         `stamp` is set by the write path (remember): only a write stamps a clean verdict, because a read
         such as the prompt hook never saves, and a record without a stamp costs a read nothing beyond
         the assessment it always had. The text hash and the guard set are computed only when a stamp or
-        a release is there to check."""
+        a release is there to check.
+
+        A READ WRITES ONLY A CHANGED VERDICT (3.17.1). This used to run `pop("read_guards")` and
+        `pop("read_guards_v")` on every record it assessed, and to re-assign an equal quarantine verdict.
+        Each of those marks a live record touched, so `refresh()` kept the held copy and the held handle's
+        next write put it back on disk over a peer's retire, edit, credit or in-place redaction. That held
+        for every record without a valid stamp: unstamped, stamped under another path or Python, or with
+        no `meta` on disk. Now a read assigns a verdict only when it differs, and leaves an invalid stamp
+        and a stale `read_guards_v` where they are: neither is trusted here, and only the write path
+        (`stamp=True`) replaces or removes them. `setdefault` is not an edit when `meta` is there (every
+        loaded record has it)."""
         meta = rec.setdefault("meta", {})
         rid = rec.get("id") or id(rec)
         if rid in self._guard_seen:
@@ -10032,14 +10050,19 @@ class Inspeximus:
                 th = th or hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
                 if _guard_mac_ok(q.get("release_mac"), key, "release", rid, th):
                     nq["released"], nq["release_mac"] = q["released"], q["release_mac"]
-            meta["quarantined"] = nq
+            if meta.get("quarantined") != nq:
+                meta["quarantined"] = nq
         if stuffed and not meta.get("stuffed"):
             meta["stuffed"] = stuffed
-        meta.pop("read_guards", None)
-        if meta.get("quarantined") or meta.get("stuffed"):
-            meta["read_guards_v"] = 1
+        flagged = bool(meta.get("quarantined") or meta.get("stuffed"))
+        if "read_guards" in meta and (stamp or flagged):
+            meta.pop("read_guards", None)
+        if flagged:
+            if meta.get("read_guards_v") != 1:
+                meta["read_guards_v"] = 1
             return meta
-        meta.pop("read_guards_v", None)
+        if stamp and "read_guards_v" in meta:
+            meta.pop("read_guards_v", None)
         gset = _guard_set_hash() if (stamp and key) else None
         if gset:
             th = th or hashlib.sha256(text.encode("utf-8", "surrogatepass")).hexdigest()
