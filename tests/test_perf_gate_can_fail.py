@@ -547,6 +547,15 @@ def test_it_fails_when_memory_report_rebuilds_the_pool_per_query(monkeypatch):
     assert good["read_guard_assessments"] == 150, ("fixture error: the report did not assess each record once", good)
 
     monkeypatch.setattr(core, "_shared_recall_pool", lambda store: contextlib.nullcontext())
+    # 3.18: the recall index also keeps one pool across the report's queries, so with the shared pool gone and the index
+    # on, each record is assessed twice: by the first query, which only counts its key, and by the second, which builds
+    # the entry the rest reuse. The pre-fix code had neither; INSPEXIMUS_RECALL_INDEX=0 turns the index off, and then
+    # the shared pool is what holds the count.
+    run = gate.w_memreport(150)
+    with gate.Counters() as c:
+        run()
+    assert c.as_dict()["read_guard_assessments"] == 2 * 150, "the recall index no longer keeps the pool across queries"
+    monkeypatch.setattr(core, "_RECALL_INDEX_ON", False)
     run = gate.w_memreport(150)
     with gate.Counters() as c:
         run()

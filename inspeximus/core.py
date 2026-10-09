@@ -1930,6 +1930,33 @@ def _plain(v):
     return v
 
 
+#: The held-handle recall index (3.18 prototype). INSPEXIMUS_RECALL_INDEX=0 turns it off, for an A/B in one build.
+_RECALL_INDEX_ON = (os.environ.get("INSPEXIMUS_RECALL_INDEX") or "").strip().lower() not in ("0", "false", "no", "off")
+
+
+def _view_scope(h) -> tuple:
+    """WHAT DECIDES WHICH RECORDS A HANDLE MAY SEE, in one place: the tenant, the agent and the ACL revision. `items`
+    keys its filtered view on it and recall keys its cached pool on it, so a scope dimension added to one is in the
+    other (AUDIT-A X-1: the pool key had the tenant and not the agent, and agent views were answered from each
+    other's pools). A module function and not a method: a view forwards private names to its parent, so
+    `view._scope()` would read the PARENT's tenant and agent, which is the defect itself."""
+    return (h.tenant, getattr(h, "agent", None), getattr(h, "_acl_rev", 0))
+
+
+def _note_dirty(store, rid) -> None:
+    """Record which record the current content revision moved (`None` when the edit has no id). Recall's cache uses it
+    to tell records appended since an entry was built, which it can add to the entry, from edits, which it cannot."""
+    log = getattr(store, "_ix_log", None)
+    if log is not None and getattr(store, "_recall_ix", None):
+        log[rid or None] = store._rev
+
+
+#: At most this many cached pools per store: one per combination of scope and pool arguments in use. Measured
+#: (AUDIT-A Y-2) on copies of the live stores: 5.7 MB an entry on the 23,126-row project store and 13.4 MB on the
+#: MCP store, so 4 entries hold at most 23 MB and 54 MB.
+_RECALL_IX_ENTRIES = 4
+
+
 class _TrackedDict(dict):
     """A record that says when it changes, so nothing has to compare the store to find out.
 
@@ -1968,7 +1995,7 @@ class _TrackedDict(dict):
         # at load turned opening a 30,000-record store from 0.5 s into 6.2 s, and this library is
         # opened once per tool call by its own hook.
 
-    def _fire(self):
+    def _fire(self, key=None):
         root = self._root if self._root is not None else self
         ref = root._store if isinstance(root, _TrackedDict) else None
         store = ref() if ref is not None else None
@@ -1978,6 +2005,12 @@ class _TrackedDict(dict):
         if rid:
             store._touched.add(rid)
         store._dirty = True
+        # THE CONTENT REVISION (3.18 prototype). Recall's cached pool and token index are valid while it stands.
+        # A top-level `_` key is a reader's note (`_stale_derived`, written on every candidate of every recall)
+        # and is never stored, so it does not move it; every other edit, at any depth, does.
+        if not (self._root is None and isinstance(key, str) and key[:1] == "_"):
+            store._rev = getattr(store, "_rev", 0) + 1
+            _note_dirty(store, rid)
 
     def _child(self, v):
         root = self._root if self._root is not None else self
@@ -2007,11 +2040,11 @@ class _TrackedDict(dict):
         return v
 
     def __setitem__(self, k, v):
-        self._fire()
+        self._fire(k)
         super().__setitem__(k, self._child(v))
 
     def __delitem__(self, k):
-        self._fire()
+        self._fire(k)
         super().__delitem__(k)
 
     def update(self, *a, **kw):
@@ -2026,7 +2059,7 @@ class _TrackedDict(dict):
         return self[k]
 
     def pop(self, *a):
-        self._fire()
+        self._fire(a[0] if a else None)
         return super().pop(*a)
 
     def popitem(self):
@@ -3246,6 +3279,10 @@ class Inspeximus:
         # and raced the first thread's write (the LangGraph checkpointer's thread pool hit it).
         self._decide_depths: dict = {}
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
+        self._rev = 0                             # content revision; see _TrackedDict._fire
+        self._recall_ix = {}                      # recall's cached pools and token indexes, by key; see recall()
+        self._ix_uses = {}                        # recalls per cache key; the index is built from the second
+        self._ix_log = {}                         # record id -> the revision that last moved it; see _note_dirty
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
         # recall auto-mode: below this many active memories lexical is as good and free; above it the
@@ -4995,11 +5032,17 @@ class Inspeximus:
 
     @_items.setter
     def _items(self, value) -> None:
-        # Every replacement of the list -- load, reload, refresh, forget, retention, shred -- comes
-        # through here, so the L1 cannot outlive the records it pointed at. Appends do not, and
-        # remember() invalidates its own key.
+        # Every replacement of the list -- load, reload, refresh, forget, retention, shred, an import's
+        # burial, an archive move -- comes through here, so the L1 cannot outlive the records it pointed
+        # at. Appends do not, and remember() invalidates its own key.
+        # THE DERIVED CACHES TOO (3.18, AUDIT-A R-1). import_changeset dropped buried records and never
+        # pruned, so the erased text stayed in the token, signature and term caches and in the recall
+        # index until the next recall. Pruning here covers every path that replaces the list, including
+        # one written later; tests/test_an_erasure_holds_in_every_handle_on_the_store.py fails on a path
+        # that removes records in place instead.
         self.__dict__["_Inspeximus__items"] = value
         self._l1_reset()
+        self._prune_derived_caches()
 
     def _l1_reset(self) -> None:
         l1 = getattr(self, "_l1", None)           # absent while __init__ is still running
@@ -11815,7 +11858,7 @@ class Inspeximus:
         if self.tenant is None and getattr(self, "agent", None) is None:
             return self._items
         rev = (len(self._items), id(self._items))
-        ck = (self.tenant, getattr(self, "agent", None), rev, getattr(self, "_acl_rev", 0))
+        ck = _view_scope(self) + (rev,)
         if getattr(self, "_items_view_rev", None) != ck:
             rows = self._items
             if self.tenant is not None:
@@ -15242,10 +15285,23 @@ class Inspeximus:
         (measured on 3.9.6: {'courier': 1, 'password': 1, 'zyxwvq': 1} after forget). `shred` reset
         only the token set, and a peer's erasure adopted by a reload popped nothing. Pruning against
         the live rows covers all three paths."""
+        caches = [c for c in (getattr(self, "_tok_cache", None), getattr(self, "_sig_cache", None),
+                              getattr(self, "_tc_cache", None)) if c]
+        if not caches and not getattr(self, "_recall_ix", None):
+            return                                    # nothing derived yet (a load, __init__): nothing to build
         live = {r.get("id") for r in self._items}
-        for cache in (self._tok_cache, self._sig_cache, self._tc_cache):
+        for cache in caches:
             for rid in [k for k in cache if k not in live]:
                 del cache[rid]
+        # The recall index (3.18) holds records in its pool and snapshot, and their tokens in its postings: an entry
+        # that holds an erased record goes whole, and the next recall builds it from the live rows.
+        ixd = getattr(self, "_recall_ix", None)
+        if ixd:
+            for k in [k for k, e in ixd.items() if any(r.get("id") not in live for r in e["snap"])
+                      or any(r.get("id") not in live for r in e["pool"])]:
+                del ixd[k]
+            if not ixd:
+                self._ix_log.clear()
 
     def _bm25_scores(self, qtok: set, pool: list, k1: float = 1.5, b: float = 0.75) -> list:
         """Okapi BM25 score of `query` (token set) against every record in `pool` — the strong lexical
@@ -15538,13 +15594,65 @@ class Inspeximus:
                       user_id, agent_id, session_id, self.read_guards, len(self._items), id(self._items),
                       getattr(self, "_acl_rev", 0), len(self._objections or ()))
                      if _shared is not None else None)
-        if _shared is not None and _shared.get("key") == _pool_key:
+        # A HELD HANDLE KEEPS ITS POOL AND A TOKEN INDEX (3.18 prototype). The pool is rebuilt from every record on
+        # every recall; on a held handle (the prompt daemon, the MCP server) nothing moved since the last one most
+        # of the time. Valid while the content revision, the list object, its length and the pool arguments stand;
+        # off for the paths that build their own pool, and for stores whose records do not report their edits.
+        # KEYED BY EVERYTHING THAT DECIDES THE POOL (AUDIT-A X-1). The entries live in one dict on the store, and a
+        # view reads and writes that dict in place, so each scope finds only its own entry: the key holds the view's
+        # tenant, agent and ACL revision (`_view_scope`, the key `items` uses) and every pool argument.
+        _ix, _ix_args, _ix_new = None, None, None
+        if (_RECALL_INDEX_ON and _shared is None and not (where or trusted_only or influence_only or reinforce)
+                and not self._objections and self._items and type(self._items[0]) is _TrackedDict
+                and isinstance(getattr(self, "_recall_ix", None), dict)):
+            _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,
+                        agent_id, session_id, self.read_guards) + _view_scope(self)
+            # NOTHING ON THE FIRST RECALL UNDER A KEY (AUDIT-B, 3.18 speed check). A one-shot handle (the CLI, a hook
+            # the daemon does not serve) recalls once: it counts the key and runs the 3.17 path, with no snapshot, no
+            # entry and no token index. The second recall under the key builds the entry and its token index, whatever
+            # the first recall's read guards edited; later ones reuse or extend it.
+            _uses = getattr(self, "_ix_uses", None)
+            if _uses is None:
+                _ix_args = None                           # a handle built without __init__ keeps no index
+            else:
+                _uses[_ix_args] = _uses.get(_ix_args, 0) + 1
+                if len(_uses) > 64:
+                    _uses.clear()
+                if _uses.get(_ix_args, 0) < 2 and _ix_args not in self._recall_ix:
+                    _ix_args = None
+        if _ix_args is not None:
+            # READ BEFORE THE POOL IS BUILT (AUDIT-A Y-1). Keyed with what was current at the end, an entry built while
+            # another thread wrote carried that write's revision and a pool that predates it, and was served as current.
+            # Keyed with what was current at the start, such an entry is stale at the next recall and rebuilt. An edit
+            # this recall makes itself (the read guards drop a stamp they cannot verify) costs one extra rebuild.
+            _ix_at = (self._rev, len(self._items), tuple(self._items))
+            _c = self._recall_ix.get(_ix_args)
+            if _c is not None and _c["items"] is self._items:
+                if _c["n"] == len(self._items) and _c["rev"] == self._rev:
+                    _ix = _c
+                elif len(self._items) > _c["n"]:
+                    # RECORDS APPENDED SINCE THE ENTRY, AND NOTHING ELSE (AUDIT-A X-2: one remember between recalls
+                    # rebuilt the whole pool and made the index slower than none). Every revision since the entry
+                    # moved a record that is among the appended ones, and the records before them are the same
+                    # objects in the same places; then only the appended records are filtered, and added.
+                    _tail = self._items[_c["n"]:]
+                    _tail_ids = {r.get("id") for r in _tail}
+                    _moved = {k for k, v in self._ix_log.items() if v > _c["rev"]}
+                    if (None not in _moved and _moved <= _tail_ids and len(self._items) == _c["n"] + len(_tail)
+                            and all(a is b for a, b in zip(self._items, _c["snap"]))):
+                        _ix, _ix_new = _c, set(_tail_ids)
+        if _ix is not None and _ix_new is None:
+            pool = list(_ix["pool"])
+        elif _shared is not None and _shared.get("key") == _pool_key:
             pool = list(_shared["pool"])
         else:
             # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
             # either. Without this, issuing a grant would put "ACL: ... granted agent 'bob' read access ..."
             # into the answer set of every loosely-related query.
-            pool = [r for r in self.items if _eligible(r) and not _is_acl_record(r)]
+            _rows = self.items
+            if _ix_new is not None:
+                _rows = [r for r in _rows[_ix["vis"]:] if r.get("id") in _ix_new]
+            pool = [r for r in _rows if _eligible(r) and not _is_acl_record(r)]
             # HARD TENANT ISOLATION (fail-closed, non-bypassable): a tenant-bound store sees ONLY its own tenant's
             # records, always — this is enforced here on the STORE, not via a caller argument, so no forgotten
             # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
@@ -15631,6 +15739,33 @@ class Inspeximus:
             if _shared is not None:
                 _shared.clear()
                 _shared.update(owner=self, key=_pool_key, pool=tuple(pool), stale={})
+            if _ix_new is not None:
+                # The appended rows, filtered as a full build filters them, go after the entry's pool; the token index
+                # gets their positions. Same pool, in the same order, as a rebuild (the tests compare the two).
+                _base = len(_ix["pool"])
+                _ix["pool"] = _ix["pool"] + tuple(pool)
+                if _ix["post"] is not None:
+                    for _i, _r in enumerate(pool, _base):
+                        for _t in self._rec_tokens(_r):
+                            _ix["post"].setdefault(_t, []).append(_i)
+                _ix.update(rev=_ix_at[0], n=_ix_at[1], snap=_ix_at[2], vis=_ix["vis"] + len(_rows))
+                _ix["appends"] = _ix.get("appends", 0) + 1
+                pool = list(_ix["pool"])
+            elif _ix_args is not None:
+                # Keyed AFTER the pool is built: assessing the read guards can edit a record (a stamp it cannot
+                # verify is dropped), and that edit belongs to this pool, not to the next recall's.
+                _ix = {"args": _ix_args, "items": self._items, "n": _ix_at[1], "rev": _ix_at[0],
+                       "vis": len(_rows), "snap": _ix_at[2], "pool": tuple(pool), "post": None}
+                _ixd = self._recall_ix
+                _ixd.pop(_ix_args, None)
+                _ixd[_ix_args] = _ix
+                while len(_ixd) > _RECALL_IX_ENTRIES:
+                    _ixd.pop(next(iter(_ixd)))
+            if _ix_args is not None:
+                # The log only has to reach back to the oldest entry still held.
+                _floor = min(e["rev"] for e in self._recall_ix.values())
+                for _k in [k for k, v in self._ix_log.items() if v <= _floor]:
+                    del self._ix_log[_k]
         # Mode selection. 'hybrid' = lexical (token overlap) + semantic (embedding) fused with Reciprocal
         # Rank Fusion. We MEASURED hybrid robustly beating EITHER channel alone for agent memory on LoCoMo
         # (recall@20 0.61 hybrid vs 0.55 lexical vs 0.53 semantic; +0.057 over the best single channel,
@@ -15708,7 +15843,22 @@ class Inspeximus:
                 for i, (r, sem, bx) in enumerate(scn):
                     cands.append(_candrec(r, rrf[i] / mx))    # normalize the fused rank score to a [0,1] relevance
         else:
-            for r in pool:
+            _scan = pool
+            # Built with the entry, on the second recall under a key: a one-shot handle never gets here (see above).
+            if sel == "lexical" and _ix is not None and qtok:
+                # ONLY RECORDS THAT SHARE A TOKEN WITH THE QUERY CAN SCORE: the lexical similarity of any other
+                # is 0 and is dropped below. Same records, same scores, visited in pool order, so ties keep it.
+                if _ix["post"] is None:
+                    _post = {}
+                    for _i, _r in enumerate(_ix["pool"]):
+                        for _t in self._rec_tokens(_r):
+                            _post.setdefault(_t, []).append(_i)
+                    _ix["post"] = _post
+                _hit = set()
+                for _t in qtok:
+                    _hit.update(_ix["post"].get(_t, ()))
+                _scan = [pool[_i] for _i in sorted(_hit)]
+            for r in _scan:
                 sim = _semsim(r) if sel == "semantic" else _lexsim(r)
                 if sim <= 0 or sim < min_relevance:
                     continue
@@ -19657,6 +19807,8 @@ class Inspeximus:
             rid = None
         if rid:
             self._touched.add(rid)
+        self._rev = getattr(self, "_rev", 0) + 1             # a declared change moves the content revision
+        _note_dirty(self, rid)
 
     def _save(self, force: bool = False):
         if not self.path:

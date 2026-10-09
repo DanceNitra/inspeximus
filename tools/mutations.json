@@ -11485,5 +11485,182 @@
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
+ },
+ {
+  "name": "3.18 index: an edit does not move the content revision",
+  "file": "inspeximus/core.py",
+  "old": "            store._rev = getattr(store, \"_rev\", 0) + 1\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: a reader's note moves the content revision",
+  "file": "inspeximus/core.py",
+  "old": "        if not (self._root is None and isinstance(key, str) and key[:1] == \"_\"):\n            store._rev",
+  "new": "        if True:\n            store._rev",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: a declared change does not move the content revision",
+  "file": "inspeximus/core.py",
+  "old": "        self._rev = getattr(self, \"_rev\", 0) + 1             # a declared change moves the content revision\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the cached pool ignores the content revision",
+  "file": "inspeximus/core.py",
+  "old": "                if _c[\"n\"] == len(self._items) and _c[\"rev\"] == self._rev:\n",
+  "new": "                if _c[\"n\"] == len(self._items):\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the cached pool ignores the pool arguments",
+  "file": "inspeximus/core.py",
+  "old": "            _c = self._recall_ix.get(_ix_args)\n",
+  "new": "            _c = next(iter(self._recall_ix.values()), None)\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the cache is never reused",
+  "file": "inspeximus/core.py",
+  "old": "        if _ix is not None and _ix_new is None:\n            pool = list(_ix[\"pool\"])\n",
+  "new": "        if False:\n            pool = list(_ix[\"pool\"])\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the status edit through pop is not tracked",
+  "file": "inspeximus/core.py",
+  "old": "        self._fire(a[0] if a else None)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-1: the pool key has the tenant and not the agent",
+  "file": "inspeximus/core.py",
+  "old": "                        agent_id, session_id, self.read_guards) + _view_scope(self)\n",
+  "new": "                        agent_id, session_id, self.read_guards, self.tenant)\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-1: the scope key leaves out the ACL revision",
+  "file": "inspeximus/core.py",
+  "old": "    return (h.tenant, getattr(h, \"agent\", None), getattr(h, \"_acl_rev\", 0))\n",
+  "new": "    return (h.tenant, getattr(h, \"agent\", None))\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: an edit of an older record is taken as an append",
+  "file": "inspeximus/core.py",
+  "old": "                    if (None not in _moved and _moved <= _tail_ids and len(self._items) == _c[\"n\"] + len(_tail)\n",
+  "new": "                    if (len(self._items) == _c[\"n\"] + len(_tail)\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: the appended records never reach the token index",
+  "file": "inspeximus/core.py",
+  "old": "                if _ix[\"post\"] is not None:\n                    for _i, _r in enumerate(pool, _base):\n",
+  "new": "                if False:\n                    for _i, _r in enumerate(pool, _base):\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: an append rebuilds the whole pool",
+  "file": "inspeximus/core.py",
+  "old": "                elif len(self._items) > _c[\"n\"]:\n",
+  "new": "                elif False:\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index X-2: the appended records skip the pool filters",
+  "file": "inspeximus/core.py",
+  "old": "                _rows = [r for r in _rows[_ix[\"vis\"]:] if r.get(\"id\") in _ix_new]\n",
+  "new": "                _rows = list(self._items[_ix[\"n\"]:])\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the entries are not bounded",
+  "file": "inspeximus/core.py",
+  "old": "                while len(_ixd) > _RECALL_IX_ENTRIES:\n",
+  "new": "                while False:\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index Y-1: the entry is keyed with the revision after the build",
+  "file": "inspeximus/core.py",
+  "old": "                _ix = {\"args\": _ix_args, \"items\": self._items, \"n\": _ix_at[1], \"rev\": _ix_at[0],\n",
+  "new": "                _ix = {\"args\": _ix_args, \"items\": self._items, \"n\": _ix_at[1], \"rev\": self._rev,\n",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py",
+   "tests/test_the_recall_index_keeps_views_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 index: the first recall under a key does index work",
+  "file": "inspeximus/core.py",
+  "old": "                if _uses.get(_ix_args, 0) < 2 and _ix_args not in self._recall_ix:",
+  "new": "                if False:",
+  "tests": [
+   "tests/test_the_recall_index_stays_exact.py"
+  ]
+ },
+ {
+  "name": "3.18 index: an erasure leaves the erased record in the recall index",
+  "file": "inspeximus/core.py",
+  "old": "        ixd = getattr(self, \"_recall_ix\", None)\n        if ixd:",
+  "new": "        ixd = None\n        if ixd:",
+  "tests": [
+   "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
+  ]
+ },
+ {
+  "name": "3.18 R-1: replacing the record list prunes nothing",
+  "file": "inspeximus/core.py",
+  "old": "        self._l1_reset()\n        self._prune_derived_caches()",
+  "new": "        self._l1_reset()",
+  "tests": [
+   "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
+  ]
  }
 ]
