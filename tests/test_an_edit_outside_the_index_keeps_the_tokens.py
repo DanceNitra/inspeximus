@@ -24,11 +24,50 @@ sys.path.insert(0, ROOT)
 from inspeximus import core  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
 
-FORMATS = ["json", "db"]
+#: A ROW-STORE-ONLY EXPECTATION, NOT A SKIP (AUDIT-A F-2, F-2b). The whole-file JSON format does not track its records:
+#: an in-place edit is not declared, so it drops no cache and a flush does not write it (3.17.1 the same, measured
+#: 2026-10-10). Strict: the JSON case must fail, and passes the day that format starts tracking, which then needs a look.
+ROW_ONLY = pytest.mark.xfail(strict=True, reason="row store only: the whole-file JSON format does not track its records")
+FORMATS = [pytest.param("json", marks=ROW_ONLY), "db"]
+
+
+_MADE = []          # (path, format) of every store this test created, checked when the test ends
+
+
+@pytest.fixture(autouse=True)
+def _keep_the_format():
+    """AUDIT-A F-2: a "json" case must run on the whole-file JSON format. The variable has to stay set for the whole
+    test, because an open without it converts a JSON store to rows; at the end every store this test made must still
+    carry its format's header."""
+    old = os.environ.get("INSPEXIMUS_STORE_FORMAT")
+    del _MADE[:]
+    yield
+    if old is None:
+        os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+    else:
+        os.environ["INSPEXIMUS_STORE_FORMAT"] = old
+    for p, fmt in _MADE:
+        _assert_format(p, fmt)
+
+
+def _pin(fmt):
+    """Pin the format for the rest of the test: "json" is the whole-file JSON format, "db" the row store."""
+    if fmt == "json":
+        os.environ["INSPEXIMUS_STORE_FORMAT"] = "json"
+    else:
+        os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+
+
+def _assert_format(p, fmt):
+    with open(p, "rb") as fh:
+        head = fh.read(16)
+    want = b"[" if fmt == "json" else b"SQLite format 3"
+    assert head.startswith(want), "CONTROL: %s is not in the %s format (%r)" % (p, fmt, head)
 
 
 def _held(tmp_path, fmt):
     p = str(tmp_path / ("s." + fmt))
+    _pin(fmt)
     m = Inspeximus(path=p)
     for i in range(6):
         m.remember("filler note number %d about gardening" % i)
@@ -36,6 +75,8 @@ def _held(tmp_path, fmt):
     m.remember_decision("we ship on fridays", because="the team is in", topic="release-day",
                         context="quarterly planning")
     m.flush()
+    _assert_format(p, fmt)
+    _MADE.append((p, fmt))
     h = Inspeximus(path=p)
     h._ix_held = True
     for _ in range(3):

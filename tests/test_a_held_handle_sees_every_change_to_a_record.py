@@ -24,24 +24,67 @@ sys.path.insert(0, ROOT)
 from inspeximus.core import Inspeximus  # noqa: E402
 
 FORMATS = ["json", "db"]
+#: A ROW-STORE-ONLY EXPECTATION, NOT A SKIP (AUDIT-A F-2, F-2b). The whole-file JSON format does not track its records:
+#: an in-place edit is not declared, so it drops no cache and a flush does not write it (3.17.1 the same, measured
+#: 2026-10-10). Strict: the JSON case must fail, and passes the day that format starts tracking, which then needs a look.
+ROW_ONLY = pytest.mark.xfail(strict=True, reason="row store only: the whole-file JSON format does not track its records")
+FORMATS_ROW_ONLY = [pytest.param("json", marks=ROW_ONLY), "db"]
+
+
+_MADE = []          # (path, format) of every store this test created, checked when the test ends
+
+
+@pytest.fixture(autouse=True)
+def _keep_the_format():
+    """AUDIT-A F-2: a "json" case must run on the whole-file JSON format. The variable has to stay set for the whole
+    test, because an open without it converts a JSON store to rows; at the end every store this test made must still
+    carry its format's header."""
+    old = os.environ.get("INSPEXIMUS_STORE_FORMAT")
+    del _MADE[:]
+    yield
+    if old is None:
+        os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+    else:
+        os.environ["INSPEXIMUS_STORE_FORMAT"] = old
+    for p, fmt in _MADE:
+        _assert_format(p, fmt)
+
+
+def _pin(fmt):
+    """Pin the format for the rest of the test: "json" is the whole-file JSON format, "db" the row store."""
+    if fmt == "json":
+        os.environ["INSPEXIMUS_STORE_FORMAT"] = "json"
+    else:
+        os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+
+
+def _assert_format(p, fmt):
+    with open(p, "rb") as fh:
+        head = fh.read(16)
+    want = b"[" if fmt == "json" else b"SQLite format 3"
+    assert head.startswith(want), "CONTROL: %s is not in the %s format (%r)" % (p, fmt, head)
 
 
 def _store(tmp_path, fmt):
     p = str(tmp_path / ("s." + fmt))
+    _pin(fmt)
     m = Inspeximus(path=p)
     for i in range(6):
         m.remember("filler note number %d about gardening" % i)
     m.remember("the deploy window is friday", key="deploy")
     m.flush()
+    _assert_format(p, fmt)
+    _MADE.append((p, fmt))
     return p
 
 
-def _warm(p):
+def _warm(p, fmt="db"):
     m = Inspeximus(path=p)
     m._ix_held = True
     for _ in range(3):
         assert any("friday" in r["text"] for r in m.recall("deploy window", k=5)), "CONTROL: the record answers"
-    assert m._recall_ix and m._tok_cache, "CONTROL: the handle holds an index entry and cached tokens"
+    if fmt == "db":                                 # the whole-file JSON format builds no recall index
+        assert m._recall_ix and m._tok_cache, "CONTROL: the handle holds an index entry and cached tokens"
     return m
 
 
@@ -57,7 +100,7 @@ def _texts(m, q):
                                     {"text": ""}])
 def test_a_same_id_replacement_through_an_alias_is_seen(tmp_path, change):
     """AUDIT-B's probe: `a[i] = other version of the record`, through an alias of the list."""
-    m = _warm(_store(tmp_path, "json"))
+    m = _warm(_store(tmp_path, "db"))
     a = m._items
     i = a.index(_deploy(m))
     a[i] = dict(a[i], **change)
@@ -65,7 +108,7 @@ def test_a_same_id_replacement_through_an_alias_is_seen(tmp_path, change):
 
 
 def test_an_in_place_edit_answers_by_its_new_words(tmp_path):
-    m = _warm(_store(tmp_path, "json"))
+    m = _warm(_store(tmp_path, "db"))
     _deploy(m)["text"] = "the release slot is monday"
     assert "the release slot is monday" in _texts(m, "release slot monday"), "the new words do not find the record"
     assert "the release slot is monday" not in _texts(m, "deploy window friday"), "the old words still find it"
@@ -74,7 +117,7 @@ def test_an_in_place_edit_answers_by_its_new_words(tmp_path):
 @pytest.mark.parametrize("fmt", FORMATS)
 def test_refresh_adopts_a_peers_retire(tmp_path, fmt):
     p = _store(tmp_path, fmt)
-    m = _warm(p)
+    m = _warm(p, fmt)
     peer = Inspeximus(path=p)
     peer.retire("deploy", "obsolete")
     peer.flush()
@@ -83,10 +126,10 @@ def test_refresh_adopts_a_peers_retire(tmp_path, fmt):
     assert not any("friday" in t for t in _texts(m, "deploy window")), "a retired record still answers"
 
 
-@pytest.mark.parametrize("fmt", FORMATS)
+@pytest.mark.parametrize("fmt", FORMATS_ROW_ONLY)
 def test_refresh_adopts_a_peers_in_place_edit(tmp_path, fmt):
     p = _store(tmp_path, fmt)
-    m = _warm(p)
+    m = _warm(p, fmt)
     peer = Inspeximus(path=p)
     _deploy(peer)["text"] = "the release slot is monday"
     peer.flush()
@@ -99,7 +142,7 @@ def test_refresh_adopts_a_peers_in_place_edit(tmp_path, fmt):
 @pytest.mark.parametrize("fmt", FORMATS)
 def test_refresh_adopts_a_peers_credit(tmp_path, fmt):
     p = _store(tmp_path, fmt)
-    m = _warm(p)
+    m = _warm(p, fmt)
     peer = Inspeximus(path=p)
     peer.credit([_deploy(peer)["id"]], "good")
     peer.flush()
@@ -112,7 +155,7 @@ def test_refresh_adopts_a_peers_credit(tmp_path, fmt):
 def test_a_readers_note_is_not_an_edit(tmp_path):
     """The cause of the refresh() half: `_stale_derived`, written on every candidate of every recall, marked the record
     as this handle's edit. It is never stored, so it marks nothing."""
-    m = Inspeximus(path=_store(tmp_path, "json"))
+    m = Inspeximus(path=_store(tmp_path, "db"))
     rev = m._rev
     m.recall("deploy window", k=5)
     assert "_stale_derived" in _deploy(m), "CONTROL: the recall wrote its note on the record"
