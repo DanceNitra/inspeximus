@@ -11212,8 +11212,8 @@
  {
   "name": "3.18 daemon D-10: the listener binds before the state directory exists",
   "file": "inspeximus/hookd.py",
-  "old": "        warm_cwd = warm_cwd or os.getcwd()\n        self._make_state_dir()\n",
-  "new": "        warm_cwd = warm_cwd or os.getcwd()\n",
+  "old": "            return \"stopped\"                                    # asked to stop while it was being launched: no warm-up\n        self._make_state_dir()\n",
+  "new": "            return \"stopped\"                                    # asked to stop while it was being launched: no warm-up\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ],
@@ -12119,6 +12119,60 @@
   "new": "    return math.sqrt(math.sumprod(v, v) if hasattr(math, \"sumprod\") else sum(map(_mul, v, v))) or 1.0\n",
   "tests": [
    "tests/test_the_semantic_score_is_bit_identical.py"
+  ]
+ },
+ {
+  "name": "3.18 hookd: the launcher does not pass --launched-at",
+  "file": "inspeximus/hookd.py",
+  "old": "os.path.abspath(cwd),\n                                   \"--launched-at\", repr(now)],",
+  "new": "os.path.abspath(cwd)],",
+  "tests": [
+   "tests/test_a_stop_during_the_launch_reaches_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.18 hookd: the serve command ignores --launched-at",
+  "file": "inspeximus/hookd.py",
+  "old": "launched_at=argv[k + 1] if k >= 0 else None",
+  "new": "launched_at=None",
+  "tests": [
+   "tests/test_a_stop_during_the_launch_reaches_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.18 hookd: the daemon counts stop requests from its own start",
+  "file": "inspeximus/hookd.py",
+  "old": "self.started_at = _launch_time(launched_at)",
+  "new": "self.started_at = time.time()",
+  "tests": [
+   "tests/test_a_stop_during_the_launch_reaches_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.18 hookd: a launch time of any age is believed",
+  "file": "inspeximus/hookd.py",
+  "old": "if not (now - LAUNCH_MAX_AGE_S <= at <= now):",
+  "new": "if not (at <= now):",
+  "tests": [
+   "tests/test_a_stop_during_the_launch_reaches_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.18 hookd: a launch time in the future is believed",
+  "file": "inspeximus/hookd.py",
+  "old": "if not (now - LAUNCH_MAX_AGE_S <= at <= now):",
+  "new": "if not (now - LAUNCH_MAX_AGE_S <= at):",
+  "tests": [
+   "tests/test_a_stop_during_the_launch_reaches_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.18 hookd: a stop made during the launch is seen only after the warm-up",
+  "file": "inspeximus/hookd.py",
+  "old": "if stop_requested(self.kh, self.started_at):\n            return \"stopped\"",
+  "new": "if False:\n            return \"stopped\"",
+  "tests": [
+   "tests/test_a_stop_during_the_launch_reaches_the_daemon.py"
   ]
  }
 ]

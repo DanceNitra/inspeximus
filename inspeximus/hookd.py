@@ -45,6 +45,10 @@ REPLY_TIMEOUT_S = 0.3            #: the whole exchange, connect to verified repl
 SERVER_READ_TIMEOUT_S = 0.5
 IDLE_EXIT_S = 600.0              #: the daemon exits after this long without a request
 START_MIN_INTERVAL_S = 60.0      #: at most one start attempt per store in this interval
+#: A daemon counts a stop request from the moment its launcher started it, not from its own start, so a request made
+#: while the interpreter loads is not lost. A launch time older than this, or in the future, is not believed: an old
+#: request left in the folder would then stop every daemon at once (3.18, EM).
+LAUNCH_MAX_AGE_S = 120.0
 BACKOFF_AFTER = 3                #: this many timeouts in a row and the hook stops asking ...
 BACKOFF_S = 300.0                #: ... for this long, so a slow daemon costs at most BACKOFF_AFTER x REPLY_TIMEOUT_S
 MAX_LIVE_DAEMONS = 4             #: at most this many live daemons per key home; a fifth store gets none (AUDIT-A D-3)
@@ -497,7 +501,8 @@ def maybe_start(cwd, store_path) -> str:
         # against the wrong folder (E-1).
         kh = key_home_for(store_path)
         os.makedirs(state_dir(kh), mode=0o700, exist_ok=True)
-        proc = cc._start_detached(["--serve", "--expect-store", store_path, "--project", os.path.abspath(cwd)],
+        proc = cc._start_detached(["--serve", "--expect-store", store_path, "--project", os.path.abspath(cwd),
+                                   "--launched-at", repr(now)],
                                   state_dir(kh), cc._state_path(store_path, "hookd", ".log"))
         record["pid"] = getattr(proc, "pid", None)
         record["proc_start"] = _proc_start(record["pid"]) if record["pid"] else None
@@ -524,7 +529,7 @@ def _drop_handle(m) -> None:
 class Daemon:
     """Holds the stores the prompt hook reads, and answers one request type: the hook's recall block for an event."""
 
-    def __init__(self, store_path, idle_exit_s=IDLE_EXIT_S):
+    def __init__(self, store_path, idle_exit_s=IDLE_EXIT_S, launched_at=None):
         self.store = _real(store_path)
         self.kh = key_home_for(store_path)
         self.tag = tag(store_path, self.kh)
@@ -534,7 +539,7 @@ class Daemon:
         self.idle_exit_s = idle_exit_s
         self.held = {}                 # real path -> (signature, handle)
         self.last_request = time.monotonic()
-        self.started_at = time.time()      # a stop request older than this is not for this daemon
+        self.started_at = _launch_time(launched_at)    # a stop request older than this is not for this daemon
         self.stop = False
         self.token = os.urandom(32)
         self.reopens = 0
@@ -731,6 +736,8 @@ class Daemon:
         """Run until idle, until the store is gone, or until a request of another version. Returns the exit reason."""
         from multiprocessing.connection import Listener
         warm_cwd = warm_cwd or os.getcwd()
+        if stop_requested(self.kh, self.started_at):
+            return "stopped"                                    # asked to stop while it was being launched: no warm-up
         self._make_state_dir()
         # A SLOT AND THE STORE, CLAIMED BEFORE THE WARM-UP (AUDIT-A F-2). The record is written after the warm-up, so a
         # burst of starts saw no daemon and no count, and six starts made six daemons. Both claims are O_EXCL files.
@@ -819,8 +826,8 @@ def stop_requested(kh, since) -> bool:
 def request_stop(kh, wait_s=5.0) -> dict:
     """Ask every daemon of key home `kh` to exit, and wait up to `wait_s` for them to go (CL-7). The request is a file
     in the daemons' own folder, which only this user can write; each daemon's watchdog reads it within a second,
-    closes its endpoint and removes its files. No process is signalled. A daemon that starts after the request is
-    not affected. Returns {"key_home", "running_before", "stopped", "still_running"}."""
+    closes its endpoint and removes its files. No process is signalled. A daemon launched after the request is
+    not affected; one launched before it and still loading is (`--launched-at`). Returns {"key_home", "running_before", "stopped", "still_running"}."""
     before = live_daemon_count(kh)
     os.makedirs(state_dir(kh), mode=0o700, exist_ok=True)
     tmp = _stop_path(kh) + ".tmp"
@@ -955,8 +962,23 @@ def serve_main(argv):
         return 2                                                # no start time here: this daemon could never be live (F-1)
     if live_daemon(store_path):
         return 0                                                # one per (store, key home)
-    Daemon(store_path).serve(warm_cwd=project)
+    k = argv.index("--launched-at") if "--launched-at" in argv[:-1] else -1
+    Daemon(store_path, launched_at=argv[k + 1] if k >= 0 else None).serve(warm_cwd=project)
     return 0
+
+
+def _launch_time(launched_at):
+    """The wall time a stop request is counted from: the launcher's `--launched-at` when it is a number no older than
+    LAUNCH_MAX_AGE_S and not in the future, else now. Without it, `inspeximus hookd stop` during the second the
+    interpreter takes to load found no daemon, and the daemon then started after the request and ignored it."""
+    now = time.time()
+    try:
+        at = float(launched_at)
+    except (TypeError, ValueError):
+        return now
+    if not (now - LAUNCH_MAX_AGE_S <= at <= now):               # also false for nan
+        return now
+    return at
 
 
 # ── the Windows endpoint: a pipe only this user and SYSTEM can open ────────────────────────────────────────────────
