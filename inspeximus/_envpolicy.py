@@ -168,7 +168,8 @@ def guard_on(var: str) -> bool:
     key = POLICY[var][1]
     if _cfg(key) is False:
         return False
-    if _env(var).lower() in _OFF:
+    v = _env(var)
+    if v and v.lower() in _OFF:                       # an unset variable costs no call (perf gate: erase arms)
         _ignored(var, "%s to false" % key)
     return True
 

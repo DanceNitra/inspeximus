@@ -10449,8 +10449,8 @@
  {
   "name": "3.18 env: the environment switches a guard off",
   "file": "inspeximus/_envpolicy.py",
-  "old": "    if _env(var).lower() in _OFF:\n        _ignored(var, \"%s to false\" % key)\n    return True\n",
-  "new": "    if _env(var).lower() in _OFF:\n        return False\n    return True\n",
+  "old": "    if v and v.lower() in _OFF:                       # an unset variable costs no call (perf gate: erase arms)\n        _ignored(var, \"%s to false\" % key)\n    return True\n",
+  "new": "    if v and v.lower() in _OFF:                       # an unset variable costs no call (perf gate: erase arms)\n        return False\n    return True\n",
   "tests": [
    "tests/test_every_environment_variable_has_a_policy.py"
   ]
@@ -11439,8 +11439,8 @@
  {
   "name": "3.18 index: an edit does not move the content revision",
   "file": "inspeximus/core.py",
-  "old": "        store._rev = getattr(store, \"_rev\", 0) + 1\n        _note_dirty(store, rid)\n",
-  "new": "        _note_dirty(store, rid)\n",
+  "old": "        store._rev = getattr(store, \"_rev\", 0) + 1\n        if field is None:\n",
+  "new": "        if field is None:\n",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py"
@@ -11862,10 +11862,11 @@
  {
   "name": "3.18 R-5: an edit keeps the record's cached tokens",
   "file": "inspeximus/core.py",
-  "old": "    if rid:\n        _drop_derived(store, rid)\n",
+  "old": "    if rid and not tracked and (field is None or field in _INDEX_FIELDS):\n        _drop_derived(store, rid)\n",
   "new": "",
   "tests": [
-   "tests/test_a_held_handle_sees_every_change_to_a_record.py"
+   "tests/test_a_held_handle_sees_every_change_to_a_record.py",
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
   ]
  },
  {
@@ -12001,6 +12002,87 @@
   "new": "        rundll = os.path.join(os.environ.get(\"SystemRoot\", \"C:\\Windows\"), \"System32\", \"rundll32.exe\")\n",
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: every edit drops the cached tokens",
+  "file": "inspeximus/core.py",
+  "old": "    if rid and not tracked and (field is None or field in _INDEX_FIELDS):\n        _drop_derived(store, rid)\n",
+  "new": "    if rid:\n        _drop_derived(store, rid)\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: a meta edit keeps the cached tokens",
+  "file": "inspeximus/core.py",
+  "old": "_INDEX_FIELDS = frozenset((\"text\", \"key\", \"meta\"))\n",
+  "new": "_INDEX_FIELDS = frozenset((\"text\", \"key\"))\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: a nested list forgets its field",
+  "file": "inspeximus/core.py",
+  "old": "        if type(v) is list:\n            return _TrackedList(v, root, field)\n",
+  "new": "        if type(v) is list:\n            return _TrackedList(v, root)\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: a nested dict forgets its field",
+  "file": "inspeximus/core.py",
+  "old": "            return _TrackedDict(v, None, self._root, self._field)\n",
+  "new": "            return _TrackedDict(v, None, self._root)\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: a nested dict under meta reports no field",
+  "file": "inspeximus/core.py",
+  "old": "        if type(v) is dict:\n            return _TrackedDict(v, None, root, field)\n",
+  "new": "        if type(v) is dict:\n            return _TrackedDict(v, None, root, \"links\")\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: a moved container keeps its old field",
+  "file": "inspeximus/core.py",
+  "old": "            v._field = None                           # a container moved between fields: its edits drop the caches\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: every meta key counts as the context",
+  "file": "inspeximus/core.py",
+  "old": "                field = \"meta.\" + str(key)            # one `meta` key that is not the decision's context\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: touch drops the tokens of a tracked record",
+  "file": "inspeximus/core.py",
+  "old": "        _note_dirty(self, rid, tracked=isinstance(rec, _TrackedDict))\n",
+  "new": "        _note_dirty(self, rid)\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
+  ]
+ },
+ {
+  "name": "3.18 perf: touch never drops the tokens",
+  "file": "inspeximus/core.py",
+  "old": "        _note_dirty(self, rid, tracked=isinstance(rec, _TrackedDict))\n",
+  "new": "        _note_dirty(self, rid, tracked=True)\n",
+  "tests": [
+   "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
   ]
  }
 ]

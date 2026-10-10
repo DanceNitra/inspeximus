@@ -1972,7 +1972,7 @@ def _view_scope(h) -> tuple:
     return (h.tenant, getattr(h, "agent", None), getattr(h, "_acl_rev", 0))
 
 
-def _note_dirty(store, rid) -> None:
+def _note_dirty(store, rid, field=None, tracked=False) -> None:
     """Record which record the current content revision moved (`None` when the edit has no id). Recall's cache uses it
     to tell records appended since an entry was built, which it can add to the entry, from edits, which it cannot."""
     log = getattr(store, "_ix_log", None)
@@ -1980,8 +1980,20 @@ def _note_dirty(store, rid) -> None:
         log[rid or None] = store._rev
     # THE PER-ID CACHES GO WITH THE EDIT (3.18, AUDIT-B R-5). They were filled once per id and never invalidated, so a
     # held handle went on matching the words a record had before an in-place edit, and missed its new ones.
-    if rid:
+    # ONLY AN EDIT TO WHAT THE INDEX READS. The caches hold what `_index_text` derives, and it reads `text`, `key` and
+    # `meta` (a decision's context). `field` is the record's top-level field the edit is under (`meta.<key>` for a direct
+    # edit of one `meta` key), `None` when it is not known (`update`, `clear`); then the caches go too. `tracked` is
+    # `_touch` on a tracked record: its edits already fired here with their field, so the declaration drops nothing.
+    # Measured on the perf gate's sleep arm: a state toggle sets `meta.superseded_by_toggle` and touches both records,
+    # and dropping on that re-tokenized 80 records whose text had not changed (+80 regex calls, +160 tracked gets).
+    if rid and not tracked and (field is None or field in _INDEX_FIELDS):
         _drop_derived(store, rid)
+
+
+#: The record fields `_index_text` reads. The per-id caches (`_tok_cache`, `_sig_cache`, `_tc_cache`) derive from them
+#: alone, so an edit to any other field leaves them valid. A test reads `_index_text` and fails when it reads a field
+#: this set does not name.
+_INDEX_FIELDS = frozenset(("text", "key", "meta"))
 
 
 def _drop_derived(store, rid) -> None:
@@ -2089,10 +2101,11 @@ class _TrackedDict(dict):
     or appended without going through `remember()`; the id-set check in `_save` covers those, and the
     sweep in `test_every_mutating_call_reaches_the_store_file.py` is what proves the pair is enough.
     """
-    __slots__ = ("_store", "_root")
+    __slots__ = ("_store", "_root", "_field")
 
-    def __init__(self, data=(), store=None, root=None):
+    def __init__(self, data=(), store=None, root=None, field=None):
         super().__init__(data)
+        self._field = field                       # the record's top-level field this container sits under
         # WEAK, OR A RETURNED RECORD PINS THE WHOLE STORE. `recall()` hands records back, and a
         # caller that keeps one would otherwise keep every record beside it alive through this
         # reference. Measured before the weakref: workers in the test suite died under load while
@@ -2104,7 +2117,7 @@ class _TrackedDict(dict):
         # at load turned opening a 30,000-record store from 0.5 s into 6.2 s, and this library is
         # opened once per tool call by its own hook.
 
-    def _fire(self, key=None):
+    def _fire(self, key=None, field=None):
         root = self._root if self._root is not None else self
         ref = root._store if isinstance(root, _TrackedDict) else None
         store = ref() if ref is not None else None
@@ -2124,20 +2137,27 @@ class _TrackedDict(dict):
         # THE CONTENT REVISION (3.18 prototype). Recall's cached pool and token index are valid while it stands;
         # every edit, at any depth, moves it.
         store._rev = getattr(store, "_rev", 0) + 1
-        _note_dirty(store, rid)
+        if field is None:
+            field = key if self._root is None else self._field
+            if field == "meta" and key is not None and key != "context" and dict.get(root, "meta") is self:
+                field = "meta." + str(key)            # one `meta` key that is not the decision's context
+        _note_dirty(store, rid, field)
 
-    def _child(self, v):
+    def _child(self, v, k=None):
         root = self._root if self._root is not None else self
+        field = k if self._root is None else self._field
         if type(v) is dict:
-            return _TrackedDict(v, None, root)
+            return _TrackedDict(v, None, root, field)
         if type(v) is list:
-            return _TrackedList(v, root)
+            return _TrackedList(v, root, field)
+        if isinstance(v, (_TrackedDict, _TrackedList)) and v._field != field:
+            v._field = None                           # a container moved between fields: its edits drop the caches
         return v
 
     def __getitem__(self, k):
         v = super().__getitem__(k)
         if type(v) is dict or type(v) is list:
-            v = self._child(v)
+            v = self._child(v, k)
             dict.__setitem__(self, k, v)
         return v
 
@@ -2149,13 +2169,13 @@ class _TrackedDict(dict):
         if v is _MISSING:
             return default
         if type(v) is dict or type(v) is list:
-            v = self._child(v)
+            v = self._child(v, k)
             dict.__setitem__(self, k, v)
         return v
 
     def __setitem__(self, k, v):
         self._fire(k)
-        super().__setitem__(k, self._child(v))
+        super().__setitem__(k, self._child(v, k))
 
     def __delitem__(self, k):
         self._fire(k)
@@ -2164,7 +2184,7 @@ class _TrackedDict(dict):
     def update(self, *a, **kw):
         self._fire()
         for k, v in dict(*a, **kw).items():
-            super().__setitem__(k, self._child(v))
+            super().__setitem__(k, self._child(v, k))
 
     def setdefault(self, k, default=None):
         if k in self:
@@ -2208,21 +2228,22 @@ class _TrackedDict(dict):
 
 class _TrackedList(list):
     """The list half: `rec["tags"].append(...)` must mark the record that holds it."""
-    __slots__ = ("_root",)
+    __slots__ = ("_root", "_field")
 
-    def __init__(self, data=(), root=None):
+    def __init__(self, data=(), root=None, field=None):
         super().__init__(data)
         self._root = root
+        self._field = field
 
     def _fire(self):
         if isinstance(self._root, _TrackedDict):
-            self._root._fire()
+            self._root._fire(None, self._field)
 
     def _child(self, v):
         if type(v) is dict:
-            return _TrackedDict(v, None, self._root)
+            return _TrackedDict(v, None, self._root, self._field)
         if type(v) is list:
-            return _TrackedList(v, self._root)
+            return _TrackedList(v, self._root, self._field)
         return v
 
     def __getitem__(self, i):
@@ -19954,7 +19975,7 @@ class Inspeximus:
         if rid:
             self._touched.add(rid)
         self._rev = getattr(self, "_rev", 0) + 1             # a declared change moves the content revision
-        _note_dirty(self, rid)
+        _note_dirty(self, rid, tracked=isinstance(rec, _TrackedDict))
 
     def _save(self, force: bool = False):
         if not self.path:
