@@ -1811,7 +1811,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased), "authorship": authorship}
 
 
-__version__ = "3.17.0"
+__version__ = "3.17.1"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -10242,12 +10242,14 @@ class Inspeximus:
 
     @staticmethod
     def _is_quarantined(rec: dict) -> bool:
-        q = (rec.get("meta") or {}).get("quarantined")
+        # `dict.get`, not the tracked `get`: a read, and 3.17.1 leaves an invalid stamp in `meta`, so `meta` is no
+        # longer empty on an unstamped row and the tracked `get` would be a Python call per row on every recall.
+        q = dict.get(rec.get("meta") or {}, "quarantined")
         return bool(q) and not q.get("released")
 
     @staticmethod
     def _is_stuffed(rec: dict) -> bool:
-        return bool((rec.get("meta") or {}).get("stuffed"))
+        return bool(dict.get(rec.get("meta") or {}, "stuffed"))
 
     def _served_rows(self, rows, *, include_quarantined: bool = False, limit: int | None = None) -> list:
         """The subset of `rows` that recall would serve: a standing Art. 21 objection withholds its

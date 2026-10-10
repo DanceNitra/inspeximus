@@ -11454,7 +11454,8 @@
   "tests": [
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py",
-   "tests/test_a_held_handle_sees_every_change_to_a_record.py"
+   "tests/test_a_held_handle_sees_every_change_to_a_record.py",
+   "tests/test_a_read_marks_no_record_touched.py"
   ]
  },
  {
