@@ -12084,5 +12084,41 @@
   "tests": [
    "tests/test_an_edit_outside_the_index_keeps_the_tokens.py"
   ]
+ },
+ {
+  "name": "3.18 cos: a cached norm is used for any vector",
+  "file": "inspeximus/core.py",
+  "old": "        if e is not None and e[0] is v:\n            nb = e[1]\n",
+  "new": "        if e is not None:\n            nb = e[1]\n",
+  "tests": [
+   "tests/test_the_semantic_score_is_bit_identical.py"
+  ]
+ },
+ {
+  "name": "3.18 cos: re-embed and an in-place vector edit keep the old norm",
+  "file": "inspeximus/core.py",
+  "old": "    elif rid and not tracked and field == \"vec\":\n",
+  "new": "    elif False:\n",
+  "tests": [
+   "tests/test_the_semantic_score_is_bit_identical.py"
+  ]
+ },
+ {
+  "name": "3.18 cos: the dot product uses sumprod",
+  "file": "inspeximus/core.py",
+  "old": "    return sum(map(_mul, a, b))\n",
+  "new": "    return math.sumprod(a, b) if hasattr(math, \"sumprod\") else sum(map(_mul, a, b))\n",
+  "tests": [
+   "tests/test_the_semantic_score_is_bit_identical.py"
+  ]
+ },
+ {
+  "name": "3.18 cos: the norm uses sumprod",
+  "file": "inspeximus/core.py",
+  "old": "    return math.sqrt(sum(map(_mul, v, v))) or 1.0\n",
+  "new": "    return math.sqrt(math.sumprod(v, v) if hasattr(math, \"sumprod\") else sum(map(_mul, v, v))) or 1.0\n",
+  "tests": [
+   "tests/test_the_semantic_score_is_bit_identical.py"
+  ]
  }
 ]

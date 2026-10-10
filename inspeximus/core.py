@@ -49,6 +49,7 @@ import json
 import logging
 import sys
 import math
+import operator as _operator
 import os
 import shutil
 import random as _random
@@ -1872,11 +1873,21 @@ def _token_counts(text: str) -> dict:
     return d
 
 
+_mul = _operator.mul
+
+
+def _dot(a, b) -> float:
+    """`sum(map(mul, a, b))`: the products and the sum of `sum(x * y for x, y in zip(a, b))`, bit for bit, about 3 times
+    faster on a 1,024-dimension vector. Not `math.sumprod`, which rounds differently, so near-ties could swap order."""
+    return sum(map(_mul, a, b))
+
+
+def _norm(v) -> float:
+    return math.sqrt(sum(map(_mul, v, v))) or 1.0
+
+
 def _cosine(a, b) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
-    na = math.sqrt(sum(x * x for x in a)) or 1.0
-    nb = math.sqrt(sum(y * y for y in b)) or 1.0
-    return dot / (na * nb)
+    return _dot(a, b) / (_norm(a) * _norm(b))
 
 
 def _prefix_collision_threshold(keys, length: int, p: float = 0.01):
@@ -1988,6 +1999,12 @@ def _note_dirty(store, rid, field=None, tracked=False) -> None:
     # and dropping on that re-tokenized 80 records whose text had not changed (+80 regex calls, +160 tracked gets).
     if rid and not tracked and (field is None or field in _INDEX_FIELDS):
         _drop_derived(store, rid)
+    elif rid and not tracked and field == "vec":
+        # A VECTOR'S NORM GOES WITH THE VECTOR: re-embed (`_set_vec`), any assignment of `vec`, and an in-place edit,
+        # which keeps the list's identity, so `_rec_cos`'s identity check alone would not see it.
+        _vn = getattr(store, "_vnorm", None)
+        if _vn:
+            _vn.pop(rid, None)
 
 
 #: The record fields `_index_text` reads. The per-id caches (`_tok_cache`, `_sig_cache`, `_tc_cache`) derive from them
@@ -1998,7 +2015,7 @@ _INDEX_FIELDS = frozenset(("text", "key", "meta"))
 
 def _drop_derived(store, rid) -> None:
     """Forget what the store derived from one record's text: its token set, signature and term counts."""
-    for name in ("_tok_cache", "_sig_cache", "_tc_cache"):
+    for name in ("_tok_cache", "_sig_cache", "_tc_cache", "_vnorm"):
         c = getattr(store, name, None)
         if c:
             c.pop(rid, None)
@@ -3415,6 +3432,7 @@ class Inspeximus:
         # and raced the first thread's write (the LangGraph checkpointer's thread pool hit it).
         self._decide_depths: dict = {}
         self._tok_cache: dict[str, set] = {}     # id -> token set, so recall doesn't re-tokenize
+        self._vnorm: dict = {}                    # id -> (vector, its norm); see _rec_cos
         self._rev = 0                             # content revision; see _TrackedDict._fire
         self._recall_ix = {}                      # recall's cached pools and token indexes, by key; see recall()
         self._ix_uses = {}                        # recalls per cache key; see _RECALL_IX_BUILD_AFTER
@@ -3868,6 +3886,7 @@ class Inspeximus:
                 for r in _held:
                     self._legacy_shelved.add(dict.get(r, "id"))
                     Inspeximus._shelve_vector(r)
+                    self._vnorm.pop(dict.get(r, "id"), None)
                 if _held:
                     self._mat = None
                     self._foreign_vec_ids = {dict.get(r, "id") for r in _held} | set(getattr(self, "_foreign_vec_ids", ()))
@@ -15452,7 +15471,7 @@ class Inspeximus:
         only the token set, and a peer's erasure adopted by a reload popped nothing. Pruning against
         the live rows covers all three paths."""
         caches = [c for c in (getattr(self, "_tok_cache", None), getattr(self, "_sig_cache", None),
-                              getattr(self, "_tc_cache", None)) if c]
+                              getattr(self, "_tc_cache", None), getattr(self, "_vnorm", None)) if c]
         if not caches and not getattr(self, "_recall_ix", None):
             return                                    # nothing derived yet (a load, __init__): nothing to build
         live = {r.get("id") for r in self._items}
@@ -15967,10 +15986,11 @@ class Inspeximus:
             if _shared is not None:
                 _shared["by_id"] = _by_id
         _stale_memo = _shared["stale"] if _shared is not None else None
+        _qn = _norm(qvec) if qvec is not None else None
         def _semsim(r) -> float:
             if sims_vec is not None and r.get("vec") and r["id"] in self._vec_rowof:
                 return max(0.0, float(sims_vec[self._vec_rowof[r["id"]]]))
-            return max(0.0, _cosine(qvec, r["vec"])) if (qvec is not None and r.get("vec")) else 0.0
+            return max(0.0, self._rec_cos(qvec, r, _qn)) if (qvec is not None and r.get("vec")) else 0.0
         def _lexsim(r) -> float:
             t = self._rec_tokens(r)
             return (len(qtok & t) / min(len(qtok), len(t))) if (qtok and t) else 0.0
@@ -18024,6 +18044,7 @@ class Inspeximus:
         scope would be shown, and quoted, records its own recall never returns."""
         now = time.time()
         qvec = self._qvec(query) if self.embed else None
+        _qn = _norm(qvec) if qvec is not None else None
         qtok = _tokens(query)
         # reinforce=False, passed EXPLICITLY. The reason written here was wrong: it said
         # "recall() defaults reinforce=True", and the signature two thousand lines up says
@@ -18049,7 +18070,7 @@ class Inspeximus:
 
         def _brk(rec):
             r = _full.get(rec["id"], rec)                 # resolve the full record so the vec is present
-            sem = max(0.0, _cosine(qvec, r["vec"])) if (qvec is not None and r.get("vec")) else 0.0
+            sem = max(0.0, self._rec_cos(qvec, r, _qn)) if (qvec is not None and r.get("vec")) else 0.0
             t = self._rec_tokens(r)
             lex = (len(qtok & t) / min(len(qtok), len(t))) if (qtok and t) else 0.0
             return {"id": r["id"], "text": (r.get("text") or "")[:80],
@@ -19757,13 +19778,36 @@ class Inspeximus:
                               "store with persist_vectors=True to keep them.")
         return out
 
+    def _rec_cos(self, a, r, na=None) -> float:
+        """`_cosine(a, r["vec"])`, with the norm of `r`'s vector computed once per vector; `na` is `_norm(a)`, which a
+        caller scoring many records against one query computes once.
+
+        Bit for bit the score `_cosine` gives. The norm is kept beside the record id with the vector object it was
+        computed from, and used only while `r["vec"]` is that same object, so a vector replaced by any path (re-embed,
+        a refresh that adopts a peer's row, a shelved foreign vector) cannot be scored with a norm that is not its own.
+        `_set_vec`, an in-place edit of the vector and the prune against the live rows drop the entry as well."""
+        v = r["vec"]
+        if na is None:
+            na = _norm(a)
+        c = getattr(self, "_vnorm", None)
+        if c is None:
+            return _dot(a, v) / (na * _norm(v))
+        rid = r.get("id")
+        e = c.get(rid)
+        if e is not None and e[0] is v:
+            nb = e[1]
+        else:
+            nb = _norm(v)
+            c[rid] = (v, nb)
+        return _dot(a, v) / (na * nb)
+
     def _set_vec(self, rec, vec) -> None:
         """Give `rec` the vector `vec`, stamped with this handle's embed recipe when it has one (3.17).
 
         The stamp is what lets a later open tell a vector made under another model from one made under
         this one; see `sqlite_store.VEC_KEY`. Without an `embed_id` the recipe is unknown, so nothing is
         stamped and nothing is judged."""
-        rec["vec"] = vec
+        rec["vec"] = vec                              # a tracked record's `vec` edit drops its cached norm (_note_dirty)
         if vec and self.embed_id and _rows is not None:
             rec["vec_recipe"] = _rows.recipe_tag(self.embed_id, len(vec))
         else:
@@ -19824,6 +19868,7 @@ class Inspeximus:
                 if self._recipe_of(r) is False:
                     Inspeximus._shelve_vector(r)
                     ids.add(dict.get(r, "id"))
+                    getattr(self, "_vnorm", {}).pop(dict.get(r, "id"), None)
             if ids:
                 self._mat = None
         # Ids found by an earlier pass stay counted until reembed() gives them a vector; index_coherence
