@@ -458,6 +458,34 @@ def test_serve_creates_its_state_directory_before_it_binds(project, tmp_path, mo
         _stop(d, th)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX modes: the Windows endpoint is a pipe with its own descriptor")
+def test_a_state_directory_left_open_is_0700_before_the_listener_binds(project, tmp_path, monkeypatch):
+    """D-10, the part the slot claim does not cover: `claim_slot` creates a missing state directory before the bind, but
+    leaves one that already exists as it is. A directory left at 0755 must be 0700 before the socket is bound in it."""
+    import stat
+    from multiprocessing import connection
+    proj, sp = project
+    fresh = str(tmp_path / "open-key-home")
+    monkeypatch.setattr(hookd, "key_home_for", lambda s: fresh)
+    sd = hookd.state_dir(fresh)
+    os.makedirs(sd)
+    os.chmod(sd, 0o755)
+    assert stat.S_IMODE(os.stat(sd).st_mode) == 0o755, "CONTROL: the state directory starts open"
+    seen = []
+    real = connection.Listener
+
+    def listener(*a, **kw):
+        seen.append(stat.S_IMODE(os.stat(sd).st_mode))
+        return real(*a, **kw)
+    monkeypatch.setattr(connection, "Listener", listener)
+    d, th = _start(sp, proj)
+    try:
+        assert seen, "CONTROL: the listener was created"
+        assert seen[0] == 0o700, "the socket was bound in a state directory at %o" % seen[0]
+    finally:
+        _stop(d, th)
+
+
 def test_no_more_than_the_limit_of_daemons_per_key_home(project, tmp_path, monkeypatch, switched_on):
     """D-3: a daemon per store and no global bound. A key home of its own: another test's live record would count."""
     proj, sp = project
