@@ -1034,6 +1034,15 @@ def _hook_command(cwd=None) -> "str | None":
     return None
 
 
+def _stamp_pass_complete(r) -> bool:
+    """Whether a stamping pass did all it can: it applied, or nothing was left, or it assessed every record it had to
+    and the ones left are flagged, which are never stamped (3.18: such a pass was marked "failed"). A pass without a
+    key assesses nothing, so it counts neither stamped nor flagged records and is not complete."""
+    if r.get("applied") or not r.get("to_stamp"):
+        return True
+    return (r.get("stamped") or 0) + (r.get("flagged") or 0) >= r["to_stamp"]
+
+
 def stamp_guards(cwd=None, apply=False, store=None) -> dict:
     """Persist a read-guard verdict for the project store's active records that have none. DRY BY
     DEFAULT. A read never saves, so records written before 3.15.4 are assessed again on every prompt;
@@ -2353,14 +2362,20 @@ def main():
             except Exception:                                   # noqa: BLE001
                 _mark_stamp_run(have, False)
                 raise
-            _mark_stamp_run(have, bool(r.get("applied") or not r.get("to_stamp")))
+            _mark_stamp_run(have, _stamp_pass_complete(r))
             print(json.dumps(r, indent=2, default=str))
             return
         r = stamp_guards(apply="--apply" in argv,
                          store=argv[argv.index("--store") + 1] if "--store" in argv[:-1] else None)
         print(json.dumps(r, indent=2, default=str))
-        if not r["applied"] and r.get("to_stamp") and r.get("has_key"):
-            print(chr(10) + "Dry run. Add --apply to stamp %d record(s); the store is saved once." % r["to_stamp"])
+        if "--apply" not in argv:
+            if r.get("to_stamp") and r.get("has_key"):
+                print(chr(10) + "Dry run. Add --apply to stamp %d record(s); the store is saved once." % r["to_stamp"])
+        elif r.get("flagged"):
+            # A FLAGGED RECORD IS NEVER STAMPED, so it stays in `to_stamp` and a run with --apply was told to add
+            # --apply (3.18). Its flags are kept and checked on every read; release it with release_quarantine.
+            print(chr(10) + "%d flagged record(s) stay unstamped; their flags are checked on every read."
+                  % r["flagged"])
         return
     if "--scrub-secrets" in sys.argv:
         r = scrub_secrets(apply="--apply" in sys.argv)

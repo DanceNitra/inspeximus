@@ -9631,7 +9631,7 @@
  {
   "name": "a re-stamp run never marks itself done",
   "file": "inspeximus/claude_code.py",
-  "old": "            _mark_stamp_run(have, bool(r.get(\"applied\") or not r.get(\"to_stamp\")))\n",
+  "old": "            _mark_stamp_run(have, _stamp_pass_complete(r))\n",
   "new": "            pass\n",
   "tests": [
    "tests/test_the_stamp_heal_follows_the_launch_rules_of_a_hook_run.py"
@@ -12263,6 +12263,51 @@
   "new": "            import urllib.request as _u; return embedding_from(json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + t}).encode(), headers=dict(headers or {}, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read()))\n",
   "tests": [
    "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
+  ]
+ },
+ {
+  "name": "3.18 stamp msg: a run with --apply is called a dry run",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if \"--apply\" not in argv:\n            if r.get(\"to_stamp\")",
+  "new": "        if True:\n            if r.get(\"to_stamp\")",
+  "tests": [
+   "tests/test_stamp_guards_reports_flagged_records_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 stamp msg: the flagged records are not reported",
+  "file": "inspeximus/claude_code.py",
+  "old": "        elif r.get(\"flagged\"):\n",
+  "new": "        elif False:\n",
+  "tests": [
+   "tests/test_stamp_guards_reports_flagged_records_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 stamp msg: the hook's pass is marked by the old rule",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _mark_stamp_run(have, _stamp_pass_complete(r))",
+  "new": "            _mark_stamp_run(have, bool(r.get(\"applied\") or not r.get(\"to_stamp\")))",
+  "tests": [
+   "tests/test_stamp_guards_reports_flagged_records_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 stamp msg: the flagged records do not count as assessed",
+  "file": "inspeximus/claude_code.py",
+  "old": " + (r.get(\"flagged\") or 0) >= r[\"to_stamp\"]",
+  "new": " >= r[\"to_stamp\"]",
+  "tests": [
+   "tests/test_stamp_guards_reports_flagged_records_apart.py"
+  ]
+ },
+ {
+  "name": "3.18 stamp msg: any pass with a key is complete",
+  "file": "inspeximus/claude_code.py",
+  "old": "(r.get(\"flagged\") or 0) >= r[\"to_stamp\"]",
+  "new": "(r.get(\"flagged\") or 0) >= 0",
+  "tests": [
+   "tests/test_stamp_guards_reports_flagged_records_apart.py"
   ]
  }
 ]
