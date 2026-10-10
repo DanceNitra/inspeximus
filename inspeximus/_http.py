@@ -95,6 +95,42 @@ def embedding_from(answer):
     return vec
 
 
+#: An input over the model's context is sent again shortened to this fraction of its length, at most FIT_TRIES times
+#: (3.18). Measured 2026-10-10: Ollama bge-m3 answered 413 "the input length exceeds the context length" for a 6,123-
+#: character record of markdown and figures, which fits up to about 5,980 characters; the limit is in tokens, so no
+#: character cap set in advance is right for every text and model.
+FIT_SHRINK = 0.75
+FIT_TRIES = 6
+
+
+def _over_context(e) -> bool:
+    """Whether HTTP error `e` says the input is longer than the model takes: a 413, or a 400 that says so."""
+    code = getattr(e, "code", None)
+    if code == 413:
+        return True
+    if code != 400:
+        return False
+    try:
+        msg = e.read(4096).decode("utf-8", "replace").lower()
+    except Exception:                                           # noqa: BLE001
+        return False
+    return "context length" in msg or "maximum context" in msg or "too many tokens" in msg
+
+
+def embed_fitting(url, model, text, prefix="", headers=None, timeout=20):
+    """The embedding of `prefix + text`, or, when the endpoint says the input is over the model's context, of the
+    longest prefix of `text` it takes among the lengths tried: FIT_SHRINK of the last one, at most FIT_TRIES times. The
+    same text always gives the same tries, so the same vector. Any other error is raised as before."""
+    t = text
+    for i in range(FIT_TRIES + 1):
+        try:
+            return embedding_from(post_json(url, {"model": model, "input": prefix + t}, headers, timeout))
+        except urllib.error.HTTPError as e:
+            if i == FIT_TRIES or len(t) < 2 or not _over_context(e):
+                raise
+            t = t[:int(len(t) * FIT_SHRINK)]
+
+
 # WHO MAY NAME A REMOTE HOST (3.16.4, AUDIT-A F-12, the owner's decision). A host such as Claude Code applies a
 # project's settings `env` block to hooks and to the MCP server, so INSPEXIMUS_EMBED_URL and INSPEXIMUS_EMBED_KEY
 # can come from a repository: measured with Claude Code 2.1.291, a prompt and the repository's key reached a

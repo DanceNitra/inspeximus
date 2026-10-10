@@ -8072,8 +8072,8 @@
  {
   "name": "the hook embedder posts with plain urlopen again",
   "file": "inspeximus/claude_code.py",
-  "old": "        return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout))\n",
-  "new": "        import urllib.request as _u; return embedding_from(json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + text}).encode(), headers=dict(headers, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read()))\n",
+  "old": "        return embed_fitting(url, model, text, prefix, headers, timeout)  # an input over the context: a prefix (3.18)\n",
+  "new": "        from ._http import embedding_from; import urllib.request as _u; return embedding_from(json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + text}).encode(), headers=dict(headers or {}, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read()))\n",
   "tests": [
    "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
   ]
@@ -12173,6 +12173,96 @@
   "new": "if False:\n            return \"stopped\"",
   "tests": [
    "tests/test_a_stop_during_the_launch_reaches_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.18 413: the shared embedder sends a long input once",
+  "file": "inspeximus/_embedders.py",
+  "old": "        return embed_fitting(url, model, text, prefix, headers, 20)",
+  "new": "        from ._http import embedding_from, post_json; return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + text}, headers, 20))",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: the hooks' embedder sends a long input once",
+  "file": "inspeximus/claude_code.py",
+  "old": "        return embed_fitting(url, model, text, prefix, headers, timeout)",
+  "new": "        from ._http import embedding_from, post_json; return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout))",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: a 413 is not read as an input over the context",
+  "file": "inspeximus/_http.py",
+  "old": "    if code == 413:\n        return True\n",
+  "new": "    if code == 4130:\n        return True\n",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: a 400 that names the context is not read as one",
+  "file": "inspeximus/_http.py",
+  "old": "    return \"context length\" in msg or \"maximum context\" in msg or \"too many tokens\" in msg",
+  "new": "    return False",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: every HTTP error is retried shortened",
+  "file": "inspeximus/_http.py",
+  "old": "            if i == FIT_TRIES or len(t) < 2 or not _over_context(e):",
+  "new": "            if i == FIT_TRIES or len(t) < 2:",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: the tries are not bounded",
+  "file": "inspeximus/_http.py",
+  "old": "            if i == FIT_TRIES or len(t) < 2 or not _over_context(e):",
+  "new": "            if len(t) < 2 or not _over_context(e):",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: a retry sends the whole text again",
+  "file": "inspeximus/_http.py",
+  "old": "            return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + t}, headers, timeout))",
+  "new": "            return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout))",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: reembed does not name the failed records",
+  "file": "inspeximus/core.py",
+  "old": "        if failed_ids:\n            out[\"failed_ids\"] = failed_ids\n",
+  "new": "        if failed_ids:\n            pass\n",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: reembed reports failed_ids when nothing failed",
+  "file": "inspeximus/core.py",
+  "old": "        if failed_ids:\n            out[\"failed_ids\"] = failed_ids\n",
+  "new": "        if True:\n            out[\"failed_ids\"] = failed_ids\n",
+  "tests": [
+   "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
+  ]
+ },
+ {
+  "name": "3.18 413: embed_fitting posts with plain urlopen",
+  "file": "inspeximus/_http.py",
+  "old": "            return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + t}, headers, timeout))\n",
+  "new": "            import urllib.request as _u; return embedding_from(json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + t}).encode(), headers=dict(headers or {}, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read()))\n",
+  "tests": [
+   "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
   ]
  }
 ]

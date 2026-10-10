@@ -15,7 +15,7 @@ def make_embedders(default_model: str = "text-embedding-3-small"):
     prefix `search_document: ` and `search_query: `, measured on LoCoMo (n=1536) to lift recall_any@1 from 0.19 to 0.29,
     with the recipe `<model>|nomic-sd-sq`. For symmetric models it returns `(embed, None, model)`.
     `(None, None, None)` when `INSPEXIMUS_EMBED_URL` is unset or names a host the user's config does not allow."""
-    from ._http import embedding_from, env_key, env_url, post_json   # no redirect, no proxy for loopback (3.16.4)
+    from ._http import embed_fitting, env_key, env_url    # no redirect, no proxy for loopback (3.16.4)
     url = env_url("INSPEXIMUS_EMBED_URL")             # another host only when the user's config allows it (F-12)
     if not url:
         return None, None, None
@@ -25,7 +25,7 @@ def make_embedders(default_model: str = "text-embedding-3-small"):
 
     def _embed(text: str, prefix: str = ""):
         headers = {"Authorization": f"Bearer {key}"} if key else {}
-        return embedding_from(post_json(url, {"model": model, "input": prefix + text}, headers, 20))
+        return embed_fitting(url, model, text, prefix, headers, 20)    # an input over the context: a prefix (3.18)
 
     # nomic-embed-text is asymmetric; task prefixes are REQUIRED for good retrieval. Opt out with INSPEXIMUS_NOMIC_PREFIX=0.
     if "nomic" in model.lower() and _envpolicy.raw("INSPEXIMUS_NOMIC_PREFIX", "1") != "0":

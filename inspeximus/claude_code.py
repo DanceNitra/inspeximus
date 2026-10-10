@@ -206,12 +206,12 @@ def _make_embedder(cwd):
     except Exception:
         timeout = 10.0
 
-    from ._http import embedding_from, post_json
+    from ._http import embed_fitting
 
     def _embed(text: str, prefix: str = ""):
         # No redirect is followed and a loopback URL uses no proxy (3.16.4): see inspeximus/_http.py.
         headers = {"Authorization": f"Bearer {key}"} if key else {}
-        return embedding_from(post_json(url, {"model": model, "input": prefix + text}, headers, timeout))
+        return embed_fitting(url, model, text, prefix, headers, timeout)  # an input over the context: a prefix (3.18)
 
     # nomic-embed-text is ASYMMETRIC — the doc/query task prefixes are REQUIRED for good retrieval (the
     # correctness fix shipped for the MCP in 1.15.0, now applied to the Claude Code plugin too). Returns

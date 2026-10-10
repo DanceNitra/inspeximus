@@ -19754,17 +19754,22 @@ class Inspeximus:
         if batch:
             todo = todo[:int(batch)]
         done = failed = 0
+        failed_ids = []
         for r in todo:
             try:
                 self._set_vec(r, list(self.embed(r["text"]))); done += 1
-            except Exception:
+            except Exception as e:
                 self._set_vec(r, None); failed += 1
+                if len(failed_ids) < 20:                            # which records, and why (3.18: the 413)
+                    failed_ids.append({"id": r.get("id"), "error": ("%s: %s" % (type(e).__name__, e))[:200]})
             self._touch(r)                                          # a row store writes what is declared
         self._mat = None
         self._legacy_shelved.difference_update(dict.get(r, "id") for r in todo if dict.get(r, "vec"))
         self._save(force=True)
         out = {"reembedded": done, "failed": failed,
                "remaining": sum(1 for r in self.items if r.get("text") is not None and not r.get("vec"))}
+        if failed_ids:
+            out["failed_ids"] = failed_ids
         if done and self._persist_vectors:
             # A ROW WHOSE NEW VECTOR EQUALS ITS OLD LIST IS NOT REWRITTEN: the writer compares the record, not
             # its encoding, so it stays a list. The compaction writes those as float16, then vacuums (3.17).
