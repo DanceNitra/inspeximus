@@ -4517,7 +4517,7 @@ class Inspeximus:
             rec["attested_key"] = self.writer_pubkey
         if self.embed:
             try:
-                self._set_vec(rec, list(self.embed(text)))
+                self._set_vec(rec, self.embed(text))
             except Exception:
                 self._set_vec(rec, None)
         rec = self._track(rec)                    # edits to it from here on declare themselves
@@ -19753,10 +19753,13 @@ class Inspeximus:
         if batch:
             todo = todo[:int(batch)]
         done = failed = 0
-        failed_ids = []
+        failed_ids, truncated = [], []
         for r in todo:
             try:
-                self._set_vec(r, list(self.embed(r["text"]))); done += 1
+                self._set_vec(r, self.embed(r["text"])); done += 1
+                kept = (dict.get(r, "meta") or {}).get("embed_truncated")
+                if kept is not None and len(truncated) < 20:     # embedded from its start only (3.18, AUDIT-A F-1)
+                    truncated.append({"id": r.get("id"), "kept": kept, "of": len(r["text"])})
             except Exception as e:
                 self._set_vec(r, None); failed += 1
                 if len(failed_ids) < 20:                            # which records, and why (3.18: the 413)
@@ -19769,6 +19772,8 @@ class Inspeximus:
                "remaining": sum(1 for r in self.items if r.get("text") is not None and not r.get("vec"))}
         if failed_ids:
             out["failed_ids"] = failed_ids
+        if truncated:
+            out["truncated"] = truncated
         if done and self._persist_vectors:
             # A ROW WHOSE NEW VECTOR EQUALS ITS OLD LIST IS NOT REWRITTEN: the writer compares the record, not
             # its encoding, so it stays a list. The compaction writes those as float16, then vacuums (3.17).
@@ -19810,8 +19815,23 @@ class Inspeximus:
 
         The stamp is what lets a later open tell a vector made under another model from one made under
         this one; see `sqlite_store.VEC_KEY`. Without an `embed_id` the recipe is unknown, so nothing is
-        stamped and nothing is judged."""
+        stamped and nothing is judged.
+
+        A vector the embedder made from the start of the text only (an `Embedding` with `truncated_to`, 3.18) marks the
+        record `meta["embed_truncated"]` with the characters it kept; a later complete vector removes the mark. The
+        mark sits under `meta` but not `meta.context`, so it drops none of the record's index caches."""
+        kept = getattr(vec, "truncated_to", None)
+        if vec is not None:
+            vec = list(vec)
         rec["vec"] = vec                              # a tracked record's `vec` edit drops its cached norm (_note_dirty)
+        meta = rec.get("meta")                        # tracked: the edit is `meta.embed_truncated`, no cache drop
+        if kept is not None:
+            if isinstance(meta, dict):
+                meta["embed_truncated"] = int(kept)
+            else:
+                rec["meta"] = {"embed_truncated": int(kept)}
+        elif isinstance(meta, dict) and "embed_truncated" in meta:
+            meta.pop("embed_truncated", None)
         if vec and self.embed_id and _rows is not None:
             rec["vec_recipe"] = _rows.recipe_tag(self.embed_id, len(vec))
         else:

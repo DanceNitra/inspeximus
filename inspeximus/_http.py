@@ -117,14 +117,24 @@ def _over_context(e) -> bool:
     return "context length" in msg or "maximum context" in msg or "too many tokens" in msg
 
 
+class Embedding(list):
+    """A vector from `embed_fitting`. `truncated_to` is the number of characters of the text it embeds when the
+    endpoint took only a prefix of it, else None; `Inspeximus._set_vec` records it on the record (3.18, AUDIT-A F-1)."""
+    truncated_to = None
+
+
 def embed_fitting(url, model, text, prefix="", headers=None, timeout=20):
     """The embedding of `prefix + text`, or, when the endpoint says the input is over the model's context, of the
-    longest prefix of `text` it takes among the lengths tried: FIT_SHRINK of the last one, at most FIT_TRIES times. The
-    same text always gives the same tries, so the same vector. Any other error is raised as before."""
+    first of the shortenings it accepts: FIT_SHRINK of the last length, at most FIT_TRIES times. That is not the longest
+    prefix that fits, and the same text gets the same vector only from the same model with the same context limit. A
+    shortened answer carries `truncated_to`. Any other error is raised as before."""
     t = text
     for i in range(FIT_TRIES + 1):
         try:
-            return embedding_from(post_json(url, {"model": model, "input": prefix + t}, headers, timeout))
+            v = Embedding(embedding_from(post_json(url, {"model": model, "input": prefix + t}, headers, timeout)))
+            if i:
+                v.truncated_to = len(t)
+            return v
         except urllib.error.HTTPError as e:
             if i == FIT_TRIES or len(t) < 2 or not _over_context(e):
                 raise

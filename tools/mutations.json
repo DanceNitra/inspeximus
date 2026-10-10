@@ -12232,8 +12232,8 @@
  {
   "name": "3.18 413: a retry sends the whole text again",
   "file": "inspeximus/_http.py",
-  "old": "            return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + t}, headers, timeout))",
-  "new": "            return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout))",
+  "old": "            v = Embedding(embedding_from(post_json(url, {\"model\": model, \"input\": prefix + t}, headers, timeout)))\n",
+  "new": "            v = Embedding(embedding_from(post_json(url, {\"model\": model, \"input\": prefix + text}, headers, timeout)))\n",
   "tests": [
    "tests/test_an_input_over_the_context_is_embedded_by_its_prefix.py"
   ]
@@ -12259,8 +12259,8 @@
  {
   "name": "3.18 413: embed_fitting posts with plain urlopen",
   "file": "inspeximus/_http.py",
-  "old": "            return embedding_from(post_json(url, {\"model\": model, \"input\": prefix + t}, headers, timeout))\n",
-  "new": "            import urllib.request as _u; return embedding_from(json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + t}).encode(), headers=dict(headers or {}, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read()))\n",
+  "old": "            v = Embedding(embedding_from(post_json(url, {\"model\": model, \"input\": prefix + t}, headers, timeout)))\n",
+  "new": "            import urllib.request as _u; v = Embedding(embedding_from(json.loads(_u.urlopen(_u.Request(url, data=json.dumps({\"model\": model, \"input\": prefix + t}).encode(), headers=dict(headers or {}, **{\"Content-Type\": \"application/json\"})), timeout=timeout).read())))\n",
   "tests": [
    "tests/test_an_embedder_follows_no_redirect_and_no_proxy_for_this_machine.py"
   ]
@@ -12317,6 +12317,87 @@
   "new": "        A READ WRITES ONLY A CHANGED VERDICT (3.17.2). This used to run",
   "tests": [
    "tests/test_the_guard_set_hash_is_the_3_17_1_hash.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: a shortened vector does not say so",
+  "file": "inspeximus/_http.py",
+  "old": "            if i:\n                v.truncated_to = len(t)\n",
+  "new": "            if False:\n                v.truncated_to = len(t)\n",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: a whole-text vector says it was shortened",
+  "file": "inspeximus/_http.py",
+  "old": "            if i:\n                v.truncated_to = len(t)\n",
+  "new": "            if True:\n                v.truncated_to = len(t)\n",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: _set_vec ignores the cut",
+  "file": "inspeximus/core.py",
+  "old": "        kept = getattr(vec, \"truncated_to\", None)\n        if vec is not None:",
+  "new": "        kept = None\n        if vec is not None:",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: a complete vector keeps the old mark",
+  "file": "inspeximus/core.py",
+  "old": "        elif isinstance(meta, dict) and \"embed_truncated\" in meta:",
+  "new": "        elif False:",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: the mark is written by replacing meta, which drops the index caches",
+  "file": "inspeximus/core.py",
+  "old": "                meta[\"embed_truncated\"] = int(kept)\n",
+  "new": "                rec[\"meta\"] = dict(meta, embed_truncated=int(kept))\n",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: reembed does not report the cut records",
+  "file": "inspeximus/core.py",
+  "old": "        if truncated:\n            out[\"truncated\"] = truncated\n",
+  "new": "        if truncated:\n            pass\n",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: reembed reports the kept length as the whole",
+  "file": "inspeximus/core.py",
+  "old": "\"kept\": kept, \"of\": len(r[\"text\"])}",
+  "new": "\"kept\": kept, \"of\": kept}",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: remember drops the cut by copying the vector first",
+  "file": "inspeximus/core.py",
+  "old": "                self._set_vec(rec, self.embed(text))\n",
+  "new": "                self._set_vec(rec, list(self.embed(text)))\n",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 trunc: reembed drops the cut by copying the vector first",
+  "file": "inspeximus/core.py",
+  "old": "                self._set_vec(r, self.embed(r[\"text\"])); done += 1\n",
+  "new": "                self._set_vec(r, list(self.embed(r[\"text\"]))); done += 1\n",
+  "tests": [
+   "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
   ]
  }
 ]
