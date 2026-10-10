@@ -10225,16 +10225,15 @@ class Inspeximus:
         the assessment it always had. The text hash and the guard set are computed only when a stamp or
         a release is there to check.
 
-        A READ WRITES ONLY A CHANGED VERDICT (3.18, AUDIT-A D-1, AUDIT-B CL-1). This used to run
-        `setdefault("meta")`, `pop("read_guards")` and `pop("read_guards_v")` on every record it
-        assessed, and to re-assign an equal quarantine verdict. On a live record each of those marks the
-        record touched, so `refresh()` kept the held copy and the held handle's next write put it back on
-        disk over a peer's retire, edit or credit. Measured: lost 12 of 12 times for a record with no
-        stamp, and 6 of 6 for one stamped under another path or Python. Now a read (`stamp=False`)
-        assigns a verdict only when it differs, and leaves an invalid stamp and a stale `read_guards_v`
-        where they are: neither is trusted here, and only the write path (`stamp=True`) replaces or
-        removes them. `setdefault` is not an edit when `meta` is there (every loaded record has it): it
-        reads, and it writes only on a record built in memory without one."""
+        A READ WRITES ONLY A CHANGED VERDICT (3.17.1). This used to run `pop("read_guards")` and
+        `pop("read_guards_v")` on every record it assessed, and to re-assign an equal quarantine verdict.
+        Each of those marks a live record touched, so `refresh()` kept the held copy and the held handle's
+        next write put it back on disk over a peer's retire, edit, credit or in-place redaction. That held
+        for every record without a valid stamp: unstamped, stamped under another path or Python, or with
+        no `meta` on disk. Now a read assigns a verdict only when it differs, and leaves an invalid stamp
+        and a stale `read_guards_v` where they are: neither is trusted here, and only the write path
+        (`stamp=True`) replaces or removes them. `setdefault` is not an edit when `meta` is there (every
+        loaded record has it)."""
         meta = rec.setdefault("meta", {})
         rid = rec.get("id") or id(rec)
         if rid in self._guard_seen:

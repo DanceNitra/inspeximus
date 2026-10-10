@@ -12309,5 +12309,14 @@
   "tests": [
    "tests/test_stamp_guards_reports_flagged_records_apart.py"
   ]
+ },
+ {
+  "name": "3.18 guard hash: one character of _assess_read_guards' docstring changes",
+  "file": "inspeximus/core.py",
+  "old": "        A READ WRITES ONLY A CHANGED VERDICT (3.17.1). This used to run",
+  "new": "        A READ WRITES ONLY A CHANGED VERDICT (3.17.2). This used to run",
+  "tests": [
+   "tests/test_the_guard_set_hash_is_the_3_17_1_hash.py"
+  ]
  }
 ]
