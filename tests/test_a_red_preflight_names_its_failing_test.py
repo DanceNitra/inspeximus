@@ -77,7 +77,11 @@ def test_the_parallel_runner_reports_the_failing_test_and_keeps_worker_output(tm
     p = subprocess.run([sys.executable, os.path.join("tools", "mutation_check_parallel.py"), str(spec),
                         "--workers", "1", "--allow-dirty"], cwd=ROOT, capture_output=True, text=True,
                        encoding="utf-8", errors="replace", env=env, timeout=900)
-    assert p.returncode == 1, p.stdout[-2000:] + p.stderr[-2000:]
+    # ONE ENTRY, RED ON PURPOSE, IS A BROKEN RUN (ea03b308): more than 10 % of the entries red before mutating exits 3
+    # and says the run is not a mutation score. This test expected 1 and was not updated; it carries the mutation
+    # marker, so only CI's mutation job ran it (3.18.0 release run, 2026-10-11).
+    assert p.returncode == 3, p.stdout[-2000:] + p.stderr[-2000:]
+    assert "BROKEN RUN" in p.stdout, p.stdout[-2000:]
     reason = [ln for ln in p.stdout.splitlines()
               if ln.strip().startswith("skipped: forced red pre-flight (parallel)")]
     assert len(reason) == 1, p.stdout[-2000:]
