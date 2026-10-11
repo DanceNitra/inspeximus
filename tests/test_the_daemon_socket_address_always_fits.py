@@ -50,12 +50,12 @@ def test_a_long_key_home_and_a_long_temp_directory_still_give_a_socket_that_fits
     long_tmp = _long(tmp_path, "tmp")
     monkeypatch.setattr(tempfile, "gettempdir", lambda: long_tmp)
     kh = _long(tmp_path, "kh")
-    assert len(os.path.join(hookd.state_dir(kh), TAG + ".sock").encode()) >= hookd.SOCK_PATH_MAX, \
+    assert len(os.path.join(hookd.state_dir(kh), TAG + ".sock").encode()) > hookd.SOCK_PATH_MAX, \
         "CONTROL: the key home's socket path is too long"
-    assert len(os.path.join(long_tmp, "inspeximus-hookd-%d" % os.getuid(), TAG + ".sock").encode()) >= \
+    assert len(os.path.join(long_tmp, "inspeximus-hookd-%d" % os.getuid(), TAG + ".sock").encode()) > \
         hookd.SOCK_PATH_MAX, "CONTROL: the temp directory's socket path is too long"
     a = hookd.address(kh, TAG)
-    assert a is not None and len(a.encode()) < hookd.SOCK_PATH_MAX, a
+    assert a is not None and len(a.encode()) <= hookd.SOCK_PATH_MAX, a
     assert a == os.path.join("/tmp", "inspeximus-hookd-%d" % os.getuid(), TAG + ".sock")
 
 
@@ -67,7 +67,7 @@ def test_every_address_returned_fits(tmp_path, monkeypatch):
         monkeypatch.setattr(tempfile, "gettempdir", lambda t=t: t)
         kh = str(tmp_path / ("k" * n))
         a = hookd.address(kh, TAG)
-        assert a is None or len(a.encode()) < hookd.SOCK_PATH_MAX, (n, a)
+        assert a is None or len(a.encode()) <= hookd.SOCK_PATH_MAX, (n, a)
 
 
 @POSIX
@@ -92,7 +92,49 @@ def test_with_no_address_the_daemon_does_not_start_and_the_hook_says_so_once(pro
         hookd.maybe_start(proj, sp)                             # rate-limited or not, never a second notice
     assert not started, "a daemon was started with nowhere to listen"
     err = capsys.readouterr().err
-    assert err.count("no socket path shorter than") == 1, err
+    assert err.count("no socket path of at most") == 1, err
+
+
+def _key_home_of_length(n):
+    """A key home whose socket path is exactly n bytes long. Nothing is created: this candidate is only a string."""
+    pad = n - len(os.path.join(hookd.state_dir("/k"), TAG + ".sock").encode())
+    kh = "/k" + "k" * pad
+    assert len(os.path.join(hookd.state_dir(kh), TAG + ".sock").encode()) == n, "CONTROL: %d bytes" % n
+    return kh
+
+
+@POSIX
+def test_a_key_home_socket_path_of_exactly_the_limit_fits_and_one_byte_more_does_not(tmp_path, monkeypatch):
+    """The approved CHANGELOG says "a socket path of at most 100 bytes": 100 is used, 101 is not."""
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: _long(tmp_path, "tmp"))
+    at = _key_home_of_length(hookd.SOCK_PATH_MAX)
+    assert hookd.address(at, TAG) == os.path.join(hookd.state_dir(at), TAG + ".sock"), \
+        "a key home socket path of exactly the limit was not used"
+    over = _key_home_of_length(hookd.SOCK_PATH_MAX + 1)
+    assert hookd.address(over, TAG) != os.path.join(hookd.state_dir(over), TAG + ".sock"), \
+        "a key home socket path one byte over the limit was used"
+
+
+@POSIX
+def test_a_temp_socket_path_of_exactly_the_limit_fits_and_one_byte_more_does_not(monkeypatch):
+    """The same boundary for the temp-directory candidate. makedirs and stat are stubbed with a private folder of this
+    user, so nothing is created and the test reaches the length check wherever pytest puts its own folders."""
+    kh = _key_home_of_length(hookd.SOCK_PATH_MAX + 1)
+    tail = os.path.join("inspeximus-hookd-%d" % os.getuid(), TAG + ".sock")
+    made = []
+    real_stat = os.stat
+    monkeypatch.setattr(hookd.os, "makedirs", lambda d, mode=0o777, exist_ok=False: made.append(d))
+    monkeypatch.setattr(hookd.os, "stat", lambda d, *a, **k: os.stat_result(
+        (0o40700, 0, 0, 0, os.getuid(), 0, 0, 0, 0, 0)) if d in made else real_stat(d, *a, **k))
+    for n, fits in ((hookd.SOCK_PATH_MAX, True), (hookd.SOCK_PATH_MAX + 1, False)):
+        root = "/t" + "t" * (n - len(os.path.join("/t", tail).encode()))
+        assert len(os.path.join(root, tail).encode()) == n, "CONTROL: the temp socket path is %d bytes" % n
+        monkeypatch.setattr(tempfile, "gettempdir", lambda root=root: root)
+        a = hookd.address(kh, TAG)
+        if fits:
+            assert a == os.path.join(root, tail), "a temp socket path of exactly the limit was not used: %r" % a
+        else:
+            assert a == os.path.join("/tmp", tail), "a temp socket path one byte over the limit was used: %r" % a
 
 
 def _second_project(tmp_path):

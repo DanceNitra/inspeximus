@@ -139,7 +139,8 @@ def _read_record(kh, t):
         return None
 
 
-#: The longest socket path used, in bytes. AF_UNIX takes 107 on Linux and 103 on macOS, before the terminating NUL.
+#: The longest socket path used, in bytes: a path of at most this many fits. AF_UNIX takes 107 on Linux and 103 on
+#: macOS, before the terminating NUL.
 SOCK_PATH_MAX = 100
 
 
@@ -152,13 +153,13 @@ def address(kh, t):
     if os.name == "nt":
         return r"\\.\pipe\inspeximus-hookd-" + t
     p = os.path.join(state_dir(kh), t + ".sock")
-    if len(p.encode("utf-8")) < SOCK_PATH_MAX:
+    if len(p.encode("utf-8")) <= SOCK_PATH_MAX:
         return p
     import tempfile
     for root in (tempfile.gettempdir(), "/tmp"):
         d = os.path.join(root, "inspeximus-hookd-%d" % os.getuid())
         p = os.path.join(d, t + ".sock")
-        if len(p.encode("utf-8")) >= SOCK_PATH_MAX:
+        if len(p.encode("utf-8")) > SOCK_PATH_MAX:
             continue                                            # too long to bind: the next candidate
         os.makedirs(d, mode=0o700, exist_ok=True)
         st = os.stat(d)
@@ -493,7 +494,7 @@ def _notice_no_address():
     """One line on stderr, once per process, when no socket path fits (3.18)."""
     if not _NO_ADDRESS_SAID:
         _NO_ADDRESS_SAID.append(1)
-        sys.stderr.write("[inspeximus] hookd: no socket path shorter than %d bytes here (the key home, the temp "
+        sys.stderr.write("[inspeximus] hookd: no socket path of at most %d bytes here (the key home, the temp "
                          "directory and /tmp are too long); the prompt daemon does not start" % SOCK_PATH_MAX + chr(10))
 
 
