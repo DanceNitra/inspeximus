@@ -336,3 +336,86 @@ def test_a_silent_connection_gives_its_slot_back_within_the_read_timeout(project
         assert daemon.conns._value == hookd.MAX_CONNECTIONS,             "a silent connection kept its slot for over 1.1 s (the read timeout is documented as 0.5 s)"
     finally:
         silent.close()
+
+
+
+class _SlowClaims:
+    """hookd.json with a slow dump for one kind of claim, to hold open the gap between creating a claim file and writing
+    it (3.18.0 release run, main CI, Python 3.9: a burst counted 3 daemons for 4). The long wait is for a write into the
+    claim file itself, where a reader can see it empty; a write into a private temp file does not wait, so a starter that
+    writes there first does not come back late enough to hide the gap."""
+
+    def __init__(self, real, slot):
+        self._real, self._slot = real, slot
+
+    def __getattr__(self, n):
+        return getattr(self._real, n)
+
+    def dump(self, obj, fh, *a, **k):
+        if isinstance(obj, dict) and "pid" in obj and ("tag" in obj) == self._slot:
+            if not str(getattr(fh, "name", "")).endswith(".tmp"):
+                time.sleep(0.3)
+        return self._real.dump(obj, fh, *a, **k)
+
+
+def test_a_burst_count_sees_every_claimed_slot(tmp_path, monkeypatch):
+    """The count taken when the losers return "limit" sees all 4 winners, and every slot file holds a whole claim. With
+    the claim created first and written after, all 4 slot files were empty at that moment: 0 counted, 5 runs of 5."""
+    import threading
+    kh = str(tmp_path / "burst-key-home")
+    monkeypatch.setattr(hookd, "key_home_for", lambda s: kh)
+    monkeypatch.setattr(hookd, "json", _SlowClaims(hookd.json, slot=True))
+    ps = _projects(tmp_path, hookd.MAX_LIVE_DAEMONS + 2)
+    ds = [hookd.Daemon(sp, idle_exit_s=60) for _p, sp in ps]
+    res = {}
+    gate = threading.Barrier(len(ds))
+
+    def run(i):
+        gate.wait()
+        res[i] = ds[i].serve(warm_cwd=ps[i][0])
+    ths = [threading.Thread(target=run, args=(i,), daemon=True) for i in range(len(ds))]
+    for t in ths:
+        t.start()
+    try:
+        deadline = time.time() + 30
+        while time.time() < deadline and len(res) < 2:
+            time.sleep(0.01)
+        assert sorted(res.values()) == ["limit", "limit"], res
+        slots = [hookd._claim_owner(hookd._slot_path(kh, i)) for i in range(hookd.MAX_LIVE_DAEMONS)]
+        assert all(isinstance(s, dict) and s.get("tag") for s in slots), "a slot was seen without a whole claim: %r" % slots
+        assert hookd.live_daemon_count(kh) == hookd.MAX_LIVE_DAEMONS
+    finally:
+        for d in ds:
+            d.stop = True
+            d._wake()
+        for t in ths:
+            t.join(10)
+    assert hookd.live_daemon_count(kh) == 0, "a stopped daemon kept its slot"
+    left = [f for f in os.listdir(hookd.state_dir(kh)) if f.endswith(".tmp")]
+    assert not left, "claim temp files were left behind: %s" % left
+
+
+def test_two_claims_of_one_store_at_once_give_one(tmp_path, monkeypatch):
+    """With the gap held open, the second starter found the first one's claim empty, took it for a dead process's,
+    removed it and claimed the store too: two daemons for one store."""
+    import threading
+    kh = str(tmp_path / "store-claim-key-home")
+    os.makedirs(hookd.state_dir(kh))
+    monkeypatch.setattr(hookd, "json", _SlowClaims(hookd.json, slot=False))
+    got = []
+    gate = threading.Barrier(2)
+
+    def run():
+        gate.wait()
+        got.append(hookd._claim_store(kh, "0" * 16))
+    ths = [threading.Thread(target=run, daemon=True) for _ in range(2)]
+    for t in ths:
+        t.start()
+    for t in ths:
+        t.join(10)
+    won = [p for p in got if p]
+    try:
+        assert len(got) == 2 and len(won) == 1, "two starts of one store both claimed it: %r" % got
+    finally:
+        for p in won:
+            hookd.release_slot(p)

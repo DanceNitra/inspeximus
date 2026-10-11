@@ -928,6 +928,38 @@ def live_daemon_count(kh):
     return n
 
 
+def _claim_exclusive(p, me) -> bool:
+    """Create the claim file `p` holding `me`, or return False when `p` exists. THE CLAIM APPEARS WITH ITS CONTENT (3.18):
+    it is written to a private temp file and hard-linked to `p`, which is atomic and fails when `p` exists. An O_EXCL
+    create followed by the write left `p` empty in between, and an empty claim is not live: in a burst, the losers
+    refused on slots whose owners had not written yet, and a count taken then missed a daemon that held a slot (the
+    3.18.0 release run's main CI, Python 3.9: 3 counted for 4; with the gap widened to 0.3 s, 0 counted in 5 of 5). Where
+    the file system has no hard links, the exclusive create and write, as before."""
+    tmp = "%s.%d.%d.%s.tmp" % (p, os.getpid(), threading.get_ident(), os.urandom(4).hex())
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(me, fh)
+        try:
+            os.link(tmp, p)
+            return True
+        except FileExistsError:
+            return False
+        except OSError:                                         # no hard links here: the exclusive create, as before
+            try:
+                fd2 = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            except FileExistsError:
+                return False
+            with os.fdopen(fd2, "w", encoding="utf-8") as fh:
+                json.dump(me, fh)
+            return True
+    finally:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+
+
 def claim_slot(kh, t):
     """Take a free slot for the daemon of tag `t`, atomically, or return None when all MAX_LIVE_DAEMONS are held by live
     processes. A slot held by a dead process is taken over. The claim names the pid, its start time and the tag."""
@@ -936,13 +968,8 @@ def claim_slot(kh, t):
     for _ in range(2):                                          # a second pass after clearing dead claims
         for i in range(MAX_LIVE_DAEMONS):
             p = _slot_path(kh, i)
-            try:
-                fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            except FileExistsError:
-                continue
-            with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                json.dump(me, fh)
-            return p
+            if _claim_exclusive(p, me):
+                return p
         for i in range(MAX_LIVE_DAEMONS):
             p = _slot_path(kh, i)
             rec = _claim_owner(p)
@@ -960,20 +987,16 @@ def _claim_store(kh, t):
     p = os.path.join(state_dir(kh), t + ".claim")
     me = {"pid": os.getpid(), "proc_start": _proc_start(os.getpid())}
     for _ in range(2):
+        if _claim_exclusive(p, me):
+            return p
+        # Held: a claim is never empty (written whole, then linked), so one that is not live is a dead process's.
+        rec = _claim_owner(p)
+        if rec and _record_is_live(rec):
+            return None
         try:
-            fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        except FileExistsError:
-            rec = _claim_owner(p)
-            if rec and _record_is_live(rec):
-                return None
-            try:
-                os.unlink(p)
-            except OSError:
-                pass
-            continue
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(me, fh)
-        return p
+            os.unlink(p)
+        except OSError:
+            pass
     return None
 
 

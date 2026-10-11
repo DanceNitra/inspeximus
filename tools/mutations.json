@@ -12581,5 +12581,33 @@
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ],
   "platform": "posix"
+ },
+ {
+  "name": "3.18 claim: a claim is created first and written after (no hard link)",
+  "file": "inspeximus/hookd.py",
+  "old": "            os.link(tmp, p)\n            return True\n",
+  "new": "            raise OSError(\"no hard links\")\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 claim: a held claim is taken as won",
+  "file": "inspeximus/hookd.py",
+  "old": "        except FileExistsError:\n            return False\n        except OSError:                                         # no hard links here",
+  "new": "        except FileExistsError:\n            return True\n        except OSError:                                         # no hard links here",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
+ },
+ {
+  "name": "3.18 claim: the temp file is left behind",
+  "file": "inspeximus/hookd.py",
+  "old": "        try:\n            os.unlink(tmp)\n        except OSError:\n            pass\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ]
  }
 ]
