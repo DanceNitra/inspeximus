@@ -12609,5 +12609,95 @@
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_delta.py"
   ]
+ },
+ {
+  "name": "3.18 reclaim: a dead claim is removed without the lock",
+  "file": "inspeximus/hookd.py",
+  "old": "    with _reclaim_lock(os.path.dirname(p)) as held:",
+  "new": "    with contextlib.nullcontext(True) as held:",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 reclaim: the claim is not read again under the lock",
+  "file": "inspeximus/hookd.py",
+  "old": "        if not _claim_dead(p):                                  # read again under the lock: it may have become live\n            return False",
+  "new": "        if False:\n            return False",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 reclaim: a reclaim goes ahead without the lock",
+  "file": "inspeximus/hookd.py",
+  "old": "        if not held:\n            return False                                        # another reclaim is in progress: held for now",
+  "new": "        if False:\n            return False",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 reclaim: a young empty claim is taken for a dead one",
+  "file": "inspeximus/hookd.py",
+  "old": "        return age > CLAIM_STALE_S\n",
+  "new": "        return True\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 reclaim: an old empty claim is never reclaimed",
+  "file": "inspeximus/hookd.py",
+  "old": "        return age > CLAIM_STALE_S\n",
+  "new": "        return False\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sweep: a fresh temp file is removed",
+  "file": "inspeximus/hookd.py",
+  "old": "            if now - os.stat(p).st_mtime > CLAIM_STALE_S:",
+  "new": "            if True:",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sweep: a file of another name is removed",
+  "file": "inspeximus/hookd.py",
+  "old": "        if not _TEMP_NAME.fullmatch(n):",
+  "new": "        if not n.endswith(\".tmp\"):",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sweep: claim_slot does not sweep",
+  "file": "inspeximus/hookd.py",
+  "old": "    _sweep_temp(state_dir(kh))\n    me = {\"pid\": os.getpid(), \"proc_start\": _proc_start(os.getpid()), \"tag\": t}",
+  "new": "    me = {\"pid\": os.getpid(), \"proc_start\": _proc_start(os.getpid()), \"tag\": t}",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 reclaim: the store claim takes any held claim as free",
+  "file": "inspeximus/hookd.py",
+  "old": "        if not _reclaim_if_dead(p):\n            return None                                         # held: live, or too young to judge",
+  "new": "        if False:\n            return None",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
  }
 ]

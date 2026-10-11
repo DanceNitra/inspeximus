@@ -27,6 +27,7 @@ with the 3.16.4 launch rules (`_start_detached`: -E and the shim, breakaway, a n
 recorded. It exits after IDLE_EXIT_S without a request, when the store disappears, or when `inspeximus hookd stop` asks
 every daemon of the key home to exit (`request_stop`).
 """
+import contextlib
 import hashlib
 import hmac
 import io
@@ -960,10 +961,118 @@ def _claim_exclusive(p, me) -> bool:
             pass
 
 
+#: A claim that is empty or cannot be read is held while it is younger than this: in the no-hard-link fallback a starter
+#: writes it right after creating it. Older, it is a crash's leftover and is reclaimed. Our own stray temp files of
+#: this age are removed too.
+CLAIM_STALE_S = 5.0
+#: How long a starter waits for another starter's reclaim before it treats the claim as held.
+RECLAIM_WAIT_S = 2.0
+_TEMP_NAME = None
+
+
+@contextlib.contextmanager
+def _reclaim_lock(d):
+    """THE RECLAIM OF A DEAD CLAIM IS SERIALIZED (3.18, AUDIT-A C-1). It was "read, decide dead, unlink", and a starter
+    that decided on an old read removed the claim another starter had just made: with a dead claim and 8 starters at
+    once, more than one won the store claim in 103 of 120 rounds, and two shared a slot in 65 of 120. The lock is the
+    kernel's (flock, or msvcrt on Windows), not a lock file: it ends with its holder, so a starter that dies holding it
+    leaves nothing to time out and no stale lock to take over, which would race the same way one level up. Yields True
+    when held, False when another reclaim did not finish within RECLAIM_WAIT_S."""
+    fd = os.open(os.path.join(d, "reclaim.lock"), os.O_RDWR | os.O_CREAT, 0o600)
+    held = False
+    try:
+        deadline = time.monotonic() + RECLAIM_WAIT_S
+        while True:
+            try:
+                if os.name == "nt":
+                    import msvcrt
+                    os.lseek(fd, 0, 0)
+                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                held = True
+                break
+            except OSError:
+                if time.monotonic() >= deadline:
+                    break
+                time.sleep(0.005)
+        yield held
+    finally:
+        if held:
+            try:
+                if os.name == "nt":
+                    import msvcrt
+                    os.lseek(fd, 0, 0)
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+            except OSError:
+                pass
+        os.close(fd)
+
+
+def _claim_dead(p) -> bool:
+    """Whether the claim at `p` may be removed: a whole claim whose process is gone, or an empty or unreadable claim
+    older than CLAIM_STALE_S (AUDIT-A C-2: the store claim took a young empty claim, still being written in the
+    no-hard-link fallback, for a dead one). A missing claim is not dead: there is nothing to remove."""
+    try:
+        age = time.time() - os.stat(p).st_mtime
+    except OSError:
+        return False
+    rec = _claim_owner(p)
+    if not rec:                                                 # empty, unreadable, or not a claim
+        return age > CLAIM_STALE_S
+    return not _record_is_live(rec)
+
+
+def _reclaim_if_dead(p) -> bool:
+    """Remove the claim at `p` when it is dead, deciding again under the reclaim lock. True when `p` is free to try
+    again (removed here, or already gone), False when it is held."""
+    with _reclaim_lock(os.path.dirname(p)) as held:
+        if not held:
+            return False                                        # another reclaim is in progress: held for now
+        if not os.path.exists(p):
+            return True
+        if not _claim_dead(p):                                  # read again under the lock: it may have become live
+            return False
+        try:
+            os.unlink(p)
+        except OSError:
+            return False
+        return True
+
+
+def _sweep_temp(d):
+    """Remove our own claim temp files older than CLAIM_STALE_S (AUDIT-A C-3: a starter killed between writing its
+    temp file and removing it left one). Only this exact name pattern, only in this folder."""
+    import re
+    global _TEMP_NAME
+    if _TEMP_NAME is None:
+        _TEMP_NAME = re.compile(r"(slot-\d+|[0-9a-f]{16})\.claim\.\d+\.\d+\.[0-9a-f]{8}\.tmp")
+    try:
+        names = os.listdir(d)
+    except OSError:
+        return
+    now = time.time()
+    for n in names:
+        if not _TEMP_NAME.fullmatch(n):
+            continue
+        p = os.path.join(d, n)
+        try:
+            if now - os.stat(p).st_mtime > CLAIM_STALE_S:
+                os.unlink(p)
+        except OSError:
+            pass
+
+
 def claim_slot(kh, t):
     """Take a free slot for the daemon of tag `t`, atomically, or return None when all MAX_LIVE_DAEMONS are held by live
-    processes. A slot held by a dead process is taken over. The claim names the pid, its start time and the tag."""
+    processes. A slot held by a dead process is taken over, under the reclaim lock. The claim names the pid, its start
+    time and the tag."""
     os.makedirs(state_dir(kh), mode=0o700, exist_ok=True)
+    _sweep_temp(state_dir(kh))
     me = {"pid": os.getpid(), "proc_start": _proc_start(os.getpid()), "tag": t}
     for _ in range(2):                                          # a second pass after clearing dead claims
         for i in range(MAX_LIVE_DAEMONS):
@@ -971,32 +1080,21 @@ def claim_slot(kh, t):
             if _claim_exclusive(p, me):
                 return p
         for i in range(MAX_LIVE_DAEMONS):
-            p = _slot_path(kh, i)
-            rec = _claim_owner(p)
-            if rec is not None and not (rec and _record_is_live(rec)):
-                try:
-                    os.unlink(p)                                # its process is gone
-                except OSError:
-                    pass
+            _reclaim_if_dead(_slot_path(kh, i))
     return None
 
 
 def _claim_store(kh, t):
-    """The per-store twin of the slot claim: one daemon per (store, key home), also in a burst. None when a live
-    process holds it."""
+    """The per-store twin of the slot claim: one daemon per (store, key home), also in a burst and over a dead claim.
+    None when a live process holds it."""
+    _sweep_temp(state_dir(kh))
     p = os.path.join(state_dir(kh), t + ".claim")
     me = {"pid": os.getpid(), "proc_start": _proc_start(os.getpid())}
     for _ in range(2):
         if _claim_exclusive(p, me):
             return p
-        # Held: a claim is never empty (written whole, then linked), so one that is not live is a dead process's.
-        rec = _claim_owner(p)
-        if rec and _record_is_live(rec):
-            return None
-        try:
-            os.unlink(p)
-        except OSError:
-            pass
+        if not _reclaim_if_dead(p):
+            return None                                         # held: live, or too young to judge
     return None
 
 

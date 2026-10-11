@@ -419,3 +419,140 @@ def test_two_claims_of_one_store_at_once_give_one(tmp_path, monkeypatch):
     finally:
         for p in won:
             hookd.release_slot(p)
+
+
+
+# ── a dead claim, reclaimed by several starters at once (AUDIT-A C-1 to C-3, 2026-10-11) ───────────────────────────
+DEAD = {"pid": 2 ** 22 + 99, "proc_start": 1}
+
+
+def _slow_reads(monkeypatch, delay=0.3):
+    """The starter in thread "slow" takes `delay` over every claim read, so it decides "dead" on a read that another
+    starter has made out of date by the time it acts: the window C-1 races in, held open. The others read at full speed."""
+    import threading
+    real = hookd._claim_owner
+
+    def slow(p):
+        rec = real(p)
+        if threading.current_thread().name == "slow":
+            time.sleep(delay)
+        return rec
+    monkeypatch.setattr(hookd, "_claim_owner", slow)
+
+
+def _at_once(n, fn, stagger=False):
+    """Run fn(0) .. fn(n-1) in n threads; thread 0 is "slow" (see _slow_reads). With `stagger`, thread 0 starts first
+    and the others 0.05 s later, so it is inside its slow read of the dead claim while they replace it: the order that
+    loses a claim on the old code, every time, not by chance. Without it, all start together at a barrier."""
+    import threading
+    out = []
+    gate = threading.Barrier(n - 1 if stagger else n)
+
+    def run(i):
+        if not (stagger and i == 0):
+            gate.wait()
+        out.append(fn(i))
+    ths = [threading.Thread(target=run, args=(i,), daemon=True, name="slow" if i == 0 else "s%d" % i) for i in range(n)]
+    if stagger:
+        ths[0].start()
+        time.sleep(0.05)
+        for t in ths[1:]:
+            t.start()
+    else:
+        for t in ths:
+            t.start()
+    for t in ths:
+        t.join(30)
+    return out
+
+
+def test_a_dead_store_claim_with_8_starters_gives_exactly_one_winner(tmp_path, monkeypatch):
+    kh = str(tmp_path / "kh")
+    os.makedirs(hookd.state_dir(kh))
+    t = "0" * 16
+    _write(os.path.join(hookd.state_dir(kh), t + ".claim"), json.dumps(DEAD))
+    _slow_reads(monkeypatch)
+    got = _at_once(8, lambda i: hookd._claim_store(kh, t), stagger=True)
+    won = [g for g in got if g]
+    assert len(got) == 8 and len(won) == 1, "%d starters won one dead store claim" % len(won)
+    rec = hookd._claim_owner(won[0])
+    assert rec and hookd._record_is_live(rec), "CONTROL: the winner's claim is the one on disk"
+
+
+def test_four_dead_slots_with_8_starters_give_no_slot_twice(tmp_path, monkeypatch):
+    kh = str(tmp_path / "kh")
+    os.makedirs(hookd.state_dir(kh))
+    for i in range(hookd.MAX_LIVE_DAEMONS):
+        _write(hookd._slot_path(kh, i), json.dumps(dict(DEAD, pid=DEAD["pid"] + i)))
+    _slow_reads(monkeypatch)
+    got = _at_once(8, lambda i: hookd.claim_slot(kh, "%016x" % i), stagger=True)
+    won = [g for g in got if g]
+    assert len(won) == len(set(won)), "a slot was won twice: %r" % sorted(won)
+    assert len(won) <= hookd.MAX_LIVE_DAEMONS
+    assert hookd.live_daemon_count(kh) == len(won), "a winner's slot is not on disk"
+
+
+def test_the_no_link_fallback_gives_one_winner_while_a_claim_is_being_written(tmp_path, monkeypatch):
+    """Without hard links the claim is created, then written. A second starter must take a young empty claim as held."""
+    kh = str(tmp_path / "kh")
+    os.makedirs(hookd.state_dir(kh))
+    monkeypatch.setattr(hookd.os, "link", lambda *a, **k: (_ for _ in ()).throw(OSError("no hard links")))
+    monkeypatch.setattr(hookd, "json", _SlowClaims(hookd.json, slot=False))
+    got = _at_once(4, lambda i: hookd._claim_store(kh, "0" * 16))
+    won = [g for g in got if g]
+    assert len(won) == 1, "%d starters won one store claim in the no-link fallback" % len(won)
+
+
+@pytest.mark.parametrize("which", ["slot", "store"])
+def test_an_old_empty_claim_is_reclaimed_and_a_fresh_one_is_not(tmp_path, which):
+    kh = str(tmp_path / "kh")
+    os.makedirs(hookd.state_dir(kh))
+    t = "0" * 16
+    paths = [hookd._slot_path(kh, i) for i in range(hookd.MAX_LIVE_DAEMONS)] if which == "slot" else         [os.path.join(hookd.state_dir(kh), t + ".claim")]
+    for p in paths:
+        open(p, "w").close()                                    # empty: a crash between the create and the write
+    claim = (lambda: hookd.claim_slot(kh, t)) if which == "slot" else (lambda: hookd._claim_store(kh, t))
+    assert claim() is None, "a fresh empty claim was taken for a dead one"
+    old = time.time() - 3600                                 # far older than CLAIM_STALE_S
+    for p in paths:
+        os.utime(p, (old, old))
+    got = claim()
+    assert got in paths, "an empty claim older than CLAIM_STALE_S was never reclaimed"
+    rec = hookd._claim_owner(got)
+    assert rec and hookd._record_is_live(rec)
+
+
+def test_an_old_stray_temp_file_of_ours_is_removed_and_nothing_else(tmp_path):
+    kh = str(tmp_path / "kh")
+    d = hookd.state_dir(kh)
+    os.makedirs(d)
+    ours = os.path.join(d, "slot-0.claim.4242.140001.0a1b2c3d.tmp")
+    fresh = os.path.join(d, "slot-1.claim.4242.140001.0a1b2c3e.tmp")
+    other = os.path.join(d, "notes.claim.4242.140001.0a1b2c3d.tmp")
+    for p in (ours, fresh, other):
+        open(p, "w").close()
+    old = time.time() - 3600                                 # far older than CLAIM_STALE_S
+    for p in (ours, other):
+        os.utime(p, (old, old))
+    p = hookd.claim_slot(kh, "0" * 16)
+    try:
+        assert not os.path.exists(ours), "an old temp file of ours was left"
+        assert os.path.exists(fresh), "a fresh temp file, maybe a starter's in flight, was removed"
+        assert os.path.exists(other), "a file of another name was removed"
+    finally:
+        hookd.release_slot(p)
+
+
+
+def test_a_starter_that_cannot_get_the_reclaim_lock_removes_nothing(tmp_path, monkeypatch):
+    """While another reclaim holds the lock past RECLAIM_WAIT_S, a dead claim is treated as held: never removed blind."""
+    kh = str(tmp_path / "kh")
+    os.makedirs(hookd.state_dir(kh))
+    p = hookd._slot_path(kh, 0)
+    _write(p, json.dumps(DEAD))
+    monkeypatch.setattr(hookd, "RECLAIM_WAIT_S", 0.2)
+    with hookd._reclaim_lock(hookd.state_dir(kh)) as held:
+        assert held, "CONTROL: the lock is taken here"
+        assert hookd._reclaim_if_dead(p) is False, "a reclaim went ahead without the lock"
+        assert os.path.exists(p), "a claim was removed without the lock"
+    assert hookd._reclaim_if_dead(p) is True and not os.path.exists(p), "CONTROL: with the lock free, the dead claim goes"
