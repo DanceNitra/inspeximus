@@ -132,6 +132,7 @@ Re-measured on feat-318 9003e4d7 (AUDIT-B, Windows, Python 3.12 and 3.14; the CP
 - **The one-reader test finds accidents in the package's own code.** It does not find deliberate evasion, such as `os.__dict__["environ"]`, `ctypes`, `exec`, or a name built with `chr()`.
 - **A long-lived process reads some settings once.** A change to your user config reaches the daemon at its next answer, and reaches the MCP server and other handles when they open the store again. `INSPEXIMUS_RECALL_INDEX` is read at the first recall.
 - **On Linux, the daemon needs a socket path of at most 100 bytes.** It tries the key home's folder, then the temp directory, then /tmp, each owned by you and of mode 0700. When none fits, the daemon does not start, the hook prints one line on stderr and takes its normal path.
+- **On a file system where locking a folder fails (some network mounts), the daemon does not take over a claim left by a daemon that died.** It writes one line on stderr, and that slot or store stays claimed until you delete the claim file in `<key home>/inspeximus/hookd/`.
 
 ## 3.17.1 - UPGRADE IF you run more than one process on a store (an MCP server beside hooks, a second session, an agent): a process that held the store open could write its old copy of a record back over another process's retire, edit, credit or in-place redaction. ACTION: upgrade, then restart every process that holds the store, such as the MCP server, and re-stamp a decision store if your prompt hook reads one (see Read-guard stamps)
 
