@@ -937,10 +937,11 @@ def _claim_exclusive(p, me) -> bool:
     3.18.0 release run's main CI, Python 3.9: 3 counted for 4; with the gap widened to 0.3 s, 0 counted in 5 of 5). Where
     the file system has no hard links, the exclusive create and write, as before."""
     tmp = "%s.%d.%d.%s.tmp" % (p, os.getpid(), threading.get_ident(), os.urandom(4).hex())
+    rec = dict(me, nonce=os.urandom(8).hex())                   # which starter wrote this claim (AUDIT-A E-4)
     fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(me, fh)
+            json.dump(rec, fh)
         try:
             os.link(tmp, p)
             return True
@@ -952,8 +953,11 @@ def _claim_exclusive(p, me) -> bool:
             except FileExistsError:
                 return False
             with os.fdopen(fd2, "w", encoding="utf-8") as fh:
-                json.dump(me, fh)
-            return True
+                json.dump(rec, fh)
+            # A WRITER STALLED PAST CLAIM_STALE_S (AUDIT-A E-4): its empty claim was taken for a crash's leftover and
+            # replaced, and its write went to a file no longer at the path. The claim at the path decides.
+            got = _claim_owner(p)
+            return isinstance(got, dict) and got.get("nonce") == rec["nonce"]
     finally:
         try:
             os.unlink(tmp)
@@ -970,47 +974,103 @@ RECLAIM_WAIT_S = 2.0
 _TEMP_NAME = None
 
 
+_NO_LOCK_SAID = []
+#: How often a starter reopens the reclaim lock when the file it locked is no longer the one at the path (AUDIT-A E-2).
+RECLAIM_REOPENS = 5
+
+
+def _try_lock(fd) -> None:
+    """Take the reclaim lock on `fd` without waiting, or raise OSError."""
+    if os.name == "nt":
+        import msvcrt
+        os.lseek(fd, 0, 0)
+        msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+    else:
+        import fcntl
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _unlock(fd) -> None:
+    try:
+        if os.name == "nt":
+            import msvcrt
+            os.lseek(fd, 0, 0)
+            msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(fd, fcntl.LOCK_UN)
+    except OSError:
+        pass
+
+
+def _lock_busy(e) -> bool:
+    """Whether an OSError from _try_lock means another holder (AUDIT-A E-1). Anything else, ENOLCK from a file system
+    without locks for one, means the lock cannot be taken here at all."""
+    import errno
+    return e.errno in (errno.EWOULDBLOCK, errno.EAGAIN, errno.EACCES)
+
+
+def _notice_no_lock(d, e):
+    """One line on stderr, once per process, when the reclaim lock cannot be taken on this file system."""
+    if not _NO_LOCK_SAID:
+        _NO_LOCK_SAID.append(1)
+        sys.stderr.write("[inspeximus] hookd: no file lock in %s (%s); a claim left by a dead daemon is not taken over "
+                         "here, so it holds its slot until removed" % (d, e) + chr(10))
+
+
 @contextlib.contextmanager
 def _reclaim_lock(d):
     """THE RECLAIM OF A DEAD CLAIM IS SERIALIZED (3.18, AUDIT-A C-1). It was "read, decide dead, unlink", and a starter
     that decided on an old read removed the claim another starter had just made: with a dead claim and 8 starters at
     once, more than one won the store claim in 103 of 120 rounds, and two shared a slot in 65 of 120. The lock is the
     kernel's (flock, or msvcrt on Windows), not a lock file: it ends with its holder, so a starter that dies holding it
-    leaves nothing to time out and no stale lock to take over, which would race the same way one level up. Yields True
-    when held, False when another reclaim did not finish within RECLAIM_WAIT_S."""
-    fd = os.open(os.path.join(d, "reclaim.lock"), os.O_RDWR | os.O_CREAT, 0o600)
-    held = False
+    leaves nothing to time out and no stale lock to take over, which would race the same way one level up.
+
+    The lock counts only on the file that is at the path: a file locked after the path was removed or replaced is let
+    go and the path opened again, at most RECLAIM_REOPENS times (AUDIT-A E-2). When the file system has no locks
+    (ENOLCK and the like), nothing is taken over, with one line on stderr: a lock file with an age limit could give
+    two winners, and not reclaiming cannot (E-1). Yields True when held, False when another reclaim did not finish
+    within RECLAIM_WAIT_S or no lock can be taken here."""
+    # ON POSIX THE LOCK IS ON THE STATE FOLDER ITSELF (AUDIT-A E-2). A lock file can be removed while it is held, and
+    # the next starter then makes and locks a new one: with a 0.5 ms deleter, two winners in 18 of 60 rounds, inode
+    # check or not. A folder holding claims cannot be removed. On Windows a file another handle has open cannot be
+    # removed either, so reclaim.lock is the lock there.
+    path = os.path.join(d, "reclaim.lock") if os.name == "nt" else d
+    deadline = time.monotonic() + RECLAIM_WAIT_S
+    fd, held = None, False
     try:
-        deadline = time.monotonic() + RECLAIM_WAIT_S
-        while True:
-            try:
-                if os.name == "nt":
-                    import msvcrt
-                    os.lseek(fd, 0, 0)
-                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
-                else:
-                    import fcntl
-                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                held = True
-                break
-            except OSError:
-                if time.monotonic() >= deadline:
+        for _ in range(RECLAIM_REOPENS):
+            fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600) if os.name == "nt" else os.open(path, os.O_RDONLY)
+            while True:
+                try:
+                    _try_lock(fd)
+                    held = True
                     break
-                time.sleep(0.005)
+                except OSError as e:
+                    if not _lock_busy(e):
+                        _notice_no_lock(d, e)
+                        break
+                    if time.monotonic() >= deadline:
+                        break
+                    time.sleep(0.005)
+            if not held:
+                break
+            try:
+                at, mine = os.stat(path), os.fstat(fd)
+                same = (at.st_ino, at.st_dev) == (mine.st_ino, mine.st_dev)
+            except OSError:
+                same = False
+            if same:
+                break
+            _unlock(fd)                                         # a file no longer at the path: let it go, open again
+            os.close(fd)
+            fd, held = None, False
         yield held
     finally:
-        if held:
-            try:
-                if os.name == "nt":
-                    import msvcrt
-                    os.lseek(fd, 0, 0)
-                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
-                else:
-                    import fcntl
-                    fcntl.flock(fd, fcntl.LOCK_UN)
-            except OSError:
-                pass
-        os.close(fd)
+        if fd is not None:
+            if held:
+                _unlock(fd)
+            os.close(fd)
 
 
 def _claim_dead(p) -> bool:

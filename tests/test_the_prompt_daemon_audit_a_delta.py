@@ -151,7 +151,9 @@ def test_every_answer_prints_the_notices_a_fresh_process_prints(project):
 #: Module-level containers that are not once-per-process state: caches keyed by their inputs, or state the daemon
 #: handles itself. Anything else that is a module-level set or list must be in hookd.PROCESS_STATE.
 #: hookd._NO_ADDRESS_SAID (3.18): its notice prints in the hook's own process, from maybe_start, never in an answer.
-NOT_PROCESS_STATE = {("claude_code", "_LAST_STORES"), ("claude_code", "_FAST_EXIT"), ("hookd", "_NO_ADDRESS_SAID")}
+#: hookd._NO_LOCK_SAID (3.18): its notice prints from a claim, in serve() before any answer, never in an answer.
+NOT_PROCESS_STATE = {("claude_code", "_LAST_STORES"), ("claude_code", "_FAST_EXIT"), ("hookd", "_NO_ADDRESS_SAID"),
+                     ("hookd", "_NO_LOCK_SAID")}
 
 
 def test_every_once_per_process_set_is_reset():
@@ -339,10 +341,20 @@ def test_a_silent_connection_gives_its_slot_back_within_the_read_timeout(project
 
 
 
+def _writing_the_claim_itself():
+    """Whether the json.dump being made writes the claim file a reader can see, not a private temp file. The file
+    object cannot say: os.fdopen() names it by its fd number. So the writer's frame decides: _claim_exclusive writes its
+    temp file first (it has `tmp` and no `fd2`) and, in the no-link fallback, the claim itself (`fd2`); code without a
+    temp file (3d6b0348) writes the claim directly."""
+    import sys as _sys
+    caller = _sys._getframe(2).f_locals
+    return "fd2" in caller or "tmp" not in caller
+
+
 class _SlowClaims:
     """hookd.json with a slow dump for one kind of claim, to hold open the gap between creating a claim file and writing
-    it (3.18.0 release run, main CI, Python 3.9: a burst counted 3 daemons for 4). The long wait is for a write into the
-    claim file itself, where a reader can see it empty; a write into a private temp file does not wait, so a starter that
+    it (3.18.0 release run, main CI, Python 3.9: a burst counted 3 daemons for 4). The wait is for a write into the claim
+    file itself, where a reader can see it empty; a write into a private temp file does not wait, so a starter that
     writes there first does not come back late enough to hide the gap."""
 
     def __init__(self, real, slot):
@@ -352,9 +364,8 @@ class _SlowClaims:
         return getattr(self._real, n)
 
     def dump(self, obj, fh, *a, **k):
-        if isinstance(obj, dict) and "pid" in obj and ("tag" in obj) == self._slot:
-            if not str(getattr(fh, "name", "")).endswith(".tmp"):
-                time.sleep(0.3)
+        if isinstance(obj, dict) and "pid" in obj and ("tag" in obj) == self._slot and _writing_the_claim_itself():
+            time.sleep(0.3)
         return self._real.dump(obj, fh, *a, **k)
 
 
@@ -556,3 +567,125 @@ def test_a_starter_that_cannot_get_the_reclaim_lock_removes_nothing(tmp_path, mo
         assert hookd._reclaim_if_dead(p) is False, "a reclaim went ahead without the lock"
         assert os.path.exists(p), "a claim was removed without the lock"
     assert hookd._reclaim_if_dead(p) is True and not os.path.exists(p), "CONTROL: with the lock free, the dead claim goes"
+
+
+
+# ── the reclaim lock's edges (AUDIT-A E-1, E-2, E-4, 2026-10-11) ───────────────────────────────────────────────────
+def _patch_platform_lock(monkeypatch, wrap):
+    """Wrap the platform's lock call (fcntl.flock, or msvcrt.locking on Windows) with `wrap(real, fd, *args)`."""
+    if os.name == "nt":
+        import msvcrt as mod
+        name = "locking"
+    else:
+        import fcntl as mod
+        name = "flock"
+    real = getattr(mod, name)
+    monkeypatch.setattr(mod, name, lambda fd, *a: wrap(real, fd, *a))
+
+
+def test_a_file_system_without_locks_takes_nothing_over_and_says_so_once(tmp_path, monkeypatch, capsys):
+    """E-1: ENOLCK is not "busy". The starter does not retry it for RECLAIM_WAIT_S, removes nothing, and says why."""
+    import errno
+
+    def no_locks(real, fd, *a):
+        raise OSError(errno.ENOLCK, "No locks available")
+    kh = str(tmp_path / "kh")
+    os.makedirs(hookd.state_dir(kh))
+    p = hookd._slot_path(kh, 0)
+    _write(p, json.dumps(DEAD))
+    _patch_platform_lock(monkeypatch, no_locks)
+    monkeypatch.setattr(hookd, "_NO_LOCK_SAID", [], raising=False)
+    t0 = time.monotonic()
+    assert hookd._reclaim_if_dead(p) is False
+    took = time.monotonic() - t0
+    assert os.path.exists(p), "a claim was removed without a lock"
+    assert took < hookd.RECLAIM_WAIT_S / 2, "ENOLCK was retried as if another holder had the lock (%.2f s)" % took
+    hookd._reclaim_if_dead(p)
+    err = capsys.readouterr().err
+    assert err.count("no file lock in") == 1, "the starter said %d times that it cannot lock: %r" % (
+        err.count("no file lock in"), err)
+
+
+def test_removing_reclaim_lock_while_it_is_held_does_not_let_a_second_starter_in(tmp_path, monkeypatch):
+    """E-2: a lock file can be removed while it is held, and the next starter then made and locked a new one: with a
+    0.5 ms deleter, two winners in 18 of 60 rounds. On POSIX the lock is on the state folder; on Windows a file another
+    handle has open cannot be removed. Either way a second starter does not get the lock while the first holds it."""
+    import threading
+    kh = str(tmp_path / "kh")
+    d = hookd.state_dir(kh)
+    os.makedirs(d)
+    monkeypatch.setattr(hookd, "RECLAIM_WAIT_S", 0.3)
+    second = {}
+    with hookd._reclaim_lock(d) as held:
+        assert held, "CONTROL: the first starter holds the lock"
+        try:
+            os.unlink(os.path.join(d, "reclaim.lock"))         # a cleanup that removes the lock file while it is held
+        except OSError:
+            pass                                                # Windows: the open file cannot be removed
+
+        def other():
+            with hookd._reclaim_lock(d) as h:
+                second["held"] = h
+        t = threading.Thread(target=other, daemon=True)
+        t.start()
+        t.join(5)
+    assert second.get("held") is False, "a second starter got the reclaim lock while the first held it"
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX: the lock is on the state folder; Windows locks reclaim.lock")
+def test_a_state_folder_replaced_before_the_lock_is_opened_again(tmp_path, monkeypatch):
+    """The lock counts only on the folder at the path: one replaced between the open and the lock is let go and the
+    path opened again, or a second starter could lock the new folder while the first held the old one."""
+    import fcntl
+    kh = str(tmp_path / "kh")
+    d = hookd.state_dir(kh)
+    os.makedirs(d)
+    replaced = []
+
+    def replace_first(real, fd, *a):
+        if not replaced:
+            replaced.append(1)
+            os.rename(d, d + ".old")
+            os.makedirs(d)                                      # another folder at the path, after this one was opened
+        return real(fd, *a)
+    _patch_platform_lock(monkeypatch, replace_first)
+    with hookd._reclaim_lock(d) as held:
+        assert held and replaced, "CONTROL: the lock was taken after the folder at the path was replaced"
+        monkeypatch.undo()
+        other = os.open(d, os.O_RDONLY)
+        try:
+            with pytest.raises(OSError):
+                fcntl.flock(other, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        finally:
+            os.close(other)
+
+
+def test_a_fallback_writer_stalled_past_the_age_rule_does_not_also_win(tmp_path, monkeypatch):
+    """E-4: without hard links, A creates the claim and stalls before writing it. Past CLAIM_STALE_S, B takes the empty
+    claim for a crash's leftover and makes its own; A's write then lands in a file no longer at the path. One winner."""
+    import threading
+    kh = str(tmp_path / "kh")
+    os.makedirs(hookd.state_dir(kh))
+    monkeypatch.setattr(hookd.os, "link", lambda *a, **k: (_ for _ in ()).throw(OSError("no hard links")))
+    monkeypatch.setattr(hookd, "CLAIM_STALE_S", 0.2)
+    real = hookd.json
+
+    class StallA:
+        def __getattr__(self, n):
+            return getattr(real, n)
+
+        def dump(self, obj, fh, *a, **k):
+            if threading.current_thread().name == "A" and _writing_the_claim_itself():
+                time.sleep(0.6)
+            return real.dump(obj, fh, *a, **k)
+    monkeypatch.setattr(hookd, "json", StallA())
+    got = {}
+    ta = threading.Thread(target=lambda: got.__setitem__("A", hookd._claim_store(kh, "0" * 16)), name="A", daemon=True)
+    tb = threading.Thread(target=lambda: got.__setitem__("B", hookd._claim_store(kh, "0" * 16)), name="B", daemon=True)
+    ta.start()
+    time.sleep(0.35)                                            # past CLAIM_STALE_S, while A is stalled
+    tb.start()
+    ta.join(10)
+    tb.join(10)
+    won = [k for k, v in got.items() if v]
+    assert len(got) == 2 and len(won) == 1, "winners: %r" % got

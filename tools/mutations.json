@@ -12699,5 +12699,75 @@
    "tests/test_the_prompt_daemon_audit_a_delta.py"
   ],
   "platform": "posix"
+ },
+ {
+  "name": "3.18 E-1: every lock error is read as busy",
+  "file": "inspeximus/hookd.py",
+  "old": "    return e.errno in (errno.EWOULDBLOCK, errno.EAGAIN, errno.EACCES)",
+  "new": "    return True",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 E-1: no notice when the file system has no locks",
+  "file": "inspeximus/hookd.py",
+  "old": "                        _notice_no_lock(d, e)\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 E-1: the no-lock notice prints every time",
+  "file": "inspeximus/hookd.py",
+  "old": "    if not _NO_LOCK_SAID:\n        _NO_LOCK_SAID.append(1)\n",
+  "new": "    if True:\n        _NO_LOCK_SAID.append(1)\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 E-2: a lock on a file no longer at the path counts",
+  "file": "inspeximus/hookd.py",
+  "old": "            if same:\n                break",
+  "new": "            if True:\n                break",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 E-4: a stalled fallback writer always reports a win",
+  "file": "inspeximus/hookd.py",
+  "old": "            return isinstance(got, dict) and got.get(\"nonce\") == rec[\"nonce\"]",
+  "new": "            return True",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 E-4: every claim carries the same nonce",
+  "file": "inspeximus/hookd.py",
+  "old": "    rec = dict(me, nonce=os.urandom(8).hex())",
+  "new": "    rec = dict(me, nonce=\"same\")",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 E-2: on POSIX the lock is on reclaim.lock, which can be removed while held",
+  "file": "inspeximus/hookd.py",
+  "old": "    path = os.path.join(d, \"reclaim.lock\") if os.name == \"nt\" else d\n    deadline = time.monotonic() + RECLAIM_WAIT_S\n    fd, held = None, False\n    try:\n        for _ in range(RECLAIM_REOPENS):\n            fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600) if os.name == \"nt\" else os.open(path, os.O_RDONLY)\n",
+  "new": "    path = os.path.join(d, \"reclaim.lock\")\n    deadline = time.monotonic() + RECLAIM_WAIT_S\n    fd, held = None, False\n    try:\n        for _ in range(RECLAIM_REOPENS):\n            fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_delta.py"
+  ],
+  "platform": "posix"
  }
 ]
