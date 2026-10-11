@@ -299,10 +299,14 @@ def test_two_starts_of_one_store_make_one_daemon(project, tmp_path, monkeypatch)
     res = {}
     ta = threading.Thread(target=lambda: res.__setitem__("a", a.serve(warm_cwd=proj)), daemon=True)
     ta.start()
+    # READY MEANS SERVING, NOT A SLOT (3.18.0 release run, main CI, 2026-10-11). The slot count reached 1 when a held its
+    # slot but not yet its store claim; b then took the store and served, a got "taken", and b's serve() ended
+    # "stopped" at its idle limit. The record is written after both claims and the bind, so a live record is ready.
     for _ in range(200):
-        if hookd.live_daemon_count(kh) == 1:
+        if hookd.live_daemon(sp) and hookd._read_token(a.kh, a.tag):
             break
         time.sleep(0.05)
+    assert hookd.live_daemon(sp), "CONTROL: a is serving before b starts"
     try:
         assert b.serve(warm_cwd=proj) == "taken"
         assert hookd.live_daemon_count(kh) == 1

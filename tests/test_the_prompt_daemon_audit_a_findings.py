@@ -38,6 +38,22 @@ def _start(sp, proj, **kw):
     return d, th
 
 
+def _wait_idle(d, timeout=10.0):
+    """Until no connection is in flight: every connection permit can be taken. A fixed sleep stood in for this, and
+    under load the abandoned answers could still hold the answer lock when the next ask came (3.18)."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        got = 0
+        while got < hookd.MAX_CONNECTIONS and d.conns.acquire(blocking=False):
+            got += 1
+        for _ in range(got):
+            d.conns.release()
+        if got == hookd.MAX_CONNECTIONS:
+            return
+        time.sleep(0.02)
+    raise AssertionError("CONTROL: the daemon still had connections in flight after %.0f s" % timeout)
+
+
 def _stop(d, th):
     d.stop = True
     d._wake()
@@ -526,7 +542,7 @@ def test_a_slow_daemon_is_skipped_after_repeated_timeouts(project, daemon, monke
     t = time.monotonic()
     assert hookd.ask(_ev(proj), sp, timeout=0.15) is None and hookd.LAST["outcome"] == "backoff"
     assert time.monotonic() - t < 0.05
-    time.sleep(0.6)                                             # the daemon finishes the abandoned answers
+    _wait_idle(daemon)                                          # the daemon finishes the abandoned answers
     # The back-off ran out: the count stays on disk, its window is over. Only a served answer may clear it.
     _write(hookd._fails_path(daemon.kh, daemon.tag), json.dumps({"n": hookd.BACKOFF_AFTER, "until": time.time() - 1}))
     monkeypatch.setattr(hookd.Daemon, "answer", lambda self, req: {"ok": True, "out": "fast"})
