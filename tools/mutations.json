@@ -11212,8 +11212,8 @@
  {
   "name": "3.18 daemon D-10: the listener binds before the state directory exists",
   "file": "inspeximus/hookd.py",
-  "old": "            return \"stopped\"                                    # asked to stop while it was being launched: no warm-up\n        self._make_state_dir()\n",
-  "new": "            return \"stopped\"                                    # asked to stop while it was being launched: no warm-up\n",
+  "old": "            return \"no-address\"                                 # no socket path fits here: nothing to listen on (3.18)\n        self._make_state_dir()\n",
+  "new": "            return \"no-address\"                                 # no socket path fits here: nothing to listen on (3.18)\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ],
@@ -11222,8 +11222,8 @@
  {
   "name": "3.18 daemon: an exception in the answer leaves the streams redirected",
   "file": "inspeximus/hookd.py",
-  "old": "count_foreign=counted_once)\n        finally:\n            sys.stdout, sys.stderr = saved\n",
-  "new": "count_foreign=counted_once)\n        finally:\n            pass\n",
+  "old": "count_foreign=counted_once)\n            finally:\n                sys.stdout, sys.stderr = saved\n",
+  "new": "count_foreign=counted_once)\n            finally:\n                pass\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -11339,8 +11339,8 @@
  {
   "name": "3.18 daemon E-2: once-per-process notices are not reset per answer",
   "file": "inspeximus/hookd.py",
-  "old": "            reset_process_state()\n            with warnings",
-  "new": "            with warnings",
+  "old": "                reset_process_state()\n                with warnings",
+  "new": "                with warnings",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_delta.py"
   ]
@@ -12398,6 +12398,94 @@
   "new": "                self._set_vec(r, list(self.embed(r[\"text\"]))); done += 1\n",
   "tests": [
    "tests/test_a_truncated_embedding_is_marked_on_the_record.py"
+  ]
+ },
+ {
+  "name": "3.18 sock: the fallback's own length is not checked",
+  "file": "inspeximus/hookd.py",
+  "old": "        if len(p.encode(\"utf-8\")) >= SOCK_PATH_MAX:\n            continue",
+  "new": "        if False:\n            continue",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sock: no /tmp candidate",
+  "file": "inspeximus/hookd.py",
+  "old": "    for root in (tempfile.gettempdir(), \"/tmp\"):",
+  "new": "    for root in (tempfile.gettempdir(),):",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sock: a path that does not fit is returned anyway",
+  "file": "inspeximus/hookd.py",
+  "old": "private directory\" % d)\n        return p\n    return None\n",
+  "new": "private directory\" % d)\n        return p\n    return p\n",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sock: a daemon without an address serves anyway",
+  "file": "inspeximus/hookd.py",
+  "old": "        if self.addr is None:\n            return \"no-address\"",
+  "new": "        if False:\n            return \"no-address\"",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sock: maybe_start starts a daemon without an address",
+  "file": "inspeximus/hookd.py",
+  "old": "            _notice_no_address()                                # once per process; the hook takes its normal path\n            return \"no-address\"",
+  "new": "            pass",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 sock: the no-address notice prints every time",
+  "file": "inspeximus/hookd.py",
+  "old": "    if not _NO_ADDRESS_SAID:\n        _NO_ADDRESS_SAID.append(1)\n",
+  "new": "    if True:\n        _NO_ADDRESS_SAID.append(1)\n",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 state: the warm-up swaps the streams without the lock",
+  "file": "inspeximus/hookd.py",
+  "old": "        with _PROCESS_STATE:                                    # the streams are the process's",
+  "new": "        if True:                                                # the streams are the process's",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ]
+ },
+ {
+  "name": "3.18 state: the bind sets the umask without the lock",
+  "file": "inspeximus/hookd.py",
+  "old": "            with _PROCESS_STATE:                                # the umask is the process's",
+  "new": "            if True:                                            # the umask is the process's",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.18 state: an answer swaps the streams without the lock",
+  "file": "inspeximus/hookd.py",
+  "old": "        with _PROCESS_STATE:                                # the streams and _LAST_STORES are the process's",
+  "new": "        if True:                                            # the streams and _LAST_STORES are the process's",
+  "tests": [
+   "tests/test_the_daemon_socket_address_always_fits.py"
   ]
  }
 ]

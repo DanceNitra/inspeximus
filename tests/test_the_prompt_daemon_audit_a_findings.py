@@ -185,11 +185,18 @@ def test_state_files_and_socket_are_private(project, daemon):
 def test_a_shared_socket_directory_is_refused(tmp_path, monkeypatch):
     import tempfile
     monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+    # A limit this test's own paths fit, wherever pytest puts tmp_path: in CI the basetemp is long enough that the
+    # temp-directory candidate would be skipped as too long, and the refusal under test never reached (3.18).
+    monkeypatch.setattr(hookd, "SOCK_PATH_MAX", 4000)
     d = tmp_path / ("inspeximus-hookd-%d" % os.getuid())
     d.mkdir()
     os.chmod(str(d), 0o777)
+    kh = str(tmp_path / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250)
+             / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250)
+             / ("k" * 250) / ("k" * 250))
+    assert len(os.path.join(hookd.state_dir(kh), "0" * 16 + ".sock").encode()) >= hookd.SOCK_PATH_MAX,         "CONTROL: the key home's path does not fit, so the temp directory is the candidate"
     with pytest.raises(PermissionError):
-        hookd.address(str(tmp_path / ("k" * 120)), "0" * 16)
+        hookd.address(kh, "0" * 16)
 
 
 # ── stale state ────────────────────────────────────────────────────────────────────────────────────────────────

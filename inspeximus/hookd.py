@@ -139,21 +139,33 @@ def _read_record(kh, t):
         return None
 
 
+#: The longest socket path used, in bytes. AF_UNIX takes 107 on Linux and 103 on macOS, before the terminating NUL.
+SOCK_PATH_MAX = 100
+
+
 def address(kh, t):
     """A named pipe on Windows. Elsewhere a socket in the key home, or, when that path is too long for AF_UNIX, in a
-    per-user 0700 directory under the temp directory whose ownership is checked."""
+    per-user 0700 directory under the temp directory, then under /tmp, whose ownership is checked. None when no
+    candidate fits SOCK_PATH_MAX (3.18): the daemon does not start and the hook takes its normal path. Measured
+    2026-10-11 in CI: the test sandbox's temp directory was long enough that the fallback did not fit either, the bind
+    raised "AF_UNIX path too long", and the daemon's tests failed on Linux."""
     if os.name == "nt":
         return r"\\.\pipe\inspeximus-hookd-" + t
     p = os.path.join(state_dir(kh), t + ".sock")
-    if len(p.encode("utf-8")) < 100:
+    if len(p.encode("utf-8")) < SOCK_PATH_MAX:
         return p
     import tempfile
-    d = os.path.join(tempfile.gettempdir(), "inspeximus-hookd-%d" % os.getuid())
-    os.makedirs(d, mode=0o700, exist_ok=True)
-    st = os.stat(d)
-    if st.st_uid != os.getuid() or (st.st_mode & 0o077):
-        raise PermissionError("%s is not this user's private directory" % d)
-    return os.path.join(d, t + ".sock")
+    for root in (tempfile.gettempdir(), "/tmp"):
+        d = os.path.join(root, "inspeximus-hookd-%d" % os.getuid())
+        p = os.path.join(d, t + ".sock")
+        if len(p.encode("utf-8")) >= SOCK_PATH_MAX:
+            continue                                            # too long to bind: the next candidate
+        os.makedirs(d, mode=0o700, exist_ok=True)
+        st = os.stat(d)
+        if st.st_uid != os.getuid() or (st.st_mode & 0o077):
+            raise PermissionError("%s is not this user's private directory" % d)
+        return p
+    return None
 
 
 # ── what must match between the hook and the daemon ────────────────────────────────────────────────────────────
@@ -408,7 +420,11 @@ def ask(ev, store_path, timeout=REPLY_TIMEOUT_S):
         if paths is None:
             LAST["outcome"] = "relative"                        # a relative path variable: today's path (E-1)
             return None
-        conn = _connect(address(kh, t), min(deadline, time.monotonic() + CONNECT_TIMEOUT_S))
+        addr = address(kh, t)
+        if addr is None:
+            LAST["outcome"] = "no-address"                      # no socket path fits here (3.18)
+            return None
+        conn = _connect(addr, min(deadline, time.monotonic() + CONNECT_TIMEOUT_S))
         if conn is None:
             LAST["outcome"] = "absent"
             return None
@@ -470,6 +486,17 @@ def enabled():
     return False
 
 
+_NO_ADDRESS_SAID = []
+
+
+def _notice_no_address():
+    """One line on stderr, once per process, when no socket path fits (3.18)."""
+    if not _NO_ADDRESS_SAID:
+        _NO_ADDRESS_SAID.append(1)
+        sys.stderr.write("[inspeximus] hookd: no socket path shorter than %d bytes here (the key home, the temp "
+                         "directory and /tmp are too long); the prompt daemon does not start" % SOCK_PATH_MAX + chr(10))
+
+
 def maybe_start(cwd, store_path) -> str:
     """Start a daemon for `store_path` when none answers. Rate-limited per store, the attempt recorded before the start,
     the pid merged after it, through `claude_code._start_detached` (3.16.4's launch rules). Never raises."""
@@ -494,6 +521,9 @@ def maybe_start(cwd, store_path) -> str:
             return "unsupported"                                # no start time here: no daemon is ever live (F-1)
         if live_daemon_count(key_home_for(store_path)) >= MAX_LIVE_DAEMONS:
             return "limit"
+        if address(key_home_for(store_path), tag(store_path, key_home_for(store_path))) is None:
+            _notice_no_address()                                # once per process; the hook takes its normal path
+            return "no-address"
         record = {"last_attempt": now, "interpreter": sys.executable}
         write_atomic(state, json.dumps(record))
         # The state directory is the daemon's working directory, so it holds no project folder open (AUDIT-A D-4); the
@@ -524,6 +554,15 @@ def _drop_handle(m) -> None:
         m._row_snapshot = None
     except Exception:                                           # noqa: BLE001 -- a failure here costs memory only
         pass
+
+
+#: THE STREAMS AND THE UMASK ARE THE PROCESS'S (3.18). A daemon swaps sys.stdout and sys.stderr around its warm-up and
+#: each answer, and sets the umask around the bind. Two daemons serving in one process (the tests do; a daemon process
+#: serves one) interleaved those swaps. Measured in WSL: sys.stdout stayed a StringIO after 8 of 10 rounds, and the
+#: umask stayed 0177 after 1 of 10, so every folder the process made after that had no execute bit (CI, 2026-10-11: 40
+#: setup errors, "Permission denied" inside a test's own tmp_path). One daemon at a time changes them and restores
+#: what it found.
+_PROCESS_STATE = threading.RLock()
 
 
 class Daemon:
@@ -621,20 +660,21 @@ class Daemon:
         # stderr are still redirected for the length of the answer, which is sound only while the accept loop is the one
         # thread that writes to them (the watchdog writes nothing).
         out, err = io.StringIO(), io.StringIO()
-        saved = sys.stdout, sys.stderr
-        try:
-            sys.stdout, sys.stderr = out, err
-            # A FRESH HOOK IS A FRESH PROCESS (AUDIT-A E-2). The notices the library prints once per process, and the
-            # warnings Python shows once per place, were spent by the first answer or the warm-up and never reached a
-            # later hook. They are reset here, so every answer prints what a fresh process would.
-            reset_process_state()
-            with warnings.catch_warnings():                     # entering resets the shown-once registries
-                cc.recall(ev, store=held_store, decision_store=held_decisions, count_foreign=counted_once)
-        finally:
-            sys.stdout, sys.stderr = saved
-        foreign = sum(n for _p, _e, n in cc._LAST_STORES)
-        cc._LAST_STORES.clear()
-        return {"ok": True, "out": out.getvalue(), "err": err.getvalue(), "foreign": foreign}
+        with _PROCESS_STATE:                                # the streams and _LAST_STORES are the process's
+            saved = sys.stdout, sys.stderr
+            try:
+                sys.stdout, sys.stderr = out, err
+                # A FRESH HOOK IS A FRESH PROCESS (AUDIT-A E-2). The notices the library prints once per process, and the
+                # warnings Python shows once per place, were spent by the first answer or the warm-up and never reached a
+                # later hook. They are reset here, so every answer prints what a fresh process would.
+                reset_process_state()
+                with warnings.catch_warnings():                     # entering resets the shown-once registries
+                    cc.recall(ev, store=held_store, decision_store=held_decisions, count_foreign=counted_once)
+            finally:
+                sys.stdout, sys.stderr = saved
+            foreign = sum(n for _p, _e, n in cc._LAST_STORES)
+            cc._LAST_STORES.clear()
+            return {"ok": True, "out": out.getvalue(), "err": err.getvalue(), "foreign": foreign}
 
     # -- the channel ------------------------------------------------------------------------------------------------
     def _serve_one(self, conn):
@@ -738,6 +778,8 @@ class Daemon:
         warm_cwd = warm_cwd or os.getcwd()
         if stop_requested(self.kh, self.started_at):
             return "stopped"                                    # asked to stop while it was being launched: no warm-up
+        if self.addr is None:
+            return "no-address"                                 # no socket path fits here: nothing to listen on (3.18)
         self._make_state_dir()
         # A SLOT AND THE STORE, CLAIMED BEFORE THE WARM-UP (AUDIT-A F-2). The record is written after the warm-up, so a
         # burst of starts saw no daemon and no count, and six starts made six daemons. Both claims are O_EXCL files.
@@ -757,26 +799,28 @@ class Daemon:
     def _serve_claimed(self, warm_cwd):
         from multiprocessing.connection import Listener
         _clear_stale(self.kh, self.tag)
-        saved = sys.stdout, sys.stderr
-        try:
-            # What the warm-up prints is nobody's answer: discarded, and the once-per-process state it spent is reset
-            # before every answer (E-2).
-            sys.stdout = sys.stderr = io.StringIO()
-            self.warm(warm_cwd)
-        except Exception:                                       # noqa: BLE001 -- a cold first answer is only slower
-            pass
-        finally:
-            sys.stdout, sys.stderr = saved
+        with _PROCESS_STATE:                                    # the streams are the process's
+            saved = sys.stdout, sys.stderr
+            try:
+                # What the warm-up prints is nobody's answer: discarded, and the once-per-process state it spent is
+                # reset before every answer (E-2).
+                sys.stdout = sys.stderr = io.StringIO()
+                self.warm(warm_cwd)
+            except Exception:                                   # noqa: BLE001 -- a cold first answer is only slower
+                pass
+            finally:
+                sys.stdout, sys.stderr = saved
         if os.name == "nt":
             listener = _OwnerPipeListener(self.addr)
         else:
             if os.path.exists(self.addr):
                 os.unlink(self.addr)
-            old = os.umask(0o177)                               # the socket is 0600 from its creation
-            try:
-                listener = Listener(self.addr, family="AF_UNIX")
-            finally:
-                os.umask(old)
+            with _PROCESS_STATE:                                # the umask is the process's
+                old = os.umask(0o177)                           # the socket is 0600 from its creation
+                try:
+                    listener = Listener(self.addr, family="AF_UNIX")
+                finally:
+                    os.umask(old)
             os.chmod(self.addr, 0o600)
         self._write_files()
         threading.Thread(target=self._watchdog, daemon=True).start()

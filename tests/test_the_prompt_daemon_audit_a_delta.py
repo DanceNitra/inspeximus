@@ -150,7 +150,8 @@ def test_every_answer_prints_the_notices_a_fresh_process_prints(project):
 
 #: Module-level containers that are not once-per-process state: caches keyed by their inputs, or state the daemon
 #: handles itself. Anything else that is a module-level set or list must be in hookd.PROCESS_STATE.
-NOT_PROCESS_STATE = {("claude_code", "_LAST_STORES"), ("claude_code", "_FAST_EXIT")}
+#: hookd._NO_ADDRESS_SAID (3.18): its notice prints in the hook's own process, from maybe_start, never in an answer.
+NOT_PROCESS_STATE = {("claude_code", "_LAST_STORES"), ("claude_code", "_FAST_EXIT"), ("hookd", "_NO_ADDRESS_SAID")}
 
 
 def test_every_once_per_process_set_is_reset():
