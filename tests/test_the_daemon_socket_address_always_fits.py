@@ -237,3 +237,80 @@ def test_two_daemons_answering_together_give_back_the_streams(project, tmp_path,
             "two daemons answering in one process left sys.stdout as %r" % type(sys.stdout).__name__
     finally:
         sys.stdout, sys.stderr = real_out, real_err
+
+
+def test_three_hook_runs_with_no_address_print_one_line(project, monkeypatch, capsys):
+    """AUDIT-A V-1: maybe_start returned before it wrote its attempt record, so every hook run, a new process each
+    time, printed the line again. Each run here starts with a fresh once-per-process flag, as a new process would."""
+    proj, sp = project
+    monkeypatch.setattr(hookd, "address", lambda kh, t: None)
+    started = []
+    monkeypatch.setattr(cc, "_start_detached", lambda *a: started.append(a))
+    outcomes = []
+    with switch_on():
+        for _ in range(3):
+            monkeypatch.setattr(hookd, "_NO_ADDRESS_SAID", [])
+            outcomes.append(hookd.maybe_start(proj, sp))
+    err = capsys.readouterr().err
+    assert outcomes[0] == "no-address", outcomes
+    assert err.count("no socket path of at most") == 1, "3 hook runs printed %d lines" % err.count("no socket path")
+    assert not started
+
+
+def _private(d):
+    os.makedirs(d, exist_ok=True)
+    os.chmod(d, 0o700)
+
+
+@POSIX
+def test_a_foreign_last_folder_is_not_used_when_an_earlier_one_is_usable_or_at_all(project, tmp_path, monkeypatch, capsys):
+    """AUDIT-A V-2: a candidate folder that is not this user's, or not 0700, is skipped and never changed."""
+    proj, sp = project
+    uid = "inspeximus-hookd-%d" % os.getuid()
+    t_root, last_root = str(tmp_path / "t"), str(tmp_path / "last")
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: t_root)
+    monkeypatch.setattr(hookd, "_LAST_RESORT_ROOT", last_root)
+    monkeypatch.setattr(hookd, "SOCK_PATH_MAX", 4000)          # this test's paths fit, wherever pytest puts tmp_path
+    kh = str(tmp_path / "/".join(["k" * 250] * 16))
+    monkeypatch.setattr(hookd, "key_home_for", lambda s: kh)
+    assert len(os.path.join(hookd.state_dir(kh), TAG + ".sock").encode()) > hookd.SOCK_PATH_MAX, \
+        "CONTROL: the key home's path does not fit"
+    shared_last = os.path.join(last_root, uid)
+    os.makedirs(shared_last)
+    os.chmod(shared_last, 0o777)
+    # An earlier candidate that is usable: it is used, and the shared last folder is left as it is.
+    assert hookd.address(kh, TAG) == os.path.join(t_root, uid, TAG + ".sock")
+    # The earlier folder now belongs to someone else (stat says another uid): nothing is usable.
+    foreign = os.path.join(t_root, uid)
+    real_stat = os.stat
+    monkeypatch.setattr(hookd.os, "stat", lambda d, *a, **k: os.stat_result(
+        (0o40700, 0, 0, 0, os.getuid() + 1, 0, 0, 0, 0, 0)) if d == foreign else real_stat(d, *a, **k))
+    assert hookd.address(kh, TAG) is None, "a folder of another user, or a shared one, was used"
+    assert stat_mode(shared_last) == 0o777, "the shared folder was changed"
+    started = []
+    monkeypatch.setattr(cc, "_start_detached", lambda *a: started.append(a))
+    monkeypatch.setattr(hookd, "_NO_ADDRESS_SAID", [])
+    with switch_on():
+        assert hookd.maybe_start(proj, sp) == "no-address"
+    assert capsys.readouterr().err.count("no socket path of at most") == 1
+    assert not started
+
+
+def stat_mode(p):
+    import stat
+    return stat.S_IMODE(os.stat(p).st_mode)
+
+
+@POSIX
+def test_a_candidate_that_cannot_be_made_is_skipped(tmp_path, monkeypatch):
+    """A file where the candidate folder would be: makedirs fails, and the next candidate is used, not an exception."""
+    uid = "inspeximus-hookd-%d" % os.getuid()
+    t_root, last_root = str(tmp_path / "t"), str(tmp_path / "last")
+    os.makedirs(t_root)
+    with open(os.path.join(t_root, uid), "w") as fh:            # a file, not a folder
+        fh.write("x")
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: t_root)
+    monkeypatch.setattr(hookd, "_LAST_RESORT_ROOT", last_root)
+    monkeypatch.setattr(hookd, "SOCK_PATH_MAX", 4000)
+    kh = str(tmp_path / "/".join(["k" * 250] * 16))
+    assert hookd.address(kh, TAG) == os.path.join(last_root, uid, TAG + ".sock")

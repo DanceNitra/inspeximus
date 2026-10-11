@@ -142,29 +142,38 @@ def _read_record(kh, t):
 #: The longest socket path used, in bytes: a path of at most this many fits. AF_UNIX takes 107 on Linux and 103 on
 #: macOS, before the terminating NUL.
 SOCK_PATH_MAX = 100
+#: The last candidate folder for the socket, after the temp directory. A module name so a test can point it elsewhere.
+_LAST_RESORT_ROOT = "/tmp"
 
 
 def address(kh, t):
     """A named pipe on Windows. Elsewhere a socket in the key home, or, when that path is too long for AF_UNIX, in a
-    per-user 0700 directory under the temp directory, then under /tmp, whose ownership is checked. None when no
-    candidate fits SOCK_PATH_MAX (3.18): the daemon does not start and the hook takes its normal path. Measured
-    2026-10-11 in CI: the test sandbox's temp directory was long enough that the fallback did not fit either, the bind
-    raised "AF_UNIX path too long", and the daemon's tests failed on Linux."""
+    per-user 0700 directory under the temp directory, then under /tmp. None when no candidate is usable (3.18): the
+    daemon does not start and the hook takes its normal path. Measured 2026-10-11 in CI: the test sandbox's temp
+    directory was long enough that the fallback did not fit either, the bind raised "AF_UNIX path too long", and the
+    daemon's tests failed on Linux.
+
+    A candidate folder is usable when its socket path fits SOCK_PATH_MAX and the folder is this user's and of mode 0700.
+    A folder that exists and is another user's, or open to the group or others, is skipped: never changed, never used
+    (AUDIT-A V-2: it raised, the hook gave up with no notice, and the next candidate was never tried)."""
     if os.name == "nt":
         return r"\\.\pipe\inspeximus-hookd-" + t
     p = os.path.join(state_dir(kh), t + ".sock")
     if len(p.encode("utf-8")) <= SOCK_PATH_MAX:
         return p
     import tempfile
-    for root in (tempfile.gettempdir(), "/tmp"):
+    for root in (tempfile.gettempdir(), _LAST_RESORT_ROOT):
         d = os.path.join(root, "inspeximus-hookd-%d" % os.getuid())
         p = os.path.join(d, t + ".sock")
         if len(p.encode("utf-8")) > SOCK_PATH_MAX:
             continue                                            # too long to bind: the next candidate
-        os.makedirs(d, mode=0o700, exist_ok=True)
-        st = os.stat(d)
+        try:
+            os.makedirs(d, mode=0o700, exist_ok=True)
+            st = os.stat(d)
+        except OSError:
+            continue                                            # cannot be made or read: the next candidate
         if st.st_uid != os.getuid() or (st.st_mode & 0o077):
-            raise PermissionError("%s is not this user's private directory" % d)
+            continue                                            # not this user's private folder: never used
         return p
     return None
 
@@ -491,11 +500,13 @@ _NO_ADDRESS_SAID = []
 
 
 def _notice_no_address():
-    """One line on stderr, once per process, when no socket path fits (3.18)."""
+    """One line on stderr when no socket path is usable (3.18): once per process, and, because `maybe_start` records
+    the attempt first, once per START_MIN_INTERVAL_S across hook runs."""
     if not _NO_ADDRESS_SAID:
         _NO_ADDRESS_SAID.append(1)
         sys.stderr.write("[inspeximus] hookd: no socket path of at most %d bytes here (the key home, the temp "
-                         "directory and /tmp are too long); the prompt daemon does not start" % SOCK_PATH_MAX + chr(10))
+                         "directory and /tmp are too long, or not your own folder of mode 0700); the prompt daemon does "
+                         "not start" % SOCK_PATH_MAX + chr(10))
 
 
 def maybe_start(cwd, store_path) -> str:
@@ -523,7 +534,10 @@ def maybe_start(cwd, store_path) -> str:
         if live_daemon_count(key_home_for(store_path)) >= MAX_LIVE_DAEMONS:
             return "limit"
         if address(key_home_for(store_path), tag(store_path, key_home_for(store_path))) is None:
-            _notice_no_address()                                # once per process; the hook takes its normal path
+            # THE ATTEMPT IS RECORDED, SO THE NOTICE IS RATE-LIMITED LIKE A START (AUDIT-A V-1). Returning before this
+            # write printed the line on every hook run: each run is a new process.
+            write_atomic(state, json.dumps({"last_attempt": now, "no_address": True}))
+            _notice_no_address()                                # the hook takes its normal path
             return "no-address"
         record = {"last_attempt": now, "interpreter": sys.executable}
         write_atomic(state, json.dumps(record))

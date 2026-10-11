@@ -182,21 +182,25 @@ def test_state_files_and_socket_are_private(project, daemon):
 
 
 @pytest.mark.skipif(os.name == "nt", reason="the POSIX socket directory")
-def test_a_shared_socket_directory_is_refused(tmp_path, monkeypatch):
+def test_a_shared_socket_directory_is_never_used(tmp_path, monkeypatch):
+    """A candidate folder open to the group or others is skipped, never changed and never used (AUDIT-A V-2: it raised,
+    and the next candidate was never tried)."""
+    import stat
     import tempfile
-    monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path / "t"))
+    monkeypatch.setattr(hookd, "_LAST_RESORT_ROOT", str(tmp_path / "last"))
     # A limit this test's own paths fit, wherever pytest puts tmp_path: in CI the basetemp is long enough that the
-    # temp-directory candidate would be skipped as too long, and the refusal under test never reached (3.18).
+    # candidates would be skipped as too long, and the check under test never reached (3.18).
     monkeypatch.setattr(hookd, "SOCK_PATH_MAX", 4000)
-    d = tmp_path / ("inspeximus-hookd-%d" % os.getuid())
-    d.mkdir()
-    os.chmod(str(d), 0o777)
-    kh = str(tmp_path / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250)
-             / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250) / ("k" * 250)
-             / ("k" * 250) / ("k" * 250))
-    assert len(os.path.join(hookd.state_dir(kh), "0" * 16 + ".sock").encode()) >= hookd.SOCK_PATH_MAX,         "CONTROL: the key home's path does not fit, so the temp directory is the candidate"
-    with pytest.raises(PermissionError):
-        hookd.address(kh, "0" * 16)
+    shared = tmp_path / "t" / ("inspeximus-hookd-%d" % os.getuid())
+    shared.mkdir(parents=True)
+    os.chmod(str(shared), 0o777)
+    kh = str(tmp_path / "/".join(["k" * 250] * 16))
+    assert len(os.path.join(hookd.state_dir(kh), "0" * 16 + ".sock").encode()) > hookd.SOCK_PATH_MAX, \
+        "CONTROL: the key home's path does not fit, so the temp directory is the candidate"
+    a = hookd.address(kh, "0" * 16)
+    assert a == os.path.join(str(tmp_path / "last"), "inspeximus-hookd-%d" % os.getuid(), "0" * 16 + ".sock"), a
+    assert stat.S_IMODE(os.stat(str(shared)).st_mode) == 0o777, "the shared folder was changed"
 
 
 # ── stale state ────────────────────────────────────────────────────────────────────────────────────────────────
