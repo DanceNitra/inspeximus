@@ -12487,5 +12487,14 @@
   "tests": [
    "tests/test_the_daemon_socket_address_always_fits.py"
   ]
+ },
+ {
+  "name": "3.18 mutation runner: a broken run exits 1, like a run with survivors",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "              \"NOT a pass, and NOT a mutation score.\" % (len(red), len(mutations), int(BROKEN_RUN_SHARE * 100)))\n        return 3\n",
+  "new": "              \"NOT a pass, and NOT a mutation score.\" % (len(red), len(mutations), int(BROKEN_RUN_SHARE * 100)))\n        return 1\n",
+  "tests": [
+   "tests/test_a_red_preflight_names_its_failing_test.py"
+  ]
  }
 ]
