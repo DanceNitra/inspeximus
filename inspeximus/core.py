@@ -20151,6 +20151,12 @@ class Inspeximus:
             # The `items` SETTER already refuses this move ("Route deliberate whole-list writes to
             # `_items`"). The persist path read the same property and was missed: one guarantee, two
             # implementations, one of them unchecked.
+            # THE EDIT GENERATIONS, BEFORE THE RECORDS ARE COPIED (3.19, AUDIT-A F-10). `slim` below is the serialisation of
+            # a whole-file save: without vectors it holds a copy of each record, taken here, before the lock wait. Copied
+            # after it, the snapshot carried the generation of an edit made in between while the file got the text from
+            # before it, and the save cleared the edit. The row branch takes its own snapshot later, just before the row
+            # writer, which reads the live records after it.
+            _saving_whole = _saving_now(self)
             rows = self._items
             slim = list(rows) if self._persist_vectors else \
                 [{k: v for k, v in r.items() if k != "vec"} for r in rows]
@@ -20286,7 +20292,7 @@ class Inspeximus:
                 # recipe had nothing to compare against. Three probes cited by
                 # the docs caught it; nothing in the store itself would have.
                 if not _wrote_rows:
-                    _saving = _saving_now(self)             # before the serialisation, as in the row branch (F-1)
+                    _saving = _saving_whole                 # taken before `slim` was built (F-1, F-10)
                     data = _dump_store(slim)
                     if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
                         key = self._resolve_key()                         # sets self._enc_salt on first save

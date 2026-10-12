@@ -279,3 +279,85 @@ def test_a_second_edit_of_a_record_the_save_is_writing_is_written_by_the_next_sa
     assert h._dirty and rid in h._touched, "the save cleared an id whose record was edited again during the write"
     h.flush()
     assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is tuesday",         "a second edit of a record the save was writing was lost"
+
+
+@pytest.mark.parametrize("fmt", ["json", pytest.param("enc", marks=pytest.mark.skipif(not _CRYPTO, reason="crypto"))])
+def test_an_edit_between_the_record_copies_and_the_lock_is_written_by_the_next_save(tmp_path, fmt, monkeypatch):
+    """AUDIT-A F-10 (3.19): a whole-file save copies each record into `slim` before it waits for the store lock, and it
+    took the edit-generation snapshot after the lock. An edit in between moved the generation before the snapshot, so
+    the snapshot held the new generation while the file got the copy from before the edit, and the save cleared it.
+    Forced here: the edit runs as the save enters the store lock, after the copies."""
+    p = _store(tmp_path, fmt)
+    h = _open(p, fmt)
+    _rec(h, "deploy")["text"] = "the release slot is monday"
+    fired = []
+    real_lock = core._StoreLock
+
+    class EditingLock(real_lock):
+        def __enter__(self):
+            if not fired:
+                fired.append(1)
+                _rec(h, "deploy")["text"] = "the release slot is tuesday"   # after `slim`, before the old snapshot
+            return super().__enter__()
+    monkeypatch.setattr(core, "_StoreLock", EditingLock)
+    h.flush()
+    assert fired, "CONTROL: the forced window was reached"
+    assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is monday", \
+        "CONTROL: the file got the copy from before the second edit, so the window was real"
+    monkeypatch.undo()
+    rid = _rec(h, "deploy")["id"]
+    assert h._dirty and rid in h._touched, "the save cleared an edit made after it copied the records"
+    h.flush()
+    assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is tuesday", \
+        "an edit made between the record copies and the lock was lost"
+
+
+@pytest.mark.parametrize("fmt", FORMATS)
+def test_an_editor_and_a_saver_on_two_threads_lose_no_edit(tmp_path, fmt):
+    """AUDIT-A's p_race319.py, bounded: one thread re-edits four hot records while another flushes in a loop, with a
+    short switch interval so the threads interleave inside the save. After a final flush, the last edit of every hot
+    record is on disk. On eeeab6e2 the JSON store lost 4 of 4 in 2 of 3 runs of 4 s; the forced test above is the
+    deterministic one, this is the shape it comes from."""
+    import threading
+    import time
+    p = _store(tmp_path, fmt, n=20)
+    h = _open(p, fmt)
+    h._save_min_s = 0.0
+    hot = [r for r in h._items if str(r.get("text", "")).startswith("filler")][:4]
+    assert len(hot) == 4, "CONTROL: four hot records"
+    last, stop, errs, counts = {}, threading.Event(), [], {"edits": 0, "saves": 0}
+
+    def editor():
+        n = 0
+        while not stop.is_set():
+            n += 1
+            r = hot[n % 4]
+            v = "edit %d" % n
+            r["text"] = v
+            last[r["id"]] = v
+            counts["edits"] += 1
+
+    def saver():
+        while not stop.is_set():
+            try:
+                h.flush()
+                counts["saves"] += 1
+            except Exception as e:                      # noqa: BLE001 -- reported below
+                errs.append(repr(e)[:200])
+                return
+    old = sys.getswitchinterval()
+    sys.setswitchinterval(1e-5)
+    try:
+        ts = [threading.Thread(target=editor), threading.Thread(target=saver)]
+        [t.start() for t in ts]
+        time.sleep(2.0)
+        stop.set()
+        [t.join(30) for t in ts]
+    finally:
+        sys.setswitchinterval(old)
+    assert not errs, errs
+    assert counts["saves"] >= 2 and counts["edits"] >= 4, "CONTROL: the threads ran: %r" % counts
+    h.flush()
+    got = {r["id"]: r.get("text") for r in _open(p, fmt)._items}
+    lost = [rid for rid, v in last.items() if got.get(rid) != v]
+    assert not lost, "%d of %d hot records lost their last edit (%r)" % (len(lost), len(last), counts)

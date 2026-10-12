@@ -12826,8 +12826,17 @@
  },
  {
   "name": "3.19 F-1: the JSON save copies the edited ids after the serialisation",
-  "old": "                    _saving = _saving_now(self)             # before the serialisation, as in the row branch (F-1)\n                    data = _dump_store(slim)\n",
-  "new": "                    data = _dump_store(slim)\n                    _saving = _saving_now(self)             # before the serialisation, as in the row branch (F-1)\n",
+  "old": "                    _saving = _saving_whole                 # taken before `slim` was built (F-1, F-10)\n                    data = _dump_store(slim)\n",
+  "new": "                    data = _dump_store(slim)\n                    _saving = _saving_now(self)\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-10: the whole-file save takes the generation snapshot after the record copies",
+  "old": "                    _saving = _saving_whole                 # taken before `slim` was built (F-1, F-10)\n                    data = _dump_store(slim)\n",
+  "new": "                    _saving = _saving_now(self)\n                    data = _dump_store(slim)\n",
   "file": "inspeximus/core.py",
   "tests": [
    "tests/test_a_json_store_writes_an_in_place_edit.py"
