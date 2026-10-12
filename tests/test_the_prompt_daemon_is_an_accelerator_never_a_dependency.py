@@ -290,6 +290,12 @@ def test_the_hook_prints_the_daemons_answer_when_it_is_up(project, daemon):
     # Up to two asks: the hook's own bound is 0.3 s, and a loaded machine can miss it once. Two timeouts stay below
     # BACKOFF_AFTER, so the second ask is a real one; the output compared is the served one's.
     with switch_on():
+        # A DEFINED STATE FIRST (3.19 item 6). The switched-off run wrote the store and switch_on wrote the user's config,
+        # so the daemon's handle is stale, and since 3.19 its watchdog drops it: the hook's first ask would reopen it inside
+        # the hook's 0.3 s bound, time out on a loaded machine, take its normal path, write the store again, and leave the
+        # second ask cold as well (measured: 1 of 4 batch runs on Windows). One ask with a long bound reopens it; the
+        # store and the config do not move again before the hook asks.
+        assert hookd.ask(_ev(proj), sp, timeout=10.0) is not None and hookd.LAST["outcome"] == "served",             "CONTROL: the daemon serves once its handle is current: %r" % hookd.LAST
         for _attempt in range(2):
             r = subprocess.run([sys.executable, "-m", "inspeximus.claude_code"], input=json.dumps(_ev(proj)),
                                cwd=ROOT, env=dict(os.environ, INSPEXIMUS_HOOK_DAEMON_TRACE="1"), capture_output=True,

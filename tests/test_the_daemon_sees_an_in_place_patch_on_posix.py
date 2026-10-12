@@ -23,7 +23,30 @@ def _store(tmp_path):
     return p
 
 
+def _past_the_ctime_tick(p):
+    """Wait until the kernel's ctime clock has moved past the store's last change (3.19 item 6).
+
+    st_ctime_ns comes from a coarse clock: one tick is 4 ms in WSL (measured, 9,042 writes in 0.2 s gave 51 distinct
+    values, 4.002 ms apart). A patch inside the tick of the store's last write leaves ctime equal, so the signature
+    cannot see it: measured in WSL as nobody, 116 of 300 patches made straight after the write, every one of them with
+    ctime unchanged. That is a limit of the detection, stated in the CHANGELOG; the test patches after the tick, which
+    is what it means to check. Bounded: a scratch file beside the store is written until its ctime is past the store's."""
+    import time
+    probe = p + ".tick"
+    deadline = time.monotonic() + 2.0
+    try:
+        while time.monotonic() < deadline:
+            with open(probe, "wb") as fh:
+                fh.write(b"x")
+            if os.stat(probe).st_ctime_ns > os.stat(p).st_ctime_ns:
+                return
+        raise AssertionError("CONTROL: the ctime clock did not move in 2 s")
+    finally:
+        os.unlink(probe)
+
+
 def _patch_in_place(p, old, new):
+    _past_the_ctime_tick(p)
     st = os.stat(p)
     with open(p, "r+b") as fh:
         raw = fh.read()
