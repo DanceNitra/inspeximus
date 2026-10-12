@@ -332,7 +332,9 @@ def test_a_silent_connection_gives_its_slot_back_within_the_read_timeout(project
     MAX_CONNECTIONS handshake slots."""
     silent = hookd._connect(daemon.addr, time.monotonic() + 1)
     try:
-        time.sleep(0.1)
+        # 0.02 s, not 0.1 s: since 3.19 a silent connection goes after HELLO_TIMEOUT_S (0.1 s), so the old wait raced the
+        # release this control looks for. The tighter bound is in test_silent_connections_cannot_push_the_hook_off_the_daemon.
+        time.sleep(0.02)
         assert daemon.conns._value == hookd.MAX_CONNECTIONS - 1, "CONTROL: the silent connection holds a slot"
         # An absolute bound, not one read from the constant: the documented 0.5 s plus 0.6 s of scheduling slack. A
         # bound computed from SERVER_READ_TIMEOUT_S grows with it, so a longer timeout would pass unseen.

@@ -12886,5 +12886,61 @@
   ],
   "old": "        wal = (w.st_mtime_ns, w.st_size, w.st_ctime_ns, w.st_ino)\n",
   "new": "        wal = None\n"
+ },
+ {
+  "name": "3.19 item 3: a silent connection waits the whole read timeout for its hello",
+  "old": "HELLO_TIMEOUT_S = 0.1\n",
+  "new": "HELLO_TIMEOUT_S = 0.5\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.19 item 3: a full house refuses the new connection instead of evicting a silent one",
+  "old": "                    if not (self._evict_oldest_silent() and self.conns.acquire(timeout=2 * HELLO_POLL_S + 0.05)):\n",
+  "new": "                    if True:\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.19 item 3: an evicted connection waits out its hello timeout",
+  "old": "                if left <= 0 or evicted.is_set():\n",
+  "new": "                if left <= 0:\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.19 item 3: an accepted connection is not registered as waiting for its hello",
+  "old": "                with self.pending_lock:\n                    self.pending[id(conn)] = (time.monotonic(), threading.Event())\n",
+  "new": "                pass\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.19 item 3: the socket keeps multiprocessing's backlog of 1",
+  "old": "                    listener = Listener(self.addr, family=\"AF_UNIX\", backlog=2 * MAX_CONNECTIONS)\n",
+  "new": "                    listener = Listener(self.addr, family=\"AF_UNIX\")\n",
+  "platform": "posix",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"
+  ]
+ },
+ {
+  "name": "3.19 item 3: a connect to a full queue gives up at once",
+  "old": "        except BlockingIOError:\n            s.close()\n            if time.monotonic() >= deadline:\n                return None\n            time.sleep(0.002)\n",
+  "new": "        except BlockingIOError:\n            s.close()\n            return None\n",
+  "platform": "posix",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"
+  ]
  }
 ]

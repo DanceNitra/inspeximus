@@ -57,7 +57,12 @@ LAUNCH_MAX_AGE_S = 120.0
 BACKOFF_AFTER = 3                #: this many timeouts in a row and the hook stops asking ...
 BACKOFF_S = 300.0                #: ... for this long, so a slow daemon costs at most BACKOFF_AFTER x REPLY_TIMEOUT_S
 MAX_LIVE_DAEMONS = 4             #: at most this many live daemons per key home; a fifth store gets none (AUDIT-A D-3)
-MAX_CONNECTIONS = 16             #: handshakes in flight at once; one more is closed at accept (AUDIT-A E-4)
+MAX_CONNECTIONS = 16             #: handshakes in flight at once (AUDIT-A E-4)
+#: A connection must say hello within this of being accepted (3.19). A client sends it right after connecting; the
+#: rest of the handshake keeps SERVER_READ_TIMEOUT_S. On 3.18.0 a silent connection held its slot for the whole 0.5 s.
+HELLO_TIMEOUT_S = 0.1
+#: How often a connection waiting for its hello looks whether a newer connection evicted it.
+HELLO_POLL_S = 0.01
 
 
 # ── names: one daemon per (store, key home) ────────────────────────────────────────────────────────────────────
@@ -390,13 +395,23 @@ def _connect(addr, deadline):
             return PipeConnection(h)
     import socket
     from multiprocessing.connection import Connection
-    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    s.settimeout(max(0.001, deadline - time.monotonic()))
-    try:
-        s.connect(addr)
-    except OSError:
-        s.close()
-        return None
+    # A FULL QUEUE IS WAITED ON, AS A BUSY PIPE IS (3.19). With a timeout the socket is non-blocking, and an AF_UNIX
+    # connect to a listener whose queue is full fails at once with EAGAIN rather than waiting: measured in WSL, a burst
+    # of silent connections made every hook beside it "absent". The connect is retried until the deadline.
+    while True:
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.settimeout(max(0.001, deadline - time.monotonic()))
+        try:
+            s.connect(addr)
+            break
+        except BlockingIOError:
+            s.close()
+            if time.monotonic() >= deadline:
+                return None
+            time.sleep(0.002)
+        except OSError:
+            s.close()
+            return None
     s.setblocking(True)
     return Connection(s.detach())
 
@@ -641,6 +656,8 @@ class Daemon:
         self.counts = {}               # id(handle) -> (handle, foreign stamps counted when it was opened)
         self.answering = threading.Lock()  # one answer at a time: the stores and the redirected streams are shared
         self.conns = threading.BoundedSemaphore(MAX_CONNECTIONS)
+        self.pending = {}              # id(conn) -> (accepted at, eviction event): connections that have not said hello
+        self.pending_lock = threading.Lock()
 
     # -- holding the stores -----------------------------------------------------------------------------------------
     def handle_for(self, path, opener):
@@ -742,9 +759,35 @@ class Daemon:
             return {"ok": True, "out": out.getvalue(), "err": err.getvalue(), "foreign": foreign}
 
     # -- the channel ------------------------------------------------------------------------------------------------
+    def _hello(self, conn):
+        """The first message, within HELLO_TIMEOUT_S, read in HELLO_POLL_S steps so an eviction ends the wait."""
+        with self.pending_lock:
+            ent = self.pending.get(id(conn))
+        evicted = ent[1] if ent else threading.Event()
+        until = time.monotonic() + HELLO_TIMEOUT_S
+        try:
+            while True:
+                left = until - time.monotonic()
+                if left <= 0 or evicted.is_set():
+                    raise TimeoutError("no hello in time")
+                if conn.poll(min(HELLO_POLL_S, left)):
+                    return _recv(conn, until)                   # the one bounded read (3.18 request size)
+        finally:
+            with self.pending_lock:
+                self.pending.pop(id(conn), None)
+
+    def _evict_oldest_silent(self):
+        """Mark the oldest connection that has not said hello for eviction. Returns whether there was one."""
+        with self.pending_lock:
+            live = [(at, ev) for at, ev in self.pending.values() if not ev.is_set()]
+            if not live:
+                return False
+            min(live, key=lambda x: x[0])[1].set()
+            return True
+
     def _serve_one(self, conn):
+        hello = self._hello(conn)
         deadline = time.monotonic() + SERVER_READ_TIMEOUT_S
-        hello = _recv(conn, deadline)
         nc = str(hello.get("nc", ""))
         if hello.get("hello") != PROTOCOL or len(nc) != 32:
             return
@@ -929,7 +972,9 @@ class Daemon:
             with _PROCESS_STATE:                                # the umask is the process's
                 old = os.umask(0o177)                           # the socket is 0600 from its creation
                 try:
-                    listener = Listener(self.addr, family="AF_UNIX")
+                    # A QUEUE FOR A BURST (3.19). multiprocessing's default backlog is 1, so a second connection that
+                    # came while the loop handled the first was refused at once.
+                    listener = Listener(self.addr, family="AF_UNIX", backlog=2 * MAX_CONNECTIONS)
                 finally:
                     os.umask(old)
             os.chmod(self.addr, 0o600)
@@ -947,9 +992,15 @@ class Daemon:
                 # A THREAD PER CONNECTION (AUDIT-A E-4). The handshake was read on the accept loop, so a connection that
                 # said nothing held the next hook past its 0.3 s bound, and three of them started the back-off. Now a
                 # silent connection holds only its own thread, for SERVER_READ_TIMEOUT_S; the answers stay serial.
+                # A FULL HOUSE EVICTS THE OLDEST SILENT CONNECTION (3.19). Refusing the newest one let MAX_CONNECTIONS
+                # silent clients refuse every hook for as long as they stayed, and three refusals put the hook into its
+                # back-off. A connection that said hello is never evicted, so the thread bound and the handshake hold.
                 if not self.conns.acquire(blocking=False):
-                    conn.close()                                # MAX_CONNECTIONS handshakes in flight: refuse this one
-                    continue
+                    if not (self._evict_oldest_silent() and self.conns.acquire(timeout=2 * HELLO_POLL_S + 0.05)):
+                        conn.close()                            # every slot is a client past its hello: refuse this one
+                        continue
+                with self.pending_lock:
+                    self.pending[id(conn)] = (time.monotonic(), threading.Event())
                 threading.Thread(target=self._serve_thread, args=(conn,), daemon=True).start()
         finally:
             listener.close()
