@@ -7692,8 +7692,8 @@
  {
   "name": "the suite runs without a temp root of its own",
   "file": "tests/conftest.py",
-  "old": "def pytest_configure(config):\n    _own_temp_root(config)\n",
-  "new": "def pytest_configure(config):\n",
+  "old": "    _strip_inspeximus_env(config)\n    _own_temp_root(config)\n",
+  "new": "    _strip_inspeximus_env(config)\n",
   "tests": [
    "tests/test_the_home_guard_attributes_heads_to_this_run.py"
   ]
@@ -12942,5 +12942,14 @@
   "tests": [
    "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"
   ]
+ },
+ {
+  "name": "3.19 env leak: the suite keeps the caller's INSPEXIMUS_* variables",
+  "file": "tests/conftest.py",
+  "tests": [
+   "tests/test_the_suite_sees_no_live_store.py"
+  ],
+  "old": "                                           if k.startswith(\"INSPEXIMUS_\") and k not in INHERITED_INSPEXIMUS]}\n",
+  "new": "                                           if k.startswith(\"INSPEXIMUS_NONE_\") and k not in INHERITED_INSPEXIMUS]}\n"
  }
 ]

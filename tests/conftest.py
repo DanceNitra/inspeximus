@@ -468,9 +468,44 @@ def _restore_temp_root(config):
     shutil.rmtree(config._run_tmp, ignore_errors=True)
 
 
+#: The INSPEXIMUS_* variables a run may keep from its caller. INSPEXIMUS_PYTHON names an interpreter, not a store or a
+#: home: CI's examples leg sets it for tests/test_examples_run.py, which skips without it.
+INHERITED_INSPEXIMUS = frozenset({"INSPEXIMUS_PYTHON"})
+
+#: Test-only switch for the control in tests/test_the_suite_sees_no_live_store.py: with it set, the strip below does not
+#: run, so the control can show the guard fails on a leaked variable. Nothing outside that control sets it.
+NO_STRIP_FOR_THE_CONTROL = "PYTEST_INSPEXIMUS_NO_ENV_STRIP"
+
+
+def _strip_inspeximus_env(config):
+    """Every INSPEXIMUS_* variable of the caller leaves this process before collection (3.19, EM).
+
+    MEASURED 2026-10-12. This machine's session environment carries INSPEXIMUS_DECISION_STORE, which names the owner's
+    live crew store (~/.inspeximus/mcp_memory.json, 96 MB, WAL mode). The suite did not strip it, so every prompt-daemon
+    test held that store as its decision store: a live MCP server's write moved its -wal and -shm files and made
+    test_an_unchanged_store_is_not_reopened reopen it (2 of 13 traced runs), and a cold open of 96 MB pushed the hook
+    past its 0.3 s bound. The hook only reads that store, and nothing was written to it, but the suite must not see the
+    owner's stores at all. A test that needs one of these variables sets it inside its own sandbox.
+
+    Runs in the xdist controller too, before the workers start, so they inherit the stripped environment."""
+    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == "1":
+        config._inspeximus_env_stripped = {}
+        return
+    gone = {k: os.environ.pop(k) for k in [k for k in os.environ
+                                           if k.startswith("INSPEXIMUS_") and k not in INHERITED_INSPEXIMUS]}
+    config._inspeximus_env_stripped = gone
+
+
+def _restore_inspeximus_env(config):
+    for k, v in (getattr(config, "_inspeximus_env_stripped", None) or {}).items():
+        os.environ[k] = v
+
+
 def pytest_configure(config):
+    _strip_inspeximus_env(config)
     _own_temp_root(config)
     _redirect_home(config)
+    config._inspeximus_env_at_collection = sorted(k for k in os.environ if k.startswith("INSPEXIMUS_"))
     # A mutation survivor is re-run against the full suite (tools/mutation_check.py). Tests that drive the
     # gate with a survivor on purpose would each start a full serial suite run, so the session turns that
     # off; the tests of the classification itself set MUTATION_FULL_SUITE to their own small suite.
@@ -533,6 +568,7 @@ def pytest_sessionfinish(session):
 def pytest_unconfigure(config):
     _restore_home(config)
     _restore_temp_root(config)
+    _restore_inspeximus_env(config)
 
 
 @pytest.fixture
