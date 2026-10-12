@@ -12790,8 +12790,8 @@
  },
  {
   "name": "3.19 item 1: a JSON save keeps the edited ids",
-  "old": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    self._touched -= _saving\n",
-  "new": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    pass\n",
+  "old": "                    # Only the ids serialised above, at the generation serialised: an edit made during the write is still\n                    # this handle's, a second edit of a record being written too (AUDIT-A F-1, F-9).\n                    _clear_saved(self, _saving)\n",
+  "new": "                    # Only the ids serialised above, at the generation serialised: an edit made during the write is still\n                    # this handle's, a second edit of a record being written too (AUDIT-A F-1, F-9).\n                    pass\n",
   "file": "inspeximus/core.py",
   "tests": [
    "tests/test_a_json_store_writes_an_in_place_edit.py"
@@ -12799,8 +12799,8 @@
  },
  {
   "name": "3.19 F-1: a JSON save clears every edited id, the ones made during its write too",
-  "old": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    self._touched -= _saving\n",
-  "new": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    self._touched = set()\n",
+  "old": "                    # Only the ids serialised above, at the generation serialised: an edit made during the write is still\n                    # this handle's, a second edit of a record being written too (AUDIT-A F-1, F-9).\n                    _clear_saved(self, _saving)\n",
+  "new": "                    # Only the ids serialised above, at the generation serialised: an edit made during the write is still\n                    # this handle's, a second edit of a record being written too (AUDIT-A F-1, F-9).\n                    self._touched = set()\n",
   "file": "inspeximus/core.py",
   "tests": [
    "tests/test_a_json_store_writes_an_in_place_edit.py"
@@ -12808,7 +12808,7 @@
  },
  {
   "name": "3.19 F-1: a row save clears every edited id, the ones made during its write too",
-  "old": "                    self._row_snapshot = _res[\"snapshot\"]\n                    self._touched -= _saving\n",
+  "old": "                    self._row_snapshot = _res[\"snapshot\"]\n                    _clear_saved(self, _saving)\n",
   "new": "                    self._row_snapshot = _res[\"snapshot\"]\n                    self._touched = set()\n",
   "file": "inspeximus/core.py",
   "tests": [
@@ -12826,8 +12826,26 @@
  },
  {
   "name": "3.19 F-1: the JSON save copies the edited ids after the serialisation",
-  "old": "                    _saving = set(self._touched)            # before the serialisation, as in the row branch (F-1)\n                    data = _dump_store(slim)\n",
-  "new": "                    data = _dump_store(slim)\n                    _saving = set(self._touched)            # before the serialisation, as in the row branch (F-1)\n",
+  "old": "                    _saving = _saving_now(self)             # before the serialisation, as in the row branch (F-1)\n                    data = _dump_store(slim)\n",
+  "new": "                    data = _dump_store(slim)\n                    _saving = _saving_now(self)             # before the serialisation, as in the row branch (F-1)\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-9: the save clears an id without comparing its edit generation",
+  "old": "        if gen.get(rid) != g:\n            store._touched.add(rid)                       # edited again after the serialisation: the next save writes it\n",
+  "new": "        if False:\n            store._touched.add(rid)                       # edited again after the serialisation: the next save writes it\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-9: a mark does not move the id's edit generation",
+  "old": "        if gen is not None:\n            gen[rid] = next(_TOUCH_SEQ)\n",
+  "new": "        if gen is not None:\n            pass\n",
   "file": "inspeximus/core.py",
   "tests": [
    "tests/test_a_json_store_writes_an_in_place_edit.py"
@@ -12844,7 +12862,7 @@
  },
  {
   "name": "3.19 item 1: a same-id replacement is not declared as an edit",
-  "old": "                o._touched.add(old_id)\n                o._dirty = True\n",
+  "old": "                _mark_touched(o, (old_id,))\n                o._dirty = True\n",
   "new": "                pass\n",
   "file": "inspeximus/core.py",
   "tests": [

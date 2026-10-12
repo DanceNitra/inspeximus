@@ -252,3 +252,30 @@ def test_an_edit_made_while_a_save_writes_is_written_by_the_next_save(tmp_path, 
     h.flush()
     assert _rec(_open(p, fmt), "decision::release-day")["status"] == "superseded", \
         "an edit made while a save wrote was lost"
+
+@pytest.mark.parametrize("fmt,at", [("json", "dump"), ("json", "replace"),
+                                    pytest.param("enc", "dump", marks=pytest.mark.skipif(not _CRYPTO, reason="crypto")),
+                                    pytest.param("enc", "replace", marks=pytest.mark.skipif(not _CRYPTO, reason="crypto")),
+                                    ("db", "commit")])
+def test_a_second_edit_of_a_record_the_save_is_writing_is_written_by_the_next_save(tmp_path, fmt, at, monkeypatch):
+    """AUDIT-A F-9 (3.19): the save copied the edited IDS, not their versions. An id that the save was already writing
+    and that was edited again after the serialisation was still cleared, so the second edit was lost. Each mark of an
+    id now moves its edit generation, and the save clears an id only if its generation did not move."""
+    p = _store(tmp_path, fmt)
+    h = _open(p, fmt)
+    _rec(h, "deploy")["text"] = "the release slot is monday"          # the first edit, which this save writes
+    fired = []
+
+    def again():
+        if not fired:
+            fired.append(1)
+            _rec(h, "deploy")["text"] = "the release slot is tuesday"   # the same id, after the serialisation
+    _edit_inside_the_write(monkeypatch, h, fmt, again, at)
+    h.flush()
+    assert fired, "CONTROL: the forced window was reached"
+    assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is monday",         "CONTROL: the save wrote the first edit and missed the second, so the window was real"
+    monkeypatch.undo()
+    rid = _rec(h, "deploy")["id"]
+    assert h._dirty and rid in h._touched, "the save cleared an id whose record was edited again during the write"
+    h.flush()
+    assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is tuesday",         "a second edit of a record the save was writing was lost"

@@ -42,6 +42,7 @@ from __future__ import annotations
 import calendar
 import contextlib
 import functools
+import itertools as _itertools
 import collections as _collections
 import hashlib
 import hmac
@@ -1983,6 +1984,44 @@ def _view_scope(h) -> tuple:
     return (h.tenant, getattr(h, "agent", None), getattr(h, "_acl_rev", 0))
 
 
+#: The edit generations (3.19, AUDIT-A F-9). One process-wide sequence: `next()` on it is one C call, so two threads never
+#: draw the same number.
+_TOUCH_SEQ = _itertools.count(1)
+
+
+def _mark_touched(store, ids) -> None:
+    """Declare `ids` as this handle's edits, and move each id's edit generation.
+
+    A SAVE CLEARS AN ID ONLY IF ITS GENERATION DID NOT MOVE (3.19, AUDIT-A F-9). The save copied the edited ids before
+    it serialised and cleared that copy after the write, so an id that was edited again after the serialisation was
+    cleared too, and its second edit was never written. The save now copies {id: generation} and clears an id only if
+    the generation is the one it copied. The generation moves BEFORE the id is added: a save that compares after it has
+    discarded the id then sees the move, and a mark that comes later adds the id back itself. A module function and not
+    a method, so a tenant view marks its parent's set (see `_scope`)."""
+    gen = getattr(store, "_touch_gen", None)
+    for rid in ids:
+        if gen is not None:
+            gen[rid] = next(_TOUCH_SEQ)
+        store._touched.add(rid)
+
+
+def _clear_saved(store, saved) -> None:
+    """Remove from `_touched` each id of `saved` ({id: generation}) whose generation did not move since the copy. The id
+    is discarded first and compared second, so a mark between the two is never lost (see `_mark_touched`)."""
+    gen = getattr(store, "_touch_gen", None) or {}
+    for rid, g in saved.items():
+        store._touched.discard(rid)
+        if gen.get(rid) != g:
+            store._touched.add(rid)                       # edited again after the serialisation: the next save writes it
+
+
+def _saving_now(store) -> dict:
+    """{id: generation} of the ids this save writes, copied before it serialises. `set()` copies in one C call, so a
+    concurrent mark cannot change the set while it is read."""
+    gen = getattr(store, "_touch_gen", None) or {}
+    return {rid: gen.get(rid) for rid in set(store._touched)}
+
+
 def _note_dirty(store, rid, field=None, tracked=False) -> None:
     """Record which record the current content revision moved (`None` when the edit has no id). Recall's cache uses it
     to tell records appended since an entry was built, which it can add to the entry, from edits, which it cannot."""
@@ -2111,7 +2150,7 @@ class _RecordList(list):
                 # was already in the row baseline, so `flush()` found nothing to write in either format and the version
                 # was gone at the next open (measured on 3.18.0). It is tracked from here and declared as this handle's edit.
                 list.__setitem__(self, i, o._track(v))
-                o._touched.add(old_id)
+                _mark_touched(o, (old_id,))
                 o._dirty = True
                 o._l1_reset()
                 o._rev = getattr(o, "_rev", 0) + 1
@@ -2177,7 +2216,7 @@ class _TrackedDict(dict):
             return
         rid = dict.get(root, "id")
         if rid:
-            store._touched.add(rid)
+            _mark_touched(store, (rid,))
         store._dirty = True
         # THE CONTENT REVISION (3.18 prototype). Recall's cached pool and token index are valid while it stands;
         # every edit, at any depth, moves it.
@@ -3850,6 +3889,7 @@ class Inspeximus:
         self._last_save = 0.0
         self._dirty = False
         self._touched = set()          # ids changed since the last successful save
+        self._touch_gen = {}           # id -> the edit generation of its last mark (_mark_touched, AUDIT-A F-9)
         self._full_reconcile = False   # ask the next save for the complete diff
         # THE EVENT TABLE, since 3.0.0. Every committed change to a row is described by a
         # content-free row in `memory_events`, inserted in the same transaction (see
@@ -9771,7 +9811,7 @@ class Inspeximus:
         _arch_prepared = _archive.prepare_erasure(self, _arch_ids) if _arch_ids else []
         for _p in _arch_prepared:
             _residue_values.extend(_p["values"])
-        self._touched.update(target)
+        _mark_touched(self, target)
         self._items = [r for r in self._items if r["id"] not in target]
         scrubbed = 0
         if redact_links:
@@ -10446,7 +10486,7 @@ class Inspeximus:
             if isinstance(meta.get("read_guards"), dict):
                 out["stamped"] += 1
                 if r.get("id"):
-                    self._touched.add(r["id"])
+                    _mark_touched(self, (r["id"],))
             else:
                 out["flagged"] += 1
         if out["stamped"]:
@@ -20080,7 +20120,7 @@ class Inspeximus:
         except Exception:
             rid = None
         if rid:
-            self._touched.add(rid)
+            _mark_touched(self, (rid,))
         self._rev = getattr(self, "_rev", 0) + 1             # a declared change moves the content revision
         _note_dirty(self, rid, tracked=isinstance(rec, _TrackedDict))
 
@@ -20222,13 +20262,14 @@ class Inspeximus:
                     # thrown away almost entirely. `keep_vec` tells it to drop the key instead.
                     # THE IDS THIS SAVE WRITES, COPIED BEFORE THE WRITER SERIALISES (3.19, AUDIT-A F-1). Clearing the whole
                     # set after the write dropped an edit that another thread made during it: the store read clean, and
-                    # the next flush() wrote nothing. Only the copy is subtracted, so a later edit stays declared.
-                    _saving = set(self._touched)
+                    # the next flush() wrote nothing. The copy carries each id's edit generation, and an id is cleared
+                    # only if its generation did not move, so a later edit stays declared, of the same record too (F-9).
+                    _saving = _saving_now(self)
                     _res = self._save_rows_retrying(
-                        rows, dirty=None if _reconcile else _saving)
+                        rows, dirty=None if _reconcile else set(_saving))
                     self._rewrite_all = False
                     self._row_snapshot = _res["snapshot"]
-                    self._touched -= _saving
+                    _clear_saved(self, _saving)
                     self._pending_events = []          # committed with the rows, or rolled back with them
                     self._file_sig = self._stat_sig()
                     self._file_hash = None
@@ -20245,7 +20286,7 @@ class Inspeximus:
                 # recipe had nothing to compare against. Three probes cited by
                 # the docs caught it; nothing in the store itself would have.
                 if not _wrote_rows:
-                    _saving = set(self._touched)            # before the serialisation, as in the row branch (F-1)
+                    _saving = _saving_now(self)             # before the serialisation, as in the row branch (F-1)
                     data = _dump_store(slim)
                     if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
                         key = self._resolve_key()                         # sets self._enc_salt on first save
@@ -20260,8 +20301,9 @@ class Inspeximus:
                     self._json_persisted = {r.get("id") for r in slim if isinstance(r, dict)}
                     # THE EDITS ARE WRITTEN, SO THEY ARE NO LONGER THIS HANDLE'S OWN (3.19). A merge keeps this handle's
                     # copy of an edited record over the disk's; left set, a refresh would keep it over a peer's newer edit.
-                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).
-                    self._touched -= _saving
+                    # Only the ids serialised above, at the generation serialised: an edit made during the write is still
+                    # this handle's, a second edit of a record being written too (AUDIT-A F-1, F-9).
+                    _clear_saved(self, _saving)
                     # INSIDE the lock, and that is the whole point. The check and the write already shared
                     # one critical section, but this line sat outside it, so the window simply moved: A
                     # writes, releases, and before it stamps its own signature B takes the lock, compares
