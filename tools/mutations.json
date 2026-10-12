@@ -13041,5 +13041,14 @@
   "tests": [
    "tests/test_a_handle_shared_between_threads.py"
   ]
+ },
+ {
+  "name": "3.19 env leak: a run the suite started itself is stripped as well",
+  "file": "tests/conftest.py",
+  "tests": [
+   "tests/test_the_suite_sees_no_live_store.py"
+  ],
+  "old": "    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == \"1\" or os.environ.get(RUN_TMP_ENV):\n",
+  "new": "    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == \"1\":\n"
  }
 ]

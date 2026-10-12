@@ -72,6 +72,25 @@ def test_every_store_and_home_the_suite_resolves_is_inside_the_run(request, tmp_
     assert not outside, "the suite resolves paths outside its temporary roots %s: %s" % (roots, outside)
 
 
+def test_a_run_this_suite_started_keeps_the_variables_its_test_set():
+    """A child pytest a test starts inherits RUN_TMP_ENV; the strip leaves its INSPEXIMUS_* alone, because a test set
+    them (test_session_continuity's recursion guard is one). Stripping them made that child run itself again."""
+    class Cfg:
+        pass
+    saved = dict(os.environ)
+    try:
+        os.environ[conftest.RUN_TMP_ENV] = "/somewhere/run-tmp"
+        os.environ["INSPEXIMUS_CONFORMANCE_CHILD"] = "1"
+        os.environ.pop(conftest.NO_STRIP_FOR_THE_CONTROL, None)
+        cfg = Cfg()
+        conftest._strip_inspeximus_env(cfg)
+        assert os.environ.get("INSPEXIMUS_CONFORMANCE_CHILD") == "1", "a nested run lost the variable its test set"
+        assert cfg._inspeximus_env_stripped == {}
+    finally:
+        os.environ.clear()
+        os.environ.update(saved)
+
+
 def test_the_strip_leaves_nothing_but_the_inherited_ones():
     class Cfg:
         pass
@@ -80,6 +99,7 @@ def test_the_strip_leaves_nothing_but_the_inherited_ones():
         os.environ["INSPEXIMUS_DECISION_STORE"] = "/somewhere/else.json"
         os.environ["INSPEXIMUS_PYTHON"] = sys.executable
         os.environ.pop(conftest.NO_STRIP_FOR_THE_CONTROL, None)
+        os.environ.pop(conftest.RUN_TMP_ENV, None)                 # a top-level run
         cfg = Cfg()
         conftest._strip_inspeximus_env(cfg)
         left = {k for k in os.environ if k.startswith("INSPEXIMUS_")}
@@ -99,6 +119,7 @@ def test_the_guard_fails_on_a_leaked_decision_store(tmp_path):
 
     def child(strip):
         env = dict(os.environ)
+        env.pop(conftest.RUN_TMP_ENV, None)              # a top-level run, as a caller starts it, not a nested one
         env["INSPEXIMUS_DECISION_STORE"] = outside
         if strip:
             env.pop(conftest.NO_STRIP_FOR_THE_CONTROL, None)

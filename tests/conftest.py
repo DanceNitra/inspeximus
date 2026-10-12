@@ -487,8 +487,14 @@ def _strip_inspeximus_env(config):
     past its 0.3 s bound. The hook only reads that store, and nothing was written to it, but the suite must not see the
     owner's stores at all. A test that needs one of these variables sets it inside its own sandbox.
 
-    Runs in the xdist controller too, before the workers start, so they inherit the stripped environment."""
-    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == "1":
+    Runs in the xdist controller too, before the workers start, so they inherit the stripped environment.
+
+    NOT IN A RUN THIS SUITE STARTED ITSELF. A test that runs pytest in a child (test_session_continuity's strict run, the
+    control in test_the_suite_sees_no_live_store) passes INSPEXIMUS_* variables on purpose: the strict run's recursion
+    guard is one of them. Stripped in the child, the guard was gone, the child ran itself again, and the xdist worker
+    died near the end of the run (measured on f01b1178, twice). Such a child inherits RUN_TMP_ENV from the run that
+    started it; every variable it sees was set by a test, and the outer run already stripped the caller's."""
+    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == "1" or os.environ.get(RUN_TMP_ENV):
         config._inspeximus_env_stripped = {}
         return
     gone = {k: os.environ.pop(k) for k in [k for k in os.environ
