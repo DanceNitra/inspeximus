@@ -12951,5 +12951,41 @@
   ],
   "old": "                                           if k.startswith(\"INSPEXIMUS_\") and k not in INHERITED_INSPEXIMUS]}\n",
   "new": "                                           if k.startswith(\"INSPEXIMUS_NONE_\") and k not in INHERITED_INSPEXIMUS]}\n"
+ },
+ {
+  "name": "3.19 item 4: the untested macOS reader is switched on",
+  "old": "DARWIN_START_TIME = False\n",
+  "new": "DARWIN_START_TIME = True\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_the_daemon_start_time_on_macos.py"
+  ]
+ },
+ {
+  "name": "3.19 item 4: the macOS parser takes the start time of another pid",
+  "old": "    if struct.unpack_from(\"<i\", raw, _KP_PID_OFFSET)[0] != pid:\n        return None\n",
+  "new": "",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_the_daemon_start_time_on_macos.py"
+  ]
+ },
+ {
+  "name": "3.19 item 4: the macOS parser takes a zero or out-of-range time",
+  "old": "    if sec <= 0 or not 0 <= usec < 1000000:\n        return None\n",
+  "new": "",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_the_daemon_start_time_on_macos.py"
+  ]
+ },
+ {
+  "name": "3.19 item 4: macOS is not dispatched to its own reader",
+  "old": "        if sys.platform == \"darwin\":\n            return _darwin_proc_start(pid)\n",
+  "new": "",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_the_daemon_start_time_on_macos.py"
+  ]
  }
 ]

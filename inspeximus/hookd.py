@@ -98,11 +98,60 @@ def _fails_path(kh, t):
     return os.path.join(state_dir(kh), t + ".fails")
 
 
+#: THE macOS START TIME IS WRITTEN AND SWITCHED OFF (3.19 item 4). No CI job runs the tests on macOS (the only macOS
+#: runner, audit.yml's claims job, runs claims_audit.py), so the reader below has never run on a Mac. Off, a Mac reads
+#: no start time, the daemon does not start there, and the hook takes its normal path, as on 3.18. It is switched on
+#: in the release after a macOS run of tests/test_the_daemon_start_time_on_macos.py passes.
+DARWIN_START_TIME = False
+
+#: CTL_KERN, KERN_PROC, KERN_PROC_PID: sysctl(3) names one process's `struct kinfo_proc`.
+_KERN_PROC_PID_MIB = (1, 14, 1)
+#: `struct kinfo_proc` begins with `struct extern_proc`, whose first member is the union holding `p_starttime`, a
+#: `struct timeval` (int64 seconds, int32 microseconds) at offset 0; `p_pid` (int32) is at offset 40, after the union
+#: (16), two pointers (16), `p_flag` (4), `p_stat` (1) and padding (3). 64-bit macOS on x86_64 and arm64, both little-endian.
+_KP_PID_OFFSET = 40
+
+
+def _parse_kinfo_proc(raw, pid):
+    """The start time in microseconds from the bytes of a `struct kinfo_proc`, or None when they do not describe `pid`:
+    an empty answer (no such process), a short one, another pid, or a start time that is not a time."""
+    import struct
+    if len(raw) < _KP_PID_OFFSET + 4:
+        return None
+    sec, usec = struct.unpack_from("<qi", raw, 0)
+    if struct.unpack_from("<i", raw, _KP_PID_OFFSET)[0] != pid:
+        return None
+    if sec <= 0 or not 0 <= usec < 1000000:
+        return None
+    return sec * 1000000 + usec
+
+
+def _darwin_kinfo_proc(pid):
+    """The raw `struct kinfo_proc` of `pid` from sysctl(3), or b"" when the call fails. Untested on a Mac."""
+    import ctypes
+    import ctypes.util
+    libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+    mib = (ctypes.c_int * 4)(*(_KERN_PROC_PID_MIB + (int(pid),)))
+    buf = ctypes.create_string_buffer(1024)                 # larger than the struct: the call reports the size it wrote
+    size = ctypes.c_size_t(len(buf))
+    if libc.sysctl(mib, 4, buf, ctypes.byref(size), None, ctypes.c_size_t(0)) != 0:
+        return b""
+    return buf.raw[:size.value]
+
+
+def _darwin_proc_start(pid):
+    if not DARWIN_START_TIME:
+        return None
+    return _parse_kinfo_proc(_darwin_kinfo_proc(pid), pid)
+
+
 def _proc_start(pid):
     """The process's creation time as an opaque number, or None where it cannot be read. With the pid it names one
     process: a pid the system gave to another process since has another start time (AUDIT-A D-5)."""
     try:
         pid = int(pid)
+        if sys.platform == "darwin":
+            return _darwin_proc_start(pid)
         if os.name == "nt":
             import ctypes
             from ctypes import wintypes
