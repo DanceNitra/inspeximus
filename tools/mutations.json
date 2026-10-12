@@ -2275,8 +2275,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "recall ignores standing objections",
-  "old": "                _withheld = self._withheld_ids()\n                if _withheld:\n                    pool = [r for r in pool if r[\"id\"] not in _withheld]",
-  "new": "                _withheld = set()\n                if _withheld:\n                    pool = [r for r in pool if r[\"id\"] not in _withheld]",
+  "old": "                    _withheld = self._withheld_ids()\n                    if _withheld:\n                        pool = [r for r in pool if r[\"id\"] not in _withheld]",
+  "new": "                    _withheld = set()\n                    if _withheld:\n                        pool = [r for r in pool if r[\"id\"] not in _withheld]",
   "tests": [
    "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
   ]
@@ -2429,8 +2429,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "quarantined records are served anyway",
-  "old": "                if not include_quarantined:\n                    pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
-  "new": "                if False:\n                    pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
+  "old": "                    if not include_quarantined:\n                        pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
+  "new": "                    if False:\n                        pool = [r for r in pool if not Inspeximus._is_quarantined(r)]",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
@@ -2474,8 +2474,8 @@
  {
   "file": "inspeximus/core.py",
   "name": "records written before the guards are never assessed at recall",
-  "old": "            if self.read_guards:\n                for r in pool:\n                    self._assess_read_guards(r)\n                if not include_quarantined:",
-  "new": "            if self.read_guards:\n                if not include_quarantined:",
+  "old": "                if self.read_guards:\n                    for r in pool:\n                        self._assess_read_guards(r)\n                    if not include_quarantined:",
+  "new": "                if self.read_guards:\n                    if not include_quarantined:",
   "tests": [
    "tests/test_two_read_guards_quarantine_instructions_and_demote_stuffing.py"
   ]
@@ -11491,8 +11491,8 @@
  {
   "name": "3.18 index: the cache is never reused",
   "file": "inspeximus/core.py",
-  "old": "        if _ix is not None and _ix_new is None:\n            pool = list(_ix[\"pool\"])\n",
-  "new": "        if False:\n            pool = list(_ix[\"pool\"])\n",
+  "old": "            if _ix is not None and _ix_new is None:\n                pool = list(_ix[\"pool\"])\n",
+  "new": "            if False:\n                pool = list(_ix[\"pool\"])\n",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py"
@@ -11541,8 +11541,8 @@
  {
   "name": "3.18 index X-2: the appended records never reach the token index",
   "file": "inspeximus/core.py",
-  "old": "                if _ix[\"post\"] is not None:\n                    for _i, _r in enumerate(pool, _base):\n",
-  "new": "                if False:\n                    for _i, _r in enumerate(pool, _base):\n",
+  "old": "                    if _ix[\"post\"] is not None:\n                        for _i, _r in enumerate(pool, _base):\n",
+  "new": "                    if False:\n                        for _i, _r in enumerate(pool, _base):\n",
   "tests": [
    "tests/test_the_recall_index_stays_exact.py",
    "tests/test_the_recall_index_keeps_views_apart.py"
@@ -11600,8 +11600,8 @@
  {
   "name": "3.18 index: an erasure leaves the erased record in the recall index",
   "file": "inspeximus/core.py",
-  "old": "        ixd = getattr(self, \"_recall_ix\", None)\n        if ixd:",
-  "new": "        ixd = None\n        if ixd:",
+  "old": "            ixd = getattr(self, \"_recall_ix\", None)\n            if ixd:",
+  "new": "            ixd = None\n            if ixd:",
   "tests": [
    "tests/test_an_erasure_holds_in_every_handle_on_the_store.py"
   ]
@@ -12986,6 +12986,60 @@
   "file": "inspeximus/hookd.py",
   "tests": [
    "tests/test_the_daemon_start_time_on_macos.py"
+  ]
+ },
+ {
+  "name": "3.19 item 5: the prune iterates the live cache, not a snapshot",
+  "old": "                for rid in [k for k in list(dict.keys(cache)) if k not in live]:\n",
+  "new": "                for rid in [k for k in cache if k not in live]:\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 item 5: recall's index section runs without the lock",
+  "old": "        with _ix_lock_of(self):\n            _ix, _ix_args, _ix_new = None, None, None\n",
+  "new": "        with _NO_LOCK:\n            _ix, _ix_args, _ix_new = None, None, None\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 item 5: the norm cache is filled without the lock",
+  "old": "            with _ix_lock_of(self):\n                nb = _norm(v)\n                c[rid] = (v, nb)\n",
+  "new": "            with _NO_LOCK:\n                nb = _norm(v)\n                c[rid] = (v, nb)\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 item 5: an edit of a vector drops its norm without the lock",
+  "old": "        if _vn is not None:\n            with _ix_lock_of(store):\n                _vn.pop(rid, None)\n",
+  "new": "        if _vn is not None:\n            with _NO_LOCK:\n                _vn.pop(rid, None)\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 item 5: an empty norm cache skips the drop",
+  "old": "        if _vn is not None:\n            with _ix_lock_of(store):\n",
+  "new": "        if _vn:\n            with _ix_lock_of(store):\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 item 5: recall holds the lock across the embed call",
+  "old": "        qvec = self._qvec(query, self.embed_query) if sel in (\"semantic\", \"hybrid\") else None\n",
+  "new": "        with _ix_lock_of(self):\n            qvec = self._qvec(query, self.embed_query) if sel in (\"semantic\", \"hybrid\") else None\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
   ]
  }
 ]

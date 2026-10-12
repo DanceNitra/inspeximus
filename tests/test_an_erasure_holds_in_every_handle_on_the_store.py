@@ -82,6 +82,20 @@ def test_forget_leaves_no_term_of_the_erased_record_in_the_handle(tmp_path):
     assert x not in [r["id"] for r in m.recall(TERM, mode="hybrid", k=10)]
 
 
+def test_forget_leaves_no_term_in_a_held_handles_recall_index(tmp_path):
+    """A held handle (the daemon, the MCP server) builds recall's index. The erasure prunes the entry at once, not at the
+    next recall that replaces it: until then the erased text would sit in the process (3.19, a mutant of the prune
+    survived every test, because _warm's two recalls on a handle that is not held never built the index)."""
+    m = Inspeximus(str(tmp_path / "s.json"), embed=_embed)
+    m._ix_held = True
+    x = _warm(m)
+    for _ in range(2):
+        m.recall(f"courier {TERM}", mode="lexical")
+    assert "_recall_ix" in _residue(m), "control: the index holds the record before the erasure"
+    m.forget(ids=[x])
+    assert _residue(m) == []
+
+
 def test_shred_leaves_no_term_in_the_handle(tmp_path):
     pytest.importorskip("cryptography")
     m = Inspeximus(str(tmp_path / "s.json"), embed=_embed, encrypt_passphrase="correct horse")

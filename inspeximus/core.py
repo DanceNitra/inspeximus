@@ -2002,9 +2002,12 @@ def _note_dirty(store, rid, field=None, tracked=False) -> None:
     elif rid and not tracked and field == "vec":
         # A VECTOR'S NORM GOES WITH THE VECTOR: re-embed (`_set_vec`), any assignment of `vec`, and an in-place edit,
         # which keeps the list's identity, so `_rec_cos`'s identity check alone would not see it.
+        # THE CHECK GOES UNDER THE LOCK TOO (3.19 item 5): an empty cache skipped the drop, while another thread was about
+        # to store the norm of this vector as it was before the edit.
         _vn = getattr(store, "_vnorm", None)
-        if _vn:
-            _vn.pop(rid, None)
+        if _vn is not None:
+            with _ix_lock_of(store):
+                _vn.pop(rid, None)
 
 
 #: The record fields `_index_text` reads. The per-id caches (`_tok_cache`, `_sig_cache`, `_tc_cache`) derive from them
@@ -2015,10 +2018,29 @@ _INDEX_FIELDS = frozenset(("text", "key", "meta"))
 
 def _drop_derived(store, rid) -> None:
     """Forget what the store derived from one record's text: its token set, signature and term counts."""
-    for name in ("_tok_cache", "_sig_cache", "_tc_cache", "_vnorm"):
-        c = getattr(store, name, None)
-        if c:
-            c.pop(rid, None)
+    with _ix_lock_of(store):
+        for name in ("_tok_cache", "_sig_cache", "_tc_cache", "_vnorm"):
+            c = getattr(store, name, None)
+            if c:
+                c.pop(rid, None)
+
+
+def _ix_lock_of(store):
+    """The handle's lock for recall's index and the caches derived from its records (3.19 item 5).
+
+    ONE THREAD AT A TIME CHANGES THEM. A handle shared between threads (an executor, LangGraph's checkpointer pool) had
+    recall extend an index entry while another recall read it, and the prune iterate a cache another thread was filling:
+    "dictionary changed size during iteration", a pool that held a record twice, or a norm kept for a vector edited in
+    place. The lock covers the index section of recall, the prune, the drops on an edit and the norm cache's fill. It is
+    never held across the store lock's wait, a save, an embed call or a read of the file: none of those runs inside it,
+    and tests/test_a_handle_shared_between_threads.py fails if one does. Measured: 148 ns uncontended, no loss of
+    throughput with four recall threads (the GIL already runs one at a time). A view finds its parent's lock through
+    __getattr__; a handle built without __init__ keeps no index and gets no lock."""
+    lk = getattr(store, "_ix_lock", None)
+    return lk if lk is not None else _NO_LOCK
+
+
+_NO_LOCK = contextlib.nullcontext()
 
 
 #: At most this many cached pools per store: one per combination of scope and pool arguments in use. Measured
@@ -3444,6 +3466,7 @@ class Inspeximus:
         self._ix_uses = {}                        # recalls per cache key; see _RECALL_IX_BUILD_AFTER
         self._ix_held = False                     # set by a process that holds this handle (the daemon, the MCP server)
         self._ix_log = {}                         # record id -> the revision that last moved it; see _note_dirty
+        self._ix_lock = threading.RLock()         # the index and the derived caches, one thread at a time (3.19)
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
         # recall auto-mode: below this many active memories lexical is as good and free; above it the
@@ -15475,19 +15498,22 @@ class Inspeximus:
                               getattr(self, "_tc_cache", None), getattr(self, "_vnorm", None)) if c]
         if not caches and not getattr(self, "_recall_ix", None):
             return                                    # nothing derived yet (a load, __init__): nothing to build
-        live = {r.get("id") for r in self._items}
-        for cache in caches:
-            for rid in [k for k in cache if k not in live]:
-                del cache[rid]
-        # The recall index (3.18) holds records in its pool and snapshot, and their tokens in its postings: an entry
-        # that holds an erased record goes whole, and the next recall builds it from the live rows.
-        ixd = getattr(self, "_recall_ix", None)
-        if ixd:
-            for k in [k for k, e in ixd.items() if any(r.get("id") not in live for r in e["snap"])
-                      or any(r.get("id") not in live for r in e["pool"])]:
-                del ixd[k]
-            if not ixd:
-                self._ix_log.clear()
+        # A SNAPSHOT, TAKEN IN ONE C CALL (3.19 item 5): `list(dict.keys(c))` runs under the GIL in one step, so another
+        # thread that adds to a cache cannot change it mid-iteration. The lock keeps the index and its log consistent.
+        with _ix_lock_of(self):
+            live = {r.get("id") for r in list(self._items)}
+            for cache in caches:
+                for rid in [k for k in list(dict.keys(cache)) if k not in live]:
+                    cache.pop(rid, None)
+            # The recall index (3.18) holds records in its pool and snapshot, and their tokens in its postings: an entry
+            # that holds an erased record goes whole, and the next recall builds it from the live rows.
+            ixd = getattr(self, "_recall_ix", None)
+            if ixd:
+                for k in [k for k, e in list(dict.items(ixd)) if any(r.get("id") not in live for r in e["snap"])
+                          or any(r.get("id") not in live for r in e["pool"])]:
+                    ixd.pop(k, None)
+                if not ixd:
+                    self._ix_log.clear()
 
     def _bm25_scores(self, qtok: set, pool: list, k1: float = 1.5, b: float = 0.75) -> list:
         """Okapi BM25 score of `query` (token set) against every record in `pool` — the strong lexical
@@ -15787,172 +15813,175 @@ class Inspeximus:
         # KEYED BY EVERYTHING THAT DECIDES THE POOL (AUDIT-A X-1). The entries live in one dict on the store, and a
         # view reads and writes that dict in place, so each scope finds only its own entry: the key holds the view's
         # tenant, agent and ACL revision (`_view_scope`, the key `items` uses) and every pool argument.
-        _ix, _ix_args, _ix_new = None, None, None
-        if (_recall_index_on() and _shared is None and not (where or trusted_only or influence_only or reinforce)
-                and not self._objections and self._items and type(self._items[0]) is _TrackedDict
-                and isinstance(getattr(self, "_recall_ix", None), dict)):
-            _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,
-                        agent_id, session_id, self.read_guards) + _view_scope(self)
-            # NOTHING ON THE FIRST RECALL UNDER A KEY (AUDIT-B, 3.18 speed check). A one-shot handle (the CLI, a hook
-            # the daemon does not serve) recalls once: it counts the key and runs the 3.17 path, with no snapshot, no
-            # entry and no token index. The second recall under the key builds the entry and its token index, whatever
-            # the first recall's read guards edited; later ones reuse or extend it.
-            _uses = getattr(self, "_ix_uses", None)
-            if _uses is None:
-                _ix_args = None                           # a handle built without __init__ keeps no index
-            else:
-                _uses[_ix_args] = _uses.get(_ix_args, 0) + 1
-                if len(_uses) > 64:
-                    _uses.clear()
-                _after = _RECALL_IX_BUILD_AFTER_HELD if getattr(self, "_ix_held", False) else _RECALL_IX_BUILD_AFTER
-                if _uses.get(_ix_args, 0) < _after and _ix_args not in self._recall_ix:
-                    _ix_args = None
-        if _ix_args is not None:
-            # READ BEFORE THE POOL IS BUILT (AUDIT-A Y-1). Keyed with what was current at the end, an entry built while
-            # another thread wrote carried that write's revision and a pool that predates it, and was served as current.
-            # Keyed with what was current at the start, such an entry is stale at the next recall and rebuilt. An edit
-            # this recall makes itself (the read guards drop a stamp they cannot verify) costs one extra rebuild.
-            _ix_at = (self._rev, len(self._items), tuple(self._items))
-            _c = self._recall_ix.get(_ix_args)
-            if _c is not None and _c["items"] is self._items:
-                if _c["n"] == len(self._items) and _c["rev"] == self._rev:
-                    _ix = _c
-                elif len(self._items) > _c["n"]:
-                    # RECORDS APPENDED SINCE THE ENTRY, AND NOTHING ELSE (AUDIT-A X-2: one remember between recalls
-                    # rebuilt the whole pool and made the index slower than none). Every revision since the entry
-                    # moved a record that is among the appended ones, and the records before them are the same
-                    # objects in the same places; then only the appended records are filtered, and added.
-                    _tail = self._items[_c["n"]:]
-                    _tail_ids = {r.get("id") for r in _tail}
-                    _moved = {k for k, v in self._ix_log.items() if v > _c["rev"]}
-                    if (None not in _moved and _moved <= _tail_ids and len(self._items) == _c["n"] + len(_tail)
-                            and all(a is b for a, b in zip(self._items, _c["snap"]))):
-                        _ix, _ix_new = _c, set(_tail_ids)
-        if _ix is not None and _ix_new is None:
-            pool = list(_ix["pool"])
-        elif _shared is not None and _shared.get("key") == _pool_key:
-            pool = list(_shared["pool"])
-        else:
-            # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
-            # either. Without this, issuing a grant would put "ACL: ... granted agent 'bob' read access ..."
-            # into the answer set of every loosely-related query.
-            _rows = self.items
-            if _ix_new is not None:
-                _rows = [r for r in _rows[_ix["vis"]:] if r.get("id") in _ix_new]
-            pool = [r for r in _rows if _eligible(r) and not _is_acl_record(r)]
-            # HARD TENANT ISOLATION (fail-closed, non-bypassable): a tenant-bound store sees ONLY its own tenant's
-            # records, always — this is enforced here on the STORE, not via a caller argument, so no forgotten
-            # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
-            if self.tenant is not None:
-                pool = [r for r in pool if r.get("tenant") == self.tenant]
-            # GDPR Art. 21: a standing objection withholds the subject's records from every recall, on the
-            # STORE, so no caller argument can serve them by omission. Records written after the objection
-            # are caught too, because the filter resolves sources, not ids. Export (Art. 15) still sees them.
-            if self._objections:
-                _withheld = self._withheld_ids()
-                if _withheld:
-                    pool = [r for r in pool if r["id"] not in _withheld]
-            # READ-PATH GUARDS (3.5.0): instruction-shaped records are quarantined here, before ranking, so
-            # they never occupy a slot; keyword-stuffed records stay in and are demoted after the sort.
-            if self.read_guards:
-                for r in pool:
-                    self._assess_read_guards(r)
-                if not include_quarantined:
-                    pool = [r for r in pool if not Inspeximus._is_quarantined(r)]
-            # Scope/namespace isolation: when a scope is requested, recall ONLY sees memories tagged with that scope
-            # (meta['scope']) BEFORE ranking — a shared store (e.g. many agents / tenants in one Inspeximus) cannot bleed
-            # one scope's memories into another's recall. scope=None (default) sees everything (legacy behavior).
-            if scope is not None:
-                pool = [r for r in pool if (r.get("meta") or {}).get("scope") == scope]
-            # PROJECT / WORKSPACE isolation (opt-in): one store, several repos. A named project sees its OWN
-            # memories plus every UNSTAMPED (global) one — the same wildcard rule the uid/aid/sid hierarchy below
-            # uses, and the reason opting in is non-destructive: everything written before you passed a project is
-            # unstamped, so it stays reachable from every project instead of vanishing the day you adopt a scope.
-            # A record stamped for ANOTHER project is filtered out HERE, before ranking, so a peer project's
-            # memories cannot occupy top-k slots and then be dropped (which would silently shrink k).
-            # project=None (default) filters nothing at all — byte-identical legacy behaviour, and the way to
-            # search ACROSS projects deliberately.
-            if project is not None:
-                pool = [r for r in pool
-                        if (r.get("meta") or {}).get("project") in (None, str(project))]
-            # MEMORY HIERARCHY visibility (user > agent > session): when the query names any of user/agent/session,
-            # a memory is visible iff, for each NAMED level, the memory is EITHER unscoped at that level (wildcard)
-            # OR equal to the query's value; an UNNAMED query level is unconstrained. So (a) a session query sees that
-            # session's memories PLUS the user's/agent's shared (unscoped-session) memories, but NOT a peer session's;
-            # (b) users are isolated from each other and peer sessions from each other; (c) a broad user-only query
-            # sees all that user's own memories (incl. their sessions' — same user, not a leak). All None = legacy.
-            if user_id is not None or agent_id is not None or session_id is not None:
-                _want = {"uid": user_id, "aid": agent_id, "sid": session_id}
-
-                def _visible(r):
-                    m = r.get("meta") or {}
-                    for lvl, qv in _want.items():
-                        if qv is None:
-                            continue
-                        mv = m.get(lvl)
-                        if mv is not None and str(mv) != str(qv):
-                            return False
-                    return True
-                pool = [r for r in pool if _visible(r)]
-            # TRUSTED-ONLY (OPT-IN, needs trust_seeds): keep only candidates whose ORIGIN is anchored to the trust root —
-            # the record is itself attested by a seed key, its (entity-resolved) source is seed-vouched, OR a trusted
-            # actor endorses it via a link (the trust closure). Filtered HERE, BEFORE ranking, so recall returns the top
-            # TRUSTED hit even at k=1 (not the top hit then dropped). The deterministic, zero-LLM defense against
-            # forged-provenance memory poisoning: an attacker can forge a warrant STRING and mint Sybil Ed25519 keys, but
-            # cannot sign as a TRUSTED key, so its poison never enters the pool. Trust is a root set ONCE (CA-style), not
-            # a per-query oracle. High-friction by design — anchor the facts that MATTER (bank, medication, instructions).
-            if trusted_only:
-                # FAIL CLOSED. With no trust_seeds there is no trust root, so NOTHING can be anchored to it and the
-                # honest answer is "no trusted memories" — not the whole untrusted pool. Skipping the filter here
-                # (the old `and self.trust_seeds`) silently returned exactly the poisoned records the caller asked
-                # to exclude, and looked identical to a successful trusted recall.
-                if not self.trust_seeds:
-                    pool = []
+        # ONE THREAD AT A TIME (3.19 item 5): the entry, its pool and postings, and the log. No embed, save or file read
+        # runs in this section; the query vector and the ranking below are outside it.
+        with _ix_lock_of(self):
+            _ix, _ix_args, _ix_new = None, None, None
+            if (_recall_index_on() and _shared is None and not (where or trusted_only or influence_only or reinforce)
+                    and not self._objections and self._items and type(self._items[0]) is _TrackedDict
+                    and isinstance(getattr(self, "_recall_ix", None), dict)):
+                _ix_args = (include_superseded, include_hubs, as_of, include_quarantined, scope, project, user_id,
+                            agent_id, session_id, self.read_guards) + _view_scope(self)
+                # NOTHING ON THE FIRST RECALL UNDER A KEY (AUDIT-B, 3.18 speed check). A one-shot handle (the CLI, a hook
+                # the daemon does not serve) recalls once: it counts the key and runs the 3.17 path, with no snapshot, no
+                # entry and no token index. The second recall under the key builds the entry and its token index, whatever
+                # the first recall's read guards edited; later ones reuse or extend it.
+                _uses = getattr(self, "_ix_uses", None)
+                if _uses is None:
+                    _ix_args = None                           # a handle built without __init__ keeps no index
                 else:
-                    _trusted = self._trusted_sources({it["id"]: it for it in self.items})
-                    pool = [r for r in pool
-                            if ("key:" + str(r.get("attested_key"))) in self.trust_seeds
-                            or self._canon_of(r) in _trusted]
-            # Metadata pre-filter (the 'filter before you rank' lever): keep only records matching ALL `where`
-            # conditions, matched against top-level fields then meta. Deterministic, no embedder, O(pool).
-            if where:
-                pool = [r for r in pool if self._cond_match(r, where)]
-            # Influence gate (retrieve-then-influence split): keep only CORROBORATED memories in the set that is
-            # allowed to drive an action. Same bar as episodic->semantic graduation; embedder-independent, so it
-            # generalizes across retrievers where geometry-based poison defenses do not (see the docstring).
-            if influence_only:
-                _byid = {x["id"]: x for x in self.items}
-                pool = [r for r in pool if self._corroborated(r, _byid)]
-            if _shared is not None:
-                _shared.clear()
-                _shared.update(owner=self, key=_pool_key, pool=tuple(pool), stale={})
-            if _ix_new is not None:
-                # The appended rows, filtered as a full build filters them, go after the entry's pool; the token index
-                # gets their positions. Same pool, in the same order, as a rebuild (the tests compare the two).
-                _base = len(_ix["pool"])
-                _ix["pool"] = _ix["pool"] + tuple(pool)
-                if _ix["post"] is not None:
-                    for _i, _r in enumerate(pool, _base):
-                        for _t in self._rec_tokens(_r):
-                            _ix["post"].setdefault(_t, []).append(_i)
-                _ix.update(rev=_ix_at[0], n=_ix_at[1], snap=_ix_at[2], vis=_ix["vis"] + len(_rows))
-                _ix["appends"] = _ix.get("appends", 0) + 1
-                pool = list(_ix["pool"])
-            elif _ix_args is not None:
-                # Keyed AFTER the pool is built: assessing the read guards can edit a record (a stamp it cannot
-                # verify is dropped), and that edit belongs to this pool, not to the next recall's.
-                _ix = {"args": _ix_args, "items": self._items, "n": _ix_at[1], "rev": _ix_at[0],
-                       "vis": len(_rows), "snap": _ix_at[2], "pool": tuple(pool), "post": None}
-                _ixd = self._recall_ix
-                _ixd.pop(_ix_args, None)
-                _ixd[_ix_args] = _ix
-                while len(_ixd) > _RECALL_IX_ENTRIES:
-                    _ixd.pop(next(iter(_ixd)))
+                    _uses[_ix_args] = _uses.get(_ix_args, 0) + 1
+                    if len(_uses) > 64:
+                        _uses.clear()
+                    _after = _RECALL_IX_BUILD_AFTER_HELD if getattr(self, "_ix_held", False) else _RECALL_IX_BUILD_AFTER
+                    if _uses.get(_ix_args, 0) < _after and _ix_args not in self._recall_ix:
+                        _ix_args = None
             if _ix_args is not None:
-                # The log only has to reach back to the oldest entry still held.
-                _floor = min(e["rev"] for e in self._recall_ix.values())
-                for _k in [k for k, v in self._ix_log.items() if v <= _floor]:
-                    del self._ix_log[_k]
+                # READ BEFORE THE POOL IS BUILT (AUDIT-A Y-1). Keyed with what was current at the end, an entry built while
+                # another thread wrote carried that write's revision and a pool that predates it, and was served as current.
+                # Keyed with what was current at the start, such an entry is stale at the next recall and rebuilt. An edit
+                # this recall makes itself (the read guards drop a stamp they cannot verify) costs one extra rebuild.
+                _ix_at = (self._rev, len(self._items), tuple(self._items))
+                _c = self._recall_ix.get(_ix_args)
+                if _c is not None and _c["items"] is self._items:
+                    if _c["n"] == len(self._items) and _c["rev"] == self._rev:
+                        _ix = _c
+                    elif len(self._items) > _c["n"]:
+                        # RECORDS APPENDED SINCE THE ENTRY, AND NOTHING ELSE (AUDIT-A X-2: one remember between recalls
+                        # rebuilt the whole pool and made the index slower than none). Every revision since the entry
+                        # moved a record that is among the appended ones, and the records before them are the same
+                        # objects in the same places; then only the appended records are filtered, and added.
+                        _tail = self._items[_c["n"]:]
+                        _tail_ids = {r.get("id") for r in _tail}
+                        _moved = {k for k, v in self._ix_log.items() if v > _c["rev"]}
+                        if (None not in _moved and _moved <= _tail_ids and len(self._items) == _c["n"] + len(_tail)
+                                and all(a is b for a, b in zip(self._items, _c["snap"]))):
+                            _ix, _ix_new = _c, set(_tail_ids)
+            if _ix is not None and _ix_new is None:
+                pool = list(_ix["pool"])
+            elif _shared is not None and _shared.get("key") == _pool_key:
+                pool = list(_shared["pool"])
+            else:
+                # Access-control acts are bookkeeping, not memories: a grant is never a recall hit, for the operator
+                # either. Without this, issuing a grant would put "ACL: ... granted agent 'bob' read access ..."
+                # into the answer set of every loosely-related query.
+                _rows = self.items
+                if _ix_new is not None:
+                    _rows = [r for r in _rows[_ix["vis"]:] if r.get("id") in _ix_new]
+                pool = [r for r in _rows if _eligible(r) and not _is_acl_record(r)]
+                # HARD TENANT ISOLATION (fail-closed, non-bypassable): a tenant-bound store sees ONLY its own tenant's
+                # records, always — this is enforced here on the STORE, not via a caller argument, so no forgotten
+                # parameter can leak another tenant's data. An unbound store (tenant=None) is the admin view (sees all).
+                if self.tenant is not None:
+                    pool = [r for r in pool if r.get("tenant") == self.tenant]
+                # GDPR Art. 21: a standing objection withholds the subject's records from every recall, on the
+                # STORE, so no caller argument can serve them by omission. Records written after the objection
+                # are caught too, because the filter resolves sources, not ids. Export (Art. 15) still sees them.
+                if self._objections:
+                    _withheld = self._withheld_ids()
+                    if _withheld:
+                        pool = [r for r in pool if r["id"] not in _withheld]
+                # READ-PATH GUARDS (3.5.0): instruction-shaped records are quarantined here, before ranking, so
+                # they never occupy a slot; keyword-stuffed records stay in and are demoted after the sort.
+                if self.read_guards:
+                    for r in pool:
+                        self._assess_read_guards(r)
+                    if not include_quarantined:
+                        pool = [r for r in pool if not Inspeximus._is_quarantined(r)]
+                # Scope/namespace isolation: when a scope is requested, recall ONLY sees memories tagged with that scope
+                # (meta['scope']) BEFORE ranking — a shared store (e.g. many agents / tenants in one Inspeximus) cannot bleed
+                # one scope's memories into another's recall. scope=None (default) sees everything (legacy behavior).
+                if scope is not None:
+                    pool = [r for r in pool if (r.get("meta") or {}).get("scope") == scope]
+                # PROJECT / WORKSPACE isolation (opt-in): one store, several repos. A named project sees its OWN
+                # memories plus every UNSTAMPED (global) one — the same wildcard rule the uid/aid/sid hierarchy below
+                # uses, and the reason opting in is non-destructive: everything written before you passed a project is
+                # unstamped, so it stays reachable from every project instead of vanishing the day you adopt a scope.
+                # A record stamped for ANOTHER project is filtered out HERE, before ranking, so a peer project's
+                # memories cannot occupy top-k slots and then be dropped (which would silently shrink k).
+                # project=None (default) filters nothing at all — byte-identical legacy behaviour, and the way to
+                # search ACROSS projects deliberately.
+                if project is not None:
+                    pool = [r for r in pool
+                            if (r.get("meta") or {}).get("project") in (None, str(project))]
+                # MEMORY HIERARCHY visibility (user > agent > session): when the query names any of user/agent/session,
+                # a memory is visible iff, for each NAMED level, the memory is EITHER unscoped at that level (wildcard)
+                # OR equal to the query's value; an UNNAMED query level is unconstrained. So (a) a session query sees that
+                # session's memories PLUS the user's/agent's shared (unscoped-session) memories, but NOT a peer session's;
+                # (b) users are isolated from each other and peer sessions from each other; (c) a broad user-only query
+                # sees all that user's own memories (incl. their sessions' — same user, not a leak). All None = legacy.
+                if user_id is not None or agent_id is not None or session_id is not None:
+                    _want = {"uid": user_id, "aid": agent_id, "sid": session_id}
+
+                    def _visible(r):
+                        m = r.get("meta") or {}
+                        for lvl, qv in _want.items():
+                            if qv is None:
+                                continue
+                            mv = m.get(lvl)
+                            if mv is not None and str(mv) != str(qv):
+                                return False
+                        return True
+                    pool = [r for r in pool if _visible(r)]
+                # TRUSTED-ONLY (OPT-IN, needs trust_seeds): keep only candidates whose ORIGIN is anchored to the trust root —
+                # the record is itself attested by a seed key, its (entity-resolved) source is seed-vouched, OR a trusted
+                # actor endorses it via a link (the trust closure). Filtered HERE, BEFORE ranking, so recall returns the top
+                # TRUSTED hit even at k=1 (not the top hit then dropped). The deterministic, zero-LLM defense against
+                # forged-provenance memory poisoning: an attacker can forge a warrant STRING and mint Sybil Ed25519 keys, but
+                # cannot sign as a TRUSTED key, so its poison never enters the pool. Trust is a root set ONCE (CA-style), not
+                # a per-query oracle. High-friction by design — anchor the facts that MATTER (bank, medication, instructions).
+                if trusted_only:
+                    # FAIL CLOSED. With no trust_seeds there is no trust root, so NOTHING can be anchored to it and the
+                    # honest answer is "no trusted memories" — not the whole untrusted pool. Skipping the filter here
+                    # (the old `and self.trust_seeds`) silently returned exactly the poisoned records the caller asked
+                    # to exclude, and looked identical to a successful trusted recall.
+                    if not self.trust_seeds:
+                        pool = []
+                    else:
+                        _trusted = self._trusted_sources({it["id"]: it for it in self.items})
+                        pool = [r for r in pool
+                                if ("key:" + str(r.get("attested_key"))) in self.trust_seeds
+                                or self._canon_of(r) in _trusted]
+                # Metadata pre-filter (the 'filter before you rank' lever): keep only records matching ALL `where`
+                # conditions, matched against top-level fields then meta. Deterministic, no embedder, O(pool).
+                if where:
+                    pool = [r for r in pool if self._cond_match(r, where)]
+                # Influence gate (retrieve-then-influence split): keep only CORROBORATED memories in the set that is
+                # allowed to drive an action. Same bar as episodic->semantic graduation; embedder-independent, so it
+                # generalizes across retrievers where geometry-based poison defenses do not (see the docstring).
+                if influence_only:
+                    _byid = {x["id"]: x for x in self.items}
+                    pool = [r for r in pool if self._corroborated(r, _byid)]
+                if _shared is not None:
+                    _shared.clear()
+                    _shared.update(owner=self, key=_pool_key, pool=tuple(pool), stale={})
+                if _ix_new is not None:
+                    # The appended rows, filtered as a full build filters them, go after the entry's pool; the token index
+                    # gets their positions. Same pool, in the same order, as a rebuild (the tests compare the two).
+                    _base = len(_ix["pool"])
+                    _ix["pool"] = _ix["pool"] + tuple(pool)
+                    if _ix["post"] is not None:
+                        for _i, _r in enumerate(pool, _base):
+                            for _t in self._rec_tokens(_r):
+                                _ix["post"].setdefault(_t, []).append(_i)
+                    _ix.update(rev=_ix_at[0], n=_ix_at[1], snap=_ix_at[2], vis=_ix["vis"] + len(_rows))
+                    _ix["appends"] = _ix.get("appends", 0) + 1
+                    pool = list(_ix["pool"])
+                elif _ix_args is not None:
+                    # Keyed AFTER the pool is built: assessing the read guards can edit a record (a stamp it cannot
+                    # verify is dropped), and that edit belongs to this pool, not to the next recall's.
+                    _ix = {"args": _ix_args, "items": self._items, "n": _ix_at[1], "rev": _ix_at[0],
+                           "vis": len(_rows), "snap": _ix_at[2], "pool": tuple(pool), "post": None}
+                    _ixd = self._recall_ix
+                    _ixd.pop(_ix_args, None)
+                    _ixd[_ix_args] = _ix
+                    while len(_ixd) > _RECALL_IX_ENTRIES:
+                        _ixd.pop(next(iter(_ixd)))
+                if _ix_args is not None:
+                    # The log only has to reach back to the oldest entry still held.
+                    _floor = min(e["rev"] for e in list(dict.values(self._recall_ix)))
+                    for _k in [k for k, v in list(dict.items(self._ix_log)) if v <= _floor]:
+                        self._ix_log.pop(_k, None)
         # Mode selection. 'hybrid' = lexical (token overlap) + semantic (embedding) fused with Reciprocal
         # Rank Fusion. We MEASURED hybrid robustly beating EITHER channel alone for agent memory on LoCoMo
         # (recall@20 0.61 hybrid vs 0.55 lexical vs 0.53 semantic; +0.057 over the best single channel,
@@ -19808,8 +19837,11 @@ class Inspeximus:
         if e is not None and e[0] is v:
             nb = e[1]
         else:
-            nb = _norm(v)
-            c[rid] = (v, nb)
+            # UNDER THE LOCK (3.19 item 5): an in-place edit of the vector drops this entry under the same lock, so a norm
+            # computed before the edit cannot be stored after the drop and kept for the edited vector.
+            with _ix_lock_of(self):
+                nb = _norm(v)
+                c[rid] = (v, nb)
         return _dot(a, v) / (na * nb)
 
     def _set_vec(self, rec, vec) -> None:
