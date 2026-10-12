@@ -20,7 +20,8 @@ WHAT THE DAEMON TRUSTS, AND WHAT IT DOES NOT
     refused without an exit: that daemon still serves the hooks it was started for.
   * Freshness: before each answer the daemon computes the store's signature (the row store's write generation and
     the stat of the store and its sidecars) and reopens the store when it moved. A write the user made before the
-    prompt is therefore in the answer, and an erasure cannot survive in the daemon's memory.
+    prompt is therefore in the answer. Between requests the watchdog compares the same signature every HELD_CHECK_S
+    and drops a moved store's handle, so an erased record does not wait in the daemon's memory for the next prompt.
 
 LIFETIME. Started by a hook that found none (opt-in: `{"hook": {"daemon": true}}` in the user's config), as a detached run
 with the 3.16.4 launch rules (`_start_detached`: -E and the shim, breakaway, a new session), with the attempt
@@ -45,6 +46,9 @@ REPLY_TIMEOUT_S = 0.3            #: the whole exchange, connect to verified repl
 #: REPLY_TIMEOUT_S, so anything longer only lets a silent connection hold the single accept loop (AUDIT-A D-8: 2 s).
 SERVER_READ_TIMEOUT_S = 0.5
 IDLE_EXIT_S = 600.0              #: the daemon exits after this long without a request
+#: The watchdog compares every held store's signature this often and drops the handle of a store that moved, so an
+#: erasure leaves the daemon's memory within about this interval, not at the next request (3.19).
+HELD_CHECK_S = 0.25
 START_MIN_INTERVAL_S = 60.0      #: at most one start attempt per store in this interval
 #: A daemon counts a stop request from the moment its launcher started it, not from its own start, so a request made
 #: while the interpreter loads is not lost. A launch time older than this, or in the future, is not believed: an old
@@ -195,14 +199,19 @@ def code_identity():
     return {"version": inspeximus.__version__, "guard_set": _guard_set_hash(), "python": _real(sys.executable)}
 
 
-def store_signature(path):
+def store_signature(path, answer_files=None):
     """What must not have moved for a held handle to be current: the row store's write generation and the stat of the
     store and every sidecar beside it. A peer's write, an erasure, a restore and a replace each move one of them.
 
     AUDIT-A D-9 added three parts. SQLite's own file change counter (header bytes 24 to 27), which every write
     transaction moves, so a raw `UPDATE` that keeps the size and restores the modification time is still seen. The
     journal files (`<store>-journal`, `-wal`, `-shm`), which a `<store>.` prefix missed. And the store's two key files
-    in the key home, so a key rotated after a suspected leak reopens the handle that holds the old one."""
+    in the key home, so a key rotated after a suspected leak reopens the handle that holds the old one.
+
+    `answer_files` is `core._answer_files(path)` when the caller already has it. The daemon's watchdog passes the list
+    `handle_for` resolved when it opened the handle, because resolving the key home is half the cost of this call (1.8
+    of 3.7 ms on a 46 MB store, 3.19) and the watchdog makes it four times a second. `handle_for` resolves it afresh on
+    every request, so a list that grew since (a key home created by the open) is seen there, as before."""
     d, base = os.path.dirname(os.path.abspath(path)), os.path.basename(path)
     parts = []
     try:
@@ -212,11 +221,13 @@ def store_signature(path):
     files = [os.path.join(d, n) for n in names]
     # EVERY FILE THE ANSWER DEPENDS ON (3.18, AUDIT-A I-2), not only the store's: the user's config, which the handle read
     # at open (guards, supersession), and the store's files in the key home. `core._answer_files` names them in one place.
-    try:
-        from .core import _answer_files
-        files += _answer_files(path)
-    except Exception:                                           # noqa: BLE001
-        pass
+    if answer_files is None:
+        try:
+            from .core import _answer_files
+            answer_files = _answer_files(path)
+        except Exception:                                       # noqa: BLE001
+            answer_files = []
+    files += list(answer_files)
     # THE INODE CHANGE TIME AND THE INODE ON POSIX (3.18, AUDIT-B R-1). An in-place patch of the same length that puts
     # the modification time back leaves the size, the mtime and SQLite's change counter as they were; the kernel moves
     # st_ctime_ns on any write and no tool can set it, and a replace moves st_ino. On Windows st_ctime is the creation
@@ -242,6 +253,23 @@ def store_signature(path):
     except Exception:                                           # noqa: BLE001
         gen = None
     return json.dumps([gen, counter, parts])
+
+
+def store_mark(path):
+    """The store file's own stat and SQLite's file change counter: what the watchdog reads every HELD_CHECK_S (3.19).
+
+    An erasure writes the store file itself. A row store is in DELETE journal mode, so every write transaction moves
+    the change counter in the header; a whole-file store is replaced, which moves the stat. So this cheap mark moves on
+    every erasure, and only then does the watchdog compute the whole `store_signature`. Measured on one idle daemon over
+    60 s: the whole signature on every tick took 1.04% of one core, against 0.05% for 3.18.0 (see the 3.19 note). A
+    change that touches no store byte (the user's config, a key file) is left to the next request, as before."""
+    try:
+        st = os.stat(path)
+        with open(path, "rb") as fh:
+            head = fh.read(28)
+        return (st.st_mtime_ns, st.st_size, st.st_ctime_ns, st.st_ino, head[24:28])
+    except OSError:
+        return None
 
 
 # ── the handshake ──────────────────────────────────────────────────────────────────────────────────────────────
@@ -593,6 +621,8 @@ class Daemon:
         self.env = env_fingerprint()
         self.idle_exit_s = idle_exit_s
         self.held = {}                 # real path -> (signature, handle)
+        self.held_paths = {}           # real path -> (the path, the answer files) its signature was computed from
+        self.held_marks = {}           # real path -> store_mark when the signature was last found current
         self.last_request = time.monotonic()
         self.started_at = _launch_time(launched_at)    # a stop request older than this is not for this daemon
         self.stop = False
@@ -606,14 +636,23 @@ class Daemon:
     def handle_for(self, path, opener):
         """The held handle for `path`, reopened from disk when its signature moved since it was opened."""
         key = _real(path)
-        sig = store_signature(path)
+        try:
+            from .core import _answer_files
+            files = _answer_files(path)
+        except Exception:                                       # noqa: BLE001
+            files = []
+        mark = store_mark(path)
+        sig = store_signature(path, files)
         cur = self.held.get(key)
         if cur is None or cur[0] != sig:
             m = opener()
             m._ix_held = True                                   # held: the recall index from its second recall (3.18)
             self.held[key] = (sig, m)
+            self.held_paths[key] = (path, files)
+            self.held_marks[key] = mark
             self.reopens += 1
             if cur is not None:
+                self.counts.pop(id(cur[1]), None)
                 _drop_handle(cur[1])
             return m
         return cur[1]
@@ -758,9 +797,55 @@ class Daemon:
             except OSError:
                 pass
 
+    def drop_moved(self):
+        """Drop every held handle whose store moved since it was opened. Returns how many went.
+
+        AN ERASURE LEAVES THE DAEMON'S MEMORY WITHOUT A REQUEST (3.19). The signature was compared only when a request
+        arrived, so a record another process erased stayed in this process until the next prompt, or for IDLE_EXIT_S
+        when none came. The watchdog calls this every HELD_CHECK_S. It drops the handle and does not reopen it: the next
+        request reopens it, as a request after any write did before, so the work per prompt does not change. The check
+        is the signature `handle_for` compares, from the same path; the drop is made under the answer lock, so no answer
+        is using the handle."""
+        def now(k):
+            path, files = self.held_paths.get(k, (k, None))
+            return store_signature(path, files)
+        moved = []
+        for k, (sig, _m) in list(self.held.items()):
+            mark = store_mark(self.held_paths.get(k, (k, None))[0])
+            if mark is not None and mark == self.held_marks.get(k):
+                continue                                        # no byte of the store moved: nothing to compare
+            if now(k) != sig:
+                moved.append(k)
+            else:
+                self.held_marks[k] = mark                       # moved and back, or a touch: current, so remember it
+        n = 0
+        for k in moved:
+            with self.answering:
+                cur = self.held.get(k)
+                if cur is None or now(k) == cur[0]:
+                    continue                                    # an answer reopened it meanwhile: it is current
+                del self.held[k]
+                self.held_paths.pop(k, None)
+                self.held_marks.pop(k, None)
+                self.counts.pop(id(cur[1]), None)
+                _drop_handle(cur[1])
+                n += 1
+        return n
+
     def _watchdog(self):
+        # TWO CADENCES (3.19). The held stores every HELD_CHECK_S, the lifetime checks (idle, store gone, stop asked) at
+        # their 3.18 cadence: run four times a second, they were most of an idle daemon's CPU.
+        life_s = min(1.0, self.idle_exit_s / 4)
+        next_life = time.monotonic() + life_s
         while not self.stop:
-            time.sleep(min(1.0, self.idle_exit_s / 4))
+            time.sleep(min(HELD_CHECK_S, life_s))
+            try:
+                self.drop_moved()
+            except Exception:                                   # noqa: BLE001 -- the next request still compares
+                pass
+            if time.monotonic() < next_life:
+                continue
+            next_life = time.monotonic() + life_s
             if time.monotonic() - self.last_request > self.idle_exit_s or not os.path.exists(self.store) \
                     or not os.path.isdir(self.kh) or stop_requested(self.kh, self.started_at):
                 self.stop = True

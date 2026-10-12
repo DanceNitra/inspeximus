@@ -11203,8 +11203,8 @@
  {
   "name": "3.18 daemon D-9: the key files are not in the signature",
   "file": "inspeximus/hookd.py",
-  "old": "        files += _answer_files(path)\n",
-  "new": "        pass\n",
+  "old": "    files += list(answer_files)\n",
+  "new": "    files += []\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -11430,8 +11430,8 @@
  {
   "name": "3.18 R-2: a replaced held handle keeps its records",
   "file": "inspeximus/hookd.py",
-  "old": "            if cur is not None:\n                _drop_handle(cur[1])",
-  "new": "            if False:\n                _drop_handle(cur[1])",
+  "old": "            if cur is not None:\n                self.counts.pop(id(cur[1]), None)\n                _drop_handle(cur[1])",
+  "new": "            if False:\n                self.counts.pop(id(cur[1]), None)\n                _drop_handle(cur[1])",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -12823,5 +12823,59 @@
   "tests": [
    "tests/test_a_json_store_writes_an_in_place_edit.py"
   ]
+ },
+ {
+  "name": "3.19 item 2: the watchdog does not check the held stores",
+  "old": "            try:\n                self.drop_moved()\n",
+  "new": "            try:\n                pass\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_an_erasure_leaves_the_daemon_without_a_request.py"
+  ]
+ },
+ {
+  "name": "3.19 item 2: the watchdog checks every 5 s, not every HELD_CHECK_S",
+  "old": "            time.sleep(min(HELD_CHECK_S, life_s))\n",
+  "new": "            time.sleep(5.0)\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_an_erasure_leaves_the_daemon_without_a_request.py"
+  ]
+ },
+ {
+  "name": "3.19 item 2: a dropped handle keeps its records until the collector runs",
+  "old": "                self.counts.pop(id(cur[1]), None)\n                _drop_handle(cur[1])\n                n += 1\n",
+  "new": "                self.counts.pop(id(cur[1]), None)\n                n += 1\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_an_erasure_leaves_the_daemon_without_a_request.py"
+  ]
+ },
+ {
+  "name": "3.19 item 2: one failed check ends the watchdog",
+  "old": "            try:\n                self.drop_moved()\n            except Exception:                                   # noqa: BLE001 -- the next request still compares\n                pass\n",
+  "new": "            self.drop_moved()\n",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_an_erasure_leaves_the_daemon_without_a_request.py"
+  ]
+ },
+ {
+  "name": "3.19 item 2: the drop does not compare again under the answer lock",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_an_erasure_leaves_the_daemon_without_a_request.py"
+  ],
+  "old": "                if cur is None or now(k) == cur[0]:\n",
+  "new": "                if cur is None:\n"
+ },
+ {
+  "name": "3.19 item 2: the watchdog skips a store whose mark moved",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_an_erasure_leaves_the_daemon_without_a_request.py"
+  ],
+  "old": "            if mark is not None and mark == self.held_marks.get(k):\n",
+  "new": "            if True:\n"
  }
 ]
