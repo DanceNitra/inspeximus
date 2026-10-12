@@ -122,7 +122,8 @@ def test_a_stale_run_variable_does_not_exempt_a_run(tmp_path):
     r = subprocess.run([sys.executable, "-m", "pytest", "-n", "0", "-p", "no:cacheprovider", "-q", "--tb=line",
                         "--basetemp", str(tmp_path / "bt-stale"), os.path.join("tests", "test_the_suite_sees_no_live_store.py"),
                         "-k", "visible_at_collection or resolves_is_inside"],
-                       cwd=ROOT, env=env, capture_output=True, text=True, timeout=300)
+                       cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       timeout=300)
     assert r.returncode == 0, "a stale RUN_TMP_ENV exempted a top-level run from the strip:\n" + r.stdout[-3000:]
     assert "2 passed" in r.stdout, "CONTROL: both guards ran in the child:\n" + r.stdout[-1500:]
 
@@ -167,7 +168,8 @@ def test_the_guard_fails_on_a_leaked_decision_store(tmp_path):
                             "--basetemp", str(tmp_path / ("bt-strip" if strip else "bt-leak")),
                             os.path.join("tests", "test_the_suite_sees_no_live_store.py"),
                             "-k", "not test_the_guard_fails_on_a_leaked_decision_store"],      # not itself: no recursion
-                           cwd=ROOT, env=env, capture_output=True, text=True, timeout=300)
+                           cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       timeout=300)
         return r.returncode, r.stdout[-4000:]
     rc_leak, out_leak = child(strip=False)
     assert rc_leak != 0, "the guard passed with a decision store outside the sandbox:\n" + out_leak

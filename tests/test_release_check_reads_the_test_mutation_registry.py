@@ -77,8 +77,9 @@ def test_the_3_15_0_incident_is_caught(tmp_path):
     text = reg.read_text(encoding="utf-8")
     # Both lines of the needle go back, because the first alone is still a substring of the deeper code:
     # "        if self.tenant..." occurs inside "            if self.tenant...". The second line is what moved.
-    pairs = [("'            if self.tenant is not None:", "'        if self.tenant is not None:"),
-             ("'                pool = [r for r in pool if r.get(\"tenant\")", "'            pool = [r for r in pool if r.get(\"tenant\")")]
+    # One level deeper since 3.19 (the index lock's `with`), so the stale needle is the 3.15.1-3.18 indentation.
+    pairs = [("'                if self.tenant is not None:", "'            if self.tenant is not None:"),
+             ("'                    pool = [r for r in pool if r.get(\"tenant\")", "'                pool = [r for r in pool if r.get(\"tenant\")")]
     for new, old in pairs:
         assert text.count(new) == 1, f"fixture error: the tenant needle moved: {new!r}"
         text = text.replace(new, old)

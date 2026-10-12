@@ -4011,14 +4011,18 @@ class Inspeximus:
     # A COPY GETS A FRESH, CLOSED WINDOW rather than an inherited one, and that is the safe direction:
     # a copy taken while some thread held privilege open must not start life privileged. Copying is not
     # a way to smuggle the window across.
+    # THE INDEX LOCK THE SAME WAY (3.19 item 5): an RLock cannot be copied either, and a copy is another handle, so it
+    # gets its own lock, released.
     def __getstate__(self):
         state = dict(self.__dict__)
         state.pop("_priv", None)
+        state.pop("_ix_lock", None)
         return state
 
     def __setstate__(self, state):
         self.__dict__.update(state)
         self._priv = threading.local()
+        self._ix_lock = threading.RLock()
 
     def _stamp(self, *a, **kw) -> str:
         """remember() for the LIBRARY's own markers, which live in the reserved meta keyspace.

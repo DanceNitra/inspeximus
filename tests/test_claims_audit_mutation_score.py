@@ -67,11 +67,12 @@ MUTATIONS = [
         "tenant_isolation",
         "tenant isolation on recall",
         # The recall filter sits one level deeper since 3.15.1: recall builds its pool inside an
-        # `else:` so a report's sampled recalls can share it (AUDIT-B B-07).
-        ['            if self.tenant is not None:\n'
-         '                pool = [r for r in pool if r.get("tenant") == self.tenant]',
+        # `else:` so a report's sampled recalls can share it (AUDIT-B B-07), and one more since 3.19, inside the index
+        # lock's `with` (item 5).
+        ['                if self.tenant is not None:\n'
+         '                    pool = [r for r in pool if r.get("tenant") == self.tenant]',
          "        return Inspeximus.items.fget(self)"],
-        ["            if False:\n                pass",
+        ["                if False:\n                    pass",
          "        return self._parent.items"],
         id="both_tenant_guards_disabled",
     ),
