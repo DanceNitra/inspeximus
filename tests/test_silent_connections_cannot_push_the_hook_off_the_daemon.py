@@ -4,9 +4,9 @@ On 3.18.0 a connection that sent nothing held one of MAX_CONNECTIONS (16) handsh
 (0.5 s), and the daemon closed any connection beyond them at accept. Sixteen silent clients therefore refused every
 hook for as long as they stayed, and three refusals in a row put the hook into BACKOFF_S of today's path.
 
-The silent wait is now HELLO_TIMEOUT_S, and a new connection that finds every slot taken evicts the oldest connection
-that has not said hello. A client that said hello keeps its slot, so the bound on threads holds and only an owner of the
-token gets past the handshake, as before.
+A new connection that finds every slot taken now evicts the oldest connection that has not said hello. While a slot is
+free, a connection keeps SERVER_READ_TIMEOUT_S for its hello, so a slow client is not sent to its normal path. A client
+that said hello keeps its slot, so the bound on threads holds and only an owner of the token gets past the handshake.
 """
 from __future__ import annotations
 
@@ -152,34 +152,49 @@ def test_the_flood_never_holds_more_than_the_slot_bound(project, daemon):
         _close(opened)
 
 
-def test_a_silent_connection_gets_nothing_and_gives_its_slot_back_soon(project, daemon):
+def test_an_evicted_connection_gets_nothing(project, daemon):
+    """Eviction closes a connection that never said hello, and it receives no byte."""
     proj, sp = project
-    c = _silent(daemon, 1)[0]
+    first = _silent(daemon, 1)[0]
+    rest = _silent(daemon, hookd.MAX_CONNECTIONS)                # the last of these evicts `first`
     try:
-        bound = getattr(hookd, "HELLO_TIMEOUT_S", hookd.SERVER_READ_TIMEOUT_S)
         t0 = time.monotonic()
-        while daemon.conns._value != hookd.MAX_CONNECTIONS and time.monotonic() - t0 < 2.0:
-            time.sleep(0.005)
-        took = time.monotonic() - t0
-        assert daemon.conns._value == hookd.MAX_CONNECTIONS, "the silent connection kept its slot"
-        assert took < 0.15, "a silent connection held its slot %.2f s; the hook's whole budget is %.1f s" % (
-            took, hookd.REPLY_TIMEOUT_S)
-        assert bound <= 0.15
+        got = None
         try:
-            got = c.recv_bytes() if c.poll(0.05) else None
+            got = first.recv_bytes() if first.poll(1.0) else "still open"
         except (EOFError, OSError):                     # closed by the daemon with nothing sent: the expected end
             got = None
-        assert got is None, "a connection without a hello received %r" % got
+        assert got is None, "the evicted connection received %r" % (got,)
+        assert time.monotonic() - t0 < hookd.SERVER_READ_TIMEOUT_S, "CONTROL: it was evicted, not timed out"
     finally:
-        _close([c])
+        _close([first] + rest)
+
+
+def test_a_slow_client_is_served_while_slots_are_free(project, daemon, monkeypatch):
+    """A hello that comes 0.3 s after the connect, with free slots, is served: a loaded machine must not send a hook to
+    its normal path. A first version gave the hello 0.1 s and closed it."""
+    proj, sp = project
+    hookd.ask(_ev(proj), sp, timeout=2.0)
+    real = hookd._send
+    first = {"done": False}
+
+    def slow(conn, obj):
+        if not first["done"] and isinstance(obj, dict) and "hello" in obj:
+            first["done"] = True
+            time.sleep(0.3)
+        return real(conn, obj)
+    monkeypatch.setattr(hookd, "_send", slow)
+    got = hookd.ask(_ev(proj), sp, timeout=2.0)
+    assert first["done"], "CONTROL: the hello was delayed"
+    assert got is not None and hookd.LAST["outcome"] == "served", "a slow hello was closed: %r" % hookd.LAST
 
 
 def test_eviction_alone_frees_a_slot(project, daemon, monkeypatch):
-    """With a long hello timeout only the eviction can free a slot: the hook is served beside MAX_CONNECTIONS fresh
+    """With a long read timeout only the eviction can free a slot: the hook is served beside MAX_CONNECTIONS fresh
     silent connections because the oldest of them is told to go, and goes at its next poll."""
     proj, sp = project
     hookd.ask(_ev(proj), sp, timeout=2.0)
-    monkeypatch.setattr(hookd, "HELLO_TIMEOUT_S", 2.0, raising=False)
+    monkeypatch.setattr(hookd, "SERVER_READ_TIMEOUT_S", 2.0)
     silent = _silent(daemon, hookd.MAX_CONNECTIONS)
     try:
         time.sleep(0.05)

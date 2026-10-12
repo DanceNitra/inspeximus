@@ -12888,9 +12888,9 @@
   "new": "        wal = None\n"
  },
  {
-  "name": "3.19 item 3: a silent connection waits the whole read timeout for its hello",
-  "old": "HELLO_TIMEOUT_S = 0.1\n",
-  "new": "HELLO_TIMEOUT_S = 0.5\n",
+  "name": "3.19 item 3: a slow hello is closed after 0.1 s while slots are free",
+  "old": "        until = time.monotonic() + SERVER_READ_TIMEOUT_S\n",
+  "new": "        until = time.monotonic() + 0.1\n",
   "file": "inspeximus/hookd.py",
   "tests": [
    "tests/test_silent_connections_cannot_push_the_hook_off_the_daemon.py"

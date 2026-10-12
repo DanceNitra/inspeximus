@@ -58,10 +58,8 @@ BACKOFF_AFTER = 3                #: this many timeouts in a row and the hook sto
 BACKOFF_S = 300.0                #: ... for this long, so a slow daemon costs at most BACKOFF_AFTER x REPLY_TIMEOUT_S
 MAX_LIVE_DAEMONS = 4             #: at most this many live daemons per key home; a fifth store gets none (AUDIT-A D-3)
 MAX_CONNECTIONS = 16             #: handshakes in flight at once (AUDIT-A E-4)
-#: A connection must say hello within this of being accepted (3.19). A client sends it right after connecting; the
-#: rest of the handshake keeps SERVER_READ_TIMEOUT_S. On 3.18.0 a silent connection held its slot for the whole 0.5 s.
-HELLO_TIMEOUT_S = 0.1
-#: How often a connection waiting for its hello looks whether a newer connection evicted it.
+#: How often a connection waiting for its hello looks whether a newer connection evicted it (3.19). A silent connection
+#: keeps its slot for SERVER_READ_TIMEOUT_S while slots are free, and loses it to the next connection once none is.
 HELLO_POLL_S = 0.01
 
 
@@ -760,11 +758,16 @@ class Daemon:
 
     # -- the channel ------------------------------------------------------------------------------------------------
     def _hello(self, conn):
-        """The first message, within HELLO_TIMEOUT_S, read in HELLO_POLL_S steps so an eviction ends the wait."""
+        """The first message, within SERVER_READ_TIMEOUT_S, read in HELLO_POLL_S steps so an eviction ends the wait.
+
+        NO SHORTER WAIT WHILE A SLOT IS FREE (3.19, EM). A first version gave the hello 0.1 s. Measured in WSL pinned to
+        two cores beside 16 busy processes: real clients' hellos took up to 39 ms, a margin of 2.5 times, and a runner
+        busier than that would have sent a slow hook to its normal path while slots stood free. A silent connection
+        harms nobody while a slot is free; it is evicted when a connection finds none."""
         with self.pending_lock:
             ent = self.pending.get(id(conn))
         evicted = ent[1] if ent else threading.Event()
-        until = time.monotonic() + HELLO_TIMEOUT_S
+        until = time.monotonic() + SERVER_READ_TIMEOUT_S
         try:
             while True:
                 left = until - time.monotonic()
