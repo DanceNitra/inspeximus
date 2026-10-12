@@ -144,13 +144,24 @@ def test_a_write_costs_one_reopen_at_the_next_request_as_before(project, daemon)
 
 
 def test_a_failing_check_does_not_stop_the_daemon(project, daemon, monkeypatch):
+    """The check raises while the store really moved, so the watchdog calls it. AUDIT-A F-2: with no peer write the
+    cheap mark never moved, the patched check was never called, and a watchdog that one error ends passed."""
     proj, sp = project
     hookd.ask(_ev(proj), sp, timeout=2.0)
+    assert hookd.LAST["outcome"] == "served", "CONTROL: the daemon holds the store"
+    calls = []
 
-    def broken(_path):
+    def broken(*_a, **_k):
+        calls.append(1)
         raise OSError("simulated")
     monkeypatch.setattr(hookd, "store_signature", broken)
-    time.sleep(4 * getattr(hookd, "HELD_CHECK_S", 0.25) + 0.2)
+    peer = Inspeximus(sp)
+    peer.remember("a peer's note that moves the store under the failing check", tags=["note"])
+    peer.flush()
+    _wait_until(lambda: calls)
+    assert calls, "CONTROL: the watchdog called the failing check"
+    _wait_until(lambda: len(calls) >= 2)                 # the store still moved, so a live watchdog calls it again
+    assert len(calls) >= 2, "the watchdog stopped after one failed check"
     assert not daemon.stop, "an error in the watchdog's check stopped the daemon"
     monkeypatch.undo()
     p = Inspeximus(sp)

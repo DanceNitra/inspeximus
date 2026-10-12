@@ -193,3 +193,62 @@ def test_touch_declares_an_edit_tracking_could_not_see(tmp_path, fmt):
     h._touch(rec["id"])
     h.flush()
     assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is monday", "flush() ignored a declared edit"
+
+
+def _edit_inside_the_write(monkeypatch, h, fmt, edit, at):
+    """Run `edit` after the save has serialised the records and before it returns: right after the serialisation or
+    at the whole-file replace for JSON and encrypted stores, after the row writer's commit for the row store."""
+    if fmt == "db":
+        real = h._save_rows_retrying
+
+        def rows(*a, **k):
+            res = real(*a, **k)
+            edit()
+            return res
+        monkeypatch.setattr(h, "_save_rows_retrying", rows)
+    elif at == "dump":
+        real_dump = core._dump_store
+
+        def dump(items):
+            data = real_dump(items)
+            edit()
+            return data
+        monkeypatch.setattr(core, "_dump_store", dump)
+    else:
+        real = core._durable_replace
+
+        def replace(path, payload, *a, **k):
+            edit()
+            return real(path, payload, *a, **k)
+        monkeypatch.setattr(core, "_durable_replace", replace)
+
+
+@pytest.mark.parametrize("fmt,at", [("json", "dump"), ("json", "replace"),
+                                    pytest.param("enc", "dump", marks=pytest.mark.skipif(not _CRYPTO, reason="crypto")),
+                                    pytest.param("enc", "replace", marks=pytest.mark.skipif(not _CRYPTO, reason="crypto")),
+                                    ("db", "commit")])
+def test_an_edit_made_while_a_save_writes_is_written_by_the_next_save(tmp_path, fmt, at, monkeypatch):
+    """AUDIT-A F-1 (3.19): the save cleared every edited id after its write, so an edit that landed between the
+    serialisation and the clear was dropped: the store read clean and the next flush() wrote nothing. The save now
+    clears only the ids it serialised. The window is forced: the edit runs inside the write."""
+    p = _store(tmp_path, fmt)
+    h = _open(p, fmt)
+    _rec(h, "deploy")["text"] = "the release slot is monday"          # the edit this save writes
+    fired = []
+
+    def late():
+        if not fired:
+            fired.append(1)
+            _rec(h, "decision::release-day")["status"] = "superseded"   # lands after serialisation
+    _edit_inside_the_write(monkeypatch, h, fmt, late, at)
+    h.flush()
+    assert fired, "CONTROL: the forced window was reached"
+    assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is monday", "CONTROL: the first edit was written"
+    assert _rec(_open(p, fmt), "decision::release-day")["status"] != "superseded", \
+        "CONTROL: the late edit missed the serialised records, so the window was real"
+    monkeypatch.undo()
+    rid = _rec(h, "decision::release-day")["id"]
+    assert h._dirty and rid in h._touched, "the save cleared an edit it did not write"
+    h.flush()
+    assert _rec(_open(p, fmt), "decision::release-day")["status"] == "superseded", \
+        "an edit made while a save wrote was lost"

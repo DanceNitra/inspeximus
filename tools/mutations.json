@@ -12790,8 +12790,44 @@
  },
  {
   "name": "3.19 item 1: a JSON save keeps the edited ids",
-  "old": "                    # copy of an edited record over the disk's; left set, a refresh would keep it over a peer's newer edit.\n                    self._touched = set()\n",
-  "new": "                    # copy of an edited record over the disk's; left set, a refresh would keep it over a peer's newer edit.\n                    pass\n",
+  "old": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    self._touched -= _saving\n",
+  "new": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-1: a JSON save clears every edited id, the ones made during its write too",
+  "old": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    self._touched -= _saving\n",
+  "new": "                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).\n                    self._touched = set()\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-1: a row save clears every edited id, the ones made during its write too",
+  "old": "                    self._row_snapshot = _res[\"snapshot\"]\n                    self._touched -= _saving\n",
+  "new": "                    self._row_snapshot = _res[\"snapshot\"]\n                    self._touched = set()\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-1: a save marks the store clean with an edit still declared",
+  "old": "            self._dirty = bool(self._touched)        # an edit made during the write is written by the next save (F-1)\n",
+  "new": "            self._dirty = False\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-1: the JSON save copies the edited ids after the serialisation",
+  "old": "                    _saving = set(self._touched)            # before the serialisation, as in the row branch (F-1)\n                    data = _dump_store(slim)\n",
+  "new": "                    data = _dump_store(slim)\n                    _saving = set(self._touched)            # before the serialisation, as in the row branch (F-1)\n",
   "file": "inspeximus/core.py",
   "tests": [
    "tests/test_a_json_store_writes_an_in_place_edit.py"

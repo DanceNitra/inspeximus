@@ -20220,11 +20220,15 @@ class Inspeximus:
                     # `rows`, not `slim`: building the stripped copy costs one dict per record on
                     # every save, and the row writer only serialises what changed, so the copy was
                     # thrown away almost entirely. `keep_vec` tells it to drop the key instead.
+                    # THE IDS THIS SAVE WRITES, COPIED BEFORE THE WRITER SERIALISES (3.19, AUDIT-A F-1). Clearing the whole
+                    # set after the write dropped an edit that another thread made during it: the store read clean, and
+                    # the next flush() wrote nothing. Only the copy is subtracted, so a later edit stays declared.
+                    _saving = set(self._touched)
                     _res = self._save_rows_retrying(
-                        rows, dirty=None if _reconcile else self._touched)
+                        rows, dirty=None if _reconcile else _saving)
                     self._rewrite_all = False
                     self._row_snapshot = _res["snapshot"]
-                    self._touched = set()
+                    self._touched -= _saving
                     self._pending_events = []          # committed with the rows, or rolled back with them
                     self._file_sig = self._stat_sig()
                     self._file_hash = None
@@ -20241,6 +20245,7 @@ class Inspeximus:
                 # recipe had nothing to compare against. Three probes cited by
                 # the docs caught it; nothing in the store itself would have.
                 if not _wrote_rows:
+                    _saving = set(self._touched)            # before the serialisation, as in the row branch (F-1)
                     data = _dump_store(slim)
                     if self._encrypted:                                   # AES-256-GCM at rest (never a plaintext tmp)
                         key = self._resolve_key()                         # sets self._enc_salt on first save
@@ -20255,7 +20260,8 @@ class Inspeximus:
                     self._json_persisted = {r.get("id") for r in slim if isinstance(r, dict)}
                     # THE EDITS ARE WRITTEN, SO THEY ARE NO LONGER THIS HANDLE'S OWN (3.19). A merge keeps this handle's
                     # copy of an edited record over the disk's; left set, a refresh would keep it over a peer's newer edit.
-                    self._touched = set()
+                    # Only the ids serialised above: an edit made during the write is still this handle's (AUDIT-A F-1).
+                    self._touched -= _saving
                     # INSIDE the lock, and that is the whole point. The check and the write already shared
                     # one critical section, but this line sat outside it, so the window simply moved: A
                     # writes, releases, and before it stamps its own signature B takes the lock, compares
@@ -20288,7 +20294,7 @@ class Inspeximus:
                 except Exception as e:
                     self._sidecar_errors['embedid'] = f"{type(e).__name__}: {e}"
             self._last_save = now
-            self._dirty = False
+            self._dirty = bool(self._touched)        # an edit made during the write is written by the next save (F-1)
             self._persist_error = None
             if isinstance(getattr(self, "last_write", None), dict):
                 self.last_write["persisted"] = True
