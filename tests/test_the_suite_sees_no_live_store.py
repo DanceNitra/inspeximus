@@ -72,23 +72,59 @@ def test_every_store_and_home_the_suite_resolves_is_inside_the_run(request, tmp_
     assert not outside, "the suite resolves paths outside its temporary roots %s: %s" % (roots, outside)
 
 
-def test_a_run_this_suite_started_keeps_the_variables_its_test_set():
-    """A child pytest a test starts inherits RUN_TMP_ENV; the strip leaves its INSPEXIMUS_* alone, because a test set
-    them (test_session_continuity's recursion guard is one). Stripping them made that child run itself again."""
-    class Cfg:
-        pass
-    saved = dict(os.environ)
+def _owner_file(root, token, pid, start):
+    import json
+    with open(os.path.join(root, conftest.RUN_OWNER_FILE), "w", encoding="utf-8") as fh:
+        json.dump({"token": token, "pid": pid, "start": start}, fh)
+
+
+def test_a_nested_run_needs_a_live_owner_with_its_token(tmp_path, monkeypatch):
+    """`_nested_in_a_live_run` is true only for a root whose owner file carries the inherited token and names a live
+    process with the start time it recorded. A stale variable, a dead owner, or a hand-made value is a top-level run."""
+    from inspeximus import hookd
+    root = str(tmp_path)
+    live = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
     try:
-        os.environ[conftest.RUN_TMP_ENV] = "/somewhere/run-tmp"
-        os.environ["INSPEXIMUS_CONFORMANCE_CHILD"] = "1"
-        os.environ.pop(conftest.NO_STRIP_FOR_THE_CONTROL, None)
-        cfg = Cfg()
-        conftest._strip_inspeximus_env(cfg)
-        assert os.environ.get("INSPEXIMUS_CONFORMANCE_CHILD") == "1", "a nested run lost the variable its test set"
-        assert cfg._inspeximus_env_stripped == {}
+        start = hookd._proc_start(live.pid)
+        assert start is not None, "CONTROL: this platform reads a start time"
+        monkeypatch.setenv(conftest.RUN_TMP_ENV, root)
+        monkeypatch.setenv(conftest.RUN_TOKEN_ENV, "t0ken")
+        _owner_file(root, "t0ken", live.pid, start)
+        assert conftest._nested_in_a_live_run(), "CONTROL: a live owner with the token is a nested run"
+        _owner_file(root, "other", live.pid, start)
+        assert not conftest._nested_in_a_live_run(), "a token that does not match was trusted"
+        _owner_file(root, "t0ken", live.pid, start + 1)
+        assert not conftest._nested_in_a_live_run(), "a reused pid (another start time) was trusted"
+        _owner_file(root, "t0ken", os.getpid(), hookd._proc_start(os.getpid()))
+        assert not conftest._nested_in_a_live_run(), "this process was taken for its own parent run"
+        os.unlink(os.path.join(root, conftest.RUN_OWNER_FILE))
+        assert not conftest._nested_in_a_live_run(), "a root with no owner file (a finished run) was trusted"
     finally:
-        os.environ.clear()
-        os.environ.update(saved)
+        live.kill()
+        live.wait()
+    _owner_file(root, "t0ken", live.pid, start)
+    assert not conftest._nested_in_a_live_run(), "an owner that has exited was trusted"
+
+
+def test_a_stale_run_variable_does_not_exempt_a_run(tmp_path):
+    """A top-level run whose shell carries a stale RUN_TMP_ENV and token, and a decision store outside the sandbox: the
+    strip must still run, so the two guards pass in the child. Exempted, they fail (the mutant shows it)."""
+    stale = tmp_path / "stale-run-root"
+    stale.mkdir()
+    _owner_file(str(stale), "stale", 999999, 1)               # a finished run's file: its pid is gone
+    outside_dir = tmp_path / "outside-the-run"
+    outside_dir.mkdir()
+    env = dict(os.environ)
+    env[conftest.RUN_TMP_ENV] = str(stale)
+    env[conftest.RUN_TOKEN_ENV] = "stale"
+    env["INSPEXIMUS_DECISION_STORE"] = str(outside_dir / "crew.json")
+    env.pop(conftest.NO_STRIP_FOR_THE_CONTROL, None)
+    r = subprocess.run([sys.executable, "-m", "pytest", "-n", "0", "-p", "no:cacheprovider", "-q", "--tb=line",
+                        "--basetemp", str(tmp_path / "bt-stale"), os.path.join("tests", "test_the_suite_sees_no_live_store.py"),
+                        "-k", "visible_at_collection or resolves_is_inside"],
+                       cwd=ROOT, env=env, capture_output=True, text=True, timeout=300)
+    assert r.returncode == 0, "a stale RUN_TMP_ENV exempted a top-level run from the strip:\n" + r.stdout[-3000:]
+    assert "2 passed" in r.stdout, "CONTROL: both guards ran in the child:\n" + r.stdout[-1500:]
 
 
 def test_the_strip_leaves_nothing_but_the_inherited_ones():
@@ -100,6 +136,7 @@ def test_the_strip_leaves_nothing_but_the_inherited_ones():
         os.environ["INSPEXIMUS_PYTHON"] = sys.executable
         os.environ.pop(conftest.NO_STRIP_FOR_THE_CONTROL, None)
         os.environ.pop(conftest.RUN_TMP_ENV, None)                 # a top-level run
+        os.environ.pop(conftest.RUN_TOKEN_ENV, None)
         cfg = Cfg()
         conftest._strip_inspeximus_env(cfg)
         left = {k for k in os.environ if k.startswith("INSPEXIMUS_")}
@@ -120,6 +157,7 @@ def test_the_guard_fails_on_a_leaked_decision_store(tmp_path):
     def child(strip):
         env = dict(os.environ)
         env.pop(conftest.RUN_TMP_ENV, None)              # a top-level run, as a caller starts it, not a nested one
+        env.pop(conftest.RUN_TOKEN_ENV, None)
         env["INSPEXIMUS_DECISION_STORE"] = outside
         if strip:
             env.pop(conftest.NO_STRIP_FOR_THE_CONTROL, None)

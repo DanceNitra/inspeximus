@@ -432,6 +432,10 @@ def pytest_collection_modifyitems(config, items):
 # pytest in a subprocess must not overwrite the file with its own few tests.
 #: The environment variable that names this run's own temporary root; read by `_home_guard` callers and tests.
 RUN_TMP_ENV = "PYTEST_INSPEXIMUS_RUN_TMP"
+#: The outer run's proof that it is live and ours: a random token in the environment, and the same token with the run's
+#: pid and process start time in RUN_OWNER_FILE under its temp root (3.19, EM). See `_nested_in_a_live_run`.
+RUN_TOKEN_ENV = "PYTEST_INSPEXIMUS_RUN_TOKEN"
+RUN_OWNER_FILE = ".inspeximus-run-owner.json"
 
 
 def _own_temp_root(config):
@@ -448,8 +452,9 @@ def _own_temp_root(config):
     import tempfile as _tempfile
     root = _tempfile.mkdtemp(prefix="inspeximus-run-")
     names = ("TEMP", "TMP", "TMPDIR", RUN_TMP_ENV)
-    config._run_tmp_env_before = {k: os.environ.get(k) for k in names}
+    config._run_tmp_env_before = {k: os.environ.get(k) for k in names + (RUN_TOKEN_ENV,)}
     os.environ.update({k: root for k in names})
+    _claim_the_run(root)
     _tempfile.tempdir = None                      # recomputed from the environment on next use
     config._run_tmp = root
 
@@ -466,6 +471,44 @@ def _restore_temp_root(config):
     import tempfile as _tempfile
     _tempfile.tempdir = None
     shutil.rmtree(config._run_tmp, ignore_errors=True)
+
+
+def _claim_the_run(root):
+    """Write the proof `_nested_in_a_live_run` checks: a token, this pid and its start time, in the run's own root."""
+    import json as _json
+    import secrets
+    from inspeximus import hookd as _hookd
+    token = secrets.token_hex(16)
+    with open(os.path.join(root, RUN_OWNER_FILE), "w", encoding="utf-8") as fh:
+        _json.dump({"token": token, "pid": os.getpid(), "start": _hookd._proc_start(os.getpid())}, fh)
+    os.environ[RUN_TOKEN_ENV] = token
+
+
+def _nested_in_a_live_run():
+    """True only for a pytest a live run of this suite started: RUN_TMP_ENV names a root whose owner file carries the
+    token this process inherited, and the pid in it is alive with the start time it recorded, and is not this process.
+
+    A VARIABLE ALONE IS NOT PROOF (3.19, EM). A shell started from inside an earlier run, or one that exported the
+    variable by hand, inherits a stale RUN_TMP_ENV; trusting it skipped the strip, and the live-store leak came back
+    with nothing to show it. The root of a finished run is removed at its end, so its file is gone; a crashed run's file
+    names a pid that is dead or now has another start time; a hand-made value has no matching token."""
+    import json as _json
+    root, token = os.environ.get(RUN_TMP_ENV), os.environ.get(RUN_TOKEN_ENV)
+    if not root or not token:
+        return False
+    try:
+        with open(os.path.join(root, RUN_OWNER_FILE), encoding="utf-8") as fh:
+            owner = _json.load(fh)
+    except (OSError, ValueError):
+        return False
+    if not isinstance(owner, dict) or owner.get("token") != token or owner.get("pid") == os.getpid():
+        return False
+    from inspeximus import hookd as _hookd
+    from inspeximus.claude_code import _pid_alive
+    if not _pid_alive(owner.get("pid")):                  # an exited process can still report its start time on Windows
+        return False
+    start = _hookd._proc_start(owner.get("pid"))
+    return start is not None and start == owner.get("start")
 
 
 #: The INSPEXIMUS_* variables a run may keep from its caller. INSPEXIMUS_PYTHON names an interpreter, not a store or a
@@ -493,8 +536,9 @@ def _strip_inspeximus_env(config):
     control in test_the_suite_sees_no_live_store) passes INSPEXIMUS_* variables on purpose: the strict run's recursion
     guard is one of them. Stripped in the child, the guard was gone, the child ran itself again, and the xdist worker
     died near the end of the run (measured on f01b1178, twice). Such a child inherits RUN_TMP_ENV from the run that
-    started it; every variable it sees was set by a test, and the outer run already stripped the caller's."""
-    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == "1" or os.environ.get(RUN_TMP_ENV):
+    started it; every variable it sees was set by a test, and the outer run already stripped the caller's. The run must
+    prove it is live and ours (`_nested_in_a_live_run`): a stale RUN_TMP_ENV alone is stripped as a top-level run."""
+    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == "1" or _nested_in_a_live_run():
         config._inspeximus_env_stripped = {}
         return
     gone = {k: os.environ.pop(k) for k in [k for k in os.environ

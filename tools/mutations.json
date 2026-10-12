@@ -13043,12 +13043,48 @@
   ]
  },
  {
-  "name": "3.19 env leak: a run the suite started itself is stripped as well",
+  "name": "3.19 env leak: a stale RUN_TMP_ENV alone exempts a run from the strip",
+  "old": "    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == \"1\" or _nested_in_a_live_run():\n",
+  "new": "    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == \"1\" or os.environ.get(RUN_TMP_ENV):\n",
   "file": "tests/conftest.py",
   "tests": [
    "tests/test_the_suite_sees_no_live_store.py"
-  ],
-  "old": "    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == \"1\" or os.environ.get(RUN_TMP_ENV):\n",
-  "new": "    if os.environ.get(NO_STRIP_FOR_THE_CONTROL) == \"1\":\n"
+  ]
+ },
+ {
+  "name": "3.19 env leak: the owner's token is not compared",
+  "old": "    if not isinstance(owner, dict) or owner.get(\"token\") != token or owner.get(\"pid\") == os.getpid():\n",
+  "new": "    if not isinstance(owner, dict) or owner.get(\"pid\") == os.getpid():\n",
+  "file": "tests/conftest.py",
+  "tests": [
+   "tests/test_the_suite_sees_no_live_store.py"
+  ]
+ },
+ {
+  "name": "3.19 env leak: an exited owner counts as live",
+  "old": "    if not _pid_alive(owner.get(\"pid\")):                  # an exited process can still report its start time on Windows\n        return False\n",
+  "new": "",
+  "file": "tests/conftest.py",
+  "tests": [
+   "tests/test_the_suite_sees_no_live_store.py"
+  ]
+ },
+ {
+  "name": "3.19 env leak: a reused pid counts as the owner",
+  "old": "    return start is not None and start == owner.get(\"start\")\n",
+  "new": "    return start is not None\n",
+  "file": "tests/conftest.py",
+  "tests": [
+   "tests/test_the_suite_sees_no_live_store.py"
+  ]
+ },
+ {
+  "name": "3.19 env leak: the run takes itself for its own parent",
+  "old": "    if not isinstance(owner, dict) or owner.get(\"token\") != token or owner.get(\"pid\") == os.getpid():\n",
+  "new": "    if not isinstance(owner, dict) or owner.get(\"token\") != token:\n",
+  "file": "tests/conftest.py",
+  "tests": [
+   "tests/test_the_suite_sees_no_live_store.py"
+  ]
  }
 ]
