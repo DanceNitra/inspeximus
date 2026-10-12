@@ -262,14 +262,24 @@ def store_mark(path):
     the change counter in the header; a whole-file store is replaced, which moves the stat. So this cheap mark moves on
     every erasure, and only then does the watchdog compute the whole `store_signature`. Measured on one idle daemon over
     60 s: the whole signature on every tick took 1.04% of one core, against 0.05% for 3.18.0 (see the 3.19 note). A
-    change that touches no store byte (the user's config, a key file) is left to the next request, as before."""
+    change that touches no store byte (the user's config, a key file) is left to the next request, as before.
+
+    AND THE WRITE-AHEAD LOG. The library creates a row store in DELETE mode, but the mode is a property of the file:
+    `PRAGMA journal_mode=WAL` from a user or another tool persists, and an open does not reset it. Measured: a WAL-mode
+    store with a second connection open took an erasure into `<store>-wal`, and the main file's stat and change counter
+    stayed as they were until a checkpoint. So the `-wal` file's stat is part of the mark, as it is of the signature."""
     try:
         st = os.stat(path)
         with open(path, "rb") as fh:
             head = fh.read(28)
-        return (st.st_mtime_ns, st.st_size, st.st_ctime_ns, st.st_ino, head[24:28])
     except OSError:
         return None
+    try:
+        w = os.stat(path + "-wal")
+        wal = (w.st_mtime_ns, w.st_size, w.st_ctime_ns, w.st_ino)
+    except OSError:
+        wal = None
+    return (st.st_mtime_ns, st.st_size, st.st_ctime_ns, st.st_ino, head[24:28], wal)
 
 
 # ── the handshake ──────────────────────────────────────────────────────────────────────────────────────────────

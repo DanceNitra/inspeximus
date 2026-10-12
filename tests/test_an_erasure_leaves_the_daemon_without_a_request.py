@@ -184,3 +184,82 @@ def test_a_handle_current_again_under_the_lock_is_kept(project, daemon, monkeypa
     assert daemon.drop_moved() == 0, "a handle that was current under the lock was dropped"
     assert calls["n"] > len(held), "CONTROL: the drop compared again under the lock"
     assert {k: v[1] for k, v in daemon.held.items()} == held
+
+
+# ── the cheap mark moves on an erasure in every store a daemon can hold ────────────────────────────────────────────
+def _crypto():
+    try:
+        import cryptography  # noqa: F401
+        return True
+    except Exception:                                   # noqa: BLE001 -- the crypto extra is optional
+        return False
+
+
+@pytest.fixture
+def _keep_the_format():
+    old = os.environ.get("INSPEXIMUS_STORE_FORMAT")
+    yield
+    if old is None:
+        os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+    else:
+        os.environ["INSPEXIMUS_STORE_FORMAT"] = old
+
+
+@pytest.mark.parametrize("fmt", ["wal", "json", pytest.param("enc", marks=pytest.mark.skipif(not _crypto(),
+                                                                                              reason="crypto extra"))])
+def test_the_mark_moves_on_an_erasure(tmp_path, fmt, _keep_the_format):
+    """WAL: a user's `PRAGMA journal_mode=WAL` persists in the file, and with another connection open the erasure stays
+    in `<store>-wal`; the main file's stat and change counter do not move until a checkpoint. JSON and encrypted stores
+    are replaced whole, so their stat moves."""
+    import sqlite3
+    kw = {"encrypt_passphrase": "pw"} if fmt == "enc" else {}
+    if fmt == "json":
+        os.environ["INSPEXIMUS_STORE_FORMAT"] = "json"
+    else:
+        os.environ.pop("INSPEXIMUS_STORE_FORMAT", None)
+    p = str(tmp_path / ("s.db" if fmt == "wal" else "s.json"))
+    m = Inspeximus(p, **kw)
+    ids = [m.remember("note %d" % i) for i in range(20)]
+    m.flush()
+    reader = None
+    if fmt == "wal":
+        c = sqlite3.connect(p)
+        assert c.execute("PRAGMA journal_mode=WAL").fetchone()[0] == "wal", "CONTROL: the store is in WAL mode"
+        reader = sqlite3.connect(p)
+        reader.execute("SELECT count(*) FROM sqlite_master").fetchone()   # an open reader: no checkpoint on close
+        c.close()
+    try:
+        before = hookd.store_mark(p)
+        q = Inspeximus(p, **kw)
+        q.forget(ids[0])
+        q.flush()
+        if fmt == "wal":
+            assert os.path.exists(p + "-wal"), "CONTROL: the erasure went to the write-ahead log"
+            assert sqlite3.connect(p).execute("PRAGMA journal_mode").fetchone()[0] == "wal", "CONTROL: still WAL"
+        assert hookd.store_mark(p) != before, "an erasure did not move the cheap mark: the watchdog would not see it"
+    finally:
+        if reader is not None:
+            reader.close()
+
+
+def test_an_erasure_in_a_wal_store_leaves_the_daemon_without_a_request(project, daemon):
+    import sqlite3
+    proj, sp = project
+    c = sqlite3.connect(sp)
+    assert c.execute("PRAGMA journal_mode=WAL").fetchone()[0] == "wal", "CONTROL: the store is in WAL mode"
+    reader = sqlite3.connect(sp)
+    reader.execute("SELECT count(*) FROM sqlite_master").fetchone()
+    c.close()
+    try:
+        p = Inspeximus(sp)
+        rid = p.remember("we decided the deploy window moved to Thursday", key="decision::deploy0", tags=["decision"])
+        p.flush()
+        _served_once(proj, sp, rid, daemon)
+        q = Inspeximus(sp)
+        q.forget(rid)
+        q.flush()
+        assert os.path.exists(sp + "-wal"), "CONTROL: the erasure went to the write-ahead log"
+        took = _wait_until(lambda: rid not in _held_ids(daemon))
+        assert rid not in _held_ids(daemon), "an erasure in a WAL store is still held %.1f s later" % took
+    finally:
+        reader.close()

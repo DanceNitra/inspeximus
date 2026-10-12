@@ -12877,5 +12877,14 @@
   ],
   "old": "            if mark is not None and mark == self.held_marks.get(k):\n",
   "new": "            if True:\n"
+ },
+ {
+  "name": "3.19 item 2: the cheap mark ignores the write-ahead log",
+  "file": "inspeximus/hookd.py",
+  "tests": [
+   "tests/test_an_erasure_leaves_the_daemon_without_a_request.py"
+  ],
+  "old": "        wal = (w.st_mtime_ns, w.st_size, w.st_ctime_ns, w.st_ino)\n",
+  "new": "        wal = None\n"
  }
 ]
