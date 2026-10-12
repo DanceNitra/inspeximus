@@ -24,11 +24,8 @@ sys.path.insert(0, ROOT)
 from inspeximus.core import Inspeximus  # noqa: E402
 
 FORMATS = ["json", "db"]
-#: A ROW-STORE-ONLY EXPECTATION, NOT A SKIP (AUDIT-A F-2, F-2b). The whole-file JSON format does not track its records:
-#: an in-place edit is not declared, so it drops no cache and a flush does not write it (3.17.1 the same, measured
-#: 2026-10-10). Strict: the JSON case must fail, and passes the day that format starts tracking, which then needs a look.
-ROW_ONLY = pytest.mark.xfail(strict=True, reason="row store only: the whole-file JSON format does not track its records")
-FORMATS_ROW_ONLY = [pytest.param("json", marks=ROW_ONLY), "db"]
+#: BOTH FORMATS SINCE 3.19 (backlog item 7). Until 3.18 the whole-file JSON format did not track its records, and these
+#: cases were a strict xfail there (AUDIT-A F-2, F-2b). It tracks them now, so the JSON case runs as an ordinary case.
 
 
 _MADE = []          # (path, format) of every store this test created, checked when the test ends
@@ -83,8 +80,8 @@ def _warm(p, fmt="db"):
     m._ix_held = True
     for _ in range(3):
         assert any("friday" in r["text"] for r in m.recall("deploy window", k=5)), "CONTROL: the record answers"
-    if fmt == "db":                                 # the whole-file JSON format builds no recall index
-        assert m._recall_ix and m._tok_cache, "CONTROL: the handle holds an index entry and cached tokens"
+    # BOTH FORMATS SINCE 3.19: the recall index needs records that report their edits, and a JSON store's records do now.
+    assert m._recall_ix and m._tok_cache, "CONTROL: the handle holds an index entry and cached tokens"
     return m
 
 
@@ -126,7 +123,7 @@ def test_refresh_adopts_a_peers_retire(tmp_path, fmt):
     assert not any("friday" in t for t in _texts(m, "deploy window")), "a retired record still answers"
 
 
-@pytest.mark.parametrize("fmt", FORMATS_ROW_ONLY)
+@pytest.mark.parametrize("fmt", FORMATS)
 def test_refresh_adopts_a_peers_in_place_edit(tmp_path, fmt):
     p = _store(tmp_path, fmt)
     m = _warm(p, fmt)

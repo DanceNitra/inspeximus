@@ -12769,5 +12769,59 @@
    "tests/test_the_prompt_daemon_audit_a_delta.py"
   ],
   "platform": "posix"
+ },
+ {
+  "name": "3.19 item 1: a JSON store's records are not tracked",
+  "old": "        if not isinstance(rec, dict) or isinstance(rec, _TrackedDict):\n            return rec\n        return _TrackedDict(rec, self)\n",
+  "new": "        if not isinstance(rec, dict) or isinstance(rec, _TrackedDict):\n            return rec\n        if not self._rows_available():\n            return rec\n        return _TrackedDict(rec, self)\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 item 1: a JSON load does not wrap its records",
+  "old": "            self._track_all()                     # a whole-file store declares its edits too (3.19)\n",
+  "new": "            pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 item 1: a JSON save keeps the edited ids",
+  "old": "                    # copy of an edited record over the disk's; left set, a refresh would keep it over a peer's newer edit.\n                    self._touched = set()\n",
+  "new": "                    # copy of an edited record over the disk's; left set, a refresh would keep it over a peer's newer edit.\n                    pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 item 1: flush() turns declared edits into a write on a row store only",
+  "old": "        if self._touched:                         # any format: a declared edit is something to write (3.19)\n",
+  "new": "        if self._rows_available() and self._touched:\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 item 1: a same-id replacement is not declared as an edit",
+  "old": "                o._touched.add(old_id)\n                o._dirty = True\n",
+  "new": "                pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 item 1: a same-id replacement stays an untracked dict",
+  "old": "                list.__setitem__(self, i, o._track(v))\n",
+  "new": "                pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
  }
 ]

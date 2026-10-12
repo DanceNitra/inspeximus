@@ -2085,6 +2085,12 @@ class _RecordList(list):
             # record's per-id caches go. One record's worth of work, so a merge loop does not pay a scan per record.
             o = self._owner() if self._owner is not None else None
             if o is not None:
+                # AND IT IS WRITTEN (3.19). It was declared to the caches only: the new version was a plain dict and its id
+                # was already in the row baseline, so `flush()` found nothing to write in either format and the version
+                # was gone at the next open (measured on 3.18.0). It is tracked from here and declared as this handle's edit.
+                list.__setitem__(self, i, o._track(v))
+                o._touched.add(old_id)
+                o._dirty = True
                 o._l1_reset()
                 o._rev = getattr(o, "_rev", 0) + 1
                 _note_dirty(o, old_id)
@@ -10992,29 +10998,23 @@ class Inspeximus:
         return True
 
     def _track(self, rec, is_rows=None):
-        """Wrap a record so any edit to it, at any depth, lands in `_touched`.
+        """Wrap a record so any edit to it, at any depth, lands in `_touched` and marks the store dirty.
 
-        Only for a row store: the JSON path rewrites the whole file and does not care which record
-        moved, so paying for the wrapper there would be cost with no benefit.
+        EVERY FORMAT, NOT ONLY THE ROW STORE (3.19, backlog item 7). This used to return a JSON store's record as it
+        was, on the reasoning that a whole-file write does not care which record moved. It does care whether ANY did:
+        nothing marked the store, so `flush()` wrote nothing and an in-place edit was gone at the next open (measured
+        on 3.17.1 and 3.18.0 with `INSPEXIMUS_STORE_FORMAT=json`, and on an encrypted store). The edit also dropped no
+        derived cache, so a held handle went on matching the record by its old words. Tracking marks the store; it
+        does not save it, so a loop that edits every record still writes the whole file once, at the next save.
+        `is_rows` is kept for callers and no longer read.
         """
         if not isinstance(rec, dict) or isinstance(rec, _TrackedDict):
             return rec
-        # ASK ONCE PER STORE, NOT ONCE PER RECORD. `_rows_available()` reads the file header, so
-        # calling it per record opened the store 30,000 times while loading it: 2.8 s of `open` plus
-        # 1.6 s of `stat`, and opening a 30,000-record store went from 0.5 s to 6.8 s. The caller
-        # that already knows passes the answer in.
-        if is_rows is None:
-            is_rows = self._rows_available()
-        if not is_rows:
-            return rec
-
         return _TrackedDict(rec, self)
 
     def _track_all(self) -> None:
         """Wrap every record currently in `_items`. Called once per load, not per write."""
-        if not self._rows_available():
-            return
-        self._items = [self._track(r, True) for r in self._items]
+        self._items = [self._track(r) for r in self._items]
 
     def _drop_pre_rows_backup(self) -> dict:
         """Remove the JSON copy the format conversion left behind. Called on every hard erasure.
@@ -11526,6 +11526,8 @@ class Inspeximus:
                 sig_before_read = self._stat_sig()
         if self._row_snapshot is None:
             self._json_persisted = {r.get("id") for r in self._items if isinstance(r, dict)}
+            self._track_all()                     # a whole-file store declares its edits too (3.19)
+            self._touched = set()
         self._file_sig = sig_before_read
         # THE BYTES THIS HANDLE READ, hashed as read (A-37). The stat signature cannot tell a peer's
         # same-tick, same-size write from no write at all; the guard in `_save` compares this instead
@@ -20215,6 +20217,9 @@ class Inspeximus:
                     self._file_hash = hashlib.sha256(
                         payload if isinstance(payload, bytes) else payload.encode("utf-8")).hexdigest()
                     self._json_persisted = {r.get("id") for r in slim if isinstance(r, dict)}
+                    # THE EDITS ARE WRITTEN, SO THEY ARE NO LONGER THIS HANDLE'S OWN (3.19). A merge keeps this handle's
+                    # copy of an edited record over the disk's; left set, a refresh would keep it over a peer's newer edit.
+                    self._touched = set()
                     # INSIDE the lock, and that is the whole point. The check and the write already shared
                     # one critical section, but this line sat outside it, so the window simply moved: A
                     # writes, releases, and before it stamps its own signature B takes the lock, compares
@@ -20327,7 +20332,7 @@ class Inspeximus:
         complete by construction and this call writes what changed. The store is still asked to write
         whatever is outstanding, which is the part of the contract that matters.
         """
-        if self._rows_available() and self._touched:
+        if self._touched:                         # any format: a declared edit is something to write (3.19)
             self._dirty = True
         if self._dirty:
             self._save(force=True)

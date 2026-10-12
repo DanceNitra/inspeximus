@@ -24,11 +24,9 @@ sys.path.insert(0, ROOT)
 from inspeximus import core  # noqa: E402
 from inspeximus.core import Inspeximus  # noqa: E402
 
-#: A ROW-STORE-ONLY EXPECTATION, NOT A SKIP (AUDIT-A F-2, F-2b). The whole-file JSON format does not track its records:
-#: an in-place edit is not declared, so it drops no cache and a flush does not write it (3.17.1 the same, measured
-#: 2026-10-10). Strict: the JSON case must fail, and passes the day that format starts tracking, which then needs a look.
-ROW_ONLY = pytest.mark.xfail(strict=True, reason="row store only: the whole-file JSON format does not track its records")
-FORMATS = [pytest.param("json", marks=ROW_ONLY), "db"]
+#: BOTH FORMATS SINCE 3.19 (backlog item 7). Until 3.18 the whole-file JSON format did not track its records, and these
+#: cases were a strict xfail there (AUDIT-A F-2, F-2b). It tracks them now, so the JSON case runs as an ordinary case.
+FORMATS = ["json", "db"]
 
 
 _MADE = []          # (path, format) of every store this test created, checked when the test ends

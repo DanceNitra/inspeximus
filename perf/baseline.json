@@ -57,7 +57,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 1000,
-   "tracked_gets": 0
+   "tracked_gets": 1000
   },
   "seconds_median": 17.5911,
   "seconds_min": 16.5732,
@@ -189,7 +189,7 @@
    "decision_syncs": 1,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 0,
+   "tracked_gets": 8150,
    "erase_items_reads": 11,
    "erase_lower_calls": 1662
   },
@@ -249,13 +249,13 @@
    "type_inferences": 500,
    "current_active_scans": 0,
    "row_serializations": 0,
-   "read_guard_assessments": 50500,
+   "read_guard_assessments": 2000,
    "store_hash_reads": 601,
    "guard_key_lookups": 1,
    "decision_syncs": 51,
    "partition_registry_reads": 0,
    "guard_shape_scans": 500,
-   "tracked_gets": 0
+   "tracked_gets": 531001
   },
   "seconds_median": 16.8624,
   "seconds_min": 16.6849,
