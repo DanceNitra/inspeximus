@@ -1,3 +1,54 @@
+## 3.19.0 - UPGRADE IF you hold a store open for a long time (the prompt daemon, the MCP server, an app that shares one handle between threads) or you pin the JSON format: four of the 3.18 known limits are fixed
+
+### Fixed
+
+- **An in-place edit of a record is written in the whole-file JSON and encrypted formats.** Those formats did not track their records, so `rec["text"] = ...` left the store clean: `flush()` wrote nothing, and the edit was gone at the next open. A held handle also went on matching the record by its old words. The records of every format now report their edits. An edit marks the store; it does not save it, so a loop that edits many records still writes the file once, at the next save.
+  - When you put a record into the list (`items[i] = d`), the store keeps its own tracked copy, so a later edit of `d` does not reach the store. 3.18 kept `d` itself.
+  - Cost, in the JSON format only: the records are wrapped on load and every read goes through the wrapper. Measured on a 23,707-record JSON store (21.9 MB): open +0.06 s (+17 to +21 %), first recall +0.13 s (+12 to +13 %), slower in 5 of 5 and in 7 of 7 pairs. Recall's index now runs on JSON and encrypted stores too, and in our perf gate's mixed JSON session recall's read-guard checks fell from 50,500 to 2,000, but the index brought no measurable speed-up to a held JSON recall (one run each: 0.131 s with it, 0.130 s without). The default row store is unchanged.
+- **An edit made while a save writes is written by the next save,** in every format. The save cleared all edited ids after its write, so an edit that another thread made between the serialisation and the end of the write was dropped: the store read clean and the next `flush()` wrote nothing. 3.18 had this window in the row store. The save now clears an edit only if it serialised that edit, so an edit made during the write is written by the next save, a second edit of a record the save is writing included.
+- **A record replaced through an alias of the record list is written** (`a = store._items; a[i] = dict(a[i], text=...)`), in every format, the default row store included. 3.18 dropped the old version from the caches, but `flush()` did not write the new one. Measured: lost on the 13 releases tried, from 1.30.0 to 3.18.0. No call of the library writes this way; the one place that replaces a record in the list declares the edit.
+- **An erased record leaves the prompt daemon's memory without waiting for a request.** The daemon checked the store only when a hook asked, so a record that another process erased stayed in its memory until the next prompt, or for up to 600 s. Its watchdog now looks at the store file every 0.25 s and drops the handle when the file moved. Measured on Windows: gone within 0.172 s median and 0.188 s at most over 20 erasures. A second run in Linux (WSL) measured 0.18 to 0.21 s. The check reads the file's stat and SQLite's change counter, plus the `-wal` file's stat, because a store that a user or another tool put in WAL mode keeps an erasure there until a checkpoint. An idle daemon uses about 0.2 % of one CPU core for it (0.16 to 0.18 %, against 0.03 to 0.05 % in 3.18). The next prompt opens the store again, as after any write in 3.18.
+- **Silent connections no longer push the prompt hook to its normal path.** A connection that sent nothing held one of the daemon's 16 handshake slots for 0.5 s, so 16 of them refused every hook while they stayed, and three refusals made the hook stop asking for 300 s. A connection that finds every slot taken now evicts the oldest connection that has not yet said hello. A connection that has said hello is never evicted. While a slot is free, a slow client still gets the full 0.5 s. On Linux the socket's listen queue now holds 32 connections instead of 1, and the hook waits for room in a full queue up to its time limit, as it waits for a busy pipe on Windows. Measured, 20 hook asks beside silent clients: 11 of 20 served on Windows with 16 held connections before, 1 of 20 in WSL beside a flood that reopens them; 20 of 20 in both after.
+- **A handle shared between threads keeps recall's index and its caches consistent.** One lock per handle covers recall's index, the caches derived from the records, and the vector-norm cache. Before, a recall on one thread and a write or a second recall on another could raise `dictionary changed size during iteration`, put a record into the index twice, or keep a stale vector norm. The lock is not held across an embedding call. Recall holds it while it checks the read guards, which can read the guard key file on its first use. Measured by the Builder on copies of our row stores (46 MB and 96 MB), and by AUDIT-B on two others (41 MB and 54 MB), one and four threads: no change beyond run-to-run noise. A `remember` does not take the lock.
+
+### Added
+
+- **A process start-time reader for macOS, switched off.** The daemon needs a process's start time to recognise a live daemon. 3.19 contains a reader for macOS (`sysctl` `KERN_PROC_PID`) behind `hookd.DARWIN_START_TIME = False`. No test has run it on a Mac, so the daemon stays off on macOS, as in 3.18.
+
+### Known limits
+
+The 3.18 known limits about the erased record in the daemon's memory, the silent connection, the thread safety of the index and the vector-norm cache, and the in-place edit in the JSON format are fixed, and the 3.18 limit about the macOS daemon is reworded. These remain or are new:
+
+- **The daemon is not enabled on macOS.** The start-time reader is in the package, switched off and untested on a Mac. The daemon does not start there, and the hook takes its normal path.
+- **The daemon does not see an in-place patch made within one clock tick of the store's last write (Linux and macOS).** A patch of the same length, with the modification time put back, is caught through the file's change time, which a program cannot set. The kernel advances that time in ticks: 4 ms in WSL, measured. A patch inside the tick of the last write leaves it equal. On Windows this kind of patch is not seen at all, as in 3.18.
+- **In a burst of more than 16 simultaneous connections, the daemon can close a real client before its hello.** Eviction takes the oldest connection that has not said hello, and a real client whose hello is still in flight can be that one: 6 to 8 of 24 in a burst of 24 real clients. That client takes the normal path. 3.19 served 16 to 18 of the 24, against 11 to 13 on 3.18.
+- **A write beside busy recall threads waits seconds.** In one process, a `remember` next to four threads that recall in a loop took a median of 1.6 to 5.5 s on 3.19, against 11.9 to 12.3 s on 3.18 and 31 to 38 ms alone, on a 5,000-record row store. The write is in SQLite and file calls, each of which gives the interpreter's lock to the CPU-bound recall threads. One handle per writer thread, or fewer recall threads, avoids it.
+
+### Upgrade notes
+
+No re-stamp and no change to your config. Stores written by 3.18 open unchanged.
+
+### Measured
+
+Every row compares v3.18.0 with 3.19 on the same machine, in pairs or runs that alternate the two versions, so a swing in the load hits both.
+
+| What | 3.18.0 | 3.19 | Load | Source |
+|---|---|---|---|---|
+| Held recall, row store, 1 thread | 0.116 s (23,707 records, 41 MB copy), 0.023 s (13,602 records, 54 MB copy) | 0.107 s, 0.025 s | Windows, CPU median 42 to 46 % | AUDIT-B, 5 pairs per store |
+| Held recall, row store, 4 threads | 8.16 and 38.6 recalls/s (the same 41 MB and 54 MB copies) | 8.13 and 39.3 recalls/s | Windows, CPU median 42 to 46 % | AUDIT-B, 5 pairs per store |
+| Whole-file JSON store, 23,707 records (21.9 MB) | open 0.331 and 0.287 s, first recall 1.125 and 1.030 s | open 0.429 and 0.347 s (+17 and +21 %), first recall 1.248 and 1.189 s (+12 and +13 %), slower in 5 of 5 and in 7 of 7 pairs | Windows, CPU median 49 % (5 pairs) and 51 % (7 pairs) | AUDIT-B, two series: 5 pairs, then 7 pairs on one store path with a same-code control |
+| A write beside 4 recall threads, 5,000-row store | median 11.9 to 12.3 s | median 1.6 to 5.5 s | Windows, not recorded; 31 to 38 ms alone | AUDIT-B, 3 runs each |
+| Erased record in the daemon's memory, no request | held at the 10 s limit, 3 of 3 | 0.172 s median, 0.188 s max, 20 of 20 dropped | Windows, not recorded | AUDIT-B |
+| Erased record in the daemon's memory, no request | not run | 0.199 s median, 0.183 to 0.209 s, 20 of 20 dropped | WSL as nobody | AUDIT-A |
+| Idle daemon, 60 s, share of one CPU core | 0.03 to 0.05 % | 0.16 to 0.18 % | Windows, machine busy | AUDIT-B, 2 runs each |
+| Hook asks served beside 16 held silent connections | 11 of 20 | 20 of 20 | Windows, machine busy, CPU 57 to 66 % between runs | AUDIT-B |
+| Hook asks served beside a flood of silent connections | 0 to 1 of 30 | 27 to 29 of 30 | WSL as nobody, 6 flooder threads | AUDIT-A |
+| Burst of 24 real clients at once | 11 to 13 served | 16 to 18 served | WSL as nobody | AUDIT-A |
+| Prompt hook with the daemon | 0.398 s, 11 of 11 served | 0.415 s, 11 of 11 served (2.11 s without the daemon) | Windows, CPU median 47 % | AUDIT-B, 11 rounds |
+| Perf gate work counters | the pinned baseline | equal on every arm: all 26 arms on 4fe9c3fd, the 10 save-path arms on f1b4cce8; `receipt_bytes_written` drifts by a few bytes between runs | Windows | AUDIT-B, `perf/gate.py check` |
+
+Not measured: Linux and macOS timings other than the rows marked WSL, an encrypted store's timings, a JSON store of more than 23,707 records, and the macOS start-time reader on a Mac.
+
 ## 3.18.0 - UPGRADE IF your prompt hook or MCP server recalls from a large store: an opt-in daemon answers the prompt hook about 4 times faster when it answers in time (otherwise the hook takes its normal path), a held handle recalls 1.8 to 3 times faster, and semantic recall without numpy is 2.7 to 3 times faster with the same scores. FIX: a long-lived handle (the MCP server) no longer writes a record back over a peer's retire, edit, credit or redaction, an error present since at least 3.16.0. ACTION if you set an `INSPEXIMUS_*` variable that turns a guard off, names a key, an actor or a supersession policy, or switches on receipts, PII detection, recall observation, hook embedding or the archive: move it to `<key home>/inspeximus/config.json`, because the environment value is now ignored with one line on stderr
 
 ### A project's environment no longer chooses how your store is written
