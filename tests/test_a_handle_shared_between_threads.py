@@ -221,3 +221,204 @@ def test_recall_survives_an_edit_logged_while_it_reads_the_log(tmp_path, monkeyp
     hits = h.recall("deploy window", k=5)
     assert _RevisionThatLogs.fired, "CONTROL: recall did not read the log"
     assert hits, "recall returned nothing"
+
+
+# ── 6. the token index, read and built beside an extension of its entry ─────────────────────────────────────────────
+def test_a_recall_skips_index_positions_added_after_it_copied_its_pool(tmp_path, monkeypatch):
+    """G-5 (3.19): a lexical recall copied the entry's pool under the handle lock, then read the token index outside it.
+    Another recall that extended the entry in between added positions past the copy, and `pool[_i]` raised IndexError.
+    Forced here: the extension runs as this recall tokenizes its query, after the copy and before the read."""
+    h = _held(tmp_path)
+    assert any(e.get("post") for e in h._recall_ix.values()), "CONTROL: the entry has its token index"
+    real, fired = core._tokens, []
+
+    def tokens(text):
+        if text == "deploy window please" and not fired:
+            fired.append(1)
+            h.remember("note new on the deploy window")
+            h.recall("deploy window", k=5)                 # extends the entry and its token index
+        return real(text)
+    monkeypatch.setattr(core, "_tokens", tokens)
+    hits = h.recall("deploy window please", k=5)
+    assert fired, "CONTROL: the extension ran inside the recall"
+    assert hits, "recall returned nothing"
+
+
+def test_a_token_index_built_beside_an_extension_keeps_the_appended_records(tmp_path, monkeypatch):
+    """G-5 (3.19): the token index was built outside the handle lock. Another thread's recall that extended the entry
+    meanwhile found no index to extend, and the build then stored an index of the pool it had read, without the
+    appended records: a lexical recall never found them again. Forced here: the other thread appends a record and
+    recalls while this recall builds the index."""
+    h = _held(tmp_path)
+    for e in h._recall_ix.values():
+        e["post"] = None                                    # the next lexical recall builds the index
+    real_tokens, real_rec = core._tokens, Inspeximus._rec_tokens
+    armed, fired, done = [], [], threading.Event()
+
+    def other():
+        h.remember("note new on the quokka migration")
+        h.recall("deploy window", k=5)                       # extends the entry
+        done.set()
+
+    def tokens(text):
+        if text == "deploy window please":
+            armed.append(1)                                  # the next record tokenized is the index build's
+        return real_tokens(text)
+
+    def rec_tokens(self, r):
+        if self is h and armed and not fired:
+            fired.append(threading.Thread(target=other))
+            fired[0].start()
+            done.wait(2)                                     # with the build under the lock, the other recall waits
+        return real_rec(self, r)
+    monkeypatch.setattr(core, "_tokens", tokens)
+    monkeypatch.setattr(Inspeximus, "_rec_tokens", rec_tokens)
+    h.recall("deploy window please", k=5)
+    monkeypatch.undo()
+    assert fired, "CONTROL: the other thread ran during the index build"
+    fired[0].join(30)
+    assert done.is_set(), "CONTROL: the other thread's recall finished"
+    hits = h.recall("quokka migration", k=5)
+    assert any("quokka" in r.get("text", "") for r in hits), "a record appended during the index build is not found"
+
+
+# ── 7. the shared-state inventory (3.19): F1 to F4 ──────────────────────────────────────────────────────────────────
+def test_words_read_before_an_edit_on_another_thread_are_not_kept(tmp_path, monkeypatch):
+    """F1: the token caches were filled outside the handle lock. A fill that read a record's text before another thread
+    edited it was stored after the edit had dropped the entry, so the record kept its old words in the index. Forced
+    here: the edit runs on another thread while the fill tokenizes the old text."""
+    h = _held(tmp_path)
+    rid = h.remember("note on the marmot burrow")
+    rec = [r for r in h._items if r["id"] == rid][0]
+    h._tok_cache.pop(rid, None)
+    real, started, done = core._tokens, [], threading.Event()
+
+    def edit():
+        rec["text"] = "note on the okapi enclosure"
+        done.set()
+
+    def tokens(text):
+        if "marmot" in text and not started:
+            started.append(threading.Thread(target=edit))
+            started[0].start()
+            done.wait(2)                                     # with the fill under the lock, the edit's drop waits
+        return real(text)
+    monkeypatch.setattr(core, "_tokens", tokens)
+    h._rec_tokens(rec)
+    monkeypatch.undo()
+    assert started, "CONTROL: the edit ran during the fill"
+    started[0].join(30)
+    assert done.is_set() and rec["text"] == "note on the okapi enclosure", "CONTROL: the edit landed"
+    assert "okapi" in h._rec_tokens(rec), "the record kept the words it had before the edit"
+
+
+def test_a_semantic_recall_scores_with_one_build_of_the_vector_matrix(tmp_path, monkeypatch):
+    """F2: the vector matrix, its row map and its mean were three attributes. A recall that computed its scores with one
+    build and looked rows up in the map of a later build scored each record with another record's row. Forced here:
+    a record is erased and the matrix rebuilt between the scores and the lookups."""
+    pytest.importorskip("numpy")
+    words = ["alpha", "bravo", "charlie", "delta"]
+
+    def emb(text):
+        return [1.0 if w in text else 0.0 for w in words]
+    h = Inspeximus(str(tmp_path / "v.db"), embed=emb)       # one handle: vectors are not stored by default
+    ids = {w: h.remember("the %s record" % w) for w in words}
+    assert h.recall("delta", k=1, mode="semantic")[0]["id"] == ids["delta"], "CONTROL: delta ranks first"
+    real_q, real_norm, armed, fired = Inspeximus._qvec, core._norm, [], []
+
+    def qvec(self, *a, **k):
+        armed.append(1)
+        return real_q(self, *a, **k)
+
+    def norm(v):
+        if armed and not fired:
+            fired.append(1)
+            h.forget(ids["alpha"])                           # the first row goes; every later row moves up one
+            h._vec_matrix()
+        return real_norm(v)
+    monkeypatch.setattr(Inspeximus, "_qvec", qvec)
+    monkeypatch.setattr(core, "_norm", norm)
+    top = h.recall("delta", k=1, mode="semantic")
+    monkeypatch.undo()
+    assert fired, "CONTROL: the matrix was rebuilt during the recall"
+    assert top and top[0]["id"] == ids["delta"], "the recall scored records with rows of another build: %r" % (
+        [r.get("text") for r in top],)
+
+
+class _LogThatMoves(dict):
+    """An edit log in which an id is edited again just before the prune pops it."""
+    target, newer, fired = None, None, []
+
+    def pop(self, k, *d):
+        if k == _LogThatMoves.target and not _LogThatMoves.fired:
+            _LogThatMoves.fired.append(1)
+            dict.__setitem__(self, k, _LogThatMoves.newer)
+        return dict.pop(self, k, *d)
+
+
+def test_the_edit_log_prune_keeps_an_edit_logged_after_its_check(tmp_path, monkeypatch):
+    """F3: recall prunes the edit log of ids every index entry has already seen. Edits write the log outside the handle
+    lock, so an id checked at an old revision could be edited before the pop, and the pop lost that edit; the next
+    recall then extended an entry over a record that had moved. Forced here: the id is edited between check and pop."""
+    h = _held(tmp_path)
+    log = _LogThatMoves(h._ix_log)
+    log["an-old-edit"] = 0
+    h._ix_log = log
+    monkeypatch.setattr(_LogThatMoves, "target", "an-old-edit")
+    monkeypatch.setattr(_LogThatMoves, "newer", h._rev + 1000)
+    monkeypatch.setattr(_LogThatMoves, "fired", [])
+    for e in h._recall_ix.values():
+        e["rev"] = -1                                       # the entry is stale, so this recall rebuilds it and prunes
+    h.recall("deploy window", k=5)
+    assert _LogThatMoves.fired, "CONTROL: the prune reached the id"
+    assert h._ix_log.get("an-old-edit") == h._rev + 1000, "the prune dropped an edit logged after its check"
+
+
+class _KeyThatFills(str):
+    """A cached key whose comparison fills the cache once: another thread's read, landing while a write drops a key."""
+    __hash__ = str.__hash__
+    cache, fired = None, []
+
+    def __eq__(self, other):
+        if _KeyThatFills.cache is not None and not _KeyThatFills.fired:
+            _KeyThatFills.fired.append(1)
+            _KeyThatFills.cache[(None, None, "filled-meanwhile")] = None
+        return str.__eq__(self, other)
+
+
+def test_dropping_a_key_from_the_read_cache_survives_a_fill_meanwhile(tmp_path, monkeypatch):
+    """F4: a keyed write drops the key's entries from the read cache by iterating it, and a read on another thread
+    filled it meanwhile: "mutated during iteration". Forced here: the cache is filled during the iteration."""
+    h = _held(tmp_path)
+    h._l1[(None, None, _KeyThatFills("deploy"))] = None
+    h._l1[(None, None, "another key")] = None            # the iteration must have a next step to notice the fill
+    monkeypatch.setattr(_KeyThatFills, "cache", h._l1)
+    monkeypatch.setattr(_KeyThatFills, "fired", [])
+    h._l1_drop_key("deploy")
+    assert _KeyThatFills.fired, "CONTROL: the cache was filled during the drop"
+    assert not [ck for ck in h._l1 if ck[2] == "deploy"], "the key's entry was not dropped"
+
+
+def test_a_tenant_view_never_returns_another_tenants_records_read_meanwhile(tmp_path, monkeypatch):
+    """F5: a view's attribute writes go to its parent, so every tenant view shared one cached view of the records,
+    written as two attributes (the rows, then their key). A read by another tenant between the two left this tenant's
+    key beside the other tenant's rows: this tenant was handed them, and read them again from the cache. Forced here:
+    the other tenant reads between the two writes."""
+    m = Inspeximus(str(tmp_path / "t.db"))
+    acme, beta = m.for_tenant("acme"), m.for_tenant("beta")
+    acme.remember("acme keeps the quarterly numbers")
+    beta.remember("beta keeps the payroll file")
+    real, fired = core._TenantView.__setattr__, []
+
+    def setattr_then_other_tenant_reads(self, name, value):
+        real(self, name, value)
+        if self.tenant == "acme" and name.startswith("_items_view") and not fired:
+            fired.append(1)
+            beta.items                                       # another tenant's read, between this read's writes
+    monkeypatch.setattr(core._TenantView, "__setattr__", setattr_then_other_tenant_reads)
+    first = acme.items
+    monkeypatch.undo()
+    assert fired, "CONTROL: the other tenant read during this tenant's read"
+    for got in (first, acme.items):
+        assert {r.get("tenant") for r in got} == {"acme"}, "a tenant view returned %r" % (
+            sorted((r.get("tenant"), r.get("text")) for r in got),)

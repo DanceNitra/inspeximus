@@ -13518,5 +13518,68 @@
   "tests": [
    "tests/test_a_check_that_could_not_run_does_not_read_clean.py"
   ]
+ },
+ {
+  "name": "3.19 G-5: recall reads token-index positions past its own pool",
+  "old": "                _scan = [pool[_i] for _i in sorted(_hit) if _i < len(pool)]\n",
+  "new": "                _scan = [pool[_i] for _i in sorted(_hit)]\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 G-5: the token index is built and read without the handle lock",
+  "old": "                with _ix_lock_of(self):\n                    if _ix[\"post\"] is None:\n",
+  "new": "                with _NO_LOCK:\n                    if _ix[\"post\"] is None:\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 F1: the token cache is filled without the handle lock",
+  "old": "            with _ix_lock_of(self):\n                t = _tokens(_index_text(rec)); self._tok_cache[rid] = t\n",
+  "new": "            with _NO_LOCK:\n                t = _tokens(_index_text(rec)); self._tok_cache[rid] = t\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 F2: a semantic recall looks rows up in the live row map, not its own build's",
+  "old": "            if sims_vec is not None and r.get(\"vec\") and r[\"id\"] in _rowof:\n                return max(0.0, float(sims_vec[_rowof[r[\"id\"]]]))\n",
+  "new": "            if sims_vec is not None and r.get(\"vec\") and r[\"id\"] in self._vec_rowof:\n                return max(0.0, float(sims_vec[self._vec_rowof[r[\"id\"]]]))\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 F3: the edit-log prune drops an edit logged after its check",
+  "old": "                        if _v is not None and _v > _floor:\n                            self._ix_log.setdefault(_k, _v)\n",
+  "new": "",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 F4: dropping a key iterates the live read cache",
+  "old": "        for ck in [ck for ck in list(l1) if ck[2] == key]:\n",
+  "new": "        for ck in [ck for ck in l1 if ck[2] == key]:\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 F5: every view of a handle caches its records in one slot, written in two steps",
+  "old": "        _views = getattr(self, \"_items_views\", None)\n        if not isinstance(_views, dict):\n            _views = {}\n            self._items_views = _views\n        _hit = _views.get(ck[:2])                      # (tenant, agent): one entry each, whatever the revisions\n        if _hit is not None and _hit[0] == ck:\n            return _hit[1]\n        rows = self._items\n        if self.tenant is not None:\n            rows = [r for r in rows if r.get(\"tenant\") == self.tenant]\n        if getattr(self, \"agent\", None) is not None:\n            rows = self._acl_visible(rows)\n        # A TUPLE, not a list. The first version cached a list and returned the object itself, so\n        # `view.items.append(rec)` did not merely fail to persist -- it planted a PHANTOM record that\n        # every later reader saw, including fresh handles, and that recall ranked first. It was never on\n        # disk and vanished on the next write. Immutable means the mistake raises instead of haunting.\n        view = tuple(rows)\n        _views[ck[:2]] = (ck, view)\n        return view\n",
+  "new": "        if getattr(self, \"_items_view_rev\", None) != ck:\n            rows = self._items\n            if self.tenant is not None:\n                rows = [r for r in rows if r.get(\"tenant\") == self.tenant]\n            if getattr(self, \"agent\", None) is not None:\n                rows = self._acl_visible(rows)\n            self._items_view = tuple(rows)\n            self._items_view_rev = ck\n        return self._items_view\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
  }
 ]

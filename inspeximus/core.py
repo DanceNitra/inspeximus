@@ -5312,8 +5312,10 @@ class Inspeximus:
         l1 = getattr(self, "_l1", None)
         if not l1:
             return
-        for ck in [ck for ck in l1 if ck[2] == key]:
-            del l1[ck]
+        # A COPY OF THE KEYS, TAKEN IN ONE C CALL (3.19, shared-state inventory F4): iterating the live cache raised
+        # "dictionary changed size during iteration" when another thread's read filled it meanwhile.
+        for ck in [ck for ck in list(l1) if ck[2] == key]:
+            l1.pop(ck, None)
 
     def current(self, key: str) -> "dict | None":
         """The record this handle currently serves for `key`, or None: the active record with the
@@ -11972,7 +11974,7 @@ class Inspeximus:
                     self._touch(_rid)
                     _kept += 1
             if _kept:
-                self._items_view_rev = None
+                self._items_views = {}
         # A RE-ADDED RECORD GETS ITS RECEIPT (2.28.1). On the JSON path a refused save emits no
         # receipt, and reload() then re-added the record and saved it with none, so a write that
         # merely lost a race read forever as "inserted out of band". Measured 2026-09-15: two
@@ -12006,7 +12008,7 @@ class Inspeximus:
         # already fixed: the case the test file beside this fix pins deterministically. The merged
         # records this handle re-added live in memory only, which is correct: if the file changed
         # since the read, the next save refuses and the caller reloads again with them still held.
-        self._items_view_rev = None
+        self._items_views = {}
         self._prune_derived_caches()                  # a peer's erasure leaves nothing here either
         self._drop_foreign_vectors()                  # a peer's rows may carry another recipe (F-41)
         return {"reloaded": len(on_disk), "readded": len(readded), "demoted": demoted,
@@ -12113,7 +12115,7 @@ class Inspeximus:
         skipped_buried = before - len(self._items)
         demoted = self._reapply_key_lww(
             "import_merge_lww", "changeset import: a newer value for this key won")
-        self._items_view_rev = None
+        self._items_views = {}
         self._save(force=True)
         return {"added": added, "demoted": demoted, "skipped_buried": skipped_buried}
 
@@ -12148,19 +12150,29 @@ class Inspeximus:
             return self._items
         rev = (len(self._items), id(self._items))
         ck = _view_scope(self) + (rev,)
-        if getattr(self, "_items_view_rev", None) != ck:
-            rows = self._items
-            if self.tenant is not None:
-                rows = [r for r in rows if r.get("tenant") == self.tenant]
-            if getattr(self, "agent", None) is not None:
-                rows = self._acl_visible(rows)
-            # A TUPLE, not a list. The first version cached a list and returned the object itself, so
-            # `view.items.append(rec)` did not merely fail to persist -- it planted a PHANTOM record that
-            # every later reader saw, including fresh handles, and that recall ranked first. It was never on
-            # disk and vanished on the next write. Immutable means the mistake raises instead of haunting.
-            self._items_view = tuple(rows)
-            self._items_view_rev = ck
-        return self._items_view
+        # ONE ENTRY PER SCOPE, KEY AND VIEW TOGETHER, AND THIS CALL RETURNS ITS OWN (3.19, shared-state inventory F5).
+        # A view's attribute writes go to the parent, so every tenant and agent view shared one cached view, written as
+        # two attributes. Two threads on two tenants could pair one's key with the other's rows: a tenant was handed
+        # another tenant's records, and read them from the cache until the store changed.
+        _views = getattr(self, "_items_views", None)
+        if not isinstance(_views, dict):
+            _views = {}
+            self._items_views = _views
+        _hit = _views.get(ck[:2])                      # (tenant, agent): one entry each, whatever the revisions
+        if _hit is not None and _hit[0] == ck:
+            return _hit[1]
+        rows = self._items
+        if self.tenant is not None:
+            rows = [r for r in rows if r.get("tenant") == self.tenant]
+        if getattr(self, "agent", None) is not None:
+            rows = self._acl_visible(rows)
+        # A TUPLE, not a list. The first version cached a list and returned the object itself, so
+        # `view.items.append(rec)` did not merely fail to persist -- it planted a PHANTOM record that
+        # every later reader saw, including fresh handles, and that recall ranked first. It was never on
+        # disk and vanished on the next write. Immutable means the mistake raises instead of haunting.
+        view = tuple(rows)
+        _views[ck[:2]] = (ck, view)
+        return view
 
     @items.setter
     def items(self, value):
@@ -15410,14 +15422,26 @@ class Inspeximus:
             else:
                 self._mat, self._vec_rowof, self._vec_mean = None, {}, None
             self._mat_built_n = len(self.items)
+            # ONE ATTRIBUTE FOR ONE BUILD (3.19, shared-state inventory F2): the matrix, its row map and its mean were three
+            # attributes, so a recall could score with one build's matrix and look rows up in another's map.
+            self._vec_pack = (self._mat, self._vec_rowof, self._vec_mean)
         return self._mat
+
+    def _vec_pack_now(self) -> tuple:
+        """(matrix, row map, mean) from one build of `_vec_matrix`, for a recall that scores with all three."""
+        self._vec_matrix()
+        return getattr(self, "_vec_pack", None) or (None, {}, None)
 
     def _rec_tokens(self, rec: dict) -> set:
         """Token set for a memory, cached by id — recall over N memories shouldn't re-tokenize."""
         rid = rec.get("id") or id(rec)
         t = self._tok_cache.get(rid)
         if t is None:
-            t = _tokens(_index_text(rec)); self._tok_cache[rid] = t
+        # UNDER THE HANDLE LOCK (3.19, shared-state inventory F1). A text edit stores, then drops this entry under the
+        # lock. Filled outside it, a fill that read the text before an edit on another thread could be stored after that
+        # drop, and the record kept its old words in the index until its next edit.
+            with _ix_lock_of(self):
+                t = _tokens(_index_text(rec)); self._tok_cache[rid] = t
         return t
 
     def _retired_values(self) -> list:
@@ -15498,8 +15522,9 @@ class Inspeximus:
         rid = rec.get("id") or id(rec)
         s = self._sig_cache.get(rid)
         if s is None:
-            s = " ".join(sorted(self._rec_tokens(rec)))
-            self._sig_cache[rid] = s
+            with _ix_lock_of(self):                   # as `_rec_tokens` (F1)
+                s = " ".join(sorted(self._rec_tokens(rec)))
+                self._sig_cache[rid] = s
         return s
 
     def _resolve_read_conflicts(self, scored: list, k: int) -> tuple[list, dict]:
@@ -15563,7 +15588,8 @@ class Inspeximus:
         rid = rec.get("id") or id(rec)
         c = self._tc_cache.get(rid)
         if c is None:
-            c = _token_counts(_index_text(rec)); self._tc_cache[rid] = c
+            with _ix_lock_of(self):                   # as `_rec_tokens` (F1)
+                c = _token_counts(_index_text(rec)); self._tc_cache[rid] = c
         return c
 
     def _prune_derived_caches(self) -> None:
@@ -16064,7 +16090,12 @@ class Inspeximus:
                     # The log only has to reach back to the oldest entry still held.
                     _floor = min(e["rev"] for e in list(dict.values(self._recall_ix)))
                     for _k in [k for k, v in list(dict.items(self._ix_log)) if v <= _floor]:
-                        self._ix_log.pop(_k, None)
+                        # AN EDIT LOGGED AFTER THE CHECK IS PUT BACK (3.19, shared-state inventory F3). Edits write the log
+                        # outside this lock, so an id checked at an old revision could be edited before the pop, and
+                        # popping it lost that edit: the next recall extended an entry over a record that had moved.
+                        _v = self._ix_log.pop(_k, None)
+                        if _v is not None and _v > _floor:
+                            self._ix_log.setdefault(_k, _v)
         # Mode selection. 'hybrid' = lexical (token overlap) + semantic (embedding) fused with Reciprocal
         # Rank Fusion. We MEASURED hybrid robustly beating EITHER channel alone for agent memory on LoCoMo
         # (recall@20 0.61 hybrid vs 0.55 lexical vs 0.53 semantic; +0.057 over the best single channel,
@@ -16084,13 +16115,13 @@ class Inspeximus:
         self._last_mode = sel
         qtok = _tokens(query)                                 # tokenize the query once (lexical + fallback)
         # Vectorized semantic fast-path: one matmul gives the cosine to every vec-bearing memory.
-        sims_vec = None
+        sims_vec, _rowof = None, {}
         if qvec is not None and _numpy() is not None:
-            M = self._vec_matrix()
+            M, _rowof, _vmean = self._vec_pack_now()     # one build: matrix, row map and mean together (F2)
             if M is not None:
                 qv = _np.asarray(qvec, dtype=_np.float32)
-                if self.center_embeddings and self._vec_mean is not None:
-                    qv = qv - self._vec_mean              # center the query the SAME way as the matrix
+                if self.center_embeddings and _vmean is not None:
+                    qv = qv - _vmean                      # center the query the SAME way as the matrix
                 sims_vec = M @ (qv / (float(_np.linalg.norm(qv)) or 1.0))
         _now = time.time()                                # for per-type decay of the ranking value
         _by_id = _shared.get("by_id") if _shared is not None else None
@@ -16101,8 +16132,8 @@ class Inspeximus:
         _stale_memo = _shared["stale"] if _shared is not None else None
         _qn = _norm(qvec) if qvec is not None else None
         def _semsim(r) -> float:
-            if sims_vec is not None and r.get("vec") and r["id"] in self._vec_rowof:
-                return max(0.0, float(sims_vec[self._vec_rowof[r["id"]]]))
+            if sims_vec is not None and r.get("vec") and r["id"] in _rowof:
+                return max(0.0, float(sims_vec[_rowof[r["id"]]]))
             return max(0.0, self._rec_cos(qvec, r, _qn)) if (qvec is not None and r.get("vec")) else 0.0
         def _lexsim(r) -> float:
             t = self._rec_tokens(r)
@@ -16148,16 +16179,23 @@ class Inspeximus:
             if sel == "lexical" and _ix is not None and qtok:
                 # ONLY RECORDS THAT SHARE A TOKEN WITH THE QUERY CAN SCORE: the lexical similarity of any other
                 # is 0 and is dropped below. Same records, same scores, visited in pool order, so ties keep it.
-                if _ix["post"] is None:
-                    _post = {}
-                    for _i, _r in enumerate(_ix["pool"]):
-                        for _t in self._rec_tokens(_r):
-                            _post.setdefault(_t, []).append(_i)
-                    _ix["post"] = _post
-                _hit = set()
-                for _t in qtok:
-                    _hit.update(_ix["post"].get(_t, ()))
-                _scan = [pool[_i] for _i in sorted(_hit)]
+                # UNDER THE HANDLE LOCK, AND ONLY THIS RECALL'S POSITIONS (3.19, G-5). The token index was built and read
+                # here, outside the lock, while another recall extended the same entry under it. A build that raced an
+                # extension kept only the positions it had read, and the extension had skipped an index that did not yet
+                # exist, so the appended records never matched a lexical recall again. And an extension after this
+                # recall copied its pool added positions past the copy: `pool[_i]` raised IndexError. The pool only
+                # grows by appending, so a position below this recall's length names the same record in both.
+                with _ix_lock_of(self):
+                    if _ix["post"] is None:
+                        _post = {}
+                        for _i, _r in enumerate(_ix["pool"]):
+                            for _t in self._rec_tokens(_r):
+                                _post.setdefault(_t, []).append(_i)
+                        _ix["post"] = _post
+                    _hit = set()
+                    for _t in qtok:
+                        _hit.update(_ix["post"].get(_t, ()))
+                _scan = [pool[_i] for _i in sorted(_hit) if _i < len(pool)]
             for r in _scan:
                 sim = _semsim(r) if sel == "semantic" else _lexsim(r)
                 if sim <= 0 or sim < min_relevance:
