@@ -15,13 +15,13 @@ session that rebased onto main inherited it. HEAD now goes to a `release/X.Y.Z` 
 moves only after the branch runs are green on that exact commit.
 
 Pre-flight, before anything leaves this machine:
-  1. `tools/release_check.py --skip-tests` reports no [FAIL]. "ci on HEAD" is exempt: it cannot pass
+  1. `tools/release_check.py --skip-tests --work-counters-run-in-ci` reports no [FAIL]. "ci on HEAD" is exempt: it cannot pass
      before the push, and guards 5 and 7 are its real check. "work counters" is exempt too: guards 5 and 7
      require ci.yml's job "work counters must not grow" (the same `perf/gate.py check`) to have run and
      succeeded on exactly HEAD, on a clean runner. Measured 2026-10-13: the local gate did not finish in
      release_check's 3600 s on PC1 (2,048 CPU-seconds in 59 min), and recommit_n2000.dir_listings reads 1
-     on PC1 and 0 on CI and in the baseline (backlog item 8). release_check itself still reports the local
-     gate when it is run alone.
+     on PC1 and 0 on CI and in the baseline (backlog item 8). So the pre-flight passes release_check the flag
+     that skips its local gate (an hour on PC1), and a standalone release_check still runs that gate.
   2. pyproject.toml says X.Y.Z.
   3. vX.Y.Z exists neither locally nor on origin.
   4. HEAD is a fast-forward of origin/main, so the push to main cannot rewrite anything.
@@ -64,6 +64,9 @@ REPO = "DanceNitra/inspeximus"
 INSTALL_WORKFLOWS = ("one-memory.yml", "clean-install.yml")
 #: release_check lines guard 1 does not stop on, because guards 5 and 7 check them in CI on exactly HEAD.
 CI_CHECKED = ("ci on HEAD", "work counters")
+#: release_check's flag that skips its local `perf/gate.py check`; only this script passes it, because guards
+#: 5 and 7 check the same gate in CI. Equal to release_check.SKIP_COUNTERS_FLAG (a test pins it).
+WORK_COUNTERS_IN_CI = "--work-counters-run-in-ci"
 #: The ci.yml job that runs `perf/gate.py check`; guards 5 and 7 require it to have run and succeeded.
 PERF_JOB = "work counters must not grow"
 
@@ -81,7 +84,7 @@ class Stop(Exception):
 def preflight(version, sh, root=ROOT):
     """Guards 1-4. Returns the list of reasons to stop; empty means the push may go ahead."""
     reasons = []
-    _, out = sh([sys.executable, "tools/release_check.py", "--skip-tests"])
+    _, out = sh([sys.executable, "tools/release_check.py", "--skip-tests", WORK_COUNTERS_IN_CI])
     fails = [ln.strip() for ln in out.splitlines()
              if "[FAIL]" in ln and not any(name in ln for name in CI_CHECKED)]
     if fails:

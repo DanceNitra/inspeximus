@@ -13203,5 +13203,41 @@
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
+ },
+ {
+  "name": "3.19 release: the pre-flight does not pass the flag that leaves the work counters to CI",
+  "file": "tools/release.py",
+  "old": "    _, out = sh([sys.executable, \"tools/release_check.py\", \"--skip-tests\", WORK_COUNTERS_IN_CI])\n",
+  "new": "    _, out = sh([sys.executable, \"tools/release_check.py\", \"--skip-tests\"])\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.19 release: release.py names a flag release_check does not have",
+  "file": "tools/release.py",
+  "old": "WORK_COUNTERS_IN_CI = \"--work-counters-run-in-ci\"\n",
+  "new": "WORK_COUNTERS_IN_CI = \"--skip-work-counters\"\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.19 release_check: the work-counters flag also skips the mutation-target check",
+  "file": "tools/release_check.py",
+  "old": "        check_mutation_targets(rep, root)\n",
+  "new": "        skip_work_counters or check_mutation_targets(rep, root)\n",
+  "tests": [
+   "tests/test_release_check_runs_the_work_counters.py"
+  ]
+ },
+ {
+  "name": "3.19 release_check: the work-counters flag also skips the core-map check",
+  "file": "tools/release_check.py",
+  "old": "        check_core_map(rep, root)\n",
+  "new": "        skip_work_counters or check_core_map(rep, root)\n",
+  "tests": [
+   "tests/test_release_check_runs_the_work_counters.py"
+  ]
  }
 ]

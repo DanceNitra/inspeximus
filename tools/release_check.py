@@ -645,9 +645,12 @@ def restore_probe_snapshot(snapshot):
 
 # --------------------------------------------------------------------------- the suite
 
-#: The one way to switch the work-counter leg off. The name says what the run then cannot do, because
-#: tools/release.py treats a SKIP as passing: this flag must never appear in a release's pre-flight.
-SKIP_COUNTERS_FLAG = "--skip-work-counters-not-for-a-release"
+#: The one way to switch the work-counter leg off. Only tools/release.py passes it: its guards 5 and 7 require
+#: CI's job "work counters must not grow" (the same perf/gate.py check, on a clean runner) to have run and
+#: succeeded on exactly HEAD. Measured 2026-10-13 on PC1: the local gate did not finish within 3600 s, and
+#: recommit_n2000.dir_listings reads 1 there and 0 on CI (backlog item 8). A standalone run, without the
+#: flag, still runs the gate.
+SKIP_COUNTERS_FLAG = "--work-counters-run-in-ci"
 
 
 def check_work_counters(rep, root=ROOT, skip=False):
@@ -662,7 +665,8 @@ def check_work_counters(rep, root=ROOT, skip=False):
     It takes minutes, most of them building the fixtures, and the suite takes half an hour.
     """
     if skip:
-        rep.add("work counters", SKIP, "%s was passed; this run does NOT clear a release" % SKIP_COUNTERS_FLAG)
+        rep.add("work counters", SKIP, "%s was passed; CI's job \"work counters must not grow\" is the check "
+                "(tools/release.py guards 5 and 7)" % SKIP_COUNTERS_FLAG)
         return
     gate = pathlib.Path(root) / "perf" / "gate.py"
     if not gate.is_file():
@@ -1098,8 +1102,8 @@ def main(argv=None):
                     help="also run the whole suite on this machine (28 to 41 min). By default the suite "
                          "is CI's: the 'tests' workflow must have finished green on HEAD")
     ap.add_argument(SKIP_COUNTERS_FLAG, dest="skip_work_counters", action="store_true",
-                    help="do not run perf/gate.py check. The run then cannot clear a release, and "
-                         "tools/release.py must never pass this flag")
+                    help="do not run perf/gate.py check here. Only tools/release.py passes it: its guards 5 "
+                         "and 7 require CI's job 'work counters must not grow' on exactly HEAD")
     ap.add_argument("--root", default=str(ROOT), help="tree to check (default: this repository)")
     args = ap.parse_args(argv)
     return run(pathlib.Path(args.root).resolve(), skip_tests=args.skip_tests,

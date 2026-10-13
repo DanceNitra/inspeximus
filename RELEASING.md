@@ -135,7 +135,7 @@ Its exit code is the contract, and an unrun check is not a passing one:
 |---|---|
 | **0** | every check ran and passed — the only state that clears a release |
 | **1** | at least one check FAILED |
-| **2** | nothing failed, but something was SKIPPED (a missing `mcp` extra, `--skip-tests`, or `--skip-work-counters-not-for-a-release`) |
+| **2** | nothing failed, but something was SKIPPED (a missing `mcp` extra, `--skip-tests`, or `--work-counters-run-in-ci`) |
 
 **It calls the audits rather than growing a second copy of them.** `claims_audit.py` and
 `governance_audit.py` already own "is every published claim still true?", including the counts quoted
@@ -159,8 +159,10 @@ counters must not grow". 3.15.2's release head passed every other leg here, and 
 alone (`erase_items_reads` 7 -> 9). The counters are exact integers, so a local run gives the verdict
 CI gives, except for a counter that moves on one platform only; CI runs Linux. `tools/release.py` runs
 this checklist with `--skip-tests` and treats a SKIP as passing, so `--skip-tests` does not skip this
-leg. Only `--skip-work-counters-not-for-a-release` does, and a release must not pass it. The leg takes
-a few minutes, most of them building fixtures; `tests/test_release_check_runs_the_work_counters.py`
+leg. Only `--work-counters-run-in-ci` does, and only `tools/release.py` passes it: its guards 5 and 7
+require CI's job "work counters must not grow" to have run and succeeded on exactly HEAD. Measured
+2026-10-13 on PC1: the local gate did not finish within 3600 s, and `recommit_n2000.dir_listings` reads
+1 there and 0 on CI. Run alone, the checklist still runs the gate; `tests/test_release_check_runs_the_work_counters.py`
 pins the wiring.
 
 `tests/test_release_check_has_teeth.py` exercises each check in **both** directions on a copied tree:

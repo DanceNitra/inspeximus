@@ -345,3 +345,17 @@ def test_a_main_run_without_a_green_perf_job_stops_before_the_tag(root, name, jo
     rc, out = _run(root, fake)
     assert rc == 1 and "STOP: ci.yml run 1 on main" in out and says in out, (name, out)
     assert fake.index(MAIN_PUSH) is not None and fake.index("git tag") is None, (name, fake.calls)
+
+
+def test_the_pre_flight_passes_the_flag_that_leaves_the_work_counters_to_ci(root):
+    """2026-10-13: the local gate took over an hour on PC1 and its verdict was exempt anyway; guards 5 and 7 check
+    the same gate in CI. The pre-flight's release_check call carries release_check's own skip flag."""
+    spec = importlib.util.spec_from_file_location("release_check_tool", os.path.join(REPO, "tools", "release_check.py"))
+    rc_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rc_mod)
+    assert _load().WORK_COUNTERS_IN_CI == rc_mod.SKIP_COUNTERS_FLAG
+    fake = Fake()
+    rc, out = _run(root, fake, "--dry-run")
+    assert rc == 0, out
+    calls = [c for c in fake.calls if "release_check.py" in c]
+    assert len(calls) == 1 and calls[0].endswith("--skip-tests " + rc_mod.SKIP_COUNTERS_FLAG), calls

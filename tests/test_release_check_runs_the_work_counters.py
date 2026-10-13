@@ -70,3 +70,23 @@ def test_skip_tests_alone_still_runs_the_counters(tmp_path, monkeypatch, argv, s
     if not seen:
         pytest.fail("control: run() never reached the work-counter leg, so nothing was tested")
     assert seen == [skipped], seen
+
+
+def test_the_flag_skips_the_work_counters_and_every_other_leg_still_runs(tmp_path, monkeypatch):
+    """2026-10-13: tools/release.py passes SKIP_COUNTERS_FLAG, because its guards 5 and 7 check CI's job
+    "work counters must not grow" on exactly HEAD. The flag must switch off that one leg and nothing else."""
+    ran, skips = [], []
+    for name in dir(release_check):
+        if name.startswith("check_") and name not in ("check_work_counters", "check_tests", "check_fast_tests"):
+            monkeypatch.setattr(release_check, name, lambda *a, _n=name, **k: ran.append(_n) or True)
+    monkeypatch.setattr(release_check, "check_work_counters",
+                        lambda rep, root=None, skip=False: skips.append(skip))
+    (tmp_path / "pyproject.toml").write_text('[project]\nversion = "0.0.0"\n', encoding="utf-8")
+    release_check.main(["--skip-tests", "--root", str(tmp_path)])
+    without = sorted(set(ran))
+    if len(without) < 8:
+        pytest.fail("control: the run without the flag reached only %r, so nothing was compared" % without)
+    ran.clear()
+    release_check.main(["--skip-tests", release_check.SKIP_COUNTERS_FLAG, "--root", str(tmp_path)])
+    assert sorted(set(ran)) == without, (sorted(set(ran)), without)
+    assert skips == [False, True], skips
