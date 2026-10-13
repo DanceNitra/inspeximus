@@ -491,8 +491,10 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             if _rh != anchor.get("root_hash"):
                 bad("anchor root_hash does not match its own root fields")
     except Exception as e:                       # a verifier must report, never crash
-        limits.append(f"merkle roots NOT re-derived ({type(e).__name__}: {e}) -- treat the roots "
-                      f"in this anchor as unchecked")
+        # ...and a check that could not run is a problem, not a limit (3.19, G-4): as a limit the bundle still
+        # verified ok=True with its roots unchecked.
+        bad(f"check not run: merkle roots NOT re-derived ({type(e).__name__}: {e}) -- treat the roots "
+            f"in this anchor as unchecked")
 
     # (4c) SIGNATURE COVERAGE, stated as a number rather than left to be inferred from silence.
     #

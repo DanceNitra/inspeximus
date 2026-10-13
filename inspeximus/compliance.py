@@ -236,21 +236,32 @@ def compliance_report(store, expected_pubkey: str | None = None, probes_dir: str
     receipts_on = bool(getattr(store, "receipts_enabled", False))
 
     live = {"write_receipts": n_writes, "erasures": n_tomb, "superseded": n_sup}
+    not_checked: dict = {}       # live key -> why its count could not be read (3.19, G-4)
     ledger = _ledger_counts(store)
+    if ledger.get("ledger_error"):
+        for _k in ("actions", "oversight_events", "disclosures", "rights_export", "rights_rectify", "incidents",
+                   "retention_attestations"):
+            not_checked[_k] = ledger["ledger_error"]
     live.update(ledger)
     try:
         from .partitions import Partitions
         prep = Partitions(store).report() if Partitions(store).path.exists() else None
         live["partitions_open"] = (prep["open"] + prep["closed"]) if prep else 0
         live["partitions"] = prep
-    except Exception:  # noqa: BLE001 - a store with no registry has no partitions
-        live["partitions_open"] = 0
+    except Exception as e:  # noqa: BLE001
+        # A registry that exists and cannot be read is not "no partitions" (3.19, G-4): the count was 0, so the
+        # control read as having nothing to show rather than as not checked.
+        live["partitions_open"] = None
+        not_checked["partitions_open"] = "check not run: the partition registry could not be read (%s: %s)" % (
+            type(e).__name__, str(e)[:160])
 
     robustness = robustness_evidence(probes_dir)
     controls = []
     for framework, art, title, obligation, evidence, live_key in _CONTROLS:
         count = live.get(live_key) if live_key else None
-        if live_key in ("write_receipts",) and not receipts_on:
+        if live_key in not_checked:
+            status = "not_checked"         # the count could not be read; neither evidence nor its absence
+        elif live_key in ("write_receipts",) and not receipts_on:
             status = "needs_receipts"      # honest: the log only exists if receipts were enabled at write time
         elif live_key is None:
             status = "available"
@@ -263,6 +274,8 @@ def compliance_report(store, expected_pubkey: str | None = None, probes_dir: str
             "obligation": obligation, "inspeximus_evidence": evidence,
             "live_count": count, "status": status,
         }
+        if live_key in not_checked:
+            row["not_checked"] = not_checked[live_key]
         if art == "Art. 15" and framework.startswith("EU AI Act"):
             # 3.6.0: the measurements the footnote used to say lived only in probes/. A STALE row
             # is named here too, so a reader of the control sees it without opening the section.
@@ -297,6 +310,7 @@ def compliance_report(store, expected_pubkey: str | None = None, probes_dir: str
             "integrity_verified": (gov.get("proof") or {}).get("verified"),
             "anchor_sth": anchor.get("sth_hash"),
             "controls_with_evidence": sum(1 for c in controls if c["status"] == "evidence"),
+            "checks_not_run": sorted(set(not_checked.values())),
         },
     }
 
@@ -310,7 +324,11 @@ def _ledger_counts(store) -> dict:
     try:
         from .actions import ActionLedger
         led = ActionLedger(store)
-    except Exception:
+    except Exception as e:  # noqa: BLE001
+        # Not "no ledger" (3.19, G-4): the counts were zeros and read as a store with nothing recorded.
+        out["ledger_verified"] = False
+        out["ledger_error"] = "check not run: the action ledger could not be opened (%s: %s)" % (
+            type(e).__name__, str(e)[:160])
         return out
     if not led.path.exists() or (len(led) == 0 and not getattr(led, "archived", None)):
         return out

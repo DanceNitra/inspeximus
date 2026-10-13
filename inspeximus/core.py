@@ -6313,8 +6313,11 @@ class Inspeximus:
             for f in _glob.glob(str(self.path) + "*"):
                 try:
                     _shutil.copy(f, os.path.join(work, os.path.basename(f)))
-                except Exception:                                          # noqa: BLE001
-                    pass
+                except Exception as _e:                                    # noqa: BLE001
+                    # A copy without one of its files is a different store (3.19, G-4): say so, rather than
+                    # let a probe run on it as if it were the caller's.
+                    limits.append("the copy for probe %r is missing %s (%s: %s), so that probe ran on an "
+                                  "incomplete copy" % (name, os.path.basename(f), type(_e).__name__, str(_e)[:120]))
             path = os.path.join(work, os.path.basename(str(self.path)))
             rows = _copy.deepcopy(live_rows)
 
@@ -6505,8 +6508,10 @@ class Inspeximus:
             for f in _g.glob(str(self.path) + "*"):
                 try:
                     _shutil.copy(f, os.path.join(work, os.path.basename(f)))
-                except Exception:                                          # noqa: BLE001
-                    pass
+                except Exception as _e:                                    # noqa: BLE001
+                    # A copy without one of its files is not the caller's store (3.19, G-4).
+                    return None, ("the store's %s could not be copied (%s), so the subject here is built"
+                                  % (os.path.basename(f), type(_e).__name__))
             path = os.path.join(work, os.path.basename(str(self.path)))
             if not os.path.exists(path):
                 return None, "the store file could not be copied, so the subject here is built"
@@ -7963,8 +7968,11 @@ class Inspeximus:
                         "store not persisted: %d record(s) in memory do not match the store file: %s "
                         "(in-memory state has not reached disk)"
                         % (len(_diverged), ", ".join(_diverged[:3])))
-            except Exception:                      # noqa: BLE001 -- never let the audit itself fail
-                pass
+            except Exception as _e:               # noqa: BLE001 -- never let the audit itself fail
+                # ...and never let it read clean either (3.19, G-4). This was `pass`: an error anywhere in the
+                # comparison skipped it, and the call answered as if every record matched its row.
+                problems.append("comparison not run: the records were not compared with the store's rows "
+                                "(%s: %s)" % (type(_e).__name__, str(_e)[:160]))
         if self.receipts_enabled and not self._receipts and self.items:
             problems.append(f"receipts are enabled but the chain is EMPTY while the store holds "
                             f"{len(self.items)} record(s) -- nothing here is covered by a write receipt")

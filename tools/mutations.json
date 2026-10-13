@@ -13464,5 +13464,59 @@
   "tests": [
    "tests/test_a_handle_shared_between_threads.py"
   ]
+ },
+ {
+  "name": "3.19 G-4: verify_writes reads clean when its comparison raised",
+  "old": "                problems.append(\"comparison not run: the records were not compared with the store's rows \"\n                                \"(%s: %s)\" % (type(_e).__name__, str(_e)[:160]))\n",
+  "new": "                pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_check_that_could_not_run_does_not_read_clean.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: verify_bundle keeps ok with its merkle roots unchecked",
+  "old": "        bad(f\"check not run: merkle roots NOT re-derived ({type(e).__name__}: {e}) -- treat the roots \"\n            f\"in this anchor as unchecked\")",
+  "new": "        limits.append(f\"merkle roots NOT re-derived ({type(e).__name__}: {e}) -- treat the roots \"\n                      f\"in this anchor as unchecked\")",
+  "file": "inspeximus/audit_bundle.py",
+  "tests": [
+   "tests/test_a_check_that_could_not_run_does_not_read_clean.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: compliance_report counts an unreadable partition registry as no partitions",
+  "old": "        live[\"partitions_open\"] = None\n        not_checked[\"partitions_open\"] = \"check not run: the partition registry could not be read (%s: %s)\" % (\n            type(e).__name__, str(e)[:160])\n",
+  "new": "        live[\"partitions_open\"] = 0\n",
+  "file": "inspeximus/compliance.py",
+  "tests": [
+   "tests/test_a_check_that_could_not_run_does_not_read_clean.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: compliance_report counts an unopenable action ledger as empty",
+  "old": "        out[\"ledger_verified\"] = False\n        out[\"ledger_error\"] = \"check not run: the action ledger could not be opened (%s: %s)\" % (\n            type(e).__name__, str(e)[:160])\n",
+  "new": "",
+  "file": "inspeximus/compliance.py",
+  "tests": [
+   "tests/test_a_check_that_could_not_run_does_not_read_clean.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: audit_the_audits runs a probe on an incomplete copy without saying so",
+  "old": "                    limits.append(\"the copy for probe %r is missing %s (%s: %s), so that probe ran on an \"\n                                  \"incomplete copy\" % (name, os.path.basename(f), type(_e).__name__, str(_e)[:120]))\n",
+  "new": "                    pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_check_that_could_not_run_does_not_read_clean.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: audit_the_audits builds a seeded probe on an incomplete copy as the caller's store",
+  "old": "                    return None, (\"the store's %s could not be copied (%s), so the subject here is built\"\n                                  % (os.path.basename(f), type(_e).__name__))\n",
+  "new": "                    pass\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_check_that_could_not_run_does_not_read_clean.py"
+  ]
  }
 ]
