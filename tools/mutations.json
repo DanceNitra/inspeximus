@@ -56,7 +56,7 @@
  {
   "name": "ordinary growth is escalated into a failure (false alarm)",
   "file": "inspeximus/audit_bundle.py",
-  "old": "limits.append(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
+  "old": "not_run(\"uncovered_records\")(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
   "new": "bad(f\"record {mid} is covered by no receipt in this bundle (written after it was \"",
   "tests": [
    "tests/test_verify_bundle_content_scope.py"
@@ -13643,6 +13643,60 @@
   "file": "inspeximus/core.py",
   "tests": [
    "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 L1: current() moves a cache entry another thread dropped",
+  "old": "            try:\n                l1.move_to_end(ck)\n            except KeyError:\n                pass\n            self._l1_hits += 1\n",
+  "new": "            l1.move_to_end(ck)\n            self._l1_hits += 1\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 L1: current() deletes a stale cache entry in two steps",
+  "old": "            l1.pop(ck, None)                          # one call: another thread may have dropped it (L1)\n",
+  "new": "            if ck in l1:\n                del l1[ck]\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 L1: l1_invalidate iterates the live cache",
+  "old": "        victims = [ck for ck in list(self._l1)\n",
+  "new": "        victims = [ck for ck in self._l1\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: verify_bundle reads fully verified with a check not run",
+  "old": "        \"fully_verified\": not problems and not checks_not_run,\n",
+  "new": "        \"fully_verified\": not problems,\n",
+  "file": "inspeximus/audit_bundle.py",
+  "tests": [
+   "tests/test_verify_bundle_names_the_checks_it_did_not_run.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: verify_bundle does not name the checks it did not run",
+  "old": "            if name not in checks_not_run:\n                checks_not_run.append(name)\n",
+  "new": "            pass\n",
+  "file": "inspeximus/audit_bundle.py",
+  "tests": [
+   "tests/test_verify_bundle_names_the_checks_it_did_not_run.py"
+  ]
+ },
+ {
+  "name": "3.19 G-4: remember_certificate reads an unreadable previous summary as a first scan",
+  "old": "        out = {\"id\": mid, \"key\": key, \"first_scan\": not prior, \"drift\": drift}\n",
+  "new": "        out = {\"id\": mid, \"key\": key, \"first_scan\": previous is None, \"drift\": drift}\n        _drift_not_run = None\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_certificate_about_a_store_we_do_not_own.py"
   ]
  }
 ]

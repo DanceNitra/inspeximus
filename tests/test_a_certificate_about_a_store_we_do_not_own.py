@@ -523,3 +523,20 @@ def test_the_scope_lists_travel_with_the_document_and_cannot_be_trimmed(tmp_path
     trimmed["scope_excludes"] = [x for x in cert["scope_excludes"] if "backups" not in x]
     res = verify_erasure_certificate(trimmed, store_path=str(m.path))
     assert res["valid"] is False and any("scope_excludes" in p for p in res["problems"])
+
+
+def test_an_unreadable_previous_certificate_is_reported_and_not_read_as_a_first_scan():
+    """AUDIT-A (3.19): a previous summary that could not be parsed was read as no previous certificate, so the result said
+    first_scan=True and drift=None, and the drift check was skipped in silence. Forced here: the stored summary of the
+    first scan is damaged, then the store is scanned again after it went dirty."""
+    sk, _pk = new_receipt_keypair()
+    ix, d = _auditor_store(), _clean()
+    first = ix.remember_certificate(_scan(d, sk))
+    rec = [r for r in ix._items if r["id"] == first["id"]][0]
+    rec["object"] = "{not a summary"
+    with open(os.path.join(d, "leak.log"), "w", encoding="utf-8") as fh:
+        fh.write(SECRET)
+    r = ix.remember_certificate(_scan(d, sk))
+    assert r["first_scan"] is False, "a store with a previous certificate read as a first scan"
+    assert r["drift"] is None and r.get("checks_not_run") == ["drift"], r
+    assert "could not be read" in r.get("drift_not_checked", ""), r

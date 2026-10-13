@@ -13,6 +13,7 @@ reload runs, so a recall never waits for disk or the network behind it.
 """
 from __future__ import annotations
 
+import collections
 import math
 import os
 import sys
@@ -547,3 +548,58 @@ def test_a_tenant_reading_its_sums_survives_another_tenant_writing_them(tmp_path
     got = bucket.items() if read == "items" else bucket.keys()
     assert _SourceThatAddsOne.fired, "CONTROL: another tenant wrote during the read"
     assert sorted(k if read == "keys" else k[0] for k in got) == ["feeds", "mail"]
+
+
+# ── 8. AUDIT-A L1: the read cache of current() ──────────────────────────────────────────────────────────────────────
+class _CacheThatDrops(collections.OrderedDict):
+    """The read cache, where another thread drops the entry this thread just read or checked."""
+    mode = None
+
+    def get(self, k, *d):
+        out = collections.OrderedDict.get(self, k, *d)
+        if _CacheThatDrops.mode == "after_get" and out is not None:
+            _CacheThatDrops.mode = None
+            collections.OrderedDict.pop(self, k, None)       # a write on another thread invalidates the key
+        return out
+
+    def __contains__(self, k):
+        out = collections.OrderedDict.__contains__(self, k)
+        if _CacheThatDrops.mode == "after_contains" and out:
+            _CacheThatDrops.mode = None
+            collections.OrderedDict.pop(self, k, None)
+        return out
+
+
+@pytest.mark.parametrize("window", ["after_get", "after_contains"])
+def test_current_survives_another_thread_dropping_its_cache_entry(tmp_path, monkeypatch, window):
+    """AUDIT-A L1 (3.19): current() read the cache, then moved or deleted the entry in a second call, so another thread
+    that dropped the entry in between made a read API raise KeyError. Forced here: the entry is dropped after the read
+    (a hit), and after the membership check of a key that no longer has an active record."""
+    h = _held(tmp_path)
+    h.remember("the deploy window is friday", key="deploy")
+    assert h.current("deploy") is not None, "CONTROL: the key is served"
+    cache = _CacheThatDrops(h._l1)
+    h._l1 = cache
+    if window == "after_contains":
+        for r in h._items:
+            if r.get("key") == "deploy":
+                dict.__setitem__(r, "status", "superseded")   # the key has no active record now; the entry is stale
+    monkeypatch.setattr(_CacheThatDrops, "mode", window)
+    h.current("deploy")
+    if window == "after_get":
+        assert _CacheThatDrops.mode is None, "CONTROL: the entry was dropped inside the window"
+    else:
+        # The fix drops the stale entry in one call, so it never checks membership first and the window is gone; before
+        # the fix the check fired, the entry vanished, and the delete that followed raised KeyError.
+        assert not [ck for ck in cache if ck[2] == "deploy"], "the stale entry was kept"
+
+
+def test_l1_invalidate_survives_a_fill_meanwhile(tmp_path, monkeypatch):
+    """AUDIT-A L1 (3.19): l1_invalidate iterated the live cache while a read on another thread filled it."""
+    h = _held(tmp_path)
+    h._l1[(None, None, _KeyThatFills("deploy"))] = None
+    h._l1[(None, None, "another key")] = None
+    monkeypatch.setattr(_KeyThatFills, "cache", h._l1)
+    monkeypatch.setattr(_KeyThatFills, "fired", [])
+    assert h.l1_invalidate("deploy") == 1
+    assert _KeyThatFills.fired, "CONTROL: the cache was filled during the invalidation"

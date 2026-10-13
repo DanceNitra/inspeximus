@@ -2089,8 +2089,9 @@ def _ix_lock_of(store):
     recall extend an index entry while another recall read it, and the prune iterate a cache another thread was filling:
     "dictionary changed size during iteration", a pool that held a record twice, or a norm kept for a vector edited in
     place. The lock covers the index section of recall, the prune, the drops on an edit and the norm cache's fill. It is
-    never held across the store lock's wait, a save, an embed call or a read of the file: none of those runs inside it,
-    and tests/test_a_handle_shared_between_threads.py fails if one does. Measured: 148 ns uncontended, no loss of
+    never held across the store lock's wait, a save, an embed call or a read of the store file: none of those runs inside
+    it, and tests/test_a_handle_shared_between_threads.py fails if one does. One small file read does run under it: the
+    read guards, which recall checks in its index section, read the guard key file on their first use. Measured: 148 ns uncontended, no loss of
     throughput with four recall threads (the GIL already runs one at a time). A view finds its parent's lock through
     __getattr__; a handle built without __init__ keeps no index and gets no lock."""
     lk = getattr(store, "_ix_lock", None)
@@ -5379,7 +5380,12 @@ class Inspeximus:
         l1 = self._l1
         rec = l1.get(ck)
         if rec is not None and rec.get("status") == "active" and rec.get("key") == key:
-            l1.move_to_end(ck)
+            # ANOTHER THREAD CAN DROP THE ENTRY BETWEEN THE GET AND THE MOVE (3.19, AUDIT-A L1): a write that invalidates
+            # the key, or an eviction. The record read is still the answer; only its place in the order is lost.
+            try:
+                l1.move_to_end(ck)
+            except KeyError:
+                pass
             self._l1_hits += 1
             return rec
         self._l1_misses += 1
@@ -5390,11 +5396,17 @@ class Inspeximus:
                     best = r
         if best is not None and self._l1_max:
             l1[ck] = best
-            l1.move_to_end(ck)
+            try:
+                l1.move_to_end(ck)
+            except KeyError:                          # dropped by another thread meanwhile (L1)
+                pass
             while len(l1) > self._l1_max:
-                l1.popitem(last=False)
-        elif ck in l1:
-            del l1[ck]
+                try:
+                    l1.popitem(last=False)
+                except KeyError:                      # emptied by another thread meanwhile (L1)
+                    break
+        else:
+            l1.pop(ck, None)                          # one call: another thread may have dropped it (L1)
         return best
 
     def l1_stats(self) -> dict:
@@ -5409,10 +5421,11 @@ class Inspeximus:
             n = len(self._l1)
             self._l1.clear()
             return n
-        victims = [ck for ck in self._l1
+        # A COPY OF THE KEYS, AND POP (3.19, AUDIT-A L1): a read on another thread fills and evicts meanwhile.
+        victims = [ck for ck in list(self._l1)
                    if (key is None or ck[2] == key) and (agent_id is None or ck[1] == agent_id)]
         for ck in victims:
-            del self._l1[ck]
+            self._l1.pop(ck, None)
         return len(victims)
 
     def l1_flush(self) -> None:
@@ -13606,12 +13619,18 @@ class Inspeximus:
         label = summary.get("root_label") or "unlabelled"
         key = key or ("residue::" + str(label))
         prior = [h for h in self.history(key) if h.get("object")]
-        previous = None
+        previous, _drift_not_run = None, None
         if prior:
+            # AN UNREADABLE PREVIOUS SUMMARY IS NOT A FIRST SCAN (3.19, AUDIT-A). It was read as `previous = None`, so the
+            # result said first_scan=True and drift=None: the drift check was skipped and nothing said so.
             try:
                 previous = json.loads(prior[-1]["object"])
-            except Exception:
+                if not isinstance(previous, dict):
+                    raise ValueError("the previous summary is a %s, not an object" % type(previous).__name__)
+            except Exception as e:                    # noqa: BLE001 -- reported below
                 previous = None
+                _drift_not_run = ("check not run: the previous certificate summary under %r could not be read "
+                                  "(%s: %s), so drift was not computed" % (key, type(e).__name__, str(e)[:120]))
         drift = None
         if previous:
             drift = {
@@ -13628,7 +13647,11 @@ class Inspeximus:
                 % (label, summary["issued_iso"], verdict, summary["checked_files"]))
         mid = self.remember(text, key=key, object=json.dumps(summary, sort_keys=True),
                             mtype="semantic", **kw)
-        return {"id": mid, "key": key, "first_scan": previous is None, "drift": drift}
+        out = {"id": mid, "key": key, "first_scan": not prior, "drift": drift}
+        if _drift_not_run:
+            out["checks_not_run"] = ["drift"]
+            out["drift_not_checked"] = _drift_not_run
+        return out
 
     def governance_report(self, expected_pubkey: str | None = None) -> dict:
         """ONE auditor-facing surface for erasure-with-proof — the compliance view of forget_subject, built for
@@ -15971,8 +15994,9 @@ class Inspeximus:
         # KEYED BY EVERYTHING THAT DECIDES THE POOL (AUDIT-A X-1). The entries live in one dict on the store, and a
         # view reads and writes that dict in place, so each scope finds only its own entry: the key holds the view's
         # tenant, agent and ACL revision (`_view_scope`, the key `items` uses) and every pool argument.
-        # ONE THREAD AT A TIME (3.19 item 5): the entry, its pool and postings, and the log. No embed, save or file read
-        # runs in this section; the query vector and the ranking below are outside it.
+        # ONE THREAD AT A TIME (3.19 item 5): the entry, its pool and postings, and the log. No embed, save or read of the
+        # store file runs in this section; the read guards checked here read the guard key file on their first use. The
+        # query vector and the ranking below are outside it.
         with _ix_lock_of(self):
             _ix, _ix_args, _ix_new = None, None, None
             if (_recall_index_on() and _shared is None and not (where or trusted_only or influence_only or reinforce)

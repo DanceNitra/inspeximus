@@ -416,9 +416,20 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
 
     def ok(msg): checks.append(msg)
     def bad(msg): problems.append(msg)
+    # A CHECK THAT DID NOT RUN, NAMED (3.19, G-4 / AUDIT-A). These stay limits, so `ok` keeps its meaning for callers
+    # that verify without a crypto backend; `fully_verified` is False and `checks_not_run` names them.
+    checks_not_run: list = []
+
+    def not_run(name):
+        def add(msg):
+            limits.append(msg)
+            if name not in checks_not_run:
+                checks_not_run.append(name)
+        return add
 
     if not isinstance(bundle, dict) or bundle.get("kind") != BUNDLE_KIND:
-        return {"ok": False, "checks": [], "problems": [f"not an {BUNDLE_KIND} bundle"], "summary": {}}
+        return {"ok": False, "fully_verified": False, "checks_not_run": [], "checks": [],
+                "problems": [f"not an {BUNDLE_KIND} bundle"], "summary": {}}
 
     # (1) bundle integrity
     if bundle.get("bundle_hash") == _bundle_hash(bundle):
@@ -548,7 +559,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         if _badsig:
             bad(f"{_badsig} chain signature(s) DO NOT VERIFY against the key they name")
         if _signed == 0:
-            (bad if require_signed else limits.append)(
+            (bad if require_signed else not_run("chain_signatures"))(
                 f"UNSIGNED: 0 of {_total} chain entries carry a signature. The chain is internally "
                 f"consistent, which is not the same as attributable -- an editor who can rewrite the "
                 f"sidecar can rewrite the chain too. Pass require_signed=True to refuse this.")
@@ -565,7 +576,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             # The pin is not entirely dead here: comparing the pubkey FIELD is a string comparison
             # and still runs, so a chain naming the wrong key is still caught above. What cannot run
             # is the signature verification itself.
-            (bad if require_signed else limits.append)(
+            (bad if require_signed else not_run("chain_signatures"))(
                 f"CANNOT CHECK {_signed} chain signature(s) against the pinned key: this install has "
                 f"no Ed25519 backend. `pip install cryptography` (or `inspeximus[crypto]`) and run "
                 f"this again -- the key each entry NAMES was still compared, but the signatures "
@@ -577,7 +588,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         else:
             # The honest wording for the unpinned case, and `require_signed` means VERIFIED, so it
             # refuses here rather than accepting a count.
-            (bad if require_signed else limits.append)(
+            (bad if require_signed else not_run("chain_signatures"))(
                 f"{_signed} of {_total} chain entries carry a signature, PRESENT BUT UNVERIFIED: no "
                 f"expected_pubkey was supplied, so they can only be checked against a key carried "
                 f"inside this same artifact -- which proves the writer owned a keypair, not which "
@@ -610,7 +621,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         # anywhere indicating that every one of those checks was the operator vouching for the
         # operator. Same lesson as the signature coverage two checks up: absence of a finding is not
         # a finding of absence, and an auditor has to be told which artifact they are holding.
-        (bad if require_witnessed else limits.append)(
+        (bad if require_witnessed else not_run("external_cosignature"))(
             "SELF-CERTIFIED: this anchor carries no external co-signature. Every check above is the "
             "operator's own record-keeping verified against itself -- an operator holding receipt_key "
             "can rewrite the whole history and re-sign it so it verifies internally. Only a witnessed "
@@ -643,7 +654,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
                 f"witness vouching for a store is not evidence, it is a stranger")
             continue
         if not _v["signed"]:
-            limits.append(f"an attestation from {_wk[:12]}... is unsigned, so it "
+            not_run("attestation_signatures")(f"an attestation from {_wk[:12]}... is unsigned, so it "
                           f"is a claim rather than evidence")
         elif not witnesses:
             # THE SAME CAVEAT THE CHAIN SIGNATURES GET, and it was missing here. With no allowlist
@@ -651,7 +662,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             # forged consistently -- key, hash and signature -- verifies. It then carries the whole
             # operator-adversarial verdict, which is the one place in this file where an unpinned
             # check is most likely to be mistaken for an external one.
-            limits.append(
+            not_run("attestation_signatures")(
                 f"the attestation from {_wk[:12]}... is SIGNED BUT UNPINNED: with no witnesses= "
                 f"allowlist it was checked against the key carried inside the statement, which "
                 f"proves whoever wrote it owned a keypair, not that they are a witness you trust. "
@@ -719,7 +730,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     if witnesses and attestations is not None:
         _missing = [w for w in witnesses if w not in _att_keys]
         if _missing:
-            limits.append(
+            not_run("witness_attestations")(
                 f"{len(_missing)} allowlisted witness(es) produced no attestation: "
                 f"{[str(m)[:12] + '...' for m in _missing[:3]]}. A witness that was not asked, or "
                 f"did not answer, vouches for nothing -- and looks the same as one that agreed.")
@@ -780,7 +791,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
     # rather than printing a number that means nothing.
     n_records = bundle.get("n_records")
     if bundle.get("cross_tenant_chain"):
-        limits.append("record-count coverage NOT CHECKED: this bundle's chain spans tenants while "
+        not_run("record_count_coverage")("record-count coverage NOT CHECKED: this bundle's chain spans tenants while "
                       "its record count is tenant-scoped, so the two are not comparable. Export "
                       "from an unbound handle for this check.")
         n_records = None
@@ -819,7 +830,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
                 f"({', '.join(map(str, missing[:5]))}{' ...' if len(missing) > 5 else ''}) -- the ACL "
                 f"summary claims a grant the store's own write chain never recorded")
         elif missing:
-            limits.append(f"{len(missing)} access-control act(s) predate this store's write receipts, so "
+            not_run("acl_chain_backing")(f"{len(missing)} access-control act(s) predate this store's write receipts, so "
                           f"the ACL summary is not backed by the chain for those -- not an accusation")
         else:
             ok(f"access control: {len(acl_acts)} grant/revocation act(s), all covered by the write chain; "
@@ -870,7 +881,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
         _live_ids = ({rc.get("memory_id") for rc in store_receipts}
                      if store_receipts is not None else None)
         if _live_ids is None:
-            limits.append("GROWTH NOT VERIFIED: no store receipt chain was supplied, so records the "
+            not_run("growth_chain_membership")("GROWTH NOT VERIFIED: no store receipt chain was supplied, so records the "
                           "bundle does not cover are classified by their own `ts` -- a field the "
                           "writer controls. Pass store_receipts= for the chain-membership check.")
 
@@ -958,7 +969,7 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             bad(f"{len(_preexisting)} record(s): {_preexisting[:5]}"
                 f"{' ...' if len(_preexisting) > 5 else ''} -- each {_why}.")
         for mid in _growth[:5]:
-            limits.append(f"record {mid} is covered by no receipt in this bundle (written after it was "
+            not_run("uncovered_records")(f"record {mid} is covered by no receipt in this bundle (written after it was "
                           f"taken, or with receipts disabled) -- not checked, not an accusation")
         orph = b.get("orphaned") or []
         for mid in orph[:5]:
@@ -968,14 +979,16 @@ def verify_bundle(bundle: dict, witnesses: list | None = None, threshold: int = 
             # Truncating to five without saying so turned twenty substituted records into five lines.
             limits.append(f"...and {len(orph) - 5} more record(s) in the chain are absent from the store")
     else:
-        limits.append("CONTENT NOT CHECKED: this bundle is content-free by design, so a clean chain over "
+        not_run("content")("CONTENT NOT CHECKED: this bundle is content-free by design, so a clean chain over "
                       "substituted text verifies here. Pass store_items= (or call bind_content) to close it.")
     if not (witnesses and cosigs):
-        limits.append("NOT OPERATOR-ADVERSARIAL: without witness co-signatures on a prior anchor, a "
+        not_run("operator_adversarial")("NOT OPERATOR-ADVERSARIAL: without witness co-signatures on a prior anchor, a "
                       "key-holder rewrite is internally consistent by construction.")
 
     return {
         "ok": not problems,
+        "fully_verified": not problems and not checks_not_run,
+        "checks_not_run": checks_not_run,
         "checks": checks,
         "problems": problems,
         "limits": limits,
