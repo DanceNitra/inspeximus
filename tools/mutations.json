@@ -10013,8 +10013,8 @@
  {
   "name": "3.17: a changeset carries a shelved vector",
   "file": "inspeximus/core.py",
-  "old": "        rows = [{k: v for k, v in r.items() if k not in (\"vec\", \"vec16\", \"vec_recipe\")} for r in self.items]\n",
-  "new": "        rows = [{k: v for k, v in r.items() if k != \"vec\"} for r in self.items]\n",
+  "old": "        rows = [{k: v for k, v in _fields(r).items() if k not in (\"vec\", \"vec16\", \"vec_recipe\")} for r in self.items]\n",
+  "new": "        rows = [{k: v for k, v in _fields(r).items() if k != \"vec\"} for r in self.items]\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
   ]
@@ -13400,6 +13400,69 @@
   "new": "self._fire(); super().reverse()",
   "tests": [
    "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-11: a save copies the records before it waits for the store lock",
+  "old": "            with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())\n                  else _StoreLock(self.path)):\n                _saving_whole = _saving_now(self)\n                rows = self._items\n                slim = _slim_copy(rows, self._persist_vectors)\n",
+  "new": "            _saving_whole = _saving_now(self)\n            rows = self._items\n            slim = _slim_copy(rows, self._persist_vectors)\n            with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())\n                  else _StoreLock(self.path)):\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-11: a row save writes the record list it read before the store lock",
+  "old": "            with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())\n                  else _StoreLock(self.path)):\n                _saving_whole = _saving_now(self)\n                rows = self._items\n                slim = _slim_copy(rows, self._persist_vectors)\n",
+  "new": "            rows = self._items\n            with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())\n                  else _StoreLock(self.path)):\n                _saving_whole = _saving_now(self)\n                slim = _slim_copy(self._items, self._persist_vectors)\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 F-11: a whole-file save copies the records before the store lock",
+  "old": "            with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())\n                  else _StoreLock(self.path)):\n                _saving_whole = _saving_now(self)\n                rows = self._items\n                slim = _slim_copy(rows, self._persist_vectors)\n",
+  "new": "            _saving_whole = _saving_now(self)\n            slim = _slim_copy(self._items, self._persist_vectors)\n            with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())\n                  else _StoreLock(self.path)):\n                rows = self._items\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 G-1: a save iterates each live record's fields",
+  "old": "    return [{k: v for k, v in _fields(r).items() if k != \"vec\"} for r in rows]\n",
+  "new": "    return [{k: v for k, v in r.items() if k != \"vec\"} for r in rows]\n",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 G-1: export_changeset iterates each live record's fields",
+  "old": "rows = [{k: v for k, v in _fields(r).items() if k not in (\"vec\", \"vec16\", \"vec_recipe\")} for r in self.items]",
+  "new": "rows = [{k: v for k, v in r.items() if k not in (\"vec\", \"vec16\", \"vec_recipe\")} for r in self.items]",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 G-1: verify_writes iterates each live record's fields",
+  "old": "_keep = {_k: _v for _k, _v in _fields(_r).items()",
+  "new": "_keep = {_k: _v for _k, _v in _r.items()",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 G-2: recall iterates the live edit log",
+  "old": "_moved = {k for k, v in dict(self._ix_log).items() if v > _c[\"rev\"]}",
+  "new": "_moved = {k for k, v in self._ix_log.items() if v > _c[\"rev\"]}",
+  "file": "inspeximus/core.py",
+  "tests": [
+   "tests/test_a_handle_shared_between_threads.py"
   ]
  }
 ]

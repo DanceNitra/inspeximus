@@ -2022,6 +2022,24 @@ def _saving_now(store) -> dict:
     return {rid: gen.get(rid) for rid in set(store._touched)}
 
 
+def _fields(rec) -> dict:
+    """A copy of one record's top-level fields, taken in one C call, for code that iterates them (3.19, G-1).
+
+    Iterating a live record raised "dictionary changed size during iteration" when another thread of the handle added a
+    key to it meanwhile: a flush beside an editing thread failed and `flush()` raised. `dict()` of a dict copies without
+    running Python code, so no other thread runs during the copy, and the iteration then reads the copy. Values are the
+    record's own, not copies."""
+    return dict(rec)
+
+
+def _slim_copy(rows, persist_vectors: bool) -> list:
+    """What a whole-file save serialises: each record as it is, or without its `vec` cache when vectors are not stored.
+    Each record is copied through `_fields`, so a field another thread adds meanwhile cannot fail the save (G-1)."""
+    if persist_vectors:
+        return list(rows)
+    return [{k: v for k, v in _fields(r).items() if k != "vec"} for r in rows]
+
+
 def _note_dirty(store, rid, field=None, tracked=False) -> None:
     """Record which record the current content revision moved (`None` when the edit has no id). Recall's cache uses it
     to tell records appended since an entry was built, which it can add to the entry, from edits, which it cannot."""
@@ -7911,7 +7929,7 @@ class Inspeximus:
                 _mem = {}
                 for _r in self._items:
                     if isinstance(_r, dict) and _r.get("id"):
-                        _keep = {_k: _v for _k, _v in _r.items()
+                        _keep = {_k: _v for _k, _v in _fields(_r).items()
                                  if _k != "vec" or self._persist_vectors}
                         # Underscore-prefixed keys are annotations a READER attaches
                         # (`_stale_derived` is set by recall on the records it returns). They are
@@ -12037,7 +12055,7 @@ class Inspeximus:
         of this payload, so a receiver must not read a match as proof of convergence: `import_changeset`
         legitimately ends elsewhere when the receiver holds records the sender never saw.
         """
-        rows = [{k: v for k, v in r.items() if k not in ("vec", "vec16", "vec_recipe")} for r in self.items]
+        rows = [{k: v for k, v in _fields(r).items() if k not in ("vec", "vec16", "vec_recipe")} for r in self.items]
         return {"format": self.CHANGESET_FORMAT, "records": rows,
                 "tombstones": [dict(t) for t in (self._tombstones or [])],
                 "digest": self.state_digest(), "count": len(rows)}
@@ -15907,7 +15925,10 @@ class Inspeximus:
                         # objects in the same places; then only the appended records are filtered, and added.
                         _tail = self._items[_c["n"]:]
                         _tail_ids = {r.get("id") for r in _tail}
-                        _moved = {k for k, v in self._ix_log.items() if v > _c["rev"]}
+                        # A COPY OF THE LOG, TAKEN IN ONE C CALL (3.19, G-2). The edits write it from `_note_dirty`, outside
+                        # this lock, so iterating the live log here raised "dictionary changed size during iteration"
+                        # when another thread of the handle edited a record meanwhile, and recall() failed.
+                        _moved = {k for k, v in dict(self._ix_log).items() if v > _c["rev"]}
                         if (None not in _moved and _moved <= _tail_ids and len(self._items) == _c["n"] + len(_tail)
                                 and all(a is b for a, b in zip(self._items, _c["snap"]))):
                             _ix, _ix_new = _c, set(_tail_ids)
@@ -20161,22 +20182,27 @@ class Inspeximus:
             # The `items` SETTER already refuses this move ("Route deliberate whole-list writes to
             # `_items`"). The persist path read the same property and was missed: one guarantee, two
             # implementations, one of them unchecked.
-            # THE EDIT GENERATIONS, BEFORE THE RECORDS ARE COPIED (3.19, AUDIT-A F-10). `slim` below is the serialisation of
-            # a whole-file save: without vectors it holds a copy of each record, taken here, before the lock wait. Copied
-            # after it, the snapshot carried the generation of an edit made in between while the file got the text from
-            # before it, and the save cleared the edit. The row branch takes its own snapshot later, just before the row
-            # writer, which reads the live records after it.
-            _saving_whole = _saving_now(self)
-            rows = self._items
-            slim = list(rows) if self._persist_vectors else \
-                [{k: v for k, v in r.items() if k != "vec"} for r in rows]
             # Atomic write: a partial/interleaved write can't corrupt the store (crash- and
             # concurrent-writer-safe — last writer wins, never a torn JSON file).
             # ONE critical section for the check AND the write. Split apart, the window
             # between them is exactly the race the check exists to report.
+            # THE RECORDS ARE COPIED INSIDE THE LOCK (3.19, AUDIT-A F-11). They were copied before the lock wait, so a
+            # save that queued behind an erasure on another thread of this handle (forget() and every path through it
+            # hold this lock from the tombstones to their own save) wrote its copy from before the erasure after it: the
+            # record was back on disk and in a fresh handle, in every format. A row store wrote it too, because `rows`
+            # was the list the erasure replaced. Copied inside, a save sees every change committed under the lock before
+            # it, and nothing it copies is older than the file it replaces.
+            # THE EDIT GENERATIONS, BEFORE THE RECORDS ARE COPIED (3.19, AUDIT-A F-10). `slim` is the serialisation of a
+            # whole-file save: without vectors it holds a copy of each record. Copied first, the snapshot carried the
+            # generation of an edit made in between while the file got the text from before it, and the save cleared
+            # the edit. The row branch takes its own snapshot later, just before the row writer, which reads the live
+            # records after it.
             _make_store_dir(self.path.parent)
             with (contextlib.nullcontext() if self._decide_depths.get(threading.get_ident())
                   else _StoreLock(self.path)):
+                _saving_whole = _saving_now(self)
+                rows = self._items
+                slim = _slim_copy(rows, self._persist_vectors)
                 # THE CONTENT, WHEN THE STAT SIGNATURE HAS NOT MOVED (A-37). (mtime_ns, size) is all
                 # the guard compared, and a peer's write in the same clock tick that leaves the size
                 # unchanged moves neither: measured on 3.15.2 with a fixed clock, a JSON or encrypted
@@ -20216,8 +20242,7 @@ class Inspeximus:
                     # refused by this guard and only the loss pattern differed.
                     if self._merge_rows_from_disk():
                         rows = self._items
-                        slim = (list(rows) if self._persist_vectors
-                                else [{k: v for k, v in r.items() if k != "vec"} for r in rows])
+                        slim = _slim_copy(rows, self._persist_vectors)
                     else:
                         raise StoreChangedOnDisk(
                             f"{self.path} changed on disk since this handle loaded it (another process "

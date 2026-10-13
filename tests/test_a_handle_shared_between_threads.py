@@ -192,3 +192,32 @@ def test_the_lock_is_not_held_across_a_save_an_embed_or_a_read_of_the_file(tmp_p
         {k: len(v) for k, v in seen.items()})
     held = {k: v.count(True) for k, v in seen.items() if any(v)}
     assert not held, "the index lock was held while these ran: %r" % held
+
+
+# ── 5. recall reads the edit log while another thread writes it ─────────────────────────────────────────────────────
+class _RevisionThatLogs(int):
+    """A logged revision whose comparison writes the log once: another thread's edit, logged by `_note_dirty` outside the
+    handle lock, while recall reads the log."""
+    store, fired = None, []
+
+    def __gt__(self, other):
+        if not _RevisionThatLogs.fired:
+            _RevisionThatLogs.fired.append(1)
+            _RevisionThatLogs.store._ix_log["an-edit-on-another-thread"] = int(self)
+        return int.__gt__(self, other)
+
+
+def test_recall_survives_an_edit_logged_while_it_reads_the_log(tmp_path, monkeypatch):
+    """G-2 (3.19): recall read the edit log (`_ix_log`) by iterating it, under the handle lock, while edits write it from
+    `_note_dirty` outside that lock. An edit on another thread in between raised "dictionary changed size during
+    iteration" from recall(). Forced here: the log is written while recall iterates it, on the path that extends an
+    index entry with appended records."""
+    h = _held(tmp_path)
+    assert h._recall_ix, "CONTROL: the held handle built an index entry"
+    rid = h.remember("note new on the deploy window")
+    monkeypatch.setattr(_RevisionThatLogs, "store", h)
+    monkeypatch.setattr(_RevisionThatLogs, "fired", [])
+    h._ix_log[rid] = _RevisionThatLogs(h._rev)
+    hits = h.recall("deploy window", k=5)
+    assert _RevisionThatLogs.fired, "CONTROL: recall did not read the log"
+    assert hits, "recall returned nothing"

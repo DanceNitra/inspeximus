@@ -283,23 +283,22 @@ def test_a_second_edit_of_a_record_the_save_is_writing_is_written_by_the_next_sa
 
 @pytest.mark.parametrize("fmt", ["json", pytest.param("enc", marks=pytest.mark.skipif(not _CRYPTO, reason="crypto"))])
 def test_an_edit_between_the_record_copies_and_the_lock_is_written_by_the_next_save(tmp_path, fmt, monkeypatch):
-    """AUDIT-A F-10 (3.19): a whole-file save copies each record into `slim` before it waits for the store lock, and it
-    took the edit-generation snapshot after the lock. An edit in between moved the generation before the snapshot, so
-    the snapshot held the new generation while the file got the copy from before the edit, and the save cleared it.
-    Forced here: the edit runs as the save enters the store lock, after the copies."""
+    """AUDIT-A F-10 (3.19): a whole-file save copies each record into `slim`, and it took the edit-generation snapshot
+    after the copies. An edit in between moved the generation before the snapshot, so the snapshot held the new
+    generation while the file got the copy from before the edit, and the save cleared it. Forced here: the edit runs at
+    the save's stat-signature check, after the copies (inside the store lock since F-11) and before the write."""
     p = _store(tmp_path, fmt)
     h = _open(p, fmt)
     _rec(h, "deploy")["text"] = "the release slot is monday"
     fired = []
-    real_lock = core._StoreLock
+    real_sig = Inspeximus._stat_sig
 
-    class EditingLock(real_lock):
-        def __enter__(self):
-            if not fired:
-                fired.append(1)
-                _rec(h, "deploy")["text"] = "the release slot is tuesday"   # after `slim`, before the old snapshot
-            return super().__enter__()
-    monkeypatch.setattr(core, "_StoreLock", EditingLock)
+    def editing_sig(self, *a, **k):
+        if self is h and not fired:
+            fired.append(1)
+            _rec(h, "deploy")["text"] = "the release slot is tuesday"   # after `slim`, before the write
+        return real_sig(self, *a, **k)
+    monkeypatch.setattr(Inspeximus, "_stat_sig", editing_sig)
     h.flush()
     assert fired, "CONTROL: the forced window was reached"
     assert _rec(_open(p, fmt), "deploy")["text"] == "the release slot is monday", \
@@ -460,3 +459,200 @@ def test_a_save_between_the_forget_mark_and_the_removal_does_not_bring_the_recor
     monkeypatch.undo()
     h.flush()
     assert not [r for r in _open(p, fmt)._items if r.get("id") == rid], "the forgotten record is back on disk"
+
+
+def _erase_forget(h):
+    h.forget(_rec(h, "deploy")["id"])
+
+
+def _erase_subject(h):
+    h.forget_subject("crm/alice")
+
+
+def _erase_pii(h):
+    h.forget_pii(["email"])
+
+
+def _erase_retention(h):
+    h.apply_retention(0.0)
+
+
+def _erase_capacity(h):
+    h.capacity = len([r for r in h._items if r.get("status", "active") == "active"])
+    h.remember("one more note about gardening")
+
+
+def _erase_import(h):
+    cs = h.export_changeset()
+    cs["records"], cs["tombstones"] = [], [{"memory_id": _rec(h, "deploy")["id"]}]
+    h.import_changeset(cs)
+
+
+_ERASURES = {"forget": _erase_forget, "forget_subject": _erase_subject, "forget_pii": _erase_pii,
+             "apply_retention": _erase_retention, "capacity": _erase_capacity, "import_changeset": _erase_import}
+
+
+@pytest.mark.parametrize("entry", sorted(_ERASURES))
+@pytest.mark.parametrize("fmt", FORMATS)
+def test_an_erasure_that_races_a_save_from_another_thread_does_not_come_back(tmp_path, fmt, entry, monkeypatch):
+    """AUDIT-A F-11 (3.19): a save copied the records before it waited for the store lock. A flush from another thread of
+    the same handle that queued behind an erasure wrote its copy from before the erasure after it, so the erased record
+    was back on disk and in a fresh handle, in every format (3.18 had it in the row store). Forced here at exactly that
+    position: as the erasure replaces the record list, another thread edits a record and flushes, and its save is held
+    at the store lock until the erasure has returned. Every entry point that removes records is run."""
+    import threading
+    p = str(tmp_path / ("s." + fmt))
+    m = _open(p, fmt)
+    for i in range(6):
+        m.remember("filler note number %d about gardening" % i)
+    m.remember("the deploy window is friday", key="deploy", source={"doc": "crm/alice"}, pii=["email"])
+    m.flush()
+    h = _open(p, fmt)
+    arrived, go, dropped = threading.Event(), threading.Event(), []
+    other = [r for r in h._items if r.get("key") != "deploy"][0]
+
+    def edit_and_flush():
+        other["text"] = "an edit on another thread"          # so the flush has something to write
+        h.flush()
+    real_lock, prop = core._StoreLock, Inspeximus.__dict__["_items"]
+
+    class HeldLock(real_lock):
+        def __enter__(self):
+            if threading.current_thread().name == "saver" and not arrived.is_set():
+                arrived.set()
+                go.wait(30)
+            return super().__enter__()
+
+    def fset(self, v):
+        if self is h and not dropped:
+            gone = {r.get("id") for r in prop.fget(self)} - {r.get("id") for r in v}
+            if gone:
+                dropped.extend(gone)
+                threading.Thread(target=edit_and_flush, name="saver", daemon=True).start()
+                assert arrived.wait(30), "CONTROL: the other thread's flush did not reach the store lock"
+        prop.fset(self, v)
+    monkeypatch.setattr(core, "_StoreLock", HeldLock)
+    monkeypatch.setattr(Inspeximus, "_items", property(prop.fget, fset))
+    try:
+        _ERASURES[entry](h)
+    finally:
+        go.set()
+    saver = [t for t in threading.enumerate() if t.name == "saver"]
+    for t in saver:
+        t.join(60)
+    monkeypatch.undo()
+    assert dropped, "CONTROL: %s removed no record" % entry
+    assert saver and not saver[0].is_alive(), "CONTROL: the other thread's flush did not finish"
+    h.flush()
+    back = {r.get("id") for r in _open(p, fmt)._items} & set(dropped)
+    assert not back, "%s: an erased record is back on disk after a save that raced it (%s)" % (entry, sorted(back))
+
+
+@pytest.mark.parametrize("fmt", FORMATS)
+def test_a_forgetter_and_a_saver_on_two_threads_bring_no_record_back(tmp_path, fmt):
+    """The shape F-11 comes from, bounded: one thread writes a record and erases it in a loop while another flushes in a
+    loop, with a short switch interval so the threads interleave inside the save. After a final flush, no erased record
+    is on disk. Before the copy moved inside the store lock, a flush that queued behind an erasure wrote the records from
+    before it; the forced test above is the deterministic one."""
+    import threading
+    import time
+    p = _store(tmp_path, fmt, n=20)
+    h = _open(p, fmt)
+    h._save_min_s = 0.0
+    erased, stop, errs, counts = [], threading.Event(), [], {"erasures": 0, "saves": 0}
+
+    def forgetter():
+        n = 0
+        while not stop.is_set():
+            n += 1
+            try:
+                rid = h.remember("a short-lived note %d" % n)
+                h.forget(rid)
+            except Exception as e:                      # noqa: BLE001 -- reported below
+                errs.append(repr(e)[:200])
+                return
+            erased.append(rid)
+            counts["erasures"] += 1
+
+    def saver():
+        while not stop.is_set():
+            try:
+                h.flush()
+                counts["saves"] += 1
+            except Exception as e:                      # noqa: BLE001 -- reported below
+                errs.append(repr(e)[:200])
+                return
+    old = sys.getswitchinterval()
+    sys.setswitchinterval(1e-5)
+    try:
+        ts = [threading.Thread(target=forgetter), threading.Thread(target=saver)]
+        [t.start() for t in ts]
+        time.sleep(2.0)
+        stop.set()
+        [t.join(30) for t in ts]
+    finally:
+        sys.setswitchinterval(old)
+    assert not errs, errs
+    assert counts["saves"] >= 2 and counts["erasures"] >= 2, "CONTROL: the threads ran: %r" % counts
+    h.flush()
+    back = set(erased) & {r.get("id") for r in _open(p, fmt)._items}
+    assert not back, "%d of %d erased records are back on disk (%r)" % (len(back), len(erased), counts)
+
+
+class _KeyThatAddsAField(str):
+    """A field name whose comparison adds a field to its record once armed: another thread's write, landing while code
+    iterates the record's fields. `__hash__` stays `str`'s, so the record finds the key as usual."""
+    __hash__ = str.__hash__
+    armed, record, fired = False, None, []
+
+    def _add(self):
+        if _KeyThatAddsAField.armed and not _KeyThatAddsAField.fired:
+            _KeyThatAddsAField.fired.append(1)
+            _KeyThatAddsAField.record["added_by_another_thread"] = "yes"
+
+    def __eq__(self, other):
+        self._add()
+        return str.__eq__(self, other)
+
+    def __ne__(self, other):
+        self._add()
+        return str.__ne__(self, other)
+
+
+_READERS = {"flush": lambda h: h.flush(), "export_changeset": lambda h: h.export_changeset(),
+            "verify_writes": lambda h: h.verify_writes()}
+
+
+# verify_writes compares the records with the rows only on a row store with nothing unsaved; elsewhere it reads none.
+@pytest.mark.parametrize("fmt,reader", [
+    pytest.param(f, r, id="%s-%s" % (f, r),
+                 marks=pytest.mark.skipif(f == "enc" and not _CRYPTO, reason="needs inspeximus[crypto]"))
+    for f in ("json", "enc", "db") for r in sorted(_READERS) if r != "verify_writes" or f == "db"])
+def test_a_field_added_while_a_record_is_copied_does_not_fail_the_call(tmp_path, fmt, reader, monkeypatch):
+    """G-1 (3.19): a save copied each record by iterating its live fields, and so did export_changeset and verify_writes.
+    A field another thread of the handle added meanwhile raised "dictionary changed size during iteration": the save
+    failed and flush() raised OSError. Forced here: a field is added while the record's fields are being iterated."""
+    p = _store(tmp_path, fmt)
+    h = _open(p, fmt)
+    r = _rec(h, "deploy")
+    r[_KeyThatAddsAField("zz_marker")] = 1
+    r["text"] = "the deploy window is monday"
+    if reader != "flush":
+        h.flush()                                        # verify_writes reads the records only when nothing is unsaved
+    if reader == "verify_writes":
+        # A record that differs from its row, unseen by the tracker: the comparison must report it. Before G-1 the error
+        # was swallowed by verify_writes' own guard, so the comparison was skipped and the audit read clean.
+        dict.__setitem__([x for x in h._items if x is not r][0], "text", "changed behind the tracker")
+    monkeypatch.setattr(_KeyThatAddsAField, "armed", True)
+    monkeypatch.setattr(_KeyThatAddsAField, "record", r)
+    monkeypatch.setattr(_KeyThatAddsAField, "fired", [])
+    out = _READERS[reader](h)
+    assert _KeyThatAddsAField.fired, "CONTROL: no field was added during the call"
+    if reader == "verify_writes":
+        assert "do not match the store file" in repr(out), (
+            "verify_writes did not compare the records with the rows, so it could not see the unsaved one: %r" % (out,))
+    monkeypatch.undo()
+    h.flush()
+    got = _rec(_open(p, fmt), "deploy")
+    assert got.get("added_by_another_thread") == "yes" and got["text"] == "the deploy window is monday", \
+        "the field added during the call was not written by the next save"
