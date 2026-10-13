@@ -2100,6 +2100,29 @@ def _ix_lock_of(store):
 _NO_LOCK = contextlib.nullcontext()
 
 
+def _chain_lock_of(store):
+    """The handle's lock for its receipt and tombstone chains (3.19, shared-state inventory).
+
+    A CHAIN IS A READ-MODIFY-WRITE: read the tail's hash, hash and sign the new entry over it, append. Two threads of one
+    handle in between both chained onto the same tail, and the store then verified as tampered although nobody touched
+    it: measured, "receipt 169: broken chain link" with `consolidate` and `sleep` beside three writers, live and after a
+    reopen. Every read-modify-write of `_receipts` and `_tombstones` (append, adopt, reconcile, compact, flush, the
+    rollback of a batch) holds this lock. ORDER: the store lock, then this lock, then a sidecar's file lock; nothing that
+    holds this lock takes the store lock or the handle lock, and nothing that holds the handle lock waits for it. A view
+    finds its parent's lock through __getattr__; a handle built without __init__ gets none."""
+    lk = getattr(store, "_chain_lock", None)
+    return lk if lk is not None else _NO_LOCK
+
+
+def _chained(fn):
+    """Run a chain method under `_chain_lock_of(self)` (see there). Reentrant, so chain methods may call each other."""
+    @functools.wraps(fn)
+    def run(self, *a, **k):
+        with _chain_lock_of(self):
+            return fn(self, *a, **k)
+    return run
+
+
 #: At most this many cached pools per store: one per combination of scope and pool arguments in use. Measured
 #: (AUDIT-A Y-2) on copies of the live stores: 5.7 MB an entry on the 23,126-row project store and 13.4 MB on the
 #: MCP store, so 4 entries hold at most 23 MB and 54 MB.
@@ -3534,6 +3557,7 @@ class Inspeximus:
         self._ix_held = False                     # set by a process that holds this handle (the daemon, the MCP server)
         self._ix_log = {}                         # record id -> the revision that last moved it; see _note_dirty
         self._ix_lock = threading.RLock()         # the index and the derived caches, one thread at a time (3.19)
+        self._chain_lock = threading.RLock()      # the receipt and tombstone chains, one writer at a time (3.19)
         self._sig_cache: dict[str, str] = {}     # id -> normalized value signature (read-time conflict resolver)
         self._tc_cache: dict[str, dict] = {}     # id -> term-frequency map, for the BM25 hybrid channel
         # recall auto-mode: below this many active memories lexical is as good and free; above it the
@@ -4085,12 +4109,14 @@ class Inspeximus:
         state = dict(self.__dict__)
         state.pop("_priv", None)
         state.pop("_ix_lock", None)
+        state.pop("_chain_lock", None)
         return state
 
     def __setstate__(self, state):
         self.__dict__.update(state)
         self._priv = threading.local()
         self._ix_lock = threading.RLock()
+        self._chain_lock = threading.RLock()
 
     def _stamp(self, *a, **kw) -> str:
         """remember() for the LIBRARY's own markers, which live in the reserved meta keyspace.
@@ -5098,6 +5124,7 @@ class Inspeximus:
         self._rc_base_ok = res["base_ok"]
         return res
 
+    @_chained
     def _reconcile_receipts_with_disk(self) -> int:
         """Adopt receipts a peer process appended to the sidecar, and re-chain ours on top of them.
 
@@ -5151,6 +5178,7 @@ class Inspeximus:
             self._append_receipt(old, rechained=True)
         return len(disk) - n
 
+    @_chained
     def _adopt_shorter_disk_chain(self, before: list, keep_ids: set) -> int:
         """On the read path, follow a receipt sidecar that is now a strict PREFIX of the chain in memory.
 
@@ -5185,6 +5213,7 @@ class Inspeximus:
                 dropped += 1
         return dropped
 
+    @_chained
     def _append_receipt(self, r: dict, rechained: bool = False) -> dict:
         """Chain, hash and sign one receipt onto the current tail, then append it. `rechained` marks
         a receipt moved from an earlier position after a peer's entries were adopted."""
@@ -5218,6 +5247,7 @@ class Inspeximus:
         self._receipts.append(r)
         return r
 
+    @_chained
     def _emit_write_receipt(self, rec: dict, amends: tuple = (), reason: str = "",
                             retires=(), strict: bool = False) -> dict:
         """`amends` names the committed fields this receipt legitimately rewrites (slash/restore -> mtype).
@@ -5514,9 +5544,16 @@ class Inspeximus:
         if not self._subscribers:
             return 0
         evs = self.poll_events(since_seq=since, limit=limit)
+        # CLAIMED UNDER THE HANDLE LOCK, DELIVERED OUTSIDE IT (3.19, shared-state inventory F7). Two threads that saved at
+        # once both polled from the same position and both delivered: a subscriber got every event twice. The claim
+        # takes only the events past the position and moves it, so each is delivered once per handle. The callbacks run
+        # with no lock held, because a subscriber may write to the store.
+        with _ix_lock_of(self):
+            evs = [ev for ev in evs if ev["seq"] > self._events_seen]
+            if evs:
+                self._events_seen = max(self._events_seen, max(ev["seq"] for ev in evs))
         n = 0
         for ev in evs:
-            self._events_seen = max(self._events_seen, ev["seq"])
             for et, cb in list(self._subscribers.values()):
                 if et == "*" or et == ev["type"]:
                     try:
@@ -5527,6 +5564,7 @@ class Inspeximus:
         return n
 
     # ------------------------------------------------------------------ receipts on an existing store
+    @_chained
     def enable_receipts(self, receipt_key: "str | None" = None, backfill_genesis: bool = True,
                         reason: str = "") -> dict:
         """Turn write receipts on for a store that has records but no chain, or a chain that does not
@@ -5632,6 +5670,7 @@ class Inspeximus:
                     "genesis_root": root, "chain_tip": self._receipts[-1]["hash"]})
         return out
 
+    @_chained
     def _flush_receipts(self) -> None:
         """Make the receipt sidecar hold `self._receipts`. Raises when it cannot.
 
@@ -5697,6 +5736,7 @@ class Inspeximus:
                         self._compact_receipts_locked(cache)
             self._receipts_sig = self._receipts_disk_sig()
 
+    @_chained
     def _compact_receipts_locked(self, cache: dict) -> None:
         """Write the whole chain as the snapshot, then a tail with a header and no entries. Caller holds the lock.
 
@@ -5714,6 +5754,7 @@ class Inspeximus:
         self._rc_good_off = len(_rtail.header_line(len(mine), tip))
         self._rc_torn, self._rc_base_ok, self._rc_problems = False, True, []
 
+    @_chained
     def _persist_receipts(self) -> None:
         """Write the whole receipt chain to its sidecar once, then record the head. One write for a
         batch, so a 2,000-record backfill is one atomic replace rather than 2,000."""
@@ -7981,10 +8022,11 @@ class Inspeximus:
         elif not self.receipts_enabled and self.items:
             problems.append(f"write receipts are DISABLED: {len(self.items)} record(s) exist with no write "
                             f"chain, so there is nothing to verify -- which is not the same as verified")
-        for what, err in (getattr(self, "_read_errors", None) or {}).items():
+        # COPIES, TAKEN IN ONE C CALL (3.19, shared-state inventory F6): other threads add and drop these entries.
+        for what, err in dict(getattr(self, "_read_errors", None) or {}).items():
             problems.append(f"the {what} sidecar is UNREADABLE ({err}) — the state it holds cannot be "
                             f"consulted, so anything gated on it fails closed")
-        for what, err in (getattr(self, "_sidecar_errors", None) or {}).items():
+        for what, err in dict(getattr(self, "_sidecar_errors", None) or {}).items():
             problems.append(f"the {what} chain was NOT persisted ({err}) — it exists in memory only, so the "
                             f"evidence this store's integrity rests on will not survive a reload")
         if getattr(self, "_extractor_errors", 0):
@@ -8586,23 +8628,26 @@ class Inspeximus:
         # Emitted with the sidecar write deferred, then written ONCE by the batch writer. A chain that
         # cannot be written is put back as it was, the way backfill() does it (A-34), so memory and disk
         # never disagree about which records are bound.
-        _prev_chain = list(self._receipts)
-        self._defer_receipt_flush = True
-        try:
-            for rec in todo:
-                self._emit_write_receipt(rec)
-                done.append(rec["id"])
-        except BaseException:
-            self._receipts = _prev_chain
-            raise
-        finally:
-            self._defer_receipt_flush = False
-        if done:
+        # ONE BATCH UNDER THE CHAIN LOCK (3.19, shared-state inventory): the rollback restores the chain as it was before
+        # the batch, so a receipt another thread appended in between would be rolled back with it.
+        with _chain_lock_of(self):
+            _prev_chain = list(self._receipts)
+            self._defer_receipt_flush = True
             try:
-                self._persist_receipts()
-            except ProofNotWritten:
+                for rec in todo:
+                    self._emit_write_receipt(rec)
+                    done.append(rec["id"])
+            except BaseException:
                 self._receipts = _prev_chain
                 raise
+            finally:
+                self._defer_receipt_flush = False
+            if done:
+                try:
+                    self._persist_receipts()
+                except ProofNotWritten:
+                    self._receipts = _prev_chain
+                    raise
         if done:
             self._save(force=True)
         return {"recommitted": done, "skipped": skipped, "problems": []}
@@ -9824,23 +9869,26 @@ class Inspeximus:
         # recorded in `_sidecar_errors`, the rows were deleted anyway, and the call answered
         # `tombstones: N` while the disk held none. The emitted tombstones are withdrawn by hash, because
         # the flush reconciles the chain with the disk and may hand back other objects.
-        now = time.time()
-        _emitted = [self._emit_tombstone(tid, now, request_id, basis=basis or "forget",
-                                         authorized_by=authorized_by, authorization=authorization, defer=True)
-                    for tid in sorted(target | _seg_ids)]              # deterministic order -> reproducible chain
-        # ONE sidecar write for the whole batch. Each _emit_tombstone used to rewrite the ENTIRE chain, so
-        # erasing k records cost k rewrites of a chain growing to k -- O(k^2) serialization plus k atomic
-        # replaces. Deferring is also strictly SAFER on a crash: the old order left j-of-k tombstones on
-        # disk claiming erasures the store save had not yet performed, i.e. a deletion proof for records
-        # still present. Now it is all-or-nothing, and still written BEFORE _save, so a crash can only lose
-        # the proof of a deletion that did not happen -- never the reverse.
-        try:
-            self._flush_tombstones()
-        except ProofNotWritten:
-            _h = {t.get("hash") for t in _emitted}
-            self._tombstones = [t for t in self._tombstones if t.get("hash") not in _h]
-            self._sidecar_errors.pop("tombstones", None)     # nothing unwritten is left: the call raised
-            raise
+        # THE BATCH AND ITS ROLLBACK UNDER THE CHAIN LOCK (3.19, shared-state inventory): the rollback filters the chain by
+        # the hashes this call emitted, and an append by another thread in between must not be lost or kept half-written.
+        with _chain_lock_of(self):
+            now = time.time()
+            _emitted = [self._emit_tombstone(tid, now, request_id, basis=basis or "forget",
+                                             authorized_by=authorized_by, authorization=authorization, defer=True)
+                        for tid in sorted(target | _seg_ids)]              # deterministic order -> reproducible chain
+            # ONE sidecar write for the whole batch. Each _emit_tombstone used to rewrite the ENTIRE chain, so
+            # erasing k records cost k rewrites of a chain growing to k -- O(k^2) serialization plus k atomic
+            # replaces. Deferring is also strictly SAFER on a crash: the old order left j-of-k tombstones on
+            # disk claiming erasures the store save had not yet performed, i.e. a deletion proof for records
+            # still present. Now it is all-or-nothing, and still written BEFORE _save, so a crash can only lose
+            # the proof of a deletion that did not happen -- never the reverse.
+            try:
+                self._flush_tombstones()
+            except ProofNotWritten:
+                _h = {t.get("hash") for t in _emitted}
+                self._tombstones = [t for t in self._tombstones if t.get("hash") not in _h]
+                self._sidecar_errors.pop("tombstones", None)     # nothing unwritten is left: the call raised
+                raise
         self._drop_pre_rows_backup()
         # The segment rewrite is prepared, and its intent logged, only AFTER the tombstones are on disk
         # (B25-R1): an intent logged first could be finished by a later erasure's recover() for an
@@ -9941,6 +9989,7 @@ class Inspeximus:
             core["auth"] = t["auth"]
         return core
 
+    @_chained
     def _emit_tombstone(self, memory_id: str, ts: float, request_id: str | None,
                         basis: str | None = None, authorized_by: str | None = None,
                         authorization: str | None = None, defer: bool = False) -> dict:
@@ -10000,6 +10049,7 @@ class Inspeximus:
             self._drop_pre_rows_backup()
         return t
 
+    @_chained
     def _seal_tombstone(self, t: dict, rechained_from: str | None = None) -> dict:
         """Chain one tombstone onto the current tip, hash it, sign it and append it. `t` carries the
         content (memory_id, ts, request_id, auth, tenant); seq and prev come from the tip. A tombstone
@@ -10079,6 +10129,7 @@ class Inspeximus:
         """Every named defect of the tombstone and receipt sidecars (AUDIT-A F-3)."""
         return list(getattr(self, "_tombstone_problems", None) or []) + self._malformed_receipts()
 
+    @_chained
     def _reconcile_tombstones_with_disk(self) -> int:
         """Adopt tombstones a peer process wrote to the sidecar, and re-chain ours on top of them.
 
@@ -10122,6 +10173,7 @@ class Inspeximus:
             self._seal_tombstone(old, rechained_from=old.get("hash"))
         return len(disk) - n
 
+    @_chained
     def _flush_tombstones(self) -> None:
         """Persist the whole tombstone chain. Split out of _emit_tombstone so a batch erasure can write once."""
         if not self._tombstones_path:
@@ -17693,6 +17745,10 @@ class Inspeximus:
             except Exception as e:
                 self._sidecar_errors['cusum'] = f"{type(e).__name__}: {e}"
 
+    # ONE MONITOR AT A TIME (3.19, shared-state inventory F8): the per-source sum is read, moved and written back, and two
+    # threads on one source lost a step, so the detector fired late; its side file was also serialised while another
+    # thread changed it. Under the store lock, like `spend_irreversible`, so the order stays store lock, then chain lock.
+    @_decides(save=False)
     def monitor(self, ids, outcome, k: float = 0.3, h: float = 3.0,
                 auto_slash: bool = False, weight: float = 1.0,
                 allow_ambiguous: bool = False) -> dict:
@@ -20512,7 +20568,7 @@ class Inspeximus:
                           f"{self._persist_error['error']}")
         if self._sidecar_errors:
             raise OSError("inspeximus could not persist: "
-                          + "; ".join(f"{k} -> {v}" for k, v in self._sidecar_errors.items()))
+                          + "; ".join(f"{k} -> {v}" for k, v in dict(self._sidecar_errors).items()))   # a copy (F6)
 
 
 # ── per-type decay priors (the half-life a memory's ranking value decays at, by kind) ──────────
@@ -20752,8 +20808,10 @@ class _TenantBucket:
         return self._k(k) in self._d
 
     def __iter__(self):
+        # A COPY OF THE KEYS, TAKEN IN ONE C CALL (3.19, shared-state inventory F9): the dict is store-wide, and another
+        # tenant's thread writes it while a report iterates this tenant's part.
         n = len(self._p)
-        return (k[n:] for k in self._d if k.startswith(self._p))
+        return (k[n:] for k in list(self._d) if k.startswith(self._p))
 
     def __len__(self):
         return sum(1 for _ in iter(self))
@@ -20763,7 +20821,7 @@ class _TenantBucket:
 
     def items(self):
         n = len(self._p)
-        return [(k[n:], v) for k, v in self._d.items() if k.startswith(self._p)]
+        return [(k[n:], v) for k, v in list(self._d.items()) if k.startswith(self._p)]   # a copy (F9)
 
     def values(self):
         return [v for _, v in self.items()]

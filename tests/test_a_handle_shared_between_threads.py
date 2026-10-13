@@ -422,3 +422,128 @@ def test_a_tenant_view_never_returns_another_tenants_records_read_meanwhile(tmp_
     for got in (first, acme.items):
         assert {r.get("tenant") for r in got} == {"acme"}, "a tenant view returned %r" % (
             sorted((r.get("tenant"), r.get("text")) for r in got),)
+
+
+class _ErrorThatAddsOne:
+    """A recorded sidecar error whose text, once formatted, adds another entry: another thread's failed write, landing
+    while flush() or verify_writes() lists the errors."""
+    errors, fired = None, []
+
+    def __format__(self, spec):
+        if not _ErrorThatAddsOne.fired:
+            _ErrorThatAddsOne.fired.append(1)
+            _ErrorThatAddsOne.errors["receipts"] = "another thread's write failed meanwhile"
+        return "a sidecar write failed"
+    __str__ = lambda self: format(self, "")                  # noqa: E731
+
+
+@pytest.mark.parametrize("call", ["flush", "verify_writes"])
+def test_listing_the_sidecar_errors_survives_one_added_meanwhile(tmp_path, monkeypatch, call):
+    """F6: flush() and verify_writes() listed the recorded sidecar errors by iterating the live dict, which other threads
+    write. One added meanwhile raised "dictionary changed size during iteration" instead of the report. Forced here: an
+    error is recorded while the list is being built."""
+    h = _held(tmp_path)
+    h._sidecar_errors["tombstones"] = _ErrorThatAddsOne()
+    monkeypatch.setattr(_ErrorThatAddsOne, "errors", h._sidecar_errors)
+    monkeypatch.setattr(_ErrorThatAddsOne, "fired", [])
+    if call == "flush":
+        with pytest.raises(OSError, match="could not persist"):
+            h.flush()
+    else:
+        ok, problems = h.verify_writes()
+        assert not ok and any("tombstones" in p for p in problems), problems
+    assert _ErrorThatAddsOne.fired, "CONTROL: an error was recorded while the list was built"
+
+
+def test_two_threads_dispatching_events_deliver_each_event_once(tmp_path, monkeypatch):
+    """F7: a save dispatches the new events to the subscribers after its commit. Two threads that dispatched at once both
+    polled from the same position and both delivered, so a subscriber got each event twice. Forced here: a second
+    dispatch runs on another thread while the first one has polled and not yet delivered."""
+    p = str(tmp_path / "e.json")
+    ix = Inspeximus(path=p)
+    got = []
+    ix.subscribe("record.added", got.append)
+    other = Inspeximus(path=p)
+    other.remember("written elsewhere", key="k1")
+    other.remember("written elsewhere too", key="k2")
+    other.flush()
+    real, main, fired = Inspeximus.poll_events, threading.current_thread(), []
+
+    def poll(self, *a, **k):
+        out = real(self, *a, **k)
+        if threading.current_thread() is main and not fired:
+            fired.append(1)
+            t = threading.Thread(target=ix.dispatch_events)
+            t.start()
+            t.join(10)
+        return out
+    monkeypatch.setattr(Inspeximus, "poll_events", poll)
+    ix.dispatch_events()
+    monkeypatch.undo()
+    assert fired, "CONTROL: a second dispatch ran during the first"
+    seqs = [e["seq"] for e in got]
+    assert len(seqs) >= 2, "CONTROL: the events were delivered: %r" % seqs
+    assert len(seqs) == len(set(seqs)), "a subscriber got an event twice: %r" % seqs
+
+
+class _SumsThatMove(dict):
+    """The per-source sums, where another thread's monitor of the same source runs between this one's read and write."""
+    other, fired = None, []
+
+    def get(self, k, *d):
+        out = dict.get(self, k, *d)
+        if threading.current_thread() is threading.main_thread() and not _SumsThatMove.fired:
+            _SumsThatMove.fired.append(threading.Thread(target=_SumsThatMove.other))
+            _SumsThatMove.fired[0].start()
+            _SumsThatMove.fired[0].join(1.5)                 # with one monitor at a time, the other waits
+        return out
+
+
+def test_two_threads_monitoring_one_source_count_both_outcomes(tmp_path, monkeypatch):
+    """F8: monitor() read a source's cumulative sum, added the step and wrote it back, with no lock. A second thread's
+    monitor of the same source in between was overwritten, so the poison detector counted one bad outcome of two and
+    fired late. Forced here: the other monitor runs between this one's read and its write."""
+    def store(name):
+        m = Inspeximus(str(tmp_path / name))
+        rid = m.remember("a claim from the feed", source={"doc": "feeds/vendor"})
+        return m, rid
+    ref, rid = store("ref.db")
+    ref.monitor([rid], outcome="bad")
+    ref.monitor([rid], outcome="bad")
+    want = dict(ref._cusum_state())
+    h, rid = store("race.db")
+    sums = _SumsThatMove(h._cusum_state())
+    h._cusum = sums
+    monkeypatch.setattr(_SumsThatMove, "other", lambda: h.monitor([rid], outcome="bad"))
+    monkeypatch.setattr(_SumsThatMove, "fired", [])
+    h.monitor([rid], outcome="bad")
+    assert _SumsThatMove.fired, "CONTROL: the other monitor ran between the read and the write"
+    _SumsThatMove.fired[0].join(30)
+    assert dict(h._cusum_state()) == want, "two bad outcomes counted as %r, one at a time as %r" % (
+        dict(h._cusum_state()), want)
+
+
+class _SourceThatAddsOne(str):
+    """A per-source key whose prefix check adds another source's entry once: another tenant's thread writing the
+    store-wide sums while this tenant's report lists its own."""
+    __hash__ = str.__hash__
+    sums, fired = None, []
+
+    def startswith(self, *a):
+        if not _SourceThatAddsOne.fired:
+            _SourceThatAddsOne.fired.append(1)
+            _SourceThatAddsOne.sums["beta\u0000feeds"] = 0.7
+        return str.startswith(self, *a)
+
+
+@pytest.mark.parametrize("read", ["items", "keys"])
+def test_a_tenant_reading_its_sums_survives_another_tenant_writing_them(tmp_path, monkeypatch, read):
+    """F9: a tenant's view of the store-wide per-source sums (the CUSUM monitor and the irreversible budget) iterated the
+    shared dict, which another tenant's thread writes: "dictionary changed size during iteration" from the report."""
+    sums = {_SourceThatAddsOne("acme\u0000feeds"): 0.7, "acme\u0000mail": 0.0}
+    monkeypatch.setattr(_SourceThatAddsOne, "sums", sums)
+    monkeypatch.setattr(_SourceThatAddsOne, "fired", [])
+    bucket = core._TenantBucket(sums, "acme")
+    got = bucket.items() if read == "items" else bucket.keys()
+    assert _SourceThatAddsOne.fired, "CONTROL: another tenant wrote during the read"
+    assert sorted(k if read == "keys" else k[0] for k in got) == ["feeds", "mail"]
