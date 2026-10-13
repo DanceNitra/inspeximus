@@ -361,3 +361,102 @@ def test_an_editor_and_a_saver_on_two_threads_lose_no_edit(tmp_path, fmt):
     got = {r["id"]: r.get("text") for r in _open(p, fmt)._items}
     lost = [rid for rid, v in last.items() if got.get(rid) != v]
     assert not lost, "%d of %d hot records lost their last edit (%r)" % (len(lost), len(last), counts)
+
+
+# THE MARK COMES AFTER THE WRITE (3.19, CI on fa655235). The tracked containers declared an edit BEFORE they stored it:
+# `_fire` moved the edit generation, and only then did `dict.__setitem__` run. A save in between copied the new
+# generation, serialised the OLD value, saw the generation unchanged after its write and cleared the id, so the edit was
+# never written. CI lost 1 of 4 hot records' last edits on ubuntu-latest, Python 3.11 row store and Python 3.9 encrypted
+# store; Windows and WSL had not shown it. Each case below runs a whole save right after the declaration, the window CI hit, so the
+# order is tested on every OS without timing.
+_EDITS = {
+    "set": lambda r: r.__setitem__("text", "EDITED"),
+    "update": lambda r: r.update(text="EDITED"),
+    "ior": lambda r: r.__ior__({"text": "EDITED"}),
+    "setdefault_new": lambda r: r.setdefault("xnew", "EDITED"),
+    "del": lambda r: r.__delitem__("xtra"),
+    "pop": lambda r: r.pop("xtra"),
+    "nested_set": lambda r: r["meta"].__setitem__("note", "EDITED"),
+    "nested_del": lambda r: r["meta"].__delitem__("seed"),
+    "nested_popitem": lambda r: r["meta"].popitem(),          # `seed` is the last key set, so it is the one removed
+    "nested_clear": lambda r: r["meta"].clear(),
+    "list_append": lambda r: r["tags"].append("c"),
+    "list_extend": lambda r: r["tags"].extend(["c"]),
+    "list_insert": lambda r: r["tags"].insert(0, "c"),
+    "list_setitem": lambda r: r["tags"].__setitem__(0, "c"),
+    "list_delitem": lambda r: r["tags"].__delitem__(0),
+    "list_iadd": lambda r: r["tags"].__iadd__(["c"]),
+    "list_imul": lambda r: r["tags"].__imul__(2),
+    "list_remove": lambda r: r["tags"].remove("a"),
+    "list_pop": lambda r: r["tags"].pop(),
+    "list_clear": lambda r: r["tags"].clear(),
+    "list_sort": lambda r: r["tags"].sort(reverse=True),
+    "list_reverse": lambda r: r["tags"].reverse(),
+}
+
+
+def _save_inside_the_mark(monkeypatch, h, rid):
+    """Run one whole flush() right after the mark of `rid`, before the caller's write returns to it."""
+    real = core._mark_touched
+    hits = []
+
+    def mark_then_save(store, ids):
+        real(store, ids)
+        if store is h and rid in ids and not hits:
+            hits.append(1)
+            h.flush()
+    monkeypatch.setattr(core, "_mark_touched", mark_then_save)
+    return hits
+
+
+def _save_after_each_declaration(monkeypatch, h):
+    """Run one whole flush() right after a tracked container's whole declaration (`_fire`: the mark, the dirty flag and
+    the content revision), which is where a saver on another thread can land before the container's own write."""
+    hits = []
+    for cls in (core._TrackedDict, core._TrackedList):
+        real = cls._fire
+
+        def fire_then_save(self, *a, _real=real, **k):
+            _real(self, *a, **k)
+            if not hits:
+                hits.append(1)
+                h.flush()
+        monkeypatch.setattr(cls, "_fire", fire_then_save)
+    return hits
+
+
+@pytest.mark.parametrize("fmt", FORMATS)
+@pytest.mark.parametrize("edit", sorted(_EDITS))
+def test_a_save_between_the_mark_and_the_write_loses_no_edit(tmp_path, fmt, edit, monkeypatch):
+    p = _store(tmp_path, fmt)
+    h = _open(p, fmt)
+    rec = _rec(h, "deploy")
+    rec["xtra"] = "x"
+    rec.setdefault("meta", {})["seed"] = "s"
+    rec["tags"] = ["a", "b"]
+    h.flush()
+    hits = _save_after_each_declaration(monkeypatch, h)
+    _EDITS[edit](rec)
+    assert hits, "CONTROL: no save ran inside the mark, so the window was never opened"
+    want = core._plain(rec)
+    monkeypatch.undo()
+    h.flush()
+    got = _rec(_open(p, fmt), "deploy")
+    for field in ("text", "xtra", "xnew", "meta", "tags"):
+        w, g = want.get(field), got.get(field)
+        if field == "meta":
+            w, g = {k: w.get(k) for k in ("note", "seed")}, {k: g.get(k) for k in ("note", "seed")}
+        assert g == w, "%s: the save inside the mark cleared the edit of %r (on disk %r, edited %r)" % (edit, field, g, w)
+
+
+@pytest.mark.parametrize("fmt", FORMATS)
+def test_a_save_between_the_forget_mark_and_the_removal_does_not_bring_the_record_back(tmp_path, fmt, monkeypatch):
+    p = _store(tmp_path, fmt)
+    h = _open(p, fmt)
+    rid = _rec(h, "deploy")["id"]
+    hits = _save_inside_the_mark(monkeypatch, h, rid)
+    h.forget(rid)
+    assert hits, "CONTROL: no save ran inside the forget's mark"
+    monkeypatch.undo()
+    h.flush()
+    assert not [r for r in _open(p, fmt)._items if r.get("id") == rid], "the forgotten record is back on disk"

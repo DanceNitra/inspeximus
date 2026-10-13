@@ -2257,18 +2257,24 @@ class _TrackedDict(dict):
             dict.__setitem__(self, k, v)
         return v
 
+    # THE WRITE COMES FIRST AND THE DECLARATION AFTER IT (3.19, CI on fa655235). Every mutator below declared the edit
+    # (`_fire`: the edit generation, the dirty flag, the content revision) and only then stored it. A save on another
+    # thread that landed in between copied the moved generation, serialised the OLD value, found the generation unchanged
+    # after its write and cleared the id: the edit was never written. CI lost 1 of 4 hot records' last edits on
+    # ubuntu-latest (Python 3.11 row store, Python 3.9 encrypted store). With the write first, a save in between writes
+    # the new value or sees the id marked after it, and the worst case is one extra save.
     def __setitem__(self, k, v):
-        self._fire(k)
         super().__setitem__(k, self._child(v, k))
+        self._fire(k)
 
     def __delitem__(self, k):
-        self._fire(k)
         super().__delitem__(k)
+        self._fire(k)
 
     def update(self, *a, **kw):
-        self._fire()
         for k, v in dict(*a, **kw).items():
             super().__setitem__(k, self._child(v, k))
+        self._fire()
 
     def setdefault(self, k, default=None):
         if k in self:
@@ -2278,16 +2284,19 @@ class _TrackedDict(dict):
 
     def pop(self, *a):
         if a and a[0] in self:                        # a pop that removes nothing changes nothing (AUDIT-A D-1)
+            v = super().pop(*a)
             self._fire(a[0])
+            return v
         return super().pop(*a)
 
     def popitem(self):
+        kv = super().popitem()
         self._fire()
-        return super().popitem()
+        return kv
 
     def clear(self):
-        self._fire()
         super().clear()
+        self._fire()
 
     def __ior__(self, other):
         # `rec |= {...}` USES A C SLOT THAT DOES NOT GO THROUGH `update`. Without this the record is
@@ -2337,43 +2346,44 @@ class _TrackedList(list):
             list.__setitem__(self, i, v)
         return v
 
+    # The write first and the declaration after it, as in `_TrackedDict` (3.19, CI on fa655235).
     def append(self, v):
-        self._fire(); super().append(self._child(v))
+        super().append(self._child(v)); self._fire()
 
     def extend(self, it):
-        self._fire(); super().extend(self._child(v) for v in it)
+        super().extend(self._child(v) for v in it); self._fire()
 
     def insert(self, i, v):
-        self._fire(); super().insert(i, self._child(v))
+        super().insert(i, self._child(v)); self._fire()
 
     def __setitem__(self, i, v):
-        self._fire(); super().__setitem__(i, self._child(v))
+        super().__setitem__(i, self._child(v)); self._fire()
 
     def __delitem__(self, i):
-        self._fire(); super().__delitem__(i)
+        super().__delitem__(i); self._fire()
 
     def __iadd__(self, other):
-        self._fire(); return super().__iadd__([self._child(v) for v in other])
+        r = super().__iadd__([self._child(v) for v in other]); self._fire(); return r
 
     def __imul__(self, n):
         # `tags *= 2` is the list half of the `|=` hole above: an in-place C slot that never reaches
         # a method this class overrides.
-        self._fire(); return super().__imul__(n)
+        r = super().__imul__(n); self._fire(); return r
 
     def remove(self, v):
-        self._fire(); super().remove(v)
+        super().remove(v); self._fire()
 
     def pop(self, *a):
-        self._fire(); return super().pop(*a)
+        r = super().pop(*a); self._fire(); return r
 
     def clear(self):
-        self._fire(); super().clear()
+        super().clear(); self._fire()
 
     def sort(self, **kw):
-        self._fire(); super().sort(**kw)
+        super().sort(**kw); self._fire()
 
     def reverse(self):
-        self._fire(); super().reverse()
+        super().reverse(); self._fire()
 
     def __reduce__(self):
         return (list, (list(self),))

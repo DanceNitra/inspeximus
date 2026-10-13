@@ -11962,8 +11962,8 @@
  {
   "name": "3.18 D-1: a pop that removes nothing marks the record",
   "file": "inspeximus/core.py",
-  "old": "        if a and a[0] in self:                        # a pop that removes nothing changes nothing (AUDIT-A D-1)\n            self._fire(a[0])\n",
-  "new": "        self._fire(a[0] if a else None)\n",
+  "old": "        if a and a[0] in self:                        # a pop that removes nothing changes nothing (AUDIT-A D-1)\n            v = super().pop(*a)\n",
+  "new": "        if a:\n            v = super().pop(*a)\n",
   "tests": [
    "tests/test_a_read_marks_no_record_touched.py"
   ]
@@ -13238,6 +13238,168 @@
   "new": "        skip_work_counters or check_core_map(rep, root)\n",
   "tests": [
    "tests/test_release_check_runs_the_work_counters.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked record declares a set before it stores it",
+  "file": "inspeximus/core.py",
+  "old": "        super().__setitem__(k, self._child(v, k))\n        self._fire(k)\n",
+  "new": "        self._fire(k)\n        super().__setitem__(k, self._child(v, k))\n",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked record declares a del before it removes the key",
+  "file": "inspeximus/core.py",
+  "old": "        super().__delitem__(k)\n        self._fire(k)\n",
+  "new": "        self._fire(k)\n        super().__delitem__(k)\n",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked record declares an update before it stores it",
+  "file": "inspeximus/core.py",
+  "old": "            super().__setitem__(k, self._child(v, k))\n        self._fire()\n",
+  "new": "            pass\n        self._fire()\n        for k, v in dict(*a, **kw).items():\n            super().__setitem__(k, self._child(v, k))\n",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked record declares a pop before it removes the key",
+  "file": "inspeximus/core.py",
+  "old": "            v = super().pop(*a)\n            self._fire(a[0])\n            return v\n",
+  "new": "            self._fire(a[0])\n            return super().pop(*a)\n",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked record declares a popitem before it removes the item",
+  "file": "inspeximus/core.py",
+  "old": "        kv = super().popitem()\n        self._fire()\n        return kv\n",
+  "new": "        self._fire()\n        return super().popitem()\n",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked record declares a clear before it clears",
+  "file": "inspeximus/core.py",
+  "old": "        super().clear()\n        self._fire()\n",
+  "new": "        self._fire()\n        super().clear()\n",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a append before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().append(self._child(v)); self._fire()",
+  "new": "self._fire(); super().append(self._child(v))",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a extend before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().extend(self._child(v) for v in it); self._fire()",
+  "new": "self._fire(); super().extend(self._child(v) for v in it)",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a insert before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().insert(i, self._child(v)); self._fire()",
+  "new": "self._fire(); super().insert(i, self._child(v))",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a item set before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().__setitem__(i, self._child(v)); self._fire()",
+  "new": "self._fire(); super().__setitem__(i, self._child(v))",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a item del before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().__delitem__(i); self._fire()",
+  "new": "self._fire(); super().__delitem__(i)",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a += before it changes",
+  "file": "inspeximus/core.py",
+  "old": "r = super().__iadd__([self._child(v) for v in other]); self._fire(); return r",
+  "new": "self._fire(); return super().__iadd__([self._child(v) for v in other])",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a *= before it changes",
+  "file": "inspeximus/core.py",
+  "old": "r = super().__imul__(n); self._fire(); return r",
+  "new": "self._fire(); return super().__imul__(n)",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a remove before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().remove(v); self._fire()",
+  "new": "self._fire(); super().remove(v)",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a pop before it changes",
+  "file": "inspeximus/core.py",
+  "old": "r = super().pop(*a); self._fire(); return r",
+  "new": "self._fire(); return super().pop(*a)",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a clear before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().clear(); self._fire()",
+  "new": "self._fire(); super().clear()",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a sort before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().sort(**kw); self._fire()",
+  "new": "self._fire(); super().sort(**kw)",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
+  ]
+ },
+ {
+  "name": "3.19 CI: a tracked list declares a reverse before it changes",
+  "file": "inspeximus/core.py",
+  "old": "super().reverse(); self._fire()",
+  "new": "self._fire(); super().reverse()",
+  "tests": [
+   "tests/test_a_json_store_writes_an_in_place_edit.py"
   ]
  }
 ]
