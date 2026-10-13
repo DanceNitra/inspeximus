@@ -562,9 +562,22 @@ class _CacheThatDrops(collections.OrderedDict):
             collections.OrderedDict.pop(self, k, None)       # a write on another thread invalidates the key
         return out
 
+    # PYTHON 3.9 AND 3.10: OrderedDict.pop on a SUBCLASS checks membership through `__contains__`, then gets and deletes
+    # the key. Without this flag the drop below fired inside the cache's own pop and made pop's delete raise, which no
+    # thread can do to the plain OrderedDict the library uses (its pop is one C call). The drop simulates another thread
+    # between two calls of current(), never inside one.
+    _popping = False
+
+    def pop(self, *a):
+        _CacheThatDrops._popping = True
+        try:
+            return collections.OrderedDict.pop(self, *a)
+        finally:
+            _CacheThatDrops._popping = False
+
     def __contains__(self, k):
         out = collections.OrderedDict.__contains__(self, k)
-        if _CacheThatDrops.mode == "after_contains" and out:
+        if _CacheThatDrops.mode == "after_contains" and out and not _CacheThatDrops._popping:
             _CacheThatDrops.mode = None
             collections.OrderedDict.pop(self, k, None)
         return out
