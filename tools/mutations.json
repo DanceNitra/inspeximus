@@ -3980,8 +3980,8 @@
  {
   "name": "the release script stops on the ci-on-HEAD line it must exempt",
   "file": "tools/release.py",
-  "old": "\"[FAIL]\" in ln and \"ci on HEAD\" not in ln",
-  "new": "\"[FAIL]\" in ln",
+  "old": "CI_CHECKED = (\"ci on HEAD\", \"work counters\")\n",
+  "new": "CI_CHECKED = (\"work counters\",)\n",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
@@ -13148,6 +13148,60 @@
   "file": "tests/conftest.py",
   "tests": [
    "tests/test_the_suite_sees_no_live_store.py"
+  ]
+ },
+ {
+  "name": "3.19 release: guard 1 stops on a local work-counters FAIL that CI checks",
+  "file": "tools/release.py",
+  "old": "CI_CHECKED = (\"ci on HEAD\", \"work counters\")\n",
+  "new": "CI_CHECKED = (\"ci on HEAD\",)\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.19 release: guard 1 exempts every FAIL",
+  "file": "tools/release.py",
+  "old": "             if \"[FAIL]\" in ln and not any(name in ln for name in CI_CHECKED)]\n",
+  "new": "             if False]\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.19 release: guard 5 does not look at the ci.yml run's perf job",
+  "file": "tools/release.py",
+  "old": "            if wf == \"ci.yml\":\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.19 release: guard 7 does not look at the main run's perf job",
+  "file": "tools/release.py",
+  "old": "        require_perf_job(run, sh, \"on main\")\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.19 release: a skipped or failed perf job counts as green",
+  "file": "tools/release.py",
+  "old": "    if found[0].get(\"conclusion\") != \"success\":\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.19 release: a run without the perf job counts as green",
+  "file": "tools/release.py",
+  "old": "    if not found:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
   ]
  }
 ]

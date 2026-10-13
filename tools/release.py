@@ -16,17 +16,24 @@ moves only after the branch runs are green on that exact commit.
 
 Pre-flight, before anything leaves this machine:
   1. `tools/release_check.py --skip-tests` reports no [FAIL]. "ci on HEAD" is exempt: it cannot pass
-     before the push, and guards 5 and 7 are its real check.
+     before the push, and guards 5 and 7 are its real check. "work counters" is exempt too: guards 5 and 7
+     require ci.yml's job "work counters must not grow" (the same `perf/gate.py check`) to have run and
+     succeeded on exactly HEAD, on a clean runner. Measured 2026-10-13: the local gate did not finish in
+     release_check's 3600 s on PC1 (2,048 CPU-seconds in 59 min), and recommit_n2000.dir_listings reads 1
+     on PC1 and 0 on CI and in the baseline (backlog item 8). release_check itself still reports the local
+     gate when it is run alone.
   2. pyproject.toml says X.Y.Z.
   3. vX.Y.Z exists neither locally nor on origin.
   4. HEAD is a fast-forward of origin/main, so the push to main cannot rewrite anything.
 Then HEAD is pushed to `release/X.Y.Z` and the workflows are started there by workflow_dispatch: ci.yml
 always, and one-memory.yml and clean-install.yml when HEAD changes a path their own `push: paths:` list
 names. Before main moves:
-  5. every one of those runs finished with conclusion success, and its headSha is HEAD.
+  5. every one of those runs finished with conclusion success, and its headSha is HEAD; in the ci.yml run,
+     the job "work counters must not grow" exists and concluded success (a skipped or missing job refuses).
 Then HEAD is pushed to main as a fast-forward, and before the tag:
   6. origin/main is HEAD, so the tag names the commit CI cleared.
-  7. the `push` run of ci.yml on main for exactly HEAD finished with conclusion success.
+  7. the `push` run of ci.yml on main for exactly HEAD finished with conclusion success, and its job
+     "work counters must not grow" exists and concluded success.
 Then the tag is created and pushed, and the script finds the release run and STOPS at its `pypi` gate.
 The release branch stays on origin; nothing here deletes a ref.
 
@@ -55,6 +62,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPO = "DanceNitra/inspeximus"
 #: Started on the release branch when HEAD changes one of their own `push: paths:` entries.
 INSTALL_WORKFLOWS = ("one-memory.yml", "clean-install.yml")
+#: release_check lines guard 1 does not stop on, because guards 5 and 7 check them in CI on exactly HEAD.
+CI_CHECKED = ("ci on HEAD", "work counters")
+#: The ci.yml job that runs `perf/gate.py check`; guards 5 and 7 require it to have run and succeeded.
+PERF_JOB = "work counters must not grow"
 
 
 def default_sh(args, cwd=None):
@@ -71,7 +82,8 @@ def preflight(version, sh, root=ROOT):
     """Guards 1-4. Returns the list of reasons to stop; empty means the push may go ahead."""
     reasons = []
     _, out = sh([sys.executable, "tools/release_check.py", "--skip-tests"])
-    fails = [ln.strip() for ln in out.splitlines() if "[FAIL]" in ln and "ci on HEAD" not in ln]
+    fails = [ln.strip() for ln in out.splitlines()
+             if "[FAIL]" in ln and not any(name in ln for name in CI_CHECKED)]
     if fails:
         reasons.append("release_check reports a failure: " + " | ".join(fails))
     m = re.search(r'^version\s*=\s*"([^"]+)"', (pathlib.Path(root) / "pyproject.toml").read_text(encoding="utf-8"),
@@ -170,6 +182,25 @@ def finished_run(head, workflow, event, sh, sleep, branch=None, polls=180, every
     raise Stop("no finished %s run of %s for %s" % (event, workflow, head))
 
 
+def require_perf_job(run, sh, where):
+    """Stop unless ci.yml run `run` holds the job PERF_JOB and that job concluded success.
+
+    A run's conclusion alone does not say the gate ran: a job that is skipped or absent leaves the run green."""
+    run_id = run.get("databaseId")
+    rc, out = GhPoll(sh)(["gh", "run", "view", str(run_id), "-R", REPO, "--json", "jobs"])
+    try:
+        jobs = json.loads(out).get("jobs", []) if rc == 0 else []
+    except ValueError:
+        jobs = []
+    found = [j for j in jobs if j.get("name") == PERF_JOB]
+    if not found:
+        raise Stop("ci.yml run %s %s has no job %r, so the work counters were not checked on this commit"
+                   % (run_id, where, PERF_JOB))
+    if found[0].get("conclusion") != "success":
+        raise Stop("ci.yml run %s %s: job %r is %s, not success" % (run_id, where, PERF_JOB,
+                                                                   found[0].get("conclusion")))
+
+
 def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
     ap = argparse.ArgumentParser(prog="release.py", description="Branch CI, main, main CI, then the tag. "
                                                                 "The only way to tag.")
@@ -205,6 +236,8 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
                 raise Stop("%s run %s on %s is %s on %s, not success on %s; main was not touched" % (
                     wf, run.get("databaseId"), branch, run.get("conclusion"), str(run.get("headSha"))[:12],
                     head[:12]))
+            if wf == "ci.yml":
+                require_perf_job(run, sh, "on %s; main was not touched" % branch)
             cleared.append("%s run %s" % (wf, run.get("databaseId")))
         out("%s: success on %s" % (", ".join(cleared), head[:12]))
 
@@ -220,6 +253,7 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
         if run.get("conclusion") != "success" or run.get("headSha") != head:
             raise Stop("main CI run %s is %s on %s, not success on %s" % (
                 run.get("databaseId"), run.get("conclusion"), str(run.get("headSha"))[:12], head[:12]))
+        require_perf_job(run, sh, "on main")
         out("main CI run %s: success on %s" % (run.get("databaseId"), head[:12]))
         now = sh(["git", "ls-remote", "origin", "refs/heads/main"])[1].split()
         if not now or now[0] != head:

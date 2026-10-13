@@ -45,6 +45,13 @@ def _pushed(conclusion="success", sha=HEAD):
             "conclusion": conclusion}
 
 
+def _jobs(perf="success", present=True):
+    jobs = [{"name": "test (3.12)", "status": "completed", "conclusion": "success"}]
+    if present:
+        jobs.append({"name": "work counters must not grow", "status": "completed", "conclusion": perf})
+    return json.dumps({"jobs": jobs})
+
+
 class Fake:
     """A scripted `sh`. `over` replaces the answer for any command whose joined args contain the key."""
 
@@ -74,6 +81,8 @@ class Fake:
             return 0, json.dumps([_dispatched(run_id=4)])
         if cmd == "git ls-remote origin refs/heads/main":
             return 0, HEAD + "\trefs/heads/main\n"
+        if cmd.startswith("gh run view"):
+            return 0, _jobs()
         if "--workflow release.yml" in cmd:
             return 0, json.dumps([{"databaseId": 2, "headBranch": "v" + V}])
         return 0, ""
@@ -295,3 +304,44 @@ def test_no_code_path_touches_the_owners_pypi_gate(root):
     assert not [c for c in fake.calls if "deployment" in c or "gh api" in c], fake.calls
     with pytest.raises(SystemExit):
         _run(root, Fake(), "--approve-pypi")                    # the flag is gone, not ignored
+
+
+def test_a_local_work_counters_fail_alone_does_not_stop_the_push(root):
+    """2026-10-13: the local perf gate did not finish within release_check's 3600 s on PC1, and its
+    recommit_n2000.dir_listings reads 1 there and 0 on CI (backlog item 8). Guards 5 and 7 check the same gate
+    in CI on exactly HEAD, so guard 1 exempts that line, as it exempts "ci on HEAD"."""
+    line = "  [FAIL] work counters              perf/gate.py check did not finish within 3600 s\n"
+    fake = Fake(**{"release_check.py": (1, line)})
+    rc, out = _run(root, fake)
+    assert rc == 0, out
+    assert fake.index("gh run view 3 ") is not None and fake.index("gh run view 1 ") is not None, fake.calls
+    fake = Fake(**{"release_check.py": (1, line + "  [FAIL] mutation targets  1 of 431 absent\n")})
+    rc, out = _run(root, fake)                                    # control: another FAIL still stops it
+    assert rc == 1 and "mutation targets" in out and "work counters" not in out, out
+    assert fake.index("git push") is None
+
+
+@pytest.mark.parametrize("name, jobs, says", [
+    ("perf job missing", _jobs(present=False), "has no job 'work counters must not grow'"),
+    ("perf job skipped", _jobs("skipped"), "is skipped, not success"),
+    ("perf job failed", _jobs("failure"), "is failure, not success"),
+    ("jobs unreadable", "not json", "has no job"),
+])
+def test_a_branch_run_without_a_green_perf_job_keeps_main_untouched(root, name, jobs, says):
+    """A green run conclusion does not say the gate ran: a skipped or absent job leaves the run green."""
+    fake = Fake(**{"gh run view 3 ": (0, jobs)})
+    rc, out = _run(root, fake)
+    assert rc == 1 and "STOP: ci.yml run 3 on " + BRANCH in out and says in out, (name, out)
+    assert fake.index(MAIN_PUSH) is None and fake.index("git tag") is None, (name, fake.calls)
+
+
+@pytest.mark.parametrize("name, jobs, says", [
+    ("perf job missing", _jobs(present=False), "has no job"),
+    ("perf job skipped", _jobs("skipped"), "is skipped, not success"),
+    ("perf job failed", _jobs("failure"), "is failure, not success"),
+])
+def test_a_main_run_without_a_green_perf_job_stops_before_the_tag(root, name, jobs, says):
+    fake = Fake(**{"gh run view 1 ": (0, jobs)})
+    rc, out = _run(root, fake)
+    assert rc == 1 and "STOP: ci.yml run 1 on main" in out and says in out, (name, out)
+    assert fake.index(MAIN_PUSH) is not None and fake.index("git tag") is None, (name, fake.calls)
