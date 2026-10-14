@@ -14283,5 +14283,32 @@
   "tests": [
    "tests/test_3200_a_registry_that_cannot_be_reached_is_not_a_missing_listing.py"
   ]
+ },
+ {
+  "name": "the published verifier accepts a record that differs from its leaf",
+  "file": "tools/publish_static_log.py",
+  "old": "        if \"entry\" in row and row[\"entry\"] != entry:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3200_f7_a_log_entry_is_the_leaf_the_tree_hashed.py"
+  ]
+ },
+ {
+  "name": "the published verifier does not hash the leaf file",
+  "file": "tools/publish_static_log.py",
+  "old": "        if hashlib.sha256(bytes([0]) + leaf).hexdigest() != row[\"leaf_hash\"]:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3200_f7_a_log_entry_is_the_leaf_the_tree_hashed.py"
+  ]
+ },
+ {
+  "name": "the published verifier passes a line with no leaf file silently",
+  "file": "tools/publish_static_log.py",
+  "old": "    if untied:\n        print(\"not checked: %d entries have no leaf file",
+  "new": "    if False:\n        print(\"not checked: %d entries have no leaf file",
+  "tests": [
+   "tests/test_3200_f7_a_log_entry_is_the_leaf_the_tree_hashed.py"
+  ]
  }
 ]
