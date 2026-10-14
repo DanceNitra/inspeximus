@@ -48,6 +48,20 @@ __all__ = ["RegistrationPolicy", "TransparencyService", "RegistrationRefused",
 POLICY_SUBJECT = "urn:ietf:params:scitt:registration-policy"
 
 
+def key_fingerprint(pubkey_hex: str) -> str:
+    """The first 16 hex characters of the SHA-256 of an Ed25519 public key: the `signed_by` of a log entry (F5)."""
+    return hashlib.sha256(bytes.fromhex(str(pubkey_hex))).hexdigest()[:16]
+
+
+def _ed25519_verifies(pubkey_hex: str, sig, msg) -> bool:
+    try:
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+        Ed25519PublicKey.from_public_bytes(bytes.fromhex(str(pubkey_hex))).verify(bytes(sig), bytes(msg))
+        return True
+    except Exception:                                                   # noqa: BLE001
+        return False
+
+
 class RegistrationRefused(Exception):
     """The statement was NOT registered, so no Receipt exists for it.
 
@@ -125,9 +139,16 @@ class TransparencyService:
     """
 
     def __init__(self, path: str, policy: RegistrationPolicy, sign, verify_issuer,
-                 service_pubkey: str | None = None):
+                 service_pubkey: str | None = None, issuer_keys: dict | None = None):
+        """`issuer_keys` = {issuer name: Ed25519 public key hex} BINDS each name to its key (3.20, F5): a statement that
+        claims a bound name is verified against that key only, so no other key can claim it. `verify_issuer` stays
+        the check for every name not bound, as before 3.20. If it carries a `which(msg, sig)` attribute returning the
+        hex key that verified (or None), each new entry records that key as `signed_by`."""
         if not callable(sign) or not callable(verify_issuer):
             raise TypeError("a Transparency Service needs a signer and an issuer verifier")
+        self._issuer_keys = {str(k): str(v) for k, v in (issuer_keys or {}).items()}
+        for _v in self._issuer_keys.values():
+            bytes.fromhex(_v)                                           # a hex key or ValueError
         self.path = str(path)
         # The witness keys its fork memory on this, so it has to be STABLE across restarts and
         # DISTINCT per log. The absolute path is both, and it never leaves this process: what the
@@ -196,7 +217,7 @@ class TransparencyService:
         Raises RegistrationRefused with every reason at once, rather than the first, so a caller
         fixing a statement does not discover the problems one round trip at a time.
         """
-        checked = scitt.verify_signed_statement(statement, self._verify_issuer)
+        checked, signed_by = self._verify_and_attribute(statement)
         policy_entry = self.policy_in_force()
         current = RegistrationPolicy(
             name=policy_entry["policy"]["name"],
@@ -214,10 +235,42 @@ class TransparencyService:
             "issuer": checked["issuer"], "subject": checked["subject"],
             "payload_sha256": hashlib.sha256(checked["payload"]).hexdigest(),
             "policy_sha256": policy_entry["policy_sha256"],
+            # WHICH KEY SIGNED (3.20, F5): the fingerprint of the key that verified, or None when the verifier
+            # cannot say. `issuer` is what the statement CLAIMS; this is what the service checked.
+            "signed_by": signed_by,
         })
         leaves = self._leaves()
         return cose.inclusion_receipt(len(leaves), index, inclusion_proof(leaves, index),
                                       root(leaves), self._sign)
+
+    def _verify_and_attribute(self, statement: bytes):
+        """Verify a statement under the rule for the issuer it claims, and name the key that verified (F5).
+
+        The claimed issuer is read first, with a verifier that accepts nothing. A BOUND name is then checked against
+        its own key only; every other name goes to `verify_issuer`, as before 3.20. So a key given for one name, and
+        any legacy key, can never pass a statement that claims a bound name."""
+        claimed = scitt.verify_signed_statement(statement, lambda m, s: False).get("issuer")
+        hit: dict = {}
+        if claimed is not None and str(claimed) in self._issuer_keys:
+            pk = self._issuer_keys[str(claimed)]
+
+            def verifier(m, s):
+                ok = _ed25519_verifies(pk, s, m)
+                if ok:
+                    hit["k"] = pk
+                return ok
+        else:
+            which = getattr(self._verify_issuer, "which", None)
+
+            def verifier(m, s):
+                k = which(m, s) if callable(which) else None
+                if k:
+                    hit["k"] = k
+                    return True
+                return bool(self._verify_issuer(m, s))
+        checked = scitt.verify_signed_statement(statement, verifier)
+        fp = key_fingerprint(hit["k"]) if checked.get("signature_ok") and hit.get("k") else None
+        return checked, fp
 
     def receipt_for(self, index: int) -> bytes | None:
         """A Receipt for an entry, proved against the CURRENT root.

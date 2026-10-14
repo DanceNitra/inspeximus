@@ -286,14 +286,36 @@ def _service_secret(a):
     return (_envpolicy.raw("INSPEXIMUS_SERVICE_SECRET") or "").strip() or None
 
 
-def policy_from_args(a) -> RegistrationPolicy:
-    """The policy this process registers under, including notes read from `--policy-notes-file`."""
+def parse_issuers(items) -> dict:
+    """`["NAME=PUBKEY", ...]` -> {name: pubkey}. The name may itself contain '=', so the key is the last part (F5)."""
+    out = {}
+    for it in items or []:
+        name, sep, pk = str(it).rpartition("=")
+        if not sep or not name or not pk:
+            raise SystemExit("--issuer needs NAME=PUBKEY, got %r" % (it,))
+        bytes.fromhex(pk)
+        out[name] = pk
+    return out
+
+
+def policy_from_args(a, issuer_keys: dict | None = None, legacy_open: bool = False) -> RegistrationPolicy:
+    """The policy this process registers under, including notes read from `--policy-notes-file`.
+
+    With bound issuers only (3.20, F5), `accepted_issuers` lists their names, so the policy on the log says exactly
+    who may register. With an --issuer-pubkey key beside them, that key may claim any name, so the list would refuse
+    its statements: the policy stays open, and its notes say the claimed issuer is not authenticated."""
     notes = ""
     if getattr(a, "policy_notes_file", None):
         with open(a.policy_notes_file, encoding="utf-8") as fh:
             notes = fh.read()
-    return RegistrationPolicy(a.policy_name, accepted_issuers=[] if a.accept_any_issuer else None,
-                              notes=notes)
+    accepted = [] if a.accept_any_issuer else None
+    if issuer_keys and not legacy_open and not getattr(a, "issuer_pubkey", None) and not a.accept_any_issuer:
+        accepted = sorted(issuer_keys)
+    if legacy_open:
+        notes = (notes + "\n" if notes else "") + (
+            "The claimed issuer is NOT authenticated for names no --issuer binds: an --issuer-pubkey key may sign "
+            "for any of them. Each entry's signed_by names the key that verified.")
+    return RegistrationPolicy(a.policy_name, accepted_issuers=accepted, notes=notes)
 
 
 def main(argv=None) -> int:
@@ -309,8 +331,12 @@ def main(argv=None) -> int:
                                           "given")
     ap.add_argument("--issuer-pubkey", action="append", default=[],
                     help="an Ed25519 public key (hex) this service accepts statements from; "
-                         "repeatable. REQUIRED: a service that cannot authenticate an issuer is "
-                         "recording bytes, not statements")
+                         "repeatable. Any key given this way may sign for ANY issuer name, so with two "
+                         "or more the claimed issuer is not authenticated: prefer --issuer NAME=PUBKEY")
+    ap.add_argument("--issuer", action="append", default=[], metavar="NAME=PUBKEY",
+                    help="bind an issuer name to its Ed25519 public key (hex); repeatable (3.20). A "
+                         "statement that claims NAME is verified against that key only, and no other key "
+                         "may claim NAME")
     ap.add_argument("--policy-name", default="scrapi-default")
     ap.add_argument("--policy-notes-file", default=None,
                     help="text for the policy's `notes` field, read from this file. The policy is "
@@ -325,10 +351,19 @@ def main(argv=None) -> int:
                          "receipt means only that something was recorded")
     a = ap.parse_args(argv)
 
-    if not a.issuer_pubkey and not a.accept_any_issuer:
-        print("refusing to start: pass --issuer-pubkey (repeatable), or --accept-any-issuer to say "
-              "out loud that this service vets nobody", file=sys.stderr)
+    if not a.issuer_pubkey and not a.issuer and not a.accept_any_issuer:
+        print("refusing to start: pass --issuer NAME=PUBKEY or --issuer-pubkey (repeatable), or "
+              "--accept-any-issuer to say out loud that this service vets nobody", file=sys.stderr)
         return 2
+    issuer_keys = parse_issuers(a.issuer)
+    legacy_open = len(a.issuer_pubkey) >= 2 or (bool(a.issuer_pubkey) and bool(issuer_keys))
+    if legacy_open:
+        # F5 (3.20): an --issuer-pubkey key may sign for any name, so with two keys, or one beside bound names, a
+        # statement can claim to come from another issuer and still verify.
+        print("WARNING: with %d --issuer-pubkey key(s)%s, a statement signed by one of them may claim ANY issuer "
+              "name that --issuer does not bind, so the claimed issuer is not authenticated for those names. Bind "
+              "each issuer with --issuer NAME=PUBKEY." % (len(a.issuer_pubkey), " beside --issuer" if issuer_keys
+                                                          else ""), file=sys.stderr)
 
     from cryptography.hazmat.primitives.asymmetric.ed25519 import (Ed25519PrivateKey as SK,
                                                                    Ed25519PublicKey as PK)
@@ -341,21 +376,35 @@ def main(argv=None) -> int:
     sk = SK.from_private_bytes(bytes.fromhex(secret))
     pub = sk.public_key().public_bytes_raw().hex()
 
-    anchors = [PK.from_public_bytes(bytes.fromhex(h)) for h in a.issuer_pubkey]
+    anchors = [(h, PK.from_public_bytes(bytes.fromhex(h))) for h in a.issuer_pubkey]
 
-    def verify_issuer(msg, sig):
-        for k in anchors:
+    def which(msg, sig):
+        """The hex of the --issuer-pubkey key that verifies, or None: the entry's `signed_by` (F5)."""
+        for h, k in anchors:
             try:
                 k.verify(sig, msg)
-                return True
+                return h
             except Exception:
                 continue
+        return None
+
+    def verify_issuer(msg, sig):
+        if which(msg, sig):
+            return True
         # With no anchors the policy is open by declaration, and the signature still has to be a
         # signature; we simply cannot say whose. Accepting it here is what --accept-any-issuer means.
         return bool(a.accept_any_issuer)
+    verify_issuer.which = which
 
-    policy = policy_from_args(a)
-    service = TransparencyService(a.log, policy, sk.sign, verify_issuer, service_pubkey=pub)
+    policy = policy_from_args(a, issuer_keys=issuer_keys, legacy_open=legacy_open)
+    service = TransparencyService(a.log, policy, sk.sign, verify_issuer, service_pubkey=pub,
+                                  issuer_keys=issuer_keys)
+    # THE BOUND NAMES ARE ON THE LOG (F5). A log that already exists keeps its first policy, so a new set of bound
+    # names becomes a new policy entry; the verifier's `check` then refuses a name the policy does not list.
+    # Only for bound names, and only when the list differs: a restart that changes nothing appends nothing.
+    if issuer_keys and list(service.policy_in_force()["policy"].get("accepted_issuers") or []) != list(
+            policy.accepted_issuers):
+        service.set_policy(policy)
     wits = []
     if a.witness:
         from .witness_pool import http_witness

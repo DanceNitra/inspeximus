@@ -2862,8 +2862,8 @@
  {
   "name": "scrapi: the notes file is read and then dropped",
   "file": "inspeximus/scrapi.py",
-  "old": "                              notes=notes)",
-  "new": "                              notes=\"\")",
+  "old": "    return RegistrationPolicy(a.policy_name, accepted_issuers=accepted, notes=notes)",
+  "new": "    return RegistrationPolicy(a.policy_name, accepted_issuers=accepted, notes=\"\")",
   "tests": [
    "tests/test_a_successor_log_records_its_predecessor_in_entry_zero.py"
   ]
@@ -13913,6 +13913,51 @@
   "new": "            except KeyError as e:",
   "tests": [
    "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "a bound issuer name goes the legacy way",
+  "file": "inspeximus/transparency.py",
+  "old": "        if claimed is not None and str(claimed) in self._issuer_keys:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3200_f5_an_issuer_name_is_bound_to_its_key.py"
+  ]
+ },
+ {
+  "name": "a log entry does not record which key signed",
+  "file": "inspeximus/transparency.py",
+  "old": "            \"signed_by\": signed_by,",
+  "new": "            \"signed_by\": None,",
+  "tests": [
+   "tests/test_3200_f5_an_issuer_name_is_bound_to_its_key.py"
+  ]
+ },
+ {
+  "name": "a legacy verifier is not asked which key verified",
+  "file": "inspeximus/transparency.py",
+  "old": "                k = which(m, s) if callable(which) else None",
+  "new": "                k = None",
+  "tests": [
+   "tests/test_3200_f5_an_issuer_name_is_bound_to_its_key.py"
+  ]
+ },
+ {
+  "name": "bound issuer names are not the policy",
+  "file": "inspeximus/scrapi.py",
+  "old": "        accepted = sorted(issuer_keys)",
+  "new": "        accepted = accepted",
+  "tests": [
+   "tests/test_3200_f5_an_issuer_name_is_bound_to_its_key.py"
+  ]
+ },
+ {
+  "name": "a mixed issuer setup does not say the claim is unauthenticated",
+  "file": "inspeximus/scrapi.py",
+  "old": "    if legacy_open:\n        notes = (notes",
+  "new": "    if False:\n        notes = (notes",
+  "tests": [
+   "tests/test_3200_f5_an_issuer_name_is_bound_to_its_key.py"
   ]
  }
 ]
