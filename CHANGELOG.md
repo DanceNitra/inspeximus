@@ -1,3 +1,32 @@
+## 3.19.1 - UPGRADE IF you use the Claude Code or Codex hooks: a store a cloned repository ships could hold up every prompt, because four of the secret-masking rules took minutes on crafted text
+
+### Fixed
+
+- **The secret rules finish in linear time.** Four of the rules that find secrets in captured and stored text backtracked on long crafted text that holds no secret. The assignment and flag rules (`TOKEN=...`, `--token ...`) took cubic time: 27 s for 4,000 characters of `token.` repeated, and 66 s for 8,000 characters of `-token`. The URL-password and JWT rules took quadratic time: 49 s and 14 s for 200,000 characters. 3.19.1 rewrites the four rules so that each starts once per word and checks the secret name once. The worst case measured is 0.5 s for 1,000,000 characters, through all the rules.
+  - **What it held up.** The prompt and session hooks check every record of the project's store once, for the one-time notice about secrets captured before 3.14.2. That store can be a file in a repository you clone. On 3.19.0, one record of 6,000 crafted characters held the prompt hook for 81.6 s. Claude Code stops a prompt hook after 30 s and discards its output. The check wrote its "done" marker only at the end, so it started again on the next prompt. The prompt daemon ran the same check: on 3.19.0, with a record of 21,000 crafted characters, two prompts in a row got no answer within 30 s, and the daemon kept one CPU core busy. The capture hook runs these rules over every Write and Bash text.
+  - **The same matches.** The new rules find and mask exactly what 3.19.0 did. Measured on 400,000 to 500,000 generated strings for each rule, and on the strings of the existing secret tests: no difference in what is found or in the masked text. The tests keep 1,746 of them, with the 3.19.0 output, as a fixture.
+- **The secrets notice marks the store before it checks it.** If the host stops the hook during the check, the next prompt does not check again. The cost: a check that is stopped never reports its count.
+
+### Known limits
+
+The 3.19.0 known limits are unchanged.
+
+### Upgrade notes
+
+No re-stamp and no change to your config.
+
+### Measured
+
+| What | 3.19.0 | 3.19.1 | Load | Source |
+|---|---|---|---|---|
+| Worst crafted input | one rule: assignment 27 s (4,000 chars), flag 66 s (8,000 chars), URL password 49 s and JWT 14 s (200,000 chars) | all rules, through `has_secret` or `redact_secrets`: at most 0.52 s for 1,000,000 chars, 0.11 s for 200,000 | Windows, Python 3.12, one process | Builder, F9 probes |
+| Prompt hook, one crafted store record | 10.5 s (3,000 chars), 81.6 s (6,000 chars) | 0.26 s (6,000 chars), 0.24 s (21,000 chars) | Windows, Python 3.12 | Builder, through the real hook, on the release head |
+| Session hook, one crafted store record | 10.2 s (3,000 chars), 79.1 s (6,000 chars) | 0.27 s (6,000 chars), 0.27 s (21,000 chars) | Windows, Python 3.12 | Builder, as above |
+| The prompt daemon's answer, one crafted store record (21,000 chars) | no answer within 30 s, 2 of 2 prompts; the daemon used 4.86 s of CPU in the 5 s after | 0.078 s, then 0.020 s, 2 of 2 served | Windows, Python 3.12; the daemon in its own process, the client a separate process | Builder, on the release head |
+| What the rules find and mask | | identical to 3.19.0 on 400,000 to 500,000 generated strings per rule | | Builder, F9 equivalence probes |
+
+Not measured: Linux and macOS timings.
+
 ## 3.19.0 - UPGRADE IF you hold a store open for a long time (the prompt daemon, the MCP server, an app that shares one handle between threads) or you pin the JSON format: four of the 3.18 known limits are fixed
 
 ### Fixed

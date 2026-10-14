@@ -40,7 +40,11 @@ import re
 _PATTERNS = (
     ("private_key", re.compile(
         r"-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]*?(?:-----END [A-Z0-9 ]*PRIVATE KEY-----|\Z)")),
-    ("jwt", re.compile(r"\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}")),
+    # LINEAR (3.19.1, F9). `\b` let a JWT start after every dash of one run ("eyJ-eyJ-..."), and each start rescanned
+    # to the run's end: 14 s on 200,000 characters. The rule starts at the run and skips to its first `\beyJ`, the only
+    # start that can succeed (every later one ends at the same place, shorter); the skipped head is kept, in `pre`.
+    ("jwt", re.compile(r"(?P<pre>(?<![A-Za-z0-9_-])(?:(?!\beyJ)[A-Za-z0-9_-])*)\beyJ[A-Za-z0-9_-]{8,}"
+                       r"\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}")),
     ("api_key", re.compile(
         r"(?<![A-Za-z0-9])(?:"
         r"sk-[A-Za-z0-9_-]{20,}"                      # OpenAI, Anthropic (sk-ant-), project keys
@@ -58,18 +62,33 @@ _PATTERNS = (
     ("bearer", re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/-]{16,}=*")),
 )
 
-#: A NAME that says its value is a secret. `auth` alone would catch `author`, so it needs a
+#: A word that says its value is a secret. `auth` alone would catch `author`, so it needs a
 #: separator or the end of the name after it.
-_SECRET_NAME = r"[A-Za-z0-9_.-]*(?:api[_-]?key|secret|token|passw(?:or)?d|pwd|credential|private[_-]?key|access[_-]?key|auth(?![a-z]))[A-Za-z0-9_.-]*"
+_SECRET_WORD = r"(?:api[_-]?key|secret|token|passw(?:or)?d|pwd|credential|private[_-]?key|access[_-]?key|auth(?![a-z]))"
+#: One character of a NAME.
+_NAME_CHAR = r"[A-Za-z0-9_.-]"
+#: A NAME that holds a secret word, taken whole: the word is found by a lookahead, which `re` never re-enters.
+#:
+#: LINEAR (3.19.1, F9). The name was `[...]* WORD [...]*`, tried from every `\b` (assignment) or every dash (flag)
+#: of a run of name characters, before a separator that never came: cubic, 27 s on 4,000 characters of `token.`.
+#: Every start inside one run ends at the same separator, so only the run's FIRST possible start can succeed. The
+#: rules below start once per run (the lookbehind), skip to that start (the skipped head is kept, in `pre`), and
+#: take the run whole, so every backtracking step fails at once. They find and mask exactly what 3.19.0 did:
+#: tests/fixtures/secret_rules_corpus.json holds 3.19.0's output for 1,746 strings.
+_SECRET_NAME = r"(?=" + _NAME_CHAR + r"*?" + _SECRET_WORD + r")" + _NAME_CHAR + r"+"
 #: A value that is a reference to a secret rather than the secret itself.
 _REFERENCE = r"(?![$%<{]|\[REDACTED)"
+#: `pre` is the run's head before its first word boundary, where the old `\b` could not start.
 _ASSIGN = re.compile(
-    r"(?i)(?P<name>\b" + _SECRET_NAME + r")(?P<sep>\s*[:=]\s*)(?P<q>['\"]?)" + _REFERENCE
-    + r"(?P<val>[^\s'\"&;|,]{8,})")
+    r"(?i)(?P<pre>(?<!" + _NAME_CHAR + r")(?:(?!\b)" + _NAME_CHAR + r")*)(?P<name>\b" + _SECRET_NAME
+    + r")(?P<sep>\s*[:=]\s*)(?P<q>['\"]?)" + _REFERENCE + r"(?P<val>[^\s'\"&;|,]{8,})")
+#: A flag starts at ANY dash, mid-word included (`x-auth-token value`); `pre` is the run's head before its first dash.
 _FLAG = re.compile(
-    r"(?i)(?P<name>--?" + _SECRET_NAME + r")(?P<sep>[= ]\s*)(?P<q>['\"]?)" + _REFERENCE
-    + r"(?P<val>[^\s'\"&;|,]{8,})")
-_URL_CRED = re.compile(r"(?P<pre>[A-Za-z][A-Za-z0-9+.-]*://[^/\s:@]+:)" + _REFERENCE + r"(?P<val>[^/\s@]{3,})(?P<post>@)")
+    r"(?i)(?P<pre>(?<!" + _NAME_CHAR + r")[A-Za-z0-9_.]*)(?P<name>--?" + _SECRET_NAME
+    + r")(?P<sep>[= ]\s*)(?P<q>['\"]?)" + _REFERENCE + r"(?P<val>[^\s'\"&;|,]{8,})")
+#: LINEAR (3.19.1, F9): the scheme starts at its run's first letter, not at every letter (49 s on 200,000 characters).
+_URL_CRED = re.compile(r"(?P<pre>(?<![A-Za-z0-9+.-])[0-9+.-]*[A-Za-z][A-Za-z0-9+.-]*://[^/\s:@]+:)" + _REFERENCE
+                       + r"(?P<val>[^/\s@]{3,})(?P<post>@)")
 
 
 def _mask(kind: str) -> str:
@@ -87,13 +106,14 @@ def redact_secrets(text):
             counts[kind] = counts.get(kind, 0) + n
 
     for kind, pat in _PATTERNS:
-        text, n = pat.subn(_mask(kind), text)
+        # A rule with a `pre` group matched text before the secret, and gives it back (3.19.1).
+        text, n = pat.subn((r"\g<pre>" if "pre" in pat.groupindex else "") + _mask(kind), text)
         _count(kind, n)
     text, n = _URL_CRED.subn(lambda m: m.group("pre") + _mask("url_password") + m.group("post"), text)
     _count("url_password", n)
     for pat in (_FLAG, _ASSIGN):
-        text, n = pat.subn(lambda m: m.group("name") + m.group("sep") + m.group("q") + _mask("assignment"),
-                           text)
+        text, n = pat.subn(lambda m: m.group("pre") + m.group("name") + m.group("sep") + m.group("q")
+                           + _mask("assignment"), text)
         _count("assignment", n)
     return text, counts
 

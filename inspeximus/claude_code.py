@@ -1127,17 +1127,28 @@ def _secrets_notice(cwd, m):
                 return None
     except Exception:
         pass
+    from ._safewrite import open_for_write                   # in place, never through a link (3.16.4, F-24)
+
+    def _mark(**fields):
+        with open_for_write(p) as fh:
+            fh.write(json.dumps(dict(rev=_SECRETS_NOTICE_REV,
+                                     at=datetime.datetime.now().isoformat(timespec="seconds"), **fields)))
+
+    # THE MARKER BEFORE THE SCAN (3.19.1, F9). Written after it, a scan that the host stopped at its hook timeout left
+    # no marker, so the next prompt scanned again and was stopped again, on every prompt. A scan stopped midway now
+    # costs its count, once; it never costs the next prompt.
+    try:
+        _mark(scanning=True)
+    except Exception:
+        return None                          # no marker, no scan and no notice: never announce it every turn
     try:
         n = sum(1 for r in getattr(m, "items", []) if _record_has_secret(r))
     except Exception:
         return None
     try:
-        from ._safewrite import open_for_write               # in place, never through a link (3.16.4, F-24)
-        with open_for_write(p) as fh:
-            fh.write(json.dumps({"rev": _SECRETS_NOTICE_REV, "found": n,
-                                 "at": datetime.datetime.now().isoformat(timespec="seconds")}))
+        _mark(found=n)
     except Exception:
-        return None                          # no marker, no notice: never announce it every turn
+        pass                                 # the marker of the scan stands, so the notice below is shown once
     if not n:
         return None
     return (("[inspeximus] %d stored record(s) look like they contain a secret, captured before inspeximus "
