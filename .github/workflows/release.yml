@@ -276,11 +276,21 @@ jobs:
           # verifier follows nextCursor to the end. Reading one page meant that past 30 published versions
           # this step could not see the new one and failed every release. It polls because the index catches
           # up a little after the publish returns.
+          # A read that never reached the registry (exit 3) is counted apart from an answer that does not list the
+          # version (exit 1): 3.19.0's run failed on 20 read timeouts while the registry listed it. Only an
+          # answer is evidence that the listing is missing.
           VERSION="$(python -c "import json;print(json.load(open('server.json'))['version'])")"
+          answered=0; unreachable=0
           for i in $(seq 1 20); do
-            if python packages/_registry_verify.py "$VERSION"; then exit 0; fi
-            echo "not indexed yet ($i/20)"; sleep 15
+            rc=0; python packages/_registry_verify.py "$VERSION" || rc=$?
+            if [ "$rc" -eq 0 ]; then exit 0; fi
+            if [ "$rc" -eq 3 ]; then unreachable=$((unreachable+1)); else answered=$((answered+1)); fi
+            echo "not confirmed yet ($i/20: $answered answered without it, $unreachable unreachable)"; sleep 15
           done
+          if [ "$answered" -eq 0 ]; then
+            echo "::warning::the registry could not be reached in 20 tries, so the listing of $VERSION is unchecked"
+            exit 0
+          fi
           echo "::error::published, but the registry does not list $VERSION"
           exit 1
 

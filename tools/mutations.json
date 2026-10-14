@@ -14265,5 +14265,23 @@
   "tests": [
    "tests/test_3200_an_example_and_the_demo_leave_no_folder_behind.py"
   ]
+ },
+ {
+  "name": "an unreachable registry reads as a missing listing",
+  "file": "packages/_registry_verify.py",
+  "old": "            print(f\"unreachable: the registry did not answer ({type(e).__name__}: {e})\")\n            return 3",
+  "new": "            print(f\"unreachable: the registry did not answer ({type(e).__name__}: {e})\")\n            return 1",
+  "tests": [
+   "tests/test_3200_a_registry_that_cannot_be_reached_is_not_a_missing_listing.py"
+  ]
+ },
+ {
+  "name": "the release step fails when the registry was never reached",
+  "file": ".github/workflows/release.yml",
+  "old": "          if [ \"$answered\" -eq 0 ]; then",
+  "new": "          if false; then",
+  "tests": [
+   "tests/test_3200_a_registry_that_cannot_be_reached_is_not_a_missing_listing.py"
+  ]
  }
 ]

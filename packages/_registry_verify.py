@@ -1,6 +1,6 @@
 """Confirm a given version is actually listed in the MCP registry.
 
-    python packages/_registry_verify.py 1.29.0             # exit 0 if listed, 1 if not
+    python packages/_registry_verify.py 1.29.0             # exit 0 if listed, 1 if not, 3 if unreachable
     python packages/_registry_verify.py r.json 1.29.0      # or check a payload already on disk
 
 The registry keeps every published version and does NOT return them newest-first, so a check that reads
@@ -11,7 +11,14 @@ It also PAGES. The response caps at 30 entries and hands back a `nextCursor`, so
 than 30 versions a single-page check could only ever see the oldest 30 — from 1.57.0 on it reported "not
 listed" for a version that was listed, and failed the release job every time. A paginated API read without
 a cursor loop is a check that silently stops covering what it claims to cover.
+
+AND IT TELLS "NOT LISTED" FROM "COULD NOT ASK" (3.20). Release run 38502302165 (3.19.0) was marked failed
+because every read timed out (`TimeoutError: The read operation timed out`), and the step reported that as
+"not indexed yet (20/20)" while the registry listed 3.19.0. A read that does not reach the registry now exits
+3, apart from 1, and the release step warns instead of failing when no read got an answer at all.
 """
+import http.client
+import urllib.error
 import urllib.request
 import json
 import pathlib
@@ -43,7 +50,12 @@ def fetch_all() -> list:
 
 def main(argv: list[str]) -> int:
     if len(argv) == 2:                           # fetch mode: page through the live registry
-        want, servers = argv[1], fetch_all()
+        want = argv[1]
+        try:
+            servers = fetch_all()
+        except (urllib.error.URLError, http.client.HTTPException, TimeoutError, OSError) as e:
+            print(f"unreachable: the registry did not answer ({type(e).__name__}: {e})")
+            return 3
     elif len(argv) == 3:                         # file mode: a payload already on disk (one page only)
         want = argv[2]
         servers = json.loads(pathlib.Path(argv[1]).read_text(encoding="utf-8")).get("servers", [])
