@@ -1061,6 +1061,10 @@ def _guard_mac_ok(got, key: bytes, *parts) -> bool:
 _NO_SIG = object()      # never equal to a stat signature: no absence has been recorded
 
 
+#: The recall_window.q key for a store with no path (3.20, F8b): such a store lives in this process only.
+_PROCESS_RECALL_Q_KEY = os.urandom(32)
+
+
 def _guard_key_file(store_path) -> str:
     """Where a store keeps its read-guard key: the key home, beside the receipt key, never the store."""
     from ._keyhome import key_home
@@ -3866,7 +3870,7 @@ class Inspeximus:
         # (understating what the free window captures). Separate lists, one meaning each.
         self._last_recall_window: list[str] = []
         self._last_recall_at: float = 0.0           # WHEN that recall happened, so a write can stamp the window's AGE
-        self._last_recall_q: str = ""               # fingerprint (not text) of the query that drove it
+        self._last_recall_q: str = ""               # the query that drove it, in memory only; fingerprinted at the write
         self._last_recall_writes: int = 0           # how many writes have already followed that recall
         # OBSERVE THE RECALL WINDOW (opt-in, default OFF = byte-identical legacy).
         #
@@ -4553,7 +4557,7 @@ class Inspeximus:
         if self.observe_recall and self._last_recall_window and self._last_recall_at > 0.0:
             _win = list(self._last_recall_window)
             _obs = {"ids": _win[:self._recall_window_max], "at": self._last_recall_at,
-                    "q": self._last_recall_q, "w": self._last_recall_writes}
+                    "q": self._recall_q_fingerprint(self._last_recall_q), "w": self._last_recall_writes}
             if len(_win) > self._recall_window_max:
                 _obs["n"] = len(_win)       # true width, so the cap can never read as a narrow recall
             rec["recall_window"] = _obs
@@ -16838,8 +16842,26 @@ class Inspeximus:
             return
         self._last_recall_window = list(ids)
         self._last_recall_at = time.time()
-        self._last_recall_q = hashlib.sha256(str(query or "").encode("utf-8", "replace")).hexdigest()[:12]
+        self._last_recall_q = str(query or "")
         self._last_recall_writes = 0
+
+    _RECALL_Q_DOMAIN = b"inspeximus/recall_window.q/v1\0"
+
+    def _recall_q_fingerprint(self, query: str) -> str:
+        """The `recall_window.q` stamp: 12 hex characters of an HMAC of the query under this store's key (3.20, F8b).
+
+        It was the first 48 bits of an unsalted sha256 of the query, stored on every write that followed a recall, so a
+        query holding an e-mail address or a name was recovered from the store by hashing candidates. The stamp exists
+        so an analysis can tell which writes followed the same recall, across every process that writes the store, so
+        the key is the store's own read-guard key (kept in the key home, never beside the store), under its own domain
+        label. A write mints it, as a write already does for the read guard. A store with no path lives in one process
+        and uses a key for this process. Values written before 3.20 are left as they are: re-keying them is a rewrite
+        of the store."""
+        key = self._guard_key(create=True) if self.path else None
+        if key is None:
+            key = _PROCESS_RECALL_Q_KEY
+        return hmac.new(key, Inspeximus._RECALL_Q_DOMAIN + str(query or "").encode("utf-8", "replace"),
+                        hashlib.sha256).hexdigest()[:12]
 
     @staticmethod
     def _canon_subject(doc) -> str:
@@ -21204,6 +21226,7 @@ class _TenantView:
     def _withheld_ids(self, *a, **k):   return Inspeximus._withheld_ids(self, *a, **k)
     def _served_rows(self, *a, **k):    return Inspeximus._served_rows(self, *a, **k)
     def _unserved_ids(self, *a, **k):   return Inspeximus._unserved_ids(self, *a, **k)
+    def _recall_q_fingerprint(self, *a, **k): return Inspeximus._recall_q_fingerprint(self, *a, **k)
     def forget_pii(self, *a, **k):      return Inspeximus.forget_pii(self, *a, **k)
     def pii_report(self, *a, **k):      return Inspeximus.pii_report(self, *a, **k)
     def remember_dedup(self, *a, **k):  return Inspeximus.remember_dedup(self, *a, **k)

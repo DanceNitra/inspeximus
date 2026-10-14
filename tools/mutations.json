@@ -14211,5 +14211,23 @@
   "tests": [
    "tests/test_3200_f8_a_residue_fingerprint_cannot_be_reversed.py"
   ]
+ },
+ {
+  "name": "recall_window.q is the unsalted sha256 of the query",
+  "file": "inspeximus/core.py",
+  "old": "        return hmac.new(key, Inspeximus._RECALL_Q_DOMAIN + str(query or \"\").encode(\"utf-8\", \"replace\"),\n                        hashlib.sha256).hexdigest()[:12]",
+  "new": "        return hashlib.sha256(str(query or \"\").encode(\"utf-8\", \"replace\")).hexdigest()[:12]",
+  "tests": [
+   "tests/test_3200_f8b_a_recall_query_cannot_be_recovered_from_the_store.py"
+  ]
+ },
+ {
+  "name": "recall_window.q is keyed per process, not per store",
+  "file": "inspeximus/core.py",
+  "old": "        key = self._guard_key(create=True) if self.path else None",
+  "new": "        key = None",
+  "tests": [
+   "tests/test_3200_f8b_a_recall_query_cannot_be_recovered_from_the_store.py"
+  ]
  }
 ]
