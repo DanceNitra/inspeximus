@@ -2166,11 +2166,17 @@ def main(argv=None):
         sk, pk = new_source_keypair()
         if a.out:
             p = pathlib.Path(a.out)
-            p.write_text(sk + "\n", encoding="utf-8")
-            try:                                   # best-effort: keep the secret off other accounts
-                os.chmod(p, 0o600)
-            except OSError:
-                pass
+            # 0600 FROM ITS CREATION, AND NEVER AN EXISTING FILE (3.20, F13). The secret used to be written with the
+            # default mode and chmod-ed after, so another account could open it in between; and an existing file, or a
+            # link a repository shipped at that name, was overwritten. O_EXCL refuses both.
+            try:
+                fd = os.open(a.out, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
+            except FileExistsError:
+                print(f"  FAIL {a.out} already exists - refusing to overwrite a writer secret. Replacing it silently "
+                      f"orphans every record it attested.", file=sys.stderr)
+                return 2
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(sk + "\n")
             # THE USER'S CONFIG, NOT AN ENVIRONMENT VARIABLE (3.18, AUDIT-A C-2). The hint printed
             # INSPEXIMUS_WRITER_KEY_FILE=<the --out path>, and `--out key.txt` puts the file in the folder the command runs
             # in, where a key file named by the environment is now ignored. The user's config names any file, and the

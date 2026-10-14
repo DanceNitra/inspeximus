@@ -14040,5 +14040,23 @@
   "tests": [
    "tests/test_3200_f12_a_timestamp_proof_cannot_write_to_the_terminal.py"
   ]
+ },
+ {
+  "name": "writer-key overwrites an existing secret file",
+  "file": "inspeximus/cli.py",
+  "old": "                fd = os.open(a.out, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, \"O_NOFOLLOW\", 0), 0o600)",
+  "new": "                fd = os.open(a.out, os.O_WRONLY | os.O_CREAT | getattr(os, \"O_NOFOLLOW\", 0), 0o600)",
+  "tests": [
+   "tests/test_3200_f13_a_writer_secret_is_private_from_its_creation.py"
+  ]
+ },
+ {
+  "name": "writer-key creates the secret readable by other accounts",
+  "file": "inspeximus/cli.py",
+  "old": "                fd = os.open(a.out, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, \"O_NOFOLLOW\", 0), 0o600)",
+  "new": "                fd = os.open(a.out, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, \"O_NOFOLLOW\", 0), 0o644)",
+  "tests": [
+   "tests/test_3200_f13_a_writer_secret_is_private_from_its_creation.py"
+  ]
  }
 ]
