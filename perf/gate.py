@@ -103,6 +103,14 @@ class Counters:
         self._real_load = None
 
     def __enter__(self):
+        # THE HEADS PRUNE IS PINNED FOR THE COUNTED REGION (3.20, backlog item 8). `_prune_heads` lists the key home's
+        # heads directory at most once per 600 s per process, on a wall clock. All arms run in one process, so whether
+        # that one listing landed inside an arm depended on how long the arms before it took: recommit_n2000 counted
+        # dir_listings 1 on a slow runner (CI 38545778386, 600 s after the first prune) and 0 on a fast one (517 s).
+        # A periodic trim is not per-call work, so the counted region starts "just pruned", and the clock goes back on
+        # exit: the prune still runs at the next head write outside the region.
+        self._pruned_at_before = core.Inspeximus._heads_pruned_at
+        core.Inspeximus._heads_pruned_at = time.time()
         self._real_replace, self._real_dump = core.os.replace, core._dump_store
         self._real_load = real_load = core.Inspeximus._load_from_disk
 
@@ -230,6 +238,7 @@ class Counters:
         return self
 
     def __exit__(self, *exc):
+        core.Inspeximus._heads_pruned_at = self._pruned_at_before
         core.os.listdir, core.os.scandir = self._real_listdir, self._real_scandir
         core.os.replace, core._dump_store = self._real_replace, self._real_dump
         core._durable_replace = self._real_durable

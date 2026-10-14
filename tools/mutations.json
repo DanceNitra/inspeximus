@@ -13788,5 +13788,41 @@
   "tests": [
    "tests/test_3200_f6_a_timestamp_proof_cannot_grow_its_digest.py"
   ]
+ },
+ {
+  "name": "the perf gate leaves the heads prune clock running in a counted arm",
+  "file": "perf/gate.py",
+  "old": "        core.Inspeximus._heads_pruned_at = time.time()",
+  "new": "        pass",
+  "tests": [
+   "tests/test_3200_item8_the_heads_prune_never_lands_in_a_counted_arm.py"
+  ]
+ },
+ {
+  "name": "the perf gate does not put the heads prune clock back",
+  "file": "perf/gate.py",
+  "old": "        core.Inspeximus._heads_pruned_at = self._pruned_at_before",
+  "new": "        pass",
+  "tests": [
+   "tests/test_3200_item8_the_heads_prune_never_lands_in_a_counted_arm.py"
+  ]
+ },
+ {
+  "name": "the heads prune runs on every write",
+  "file": "inspeximus/core.py",
+  "old": "        if now - cls._heads_pruned_at < interval_s:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3200_item8_the_heads_prune_never_lands_in_a_counted_arm.py"
+  ]
+ },
+ {
+  "name": "the heads prune removes nothing over the cap",
+  "file": "inspeximus/core.py",
+  "old": "            for _mt, fp in aged[: max(0, len(aged) - max_files // 2)]:",
+  "new": "            for _mt, fp in aged[:0]:",
+  "tests": [
+   "tests/test_3200_item8_the_heads_prune_never_lands_in_a_counted_arm.py"
+  ]
  }
 ]
