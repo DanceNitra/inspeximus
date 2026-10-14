@@ -99,9 +99,10 @@ def test_a_renewed_flood_of_silent_connections_does_not_refuse_the_hook(project,
     """A client that reopens its silent connections as fast as they are dropped keeps MAX_CONNECTIONS of them pending."""
     proj, sp = project
     hookd.ask(_ev(proj), sp, timeout=2.0)
-    stop, held = threading.Event(), []
+    stop, held, arrived = threading.Event(), [], threading.Event()
 
     def flood():
+        arrived.set()                    # the asks below rely on a running flood (3.19.1, item 13)
         while not stop.is_set():
             if len(held) < hookd.MAX_CONNECTIONS * 2:
                 c = hookd._connect(daemon.addr, time.monotonic() + 0.2)
@@ -113,6 +114,7 @@ def test_a_renewed_flood_of_silent_connections_does_not_refuse_the_hook(project,
     th = threading.Thread(target=flood, daemon=True)
     th.start()
     try:
+        assert arrived.wait(30), "CONTROL: the flood is running"
         time.sleep(0.3)
         got = []
         for _ in range(6):
@@ -129,9 +131,10 @@ def test_the_flood_never_holds_more_than_the_slot_bound(project, daemon):
     """The thread bound of AUDIT-A E-4 holds: at no time more than MAX_CONNECTIONS handshake threads, however many
     silent connections arrive. Counted as threads whose target is the daemon's `_serve_thread`."""
     proj, sp = project
-    peak, opened, stop = [0], [], threading.Event()
+    peak, opened, stop, arrived = [0], [], threading.Event(), threading.Event()
 
     def count():
+        arrived.set()                    # the peak below needs a running sampler (3.19.1, item 13)
         while not stop.is_set():
             n = sum(1 for t in threading.enumerate() if getattr(t, "_target", None) == daemon._serve_thread)
             peak[0] = max(peak[0], n)
@@ -139,6 +142,7 @@ def test_the_flood_never_holds_more_than_the_slot_bound(project, daemon):
     th = threading.Thread(target=count, daemon=True)
     th.start()
     try:
+        assert arrived.wait(30), "CONTROL: the sampler is running"
         for _ in range(hookd.MAX_CONNECTIONS * 3):
             c = hookd._connect(daemon.addr, time.monotonic() + 0.3)
             if c is not None:

@@ -47,7 +47,7 @@ def test_a_foreign_lock_that_outlasts_the_retries_is_reported_on_last_write_and_
     started = threading.Event()
     t = threading.Thread(target=_hold, args=(path, 3.0, started), daemon=True)
     t.start()
-    started.wait(5)
+    assert started.wait(30), "CONTROL: the foreign holder took the lock"   # 3.19.1, item 13
     rid = m.remember("layer", key="crew::L", object="v1")
     lw = m.last_write
     assert lw["id"] == rid and lw["blocked"] is False
@@ -76,7 +76,7 @@ def test_a_foreign_lock_that_clears_within_the_retries_costs_nothing_but_time(tm
     started = threading.Event()
     t = threading.Thread(target=_hold, args=(path, 0.4, started), daemon=True)
     t.start()
-    started.wait(5)
+    assert started.wait(30), "CONTROL: the foreign holder took the lock"   # 3.19.1, item 13
     m.remember("layer", key="crew::L", object="v1")
     assert m.last_write["persisted"] is True, m.last_write
     assert m._persist_error is None
@@ -114,7 +114,7 @@ def test_the_mcp_write_result_carries_persisted(tmp_path, monkeypatch, short_bus
     started = threading.Event()
     t = threading.Thread(target=_hold, args=(str(tmp_path / "mcp.json"), 1.5, started), daemon=True)
     t.start()
-    started.wait(5)
+    assert started.wait(30), "CONTROL: the foreign holder took the lock"   # 3.19.1, item 13
     # 3.15.2 (A-22): an unpersisted write reaches an MCP client as an error, not only as a field it may
     # never read. The message still carries the store's own reason.
     with pytest.raises(RuntimeError) as err:
@@ -139,7 +139,7 @@ def test_the_cli_exits_4_when_the_store_could_not_persist(tmp_path, monkeypatch,
     started = threading.Event()
     t = threading.Thread(target=_hold, args=(path, 4.0, started), daemon=True)
     t.start()
-    started.wait(5)
+    assert started.wait(30), "CONTROL: the foreign holder took the lock"   # 3.19.1, item 13
     r = subprocess.run([sys.executable, "-m", "inspeximus.cli", "--path", path, "--json", "remember", "layer",
                         "--key", "crew::L", "--object", "v1"],
                        capture_output=True, text=True, cwd=root, encoding="utf-8", env=env, timeout=60)

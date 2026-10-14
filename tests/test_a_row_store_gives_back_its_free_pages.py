@@ -107,7 +107,7 @@ def test_another_writer_holding_the_store_lock_is_waited_for_only_within_the_bou
             release.wait(10)
     th = threading.Thread(target=writer)
     th.start()
-    held.wait(5)
+    assert held.wait(30), "CONTROL: the other writer holds the store lock"   # 3.19.1, item 13
     try:
         out = m.vacuum(wait_s=0.3)
         assert out["vacuumed"] is False and "store lock" in out["reason"] and "slack_bytes" in out, out

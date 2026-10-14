@@ -13707,5 +13707,14 @@
   "tests": [
    "tests/test_3191_f9_secret_rules_run_in_linear_time.py"
   ]
+ },
+ {
+  "name": "the race window opens at start(), not when the other thread runs",
+  "file": "tests/test_a_receipt_chain_shared_between_threads.py",
+  "old": "        assert self.arrived.wait(ARRIVE), \"CONTROL: the other thread never started running\"",
+  "new": "        pass",
+  "tests": [
+   "tests/test_a_receipt_chain_shared_between_threads.py"
+  ]
  }
 ]

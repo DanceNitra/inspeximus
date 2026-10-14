@@ -254,9 +254,10 @@ def test_a_token_index_built_beside_an_extension_keeps_the_appended_records(tmp_
     for e in h._recall_ix.values():
         e["post"] = None                                    # the next lexical recall builds the index
     real_tokens, real_rec = core._tokens, Inspeximus._rec_tokens
-    armed, fired, done = [], [], threading.Event()
+    armed, fired, done, arrived = [], [], threading.Event(), threading.Event()
 
     def other():
+        arrived.set()                                        # the window opens when this thread runs (3.19.1, item 13)
         h.remember("note new on the quokka migration")
         h.recall("deploy window", k=5)                       # extends the entry
         done.set()
@@ -270,6 +271,7 @@ def test_a_token_index_built_beside_an_extension_keeps_the_appended_records(tmp_
         if self is h and armed and not fired:
             fired.append(threading.Thread(target=other))
             fired[0].start()
+            assert arrived.wait(30), "CONTROL: the other thread started running"
             done.wait(2)                                     # with the build under the lock, the other recall waits
         return real_rec(self, r)
     monkeypatch.setattr(core, "_tokens", tokens)
@@ -292,9 +294,10 @@ def test_words_read_before_an_edit_on_another_thread_are_not_kept(tmp_path, monk
     rid = h.remember("note on the marmot burrow")
     rec = [r for r in h._items if r["id"] == rid][0]
     h._tok_cache.pop(rid, None)
-    real, started, done = core._tokens, [], threading.Event()
+    real, started, done, arrived = core._tokens, [], threading.Event(), threading.Event()
 
     def edit():
+        arrived.set()                                        # the window opens when this thread runs (3.19.1, item 13)
         rec["text"] = "note on the okapi enclosure"
         done.set()
 
@@ -302,6 +305,7 @@ def test_words_read_before_an_edit_on_another_thread_are_not_kept(tmp_path, monk
         if "marmot" in text and not started:
             started.append(threading.Thread(target=edit))
             started[0].start()
+            assert arrived.wait(30), "CONTROL: the edit's thread started running"
             done.wait(2)                                     # with the fill under the lock, the edit's drop waits
         return real(text)
     monkeypatch.setattr(core, "_tokens", tokens)
