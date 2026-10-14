@@ -14157,5 +14157,32 @@
   "tests": [
    "tests/test_3200_f11_an_https_config_does_not_admit_http.py"
   ]
+ },
+ {
+  "name": "the e-mail pattern backtracks without bound",
+  "file": "inspeximus/core.py",
+  "old": "    (\"email\",       re.compile(r\"\\b[A-Za-z0-9._%+\\-]{1,64}@[A-Za-z0-9.\\-]{1,255}\\.[A-Za-z]{2,63}\\b\")),",
+  "new": "    (\"email\",       re.compile(r\"\\b[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}\\b\")),",
+  "tests": [
+   "tests/test_3200_f14_a_pii_scan_is_linear_in_its_input.py"
+  ]
+ },
+ {
+  "name": "a broad PII pattern may match inside a claimed span",
+  "file": "inspeximus/core.py",
+  "old": "            if (i > 0 and ends[i - 1] > s) or (i < len(starts) and starts[i] < e):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_f14_a_pii_scan_is_linear_in_its_input.py"
+  ]
+ },
+ {
+  "name": "redact_pii keeps the masked text",
+  "file": "inspeximus/core.py",
+  "old": "        pos = e\n        counts[label] = counts.get(label, 0) + 1",
+  "new": "        pos = s\n        counts[label] = counts.get(label, 0) + 1",
+  "tests": [
+   "tests/test_3200_f14_a_pii_scan_is_linear_in_its_input.py"
+  ]
  }
 ]

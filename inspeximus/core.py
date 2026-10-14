@@ -1185,7 +1185,10 @@ _SELF_NARRATION = (
 # that a record is PII-free. Detection is deterministic and embedder-free. Order matters — see redact_pii.
 _PII_PATTERNS = (
     ("ssn",         re.compile(r"\b\d{3}-\d{2}-\d{4}\b")),
-    ("email",       re.compile(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b")),
+    # BOUNDED (3.20, F14): with `+` quantifiers, "a-a-a-..." backtracked from every word boundary: 64,000 characters
+    # took 5 s and matched nothing. The bounds are RFC 5321's: a local part of at most 64, a domain of at most 255,
+    # and a top-level label of at most 63, so each start position costs a bounded amount and the scan is linear.
+    ("email",       re.compile(r"\b[A-Za-z0-9._%+\-]{1,64}@[A-Za-z0-9.\-]{1,255}\.[A-Za-z]{2,63}\b")),
     ("credit_card", re.compile(r"\b(?:\d[ \-]?){13,16}\b")),
     ("ipv4",        re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b")),
     ("phone",       re.compile(r"(?<![\w.])\+?\d[\d\s\-().]{7,}\d(?![\w.])")),
@@ -1265,6 +1268,37 @@ def _pii_plausible(label: str, raw: str) -> bool:
     return True
 
 
+def _pii_hits(text: str, want=None) -> list:
+    """Every accepted PII match in `text`, as (start, end, label, raw), in pattern order and then text order (3.20, F14).
+
+    The one scan behind detect_pii and redact_pii, which carried two copies of it. A more specific pattern claims its
+    span first, and a broader one cannot match inside a claimed span. The claimed spans never overlap, so they are
+    kept sorted and an overlap is two `bisect` lookups. It was a scan of every claimed span for every candidate:
+    20,000 e-mail addresses took 13 s.
+
+    A rejected candidate is NOT claimed: rejecting a credit_card must leave its text free for `phone`, or one false
+    positive would become a false negative."""
+    import bisect
+    starts: list = []
+    ends: list = []
+    hits: list = []
+    for label, pat in _PII_PATTERNS:
+        if want is not None and label not in want:
+            continue
+        for m in pat.finditer(text):
+            s, e = m.start(), m.end()
+            i = bisect.bisect_right(starts, s)
+            if (i > 0 and ends[i - 1] > s) or (i < len(starts) and starts[i] < e):
+                continue                                  # overlaps an already-claimed (more specific) span
+            raw = m.group(0)
+            if not _pii_plausible(label, raw):
+                continue
+            starts.insert(i, s)
+            ends.insert(i, e)
+            hits.append((s, e, label, raw))
+    return hits
+
+
 def detect_pii(text: str) -> dict:
     """Scan `text` and return {pii_type: [matched_substrings]} for every heuristic hit. Zero-dependency,
     deterministic. Ordered so specific patterns (SSN/credit-card) match before the broad phone pattern can
@@ -1272,19 +1306,8 @@ def detect_pii(text: str) -> dict:
     found: dict = {}
     if not isinstance(text, str) or not text:
         return found
-    spans: list = []                                  # claimed [start, end) so a broad pattern can't re-match
-    for label, pat in _PII_PATTERNS:
-        for m in pat.finditer(text):
-            s, e = m.start(), m.end()
-            if any(s < ce and cs < e for cs, ce in spans):   # overlaps an already-claimed (more specific) span
-                continue
-            if not _pii_plausible(label, m.group(0)):
-                # NOT claimed: a rejected candidate must leave the span free, or rejecting a
-                # credit_card would hide the text from `phone` and turn one false positive into a
-                # false negative.
-                continue
-            spans.append((s, e))
-            found.setdefault(label, []).append(m.group(0))
+    for _s, _e, label, raw in _pii_hits(text):
+        found.setdefault(label, []).append(raw)
     return found
 
 
@@ -1296,24 +1319,17 @@ def redact_pii(text: str, types=None, mask: str = "[{}]") -> tuple:
     if not isinstance(text, str) or not text:
         return text, {}
     want = set(types) if types is not None else None
-    hits: list = []                                   # (start, end, label)
-    spans: list = []
-    for label, pat in _PII_PATTERNS:
-        if want is not None and label not in want:
-            continue
-        for m in pat.finditer(text):
-            s, e = m.start(), m.end()
-            if any(s < ce and cs < e for cs, ce in spans):
-                continue
-            if not _pii_plausible(label, m.group(0)):
-                continue
-            spans.append((s, e))
-            hits.append((s, e, label))
     counts: dict = {}
-    for s, e, label in sorted(hits, key=lambda h: h[0], reverse=True):
-        text = text[:s] + mask.format(label.upper()) + text[e:]
+    out: list = []
+    pos = 0
+    # ONE PASS (3.20, F14): each hit used to rebuild the whole string, which is quadratic in the number of hits.
+    for s, e, label, _raw in sorted(_pii_hits(text, want), key=lambda h: h[0]):
+        out.append(text[pos:s])
+        out.append(mask.format(label.upper()))
+        pos = e
         counts[label] = counts.get(label, 0) + 1
-    return text, counts
+    out.append(text[pos:])
+    return "".join(out), counts
 
 
 redact_pii_fn = redact_pii   # stable module alias: recall()'s `redact_pii` bool param shadows the function name
