@@ -1123,7 +1123,8 @@ def _secrets_notice(cwd, m):
     p = os.path.join(_store_dir(cwd), "secrets_notice.json")
     try:
         with open(p, encoding="utf-8") as fh:
-            if json.load(fh).get("rev") == _SECRETS_NOTICE_REV:
+            done = json.load(fh)
+            if done.get("rev") == _SECRETS_NOTICE_REV and not done.get("retry"):
                 return None
     except Exception:
         pass
@@ -1136,7 +1137,8 @@ def _secrets_notice(cwd, m):
 
     # THE MARKER BEFORE THE SCAN (3.19.1, F9). Written after it, a scan that the host stopped at its hook timeout left
     # no marker, so the next prompt scanned again and was stopped again, on every prompt. A scan stopped midway now
-    # costs its count, once; it never costs the next prompt.
+    # costs its count, once; it never costs the next prompt. A scan that RAISES (an unreadable record) is not a stopped
+    # one: it rewrites the marker with `retry`, so the next prompt scans again, as 3.19.0 did.
     try:
         _mark(scanning=True)
     except Exception:
@@ -1144,6 +1146,10 @@ def _secrets_notice(cwd, m):
     try:
         n = sum(1 for r in getattr(m, "items", []) if _record_has_secret(r))
     except Exception:
+        try:
+            _mark(retry=True)
+        except Exception:
+            pass
         return None
     try:
         _mark(found=n)

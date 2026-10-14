@@ -218,3 +218,25 @@ def test_a_scan_cut_off_midway_is_not_repeated(project, monkeypatch):
     monkeypatch.setattr(cc, "_record_has_secret", lambda r: calls.append(r) or False)
     assert cc._secrets_notice(project, m) is None
     assert calls == [], "the cut-off scan ran again"
+
+
+def test_a_scan_that_raises_is_retried_on_the_next_prompt(project, monkeypatch):
+    """An ordinary error in the scan is not a cancelled hook: 3.19.0 scanned again on the next prompt, and so does
+    3.19.1. Only a scan that never returns (the cut-off case above) is not repeated."""
+    _plant(project, "sk-proj-FAKEa1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0")
+    m = cc._store(project)
+    marker = os.path.join(cc._store_dir(project), "secrets_notice.json")
+    real = cc._record_has_secret
+
+    def broken(_r):
+        raise ValueError("an unreadable record")
+
+    monkeypatch.setattr(cc, "_record_has_secret", broken)
+    assert cc._secrets_notice(project, m) is None
+    assert json.load(open(marker, encoding="utf-8")).get("retry") is True
+    calls = []
+    monkeypatch.setattr(cc, "_record_has_secret", lambda r: calls.append(r) or real(r))
+    again = cc._secrets_notice(project, m)
+    assert calls, "the scan that raised was not retried"
+    assert again and "1 stored record" in again
+    assert cc._secrets_notice(project, m) is None, "the notice was shown twice after the retry"

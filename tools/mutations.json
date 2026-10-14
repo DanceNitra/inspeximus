@@ -3606,7 +3606,7 @@
  {
   "name": "the secrets notice is shown on every run",
   "file": "inspeximus/claude_code.py",
-  "old": "            if json.load(fh).get(\"rev\") == _SECRETS_NOTICE_REV:",
+  "old": "            if done.get(\"rev\") == _SECRETS_NOTICE_REV and not done.get(\"retry\"):",
   "new": "            if False:",
   "tests": [
    "tests/test_the_hook_redacts_secrets_at_capture.py",
@@ -13697,6 +13697,15 @@
   "file": "inspeximus/core.py",
   "tests": [
    "tests/test_a_certificate_about_a_store_we_do_not_own.py"
+  ]
+ },
+ {
+  "name": "a secrets scan that raises is never retried",
+  "file": "inspeximus/claude_code.py",
+  "old": "            _mark(retry=True)",
+  "new": "            pass",
+  "tests": [
+   "tests/test_3191_f9_secret_rules_run_in_linear_time.py"
   ]
  }
 ]
