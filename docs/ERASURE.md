@@ -143,8 +143,11 @@ nothing. Exit 0, so it drops into a DSAR runbook or CI as a gate.
 
 `residue` is vendor-neutral. It takes a directory, not a inspeximus store: point it at a Chroma
 directory, a sqlite history, a JSONL trace or another library's data dir and it answers for that
-deployment. Values are never echoed back; each finding carries a short SHA-256 fingerprint instead,
-so the report is safe to paste into a ticket.
+deployment. Values are never echoed back. Each finding names the value by its position in your list
+(`value #1` is the first `--value`), and carries a fingerprint that is a keyed hash under a key made for
+that report and never stored. The same value has the same fingerprint inside one report and a different
+one in the next, so nobody holding the report can test candidates against it, and the report is safe
+to paste into a ticket.
 
 ---
 
@@ -157,7 +160,7 @@ person's data:
 ```console
 $ inspeximus residue --root ./dsar --value bob@example.com
 checked 3 file(s) under ./dsar
-  LIVE         store.json [records.doc x1]   fp=5ff860bf1190
+  LIVE         store.json [records.doc x1]   value #1   fp=...
   ! the value is still held in a LIVE row: the system retained it, and this is a retention question for whoever wrote that store
 RESULT: residue found (listed earlier)
 # exit status: 1

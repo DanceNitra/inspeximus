@@ -56,6 +56,7 @@ short SHA-256 fingerprint instead, which is enough to correlate and useless to l
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 import sqlite3
@@ -65,9 +66,22 @@ _SQLITE_MAGIC = b"SQLite format 3\x00"
 _SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv", ".mypy_cache", ".pytest_cache"}
 
 
-def _fingerprint(value: str) -> str:
-    """A correlatable, non-reversible stand-in. The caller already knows the value; a report should not."""
-    return hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
+def _fingerprinter():
+    """A fingerprint function for ONE report: HMAC-SHA256 under a random key that is never stored (3.20, F8).
+
+    The fingerprint was the first 48 bits of an unsalted sha256 of the value, and the docstring called it
+    non-reversible. It was not: an erased value is usually an e-mail address, a phone number or a name, and anyone
+    holding the report (a certificate is made to be handed to a third party) recovered it by hashing a list of
+    candidates. A public salt would not help against a candidate list. A key that leaves with nobody does: the
+    fingerprints still correlate the findings with each other and with `values_searched` INSIDE one report, and
+    they match nothing outside it, not even the same value in the next report. A scan_residue finding also carries
+    `value_index`, the position of its value in the caller's list, which is how the caller, who knows the values,
+    reads it."""
+    key = os.urandom(32)
+
+    def fp(value: str) -> str:
+        return hmac.new(key, value.encode("utf-8"), hashlib.sha256).hexdigest()[:12]
+    return fp
 
 
 def scan_records(records, values, max_pairs: int = 2_000_000) -> dict:
@@ -106,6 +120,7 @@ def scan_records(records, values, max_pairs: int = 2_000_000) -> dict:
     # record text) was copied again for every surviving record and field: 2,008,775 calls and 9.58 s
     # of a 12.8 s erasure on a 10,934-record store, measured 2026-09-27 (AUDIT-B B-18).
     low_vals = [(v, v.lower()) for v in vals]
+    fp = _fingerprinter()
     for r in recs:
         if budget <= 0:
             problems.append(f"stopped after {checked} record(s): the comparison budget was reached, so "
@@ -121,7 +136,7 @@ def scan_records(records, values, max_pairs: int = 2_000_000) -> dict:
                 budget -= 1
                 if v_low in low:
                     findings.append({"id": r.get("id"), "field": field,
-                                     "fingerprint": _fingerprint(v)})
+                                     "fingerprint": fp(v)})
     if findings:
         problems.append("a surviving record still contains a value that was just erased; the row went "
                         "and the string did not, so the erasure is incomplete within this store")
@@ -181,7 +196,7 @@ def _resolve_skip(skip_dirs) -> set:
 
 def scan_residue(root: str, values, max_file_mb: float = 512.0,
                  skip_dirs=None, follow_symlinks: bool = False,
-                 manifest: bool = False) -> dict:
+                 manifest: bool = False, _fp=None) -> dict:
     """Search `root` for values that should no longer exist anywhere.
 
     Returns {ok, checked_files, skipped, findings, problems, manifest}. `ok` is True only when nothing was found --
@@ -219,6 +234,9 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
     problems: list[str] = []
     skipped: list[dict] = []
     files: list[dict] = []
+    fp = _fp or _fingerprinter()                         # residue_certificate passes its own, so the two agree
+    _given = list(values or [])
+    index = {v: _given.index(v) for v in vals}
     checked = 0
     limit = int(max_file_mb * 1024 * 1024)
 
@@ -289,16 +307,16 @@ def scan_residue(root: str, values, max_file_mb: float = 512.0,
                 live = _live_rows(path, v) if sqlite_file else []
                 if live:
                     for hit in live:
-                        findings.append({"path": rel, "kind": "LIVE", "fingerprint": _fingerprint(v),
+                        findings.append({"path": rel, "kind": "LIVE", "fingerprint": fp(v), "value_index": index[v],
                                          "table": hit["table"], "column": hit["column"],
                                          "rows": hit["rows"]})
                 elif sqlite_file:
-                    findings.append({"path": rel, "kind": "UNRECLAIMED", "fingerprint": _fingerprint(v),
+                    findings.append({"path": rel, "kind": "UNRECLAIMED", "fingerprint": fp(v), "value_index": index[v],
                                      "note": "no live row holds it; the page has not been reclaimed. "
                                              "VACUUM (sqlite) or compact the store, or use encryption "
                                              "plus key destruction if the disk leaves your control."})
                 else:
-                    findings.append({"path": rel, "kind": "PLAIN", "fingerprint": _fingerprint(v),
+                    findings.append({"path": rel, "kind": "PLAIN", "fingerprint": fp(v), "value_index": index[v],
                                      "note": "a non-SQLite file still contains it (JSON, log, trace or "
                                              "backup). Nothing will reclaim this on its own."})
 
@@ -384,8 +402,9 @@ def residue_certificate(root: str, values, signing_key: str | None = None, *,
         raise RuntimeError("signing a residue certificate needs the `cryptography` package "
                            "(pip install cryptography). Omit signing_key for an unsigned document.")
     skip = _resolve_skip(skip_dirs)
+    fp = _fingerprinter()
     scan = scan_residue(root, values, max_file_mb=max_file_mb, skip_dirs=skip,
-                        follow_symlinks=follow_symlinks, manifest=True)
+                        follow_symlinks=follow_symlinks, manifest=True, _fp=fp)
     vals = [v for v in (values or []) if isinstance(v, str) and v]
     core = {
         "inspeximus_residue_certificate": "1.0",
@@ -398,7 +417,8 @@ def residue_certificate(root: str, values, signing_key: str | None = None, *,
         "scan_parameters": {"max_file_mb": max_file_mb, "skip_dirs": sorted(skip),
                             "follow_symlinks": bool(follow_symlinks),
                             "match": "literal, case-sensitive, byte substring"},
-        "values_searched": [{"fingerprint": _fingerprint(v)} for v in vals],
+        "values_searched": [{"fingerprint": fp(v), "value_index": i} for i, v in enumerate(values or [])
+                            if isinstance(v, str) and v],
         "values_count": len(vals),
         "ok": scan["ok"],
         "checked_files": scan["checked_files"],
@@ -654,7 +674,7 @@ def main(argv=None) -> int:
         print(f"checked {rep['checked_files']} file(s) under {a.root}")
         for f in rep["findings"]:
             where = f" [{f.get('table')}.{f.get('column')} x{f.get('rows')}]" if f["kind"] == "LIVE" else ""
-            print(f"  {f['kind']:12s} {f['path']}{where}   fp={f['fingerprint']}")
+            print(f"  {f['kind']:12s} {f['path']}{where}   value #{f['value_index'] + 1}   fp={f['fingerprint']}")
         for p in rep["problems"]:
             print(f"  ! {p}")
         print("RESULT:", "clean — no residue found" if rep["ok"] else "residue found (see above)")

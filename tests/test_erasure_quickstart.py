@@ -9,8 +9,9 @@ in a throwaway directory and requires the documented output to appear.
 WHAT IS ALLOWED TO DRIFT, and nothing else: record ids and key material change every run, so a 10-hex-
 character id or a 40+-hex-character key in the documentation is matched as a wildcard, and an id written
 in a COMMAND (`--derived-from 295d6c5490`) is rewritten to the id that run actually produced. An `...`
-in a documented line matches any text. Everything else -- counts, verdicts, exit codes, the fingerprint,
-the wording of a refusal -- is compared literally.
+in a documented line matches any text. Everything else -- counts, verdicts, exit codes,
+the wording of a refusal -- is compared literally. The residue fingerprint is keyed per report (3.20, F8),
+so the page writes it as `fp=...`.
 
 THE CONTROL IS THE POINT, and it is asserted twice: once as part of the page, and once as a standalone
 test that does not depend on the parser at all. Delete Alice, confirm she is gone, THEN confirm Bob is
@@ -197,9 +198,9 @@ def test_positive_control_a_different_record_is_still_there(replay):
     # system still holds), a JSON store reports PLAIN (a file contains it). The FINDING is what this
     # control is about, and pinning one label made it fail on a store that answered correctly.
     assert ("PLAIN" in out or "LIVE" in out) and "residue found" in out, out
-    # sha256("bob@example.com")[:12] -- deterministic, so this pins that the finding is about the value
-    # asked for and not some other hit. Values are never echoed; the fingerprint is what correlates.
-    assert "fp=5ff860bf1190" in out, out
+    # The finding names the value asked for by its position, so this pins that it is about that value and not
+    # some other hit. The fingerprint is keyed per report since 3.20 (F8) and correlates only inside it.
+    assert "value #1" in out and "fp=" in out, out
 
     _, code, out = _step(replay, "list -n 5")
     assert "Bob Weber" in out and "Alice Novak" not in out, out

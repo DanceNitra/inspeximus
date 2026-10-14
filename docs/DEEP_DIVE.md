@@ -198,7 +198,8 @@ It separates three verdicts, and the distinction is the whole point: **LIVE** (a
 system retained it), **UNRECLAIMED** (in the bytes but in no row — the storage engine has not reclaimed the
 page; run `VACUUM`, and this is *not* a vendor defect), **PLAIN** (a log or backup still has it). It never
 echoes the value you gave it — findings carry a fingerprint, because a tool that hunts a secret and then
-prints it into your terminal is itself the leak. It exits non-zero, so it works as a CI or DSAR gate.
+prints it into your terminal is itself the leak. The fingerprint is keyed under a key made for one report
+and never stored, so it matches across the findings of that report and nothing outside it. It exits non-zero, so it works as a CI or DSAR gate.
 
 We ran it against **mem0 2.0.11** with a local qdrant while building it: after its documented `delete()`
 and `reset()`, **no live row anywhere held the value** — only unreclaimed sqlite pages, which is a storage

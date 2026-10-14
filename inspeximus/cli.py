@@ -1678,7 +1678,7 @@ def main(argv=None):
             for f in rep["findings"]:
                 where = (f" [{f.get('table')}.{f.get('column')} x{f.get('rows')}]"
                          if f["kind"] == "LIVE" else "")
-                print(f"  {f['kind']:12s} {f['path']}{where}   fp={f['fingerprint']}")
+                print(f"  {f['kind']:12s} {f['path']}{where}   value #{f['value_index'] + 1}   fp={f['fingerprint']}")
             for problem in rep["problems"]:
                 print(f"  ! {problem}")
             if a.cert_out:

@@ -1138,7 +1138,7 @@
  {
   "name": "the residue report echoes the erased value instead of a fingerprint",
   "file": "inspeximus/erasure_residue.py",
-  "old": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": _fingerprint(v)})",
+  "old": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": fp(v)})",
   "new": "                    findings.append({\"id\": r.get(\"id\"), \"field\": field,\n                                     \"fingerprint\": v})",
   "tests": [
    "tests/test_instore_residue.py"
@@ -14183,6 +14183,33 @@
   "new": "        pos = s\n        counts[label] = counts.get(label, 0) + 1",
   "tests": [
    "tests/test_3200_f14_a_pii_scan_is_linear_in_its_input.py"
+  ]
+ },
+ {
+  "name": "a residue fingerprint is the unsalted sha256 of the value",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "        return hmac.new(key, value.encode(\"utf-8\"), hashlib.sha256).hexdigest()[:12]",
+  "new": "        return hashlib.sha256(value.encode(\"utf-8\")).hexdigest()[:12]",
+  "tests": [
+   "tests/test_3200_f8_a_residue_fingerprint_cannot_be_reversed.py"
+  ]
+ },
+ {
+  "name": "a residue certificate fingerprints its findings under another key",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "                        follow_symlinks=follow_symlinks, manifest=True, _fp=fp)",
+  "new": "                        follow_symlinks=follow_symlinks, manifest=True)",
+  "tests": [
+   "tests/test_3200_f8_a_residue_fingerprint_cannot_be_reversed.py"
+  ]
+ },
+ {
+  "name": "a PLAIN residue finding names the wrong value",
+  "file": "inspeximus/erasure_residue.py",
+  "old": "\"kind\": \"PLAIN\", \"fingerprint\": fp(v), \"value_index\": index[v],",
+  "new": "\"kind\": \"PLAIN\", \"fingerprint\": fp(v), \"value_index\": 0,",
+  "tests": [
+   "tests/test_3200_f8_a_residue_fingerprint_cannot_be_reversed.py"
   ]
  }
 ]
