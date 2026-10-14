@@ -227,8 +227,18 @@ def test_the_restamp_run_waits_for_the_pid_and_writes_its_mark_again(env, monkey
         json.dump({"last_attempt": time.time(), "foreign": 3}, fh)
     t = threading.Thread(target=cc._mark_stamp_run, args=(path, True))
     t.start()
-    time.sleep(0.5)                                          # the run has marked itself and waits for the pid
-    seen = json.load(open(state, encoding="utf-8"))
+    # POLLED, NOT SLEPT (3.20, the count-before-join audit). A fixed 0.5 s sleep assumed the run had marked itself
+    # by then; on a slow runner it had not, and the control failed for no defect. The mark is waited for.
+    deadline = time.time() + 15
+    seen = {}
+    while time.time() < deadline:
+        try:
+            seen = json.load(open(state, encoding="utf-8"))
+        except ValueError:
+            seen = {}                                        # read while the run was replacing it
+        if seen.get("done"):
+            break
+        time.sleep(0.02)
     assert seen.get("done"), "control: the run marked itself before the hook's write"
     with open(state, "w", encoding="utf-8") as fh:            # the hook's write, from a read before the mark
         json.dump({"last_attempt": seen["last_attempt"], "foreign": 3, "pid": 7}, fh)

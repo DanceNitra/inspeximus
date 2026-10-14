@@ -326,8 +326,18 @@ def test_a_mark_lost_between_the_parents_read_and_write_is_written_again(tmp_pat
         json.dump({"last_attempt": _t.time(), "hot_bytes": 1}, fh)
     t = threading.Thread(target=cc._mark_archive_run_done, args=(path, True))
     t.start()
-    _t.sleep(0.5)                                            # the run has marked itself and waits for the pid
-    seen = json.load(open(state, encoding="utf-8"))
+    # POLLED, NOT SLEPT (3.20, the count-before-join audit). A fixed 0.5 s sleep assumed the run had marked itself
+    # by then; on a slow runner it had not, and the control failed for no defect. The mark is waited for.
+    deadline = _t.time() + 15
+    seen = {}
+    while _t.time() < deadline:
+        try:
+            seen = json.load(open(state, encoding="utf-8"))
+        except ValueError:
+            seen = {}                                        # read while the run was replacing it
+        if seen.get("done"):
+            break
+        _t.sleep(0.02)
     assert seen.get("done"), "control: the run marked itself before the parent's write"
     with open(state, "w", encoding="utf-8") as fh:            # the parent's write, from a read before the mark
         json.dump({"last_attempt": seen["last_attempt"], "hot_bytes": 1, "pid": 7}, fh)
