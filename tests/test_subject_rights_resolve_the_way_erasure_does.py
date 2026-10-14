@@ -31,7 +31,7 @@ def test_export_returns_the_subjects_records_and_not_the_other_subjects(tmp_path
     pkg = export_subject(m, "crm/alice")
     texts = sorted(r["text"] for r in pkg["records"])
     assert texts == ["alice prefers email", "alice's phone is +100"]
-    assert pkg["counts"] == {"records": 2, "direct": 2, "inherited": 0, "tombstones": 0, "actions": 0}
+    assert pkg["counts"] == {"records": 2, "direct": 2, "inherited": 0, "tombstones": 0, "actions": 0, "quarantined": 0}
     assert all("provenance" in r for r in pkg["records"])
     assert [r for r in pkg["records"] if r["key"] == "alice::phone"][0]["history"]
     # the same set erasure would remove

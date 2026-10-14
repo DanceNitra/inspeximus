@@ -14058,5 +14058,86 @@
   "tests": [
    "tests/test_3200_f13_a_writer_secret_is_private_from_its_creation.py"
   ]
+ },
+ {
+  "name": "memory_index applies only the objection filter",
+  "file": "inspeximus/core.py",
+  "old": "        rows = self._served_rows(rows)\n        _by_guard = _not_objected - len(rows)",
+  "new": "        rows = [r for r in rows if r[\"id\"] not in _withheld]\n        _by_guard = _not_objected - len(rows)",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "check_conflict judges and quotes a quarantined record",
+  "file": "inspeximus/core.py",
+  "old": "        active = self._served_rows(active)\n        hits, seen = [], set()",
+  "new": "        hits, seen = [], set()",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "verify_claim quotes a quarantined record",
+  "file": "inspeximus/core.py",
+  "old": "        _withheld = self._unserved_ids(r for r in self._tenant_rows() if key is None or r.get(\"key\") == key)",
+  "new": "        _withheld = self._withheld_ids() if self._objections else set()",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "the MCP lookups hand an agent quarantined text",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    if not getattr(_MEM, \"read_guards\", False):\n        return result\n    found = []",
+  "new": "    if True:\n        return result\n    found = []",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "MCP get returns a quarantined record whole",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    rec = next((r for r in _MEM.items if r.get(\"id\") == id), None)\n    return _withhold_quarantined(rec, include_quarantined) if rec else {}",
+  "new": "    rec = next((r for r in _MEM.items if r.get(\"id\") == id), None)\n    return rec or {}",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "an MCP lookup withholds quarantined text silently",
+  "file": "inspeximus/mcp_server.py",
+  "old": "            result[\"withheld_by_read_guard\"] = n",
+  "new": "            pass",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "include_quarantined does not say the result holds quarantined rows",
+  "file": "inspeximus/mcp_server.py",
+  "old": "            result[\"holds_quarantined\"] = len(quarantined)",
+  "new": "            pass",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "an Art. 15 export does not mark a quarantined row",
+  "file": "inspeximus/subject_rights.py",
+  "old": "                row[\"quarantined\"] = True",
+  "new": "                pass",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "an Art. 15 export does not count its quarantined rows",
+  "file": "inspeximus/subject_rights.py",
+  "old": "                   \"quarantined\": sum(1 for r in records if r.get(\"quarantined\"))},",
+  "new": "                   \"quarantined\": 0},",
+  "tests": [
+   "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
  }
 ]

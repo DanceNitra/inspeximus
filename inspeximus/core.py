@@ -5365,6 +5365,7 @@ class Inspeximus:
         when a peer process has moved it, runs `refresh()` before answering, so a hot key never
         serves a value another agent superseded more than a second ago. Off, the handle serves
         what it loaded until it reads or writes for another reason, as every 2.x read did.
+        RAW, for an operator (3.20, F10): a record the read guard quarantined is returned as stored. The MCP server, the door to an agent's context, withholds its text; see read_guard_report().
         """
         if key is None:
             return None
@@ -10499,6 +10500,13 @@ class Inspeximus:
                 break
         return out
 
+    def _unserved_ids(self, rows) -> set:
+        """The ids among `rows` that `_served_rows` withholds (3.20, F10): for a reader that judges against a record and
+        quotes it, so it can skip what recall would not serve without dropping the rows it still needs to look at."""
+        rows = list(rows)
+        served = {r.get("id") for r in self._served_rows(rows)}
+        return {r.get("id") for r in rows} - served
+
     def read_guard_report(self) -> dict:
         """What the read-path guards hold back, tenant-scoped: every quarantined record with the shapes
         that put it there and whether it was released, and every stuffed record with the word and share.
@@ -12129,6 +12137,7 @@ class Inspeximus:
         `digest` is the EXPORTER's state at export time. It is a claim about the sender, not a checksum
         of this payload, so a receiver must not read a match as proof of convergence: `import_changeset`
         legitimately ends elsewhere when the receiver holds records the sender never saw.
+        RAW, for an operator (3.20, F10): a record the read guard quarantined is returned as stored. The MCP server, the door to an agent's context, withholds its text; see read_guard_report().
         """
         rows = [{k: v for k, v in _fields(r).items() if k not in ("vec", "vec16", "vec_recipe")} for r in self.items]
         return {"format": self.CHANGESET_FORMAT, "records": rows,
@@ -15160,7 +15169,9 @@ class Inspeximus:
     def history(self, key: str) -> list[dict]:
         """The full validity timeline for `key`: every value it has held, in event-time order, each
         with its [valid_from, invalidated_at) interval, status, and — when it was retired — WHICH
-        policy adjudicated the retirement (meta['superseded_by_policy']). The audit trail behind as_of()."""
+        policy adjudicated the retirement (meta['superseded_by_policy']). The audit trail behind as_of().
+
+        RAW, for an operator (3.20, F10): a record the read guard quarantined is returned as stored. The MCP server, the door to an agent's context, withholds its text; see read_guard_report()."""
         recs = [r for r in self._tenant_rows() if r.get("key") == key]
         recs.sort(key=lambda r: r.get("valid_from", r["ts"]))
         # WHO WROTE EACH VERSION, and from which session. A shared store's whole point is the
@@ -18406,10 +18417,15 @@ class Inspeximus:
         # A STANDING ART. 21 OBJECTION WITHHOLDS HERE TOO. The index is the always-loaded surface, and
         # it carried the objecting subject's line after recall had stopped serving the record
         # (mcp-tools-review S6). The count is reported; the records are not erased.
+        # AND THE READ GUARD, THROUGH THE ONE FILTER EVERY PROMPT DOOR USES (3.20, F10). Only the objection was applied
+        # here, so an instruction-shaped record that recall withheld was served by the index, the surface an agent
+        # loads into every prompt. `_served_rows` applies both, as it does for the hook's doors (audit A-03).
         _withheld = self._withheld_ids() if self._objections else set()
-        if _withheld:
-            rows = [r for r in rows if r["id"] not in _withheld]
-        est = 1.35                      # words -> tokens; an estimate, and named as one in `limits`
+        _by_objection = len(_withheld & {r["id"] for r in self._tenant_rows()})
+        _not_objected = sum(1 for r in rows if r["id"] not in _withheld)
+        rows = self._served_rows(rows)
+        _by_guard = _not_objected - len(rows)
+        est = 1.35                     # words -> tokens; an estimate, and named as one in `limits`
 
         def _first_sentence(t: str, cap: int) -> str:
             s = re.split(r"(?<=[.!?])\s+", (t or "").strip())[0]
@@ -18485,7 +18501,9 @@ class Inspeximus:
             "records": len(entries), "words": words, "tokens_estimate": int(words * est),
             "generated": generated, "reused": reused, "fallback": fallback, "shortened": cut,
             "budget_tokens": budget_tokens, "over_budget": max(0, over), "limits": limits,
-            "withheld_by_objection": len(_withheld & {r["id"] for r in self._tenant_rows()}),
+            "withheld_by_objection": _by_objection,
+            # Held back by the read guard: instruction-shaped text, out of the index until release_quarantine (F10).
+            "withheld_by_read_guard": _by_guard,
             # WHAT AN AGENT NEEDS TO FIX IT. Over MCP the caller IS a model, so it cannot pass a
             # `summarise` callable -- but it can read these and write the lines itself with
             # set_index_line(). Capped, because this is a tool result and not a dump of the store.
@@ -19619,9 +19637,8 @@ class Inspeximus:
         inc = incompatible or (lambda a, b: _value_clash(a, b) or _negation_clash(a, b))
         active = [r for r in self.items if r.get("status") == "active"
                   and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant-scoped conflict check
-        if self._objections:                                   # Art. 21: not served here either (S6)
-            _withheld = self._withheld_ids()
-            active = [r for r in active if r["id"] not in _withheld]
+        # Art. 21 (S6) and the read guard (3.20, F10): a record recall would not serve is neither quoted nor judged here.
+        active = self._served_rows(active)
         hits, seen = [], set()
         if key is not None:                                    # (1) value change on a managed key
             for r in active:
@@ -19732,8 +19749,9 @@ class Inspeximus:
                     "current": (cur.get("object") if isinstance(cur, dict) else cur),
                     "matched": matched}
         # A STANDING ART. 21 OBJECTION: the subject's records neither support nor quote here, as in recall
-        # (mcp-tools-review S6). The claim is judged against what the store may still serve.
-        _withheld = self._withheld_ids() if self._objections else set()
+        # (mcp-tools-review S6). The claim is judged against what the store may still serve. AND A QUARANTINED RECORD
+        # (3.20, F10): only the objection was applied, so this quoted instruction-shaped text that recall withheld.
+        _withheld = self._unserved_ids(r for r in self._tenant_rows() if key is None or r.get("key") == key)
         # (1) keyed path — precise and supersession-aware
         if key is not None:
             cur = self._current_active(key)
@@ -19883,7 +19901,9 @@ class Inspeximus:
         entity-extraction, no separate graph store). It covers memories keyed explicitly OR via the optional
         `extractor` hook, so extractor-keyed free text also enters the graph. Only ACTIVE edges by default, so a
         superseded fact drops out of the graph (the graph reflects CURRENT truth) unless include_superseded.
-        Returns {'nodes': [entity,...], 'edges': [{subject, relation, object, id, text}, ...]}."""
+        Returns {'nodes': [entity,...], 'edges': [{subject, relation, object, id, text}, ...]}.
+
+        RAW, for an operator (3.20, F10): a record the read guard quarantined is returned as stored. The MCP server, the door to an agent's context, withholds its text; see read_guard_report()."""
         edges, nodes = [], set()
         for r in self.items:
             if not include_superseded and r.get("status") != "active":
@@ -21167,6 +21187,7 @@ class _TenantView:
     def reembed(self, *a, **k):             return Inspeximus.reembed(self, *a, **k)
     def _withheld_ids(self, *a, **k):   return Inspeximus._withheld_ids(self, *a, **k)
     def _served_rows(self, *a, **k):    return Inspeximus._served_rows(self, *a, **k)
+    def _unserved_ids(self, *a, **k):   return Inspeximus._unserved_ids(self, *a, **k)
     def forget_pii(self, *a, **k):      return Inspeximus.forget_pii(self, *a, **k)
     def pii_report(self, *a, **k):      return Inspeximus.pii_report(self, *a, **k)
     def remember_dedup(self, *a, **k):  return Inspeximus.remember_dedup(self, *a, **k)

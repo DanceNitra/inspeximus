@@ -1246,14 +1246,77 @@ def projects() -> dict:
             "note": "recall(all_projects=True) searches every project; an unscoped memory is visible from all."}
 
 
+_WITHHELD_NOTE = ("quarantined by the read guard: instruction-shaped text, held out of an agent's context as recall holds it "
+                  "out. release_quarantine() returns it; include_quarantined=True shows it to a caller who asks.")
+
+
+def _withhold_quarantined(result, include_quarantined: bool = False):
+    """`result` with the text and value of every quarantined record taken out, and the count said (3.20, F10).
+
+    The library's lookups (get by id, history, provenance, as_of) stay raw: an operator who looks a record up by key
+    sees what is stored. This server is the door to an AGENT's context, and recall withholds a quarantined record
+    there, so a lookup that handed the same text back would make the quarantine no quarantine: measured on v3.19.1,
+    `get(id)`, `get_as`, `history`, `provenance` and `as_of` all returned it. Every row these return carries the
+    record's `id`, so each dict with an id is checked against the store's own verdict, the one recall reads.
+    With include_quarantined=True the text stays, and the result says it holds quarantined rows."""
+    if not getattr(_MEM, "read_guards", False):
+        return result
+    found = []
+
+    def walk(x):
+        if isinstance(x, dict):
+            if isinstance(x.get("id"), str):
+                found.append(x)
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+    walk(result)
+    ids = {d["id"] for d in found}
+    if not ids:
+        return result
+    quarantined = set()
+    for r in _MEM.items:
+        if r.get("id") in ids:
+            _MEM._assess_read_guards(r)
+            if _MEM._is_quarantined(r):
+                quarantined.add(r["id"])
+    if not quarantined:
+        return result
+    import copy
+    result = copy.deepcopy(result)
+    n = 0
+    stack = [result]
+    while stack:
+        x = stack.pop()
+        if isinstance(x, dict):
+            if x.get("id") in quarantined and not include_quarantined:
+                for f in ("text", "object", "embedding"):
+                    if f in x:
+                        x[f] = None
+                x["withheld"] = _WITHHELD_NOTE
+                n += 1
+            stack.extend(v for v in x.values() if isinstance(v, (dict, list)))
+        elif isinstance(x, list):
+            stack.extend(v for v in x if isinstance(v, (dict, list)))
+    if isinstance(result, dict):
+        if include_quarantined:
+            result["holds_quarantined"] = len(quarantined)
+        else:
+            result["withheld_by_read_guard"] = n
+    return result
+
+
 @mcp.tool()
-def get(id: str) -> dict:
+def get(id: str, include_quarantined: bool = False) -> dict:
     """Fetch ONE memory's FULL record by id (complete untruncated text + all fields). The companion to recall's
     progressive-disclosure default: recall returns compact snippets + ids cheaply; call get(id) only for the few
     memories you actually need in full, instead of paying to dump every full record into context. Returns {} if
-    the id is unknown."""
+    the id is unknown. A record the read guard quarantined comes back with its text and value withheld, as recall
+    withholds it, unless `include_quarantined` is set."""
     rec = next((r for r in _MEM.items if r.get("id") == id), None)
-    return rec or {}
+    return _withhold_quarantined(rec, include_quarantined) if rec else {}
 
 
 @mcp.tool()
@@ -2958,10 +3021,11 @@ def erasure_certificate(request_id: str = "", expected_pubkey: str = "") -> dict
 
 
 @mcp.tool()
-def history(key: str) -> dict:
+def history(key: str, include_quarantined: bool = False) -> dict:
     """The full validity timeline for `key`: every value it has held, in event-time order — the audit trail a plain
-    vector store cannot produce. Read-only."""
-    return {"key": key, "history": _MEM.history(key)}
+    vector store cannot produce. Read-only. A quarantined version keeps its row with its text and value withheld,
+    unless `include_quarantined` is set."""
+    return _withhold_quarantined({"key": key, "history": _MEM.history(key)}, include_quarantined)
 
 
 @mcp.tool()
@@ -2982,20 +3046,23 @@ def erasure_audit(subject: str = "", values: list[str] | None = None) -> dict:
 
 
 @mcp.tool()
-def provenance(key: str = "", id: str = "") -> dict:
+def provenance(key: str = "", id: str = "", include_quarantined: bool = False) -> dict:
     """WHERE DID THIS FACT COME FROM — one answer, assembled from the whole record: the declared source and the
     lineage it inherited through summarization, whether an origin attestation bound it to a verified key, its
     evidence grade, every value it has held and WHICH policy retired each one, and whether it still matches the
     write receipt committed at write time (so a later relabel is loud). Pass `key` (the fact, across all its
-    values) or `id` (one record). Read-only; the returned `limits` state honestly what this does NOT prove."""
-    return _MEM.provenance(key=key or None, id=id or None)
+    values) or `id` (one record). Read-only; the returned `limits` state honestly what this does NOT prove. A
+    quarantined record's text and value are withheld, unless `include_quarantined` is set."""
+    return _withhold_quarantined(_MEM.provenance(key=key or None, id=id or None), include_quarantined)
 
 
 @mcp.tool()
-def as_of(key: str, when: float, as_recorded: float = 0.0) -> dict:
+def as_of(key: str, when: float, as_recorded: float = 0.0, include_quarantined: bool = False) -> dict:
     """POINT-IN-TIME (bitemporal) query: the value that was CURRENT for `key` at event-time `when` (UTC epoch
-    seconds), optionally as the store KNEW it at record-time `as_recorded`. 'What did we believe about X on date D.'"""
-    return {"key": key, "when": when, "value": _MEM.as_of(key, when, as_recorded=as_recorded or None)}
+    seconds), optionally as the store KNEW it at record-time `as_recorded`. 'What did we believe about X on date D.'
+    A quarantined record's text and value are withheld, unless `include_quarantined` is set."""
+    return _withhold_quarantined({"key": key, "when": when, "value": _MEM.as_of(key, when, as_recorded=as_recorded or None)},
+                                 include_quarantined)
 
 
 @mcp.tool()
@@ -3116,13 +3183,13 @@ def recall_as(agent: str, query: str, k: int = 6, full: bool = False, snippet_ch
 
 
 @mcp.tool()
-def get_as(agent: str, id: str) -> dict:
+def get_as(agent: str, id: str, include_quarantined: bool = False) -> dict:
     """Fetch ONE memory's full record AS a named agent -- the scoped companion to `get`, so an agent that
     found a hit through `recall_as` can read it in full without the unscoped `get` handing it back the whole
     store's records by id. Returns {} when the id is unknown OR the agent has no access; those two cases are
     deliberately indistinguishable, so this cannot be used to probe for the existence of a record."""
     rec = next((r for r in _MEM.as_agent(agent).items if r.get("id") == id), None)
-    return rec or {}
+    return _withhold_quarantined(rec, include_quarantined) if rec else {}
 
 
 def _require_event_table() -> None:

@@ -97,6 +97,14 @@ def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = Fal
             row["object"] = r.get("object")
         if basis == "portability":
             row["portable"] = row["why"] == "direct"
+        # A QUARANTINED RECORD IS EXPORTED WHOLE, AND MARKED (3.20, F10). An Art. 15 response contains everything held,
+        # so the text stays; every surface that serves an agent withholds it. The mark and the guard's verdict say why
+        # recall does not return this record, so the subject and the operator can tell held-back from absent.
+        if getattr(store, "read_guards", False):
+            store._assess_read_guards(r)
+            if store._is_quarantined(r):
+                row["quarantined"] = True
+                row["quarantine_shapes"] = list(((r.get("meta") or {}).get("quarantined") or {}).get("shapes") or [])
         try:
             row["provenance"] = store.provenance(id=rid)
         except Exception as e:  # noqa: BLE001 - the export must not fail on one record's provenance
@@ -139,7 +147,8 @@ def export_subject(store, subject: str, ledger=None, allow_ambiguous: bool = Fal
         "counts": {"records": len(records),
                    "direct": sum(1 for r in records if r["why"] == "direct"),
                    "inherited": sum(1 for r in records if r["why"] == "inherited"),
-                   "tombstones": len(tombstones), "actions": len(actions)},
+                   "tombstones": len(tombstones), "actions": len(actions),
+                   "quarantined": sum(1 for r in records if r.get("quarantined"))},
         "tombstones": tombstones,
         "actions": actions,
         "ambiguous_with": preview.get("ambiguous_with"),
