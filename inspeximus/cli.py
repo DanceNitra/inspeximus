@@ -198,6 +198,13 @@ def _flush_or_fail(m, required: bool = True) -> int:
         return 0
 
 
+def _shown(text) -> str:
+    """`text` with every non-printable character escaped (3.20, F12): what the ots commands print comes partly from a
+    proof somebody else made, and a terminal must not execute it."""
+    s = str(text)
+    return "".join(c if (c.isprintable() or c == " ") else c.encode("unicode_escape").decode("ascii") for c in s)
+
+
 def _ots_cmd(a) -> int:
     """`inspeximus ots ...` - the Bitcoin anchor, checked without python-bitcoinlib or a node.
 
@@ -222,14 +229,14 @@ def _ots_cmd(a) -> int:
             return 1
         for row in out["calendars"]:
             if row.get("error", "").startswith("not asked"):
-                print("%-48s %s" % (row["calendar"], row["error"]))
+                print("%-48s %s" % (_shown(row["calendar"]), _shown(row["error"])))
             elif row.get("error"):
-                print("%-48s could not be reached: %s" % (row["calendar"], row["error"]))
+                print("%-48s could not be reached: %s" % (_shown(row["calendar"]), _shown(row["error"])))
             elif row.get("bitcoin"):
-                print("%-48s block %s" % (row["calendar"],
+                print("%-48s block %s" % (_shown(row["calendar"]),
                                           ", ".join(str(b["height"]) for b in row["bitcoin"])))
             else:
-                print("%-48s still pending" % row["calendar"])
+                print("%-48s still pending" % _shown(row["calendar"]))
         if out["heights"]:
             print("")
             print("To finish the check offline, fetch one of those block headers and run:")
@@ -266,8 +273,8 @@ def _ots_cmd(a) -> int:
         print("file     : %s" % a.file)
         print("proof    : %s" % proof_path)
         print("digest   : %s" % out["file_digest_of_your_data"])
-        print("verdict  : %s" % out["verdict"])
-        print("           %s" % out["why"])
+        print("verdict  : %s" % _shown(out["verdict"]))
+        print("           %s" % _shown(out["why"]))
         if out.get("block_hash"):
             print("block    : %s" % out["block_hash"])
         if out.get("line_endings"):

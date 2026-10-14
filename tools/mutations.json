@@ -14013,5 +14013,32 @@
   "tests": [
    "tests/test_3200_f2_a_timestamp_proof_cannot_choose_where_the_verifier_connects.py"
   ]
+ },
+ {
+  "name": "a pending URI may hold any byte",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "    bad = sorted({b for b in raw if b not in URI_CHARS})",
+  "new": "    bad = []",
+  "tests": [
+   "tests/test_3200_f12_a_timestamp_proof_cannot_write_to_the_terminal.py"
+  ]
+ },
+ {
+  "name": "a pending URI may be any length",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "    if len(raw) > MAX_URI_LENGTH:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3200_f12_a_timestamp_proof_cannot_write_to_the_terminal.py"
+  ]
+ },
+ {
+  "name": "the ots commands print proof text unescaped",
+  "file": "inspeximus/cli.py",
+  "old": "    return \"\".join(c if (c.isprintable() or c == \" \") else c.encode(\"unicode_escape\").decode(\"ascii\") for c in s)",
+  "new": "    return s",
+  "tests": [
+   "tests/test_3200_f12_a_timestamp_proof_cannot_write_to_the_terminal.py"
+  ]
  }
 ]

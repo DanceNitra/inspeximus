@@ -64,7 +64,7 @@ def local_server():
 
 def test_a_proof_cannot_send_the_verifier_to_a_local_http_service(local_server):
     port, hits = local_server
-    out = ots.upgrade(_pending("http://127.0.0.1:%d/admin/action?x=" % port), timeout=5)
+    out = ots.upgrade(_pending("http://127.0.0.1:%d/admin/action" % port), timeout=5)
     assert hits == [], "the verifier connected to %r" % hits
     assert out["calendars"][0]["error"].startswith("not asked") and "not https" in out["calendars"][0]["error"]
 

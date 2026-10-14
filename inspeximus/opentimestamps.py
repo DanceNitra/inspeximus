@@ -90,6 +90,25 @@ class _Reader:
         return self.i >= len(self.data)
 
 
+#: THE OPENTIMESTAMPS CALENDAR URI ALPHABET (3.20, F12), as the reference client enforces it. A pending URI is printed
+#: in the verdict, and it was decoded with no check, so a proof could carry terminal escape sequences that move the
+#: cursor, erase the PENDING line and print a fake "verdict : ANCHORED" in its place (measured on v3.19.1: the CLI
+#: wrote the raw ESC byte and the fake line, exit code still 3). A URI outside this alphabet is a malformed proof.
+URI_CHARS = frozenset(b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._/:")
+MAX_URI_LENGTH = 1000
+
+
+def _pending_uri(raw: bytes) -> str:
+    if len(raw) > MAX_URI_LENGTH:
+        raise Malformed("a pending calendar URI of %d bytes, over the %d an OpenTimestamps URI may be"
+                        % (len(raw), MAX_URI_LENGTH))
+    bad = sorted({b for b in raw if b not in URI_CHARS})
+    if bad:
+        raise Malformed("a pending calendar URI with byte(s) %s outside the OpenTimestamps URI alphabet"
+                        % ", ".join("0x%02x" % b for b in bad[:8]))
+    return raw.decode("ascii")
+
+
 def _attestation(r: _Reader) -> dict:
     tag = r.take(8)
     payload = r.varbytes()
@@ -97,7 +116,7 @@ def _attestation(r: _Reader) -> dict:
     if tag == BITCOIN_TAG:
         return {"kind": "bitcoin", "height": inner.varuint()}
     if tag == PENDING_TAG:
-        return {"kind": "pending", "uri": inner.varbytes().decode("utf-8", "replace")}
+        return {"kind": "pending", "uri": _pending_uri(inner.varbytes())}
     if tag == LITECOIN_TAG:
         return {"kind": "litecoin", "height": inner.varuint()}
     if tag == ETHEREUM_TAG:
