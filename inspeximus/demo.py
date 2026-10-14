@@ -175,9 +175,15 @@ def run_demo(keep: str | None = None, *, echo_policy: str = "safe", forget: bool
     finally:
         for k, v in saved.items():
             _envpolicy.set_for_this_process(k, v)
-        shutil.rmtree(root, ignore_errors=True)
+        # A FAILED REMOVAL IS SAID, NOT SWALLOWED (3.20). `ignore_errors=True` left the folder, which holds the demo's
+        # stores, without a word; audit_the_audits already reports its leftover scratch the same way.
+        try:
+            shutil.rmtree(root)
+            left_behind = None
+        except OSError:
+            left_behind = root if os.path.exists(root) else None
     return {"ok": all(s["ok"] for s in steps), "seconds": round(time.time() - t0, 2), "steps": steps,
-            "kept_in": keep}
+            "kept_in": keep, "left_behind": left_behind}
 
 
 def render(result: dict) -> str:
@@ -224,4 +230,6 @@ def render(result: dict) -> str:
                " certificate and both copies were checked against its public key.")
     if result.get("kept_in"):
         out.append(f"The stores, the erasure certificate and the edited copy are in {result['kept_in']}.")
+    if result.get("left_behind"):
+        out.append(f"The demo could not remove its working folder {result['left_behind']}; it holds demo stores only.")
     return "\n".join(out)

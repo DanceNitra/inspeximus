@@ -14247,5 +14247,23 @@
   "tests": [
    "tests/test_3200_f4_a_checkpoint_witness_cosigns_one_root_per_size.py"
   ]
+ },
+ {
+  "name": "the erasure example leaves its folder in TEMP",
+  "file": "examples/11_verifiable_erasure.py",
+  "old": "        if not keep:\n            try:\n                shutil.rmtree(work)",
+  "new": "        if False:\n            try:\n                shutil.rmtree(work)",
+  "tests": [
+   "tests/test_3200_an_example_and_the_demo_leave_no_folder_behind.py"
+  ]
+ },
+ {
+  "name": "the demo hides a folder it could not remove",
+  "file": "inspeximus/demo.py",
+  "old": "            left_behind = root if os.path.exists(root) else None",
+  "new": "            left_behind = None",
+  "tests": [
+   "tests/test_3200_an_example_and_the_demo_leave_no_folder_behind.py"
+  ]
  }
 ]

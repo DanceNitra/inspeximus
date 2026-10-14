@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -94,8 +95,7 @@ def check(claim: str, condition: bool) -> None:
         raise SystemExit(f"\nASSERTION FAILED: {claim}")
 
 
-def main() -> int:
-    work = tempfile.mkdtemp(prefix="inspeximus-erasure-")
+def _run(work: str, keep: bool) -> int:
     data = os.path.join(work, "dsar")
     os.makedirs(data, exist_ok=True)
     store = os.path.join(data, "store.json")
@@ -292,8 +292,25 @@ def main() -> int:
 
   These are integrity primitives that produce evidence. They are not a compliance certification --
   and the certificate says so in a field the verifier checks.""")
-    print(f"\n(working directory left for inspection: {work})")
+    print(f"\n(working directory left for inspection: {work})" if keep else
+          "\n(working directory removed; run with --keep to inspect it)")
     return 0
+
+
+def main(argv=None) -> int:
+    """Run the walk-through in a fresh directory, and remove it at the end unless `--keep` is given (3.20). It was
+    left behind on every run, one `inspeximus-erasure-*` folder in TEMP each time, holding a demo store and the
+    receipt key it signed with."""
+    keep = "--keep" in (sys.argv[1:] if argv is None else argv)
+    work = tempfile.mkdtemp(prefix="inspeximus-erasure-")
+    try:
+        return _run(work, keep)
+    finally:
+        if not keep:
+            try:
+                shutil.rmtree(work)
+            except OSError as e:
+                print(f"could not remove the working directory {work}: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":
