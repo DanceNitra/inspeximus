@@ -14229,5 +14229,23 @@
   "tests": [
    "tests/test_3200_f8b_a_recall_query_cannot_be_recovered_from_the_store.py"
   ]
+ },
+ {
+  "name": "the checkpoint witness checks and writes without a lock",
+  "file": "inspeximus/witness_checkpoint.py",
+  "old": "        with _StoreLock(self.state_path):",
+  "new": "        if True:",
+  "tests": [
+   "tests/test_3200_f4_a_checkpoint_witness_cosigns_one_root_per_size.py"
+  ]
+ },
+ {
+  "name": "every checkpoint-witness save shares one temporary file",
+  "file": "inspeximus/witness_checkpoint.py",
+  "old": "        fd, tmp = tempfile.mkstemp(prefix=\".\" + os.path.basename(self.state_path) + \".\", suffix=\".tmp\",\n                                   dir=parent or None)",
+  "new": "        tmp = self.state_path + \".tmp\"\n        fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)",
+  "tests": [
+   "tests/test_3200_f4_a_checkpoint_witness_cosigns_one_root_per_size.py"
+  ]
  }
 ]

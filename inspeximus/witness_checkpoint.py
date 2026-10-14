@@ -34,6 +34,8 @@ import hashlib
 import json
 import os
 import struct
+import tempfile
+import threading
 import time
 
 from . import checkpoint as cp
@@ -153,6 +155,7 @@ class CheckpointWitness:
         self.name, self._secret, self.pubkey = name, secret_hex, pubkey_hex
         self.max_per_minute = int(max_per_minute)
         self._hits: dict = {}
+        self._hits_lock = threading.Lock()
 
     # -- state ---------------------------------------------------------------------------------
     def _load(self) -> dict:
@@ -177,12 +180,22 @@ class CheckpointWitness:
         parent = os.path.dirname(os.path.abspath(self.state_path))
         if parent:
             os.makedirs(parent, exist_ok=True)
-        tmp = self.state_path + ".tmp"
-        with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
-            json.dump(state, fh, indent=2, sort_keys=True)
-            fh.flush()
-            os.fsync(fh.fileno())
-        os.replace(tmp, self.state_path)
+        # A TEMPORARY NAME OF ITS OWN (3.20, F4). It was `<state>.tmp` for every writer, so two writers wrote one
+        # temporary file and the slower one renamed the faster one's half.
+        fd, tmp = tempfile.mkstemp(prefix="." + os.path.basename(self.state_path) + ".", suffix=".tmp",
+                                   dir=parent or None)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(state, fh, indent=2, sort_keys=True)
+                fh.flush()
+                os.fsync(fh.fileno())
+            os.replace(tmp, self.state_path)
+        except BaseException:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
 
     def latest(self, origin: str) -> dict:
         return self._load()["logs"].get(origin, {"size": 0, "root": ""})
@@ -194,12 +207,13 @@ class CheckpointWitness:
         A witness answers a cron job, not a crowd: a log that submits more than once a minute is
         either broken or using us as a signing oracle.
         """
-        now = time.time()
-        hits = [t for t in self._hits.get(origin, []) if now - t < 60.0]
-        if len(hits) >= self.max_per_minute:
-            raise Refused(429, "too many submissions for this origin in one minute")
-        hits.append(now)
-        self._hits[origin] = hits
+        with self._hits_lock:
+            now = time.time()
+            hits = [t for t in self._hits.get(origin, []) if now - t < 60.0]
+            if len(hits) >= self.max_per_minute:
+                raise Refused(429, "too many submissions for this origin in one minute")
+            hits.append(now)
+            self._hits[origin] = hits
 
     # -- the protocol --------------------------------------------------------------------------
     def add_checkpoint(self, body: bytes):
@@ -241,7 +255,16 @@ class CheckpointWitness:
         if old_size > size:
             raise Refused(400, "the old size is larger than the checkpoint size")
 
-        state = self._load()
+        # THE CHECK AND THE WRITE UNDER ONE LOCK (3.20, F4). The class docstring said so and nothing held one: two
+        # submissions that both read the held head before either wrote were both judged against it, so two
+        # different roots at one size were both cosigned, a fork this witness exists to refuse (AUDIT-A, forced
+        # interleaving). `_StoreLock` is the store's own lock: across processes, and across threads in one.
+        from .core import _StoreLock
+        with _StoreLock(self.state_path):
+            return self._check_and_cosign(state=self._load(), origin=origin, old_size=old_size, proof=proof,
+                                          size=size, root=root, text=text)
+
+    def _check_and_cosign(self, state, origin, old_size, proof, size, root, text):
         held = state["logs"].get(origin, {"size": 0, "root": ""})
         if old_size != held["size"]:
             raise Refused(409, "the old size is not the one this witness last cosigned",
