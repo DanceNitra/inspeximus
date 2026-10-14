@@ -194,32 +194,86 @@ def attestations_from_upgrade(pending_digest: str, upgrade_body: bytes) -> list:
     return out
 
 
-def upgrade(ots: bytes, fetch=None, timeout: float = 25.0) -> dict:
+#: THE CALENDARS A PROOF MAY SEND THIS VERIFIER TO (3.20, F2). The pending URI is bytes the proof's author chose, and
+#: `upgrade` opened it with urllib's full default opener: http, ftp and file included, redirects followed. A crafted
+#: proof sent the verifier's GET to any host it could reach (measured on v3.19.1: a local server received
+#: /admin/action?x=/timestamp/...), made it read a local file as a calendar, and on Windows a `file:` URI becomes a
+#: UNC path, which can leak the user's NTLM hash. These are the public calendars the OpenTimestamps client ships with.
+#: A caller who runs another calendar passes `calendars=` (the CLI: --calendar).
+DEFAULT_CALENDARS = (
+    "https://alice.btc.calendar.opentimestamps.org",
+    "https://bob.btc.calendar.opentimestamps.org",
+    "https://finney.calendar.eternitywall.com",
+    "https://btc.calendar.catallaxy.com",
+)
+#: The largest calendar response read. A real one is a few hundred bytes.
+MAX_CALENDAR_RESPONSE = 64 * 1024
+
+
+def calendar_refusal(uri: str, calendars=DEFAULT_CALENDARS) -> str | None:
+    """Why `upgrade` will not ask `uri`, or None when it may: https only, no userinfo, query or fragment, and a host
+    (with its port) that one of `calendars` names."""
+    from urllib.parse import urlsplit
+    try:
+        u = urlsplit(str(uri))
+        host = (u.hostname or "").lower()
+        port = u.port
+    except ValueError as e:
+        return "not a URL (%s)" % e
+    if u.scheme != "https":
+        return "the calendar URI is %r, not https" % (u.scheme or "no scheme")
+    if u.username or u.password or u.query or u.fragment:
+        return "the calendar URI carries userinfo, a query or a fragment"
+    allowed = set()
+    for c in calendars or ():
+        cu = urlsplit(str(c))
+        allowed.add(((cu.hostname or "").lower(), cu.port))
+    if (host, port) not in allowed:
+        return "%s is not a calendar this verifier asks (pass calendars= or --calendar to add one)" % host
+    return None
+
+
+def _https_only_fetch(timeout: float):
+    """An opener with the HTTPS handler and nothing else: no file, ftp or plain-http handler, and no redirects, so a
+    3xx is an error rather than a hop to wherever it points. The body is capped at MAX_CALENDAR_RESPONSE."""
+    import ssl
+    import urllib.request
+    try:
+        import certifi
+        ctx = ssl.create_default_context(cafile=certifi.where())
+    except ImportError:                                          # noqa: BLE001
+        ctx = ssl.create_default_context()
+    opener = urllib.request.OpenerDirector()
+    for h in (urllib.request.HTTPSHandler(context=ctx), urllib.request.HTTPErrorProcessor(),
+              urllib.request.HTTPDefaultErrorHandler()):
+        opener.add_handler(h)
+
+    def fetch(url):
+        req = urllib.request.Request(url, headers={"Accept": "application/vnd.opentimestamps.v1",
+                                                   "User-Agent": "inspeximus-ots/1"})
+        with opener.open(req, timeout=timeout) as r:
+            body = r.read(MAX_CALENDAR_RESPONSE + 1)
+        if len(body) > MAX_CALENDAR_RESPONSE:
+            raise Malformed("the calendar answered more than %d bytes" % MAX_CALENDAR_RESPONSE)
+        return body
+    fetch.opener = opener
+    return fetch
+
+
+def upgrade(ots: bytes, fetch=None, timeout: float = 25.0, calendars=DEFAULT_CALENDARS) -> dict:
     """Ask each calendar named in a pending proof whether a block has been mined about it.
 
-    This is the ONE function here that touches the network, it is opt-in, and it reads public
-    endpoints only. Nothing about your data leaves the machine: a calendar is asked about a digest
-    it already holds. Pass `fetch` to route it through your own client, or to test without a
-    network.
+    This is the ONE function here that touches the network, and it is opt-in. It asks only https calendars that
+    `calendars` names (3.20, F2; DEFAULT_CALENDARS by default), whatever the proof says, and a calendar it will not
+    ask gets a row with the reason. Nothing about your data leaves the machine: a calendar is asked about a digest
+    it already holds. Pass `fetch` to route it through your own client, or to test without a network; the calendar
+    check applies to it as well.
 
     Returns the pending attestations with whatever each calendar answered, so a caller can see which
     calendar supplied the block rather than being handed an anonymous verdict.
     """
     if fetch is None:
-        import ssl
-        import urllib.request
-        try:
-            import certifi
-            ctx = ssl.create_default_context(cafile=certifi.where())
-        except ImportError:                                      # noqa: BLE001
-            ctx = ssl.create_default_context()
-
-        def fetch(url):                                          # noqa: F811
-            req = urllib.request.Request(
-                url, headers={"Accept": "application/vnd.opentimestamps.v1",
-                              "User-Agent": "inspeximus-ots/1"})
-            with urllib.request.urlopen(req, timeout=timeout, context=ctx) as r:
-                return r.read()
+        fetch = _https_only_fetch(timeout)
 
     parsed = parse(ots)
     results = []
@@ -227,8 +281,15 @@ def upgrade(ots: bytes, fetch=None, timeout: float = 25.0) -> dict:
         if a["kind"] != "pending":
             continue
         row = {"calendar": a["uri"], "commitment": a["digest"]}
+        why = calendar_refusal(a["uri"], calendars)
+        if why:
+            row["error"] = "not asked: " + why
+            results.append(row)
+            continue
         try:
             body = fetch(a["uri"].rstrip("/") + "/timestamp/" + a["digest"])
+            if len(body or b"") > MAX_CALENDAR_RESPONSE:              # whatever transport fetched it (F2)
+                raise Malformed("the calendar answered more than %d bytes" % MAX_CALENDAR_RESPONSE)
             row["attestations"] = attestations_from_upgrade(a["digest"], body)
             row["bitcoin"] = [x for x in row["attestations"] if x["kind"] == "bitcoin"]
         except Exception as exc:                                 # noqa: BLE001

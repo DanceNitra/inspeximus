@@ -13959,5 +13959,59 @@
   "tests": [
    "tests/test_3200_f5_an_issuer_name_is_bound_to_its_key.py"
   ]
+ },
+ {
+  "name": "a timestamp calendar may be plain http or a file",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "    if u.scheme != \"https\":",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3200_f2_a_timestamp_proof_cannot_choose_where_the_verifier_connects.py"
+  ]
+ },
+ {
+  "name": "any https host is asked as a timestamp calendar",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "    if (host, port) not in allowed:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3200_f2_a_timestamp_proof_cannot_choose_where_the_verifier_connects.py"
+  ]
+ },
+ {
+  "name": "a calendar URI may carry userinfo or a query",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "    if u.username or u.password or u.query or u.fragment:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3200_f2_a_timestamp_proof_cannot_choose_where_the_verifier_connects.py"
+  ]
+ },
+ {
+  "name": "upgrade asks every calendar a proof names",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "        why = calendar_refusal(a[\"uri\"], calendars)",
+  "new": "        why = None",
+  "tests": [
+   "tests/test_3200_f2_a_timestamp_proof_cannot_choose_where_the_verifier_connects.py"
+  ]
+ },
+ {
+  "name": "a calendar answer is not capped",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "            if len(body or b\"\") > MAX_CALENDAR_RESPONSE:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_f2_a_timestamp_proof_cannot_choose_where_the_verifier_connects.py"
+  ]
+ },
+ {
+  "name": "the calendar opener is urllib's default one",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "    opener = urllib.request.OpenerDirector()",
+  "new": "    opener = urllib.request.build_opener()",
+  "tests": [
+   "tests/test_3200_f2_a_timestamp_proof_cannot_choose_where_the_verifier_connects.py"
+  ]
  }
 ]

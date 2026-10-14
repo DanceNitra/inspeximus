@@ -210,16 +210,20 @@ def _ots_cmd(a) -> int:
     """
     import json as _json
 
-    from .opentimestamps import Malformed, upgrade, verify
+    from .opentimestamps import DEFAULT_CALENDARS, Malformed, upgrade, verify
+    # F2 (3.20): only https calendars on this list are asked, whatever the proof names.
+    calendars = tuple(DEFAULT_CALENDARS) + tuple(getattr(a, "calendar", None) or ())
 
     if a.ots_cmd == "upgrade":
         try:
-            out = upgrade(_Path(a.proof).read_bytes())
+            out = upgrade(_Path(a.proof).read_bytes(), calendars=calendars)
         except Malformed as exc:
             print("could not read %s: %s" % (a.proof, exc))
             return 1
         for row in out["calendars"]:
-            if row.get("error"):
+            if row.get("error", "").startswith("not asked"):
+                print("%-48s %s" % (row["calendar"], row["error"]))
+            elif row.get("error"):
                 print("%-48s could not be reached: %s" % (row["calendar"], row["error"]))
             elif row.get("bitcoin"):
                 print("%-48s block %s" % (row["calendar"],
@@ -243,7 +247,7 @@ def _ots_cmd(a) -> int:
     extra = []
     if a.upgrade:
         try:
-            up = upgrade(ots)
+            up = upgrade(ots, calendars=calendars)
             extra = [b for r in up["calendars"] for b in r.get("bitcoin", [])]
         except Exception as exc:                                 # noqa: BLE001
             print("the calendars could not be asked: %s" % str(exc)[:160])
@@ -931,9 +935,13 @@ def main(argv=None):
                      help="ask the calendars named in the proof what has been mined since. This is the "
                           "only part that uses the network, and it sends a digest they already hold")
     otv.add_argument("--json", action="store_true", help="print the whole verdict as json")
+    _cal_help = ("an https calendar to ask besides the four public OpenTimestamps calendars; repeatable. A calendar "
+                 "a proof names that is not on the list is not asked (3.20)")
+    otv.add_argument("--calendar", action="append", default=[], help=_cal_help)
 
     otu = otsub.add_parser("upgrade", help="ask the calendars which block covers a pending proof")
     otu.add_argument("proof", help="the .ots file")
+    otu.add_argument("--calendar", action="append", default=[], help=_cal_help)
 
     wt = sub.add_parser("witness", help="witness network: independent co-signers that make a SPLIT VIEW "
                                         "(one history shown to one reader, another to another) detectable")
