@@ -8361,7 +8361,7 @@
  {
   "name": "allowed_hosts entries are ignored",
   "file": "inspeximus/_http.py",
-  "old": "            named.append(url_host(h) if \"://\" in h else h.lower().strip(\"[]\"))\n",
+  "old": "            named.append(_entry_host(h, plain) if \"://\" in h else h.lower().strip(\"[]\"))\n",
   "new": "            pass\n",
   "tests": [
    "tests/test_audit_a_f12_env_embed_url_needs_the_users_consent.py",
@@ -14138,6 +14138,24 @@
   "new": "                   \"quarantined\": 0},",
   "tests": [
    "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
+  ]
+ },
+ {
+  "name": "an https embed.url admits http on its host",
+  "file": "inspeximus/_http.py",
+  "old": "        named.append(_entry_host(cfg[\"url\"].strip(), plain))",
+  "new": "        named.append(url_host(cfg[\"url\"].strip()))",
+  "tests": [
+   "tests/test_3200_f11_an_https_config_does_not_admit_http.py"
+  ]
+ },
+ {
+  "name": "an https allowed_hosts URL admits http on its host",
+  "file": "inspeximus/_http.py",
+  "old": "            named.append(_entry_host(h, plain) if \"://\" in h else h.lower().strip(\"[]\"))",
+  "new": "            named.append(url_host(h) if \"://\" in h else h.lower().strip(\"[]\"))",
+  "tests": [
+   "tests/test_3200_f11_an_https_config_does_not_admit_http.py"
   ]
  }
 ]

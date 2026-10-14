@@ -181,22 +181,35 @@ def user_embed_config():
 
 def host_allowed(url, embed_cfg=None) -> bool:
     """True when `url` is on this machine, or the user's config names its host in `embed.url` or
-    `embed.allowed_hosts`. An entry in `allowed_hosts` is a host name or address, or a URL whose host is used."""
+    `embed.allowed_hosts`. An entry in `allowed_hosts` is a host name or address, or a URL whose host is used.
+
+    AN HTTPS ENTRY ADMITS ONLY HTTPS (3.20, F11). Only the host was compared, so `embed.url = https://api.example/...`
+    admitted `http://api.example/...`, and env_key() then sent the API key over plain http to a host the user had
+    configured over https. A host named by an https URL is now admitted only over https. The port is not compared,
+    as the 3.16.4 rule says (the user's config names a HOST), and an http entry or a bare host admits any scheme."""
     if is_loopback(url):
         return True
     host = url_host(url)
     if not host:
         return False
     cfg = user_embed_config() if embed_cfg is None else embed_cfg
+    plain = str(url).split("://", 1)[0].lower() != "https"
     named = []
     if isinstance(cfg.get("url"), str):
-        named.append(url_host(cfg["url"].strip()))
+        named.append(_entry_host(cfg["url"].strip(), plain))
     hosts = cfg.get("allowed_hosts")
     for h in (hosts if isinstance(hosts, list) else []):
         if isinstance(h, str) and h.strip():
             h = h.strip()
-            named.append(url_host(h) if "://" in h else h.lower().strip("[]"))
+            named.append(_entry_host(h, plain) if "://" in h else h.lower().strip("[]"))
     return host in named
+
+
+def _entry_host(entry, plain: bool):
+    """The host a URL entry names, or None when it is an https entry and the URL asked about is not https (F11)."""
+    if plain and entry.split("://", 1)[0].lower() == "https":
+        return None
+    return url_host(entry)
 
 
 def _notice(var, url, what):
