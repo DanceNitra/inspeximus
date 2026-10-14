@@ -157,7 +157,23 @@ class CoseDecodeError(ValueError):
     the old trailing-bytes error still catches this."""
 
 
+def must_be_bytes(v, what: str, limit: int | None = None) -> bytes:
+    """`v` as bytes when it is a byte string of at most `limit` bytes, else a CoseDecodeError naming the slot (3.20).
+
+    F3: a COSE structure is CBOR its sender chooses, and `bytes(x)` of an INTEGER allocates x zero bytes: a 90-byte POST
+    with 2^27 in a statement's payload slot grew SCRAPI by 399 MB before any check refused it, and 2^32 asks for 4 GiB.
+    Every slot a sender controls goes through here before it is used as bytes. `limit` is for a value whose size the
+    input does not bound by itself (F6: a digest a timestamp proof's operations grow)."""
+    if not isinstance(v, (bytes, bytearray)):
+        raise CoseDecodeError("%s is a CBOR %s, not a byte string" % (what, type(v).__name__))
+    if limit is not None and len(v) > limit:
+        raise CoseDecodeError("%s is %d bytes, over the %d-byte bound" % (what, len(v), limit))
+    return bytes(v)
+
+
 def decode(b: bytes):
+    if not isinstance(b, (bytes, bytearray, memoryview)):          # bytes(int) would allocate it (3.20, F3)
+        raise CoseDecodeError("can decode only a byte string, not %s" % type(b).__name__)
     try:
         v, i = _dec(bytes(b), 0)
     except CoseDecodeError:
@@ -221,11 +237,20 @@ def verify_receipt(receipt: bytes, verify, leaf_data: bytes | None = None,
     out = {"ok": False, "signature_ok": False, "inclusion_ok": False, "root_matches": None,
            "problems": []}
     try:
+        # The caller's leaf and root are often read from another decoded structure (a log entry, a bundle), so they
+        # are checked like the receipt's own slots (3.20, F3).
+        leaf_data = None if leaf_data is None else must_be_bytes(leaf_data, "leaf_data")
+        expected_root = None if expected_root is None else must_be_bytes(expected_root, "expected_root")
         tagged = decode(receipt)
         if not isinstance(tagged, CBORTag) or tagged.tag != COSE_SIGN1_TAG:
             out["problems"].append("not a COSE_Sign1 (tag 18)")
             return out
         protected, unprotected, payload, sig = tagged.value
+        # EVERY SLOT THE SENDER CONTROLS IS A BYTE STRING BEFORE IT IS USED AS ONE (3.20, F3): bytes() of an integer
+        # allocates it, so an integer in the payload, the signature or an audit-path element cost 2^k bytes.
+        protected = must_be_bytes(protected, "the protected header") if protected else b""
+        payload = None if payload is None else must_be_bytes(payload, "the payload")
+        sig = must_be_bytes(sig, "the signature")
         ph = decode(protected) if protected else {}
         if ph.get(HDR_VDS) != VDS_RFC9162_SHA256:
             out["problems"].append("vds is %r, expected 1 (RFC9162_SHA256)" % ph.get(HDR_VDS))
@@ -233,7 +258,10 @@ def verify_receipt(receipt: bytes, verify, leaf_data: bytes | None = None,
         if not proofs:
             out["problems"].append("no inclusion proof in vdp[-1]")
             return out
-        size, index, path = decode(proofs[0])
+        size, index, path = decode(must_be_bytes(proofs[0], "the inclusion proof"))
+        if not isinstance(path, list):
+            raise CoseDecodeError("the audit path is a CBOR %s, not an array" % type(path).__name__)
+        path = [must_be_bytes(p, "audit path element %d" % i) for i, p in enumerate(path)]
         out["detached"] = payload is None
 
         # RESOLVE THE ROOT. An attached receipt carries it. A detached one does not, by design, so the

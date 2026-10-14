@@ -13716,5 +13716,50 @@
   "tests": [
    "tests/test_a_receipt_chain_shared_between_threads.py"
   ]
+ },
+ {
+  "name": "must_be_bytes passes an integer through",
+  "file": "inspeximus/cose.py",
+  "old": "    if not isinstance(v, (bytes, bytearray)):\n        raise CoseDecodeError(\"%s is a CBOR %s, not a byte string\" % (what, type(v).__name__))",
+  "new": "    if False:\n        raise CoseDecodeError(\"%s is a CBOR %s, not a byte string\" % (what, type(v).__name__))",
+  "tests": [
+   "tests/test_3200_f3_an_integer_where_bytes_belong_allocates_nothing.py"
+  ]
+ },
+ {
+  "name": "cose.decode takes an integer again",
+  "file": "inspeximus/cose.py",
+  "old": "    if not isinstance(b, (bytes, bytearray, memoryview)):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3200_f3_an_integer_where_bytes_belong_allocates_nothing.py"
+  ]
+ },
+ {
+  "name": "must_be_bytes ignores its limit",
+  "file": "inspeximus/cose.py",
+  "old": "    if limit is not None and len(v) > limit:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3200_f3_an_integer_where_bytes_belong_allocates_nothing.py"
+  ]
+ },
+ {
+  "name": "a statement's payload slot is used unchecked",
+  "file": "inspeximus/scitt.py",
+  "old": "        payload = None if payload is None else must_be_bytes(payload, \"the payload\")",
+  "new": "        payload = payload",
+  "tests": [
+   "tests/test_3200_f3_an_integer_where_bytes_belong_allocates_nothing.py"
+  ]
+ },
+ {
+  "name": "SCRAPI reads any declared body",
+  "file": "inspeximus/scrapi.py",
+  "old": "            if n > limit:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_f3_an_integer_where_bytes_belong_allocates_nothing.py"
+  ]
  }
 ]

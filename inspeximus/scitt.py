@@ -38,7 +38,7 @@ from __future__ import annotations
 import hashlib
 
 from .cose import (ALG_EDDSA, ALG_ES256, COSE_SIGN1_TAG, CBORTag, HDR_ALG,  # noqa: F401
-                   _sig_structure, decode, encode)
+                   must_be_bytes, _sig_structure, decode, encode)
 
 __all__ = ["signed_statement", "verify_signed_statement", "transparent_statement",
            "verify_transparent_statement",
@@ -115,6 +115,11 @@ def verify_signed_statement(statement: bytes, verify, expected_issuer: str | Non
             out["problems"].append("not a COSE_Sign1 (tag 18)")
             return out
         protected, _unprotected, payload, sig = tagged.value
+        # A BYTE STRING IN EVERY BYTE SLOT, CHECKED BEFORE ANY bytes() (3.20, F3): an integer here allocated itself, so
+        # a 90-byte POST with 2^27 as its payload grew SCRAPI by 399 MB before the signature check refused it.
+        protected = must_be_bytes(protected, "the protected header") if protected else b""
+        payload = None if payload is None else must_be_bytes(payload, "the payload")
+        sig = must_be_bytes(sig, "the signature")
         ph = decode(protected) if protected else {}
         out["alg"] = ph.get(HDR_ALG)
 
@@ -182,7 +187,8 @@ def receipts_of(statement: bytes) -> list:
         return []
     try:
         _protected, unprotected, _payload, _sig = tagged.value
-        return [bytes(r) for r in (unprotected or {}).get(HDR_RECEIPTS, [])]
+        return [must_be_bytes(r, "carried receipt %d" % i)                    # bytes(int) allocated it (3.20, F3)
+                for i, r in enumerate((unprotected or {}).get(HDR_RECEIPTS, []))]
     except (TypeError, ValueError, AttributeError) as e:
         raise CoseDecodeError("not a well-formed COSE_Sign1 (%s: %s)" % (type(e).__name__, e)) from None
 
@@ -207,6 +213,11 @@ def verify_transparent_statement(statement: bytes, verify_statement, verify_rece
     """
     from . import cose
     out = {"ok": False, "statement": None, "receipt": None, "bound": None, "problems": []}
+    try:                                                  # bytes(int) allocated it (3.20, F3)
+        leaf, expected_root = must_be_bytes(leaf, "leaf"), must_be_bytes(expected_root, "expected_root")
+    except cose.CoseDecodeError as e:
+        out["problems"].append(str(e))
+        return out
 
     st = verify_signed_statement(statement, verify_statement,
                                  expected_issuer=expected_issuer, expected_subject=expected_subject)

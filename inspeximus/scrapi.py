@@ -48,6 +48,10 @@ __all__ = ["make_server", "main", "CBOR", "COSE", "PROBLEM"]
 COSE = "application/cose"
 CBOR = "application/cbor"
 PROBLEM = "application/concise-problem-details+cbor"
+#: The largest request body /entries reads (3.20, F3). The handler read whatever Content-Length a client declared. A
+#: Signed Statement is its payload (the policy's `max_payload_bytes`, 4,096 by default) plus headers and a signature, so
+#: the cap is 1 MiB, or the policy's payload bound plus 64 KiB when an operator configured a larger one.
+MAX_BODY_BYTES = 1 << 20
 
 #: RFC 9290 concise problem details: the title lives at key -1, the detail at -2.
 _PROBLEM_TITLE = -1
@@ -201,6 +205,13 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
                 n = int(self.headers.get("Content-Length") or 0)
             except ValueError:
                 n = 0
+            # A BODY OVER THE CAP IS REFUSED UNREAD (3.20, F3). Draining it is what the cap exists to avoid, so this one
+            # refusal closes the connection instead: the client sees the 413 or a reset, and the server reads nothing.
+            limit = max(MAX_BODY_BYTES, int(getattr(service.policy, "max_payload_bytes", 0) or 0) + (64 << 10))
+            if n > limit:
+                self.close_connection = True
+                return self._send(413, PROBLEM, _problem("request body too large",
+                                                         "%d bytes declared; this service reads at most %d" % (n, limit)))
             statement = self.rfile.read(n) if n > 0 else b""
 
             ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip()
