@@ -105,15 +105,35 @@ def _attestation(r: _Reader) -> dict:
     return {"kind": "unknown", "tag": tag.hex(), "payload": payload.hex()}
 
 
-def _walk(r: _Reader, digest: bytes, out: list, depth: int = 0) -> None:
+#: BOUNDS ON WHAT A PROOF CAN MAKE THE VERIFIER DO (3.20, F6). `hexlify` doubles the digest, so a 98-byte proof with 22
+#: of them peaked at 403 MB, and about 30 kill the process. A real digest is a hash or a hash with a nonce appended:
+#: tens of bytes. The digest is held to MAX_DIGEST_BYTES after every operation, so no operation can start from more,
+#: and the whole proof, every fork included, to MAX_OPERATIONS. A real proof has hundreds at most (the 630-byte proof in
+#: tests/fixtures/ots has fewer operations than bytes).
+MAX_DIGEST_BYTES = 4096
+MAX_OPERATIONS = 10000
+
+
+def _bounded(digest: bytes, op_name: str) -> bytes:
+    from .cose import CoseDecodeError, must_be_bytes
+    try:
+        return must_be_bytes(digest, "the digest after %s" % op_name, limit=MAX_DIGEST_BYTES)
+    except CoseDecodeError as e:
+        raise Malformed(str(e)) from None
+
+
+def _walk(r: _Reader, digest: bytes, out: list, depth: int = 0, budget: list | None = None) -> None:
     """Apply operations to `digest`, collecting every attestation reached, down every fork.
 
     A proof is a TREE, not a line. A fork means the same digest was submitted to more than one
     calendar, and each branch has to be followed: reading only the first branch is how a proof that
     IS anchored reads as pending.
+
+    `budget` is one counter shared by every fork of one proof (F6).
     """
     if depth > 256:
         raise Malformed("the proof nests deeper than 256 forks")
+    budget = [MAX_OPERATIONS] if budget is None else budget
     while True:
         if r.done():
             return
@@ -122,17 +142,20 @@ def _walk(r: _Reader, digest: bytes, out: list, depth: int = 0) -> None:
             out.append(dict(_attestation(r), digest=digest.hex()))
             return
         if op == FORK:
-            _walk(r, digest, out, depth + 1)
+            _walk(r, digest, out, depth + 1, budget)
             continue
+        budget[0] -= 1
+        if budget[0] < 0:
+            raise Malformed("the proof has more than %d operations" % MAX_OPERATIONS)
         if op in _BINARY:
             arg = r.varbytes()
-            digest = digest + arg if _BINARY[op] == "append" else arg + digest
+            digest = _bounded(digest + arg if _BINARY[op] == "append" else arg + digest, _BINARY[op])
             continue
         if op in _UNARY:
             name, fn = _UNARY[op]
             if fn is None:
                 raise Malformed("this proof uses %s, which this verifier does not implement" % name)
-            digest = fn(digest)
+            digest = _bounded(fn(digest), name)
             continue
         raise Malformed("unknown operation byte 0x%02x at offset %d" % (op, r.i - 1))
 

@@ -13761,5 +13761,32 @@
   "tests": [
    "tests/test_3200_f3_an_integer_where_bytes_belong_allocates_nothing.py"
   ]
+ },
+ {
+  "name": "a timestamp proof's digest is not bounded",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "        return must_be_bytes(digest, \"the digest after %s\" % op_name, limit=MAX_DIGEST_BYTES)",
+  "new": "        return must_be_bytes(digest, \"the digest after %s\" % op_name, limit=None)",
+  "tests": [
+   "tests/test_3200_f6_a_timestamp_proof_cannot_grow_its_digest.py"
+  ]
+ },
+ {
+  "name": "a timestamp proof's operations are not counted",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "        budget[0] -= 1\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_3200_f6_a_timestamp_proof_cannot_grow_its_digest.py"
+  ]
+ },
+ {
+  "name": "each fork of a timestamp proof gets its own operation budget",
+  "file": "inspeximus/opentimestamps.py",
+  "old": "            _walk(r, digest, out, depth + 1, budget)",
+  "new": "            _walk(r, digest, out, depth + 1)",
+  "tests": [
+   "tests/test_3200_f6_a_timestamp_proof_cannot_grow_its_digest.py"
+  ]
  }
 ]
