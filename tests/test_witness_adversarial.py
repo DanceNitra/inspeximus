@@ -80,18 +80,29 @@ def test_a_cosignature_cannot_be_replayed_onto_another_anchor(store):
 
 
 def test_a_witness_refuses_to_co_sign_a_rollback(store):
-    """The persisted last-head is what makes the guarantee hold ACROSS TIME rather than per-call."""
+    """The persisted last-head is what makes the guarantee hold ACROSS TIME rather than per-call.
+
+    WHAT A ROLLBACK IS, since 3.20 (F1). This test used to resubmit a head the witness HAD co-signed and expect a
+    refusal. Heads are published, so that let a stranger replay one and get the store recorded and poisoned. A replay
+    of a head already co-signed now gets the same co-signature again: it was valid before, it is the same signature,
+    and it is no split view. The refusal this test exists for is a head the witness never signed and that is behind
+    the one it did."""
     a1 = store.anchor()
     w = _witness()
     w.cosign("s1", a1)
 
     store.remember("gamma fact")
     store.flush()
+    a_mid = store.anchor()          # a real head of this store that the witness is never asked to sign
+    store.remember("delta fact")
+    store.flush()
     a2 = store.anchor()
     w.cosign("s1", a2)
 
     with pytest.raises(ValueError):
-        w.cosign("s1", a1)          # back to the old head = a fork of what it already attested
+        w.cosign("s1", a_mid)       # behind the head it attested, and never signed = a rollback
+    assert w.cosign("s1", a1) == w.cosign("s1", a1), "CONTROL: a replay is answered, not refused"
+    assert len(w.refusals("s1")) == 1, "the replay was recorded as a refusal"
 
 
 def test_sybil_keys_declared_to_one_class_collapse_to_one_vote(store):

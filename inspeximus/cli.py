@@ -328,8 +328,15 @@ def _witness_cmd(a) -> int:
         state = a.state or (a.key + ".state.json")
         w = Witness(secret_hex=sk, state_path=state, strict=a.strict,
                     require_authenticated_state=a.require_authenticated_state)
+        from .witness_pool import Unauthenticated
         try:
-            pk, sig = w.cosign(a.store_id, anchor)
+            pk, sig = w.cosign(a.store_id, anchor)                     # a signed head carries store_pubkey/store_sig
+        except Unauthenticated as e:
+            # F1 (3.20): the head is not signed by this store's pinned key. Nothing was recorded.
+            print(f"  NOT CONSIDERED {e}", file=sys.stderr)
+            print("VERDICT: NOT CONSIDERED - this head is not authenticated for this store, and the witness "
+                  "recorded nothing about it. Sign it with `inspeximus witness sign-head`.", file=sys.stderr)
+            return 2
         except ValueError as e:
             # Do not restate a cause here: witness_cosign refuses for TWO reasons -- a fork/rollback of a
             # head this witness already signed, and a head whose sth_hash does not commit to its own
@@ -372,9 +379,41 @@ def _witness_cmd(a) -> int:
         if a.key:
             with open(a.key, encoding="utf-8") as f:
                 sk = f.read().strip()
+        from .witness_server import parse_pins
         serve(a.port, a.host, a.state, sk, strict=a.strict,
               require_authenticated_state=a.require_authenticated_state,
-              bootstrap_token=a.bootstrap_token)
+              bootstrap_token=a.bootstrap_token, pins=parse_pins(a.pin),
+              require_signed_heads=a.require_signed_heads)
+        return 0
+
+    if a.witness_cmd == "pin":
+        # OFFLINE PIN (3.20, F1), beside `witness bootstrap`: the operator names the head key a store's heads must be
+        # signed by, in the witness's own state file, while its server is stopped.
+        from .witness_pool import Witness
+        with open(a.key, encoding="utf-8") as f:
+            sk = f.read().strip()
+        w = Witness(secret_hex=sk, state_path=(a.state or (a.key + ".state.json")))
+        w.pin(a.store_id, a.pubkey, basis=a.basis or "pinned offline with `inspeximus witness pin`")
+        print(f"  pinned head key {a.pubkey[:16]}... for store {a.store_id} on witness {w.public[:16]}...")
+        return 0
+
+    if a.witness_cmd == "sign-head":
+        # STORE SIDE (3.20, F1): sign an anchor with the store's head key, so a witness that pinned that key takes it.
+        # The signature goes into the anchor file, where `witness cosign` and POST /cosign read it.
+        import json as _json
+        from .witness_pool import sign_head
+        with open(a.anchor, encoding="utf-8") as f:
+            anc = _json.load(f)
+        with open(a.head_key, encoding="utf-8") as f:
+            hk = f.read().strip()
+        anc.update(sign_head(a.store_id, anc, hk))
+        out = _json.dumps(anc, indent=2)
+        if a.out:
+            with open(a.out, "w", encoding="utf-8") as f:
+                f.write(out + "\n")
+            print(f"  signed head for {a.store_id} written to {a.out} (store_pubkey {anc['store_pubkey'][:16]}...)")
+        else:
+            print(out)
         return 0
 
     # verify / split-view only: both are CLIENT-side trust decisions and both need the allowlist.
@@ -954,6 +993,27 @@ def main(argv=None):
                      help="shared secret enabling POST /bootstrap (needs --strict). Callers send it "
                           "as X-Bootstrap-Token. Without this the route is 403: an unauthenticated "
                           "bootstrap would defeat --strict, since anyone could declare any store id")
+    wsr.add_argument("--pin", action="append", default=[], metavar="STORE=PUBKEY",
+                     help="pin a store's Ed25519 head key; that store's heads must then be signed by it, and "
+                          "an unsigned or wrongly signed head gets 403 and changes nothing (repeatable)")
+    wsr.add_argument("--require-signed-heads", action="store_true",
+                     help="refuse (403) every head that is not signed by its store's pinned key, unpinned stores "
+                          "included. Off by default in 3.20; every attestation says unauthenticated_heads "
+                          "while it is off")
+
+    wpn = wsub.add_parser("pin", help="pin a store's head key in a witness's state file (offline, server stopped)")
+    wpn.add_argument("--store-id", required=True)
+    wpn.add_argument("--pubkey", required=True, help="the store's Ed25519 head public key (hex)")
+    wpn.add_argument("--key", required=True, help="the witness SECRET key file (from `witness keygen`)")
+    wpn.add_argument("--state", default=None, help="the witness's state file; defaults to <key>.state.json")
+    wpn.add_argument("--basis", default=None, help="why, recorded when this replaces another pin (a rebound)")
+
+    wsh = wsub.add_parser("sign-head", help="STORE side: sign an anchor with the store's head key, for a witness "
+                                            "that pinned it")
+    wsh.add_argument("anchor", help="the anchor json (from `inspeximus anchor`)")
+    wsh.add_argument("--store-id", required=True)
+    wsh.add_argument("--head-key", required=True, help="the store's head SECRET key file (from `witness keygen`)")
+    wsh.add_argument("--out", default=None, help="write the signed anchor here (default: stdout)")
 
     # `watch` is the one witness command aimed at a stranger: the whole setup is `pip install
     # inspeximus`, and the log it reads belongs to somebody else. Its arguments live beside the code

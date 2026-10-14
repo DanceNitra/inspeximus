@@ -13824,5 +13824,95 @@
   "tests": [
    "tests/test_3200_item8_the_heads_prune_never_lands_in_a_counted_arm.py"
   ]
+ },
+ {
+  "name": "a pinned store's head is taken unsigned",
+  "file": "inspeximus/witness_pool.py",
+  "old": "        pin = (self._pins.get(str(store_id)) or {}).get(\"pubkey\")",
+  "new": "        pin = None",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "the head signature is not verified",
+  "file": "inspeximus/witness_pool.py",
+  "old": "        if not _verifies(pin, sig, head_message(store_id, (anchor or {}).get(\"sth_hash\"))):",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "require_signed_heads is ignored",
+  "file": "inspeximus/witness_pool.py",
+  "old": "        if pin is None and not self._require_signed:",
+  "new": "        if pin is None:",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "a replayed head is refused as a rollback again",
+  "file": "inspeximus/witness_pool.py",
+  "old": "            if anchor.get(\"sth_hash\") and anchor.get(\"sth_hash\") in seen and anchor_binds_its_fields(anchor):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "a replayed rotation is accepted",
+  "file": "inspeximus/witness_pool.py",
+  "old": "            if int(counter) <= int(cur.get(\"counter\") or 0):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "a rebound is not recorded",
+  "file": "inspeximus/witness_pool.py",
+  "old": "                self._rebounds.append({\"store_id\": sid, \"ts\": time.time(), \"old_pubkey\": old.get(\"pubkey\"),",
+  "new": "                dict({\"store_id\": sid, \"ts\": time.time(), \"old_pubkey\": old.get(\"pubkey\"),",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "the witness MAC drops the 3.20 state keys",
+  "file": "inspeximus/witness_pool.py",
+  "old": "    out.update({k: st[k] for k in _MAC_ADDED if k in st})",
+  "new": "    pass",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "the attestation hash drops the 3.20 fields",
+  "file": "inspeximus/witness_pool.py",
+  "old": "    out.update({k: stmt[k] for k in _ATTEST_ADDED if k in stmt})",
+  "new": "    pass",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "SCRAPI offers its head unsigned",
+  "file": "inspeximus/transparency.py",
+  "old": "        got = collect_cosignatures(self.store_id, head, witnesses, head_auth=auth)",
+  "new": "        got = collect_cosignatures(self.store_id, head, witnesses)",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
+ },
+ {
+  "name": "the witness server answers an unauthenticated head with 500",
+  "file": "inspeximus/witness_server.py",
+  "old": "            except Unauthenticated as e:                  # F1 (3.20): not considered, nothing recorded",
+  "new": "            except KeyError as e:",
+  "tests": [
+   "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
+  ]
  }
 ]

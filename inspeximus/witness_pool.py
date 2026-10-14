@@ -17,7 +17,7 @@ HTTP by the caller). Zero new dependencies beyond `cryptography` (already the si
 """
 from __future__ import annotations
 import json, os, tempfile, threading, time
-from .core import new_ed25519_keypair, witness_cosign, _HAVE_ED, _canon, _sha256_hex
+from .core import new_ed25519_keypair, witness_cosign, anchor_binds_its_fields, _HAVE_ED, _canon, _sha256_hex
 if _HAVE_ED:                     # OPTIONAL, exactly as in core: the Ed25519 names exist only when
     from .core import (          # `cryptography` is installed, and importing them unconditionally
         _Ed25519SK, _Ed25519PK)  # broke `import inspeximus.witness_pool` on a base install -- which
@@ -32,6 +32,72 @@ def _public_from_secret(secret_hex: str) -> str:
     from cryptography.hazmat.primitives import serialization as _ser
     sk = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(secret_hex))
     return sk.public_key().public_bytes(_ser.Encoding.Raw, _ser.PublicFormat.Raw).hex()
+
+
+class Unauthenticated(PermissionError):
+    """A head this witness will not consider at all: unsigned where a signature is required, or signed by a key that is
+    not the one pinned for its store (3.20, F1). Nothing is recorded for it: no head, no refusal, no poison. The HTTP
+    server answers it with 403."""
+
+
+#: AN AUTHENTICATED HEAD (3.20, F1). `/cosign` took any head from anyone, and a stranger's head with n_writes=10^15
+#: made the witness refuse every later honest head as a rollback, and poison the store (measured on v3.19.1, AUDIT-A's
+#: f1_repro.py). A consistency proof cannot be the authenticator: AUDIT-A forged proofs that
+#: merkle.verify_consistency_proof accepts for trees of 10^9 and 10^15 from the honest root alone (forge_consistency.py,
+#: kept as a test). So the store signs its head, and the witness checks the signature against a key the OPERATOR
+#: pinned (`--pin STORE=PUBKEY`, or /bootstrap with the token and a pubkey), never one learned at first contact.
+#: The signed message is canonical JSON, so no store id can be confused with a hash.
+HEAD_KIND = "inspeximus-head/1"
+ROTATION_KIND = "inspeximus-head-key-rotation/1"
+#: Per store, the sth_hash values already co-signed. A replayed genuine head gets its co-signature again instead of a
+#: rollback refusal: heads are published, and a replay is not evidence against anybody.
+_MAX_SEEN_PER_STORE = 256
+_MAX_REBOUNDS = 200
+
+
+def head_message(store_id: str, sth_hash: str) -> bytes:
+    """The bytes a store signs to authenticate its head to a witness."""
+    return _canon({"kind": HEAD_KIND, "store_id": str(store_id), "sth_hash": str(sth_hash)})
+
+
+def rotation_message(store_id: str, new_pubkey: str, counter: int) -> bytes:
+    """The bytes the OLD head key signs to hand its store to `new_pubkey`."""
+    return _canon({"kind": ROTATION_KIND, "store_id": str(store_id), "new_pubkey": str(new_pubkey),
+                   "counter": int(counter)})
+
+
+def sign_head(store_id: str, anchor: dict, head_key_hex: str) -> dict:
+    """STORE side: `{store_pubkey, store_sig}` authenticating `anchor` for `store_id` with an Ed25519 head key.
+
+    Pass the result to `Witness.cosign(..., **auth)`, to `collect_cosignatures(..., head_auth=auth)`, or merge it into
+    the anchor file `inspeximus witness cosign` reads. Mint a head key with `inspeximus witness keygen`."""
+    if not _HAVE_ED:
+        raise RuntimeError("head signing needs the `cryptography` package (pip install cryptography)")
+    sk = _Ed25519SK.from_private_bytes(bytes.fromhex(head_key_hex))
+    return {"store_pubkey": _public_from_secret(head_key_hex),
+            "store_sig": sk.sign(head_message(store_id, anchor.get("sth_hash"))).hex()}
+
+
+def _verifies(pubkey_hex, sig_hex, message: bytes) -> bool:
+    if not (_HAVE_ED and pubkey_hex and sig_hex):
+        return False
+    try:
+        _Ed25519PK.from_public_bytes(bytes.fromhex(str(pubkey_hex))).verify(bytes.fromhex(str(sig_hex)), message)
+        return True
+    except Exception:                                                   # noqa: BLE001
+        return False
+
+
+#: The state keys the MAC covered before 3.20. A key added since is covered only when the file carries it, so a 3.19
+#: state file still authenticates, and stripping a new key from a 3.20 file breaks the MAC.
+_MAC_BASE = ("heads", "refusals", "poisoned", "unauthenticated_loads", "bootstrapped")
+_MAC_ADDED = ("pins", "seen", "rebounds")
+
+
+def _mac_fields(st: dict) -> dict:
+    out = {k: st.get(k) for k in _MAC_BASE}
+    out.update({k: st[k] for k in _MAC_ADDED if k in st})
+    return out
 
 
 #: Newest-last bound on the refusal log. A witness watching a flapping operator must not grow its
@@ -51,7 +117,8 @@ class Witness:
     could restart the witness and get a fork past it."""
 
     def __init__(self, secret_hex: str | None = None, state_path: str | None = None,
-                 strict: bool = False, require_authenticated_state: bool = False):
+                 strict: bool = False, require_authenticated_state: bool = False,
+                 require_signed_heads: bool = False, pins: dict | None = None):
         if secret_hex is None:
             secret_hex, public = new_ed25519_keypair()
         else:
@@ -64,6 +131,15 @@ class Witness:
         self._last: dict[str, dict] = {}
         self._refusals: list = []
         self._poisoned: set = set()
+        # F1 (3.20). `_pins`: {store_id: {"pubkey", "counter", "since"}}, the head key the operator pinned per store.
+        # `_seen`: {store_id: [sth_hash, ...]}, the heads already co-signed, so a replay is not a rollback.
+        # `_rebounds`: a pin replaced without the old key's consent, which every attestation reports.
+        # `require_signed_heads` refuses (403) any head that is not signed by its store's pinned key; off in 3.20,
+        # and every attestation says so (`unauthenticated_heads`).
+        self._pins: dict = {}
+        self._seen: dict = {}
+        self._rebounds: list = []
+        self._require_signed = bool(require_signed_heads)
         # ONE LOCK for cosign's read-modify-write and for _persist's
         # load-compare-write. All handler threads of the shipped ThreadingHTTPServer
         # share one Witness, so the single-writer guard fired against ITSELF: measured,
@@ -123,10 +199,7 @@ class Witness:
                         try:
                             _Ed25519PK.from_public_bytes(bytes.fromhex(self.public)).verify(
                                 bytes.fromhex(_st["mac"]),
-                                bytes.fromhex(_sha256_hex(_canon(
-                                    {k: _st.get(k) for k in ("heads", "refusals", "poisoned",
-                                                             "unauthenticated_loads",
-                                                             "bootstrapped")}))))
+                                bytes.fromhex(_sha256_hex(_canon(_mac_fields(_st)))))
                         except Exception:
                             raise ValueError(
                                 f"the witness fork-memory at {state_path} does not authenticate "
@@ -150,6 +223,9 @@ class Witness:
                     # restart. `strict=True` was therefore unusable anywhere except inside one
                     # long-lived Python process -- which is not the deployment it is written for.
                     self._bootstrapped = set(_st.get("bootstrapped") or [])
+                    self._pins = dict(_st.get("pins") or {})
+                    self._seen = {k: list(v) for k, v in (_st.get("seen") or {}).items()}
+                    self._rebounds = list(_st.get("rebounds") or [])
                 else:
                     self._last = _st
                     self._note_unauthenticated(state_path)
@@ -169,6 +245,11 @@ class Witness:
             # recreated file and a genuine first run are the same bytes, and saying otherwise would be
             # the overclaim this review keeps finding. `strict=True` is what closes deletion.
             self._persist()
+        # THE OPERATOR'S PINS (`--pin STORE=PUBKEY`). A pin that differs from the one in the state file replaces it
+        # as a rebound: the operator's decision, recorded so that it shows in every attestation.
+        for _sid, _pk in (pins or {}).items():
+            if (self._pins.get(str(_sid)) or {}).get("pubkey") != str(_pk):
+                self.pin(str(_sid), str(_pk), basis="pinned at start by the operator")
 
     def _persist_locked(self) -> None:
         if not self._state_path:
@@ -203,10 +284,11 @@ class Witness:
         _body = {"heads": self._last, "refusals": self._refusals,
                  "poisoned": sorted(self._poisoned),
                  "unauthenticated_loads": self._unauth_loads[-20:],
-                 "bootstrapped": sorted(self._bootstrapped)}
+                 "bootstrapped": sorted(self._bootstrapped),
+                 "pins": self._pins, "seen": self._seen, "rebounds": self._rebounds[-_MAX_REBOUNDS:]}
         if _HAVE_ED:
             _sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._secret))
-            _body["mac"] = _sk.sign(bytes.fromhex(_sha256_hex(_canon(_body)))).hex()
+            _body["mac"] = _sk.sign(bytes.fromhex(_sha256_hex(_canon(_mac_fields(_body))))).hex()
         d = os.path.dirname(os.path.abspath(self._state_path)) or "."
         fd, tmp = tempfile.mkstemp(dir=d, suffix=".tmp")
         try:
@@ -235,7 +317,8 @@ class Witness:
                 f"the heads and refusals it holds.")
         self._unauth_loads = (self._unauth_loads + [time.time()])[-20:]
 
-    def cosign(self, store_id: str, anchor: dict) -> tuple[str, str]:
+    def cosign(self, store_id: str, anchor: dict, store_pubkey: str | None = None,
+               store_sig: str | None = None) -> tuple[str, str]:
         """Co-sign `anchor` for `store_id`. See _cosign_locked for the rules; this is the lock.
 
         Every handler thread of the shipped ThreadingHTTPServer shares ONE Witness, so the
@@ -246,9 +329,77 @@ class Witness:
         it is the availability half of the same mistake it was written to prevent.
 
         RLock, not Lock: cosign calls _persist, which takes the same lock.
+
+        `store_pubkey` and `store_sig` authenticate the head (3.20, F1; see `sign_head`). They are read from the
+        arguments, or else from the anchor itself, which is how an anchor file for `inspeximus witness cosign`
+        carries them.
         """
         with self._lock:
+            self._authenticate(store_id, anchor, store_pubkey, store_sig)
+            seen = self._seen.get(str(store_id)) or []
+            if anchor.get("sth_hash") and anchor.get("sth_hash") in seen and anchor_binds_its_fields(anchor):
+                # A REPLAY OF A HEAD ALREADY CO-SIGNED. Heads are published, so a stranger can resend an old genuine
+                # one; it used to be refused as a rollback and recorded against the store. It gets the same
+                # co-signature again, and nothing is written.
+                return self.public, witness_cosign(self._secret, anchor)
             return self._cosign_locked(store_id, anchor)
+
+    def _authenticate(self, store_id, anchor, store_pubkey=None, store_sig=None) -> None:
+        """Raise Unauthenticated, before any state is touched, for a head this witness must not consider (F1).
+
+        A PINNED store accepts only a head signed by its pinned key. With `require_signed_heads`, so does every
+        store, and an unpinned one is refused outright. Otherwise an unpinned store's head is taken unsigned, as
+        before 3.20, and the attestation reports `unauthenticated_heads`."""
+        pk = store_pubkey if store_pubkey is not None else (anchor or {}).get("store_pubkey")
+        sig = store_sig if store_sig is not None else (anchor or {}).get("store_sig")
+        pin = (self._pins.get(str(store_id)) or {}).get("pubkey")
+        if pin is None and not self._require_signed:
+            return
+        if pin is None:
+            raise Unauthenticated(f"this witness requires signed heads, and no head key is pinned for store "
+                                  f"{store_id!r}: pin one with --pin or POST /bootstrap with a pubkey")
+        if not sig:
+            raise Unauthenticated(f"store {store_id!r} has a pinned head key, and this head is not signed")
+        if pk is not None and str(pk) != pin:
+            raise Unauthenticated(f"this head is signed by a key that is not the one pinned for store {store_id!r}")
+        if not _verifies(pin, sig, head_message(store_id, (anchor or {}).get("sth_hash"))):
+            raise Unauthenticated(f"the head signature does not verify under the key pinned for store {store_id!r}")
+
+    def pin(self, store_id: str, pubkey: str, basis: str = "") -> None:
+        """OPERATOR: pin the Ed25519 head key of `store_id`. Replacing a different pin is a REBOUND: allowed, because
+        a lost key must not lock a store out for good, and recorded with `basis`, because it is the one act that
+        hands a store's witnessing to a new key without the old key's consent."""
+        bytes.fromhex(str(pubkey))                                      # a hex key or ValueError
+        with self._lock:
+            sid, old = str(store_id), (self._pins.get(str(store_id)) or {})
+            if old.get("pubkey") == str(pubkey):
+                return
+            if old:
+                self._rebounds.append({"store_id": sid, "ts": time.time(), "old_pubkey": old.get("pubkey"),
+                                       "new_pubkey": str(pubkey), "basis": str(basis or "")[:200]})
+                self._rebounds = self._rebounds[-_MAX_REBOUNDS:]
+            self._pins[sid] = {"pubkey": str(pubkey), "counter": 0, "since": time.time()}
+            self._bootstrapped.add(sid)            # a pin is a deliberate first contact, which --strict asks for
+            if self._state_path:
+                self._persist()
+
+    def rotate(self, store_id: str, new_pubkey: str, counter: int, sig: str) -> None:
+        """STORE: hand `store_id` to `new_pubkey`, with a statement the PINNED (old) key signed over
+        `rotation_message(store_id, new_pubkey, counter)`. `counter` must exceed the last rotation's, so an old
+        rotation statement cannot be replayed. Raises Unauthenticated otherwise, and writes nothing."""
+        with self._lock:
+            sid, cur = str(store_id), (self._pins.get(str(store_id)) or {})
+            if not cur:
+                raise Unauthenticated(f"store {store_id!r} has no pinned head key to rotate from")
+            if int(counter) <= int(cur.get("counter") or 0):
+                raise Unauthenticated(f"rotation counter {counter} is not above the last one "
+                                      f"({cur.get('counter') or 0}): a replayed rotation")
+            if not _verifies(cur.get("pubkey"), sig, rotation_message(sid, new_pubkey, counter)):
+                raise Unauthenticated(f"the rotation is not signed by the key pinned for store {store_id!r}")
+            bytes.fromhex(str(new_pubkey))
+            self._pins[sid] = {"pubkey": str(new_pubkey), "counter": int(counter), "since": time.time()}
+            if self._state_path:
+                self._persist()
 
     def _persist(self) -> None:
         with self._lock:
@@ -357,6 +508,10 @@ class Witness:
         # then simply stopped submitting heads is indistinguishable from an idle store -- an attack
         # whose entire cost is doing nothing.
         self._last[str(store_id)]["seen_ts"] = time.time()
+        _seen = self._seen.setdefault(str(store_id), [])
+        if anchor.get("sth_hash") not in _seen:
+            _seen.append(anchor.get("sth_hash"))
+            del _seen[:-_MAX_SEEN_PER_STORE]
         self._persist()
         return self.public, sig
 
@@ -443,11 +598,14 @@ class Witness:
             # trusted at all -- and it is the half that an attacker with file access goes for first.
             "memory_authenticated": not self._unauth_loads,
             "unauthenticated_loads": len(self._unauth_loads),
+            # WHO COULD SUBMIT A HEAD (3.20, F1). `unauthenticated_heads` is True while this witness takes this
+            # store's heads from anyone: no key pinned, and require_signed_heads off. `rebounds` are pins replaced
+            # without the old key's consent.
+            "pinned": sid in self._pins,
+            "unauthenticated_heads": sid not in self._pins and not self._require_signed,
+            "rebounds": [r for r in self._rebounds if r.get("store_id") == sid],
         }
-        core = _canon({k: stmt[k] for k in
-                       ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals",
-                        "poison_clears", "poisoned", "memory_authenticated",
-                        "unauthenticated_loads")})
+        core = _canon(_attestation_fields(stmt))
         stmt["hash"] = _sha256_hex(core)
         if _HAVE_ED:
             sk = _Ed25519SK.from_private_bytes(bytes.fromhex(self._secret))
@@ -475,10 +633,7 @@ def verify_attestation(statement: dict, witness_pubkey: str | None = None) -> di
     if not isinstance(statement, dict) or statement.get("kind") != "inspeximus-witness-attestation/1":
         return {"ok": False, "signed": False, "problems": ["not a witness attestation"],
                 "statement": statement}
-    core = _canon({k: statement.get(k) for k in
-                   ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals",
-                    "poison_clears", "poisoned", "memory_authenticated",
-                    "unauthenticated_loads")})
+    core = _canon(_attestation_fields(statement))
     if _sha256_hex(core) != statement.get("hash"):
         problems.append("attestation hash does not match its own fields (edited in transit)")
     signed = False
@@ -510,20 +665,51 @@ def verify_attestation(statement: dict, witness_pubkey: str | None = None) -> di
     if not statement.get("seen"):
         problems.append("this witness has never seen this store, so it vouches for nothing about it "
                         "-- check you are asking the witnesses that should have")
-    return {"ok": not problems, "signed": signed, "problems": problems, "statement": statement}
+    # NOTES, NOT PROBLEMS (3.20, F1): facts about how far the witness can vouch, which an auditor weighs. A 3.19
+    # witness carries neither field, and a 3.20 one in its default mode takes unsigned heads.
+    notes: list = []
+    if statement.get("unauthenticated_heads"):
+        notes.append("this witness takes this store's heads unsigned (no head key pinned, require_signed_heads "
+                     "off), so a stranger could have submitted a head that made it refuse an honest one")
+    for r in statement.get("rebounds") or []:
+        notes.append("the head key of this store was REBOUND without the old key's consent (basis: %r)"
+                     % str(r.get("basis", ""))[:80])
+    return {"ok": not problems, "signed": signed, "problems": problems, "notes": notes, "statement": statement}
 
 
-def collect_cosignatures(store_id: str, anchor: dict, witnesses) -> dict:
+#: The attestation fields the hash covered before 3.20. Fields added since count only when the statement carries
+#: them, so a 3.19 attestation still verifies, and stripping a new field breaks the hash.
+_ATTEST_BASE = ("kind", "store_id", "witness", "issued_ts", "seen", "last_head", "refusals", "poison_clears",
+                "poisoned", "memory_authenticated", "unauthenticated_loads")
+_ATTEST_ADDED = ("pinned", "unauthenticated_heads", "rebounds")
+
+
+def _attestation_fields(stmt: dict) -> dict:
+    out = {k: stmt.get(k) for k in _ATTEST_BASE}
+    out.update({k: stmt[k] for k in _ATTEST_ADDED if k in stmt})
+    return out
+
+
+def collect_cosignatures(store_id: str, anchor: dict, witnesses, head_auth: dict | None = None) -> dict:
     """Client-side: gather co-signatures for `anchor` from `witnesses` (Witness instances, or callables
     `(store_id, anchor) -> (pubkey, sig)` for remote/HTTP witnesses). A witness that REFUSES (raises) is NOT
     silently dropped — it is surfaced in `refused` as a fork alarm (an honest witness only refuses a fork or a
     rollback). Returns {cosignatures, refused, witnesses}: `cosignatures` = [(pubkey, sig), ...] to feed
     Inspeximus.verify_cosigned_anchor(anchor, cosignatures, witnesses=..., threshold=k); `refused` = list of
-    {index, reason} for the witnesses that would not sign; `witnesses` = the public keys that signed."""
+    {index, reason} for the witnesses that would not sign; `witnesses` = the public keys that signed.
+
+    `head_auth` = `sign_head(...)`'s {store_pubkey, store_sig}, handed to every Witness and every `http_witness`
+    (3.20, F1). A plain callable of your own gets (store_id, anchor) as before."""
     cosigs, refused, signers = [], [], []
+    auth = dict(head_auth or {})
     for i, w in enumerate(witnesses):
         try:
-            pk, sig = w.cosign(store_id, anchor) if isinstance(w, Witness) else w(store_id, anchor)
+            if isinstance(w, Witness):
+                pk, sig = w.cosign(store_id, anchor, **auth)
+            elif auth and getattr(w, "accepts_head_auth", False):
+                pk, sig = w(store_id, anchor, **auth)
+            else:
+                pk, sig = w(store_id, anchor)
             cosigs.append((pk, sig)); signers.append(pk)
         except Exception as e:                                          # a refusal is the split-view signal
             refused.append({"index": i, "reason": str(e)})
@@ -537,16 +723,24 @@ def http_witness(url: str, timeout: float = 10.0):
     records it as a fork alarm rather than a silent drop. Stdlib urllib only -- no new dependency."""
     import urllib.request, urllib.error, json as _json
     base = url.rstrip("/")
-    def _cosign(store_id, anchor):
+    def _cosign(store_id, anchor, store_pubkey=None, store_sig=None):
+        body = {"store_id": store_id, "anchor": anchor}
+        if store_sig:                                                   # F1 (3.20): the head's authentication
+            body.update(store_pubkey=store_pubkey, store_sig=store_sig)
         req = urllib.request.Request(base + "/cosign",
-              data=_json.dumps({"store_id": store_id, "anchor": anchor}).encode(),
+              data=_json.dumps(body).encode(),
               headers={"Content-Type": "application/json"}, method="POST")
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 d = _json.loads(r.read())
             return d["pubkey"], d["sig"]
         except urllib.error.HTTPError as e:                             # 409 = refused (fork); surface the reason
-            try: reason = _json.loads(e.read()).get("refused") or f"HTTP {e.code}"
+            try:
+                _d = _json.loads(e.read())
+                reason = _d.get("refused") or _d.get("unauthenticated") or _d.get("error") or f"HTTP {e.code}"
             except Exception: reason = f"HTTP {e.code}"
+            if e.code == 403:                       # not considered at all (F1): no head, no refusal recorded
+                raise Unauthenticated(f"remote witness did not authenticate the head: {reason}")
             raise ValueError(f"remote witness refused: {reason}")
+    _cosign.accepts_head_auth = True
     return _cosign

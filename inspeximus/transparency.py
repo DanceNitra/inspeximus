@@ -275,9 +275,17 @@ class TransparencyService:
 
         Returns {head, cosignatures, witnesses, refused, threshold, met}.
         """
-        from .witness_pool import collect_cosignatures
+        from .witness_pool import collect_cosignatures, head_message
         head = self.head()
-        got = collect_cosignatures(self.store_id, head, witnesses)
+        # THE HEAD IS SIGNED BY THE SERVICE KEY (3.20, F1), so a witness that pinned that key takes it, and a stranger's
+        # head for this store is refused (403) without changing anything. The service key is the right one here:
+        # what the witness needs to know is that the head came from the service, which only its key holder can say.
+        auth = None
+        if self.service_pubkey and self._sign:
+            sig = self._sign(head_message(self.store_id, head.get("sth_hash")))
+            auth = {"store_pubkey": self.service_pubkey,
+                    "store_sig": sig.hex() if isinstance(sig, (bytes, bytearray)) else str(sig)}
+        got = collect_cosignatures(self.store_id, head, witnesses, head_auth=auth)
         met = len(got.get("cosignatures") or []) >= int(threshold)
         return {"head": head, "cosignatures": got.get("cosignatures") or [],
                 "witnesses": got.get("witnesses") or [], "refused": got.get("refused") or [],

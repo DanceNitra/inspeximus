@@ -11,8 +11,19 @@ Endpoints:
                                         REFUSED. Verify with witness_pool.verify_attestation(). This
                                         is the only surface in the product whose evidence does not
                                         come from the party being audited.
-    POST /cosign  {store_id, anchor} -> 200 {"pubkey","sig"}   (co-signed)
+    POST /cosign  {store_id, anchor[, store_pubkey, store_sig]}
+                                     -> 200 {"pubkey","sig"}   (co-signed; a replay of a head already co-signed
+                                                                gets the same signature again)
+                                     -> 403 {"unauthenticated": reason}  (3.20, F1: the store has a pinned head key
+                                        and this head is not signed by it, or --require-signed-heads is on and the
+                                        store has none. Nothing is recorded.)
                                      -> 409 {"refused": reason} (a fork/rollback -- the split-view defense)
+    POST /bootstrap {store_id, pubkey} with X-Bootstrap-Token -> 200 {"pinned": id}
+                                        Pins the store's Ed25519 head key (sign heads with witness_pool.sign_head).
+                                        Replacing a different pin is a REBOUND, which every attestation reports.
+    POST /rotate {store_id, new_pubkey, counter, sig} -> 200, or 403
+                                        Hands a store to a new head key, with a statement the pinned key signed
+                                        over witness_pool.rotation_message; `counter` must rise.
     POST /bootstrap {store_id}       -> 200 {"bootstrapped": id}  -- ONLY with --strict, and ONLY with
                                         the shared secret from --bootstrap-token in X-Bootstrap-Token.
                                         Declares a legitimate first contact. Unauthenticated it would
@@ -28,7 +39,7 @@ your own TLS/reverse-proxy for a real deployment.
 from __future__ import annotations
 import json, argparse, os, sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from .witness_pool import Witness
+from .witness_pool import Unauthenticated, Witness
 
 
 def _make_handler(witness: Witness, bootstrap_token: str | None = None):
@@ -98,6 +109,35 @@ def _make_handler(witness: Witness, bootstrap_token: str | None = None):
                 self._send(400, {"error": "body must be a JSON object"})
                 return
 
+            if self.path.rstrip("/") == "/rotate":
+                # A STORE HANDS ITSELF TO A NEW HEAD KEY (3.20, F1), with a statement its pinned key signed. No token:
+                # the old key's signature is the authority, and a rotation it did not sign is a 403 that writes nothing.
+                try:
+                    witness.rotate(_body.get("store_id"), _body.get("new_pubkey"),
+                                   int(_body.get("counter") or 0), _body.get("sig"))
+                    self._send(200, {"rotated": _body.get("store_id")})
+                except Unauthenticated as e:
+                    self._send(403, {"unauthenticated": str(e)})
+                except (TypeError, ValueError) as e:
+                    self._send(400, {"error": "need {store_id, new_pubkey, counter, sig}: %s" % e})
+                return
+            if self.path.rstrip("/") == "/bootstrap" and "pubkey" in _body:
+                # PIN A HEAD KEY (3.20, F1): the operator, with the bootstrap token, names the key a store's heads
+                # must be signed by. Needs no --strict: a pin protects a store on any witness. Replacing a different
+                # pin is a rebound, recorded and reported in every attestation.
+                import hmac
+                if not bootstrap_token or not hmac.compare_digest(
+                        str(self.headers.get("X-Bootstrap-Token") or ""), str(bootstrap_token)):
+                    self._send(403, {"error": "pinning a head key needs the X-Bootstrap-Token this witness was "
+                                              "started with (--bootstrap-token)"})
+                    return
+                try:
+                    witness.pin(_body.get("store_id"), _body.get("pubkey"),
+                                basis="pinned through /bootstrap with the token")
+                    self._send(200, {"pinned": _body.get("store_id")})
+                except (TypeError, ValueError) as e:
+                    self._send(400, {"error": "need {store_id, pubkey}: %s" % e})
+                return
             if self.path.rstrip("/") == "/bootstrap":
                 # THE ONE WRITE ENDPOINT THAT IS AUTHENTICATED, because it is the only one that can
                 # WEAKEN the witness. /cosign cannot: the worst an unauthenticated caller does there
@@ -137,8 +177,11 @@ def _make_handler(witness: Witness, bootstrap_token: str | None = None):
                 store_id, anchor = _body.get("store_id"), _body.get("anchor")
                 if not store_id or not isinstance(anchor, dict):
                     self._send(400, {"error": "need {store_id, anchor}"}); return
-                pk, sig = witness.cosign(store_id, anchor)
+                pk, sig = witness.cosign(store_id, anchor, store_pubkey=_body.get("store_pubkey"),
+                                         store_sig=_body.get("store_sig"))
                 self._send(200, {"pubkey": pk, "sig": sig})
+            except Unauthenticated as e:                  # F1 (3.20): not considered, nothing recorded
+                self._send(403, {"unauthenticated": str(e)})
             except ValueError as e:                       # witness refused a fork/rollback
                 self._send(409, {"refused": str(e)})
             except Exception as e:
@@ -151,7 +194,8 @@ def _make_handler(witness: Witness, bootstrap_token: str | None = None):
 
 def make_server(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = None,
                 secret_hex: str | None = None, strict: bool = False,
-                require_authenticated_state: bool = False, bootstrap_token: str | None = None):
+                require_authenticated_state: bool = False, bootstrap_token: str | None = None,
+                pins: dict | None = None, require_signed_heads: bool = False):
     """BUILD the witness server without starting it, and return (server, witness).
 
     `serve()` binds and blocks, so a caller can never learn which port it got. That is fine for an
@@ -163,13 +207,19 @@ def make_server(port: int = 9700, host: str = "127.0.0.1", state_path: str | Non
     when this returns, so there is nothing to wait for.
     """
     w = Witness(secret_hex=secret_hex, state_path=state_path, strict=strict,
-                require_authenticated_state=require_authenticated_state)
+                require_authenticated_state=require_authenticated_state,
+                require_signed_heads=require_signed_heads, pins=pins)
     return ThreadingHTTPServer((host, port), _make_handler(w, bootstrap_token)), w
+
+
+def _loopback(host: str) -> bool:
+    return str(host) in ("127.0.0.1", "::1", "localhost") or str(host).startswith("127.")
 
 
 def serve(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = None,
           secret_hex: str | None = None, strict: bool = False,
-          require_authenticated_state: bool = False, bootstrap_token: str | None = None):
+          require_authenticated_state: bool = False, bootstrap_token: str | None = None,
+          pins: dict | None = None, require_signed_heads: bool = False):
     """Run a witness server (blocking). Returns never; Ctrl-C to stop.
 
     `strict` refuses a store this witness has no memory of, so deleting the state file stops being
@@ -185,8 +235,15 @@ def serve(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = No
     httpd, w = make_server(port=port, host=host, state_path=state_path, secret_hex=secret_hex,
                            strict=strict,
                            require_authenticated_state=require_authenticated_state,
-                           bootstrap_token=bootstrap_token)
+                           bootstrap_token=bootstrap_token, pins=pins,
+                           require_signed_heads=require_signed_heads)
     port = httpd.server_address[1]
+    if not _loopback(host) and not require_signed_heads:
+        # F1 (3.20): reachable by strangers and taking unsigned heads, a witness can be made to refuse an honest one.
+        print(f"WARNING: this witness listens on {host}, which is not loopback, without --require-signed-heads. "
+              f"Anyone who can reach it can submit an unsigned head for a store with no pinned key, and make it "
+              f"refuse that store's next honest head. Pin each store's head key (--pin STORE=PUBKEY) and add "
+              f"--require-signed-heads.", file=sys.stderr, flush=True)
     print(f"inspeximus witness on http://{host}:{port}  pubkey={w.public}", flush=True)
     print(f"  add to a client allowlist as: {w.public}", flush=True)
     try:
@@ -226,8 +283,25 @@ def main(argv=None):
     ap.add_argument("--secret-file", default=None,
                     help="a file holding the Ed25519 secret hex. Also read from "
                          "INSPEXIMUS_WITNESS_SECRET if neither flag is given")
+    ap.add_argument("--pin", action="append", default=[], metavar="STORE=PUBKEY",
+                    help="pin the Ed25519 head key of a store; its heads must then be signed by it (repeatable)")
+    ap.add_argument("--require-signed-heads", action="store_true",
+                    help="refuse (403) any head not signed by its store's pinned key; off by default in 3.20")
     a = ap.parse_args(argv)
-    serve(a.port, a.host, a.state, _witness_secret(a))
+    serve(a.port, a.host, a.state, _witness_secret(a), pins=parse_pins(a.pin),
+          require_signed_heads=a.require_signed_heads)
+
+
+def parse_pins(items) -> dict:
+    """`["STORE=PUBKEY", ...]` -> {store: pubkey}. The store id may itself contain '=', so the key is the last part."""
+    out = {}
+    for it in items or []:
+        sid, sep, pk = str(it).rpartition("=")
+        if not sep or not sid or not pk:
+            raise SystemExit(f"--pin needs STORE=PUBKEY, got {it!r}")
+        bytes.fromhex(pk)
+        out[sid] = pk
+    return out
 
 
 if __name__ == "__main__":
