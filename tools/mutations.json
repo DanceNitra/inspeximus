@@ -3626,8 +3626,8 @@
  {
   "name": "the URL password rule matches its own mask",
   "file": "inspeximus/_secrets.py",
-  "old": "r\"(?P<pre>[A-Za-z][A-Za-z0-9+.-]*://[^/\\s:@]+:)\" + _REFERENCE + r\"(?P<val>",
-  "new": "r\"(?P<pre>[A-Za-z][A-Za-z0-9+.-]*://[^/\\s:@]+:)\" + r\"(?P<val>",
+  "old": "://[^/\\s:@]+:)\" + _REFERENCE",
+  "new": "://[^/\\s:@]+:)\"",
   "tests": [
    "tests/test_the_hook_redacts_secrets_at_capture.py",
    "tests/test_the_hook_never_stores_a_secret.py"
