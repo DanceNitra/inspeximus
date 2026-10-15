@@ -54,6 +54,10 @@ ROTATION_KIND = "inspeximus-head-key-rotation/1"
 #: anybody. ALL OF THEM, NOT A WINDOW (3.20, AUDIT-A N-1). The list kept the last 256, so a genuine signed head older
 #: than that, replayed by anyone, was refused as a rollback, recorded, and the store marked poisoned. 12 bytes keep
 #: 100,000 heads in about 2.6 MB of state, and a prefix match needs a 96-bit second preimage of a head's hash.
+#: FOR A PINNED STORE ONLY (3.20, AUDIT-A N-13). Kept for every store, the list let a stranger grow the state of an
+#: unpinned witness by 12 bytes per invented head, and slowed each co-signature (9.2 ms at the first head, 17.1 ms at
+#: 6,000). Replay protection is needed only where a head is authenticated: an unpinned store takes any head anyway, so
+#: it keeps the 3.19 rule, where a replay of an older head is a rollback.
 _SEEN_PREFIX = 24
 
 
@@ -353,7 +357,7 @@ class Witness:
         """
         with self._lock:
             self._authenticate(store_id, anchor, store_pubkey, store_sig)
-            seen = self._seen_index.get(str(store_id)) or ()
+            seen = (self._seen_index.get(str(store_id)) or ()) if str(store_id) in self._pins else ()
             if anchor.get("sth_hash") and _seen_key(anchor.get("sth_hash")) in seen and anchor_binds_its_fields(anchor):
                 # A REPLAY OF A HEAD ALREADY CO-SIGNED. Heads are published, so a stranger can resend an old genuine
                 # one; it used to be refused as a rollback and recorded against the store. It gets the same
@@ -537,7 +541,7 @@ class Witness:
         self._last[str(store_id)]["seen_ts"] = time.time()
         _key = _seen_key(anchor.get("sth_hash"))
         _index = self._seen_index.setdefault(str(store_id), set())
-        if _key not in _index:
+        if str(store_id) in self._pins and _key not in _index:
             self._seen.setdefault(str(store_id), []).append(_key)
             _index.add(_key)
         self._persist()

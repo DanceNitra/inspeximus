@@ -14481,5 +14481,15 @@
   "tests": [
    "tests/test_3200_n12_a_raw_leaf_line_has_its_text_checked.py"
   ]
+ },
+ {
+  "name": "N-13: an unpinned store grows the replay list again",
+  "file": "inspeximus/witness_pool.py",
+  "old": "        if str(store_id) in self._pins and _key not in _index:",
+  "new": "        if _key not in _index:",
+  "tests": [
+   "tests/test_3200_n13_an_unpinned_store_keeps_no_replay_list.py",
+   "tests/test_witness_adversarial.py"
+  ]
  }
 ]
