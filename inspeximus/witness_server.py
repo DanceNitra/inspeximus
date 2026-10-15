@@ -196,7 +196,8 @@ def _make_handler(witness: Witness, bootstrap_token: str | None = None):
 def make_server(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = None,
                 secret_hex: str | None = None, strict: bool = False,
                 require_authenticated_state: bool = False, bootstrap_token: str | None = None,
-                pins: dict | None = None, require_signed_heads: bool = False):
+                pins: dict | None = None, require_signed_heads: bool = False, max_connections=None,
+                max_per_address=None):
     """BUILD the witness server without starting it, and return (server, witness).
 
     `serve()` binds and blocks, so a caller can never learn which port it got. That is fine for an
@@ -211,7 +212,8 @@ def make_server(port: int = 9700, host: str = "127.0.0.1", state_path: str | Non
                 require_authenticated_state=require_authenticated_state,
                 require_signed_heads=require_signed_heads, pins=pins)
     # A read timeout and a connection cap (3.20, N-11).
-    return make_http_server((host, port), _make_handler(w, bootstrap_token)), w
+    return make_http_server((host, port), _make_handler(w, bootstrap_token), max_connections=max_connections,
+                            max_per_address=max_per_address), w
 
 
 def _loopback(host: str) -> bool:
@@ -221,7 +223,8 @@ def _loopback(host: str) -> bool:
 def serve(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = None,
           secret_hex: str | None = None, strict: bool = False,
           require_authenticated_state: bool = False, bootstrap_token: str | None = None,
-          pins: dict | None = None, require_signed_heads: bool = False):
+          pins: dict | None = None, require_signed_heads: bool = False, max_connections=None,
+          max_per_address=None):
     """Run a witness server (blocking). Returns never; Ctrl-C to stop.
 
     `strict` refuses a store this witness has no memory of, so deleting the state file stops being
@@ -238,7 +241,8 @@ def serve(port: int = 9700, host: str = "127.0.0.1", state_path: str | None = No
                            strict=strict,
                            require_authenticated_state=require_authenticated_state,
                            bootstrap_token=bootstrap_token, pins=pins,
-                           require_signed_heads=require_signed_heads)
+                           require_signed_heads=require_signed_heads, max_connections=max_connections,
+                           max_per_address=max_per_address)
     port = httpd.server_address[1]
     if not _loopback(host) and not require_signed_heads:
         # F1 (3.20): reachable by strangers and taking unsigned heads, a witness can be made to refuse an honest one.
@@ -289,9 +293,16 @@ def main(argv=None):
                     help="pin the Ed25519 head key of a store; its heads must then be signed by it (repeatable)")
     ap.add_argument("--require-signed-heads", action="store_true",
                     help="refuse (403) any head not signed by its store's pinned key; off by default in 3.20")
+    ap.add_argument("--max-connections", type=int, default=None, metavar="N",
+                    help="at most N requests handled at once (default 64); a connection beyond it is answered 503")
+    ap.add_argument("--max-per-address", type=int, default=None, metavar="N",
+                    help="at most N requests at once from one client address (default 16); 0 turns this cap off, which a server "
+                         "behind a reverse proxy needs, because every request then has the proxy's address. "
+                         "X-Forwarded-For is not read: a client can write it")
     a = ap.parse_args(argv)
     serve(a.port, a.host, a.state, _witness_secret(a), pins=parse_pins(a.pin),
-          require_signed_heads=a.require_signed_heads)
+          require_signed_heads=a.require_signed_heads, max_connections=a.max_connections,
+          max_per_address=a.max_per_address)
 
 
 def parse_pins(items) -> dict:

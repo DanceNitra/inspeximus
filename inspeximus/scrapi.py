@@ -101,7 +101,7 @@ def _cose_key(pubkey_hex):
 
 
 def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int = 9800,
-                witnesses=None, threshold: int = 1):
+                witnesses=None, threshold: int = 1, max_connections=None, max_per_address=None):
     """Build (but do not start) a SCRAPI server over an existing Transparency Service.
 
     `witnesses` wires in the one check the service cannot perform on itself. Everything this server
@@ -261,7 +261,8 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
                     "entries": d["entries"], "root": d["root"], "scope": d["scope"],
                     "witnessed": witnessed}
 
-    return make_http_server((host, port), Handler)     # a read timeout and a connection cap (3.20, N-11)
+    # A read timeout, a deadline and connection caps (3.20, N-11 and N-14); `max_per_address=0` behind a proxy.
+    return make_http_server((host, port), Handler, max_connections=max_connections, max_per_address=max_per_address)
 
 
 def _service_secret(a):
@@ -338,6 +339,12 @@ def main(argv=None) -> int:
                     help="bind an issuer name to its Ed25519 public key (hex); repeatable (3.20). A "
                          "statement that claims NAME is verified against that key only, and no other key "
                          "may claim NAME")
+    ap.add_argument("--max-connections", type=int, default=None, metavar="N",
+                    help="at most N requests handled at once (default 64); a connection beyond it is answered 503")
+    ap.add_argument("--max-per-address", type=int, default=None, metavar="N",
+                    help="at most N requests at once from one client address (default 16); 0 turns this cap off, which a server "
+                         "behind a reverse proxy needs, because every request then has the proxy's address. "
+                         "X-Forwarded-For is not read: a client can write it")
     ap.add_argument("--policy-name", default="scrapi-default")
     ap.add_argument("--policy-notes-file", default=None,
                     help="text for the policy's `notes` field, read from this file. The policy is "
@@ -410,7 +417,8 @@ def main(argv=None) -> int:
     if a.witness:
         from .witness_pool import http_witness
         wits = [http_witness(u) for u in a.witness]
-    httpd = make_server(service, a.host, a.port, witnesses=wits, threshold=a.witness_threshold)
+    httpd = make_server(service, a.host, a.port, witnesses=wits, threshold=a.witness_threshold,
+                        max_connections=a.max_connections, max_per_address=a.max_per_address)
     print("SCRAPI on http://%s:%d  log=%s  entries=%d  service_pubkey=%s"
           % (a.host, a.port, a.log, service.size(), pub), file=sys.stderr)
     try:

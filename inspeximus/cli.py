@@ -394,7 +394,8 @@ def _witness_cmd(a) -> int:
         serve(a.port, a.host, a.state, sk, strict=a.strict,
               require_authenticated_state=a.require_authenticated_state,
               bootstrap_token=a.bootstrap_token, pins=parse_pins(a.pin),
-              require_signed_heads=a.require_signed_heads)
+              require_signed_heads=a.require_signed_heads, max_connections=a.max_connections,
+              max_per_address=a.max_per_address)
         return 0
 
     if a.witness_cmd == "pin":
@@ -1011,6 +1012,12 @@ def main(argv=None):
     wsr.add_argument("--pin", action="append", default=[], metavar="STORE=PUBKEY",
                      help="pin a store's Ed25519 head key; that store's heads must then be signed by it, and "
                           "an unsigned or wrongly signed head gets 403 and changes nothing (repeatable)")
+    wsr.add_argument("--max-connections", type=int, default=None, metavar="N",
+                     help="at most N requests handled at once (default 64); a connection beyond it is answered 503")
+    wsr.add_argument("--max-per-address", type=int, default=None, metavar="N",
+                     help="at most N requests at once from one client address (default 16); 0 turns this cap off, which a server "
+                          "behind a reverse proxy needs, because every request then has the proxy's address. "
+                          "X-Forwarded-For is not read: a client can write it")
     wsr.add_argument("--require-signed-heads", action="store_true",
                      help="refuse (403) every head that is not signed by its store's pinned key, unpinned stores "
                           "included. Off by default in 3.20; every attestation says unauthenticated_heads "

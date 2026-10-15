@@ -14350,7 +14350,7 @@
  {
   "name": "N-11: SCRAPI serves without the bounded server",
   "file": "inspeximus/scrapi.py",
-  "old": "    return make_http_server((host, port), Handler)",
+  "old": "    return make_http_server((host, port), Handler, max_connections=max_connections, max_per_address=max_per_address)",
   "new": "    return __import__('http.server').server.ThreadingHTTPServer((host, port), Handler)",
   "tests": [
    "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
@@ -14359,7 +14359,7 @@
  {
   "name": "N-11: the witness server serves without the bounded server",
   "file": "inspeximus/witness_server.py",
-  "old": "    return make_http_server((host, port), _make_handler(w, bootstrap_token)), w",
+  "old": "    return make_http_server((host, port), _make_handler(w, bootstrap_token), max_connections=max_connections,\n                            max_per_address=max_per_address), w",
   "new": "    return __import__('http.server').server.ThreadingHTTPServer((host, port), _make_handler(w, bootstrap_token)), w",
   "tests": [
    "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
@@ -14368,7 +14368,7 @@
  {
   "name": "N-11: the checkpoint witness serves without the bounded server",
   "file": "inspeximus/witness_checkpoint.py",
-  "old": "    return make_http_server((host, port), make_handler(witness, prefix))",
+  "old": "    return make_http_server((host, port), make_handler(witness, prefix), max_connections=max_connections,\n                            max_per_address=max_per_address)",
   "new": "    return __import__('http.server').server.ThreadingHTTPServer((host, port), make_handler(witness, prefix))",
   "tests": [
    "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
@@ -14504,7 +14504,7 @@
  {
   "name": "N-14: one address may take every slot",
   "file": "inspeximus/_serve.py",
-  "old": "                full = self._by_address.get(host, 0) >= per_address",
+  "old": "                full = per_address > 0 and self._by_address.get(host, 0) >= per_address",
   "new": "                full = False",
   "tests": [
    "tests/test_3200_n14_a_trickle_cannot_hold_a_slot_and_one_address_cannot_take_them_all.py"
@@ -14517,6 +14517,33 @@
   "new": "                left = self._by_address.get(host, 1)",
   "tests": [
    "tests/test_3200_n14_a_trickle_cannot_hold_a_slot_and_one_address_cannot_take_them_all.py"
+  ]
+ },
+ {
+  "name": "N-14b: the per-address setting is ignored",
+  "file": "inspeximus/_serve.py",
+  "old": "    per_address = int(MAX_PER_ADDRESS if max_per_address is None else max_per_address)",
+  "new": "    per_address = int(MAX_PER_ADDRESS)",
+  "tests": [
+   "tests/test_3200_n14b_the_connection_caps_are_settable.py"
+  ]
+ },
+ {
+  "name": "N-14b: a per-address setting of 0 still caps at 0 and refuses everyone",
+  "file": "inspeximus/_serve.py",
+  "old": "                full = per_address > 0 and self._by_address.get(host, 0) >= per_address",
+  "new": "                full = self._by_address.get(host, 0) >= per_address",
+  "tests": [
+   "tests/test_3200_n14b_the_connection_caps_are_settable.py"
+  ]
+ },
+ {
+  "name": "N-14b: SCRAPI drops its connection caps",
+  "file": "inspeximus/scrapi.py",
+  "old": "    return make_http_server((host, port), Handler, max_connections=max_connections, max_per_address=max_per_address)",
+  "new": "    return make_http_server((host, port), Handler)",
+  "tests": [
+   "tests/test_3200_n14b_the_connection_caps_are_settable.py"
   ]
  }
 ]

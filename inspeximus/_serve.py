@@ -12,8 +12,10 @@ their headers and one byte of a 1,000-byte body held 300 server threads for as l
 - at most MAX_CONNECTIONS requests are handled at once, and at most MAX_PER_ADDRESS from one client address, so one
   address cannot take every slot (N-14). A connection over either cap is answered 503 and closed without a thread.
 
-Behind a reverse proxy every request comes from the proxy's address, so MAX_PER_ADDRESS bounds them all together;
-the Caddyfile in deploy/ sets its own timeouts. Standard library only, imported when a server is made, so
+BOTH CAPS ARE SETTABLE (3.20, AUDIT-A section 7). Behind a reverse proxy every request comes from the proxy's
+address, so MAX_PER_ADDRESS bounds all users together and one client behind the proxy can hold every slot. A proxied
+deployment sets `max_per_address=0`, which turns that cap off. The address is the socket's peer: X-Forwarded-For is
+never read, because a client can write it. Standard library only, imported when a server is made, so
 `import inspeximus` does not load http.server.
 """
 READ_TIMEOUT = 10.0
@@ -25,12 +27,13 @@ _BUSY = (b"HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain\r\nConte
          b"Connection: close\r\nRetry-After: 1\r\n\r\ntoo many connections")
 
 
-def make_http_server(address, handler_class, max_connections=None, read_timeout=None):
+def make_http_server(address, handler_class, max_connections=None, read_timeout=None, max_per_address=None):
     """A ThreadingHTTPServer on `address` for `handler_class`, with a read timeout, a deadline and connection caps.
 
-    `max_connections` and `read_timeout` default to MAX_CONNECTIONS and READ_TIMEOUT; REQUEST_DEADLINE and
-    MAX_PER_ADDRESS are read too, all when the server is made. The handler class is subclassed with `timeout` set,
-    which StreamRequestHandler applies to the socket."""
+    `max_connections`, `read_timeout` and `max_per_address` default to MAX_CONNECTIONS, READ_TIMEOUT and
+    MAX_PER_ADDRESS; REQUEST_DEADLINE is read too, all when the server is made. `max_per_address=0` turns the
+    per-address cap off. The handler class is subclassed with `timeout` set, which StreamRequestHandler applies to
+    the socket."""
     import socket
     import sys
     import threading
@@ -40,9 +43,10 @@ def make_http_server(address, handler_class, max_connections=None, read_timeout=
     cap = int(MAX_CONNECTIONS if max_connections is None else max_connections)
     wait = float(READ_TIMEOUT if read_timeout is None else read_timeout)
     deadline = float(REQUEST_DEADLINE)
-    per_address = int(MAX_PER_ADDRESS)
-    if cap < 1 or wait <= 0 or deadline <= 0 or per_address < 1:
-        raise ValueError("the caps must be at least 1, and the timeout and the deadline above 0")
+    per_address = int(MAX_PER_ADDRESS if max_per_address is None else max_per_address)
+    if cap < 1 or wait <= 0 or deadline <= 0 or per_address < 0:
+        raise ValueError("max_connections must be at least 1, max_per_address 0 (off) or more, and the timeout and "
+                         "the deadline above 0")
     handler = type(handler_class.__name__, (handler_class,), {"timeout": wait})
 
     def _busy(request):
@@ -84,7 +88,7 @@ def make_http_server(address, handler_class, max_connections=None, read_timeout=
                 return
             host = client_address[0] if isinstance(client_address, tuple) else client_address
             with self._lock:
-                full = self._by_address.get(host, 0) >= per_address
+                full = per_address > 0 and self._by_address.get(host, 0) >= per_address
                 if not full:
                     self._by_address[host] = self._by_address.get(host, 0) + 1
                     self._started[request] = time.monotonic()

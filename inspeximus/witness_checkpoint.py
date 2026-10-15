@@ -358,19 +358,24 @@ def make_handler(witness: "CheckpointWitness", prefix: str = ""):
     return Handler
 
 
-def make_server(witness: "CheckpointWitness", port: int = 9810, host: str = "127.0.0.1", prefix: str = ""):
+def make_server(witness: "CheckpointWitness", port: int = 9810, host: str = "127.0.0.1", prefix: str = "",
+                max_connections=None, max_per_address=None):
     """Build (but do not start) the witness server. Pass port=0 and read `server.server_address[1]`.
 
     One thread per request, which is right for a cron-rate service, with a read timeout and a cap on
     connections (3.20, AUDIT-A N-11): before it, a client that sent headers and stopped held its thread
-    for as long as it kept the connection open."""
+    for as long as it kept the connection open. `max_connections` and `max_per_address` set the caps;
+    `max_per_address=0` turns the per-address cap off, for a witness behind a reverse proxy (N-14)."""
     from ._serve import make_http_server
-    return make_http_server((host, port), make_handler(witness, prefix))
+    return make_http_server((host, port), make_handler(witness, prefix), max_connections=max_connections,
+                            max_per_address=max_per_address)
 
 
-def serve(witness: "CheckpointWitness", port: int = 9810, host: str = "127.0.0.1", prefix: str = ""):
+def serve(witness: "CheckpointWitness", port: int = 9810, host: str = "127.0.0.1", prefix: str = "",
+          max_connections=None, max_per_address=None):
     """Run the witness (blocking)."""
-    make_server(witness, port=port, host=host, prefix=prefix).serve_forever()
+    make_server(witness, port=port, host=host, prefix=prefix, max_connections=max_connections,
+                max_per_address=max_per_address).serve_forever()
 
 
 # ------------------------------------------------------------------------------- the client side
