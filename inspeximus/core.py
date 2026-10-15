@@ -19793,11 +19793,20 @@ class Inspeximus:
         # A STANDING ART. 21 OBJECTION: the subject's records neither support nor quote here, as in recall
         # (mcp-tools-review S6). The claim is judged against what the store may still serve. AND A QUARANTINED RECORD
         # (3.20, F10): only the objection was applied, so this quoted instruction-shaped text that recall withheld.
-        _withheld = self._unserved_ids(r for r in self._tenant_rows() if key is None or r.get("key") == key)
+        # BUILT ONLY WHEN A PATH NEEDS IT (3.20, AUDIT-B). It was built first, over every row with the key, so the keyed
+        # path paid N tracked reads before it judged one record: 2,508 to 7,513 reads per call at 5,000 rows. The keyed
+        # path judges the current record alone (`_served_rows` decides each row by itself), and builds the set only
+        # for the stale step, which reads the key's history anyway.
+        _held = []
+
+        def _withheld():
+            if not _held:
+                _held.append(self._unserved_ids(r for r in self._tenant_rows() if key is None or r.get("key") == key))
+            return _held[0]
         # (1) keyed path — precise and supersession-aware
         if key is not None:
             cur = self._current_active(key)
-            if cur is not None and cur["id"] in _withheld:
+            if cur is not None and self._unserved_ids([cur]):
                 cur = None
             m = _matches(cur.get("object"), cur["text"]) if cur is not None else False
             if m is True:
@@ -19809,7 +19818,7 @@ class Inspeximus:
                 return _out("unverifiable", cur, {"id": cur["id"], "object": cur.get("object"),
                                                   "text": cur["text"][:200]})
             stale = next((h for h in self.history(key)
-                          if h["status"] != "active" and h.get("id") not in _withheld
+                          if h["status"] != "active" and h.get("id") not in _withheld()
                           and _matches(h.get("object"), h.get("text")) is True), None)
             if stale is not None:
                 return _out("stale_superseded", (cur.get("object") if cur else None),
@@ -19822,8 +19831,9 @@ class Inspeximus:
             return _out("unsupported", None, None)
         # (2) keyless path — similarity search: active (support / contradict), then retired (stale)
         tvec = self._qvec(text)
+        _unserved = _withheld()
         rows = [r for r in self.items if (self.tenant is None or r.get("tenant") == self.tenant)
-                and r["id"] not in _withheld]
+                and r["id"] not in _unserved]
         contra = undecidable = None
         for r in rows:
             if r.get("status") != "active":
@@ -19845,7 +19855,7 @@ class Inspeximus:
                 # 'current' IS THE TRUTH NOW, on this path as on the keyed one. It was always None here
                 # although the retired record's key has a current value (mcp-tools-review M7).
                 cur = self._current_active(r["key"]) if r.get("key") else None
-                if cur is not None and cur["id"] in _withheld:
+                if cur is not None and cur["id"] in _unserved:
                     cur = None
                 return _out("stale_superseded", cur,
                             {"id": r["id"], "object": r.get("object"), "text": r["text"][:200]})

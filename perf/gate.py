@@ -1117,6 +1117,50 @@ GOVERNANCE_MODULES = ("actions", "agent_audit_trail", "cose", "deployer", "erasu
                       "scitt", "subject_rights", "technical_documentation", "timestamp", "trusted_list")
 
 
+def _mcp_server_module():
+    """inspeximus.mcp_server, imported once with its own store pointed at a temp file. Importing it opens the store
+    INSPEXIMUS_PATH names, else the user's default, so the variable is set first and taken back afterwards."""
+    if "inspeximus.mcp_server" in sys.modules:
+        return sys.modules["inspeximus.mcp_server"]
+    saved = {k: os.environ.get(k) for k in ("INSPEXIMUS_PATH", "INSPEXIMUS_NO_UPDATE_CHECK")}
+    os.environ["INSPEXIMUS_PATH"] = os.path.join(tempfile.mkdtemp(), "mcp-import.json")
+    os.environ["INSPEXIMUS_NO_UPDATE_CHECK"] = "1"
+    try:
+        import inspeximus.mcp_server as srv
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+    return srv
+
+
+def w_mcp_lookup(n):
+    """One MCP `get` and one MCP `history` on an n-record store, the path the live memory server uses most.
+
+    3.20's F10 filter (`_withhold_quarantined`) walked every record on each lookup to find the few it returned, so
+    each call did n tracked reads more than the lookup itself: `get` at 5,000 rows from 2,003 to 7,011 (AUDIT-B,
+    audit_b_320_perf.md). The filter now finds the returned records by position; `tracked_gets` here is the lookups'
+    own reads, and it grows by 2 x n if the walk comes back."""
+    srv = _mcp_server_module()
+    m = Inspeximus(_store_path())
+    for i in range(n):                                # one keyed record: a keyed remember scans for its key's value
+        m.remember(f"note {i} on the deploy plan for team {i % 37}", key=("k-mid" if i == n // 2 else None))
+    m.flush()
+    rid, key = m.items[n // 2]["id"], "k-mid"
+
+    def run():
+        prev = srv._MEM
+        srv._MEM = m
+        try:
+            srv.get(rid)
+            srv.history(key)
+        finally:
+            srv._MEM = prev
+    return run
+
+
 def w_hook_import(root=None):
     """A PreToolUse event for `ls`, run as the real hook process. `hook_imports_numpy` is 1 when that
     process imported numpy. numpy only accelerates semantic recall, and an eager import was about
@@ -1234,6 +1278,7 @@ WORKLOADS = {
     "hook_install":       (lambda: w_hook_install(),     "--install into a temp project: is PostToolUse scoped to what capture records", "none"),
     "prompt_archived_n2000": (lambda: w_prompt_archived(2000), "fresh handle recalls once after --archive moved 80 % of 2,000 captures", "rows"),
     "sleep_n2000":        (lambda: w_sleep(2000),        "sleep() over 2,000 records in 40 ripe topic clusters", "rows"),
+    "mcp_lookup_n2000":   (lambda: w_mcp_lookup(2000),   "one MCP get and one MCP history on a 2,000-record store", "rows"),
 }
 
 

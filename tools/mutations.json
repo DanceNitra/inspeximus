@@ -14080,8 +14080,8 @@
  {
   "name": "verify_claim quotes a quarantined record",
   "file": "inspeximus/core.py",
-  "old": "        _withheld = self._unserved_ids(r for r in self._tenant_rows() if key is None or r.get(\"key\") == key)",
-  "new": "        _withheld = self._withheld_ids() if self._objections else set()",
+  "old": "            if cur is not None and self._unserved_ids([cur]):",
+  "new": "            if False:",
   "tests": [
    "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
   ]
@@ -14544,6 +14544,33 @@
   "new": "    return make_http_server((host, port), Handler)",
   "tests": [
    "tests/test_3200_n14b_the_connection_caps_are_settable.py"
+  ]
+ },
+ {
+  "name": "AUDIT-B: the MCP quarantine filter walks the whole store again",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    for r in _stored_rows(ids):                       # by position, not a walk of the store (AUDIT-B)",
+  "new": "    for r in [r for r in _MEM.items if r.get(\"id\") in ids]:",
+  "tests": [
+   "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
+  ]
+ },
+ {
+  "name": "AUDIT-B: the row index trusts a position a removal made stale",
+  "file": "inspeximus/mcp_server.py",
+  "old": "        return r if dict.get(r, \"id\") == rid else None",
+  "new": "        return r",
+  "tests": [
+   "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
+  ]
+ },
+ {
+  "name": "AUDIT-B: verify_claim builds its withheld set before it judges the current record",
+  "file": "inspeximus/core.py",
+  "old": "            if cur is not None and self._unserved_ids([cur]):",
+  "new": "            if cur is not None and cur[\"id\"] in _withheld():",
+  "tests": [
+   "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
   ]
  }
 ]

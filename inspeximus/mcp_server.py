@@ -1250,6 +1250,66 @@ _WITHHELD_NOTE = ("quarantined by the read guard: instruction-shaped text, held 
                   "out. release_quarantine() returns it; include_quarantined=True shows it to a caller who asks.")
 
 
+#: Where each record sits in the store's own list: {"rows": that list, "seen": how many rows are indexed, "pos": {id: i}}.
+_ROW_POS = {"rows": None, "seen": 0, "pos": {}}
+
+
+def _stored_rows(ids) -> list:
+    """The store's own rows for `ids`, found by position, never by walking the store (3.20, AUDIT-B).
+
+    _withhold_quarantined walked every record on each lookup to find the few it returned: N tracked reads per call,
+    `get` at 5,000 rows from 2,003 to 7,011 reads and from 1.7 to 3.9 ms, growing with the store (AUDIT-B,
+    audit_b_320_perf.md). The store has no id index, so this keeps one here: an id's position in the store's list.
+    A hit counts only when the row at that position still carries that id, which one dict read decides, so an
+    index that a removal or a replacement left stale can never return the wrong row. A miss first indexes the rows
+    appended since the last call, and only if the id is still not where the index says, re-indexes the whole list:
+    a call costs the rows it returns, plus the rows written since the last call. The index reads ids with
+    `dict.get`, so it adds no tracked reads. An id that is not in the store (a lineage pointer to an erased record)
+    is not found, as the walk did not find it."""
+    rows = getattr(_MEM, "_items", None)
+    if not isinstance(rows, list):
+        rows = list(_MEM.items)
+    ix = _ROW_POS
+    if ix["rows"] is not rows:                        # a reload or a refresh replaced the list
+        ix["rows"], ix["seen"], ix["pos"] = rows, 0, {}
+
+    def at(rid):
+        i = ix["pos"].get(rid)
+        if i is None:
+            return None
+        try:
+            r = rows[i]
+        except IndexError:
+            return None
+        return r if dict.get(r, "id") == rid else None
+
+    out, missing = [], []
+    for rid in ids:
+        r = at(rid)
+        if r is None:
+            missing.append(rid)
+        else:
+            out.append(r)
+    for full in (False, True):
+        if not missing:
+            break
+        if full:
+            ix["pos"], ix["seen"] = {}, 0
+        pos, start = ix["pos"], ix["seen"]
+        for i in range(start, len(rows)):
+            pos[dict.get(rows[i], "id")] = i
+        ix["seen"] = len(rows)
+        still = []
+        for rid in missing:
+            r = at(rid)
+            if r is None:
+                still.append(rid)
+            else:
+                out.append(r)
+        missing = still
+    return out
+
+
 def _withhold_quarantined(result, include_quarantined: bool = False):
     """`result` with the text and value of every quarantined record taken out, and the count said (3.20, F10).
 
@@ -1277,11 +1337,10 @@ def _withhold_quarantined(result, include_quarantined: bool = False):
     if not ids:
         return result
     quarantined = set()
-    for r in _MEM.items:
-        if r.get("id") in ids:
-            _MEM._assess_read_guards(r)
-            if _MEM._is_quarantined(r):
-                quarantined.add(r["id"])
+    for r in _stored_rows(ids):                       # by position, not a walk of the store (AUDIT-B)
+        _MEM._assess_read_guards(r)
+        if _MEM._is_quarantined(r):
+            quarantined.add(r["id"])
     if not quarantined:
         return result
     import copy

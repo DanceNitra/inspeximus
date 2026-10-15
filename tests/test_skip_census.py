@@ -111,7 +111,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: read no longer stops the server (the user's config still does), and one inside a git work tree is never used. Both
 #: start the MCP server, so they need the SDK and run in the `integrations` job; the policy itself without the SDK is
 #: test_every_environment_variable_has_a_policy.py. Exactly +2, no slack: 263 + 2 = 265.
-MAX_HIDDEN_IN_BASE_ENV = 265
+#: +4 in 3.20 for test_3200_the_mcp_lookups_do_not_walk_the_store.py (AUDIT-B): the MCP lookups find the records they
+#: return by position, not by walking the store, and the gate arm mcp_lookup_n2000 pins it. It calls the MCP server's
+#: tools, so it needs the SDK and runs in the `integrations` job; the gate job installs the SDK and runs the arm itself.
+#: Exactly +4, no slack: 265 + 4 = 269.
+MAX_HIDDEN_IN_BASE_ENV = 269
 
 
 def _base_env_census():

@@ -193,7 +193,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade pip && pip install pytest pytest-xdist pytest-timeout
+      # The MCP SDK, within the package's own bound, for mcp_lookup_n2000: that arm calls the MCP server's lookups.
+      - run: python -m pip install --upgrade pip && pip install pytest pytest-xdist pytest-timeout "mcp[cli]>=1.28,<2"
       - name: compare against the recorded baseline
         run: python perf/gate.py check
       - name: the gate must be able to go red
