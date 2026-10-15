@@ -13855,7 +13855,7 @@
  {
   "name": "a replayed head is refused as a rollback again",
   "file": "inspeximus/witness_pool.py",
-  "old": "            if anchor.get(\"sth_hash\") and anchor.get(\"sth_hash\") in seen and anchor_binds_its_fields(anchor):",
+  "old": "            if anchor.get(\"sth_hash\") and _seen_key(anchor.get(\"sth_hash\")) in seen and anchor_binds_its_fields(anchor):",
   "new": "            if False:",
   "tests": [
    "tests/test_3200_f1_a_witness_considers_only_signed_heads.py"
@@ -14372,6 +14372,33 @@
   "new": "    return __import__('http.server').server.ThreadingHTTPServer((host, port), make_handler(witness, prefix))",
   "tests": [
    "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
+  ]
+ },
+ {
+  "name": "N-1: the witness remembers only the last 256 co-signed heads again",
+  "file": "inspeximus/witness_pool.py",
+  "old": "            self._seen.setdefault(str(store_id), []).append(_key)\n            _index.add(_key)",
+  "new": "            self._seen.setdefault(str(store_id), []).append(_key)\n            _index.add(_key)\n            if len(_index) > 256:\n                _index.discard(self._seen[str(store_id)].pop(0))",
+  "tests": [
+   "tests/test_3200_n1_a_replay_of_any_cosigned_head_is_not_a_rollback.py"
+  ]
+ },
+ {
+  "name": "N-1: a restarted witness forgets the heads it co-signed",
+  "file": "inspeximus/witness_pool.py",
+  "old": "                    self._seen_index = {k: set(v) for k, v in self._seen.items()}",
+  "new": "                    self._seen_index = {}",
+  "tests": [
+   "tests/test_3200_n1_a_replay_of_any_cosigned_head_is_not_a_rollback.py"
+  ]
+ },
+ {
+  "name": "N-1: a co-signed head is kept whole, not as its 12-byte prefix",
+  "file": "inspeximus/witness_pool.py",
+  "old": "    return str(sth_hash)[:_SEEN_PREFIX]",
+  "new": "    return str(sth_hash)",
+  "tests": [
+   "tests/test_3200_n1_a_replay_of_any_cosigned_head_is_not_a_rollback.py"
   ]
  }
 ]

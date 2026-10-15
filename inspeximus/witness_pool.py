@@ -49,9 +49,16 @@ class Unauthenticated(PermissionError):
 #: The signed message is canonical JSON, so no store id can be confused with a hash.
 HEAD_KIND = "inspeximus-head/1"
 ROTATION_KIND = "inspeximus-head-key-rotation/1"
-#: Per store, the sth_hash values already co-signed. A replayed genuine head gets its co-signature again instead of a
-#: rollback refusal: heads are published, and a replay is not evidence against anybody.
-_MAX_SEEN_PER_STORE = 256
+#: Per store, every sth_hash already co-signed, kept as its first 12 bytes (24 hex characters). A replayed genuine head
+#: gets its co-signature again instead of a rollback refusal: heads are published, and a replay is not evidence against
+#: anybody. ALL OF THEM, NOT A WINDOW (3.20, AUDIT-A N-1). The list kept the last 256, so a genuine signed head older
+#: than that, replayed by anyone, was refused as a rollback, recorded, and the store marked poisoned. 12 bytes keep
+#: 100,000 heads in about 2.6 MB of state, and a prefix match needs a 96-bit second preimage of a head's hash.
+_SEEN_PREFIX = 24
+
+
+def _seen_key(sth_hash) -> str:
+    return str(sth_hash)[:_SEEN_PREFIX]
 _MAX_REBOUNDS = 200
 
 
@@ -132,12 +139,14 @@ class Witness:
         self._refusals: list = []
         self._poisoned: set = set()
         # F1 (3.20). `_pins`: {store_id: {"pubkey", "counter", "since"}}, the head key the operator pinned per store.
-        # `_seen`: {store_id: [sth_hash, ...]}, the heads already co-signed, so a replay is not a rollback.
+        # `_seen`: {store_id: [sth_hash prefix, ...]}, every head already co-signed, so a replay is not a rollback.
+        # `_seen_index` holds the same prefixes as sets, for the lookup.
         # `_rebounds`: a pin replaced without the old key's consent, which every attestation reports.
         # `require_signed_heads` refuses (403) any head that is not signed by its store's pinned key; off in 3.20,
         # and every attestation says so (`unauthenticated_heads`).
         self._pins: dict = {}
         self._seen: dict = {}
+        self._seen_index: dict = {}
         self._rebounds: list = []
         self._require_signed = bool(require_signed_heads)
         # ONE LOCK for cosign's read-modify-write and for _persist's
@@ -224,7 +233,8 @@ class Witness:
                     # long-lived Python process -- which is not the deployment it is written for.
                     self._bootstrapped = set(_st.get("bootstrapped") or [])
                     self._pins = dict(_st.get("pins") or {})
-                    self._seen = {k: list(v) for k, v in (_st.get("seen") or {}).items()}
+                    self._seen = {k: [_seen_key(h) for h in v] for k, v in (_st.get("seen") or {}).items()}
+                    self._seen_index = {k: set(v) for k, v in self._seen.items()}
                     self._rebounds = list(_st.get("rebounds") or [])
                 else:
                     self._last = _st
@@ -336,8 +346,8 @@ class Witness:
         """
         with self._lock:
             self._authenticate(store_id, anchor, store_pubkey, store_sig)
-            seen = self._seen.get(str(store_id)) or []
-            if anchor.get("sth_hash") and anchor.get("sth_hash") in seen and anchor_binds_its_fields(anchor):
+            seen = self._seen_index.get(str(store_id)) or ()
+            if anchor.get("sth_hash") and _seen_key(anchor.get("sth_hash")) in seen and anchor_binds_its_fields(anchor):
                 # A REPLAY OF A HEAD ALREADY CO-SIGNED. Heads are published, so a stranger can resend an old genuine
                 # one; it used to be refused as a rollback and recorded against the store. It gets the same
                 # co-signature again, and nothing is written.
@@ -508,10 +518,11 @@ class Witness:
         # then simply stopped submitting heads is indistinguishable from an idle store -- an attack
         # whose entire cost is doing nothing.
         self._last[str(store_id)]["seen_ts"] = time.time()
-        _seen = self._seen.setdefault(str(store_id), [])
-        if anchor.get("sth_hash") not in _seen:
-            _seen.append(anchor.get("sth_hash"))
-            del _seen[:-_MAX_SEEN_PER_STORE]
+        _key = _seen_key(anchor.get("sth_hash"))
+        _index = self._seen_index.setdefault(str(store_id), set())
+        if _key not in _index:
+            self._seen.setdefault(str(store_id), []).append(_key)
+            _index.add(_key)
         self._persist()
         return self.public, sig
 
