@@ -66,7 +66,7 @@ honest log of three entries, under a heading that invites you to distrust us.
 What it does NOT check: the signature on the head, which needs an Ed25519 implementation, and whether
 any entry is TRUE. A log proves what was recorded, never that it is right.
 """
-import hashlib, json, os
+import base64, hashlib, json, os, sys
 
 
 def node_hash(left, right):
@@ -109,32 +109,40 @@ def main():
     mtl = [bytes.fromhex(r["leaf_hash"]) for r in rows]
 
     problems = []
-    # EACH ENTRY IS TIED TO THE LEAF THE TREE HASHED (3.20, F7). This used to take leaf_hash from log.jsonl and
-    # read each entry's payload_sha256 from the same line, and never opened entries/<n>.leaf.json: a log.jsonl
-    # whose entry differed from the hashed leaf passed. Now the leaf bytes must hash to leaf_hash, the entry on
-    # the line must be the leaf they encode, and the payload check reads the entry from the leaf. The path is
-    # built from the index, never taken from the line. A line with no leaf file (a log published without the
-    # service key) cannot be tied, and it is reported as not checked rather than passed.
-    tied, untied = {}, 0
+    # EACH ENTRY IS TIED TO THE LEAF THE TREE HASHED (3.20, F7 and AUDIT-A N-2). The first version took leaf_hash
+    # from log.jsonl and read payload_sha256 from the same line, so a line whose entry differed from the hashed
+    # leaf passed. The second tied a line through entries/<n>.leaf.json, and a line with no leaf file was "not
+    # checked" with exit 0, so deleting the leaf file passed the same edit. The leaf IS the canonical JSON of the
+    # entry (sorted keys, no spaces, ASCII), so the entry on the line is re-encoded here and hashed:
+    # SHA-256(0x00 || canonical(entry)) must equal leaf_hash. No leaf file is needed, and deleting one changes
+    # nothing. A line that carries the raw leaf (leaf_b64, a leaf that is not JSON) is tied by hashing those
+    # bytes. A line with neither cannot be tied, and the run fails unless --allow-untied is given. A leaf file
+    # that is published must still be the same leaf.
+    allow_untied = "--allow-untied" in sys.argv[1:]
+    tied, tied_raw, untied = {}, 0, 0
     for row in rows:
-        leaf_path = os.path.join("entries", "%d.leaf.json" % int(row["index"]))
-        if not os.path.exists(leaf_path):
+        index = int(row["index"])
+        leaf_path = os.path.join("entries", "%d.leaf.json" % index)
+        if os.path.exists(leaf_path):
+            with open(leaf_path, "rb") as lf:
+                if hashlib.sha256(bytes([0]) + lf.read()).hexdigest() != row["leaf_hash"]:
+                    problems.append("entry %d: its leaf file does not hash to the leaf_hash log.jsonl gives" % index)
+        if "entry" in row:
+            leaf = json.dumps(row["entry"], sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+            if hashlib.sha256(bytes([0]) + leaf).hexdigest() != row["leaf_hash"]:
+                problems.append("entry %d: the record in log.jsonl is not the leaf the tree hashed" % index)
+                continue
+            tied[index] = row["entry"]
+        elif "leaf_b64" in row:
+            if hashlib.sha256(bytes([0]) + base64.b64decode(row["leaf_b64"])).hexdigest() != row["leaf_hash"]:
+                problems.append("entry %d: its leaf_b64 does not hash to the leaf_hash log.jsonl gives" % index)
+                continue
+            tied_raw += 1
+        else:
             untied += 1
-            continue
-        with open(leaf_path, "rb") as lf:
-            leaf = lf.read()
-        if hashlib.sha256(bytes([0]) + leaf).hexdigest() != row["leaf_hash"]:
-            problems.append("entry %d: its leaf file does not hash to the leaf_hash log.jsonl gives" % row["index"])
-            continue
-        try:
-            entry = json.loads(leaf.decode("utf-8"))
-        except ValueError:
-            problems.append("entry %d: its leaf file is not JSON" % row["index"])
-            continue
-        if "entry" in row and row["entry"] != entry:
-            problems.append("entry %d: the record in log.jsonl is not the leaf the tree hashed" % row["index"])
-            continue
-        tied[row["index"]] = entry
+    if untied and not allow_untied:
+        problems.append("%d entries carry no record and no leaf, so nothing ties them to the tree "
+                        "(--allow-untied accepts that)" % untied)
     # If the publisher shipped the payloads, check each one hashes to what the log recorded. This is
     # what makes the TEXT of an entry checkable rather than only its position in the tree.
     # LOOKED UP BY DIGEST, NOT BY SUBJECT. A subject holds more than one entry as soon as a claim is
@@ -186,9 +194,10 @@ def main():
         return 1
     print("OK: %d entries, root %s" % (len(mtl), head["writes_tip"]))
     print("checked: the root follows from the leaves, and sth_hash follows from the head.")
-    print("checked: %d entries are the leaves the tree hashed." % len(tied))
+    print("checked: %d entries are the leaves the tree hashed." % (len(tied) + tied_raw))
     if untied:
-        print("not checked: %d entries have no leaf file, so their records are not tied to the tree." % untied)
+        print("not checked: %d entries carry no record and no leaf, so they are not tied to the tree "
+              "(accepted by --allow-untied)." % untied)
     if payloads is not None:
         print("checked: %d published entry texts hash to what the log recorded." % checked_payloads)
         if unavailable:

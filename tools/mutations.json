@@ -14287,8 +14287,8 @@
  {
   "name": "the published verifier accepts a record that differs from its leaf",
   "file": "tools/publish_static_log.py",
-  "old": "        if \"entry\" in row and row[\"entry\"] != entry:",
-  "new": "        if False:",
+  "old": "            if hashlib.sha256(bytes([0]) + leaf).hexdigest() != row[\"leaf_hash\"]:",
+  "new": "            if False:",
   "tests": [
    "tests/test_3200_f7_a_log_entry_is_the_leaf_the_tree_hashed.py"
   ]
@@ -14296,19 +14296,28 @@
  {
   "name": "the published verifier does not hash the leaf file",
   "file": "tools/publish_static_log.py",
-  "old": "        if hashlib.sha256(bytes([0]) + leaf).hexdigest() != row[\"leaf_hash\"]:",
-  "new": "        if False:",
+  "old": "                if hashlib.sha256(bytes([0]) + lf.read()).hexdigest() != row[\"leaf_hash\"]:",
+  "new": "                if False:",
   "tests": [
    "tests/test_3200_f7_a_log_entry_is_the_leaf_the_tree_hashed.py"
   ]
  },
  {
-  "name": "the published verifier passes a line with no leaf file silently",
+  "name": "the published verifier passes a line that nothing ties to the tree",
   "file": "tools/publish_static_log.py",
-  "old": "    if untied:\n        print(\"not checked: %d entries have no leaf file",
-  "new": "    if False:\n        print(\"not checked: %d entries have no leaf file",
+  "old": "    if untied and not allow_untied:",
+  "new": "    if False:",
   "tests": [
-   "tests/test_3200_f7_a_log_entry_is_the_leaf_the_tree_hashed.py"
+   "tests/test_3200_n2_a_deleted_leaf_file_does_not_untie_an_entry.py"
+  ]
+ },
+ {
+  "name": "the published verifier ties a record only through its leaf file",
+  "file": "tools/publish_static_log.py",
+  "old": "        if \"entry\" in row:",
+  "new": "        if \"entry\" in row and os.path.exists(leaf_path):",
+  "tests": [
+   "tests/test_3200_n2_a_deleted_leaf_file_does_not_untie_an_entry.py"
   ]
  }
 ]

@@ -4,9 +4,9 @@ THE DEFECT. The verify.py that tools/publish_static_log.py writes took `leaf_has
 payload against `payload_sha256` from the same line. It never opened entries/<n>.leaf.json, so a log.jsonl whose
 record differed from the leaf the tree hashed passed, and so did a payload matched against the edited record.
 
-WHAT IS PINNED HERE. For every line with a leaf file, the leaf bytes must hash to `leaf_hash`, the record on the line
-must be the leaf they encode, and the payload check reads the record from the leaf. A line with no leaf file (a log
-published without the service key) is reported as not checked, never passed silently.
+WHAT IS PINNED HERE. The record on each line, re-encoded canonically, must hash to `leaf_hash`, a published leaf file
+must hash to it as well, and the payload check reads only a record tied that way. A missing leaf file changes nothing
+(AUDIT-A N-2, pinned in test_3200_n2_a_deleted_leaf_file_does_not_untie_an_entry.py).
 
 SCOPE: this is the generator. The static copy already published (transparency/ in this repository and the hosted
 copy) keeps its older verify.py until it is regenerated, which is a separate step.
@@ -70,9 +70,9 @@ def test_a_payload_is_checked_against_the_leaf_not_the_line(tmp_path):
     assert code == 1, "a payload matched against an edited line passed: " + out
 
 
-def test_a_line_with_no_leaf_file_is_reported_as_not_checked(tmp_path):
+def test_a_line_with_no_leaf_file_is_still_tied_through_its_record(tmp_path):
     site, _ = _site(tmp_path, 3)
     os.remove(str(site / "entries" / "3.leaf.json"))
     code, out = _verify(site)
-    assert code == 0, out                                # the tree itself still verifies
-    assert "not checked: 1 entries have no leaf file" in out and "checked: 3 entries are the leaves" in out, out
+    assert code == 0 and "checked: 4 entries are the leaves the tree hashed." in out, out
+    assert "carry no record" not in out, out
