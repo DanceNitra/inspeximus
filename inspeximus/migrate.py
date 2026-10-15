@@ -36,15 +36,23 @@ What maps, and what does not:
 
 Identity and idempotence. Each imported item is identified by its `id`, or, when the export has none,
 by `sha256(user_id, created_at, text)`. The store's live and superseded records are checked for the
-identity, and so is a sidecar beside the store (`<store>.mem0-imported.json`) that keeps the sha256 of
+identity, and so is a sidecar beside the store (`<store>.mem0-imported.json`) that keeps a keyed hash of
 every identity ever imported. The sidecar is what makes a re-import after an erasure safe: a
 tombstone is content-free by design, so once `forget_subject` has removed a person's records the
 store itself no longer knows their mem0 ids, and without the sidecar the same export would write the
-person back. The sidecar holds hashes of opaque ids and no text.
+person back.
+
+The sidecar holds no text, and its hashes are keyed (3.20, AUDIT-A N-3). Each entry is an HMAC of the
+identity under the store's read-guard key, which lives in the key home and never beside the store. It
+was a plain sha256, and for an export with no ids the identity is itself a hash of (user, timestamp,
+text): anyone holding the sidecar could confirm a guessed record after its erasure by hashing the guess.
+Entries written before 3.20 are plain sha256 values. They are still honoured, so an old sidecar still
+stops a re-import, and they keep that property until the sidecar is rewritten without them.
 """
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 import time
@@ -114,7 +122,21 @@ def _write_sidecar(store, hashes: set[str]) -> None:
 
 
 def _h(identity: str) -> str:
+    """The unkeyed sidecar entry that versions before 3.20 wrote. Read, never written."""
     return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+
+
+_SIDECAR_DOMAIN = b"inspeximus/mem0-import/v1\0"
+_PROCESS_KEY = os.urandom(32)
+
+
+def _hk(store, identity: str) -> str:
+    """The sidecar entry from 3.20: an HMAC of the identity under the store's key-home key (N-3).
+
+    A store with no path has no key home entry and lives in one process, so it uses a key for this process."""
+    key = store._guard_key(create=True) if getattr(store, "path", None) else None
+    return "k1:" + hmac.new(key or _PROCESS_KEY, _SIDECAR_DOMAIN + identity.encode("utf-8"),
+                            hashlib.sha256).hexdigest()
 
 
 def load_export(path: str) -> list[dict]:
@@ -151,7 +173,7 @@ def import_mem0(store, items: list[dict], include_expired: bool = False, now: fl
         if ident in in_store:
             skipped.append({"id": ident, "why": "already imported"})
             continue
-        if _h(ident) in ever:
+        if _hk(store, ident) in ever or _h(ident) in ever:
             skipped.append({"id": ident, "why": "imported earlier and since erased"})
             continue
         if _expired_for_mem0(it.get("expiration_date"), now) and not include_expired:
@@ -179,7 +201,7 @@ def import_mem0(store, items: list[dict], include_expired: bool = False, now: fl
         )
         written.append(rid)
         in_store.add(ident)
-        ever.add(_h(ident))
+        ever.add(_hk(store, ident))
     if written:
         _write_sidecar(store, ever)
     return {"written": written, "skipped": skipped,

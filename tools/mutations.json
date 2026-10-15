@@ -1797,7 +1797,7 @@
  {
   "file": "inspeximus/migrate.py",
   "name": "a re-import after an erasure writes the person back",
-  "old": "        if _h(ident) in ever:\n",
+  "old": "        if _hk(store, ident) in ever or _h(ident) in ever:\n",
   "new": "        if False:\n",
   "tests": [
    "tests/test_a_mem0_export_imports_with_its_subjects.py"
@@ -14399,6 +14399,33 @@
   "new": "    return str(sth_hash)",
   "tests": [
    "tests/test_3200_n1_a_replay_of_any_cosigned_head_is_not_a_rollback.py"
+  ]
+ },
+ {
+  "name": "N-3: the import sidecar stores an unkeyed hash again",
+  "file": "inspeximus/migrate.py",
+  "old": "        ever.add(_hk(store, ident))",
+  "new": "        ever.add(_h(ident))",
+  "tests": [
+   "tests/test_3200_n3_the_import_sidecar_cannot_confirm_an_erased_text.py"
+  ]
+ },
+ {
+  "name": "N-3: a sidecar entry an older version wrote is ignored",
+  "file": "inspeximus/migrate.py",
+  "old": "        if _hk(store, ident) in ever or _h(ident) in ever:",
+  "new": "        if _hk(store, ident) in ever:",
+  "tests": [
+   "tests/test_3200_n3_the_import_sidecar_cannot_confirm_an_erased_text.py"
+  ]
+ },
+ {
+  "name": "N-3: the keyed sidecar entry is never looked up",
+  "file": "inspeximus/migrate.py",
+  "old": "        if _hk(store, ident) in ever or _h(ident) in ever:",
+  "new": "        if _h(ident) in ever:",
+  "tests": [
+   "tests/test_3200_n3_the_import_sidecar_cannot_confirm_an_erased_text.py"
   ]
  }
 ]
