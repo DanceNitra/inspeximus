@@ -21400,8 +21400,13 @@ _EX_LEAD = re.compile(
 # Trailing time adverbials. "my manager is Priya now" and "my manager is Priya" are one fact; the trailing
 # word is tense, not value. Stripping is TRIED, never forced: "the meeting is today" would otherwise lose
 # its whole object, so a stripped candidate that fails to parse falls back to the unstripped one.
+# A MATCH STARTS ONLY WHERE A RUN OF SEPARATORS STARTS (3.20, AUDIT-A N-4). `sub` searches every position, and
+# from each position inside a long run of `-`, `,` or spaces the greedy `[\s,;-]+` read to the run's end and
+# backtracked, so the search was quadratic: derive_key("-" * 4000) took 1.5 s, 8,000 took 6 s, on the write path
+# of every store that sets `extractor = regex_extractor`. The lookbehind changes no match: a match that starts
+# inside a run also matches from the run's first character, and `sub` takes the leftmost one.
 _EX_TRAIL = re.compile(
-    r"[\s,;-]+(?:now|today|currently|already|again|these\s+days|nowadays|going\s+forward|"
+    r"(?<![\s,;-])[\s,;-]+(?:now|today|currently|already|again|these\s+days|nowadays|going\s+forward|"
     r"from\s+now\s+on|at\s+the\s+moment|right\s+now|yesterday|"
     r"last\s+(?:week|month|year|night)|this\s+(?:week|month|year|morning|afternoon)|"
     r"as\s+of\s+\S+|since\s+\S+)\s*[.!]?\s*$", re.I)

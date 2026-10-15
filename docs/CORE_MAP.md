@@ -6,15 +6,15 @@ matching the code rather than quietly becoming fiction.
 
 ## Why one big file, and why the size is not the problem
 
-`inspeximus/core.py` is **1,481,447 bytes** across **21,734 lines**. Of that:
+`inspeximus/core.py` is **1,481,997 bytes** across **21,739 lines**. Of that:
 
 | | bytes | share |
 |---|---:|---:|
-| comments | 456,683 | 31% |
+| comments | 457,216 | 31% |
 | docstrings | 365,429 | 25% |
-| executable code | 659,335 | 45% |
+| executable code | 659,352 | 44% |
 
-**55% of the file is explanatory prose.** Nearly every guarantee
+**56% of the file is explanatory prose.** Nearly every guarantee
 carries the reason it exists and, usually, the failure that produced it. That is the audit
 trail, not padding: deleting it to make the file smaller would remove exactly what makes the
 code checkable. What the file lacked was a table of contents.

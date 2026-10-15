@@ -14427,5 +14427,14 @@
   "tests": [
    "tests/test_3200_n3_the_import_sidecar_cannot_confirm_an_erased_text.py"
   ]
+ },
+ {
+  "name": "N-4: the trailing-adverbial pattern starts inside a separator run again",
+  "file": "inspeximus/core.py",
+  "old": "    r\"(?<![\\s,;-])[\\s,;-]+(?:now|today|currently|already|again|these\\s+days|nowadays|going\\s+forward|\"",
+  "new": "    r\"[\\s,;-]+(?:now|today|currently|already|again|these\\s+days|nowadays|going\\s+forward|\"",
+  "tests": [
+   "tests/test_3200_every_text_scanner_is_linear_on_adversarial_input.py"
+  ]
  }
 ]
