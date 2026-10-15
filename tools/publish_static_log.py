@@ -134,10 +134,21 @@ def main():
                 continue
             tied[index] = row["entry"]
         elif "leaf_b64" in row:
-            if hashlib.sha256(bytes([0]) + base64.b64decode(row["leaf_b64"])).hexdigest() != row["leaf_hash"]:
+            raw = base64.b64decode(row["leaf_b64"])
+            if hashlib.sha256(bytes([0]) + raw).hexdigest() != row["leaf_hash"]:
                 problems.append("entry %d: its leaf_b64 does not hash to the leaf_hash log.jsonl gives" % index)
                 continue
-            tied_raw += 1
+            # A RAW LEAF THAT IS A RECORD IS READ AS ONE (3.20, AUDIT-A N-12). It was only counted as tied, so a line
+            # rewritten to carry the real leaf as leaf_b64, beside a substituted text in payloads.json, passed with
+            # that text unchecked. A leaf that decodes to a JSON object is the entry, and its payload is checked.
+            try:
+                as_entry = json.loads(raw.decode("utf-8"))
+            except ValueError:
+                as_entry = None
+            if isinstance(as_entry, dict):
+                tied[index] = as_entry
+            else:
+                tied_raw += 1
         else:
             untied += 1
     if untied and not allow_untied:
@@ -198,6 +209,8 @@ def main():
     if untied:
         print("not checked: %d entries carry no record and no leaf, so they are not tied to the tree "
               "(accepted by --allow-untied)." % untied)
+    if tied_raw:
+        print("not checked: %d entries carry a leaf that is not a record, so they name no text to check." % tied_raw)
     if payloads is not None:
         print("checked: %d published entry texts hash to what the log recorded." % checked_payloads)
         if unavailable:

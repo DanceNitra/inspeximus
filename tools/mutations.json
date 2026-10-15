@@ -14472,5 +14472,14 @@
   "tests": [
    "tests/test_3200_n8_a_look_alike_of_a_pinned_store_id_is_refused.py"
   ]
+ },
+ {
+  "name": "N-12: a raw leaf that is a record is only counted, its text unchecked",
+  "file": "tools/publish_static_log.py",
+  "old": "            if isinstance(as_entry, dict):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_n12_a_raw_leaf_line_has_its_text_checked.py"
+  ]
  }
 ]
