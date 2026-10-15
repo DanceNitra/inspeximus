@@ -59,9 +59,12 @@ def _run_loop(tmp_path, codes):
                             'VERSION=9.9.9')
     script = re.sub(r"python packages/_registry_verify\.py \"\$VERSION\"", "bash ./fake.sh", script)
     script = script.replace("sleep 15", "true")
-    (tmp_path / "fake.sh").write_text(fake + "\n", encoding="utf-8", newline="\n")
-    (tmp_path / "step.sh").write_text(script + "\n", encoding="utf-8", newline="\n")
-    p = subprocess.run([bash, "step.sh"], cwd=str(tmp_path), capture_output=True, text=True, timeout=60)
+    with open(str(tmp_path / "fake.sh"), "w", encoding="utf-8", newline="\n") as fh:   # newline= needs 3.10 on Path
+        fh.write(fake + "\n")
+    with open(str(tmp_path / "step.sh"), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(script + "\n")
+    p = subprocess.run([bash, "step.sh"], cwd=str(tmp_path), capture_output=True, text=True, encoding="utf-8",
+                       errors="replace", timeout=60)
     return p.returncode, p.stdout + p.stderr
 
 

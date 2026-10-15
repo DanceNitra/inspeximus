@@ -34,7 +34,8 @@ def _rewrite_line(site, index, fn):
     path = site / "log.jsonl"
     rows = [json.loads(ln) for ln in path.read_text(encoding="utf-8").splitlines() if ln.strip()]
     fn(rows[index])
-    path.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8", newline="\n")
+    with open(str(path), "w", encoding="utf-8", newline="\n") as fh:      # newline= needs 3.10 on Path
+        fh.write("".join(json.dumps(r) + "\n" for r in rows))
 
 
 def test_control_an_honest_log_verifies_and_every_entry_is_tied(tmp_path):
