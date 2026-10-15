@@ -14549,8 +14549,8 @@
  {
   "name": "AUDIT-B: the MCP quarantine filter walks the whole store again",
   "file": "inspeximus/mcp_server.py",
-  "old": "    for r in _stored_rows(ids):                       # by position, not a walk of the store (AUDIT-B)",
-  "new": "    for r in [r for r in _MEM.items if r.get(\"id\") in ids]:",
+  "old": "    rows, missing = _stored_rows(ids)                 # by position, not a walk of the store (AUDIT-B)",
+  "new": "    rows, missing = [r for r in _MEM.items if r.get(\"id\") in ids], []",
   "tests": [
    "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
   ]
@@ -14558,8 +14558,8 @@
  {
   "name": "AUDIT-B: the row index trusts a position a removal made stale",
   "file": "inspeximus/mcp_server.py",
-  "old": "        return r if dict.get(r, \"id\") == rid else None",
-  "new": "        return r",
+  "old": "                if r is None or dict.get(r, \"id\") != rid:",
+  "new": "                if r is None:",
   "tests": [
    "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
   ]
@@ -14569,6 +14569,33 @@
   "file": "inspeximus/core.py",
   "old": "            if cur is not None and self._unserved_ids([cur]):",
   "new": "            if cur is not None and cur[\"id\"] in _withheld():",
+  "tests": [
+   "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
+  ]
+ },
+ {
+  "name": "AUDIT-A 9: an id the filter cannot find is served unfiltered",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    quarantined = set(missing)                        # not found is withheld, never quoted (AUDIT-A section 9)",
+  "new": "    quarantined = set()",
+  "tests": [
+   "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
+  ]
+ },
+ {
+  "name": "AUDIT-A 9: the row index runs without its lock",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    with _ROW_POS_LOCK:",
+  "new": "    with __import__(\"contextlib\").nullcontext():",
+  "tests": [
+   "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
+  ]
+ },
+ {
+  "name": "AUDIT-A 9: the row index keeps one row per id",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                pos.setdefault(dict.get(rows[i], \"id\"), []).append(i)",
+  "new": "                pos[dict.get(rows[i], \"id\")] = [i]",
   "tests": [
    "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
   ]

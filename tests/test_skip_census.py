@@ -115,7 +115,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: return by position, not by walking the store, and the gate arm mcp_lookup_n2000 pins it. It calls the MCP server's
 #: tools, so it needs the SDK and runs in the `integrations` job; the gate job installs the SDK and runs the arm itself.
 #: Exactly +4, no slack: 265 + 4 = 269.
-MAX_HIDDEN_IN_BASE_ENV = 269
+#: +3 in 3.20 in the same file (AUDIT-A section 9): the row index under threads, an id it cannot find, and a duplicate
+#: id. Exactly +3, no slack: 269 + 3 = 272.
+MAX_HIDDEN_IN_BASE_ENV = 272
 
 
 def _base_env_census():
