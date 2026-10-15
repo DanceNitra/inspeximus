@@ -38,7 +38,8 @@ your own TLS/reverse-proxy for a real deployment.
 """
 from __future__ import annotations
 import json, argparse, os, sys
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
+from ._serve import make_http_server
 from .witness_pool import Unauthenticated, Witness
 
 
@@ -209,7 +210,8 @@ def make_server(port: int = 9700, host: str = "127.0.0.1", state_path: str | Non
     w = Witness(secret_hex=secret_hex, state_path=state_path, strict=strict,
                 require_authenticated_state=require_authenticated_state,
                 require_signed_heads=require_signed_heads, pins=pins)
-    return ThreadingHTTPServer((host, port), _make_handler(w, bootstrap_token)), w
+    # A read timeout and a connection cap (3.20, N-11).
+    return make_http_server((host, port), _make_handler(w, bootstrap_token)), w
 
 
 def _loopback(host: str) -> bool:

@@ -38,9 +38,10 @@ import argparse
 import json
 import os
 import sys
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
 
 from . import cose, scitt
+from ._serve import make_http_server
 from .transparency import RegistrationPolicy, RegistrationRefused, TransparencyService
 
 __all__ = ["make_server", "main", "CBOR", "COSE", "PROBLEM"]
@@ -260,7 +261,7 @@ def make_server(service: TransparencyService, host: str = "127.0.0.1", port: int
                     "entries": d["entries"], "root": d["root"], "scope": d["scope"],
                     "witnessed": witnessed}
 
-    return ThreadingHTTPServer((host, port), Handler)
+    return make_http_server((host, port), Handler)     # a read timeout and a connection cap (3.20, N-11)
 
 
 def _service_secret(a):

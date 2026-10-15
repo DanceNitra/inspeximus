@@ -14319,5 +14319,59 @@
   "tests": [
    "tests/test_3200_n2_a_deleted_leaf_file_does_not_untie_an_entry.py"
   ]
+ },
+ {
+  "name": "N-11: a served connection has no read timeout",
+  "file": "inspeximus/_serve.py",
+  "old": "    handler = type(handler_class.__name__, (handler_class,), {\"timeout\": wait})",
+  "new": "    handler = handler_class",
+  "tests": [
+   "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
+  ]
+ },
+ {
+  "name": "N-11: the server takes every connection, with no cap",
+  "file": "inspeximus/_serve.py",
+  "old": "            if not self._slots.acquire(blocking=False):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
+  ]
+ },
+ {
+  "name": "N-11: a finished request never gives its slot back",
+  "file": "inspeximus/_serve.py",
+  "old": "            finally:\n                self._slots.release()",
+  "new": "            finally:\n                pass",
+  "tests": [
+   "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
+  ]
+ },
+ {
+  "name": "N-11: SCRAPI serves without the bounded server",
+  "file": "inspeximus/scrapi.py",
+  "old": "    return make_http_server((host, port), Handler)",
+  "new": "    return __import__('http.server').server.ThreadingHTTPServer((host, port), Handler)",
+  "tests": [
+   "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
+  ]
+ },
+ {
+  "name": "N-11: the witness server serves without the bounded server",
+  "file": "inspeximus/witness_server.py",
+  "old": "    return make_http_server((host, port), _make_handler(w, bootstrap_token)), w",
+  "new": "    return __import__('http.server').server.ThreadingHTTPServer((host, port), _make_handler(w, bootstrap_token)), w",
+  "tests": [
+   "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
+  ]
+ },
+ {
+  "name": "N-11: the checkpoint witness serves without the bounded server",
+  "file": "inspeximus/witness_checkpoint.py",
+  "old": "    return make_http_server((host, port), make_handler(witness, prefix))",
+  "new": "    return __import__('http.server').server.ThreadingHTTPServer((host, port), make_handler(witness, prefix))",
+  "tests": [
+   "tests/test_3200_n11_stalled_connections_cannot_hold_every_server_thread.py"
+  ]
  }
 ]

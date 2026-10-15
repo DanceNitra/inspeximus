@@ -358,17 +358,19 @@ def make_handler(witness: "CheckpointWitness", prefix: str = ""):
     return Handler
 
 
+def make_server(witness: "CheckpointWitness", port: int = 9810, host: str = "127.0.0.1", prefix: str = ""):
+    """Build (but do not start) the witness server. Pass port=0 and read `server.server_address[1]`.
+
+    One thread per request, which is right for a cron-rate service, with a read timeout and a cap on
+    connections (3.20, AUDIT-A N-11): before it, a client that sent headers and stopped held its thread
+    for as long as it kept the connection open."""
+    from ._serve import make_http_server
+    return make_http_server((host, port), make_handler(witness, prefix))
+
+
 def serve(witness: "CheckpointWitness", port: int = 9810, host: str = "127.0.0.1", prefix: str = ""):
-    """Run the witness (blocking). One thread per request, which is right for a cron-rate service."""
-    import http.server
-    import socketserver
-
-    class Threaded(socketserver.ThreadingMixIn, http.server.HTTPServer):
-        daemon_threads = True
-        allow_reuse_address = True
-
-    httpd = Threaded((host, port), make_handler(witness, prefix))
-    httpd.serve_forever()
+    """Run the witness (blocking)."""
+    make_server(witness, port=port, host=host, prefix=prefix).serve_forever()
 
 
 # ------------------------------------------------------------------------------- the client side
