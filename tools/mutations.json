@@ -14436,5 +14436,14 @@
   "tests": [
    "tests/test_3200_every_text_scanner_is_linear_on_adversarial_input.py"
   ]
+ },
+ {
+  "name": "F10 class: the MCP filter passes quarantined rows through",
+  "file": "inspeximus/mcp_server.py",
+  "old": "    if not quarantined:\n        return result",
+  "new": "    if True:\n        return result",
+  "tests": [
+   "tests/test_3200_f10_no_read_mcp_tool_returns_quarantined_text.py"
+  ]
  }
 ]
