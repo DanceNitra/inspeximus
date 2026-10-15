@@ -57,6 +57,13 @@ ROTATION_KIND = "inspeximus-head-key-rotation/1"
 _SEEN_PREFIX = 24
 
 
+def _id_shape(store_id) -> str:
+    """A store id with case, whitespace and invisible characters taken out, and compatibility forms folded (N-8)."""
+    import unicodedata
+    folded = unicodedata.normalize("NFKC", str(store_id))
+    return "".join(ch for ch in folded if ch.isprintable() and not ch.isspace()).casefold()
+
+
 def _seen_key(sth_hash) -> str:
     return str(sth_hash)[:_SEEN_PREFIX]
 _MAX_REBOUNDS = 200
@@ -363,6 +370,16 @@ class Witness:
         pk = store_pubkey if store_pubkey is not None else (anchor or {}).get("store_pubkey")
         sig = store_sig if store_sig is not None else (anchor or {}).get("store_sig")
         pin = (self._pins.get(str(store_id)) or {}).get("pubkey")
+        if pin is None and self._pins:
+            # A LOOK-ALIKE OF A PINNED ID IS NOT A NEW STORE (3.20, AUDIT-A N-8). Without this, "Store-A", "store-a "
+            # or "store-a\x00" was a different, unpinned id beside the pinned "store-a", and took unsigned heads: the
+            # witness co-signed them and grew its state with invented ids that a reader can mistake for the store.
+            shape = _id_shape(store_id)
+            twin = next((p for p in self._pins if p != str(store_id) and _id_shape(p) == shape), None)
+            if twin is not None:
+                raise Unauthenticated(f"store id {store_id!r} differs from the pinned store {twin!r} only by case, "
+                                      f"whitespace or invisible characters, and is refused rather than taken as "
+                                      f"a new store")
         if pin is None and not self._require_signed:
             return
         if pin is None:

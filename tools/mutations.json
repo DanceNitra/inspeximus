@@ -14454,5 +14454,23 @@
   "tests": [
    "tests/test_3200_n5_a_long_local_part_is_found_and_masked_whole.py"
   ]
+ },
+ {
+  "name": "N-8: a look-alike of a pinned store id is a new store again",
+  "file": "inspeximus/witness_pool.py",
+  "old": "            if twin is not None:",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_3200_n8_a_look_alike_of_a_pinned_store_id_is_refused.py"
+  ]
+ },
+ {
+  "name": "N-8: a store id is compared by case only",
+  "file": "inspeximus/witness_pool.py",
+  "old": "    return \"\".join(ch for ch in folded if ch.isprintable() and not ch.isspace()).casefold()",
+  "new": "    return str(store_id).casefold()",
+  "tests": [
+   "tests/test_3200_n8_a_look_alike_of_a_pinned_store_id_is_refused.py"
+  ]
  }
 ]
