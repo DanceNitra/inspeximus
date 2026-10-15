@@ -1190,9 +1190,13 @@ _SELF_NARRATION = (
 _PII_PATTERNS = (
     ("ssn",         re.compile(r"\b\d{3}-\d{2}-\d{4}\b")),
     # BOUNDED (3.20, F14): with `+` quantifiers, "a-a-a-..." backtracked from every word boundary: 64,000 characters
-    # took 5 s and matched nothing. The bounds are RFC 5321's: a local part of at most 64, a domain of at most 255,
-    # and a top-level label of at most 63, so each start position costs a bounded amount and the scan is linear.
-    ("email",       re.compile(r"\b[A-Za-z0-9._%+\-]{1,64}@[A-Za-z0-9.\-]{1,255}\.[A-Za-z]{2,63}\b")),
+    # took 5 s and matched nothing. Each part now has a bound, so each start position costs a bounded amount and the
+    # scan is linear. THE LOCAL PART'S BOUND IS 254, NOT 64 (AUDIT-A N-5). With RFC 5321's 64, a local part of 65 or
+    # more characters with no word boundary inside was not found at all, and a dotted one was masked only from its
+    # last 64 characters, leaving the rest visible ("john.smith.john.[EMAIL]"). 254 is the longest path RFC 5321
+    # allows for a whole address, so no address a mail system accepts is cut; the scan stays linear (measured
+    # 0.043 s at 64,000 characters, the slowest shape). The domain keeps 255 and the top-level label 63.
+    ("email",       re.compile(r"\b[A-Za-z0-9._%+\-]{1,254}@[A-Za-z0-9.\-]{1,255}\.[A-Za-z]{2,63}\b")),
     ("credit_card", re.compile(r"\b(?:\d[ \-]?){13,16}\b")),
     ("ipv4",        re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b")),
     ("phone",       re.compile(r"(?<![\w.])\+?\d[\d\s\-().]{7,}\d(?![\w.])")),

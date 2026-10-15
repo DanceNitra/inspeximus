@@ -5,11 +5,9 @@ every word boundary: redact_pii("a-" * 64000) took 5.8 s and matched nothing. (2
 against every span claimed so far, and redact_pii rebuilt the whole string once per hit: 20,000 addresses took 13 s.
 Both are reachable with text an agent writes: recall(redact_pii=True), forget_pii, pii_report and pii_detect=True.
 
-WHAT IS PINNED HERE. The e-mail pattern is bounded by RFC 5321 (local part 64, domain 255, top-level label 63).
-The claimed spans are kept sorted and checked with bisect, and redact_pii builds its output in one pass. The
-results are unchanged except for a local part over 64 characters, which RFC 5321 does not allow: the address is
-still found and masked, from its last 64 characters. Measured on 3,000 varied texts (2,606 with hits) against
-v3.19.1: one difference, that case.
+WHAT IS PINNED HERE. The e-mail pattern is bounded (local part 254, domain 255, top-level label 63; the local
+part's bound is AUDIT-A N-5, see test_3200_n5_a_long_local_part_is_found_and_masked_whole.py). The claimed spans are
+kept sorted and checked with bisect, and redact_pii builds its output in one pass.
 
 The time limits below are 20 times what the fix measures on PC1 and under half of what v3.19.1 took.
 """

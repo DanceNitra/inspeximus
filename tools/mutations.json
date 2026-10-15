@@ -14161,7 +14161,7 @@
  {
   "name": "the e-mail pattern backtracks without bound",
   "file": "inspeximus/core.py",
-  "old": "    (\"email\",       re.compile(r\"\\b[A-Za-z0-9._%+\\-]{1,64}@[A-Za-z0-9.\\-]{1,255}\\.[A-Za-z]{2,63}\\b\")),",
+  "old": "    (\"email\",       re.compile(r\"\\b[A-Za-z0-9._%+\\-]{1,254}@[A-Za-z0-9.\\-]{1,255}\\.[A-Za-z]{2,63}\\b\")),",
   "new": "    (\"email\",       re.compile(r\"\\b[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}\\b\")),",
   "tests": [
    "tests/test_3200_f14_a_pii_scan_is_linear_in_its_input.py"
@@ -14444,6 +14444,15 @@
   "new": "    if True:\n        return result",
   "tests": [
    "tests/test_3200_f10_no_read_mcp_tool_returns_quarantined_text.py"
+  ]
+ },
+ {
+  "name": "N-5: the e-mail local part is cut at 64 characters again",
+  "file": "inspeximus/core.py",
+  "old": "    (\"email\",       re.compile(r\"\\b[A-Za-z0-9._%+\\-]{1,254}@[A-Za-z0-9.\\-]{1,255}\\.[A-Za-z]{2,63}\\b\")),",
+  "new": "    (\"email\",       re.compile(r\"\\b[A-Za-z0-9._%+\\-]{1,64}@[A-Za-z0-9.\\-]{1,255}\\.[A-Za-z]{2,63}\\b\")),",
+  "tests": [
+   "tests/test_3200_n5_a_long_local_part_is_found_and_masked_whole.py"
   ]
  }
 ]
