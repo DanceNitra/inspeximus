@@ -14491,5 +14491,32 @@
    "tests/test_3200_n13_an_unpinned_store_keeps_no_replay_list.py",
    "tests/test_witness_adversarial.py"
   ]
+ },
+ {
+  "name": "N-14: a request has no deadline, so a trickle holds its slot",
+  "file": "inspeximus/_serve.py",
+  "old": "                    late = [r for r, t in self._started.items() if now - t > deadline]",
+  "new": "                    late = []",
+  "tests": [
+   "tests/test_3200_n14_a_trickle_cannot_hold_a_slot_and_one_address_cannot_take_them_all.py"
+  ]
+ },
+ {
+  "name": "N-14: one address may take every slot",
+  "file": "inspeximus/_serve.py",
+  "old": "                full = self._by_address.get(host, 0) >= per_address",
+  "new": "                full = False",
+  "tests": [
+   "tests/test_3200_n14_a_trickle_cannot_hold_a_slot_and_one_address_cannot_take_them_all.py"
+  ]
+ },
+ {
+  "name": "N-14: a per-address slot is never given back",
+  "file": "inspeximus/_serve.py",
+  "old": "                left = self._by_address.get(host, 1) - 1",
+  "new": "                left = self._by_address.get(host, 1)",
+  "tests": [
+   "tests/test_3200_n14_a_trickle_cannot_hold_a_slot_and_one_address_cannot_take_them_all.py"
+  ]
  }
 ]

@@ -64,7 +64,10 @@ def _closed_or_busy(s, deadline):
 
 
 @pytest.mark.parametrize("make", [_scrapi, _witness, _checkpoint], ids=["scrapi", "witness", "checkpoint"])
-def test_stalled_connections_hold_at_most_the_cap_and_are_closed(tmp_path, make):
+def test_stalled_connections_hold_at_most_the_cap_and_are_closed(tmp_path, make, monkeypatch):
+    # All 80 come from one address, so the per-address cap (N-14, its own test) is lifted to test the total cap.
+    from inspeximus import _serve as serve_mod
+    monkeypatch.setattr(serve_mod, "MAX_PER_ADDRESS", 10 ** 6)
     httpd, path = make(tmp_path)
     port = httpd.server_address[1]
     t = threading.Thread(target=httpd.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True)
