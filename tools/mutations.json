@@ -14599,5 +14599,41 @@
   "tests": [
    "tests/test_3200_the_mcp_lookups_do_not_walk_the_store.py"
   ]
+ },
+ {
+  "name": "3.21 item 1: the matrix ignores a replaced vector",
+  "file": "inspeximus/core.py",
+  "old": "                if len(_now) != len(_refs) or any(a is not b for a, b in zip(_now, _refs)):",
+  "new": "                if False:",
+  "tests": [
+   "tests/test_a_held_handle_ranks_with_the_vectors_it_holds.py"
+  ]
+ },
+ {
+  "name": "3.21 item 1: the matrix rebuilds on every recall",
+  "file": "inspeximus/core.py",
+  "old": "                if len(_now) != len(_refs) or any(a is not b for a, b in zip(_now, _refs)):",
+  "new": "                if True:",
+  "tests": [
+   "tests/test_a_held_handle_ranks_with_the_vectors_it_holds.py"
+  ]
+ },
+ {
+  "name": "3.21 item 1: an in-place vector edit moves no generation",
+  "file": "inspeximus/core.py",
+  "old": "        store._vec_gen = getattr(store, \"_vec_gen\", 0) + 1",
+  "new": "        pass",
+  "tests": [
+   "tests/test_a_held_handle_ranks_with_the_vectors_it_holds.py"
+  ]
+ },
+ {
+  "name": "3.21 item 1: the matrix ignores the vector generation",
+  "file": "inspeximus/core.py",
+  "old": "            if getattr(self, \"_mat_gen\", None) != getattr(self, \"_vec_gen\", 0):",
+  "new": "            if False:",
+  "tests": [
+   "tests/test_a_held_handle_ranks_with_the_vectors_it_holds.py"
+  ]
  }
 ]

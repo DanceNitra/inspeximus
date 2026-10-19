@@ -2078,6 +2078,10 @@ def _note_dirty(store, rid, field=None, tracked=False) -> None:
     # `_touch` on a tracked record: its edits already fired here with their field, so the declaration drops nothing.
     # Measured on the perf gate's sleep arm: a state toggle sets `meta.superseded_by_toggle` and touches both records,
     # and dropping on that re-tokenized 80 records whose text had not changed (+80 regex calls, +160 tracked gets).
+    if rid and not tracked and field == "vec":
+        # An in-place edit keeps the vector's identity, so the numpy matrix needs a generation to see it (3.21). A vector
+        # replaced through any other path, `update` included, is another object, which `_vec_matrix` sees by identity.
+        store._vec_gen = getattr(store, "_vec_gen", 0) + 1
     if rid and not tracked and (field is None or field in _INDEX_FIELDS):
         _drop_derived(store, rid)
     elif rid and not tracked and field == "vec":
@@ -15516,11 +15520,26 @@ class Inspeximus:
         changes (remember / bulk load); status changes (consolidate) don't touch the vectors."""
         if _numpy() is None:
             return None
+        # A CHANGED VECTOR REBUILDS IT, NOT ONLY A CHANGED COUNT (3.21). Keyed on the count alone, a held handle kept
+        # ranking with its old matrix after a peer's `reembed` reached it through `refresh()`: same count, new vectors.
+        # Measured on 3.20.0: the re-vectored record came first on the pure path and in a fresh handle, and not at all in
+        # the held one. The build keeps the vector objects it read; a vector replaced by any path (a refresh that adopts
+        # a peer's record, an assignment, `_set_vec`) is another object, and an in-place edit moves `_vec_gen`.
+        if self._mat is not None and self._mat_built_n == len(self.items):
+            _refs = getattr(self, "_mat_refs", None) or ()
+            if getattr(self, "_mat_gen", None) != getattr(self, "_vec_gen", 0):
+                self._mat = None
+            else:
+                _now = [v for v in (dict.get(r, "vec") for r in self.items) if v]
+                if len(_now) != len(_refs) or any(a is not b for a, b in zip(_now, _refs)):
+                    self._mat = None
         if self._mat is None or self._mat_built_n != len(self.items):
             rows, ids = [], []
+            _gen = getattr(self, "_vec_gen", 0)
             for r in self.items:
                 if r.get("vec"):
                     rows.append(r["vec"]); ids.append(r["id"])
+            self._mat_refs, self._mat_gen = tuple(rows), _gen
             if rows:
                 M = _np.asarray(rows, dtype=_np.float32)
                 self._vec_mean = M.mean(axis=0)               # corpus mean (computed regardless; used to center)
