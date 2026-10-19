@@ -3623,7 +3623,13 @@ class Inspeximus:
         # anisotropic — all cosines compress into a narrow band — so semantic recall under-separates.
         # MEASURED on real LoCoMo (419 turns): centering lifts single-hop full-evidence recall@k by
         # +0.04..+0.07 (k=5/10/20) and is neutral on multi-hop. Reversible: set center_embeddings=False.
-        self.center_embeddings = True
+        # THE USER'S SWITCH (3.21, AUDIT-A A-4): `store.center_embeddings` in `<key home>/inspeximus/config.json`,
+        # the file `store.format` and `receipts.tail` come from, so the MCP server, the command line and the hooks
+        # follow it too. Never an environment variable: a project's settings can set those, and this changes how
+        # the user's store ranks. Only `true` or `false` counts; an assignment in code still wins.
+        from . import _userconfig
+        _ce = _userconfig.get("store", "center_embeddings")
+        self.center_embeddings = _ce if isinstance(_ce, bool) else True
         # Two-tier keep-budget: when consolidate(keep) must drop surplus, PROTECT the top protect_frac
         # of the budget by RAW value (recency-immune) and fill the REST by EFFECTIVE (decay-weighted)
         # value — so a freshly-useful memory isn't evicted by a stale high-value one. A pure top-N-by-raw

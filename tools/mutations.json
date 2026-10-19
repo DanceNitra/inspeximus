@@ -14978,5 +14978,23 @@
   "tests": [
    "tests/test_3210_a6_centring_needs_three_distinct_vectors.py"
   ]
+ },
+ {
+  "name": "3.21 A-4: the user's config cannot switch centring off",
+  "file": "inspeximus/core.py",
+  "old": "        self.center_embeddings = _ce if isinstance(_ce, bool) else True",
+  "new": "        self.center_embeddings = True",
+  "tests": [
+   "tests/test_3210_a4_the_user_config_switches_centring.py"
+  ]
+ },
+ {
+  "name": "3.21 A-4: any truthy or falsy config value switches centring",
+  "file": "inspeximus/core.py",
+  "old": "        self.center_embeddings = _ce if isinstance(_ce, bool) else True",
+  "new": "        self.center_embeddings = bool(_ce) if _ce is not None else True",
+  "tests": [
+   "tests/test_3210_a4_the_user_config_switches_centring.py"
+  ]
  }
 ]
