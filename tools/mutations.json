@@ -14071,7 +14071,7 @@
  {
   "name": "check_conflict judges and quotes a quarantined record",
   "file": "inspeximus/core.py",
-  "old": "                v = _served[r[\"id\"]] = bool(self._served_rows([r]))",
+  "old": "                v = _served[r[\"id\"]] = bool(self._served_rows([r], withheld=_withheld[0]))",
   "new": "                v = _served[r[\"id\"]] = True",
   "tests": [
    "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
@@ -14702,8 +14702,8 @@
  {
   "name": "3.21 item 20: every active row is guarded first, as in 3.20",
   "file": "inspeximus/core.py",
-  "old": "        _served = {}\n",
-  "new": "        active = self._served_rows(active); _served = {}\n",
+  "old": "        _served, _withheld = {}, []                          # the objection set, resolved once per call (A-1)\n",
+  "new": "        active = self._served_rows(active); _served, _withheld = {}, []\n",
   "tests": [
    "tests/test_3210_check_conflict_guards_only_the_rows_it_judges.py"
   ]
