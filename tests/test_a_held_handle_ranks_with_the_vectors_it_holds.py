@@ -13,7 +13,13 @@ import pytest
 from inspeximus import core
 from inspeximus.core import Inspeximus
 
-pytest.importorskip("numpy")
+
+@pytest.fixture(autouse=True)
+def _needs_numpy():
+    """Inside a fixture, not at module level: the base CI job has no numpy, and a module-level guard would hide the
+    whole file as one skip line (test_skip_census.py). Here each test skips by name."""
+    pytest.importorskip("numpy")
+
 
 DIM = 32
 QUERY = "the stale matrix query"
