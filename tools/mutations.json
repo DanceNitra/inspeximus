@@ -15032,5 +15032,14 @@
   "tests": [
    "tests/test_3210_the_guard_set_is_a_version.py::test_the_guards_verdicts_are_pinned_to_the_version"
   ]
+ },
+ {
+  "name": "3.21.1: the smuggled-parameters check is the backtracking regex again",
+  "file": "inspeximus/core.py",
+  "old": "_SMUGGLED_PARAMS = _SmuggledParams()",
+  "new": "_SMUGGLED_PARAMS = re.compile(r\"</([A-Za-z_][\\w.:-]{1,32})>\\s*(?:<([A-Za-z_][\\w.:-]{1,32})>.*?</\\2>\\s*)+\\Z\", re.S)",
+  "tests": [
+   "tests/test_3211_frame_guard_is_linear.py::test_the_tag_runs_that_blew_up_take_under_a_tenth_of_a_second"
+  ]
  }
 ]

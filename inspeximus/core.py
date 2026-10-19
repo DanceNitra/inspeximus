@@ -253,8 +253,50 @@ _WITHHELD = frozenset({"provisional", "discarded", "candidate"})
 # ENDS in a frame terminator, or ends in a closing tag followed by sibling tag pairs, because a
 # stored value has no reason to close a tag it never opened.
 _FRAME_TAIL = re.compile(r"</(?:antml:)?(?:invoke|parameter|function_calls)>\s*\Z")
-_SMUGGLED_PARAMS = re.compile(
-    r"</([A-Za-z_][\w.:-]{1,32})>\s*(?:<([A-Za-z_][\w.:-]{1,32})>.*?</\2>\s*)+\Z", re.S)
+_TAG_NAME = re.compile(r"[A-Za-z_][\w.:-]{1,32}")
+
+
+class _SmuggledParams:
+    """Does the text end with a closing tag followed by one or more `<name>...</name>` blocks?
+
+    The question the regex below asked, answered in linear time. The regex itself backtracked exponentially: its
+    lazy `.*?` inside a repeated group could split the same run of tags in every possible way before failing, so
+    remember() spent 67 s on one 3,776-character section of an ordinary tool output with 47 closing tags, and the
+    time doubled with each added `<td>v</td>` cell (3.21.1, measured 2026-10-19). `.search` keeps the regex's
+    meaning: the LAST block's closing tag is the text's end, its opener is any earlier `<name>` of the same name,
+    and the text before that opener, whitespace removed, ends in any `</tag>`. A text that ends with blocks after
+    a closing tag always has that shape: the earliest block is preceded by the closing tag, and every later block
+    by the closing tag of the block before it. `pattern` is the regex this replaces, kept for reference."""
+    pattern = r"</([A-Za-z_][\w.:-]{1,32})>\s*(?:<([A-Za-z_][\w.:-]{1,32})>.*?</\2>\s*)+\Z"
+
+    @staticmethod
+    def _closing_tag_ends_at(s, end):
+        """True when s[:end] ends with `</name>` for a valid tag name."""
+        if end < 5 or s[end - 1] != ">":
+            return False
+        start = s.rfind("</", max(0, end - 36), end - 1)
+        return start >= 0 and _TAG_NAME.fullmatch(s, start + 2, end - 1) is not None
+
+    def search(self, text):
+        s = text.rstrip()
+        if not s.endswith(">"):
+            return None
+        close = s.rfind("</", max(0, len(s) - 36))
+        if close < 0 or _TAG_NAME.fullmatch(s, close + 2, len(s) - 1) is None:
+            return None
+        opener = "<" + s[close + 2:len(s) - 1] + ">"
+        k = s.find(opener)
+        while 0 <= k and k + len(opener) <= close:
+            j = k
+            while j > 0 and s[j - 1].isspace():
+                j -= 1
+            if self._closing_tag_ends_at(s, j):
+                return True
+            k = s.find(opener, k + 1)
+        return None
+
+
+_SMUGGLED_PARAMS = _SmuggledParams()
 # The backreference above was written as a literal chr(2) once, by a heredoc that ate the
 # backslash, and the pattern then silently matched nothing: the guard reported every smuggled
 # write as clean. Assert the patterns BEHAVE at import, because a dead regex fails open.
