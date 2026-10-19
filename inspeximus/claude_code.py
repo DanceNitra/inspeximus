@@ -1504,7 +1504,6 @@ _NO_REPLAY = [re.compile(p, re.I) for p in (
     r"\b(?:stop-process|spps|kill)\b[^\n]*?\s-name\b",
     r"\bget-process\b[^|\n]*\|\s*stop-process\b",
     r"\b(?:pkill|killall)\b",
-    r"\brm\s+(?:[^\n;&|]*\s)?(?:-\w*r\w*|--recursive)\b",           # rm -r, -rf, -fr, -Recurse
     r"\bremove-item\b[^\n]*?\s-r(?:ecurse)?\b",
     r"\b(?:del|erase|rmdir|rd)\b[^\n]*?\s/s\b",
     r"\bgit\s+reset\b[^\n]*?\s--hard\b",
@@ -1518,6 +1517,42 @@ _NO_REPLAY = [re.compile(p, re.I) for p in (
     r"\bmkfs\b|\bdd\b[^\n]*?\bof=/dev/|\bformat(?:\.com)?\s+[a-z]:",
     r"\b(?:shutdown|restart-computer|stop-computer)\b",
 )]
+
+
+class _RmRecursive:
+    """`rm -r`, `-rf`, `-fr` or `--recursive` (any case), as the regex below matched it, in linear time (3.21.1).
+
+    The regex backtracked quadratically: after `rm` and a long run of whitespace it tried every split of that run
+    against `[^\\n;&|]*\\s`, so a 20 KB captured command took about 3 s. The same question, asked once per command
+    segment: after `rm` and its whitespace, a flag token starts either right there or after a whitespace character,
+    with no `\\n`, `;`, `&` or `|` in between (a `\\n` may be that whitespace character). `pattern` is the regex."""
+    pattern = r"\brm\s+(?:[^\n;&|]*\s)?(?:-\w*r\w*|--recursive)\b"
+    flags = re.I
+    _RM = re.compile(r"\brm(?=\s)", re.I)
+    _FLAG = re.compile(r"(?:-\w*r\w*|--recursive)\b", re.I)
+    _STOP = re.compile(r"[\n;&|]")
+
+    def search(self, text):
+        n, done = len(text), -1
+        for m in self._RM.finditer(text):
+            a = m.end()
+            while a < n and text[a].isspace():
+                a += 1
+            if a <= done:                       # a later `rm` in a segment already scanned from an earlier start
+                continue
+            stop = self._STOP.search(text, a)
+            end = stop.start() if stop else n
+            if self._FLAG.match(text, a):
+                return True
+            last = end + 1 if (stop and text[end] == "\n") else end
+            for f in range(a + 1, last + 1):
+                if f <= n and text[f - 1].isspace() and self._FLAG.match(text, f):
+                    return True
+            done = end
+        return None
+
+
+_NO_REPLAY.append(_RmRecursive())
 
 
 def _not_for_replay(rec) -> bool:
