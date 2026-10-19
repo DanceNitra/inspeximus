@@ -14869,5 +14869,23 @@
   "tests": [
    "tests/test_3210_check_conflict_guards_only_the_rows_it_judges.py"
   ]
+ },
+ {
+  "name": "3.21 A-2: a witness input mistake exits 2, the REFUSED code",
+  "file": "inspeximus/cli.py",
+  "old": "_INPUT_MISTAKE_EXIT = {(\"witness\",): 1}",
+  "new": "_INPUT_MISTAKE_EXIT = {}",
+  "tests": [
+   "tests/test_3210_a2_a_witness_exit_2_still_means_refused.py"
+  ]
+ },
+ {
+  "name": "3.21 A-2: every handled input mistake exits 1",
+  "file": "inspeximus/cli.py",
+  "old": "        return next((code for k, code in _INPUT_MISTAKE_EXIT.items() if cmd[:len(k)] == k), 2)",
+  "new": "        return 1",
+  "tests": [
+   "tests/test_3210_a2_a_witness_exit_2_still_means_refused.py"
+  ]
  }
 ]

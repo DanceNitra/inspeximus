@@ -293,7 +293,8 @@ def _witness_cmd(a) -> int:
     Exit codes are the contract a CI job or a cron auditor reads:
       0 = the check passed (co-signed, or verified at threshold, or no split view)
       1 = the check FAILED (below threshold, or a split view was proven)
-      2 = the witness REFUSED to co-sign (a fork/rollback — the defence firing, not an error), or usage
+      2 = the witness REFUSED to co-sign (a fork/rollback — the defence firing, not an error), or argparse usage
+          (an option missing or misspelled). A file it cannot read or parse is exit 1 (3.21, A-2).
       3 = undetermined (heads of different sizes: not decidable from head commitments alone)
       4 = Ed25519 unavailable
     """
@@ -541,6 +542,11 @@ def _num(text: str):
 
 #: Commands that run until stopped: a failure inside them is a defect of a running service, so it keeps its traceback.
 _LONG_RUNNING = {("mcp",), ("hookd",), ("witness", "serve"), ("witness", "watch")}
+#: The commands whose exit 2 already means something else (3.21, AUDIT-A A-2): every `witness` check, where 2 is a
+#: REFUSED co-signature, a fork or a rollback. A handled input mistake there exits 1, "the check failed", so a script
+#: that raises a fork alarm on 2 does not raise it for a missing file. `timestamp qualified` keeps 2: its 1 is a
+#: verdict ("not qualified"), and its 2, "undetermined, stop", is the honest answer to an input it could not read.
+_INPUT_MISTAKE_EXIT = {("witness",): 1}
 
 
 def main(argv=None):
@@ -548,7 +554,8 @@ def main(argv=None):
 
     A UsageError (a value or a name the caller passed cannot be used), an OSError (a path that does not exist, a
     directory where a file belongs, a file it may not write) or a json.JSONDecodeError (a file that is not JSON) prints
-    `inspeximus <command>: error: <message>` and returns 2, as argparse does for its own usage errors. Every other
+    `inspeximus <command>: error: <message>` and returns 2, as argparse does for its own usage errors, or 1 in a command
+    whose 2 already has a meaning (_INPUT_MISTAKE_EXIT). Every other
     exception keeps its traceback: it is a defect to report, not a mistake to correct. INSPEXIMUS_TRACEBACK=1 keeps the
     traceback for the handled ones too, and the commands that run until stopped are never handled."""
     seen = {}
@@ -563,7 +570,7 @@ def main(argv=None):
         if isinstance(exc, json.JSONDecodeError):
             msg = "a file is not valid JSON (%s)" % msg
         print("inspeximus%s: error: %s" % ("".join(" " + c for c in cmd), msg), file=sys.stderr)
-        return 2
+        return next((code for k, code in _INPUT_MISTAKE_EXIT.items() if cmd[:len(k)] == k), 2)
 
 
 def _main(argv, seen):
@@ -950,7 +957,8 @@ def _main(argv, seen):
 
     tsq = tsub.add_parser("qualified",
                           help="was the authority that signed this RFC 3161 token a QUALIFIED EU "
-                               "timestamp service AT THE TIME? Exit 0 yes, 1 no, 2 undetermined")
+                               "timestamp service AT THE TIME? Exit 0 yes, 1 no, 2 undetermined (also when a file cannot "
+                               "be read)")
     tsq.add_argument("token", help="the .tsr token file")
     tsq.add_argument("--trusted-list", required=True, help="the cache from `timestamp trusted-lists`")
     tsq.add_argument("--when", default=None,
