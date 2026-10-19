@@ -154,6 +154,14 @@ def test_the_carrier_set_names_a_module_we_actually_ship():
         "mcp_server imports the MCP SDK at module scope and must be listed: %s" % sorted(carriers))
 
 
+def test_an_import_inside_a_function_does_not_make_a_carrier():
+    """3.22: context_saver imports sentence_transformers only inside load_reranker(), which importing the module
+    never runs, so it carries no extra. mcp_server imports the MCP SDK inside a module-level try, which does run."""
+    carriers = _first_party_carriers()
+    assert "inspeximus.context_saver" not in carriers, carriers.get("inspeximus.context_saver")
+    assert "inspeximus.mcp_server" in carriers
+
+
 def _is_helper(name: str) -> bool:
     """A module in tests/ that pytest never collects: not test_*.py and not conftest.py (which every
     run imports). It cannot error on collection itself; a test file that imports it can."""
