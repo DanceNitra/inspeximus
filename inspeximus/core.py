@@ -2658,6 +2658,21 @@ _RE_I_ASCII_FOLD = {0x130: "i", 0x131: "i", 0x17F: "s", 0x212A: "k"}
 _RE_I_FOLD_CHARS = re.compile("[" + "".join(map(chr, _RE_I_ASCII_FOLD)) + "]")
 
 
+def _fewer_than_three_distinct(rows) -> bool:
+    """True when `rows` holds fewer than three distinct vectors (3.21, AUDIT-A A-6). Centring is then skipped on both
+    recall paths, by this one rule: with one vector, or copies of one, every centred vector is zero and every
+    centred score is undefined, so semantic-only recall returned nothing, even for a query equal to the stored
+    vector. Two distinct vectors centre to opposites, which ranks only by sign. Stops at the third distinct vector,
+    so a real store pays three comparisons."""
+    seen = []
+    for v in rows:
+        if not any(v is u or v == u for u in seen):
+            seen.append(v)
+            if len(seen) >= 3:
+                return False
+    return True
+
+
 def _instruction_shape(text: str) -> list:
     """The names of every instruction shape found in `text`, in list order; empty when none.
 
@@ -15563,7 +15578,9 @@ class Inspeximus:
             if rows:
                 M = _np.asarray(rows, dtype=_np.float32)
                 self._vec_mean = M.mean(axis=0)               # corpus mean (computed regardless; used to center)
-                if self.center_embeddings:
+                if self.center_embeddings and _fewer_than_three_distinct(rows):
+                    self._vec_mean = None                     # no centring, and no centred query (A-6)
+                if self.center_embeddings and self._vec_mean is not None:
                     M = M - self._vec_mean                    # de-anisotropise: remove the common component
                 M /= (_np.linalg.norm(M, axis=1, keepdims=True) + 1e-9)
                 self._mat = M
@@ -15599,7 +15616,7 @@ class Inspeximus:
                 return p if p["mean"] is not None else None
         rows = [v for v in (r.get("vec") for r in self.items) if v]
         mean = None
-        if rows and all(len(v) == len(rows[0]) for v in rows):
+        if rows and all(len(v) == len(rows[0]) for v in rows) and not _fewer_than_three_distinct(rows):   # A-6
             k = float(len(rows))
             mean = [s / k for s in map(sum, zip(*rows))]
         p = {"n": n, "gen": gen, "refs": tuple(rows), "mean": mean,

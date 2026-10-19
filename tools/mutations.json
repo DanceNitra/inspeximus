@@ -14960,5 +14960,23 @@
   "tests": [
    "tests/test_3210_the_guard_set_is_a_version.py::test_the_guards_verdicts_are_pinned_to_the_version"
   ]
+ },
+ {
+  "name": "3.21 A-6: the pure path centres a store of fewer than three distinct vectors",
+  "file": "inspeximus/core.py",
+  "old": "        if rows and all(len(v) == len(rows[0]) for v in rows) and not _fewer_than_three_distinct(rows):   # A-6",
+  "new": "        if rows and all(len(v) == len(rows[0]) for v in rows):",
+  "tests": [
+   "tests/test_3210_a6_centring_needs_three_distinct_vectors.py"
+  ]
+ },
+ {
+  "name": "3.21 A-6: the numpy path centres a store of fewer than three distinct vectors",
+  "file": "inspeximus/core.py",
+  "old": "                if self.center_embeddings and _fewer_than_three_distinct(rows):",
+  "new": "                if False:",
+  "tests": [
+   "tests/test_3210_a6_centring_needs_three_distinct_vectors.py"
+  ]
  }
 ]
