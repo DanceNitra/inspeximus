@@ -19699,11 +19699,22 @@ class Inspeximus:
         active = [r for r in self.items if r.get("status") == "active"
                   and (self.tenant is None or r.get("tenant") == self.tenant)]   # tenant-scoped conflict check
         # Art. 21 (S6) and the read guard (3.20, F10): a record recall would not serve is neither quoted nor judged here.
-        active = self._served_rows(active)
+        # ONLY THE ROWS THAT REACH A VERDICT ARE GUARDED (3.21, item 20). 3.20 guarded every active row first: at 5,000
+        # rows up to 2,808 assessments per call, +8 to 12 %. A row's verdict depends on the new text and that row
+        # alone, so dropping the rows recall would not serve after the match gives the same hits in the same order.
+        # The guard still runs before `incompatible` sees a row's text, so a judge (an LLM) is never handed a withheld
+        # record, as in 3.20.
+        _served = {}
+
+        def served(r):
+            v = _served.get(r["id"])
+            if v is None:
+                v = _served[r["id"]] = bool(self._served_rows([r]))
+            return v
         hits, seen = [], set()
         if key is not None:                                    # (1) value change on a managed key
             for r in active:
-                if r.get("key") != key or r["id"] in seen:
+                if r.get("key") != key or r["id"] in seen or not served(r):
                     continue
                 if object is not None and r.get("object") is not None:
                     # NORMALISED, not raw. Same rule as supersession's _obj_sig.
@@ -19721,7 +19732,7 @@ class Inspeximus:
         for r in active:
             if r["id"] in seen:
                 continue
-            if self._similarity(text, r, tvec) >= sim_threshold and inc(text, r["text"]):
+            if self._similarity(text, r, tvec) >= sim_threshold and served(r) and inc(text, r["text"]):
                 hits.append((r, "clash")); seen.add(r["id"])
         return [{"id": r["id"], "kind": kind, "key": r.get("key"), "object": r.get("object"),
                  "text": r["text"][:200]} for r, kind in hits]

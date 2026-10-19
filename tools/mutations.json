@@ -14071,8 +14071,8 @@
  {
   "name": "check_conflict judges and quotes a quarantined record",
   "file": "inspeximus/core.py",
-  "old": "        active = self._served_rows(active)\n        hits, seen = [], set()",
-  "new": "        hits, seen = [], set()",
+  "old": "                v = _served[r[\"id\"]] = bool(self._served_rows([r]))",
+  "new": "                v = _served[r[\"id\"]] = True",
   "tests": [
    "tests/test_3200_f10_what_recall_withholds_no_served_surface_quotes.py"
   ]
@@ -14679,6 +14679,33 @@
   "new": "    pytest.importorskip(\"agents\", reason=f\"needs openai-agents (the example pins {PINNED})\")",
   "tests": [
    "tests/test_the_openai_agents_example_ledgers_every_tool_call.py"
+  ]
+ },
+ {
+  "name": "3.21 item 20: a similar row reaches the judge unguarded",
+  "file": "inspeximus/core.py",
+  "old": "            if self._similarity(text, r, tvec) >= sim_threshold and served(r) and inc(text, r[\"text\"]):",
+  "new": "            if self._similarity(text, r, tvec) >= sim_threshold and inc(text, r[\"text\"]):",
+  "tests": [
+   "tests/test_3210_check_conflict_guards_only_the_rows_it_judges.py"
+  ]
+ },
+ {
+  "name": "3.21 item 20: a keyed row is judged unguarded",
+  "file": "inspeximus/core.py",
+  "old": "                if r.get(\"key\") != key or r[\"id\"] in seen or not served(r):",
+  "new": "                if r.get(\"key\") != key or r[\"id\"] in seen:",
+  "tests": [
+   "tests/test_3210_check_conflict_guards_only_the_rows_it_judges.py"
+  ]
+ },
+ {
+  "name": "3.21 item 20: every active row is guarded first, as in 3.20",
+  "file": "inspeximus/core.py",
+  "old": "        _served = {}\n",
+  "new": "        active = self._served_rows(active); _served = {}\n",
+  "tests": [
+   "tests/test_3210_check_conflict_guards_only_the_rows_it_judges.py"
   ]
  }
 ]
