@@ -89,7 +89,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 2029500
+   "tracked_gets": 20500
   },
   "seconds_median": 1.4341,
   "seconds_min": 1.3272,
@@ -223,7 +223,7 @@
    "decision_syncs": 51,
    "partition_registry_reads": 0,
    "guard_shape_scans": 500,
-   "tracked_gets": 685576
+   "tracked_gets": 182576
   },
   "seconds_median": 15.772,
   "seconds_min": 15.4605,
@@ -255,7 +255,7 @@
    "decision_syncs": 51,
    "partition_registry_reads": 0,
    "guard_shape_scans": 500,
-   "tracked_gets": 531001
+   "tracked_gets": 28001
   },
   "seconds_median": 16.8624,
   "seconds_min": 16.6849,
@@ -319,7 +319,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 495575
+   "tracked_gets": 476325
   },
   "seconds_median": 0.1613,
   "seconds_min": 0.1385,
@@ -351,7 +351,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 42066
+   "tracked_gets": 20054
   },
   "seconds_median": 0.11,
   "seconds_min": 0.0887,
@@ -383,7 +383,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 2000,
-   "tracked_gets": 40066
+   "tracked_gets": 18054
   },
   "seconds_median": 0.1173,
   "seconds_min": 0.1154,
@@ -415,7 +415,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 42066
+   "tracked_gets": 20054
   },
   "seconds_median": 0.123,
   "seconds_min": 0.1103,
@@ -480,7 +480,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 33284,
+   "tracked_gets": 20032,
    "token_builds": 1202
   },
   "seconds_median": 0.1231,
@@ -665,7 +665,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 3229200
+   "tracked_gets": 21200
   },
   "seconds_median": 2.5425,
   "seconds_min": 2.4088,
@@ -777,7 +777,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 8466,
+   "tracked_gets": 4054,
    "prompt_rows_loaded": 400,
    "archive_segments_read": 0
   },
@@ -811,7 +811,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 38840,
+   "tracked_gets": 24120,
    "sleep_similarity_calls_cluster": 1960,
    "sleep_similarity_calls_pairs": 6760,
    "sleep_regex_calls": 6080
@@ -846,7 +846,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 3021
+   "tracked_gets": 3019
   },
   "seconds_median": 0.0098,
   "seconds_min": 0.0067,
