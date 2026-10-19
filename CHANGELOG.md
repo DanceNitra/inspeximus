@@ -1,3 +1,74 @@
+## 3.21.0 - UPGRADE IF you recall without numpy, or you hold a store open beside another process that re-embeds it: recall without numpy now centres the vectors as the documented default says, and a held handle with numpy no longer ranks against vectors from before a peer's reembed. ACTION: every read-guard stamp from 3.18 to 3.20 is assessed again until it is stamped under 3.21; re-stamp a large store with `--stamp-guards --apply`
+
+### Fixed
+
+- **A held handle ranks with the vectors it holds.** With numpy, the vector matrix was rebuilt only when the number of records changed. A long-lived handle, such as the MCP server or an app, that took another process's re-embedded records through `refresh()` kept its old matrix, because the count had not moved. It ranked against the vectors from before the reembed until a record was added or removed. An in-place edit of a vector did the same. Measured on 3.20.0: the re-vectored record came first on the pure-Python path and in a fresh handle, and not in the held handle. The matrix is now rebuilt when any vector is replaced or edited. A credit or a metadata edit rebuilds nothing.
+- **Recall without numpy centres the vectors, as `center_embeddings` documents.** `center_embeddings` is on by default, and only the numpy path honoured it. Without numpy, recall scored raw cosines, so one store ranked differently depending on whether numpy was installed. The pure-Python path now subtracts the same corpus mean.
+  - Measured on a copy of our own crew store (bge-m3, 8 questions with a known target; AUDIT-B):
+    - hybrid recall's mean reciprocal rank went from 0.533 to 0.617;
+    - semantic-only recall found 8 of 8 targets in its top 50, where it found 2;
+    - its top 10 equals the numpy path's on 8 of 8 questions.
+  - **Semantic and hybrid rankings change for every store with vectors that is recalled without numpy.** Lexical recall, and a store without vectors, rank as before.
+  - `why_recalled` reports the centred score too. It reported a raw cosine while recall ranked by the centred one.
+  - With fewer than three distinct vectors, neither path centres. One vector, or copies of one, centre to zero, and semantic-only recall returned nothing on the numpy path, even for a query equal to the stored vector. Both paths now follow one rule.
+- **`check_conflict` assesses the read guard only on the rows it judges.** 3.20 checked every active row against the read guard before comparing. A row's verdict depends only on the new text and that row, so the guard now runs on a row when it reaches a verdict: a row with the key, or a row similar enough to be compared.
+  - Tested against the 3.20 order on 40 random stores, with quarantined records and a standing objection: the same conflicts in the same order. AUDIT-A ran the same comparison on 150 random stores, 1,800 calls: identical results and identical judge inputs.
+  - A judge you pass as `incompatible`, for example a language model, is still never handed a record recall would withhold.
+  - It assesses only the rows that reach a verdict: 1 of 2,001 in the test, where one row has the key.
+  - A standing objection is resolved once per call. With 1,500 matching rows and one standing objection, one call takes 0.04 s (3.20.0: 0.03 s), with the same 720 conflicts.
+- **A command no longer answers an ordinary input mistake with a Python traceback.** On 3.20.0, a sweep gave every argument of every subcommand bad values, except 9 commands that serve, call a network or run until stopped: `witness serve`, `witness watch`, `hookd`, `mcp`, `ots upgrade`, `timestamp trusted-lists`, `actions timestamp`, `distill` and `reembed`. The bad values were:
+  - a missing parent folder, a missing file, a folder, an empty file, a file that is not JSON, `-1` and `x`;
+  - a file that is not UTF-8, valid JSON of the wrong shape (an array, a string, `null`, an object with other fields), a number too large for a date, `nan`, `-0.0`, an empty string, a path of 5,000 characters, a path through a file, non-ASCII text and `-`.
+  The 3.20.0 sweep ended in a traceback 338 times in 47 commands for the first set alone (AUDIT-A found the first one: `writer-key --new --out` with a missing parent folder), and AUDIT-A's sweep of the second set found 884 more. The 3.21 test walks both sets, 5,862 cases, and finds none.
+  - Such a mistake now prints one line, `inspeximus <command>: error: <message>`, and exits with code 2, as argparse does for its own usage errors. In a `witness` command, where exit 2 means a refused co-signature, it exits 1.
+  - A file that is valid JSON of the wrong shape names both shapes. A JSON file nested too deep for Python, or holding an integer of more than 4,300 digits, is one line too. `actions export-trail --verify` reports a line that is not a record, or a file that is not UTF-8, as a failed verification (exit 1).
+  - Any other exception keeps its traceback, and so does a store file that is not JSON or not UTF-8, because that is a fault and not a typo.
+  - `INSPEXIMUS_TRACEBACK=1` shows the traceback for the handled ones too.
+  - `mcp`, `hookd`, `witness serve` and `witness watch` are never handled this way.
+- **`--max-connections` and `--max-per-address` refuse a value out of range with a usage error.** `--max-connections 0` or `-1`, and `--max-per-address -1`, ended in a `ValueError` traceback on SCRAPI, `python -m inspeximus.witness_server` and `inspeximus witness serve`. They now exit with code 2 and say which values are allowed.
+
+### Changed
+
+- **The read-guard stamp is tied to a version of the guards, not to their source code.** A stored verdict named the hash of the source of the three guard functions, comments included, so any edit of that text made every stamp in every store foreign. The guard set is now a version number, the guards' inputs and the Unicode version. A change that can alter a verdict raises the version on purpose. The test suite pins to the version what the guards decide on 39 fixed texts and 6 stamp-path checks, so a change that decides one of those differently fails unless the version is raised. That caught 12 of the 16 behaviour edits AUDIT-A tried. A change to the case folding, to a release or to how an old quarantine is kept can still pass it, so every guard change is reviewed as a version change. **This release changes the set once, so every stamp made by 3.18 to 3.20 is assessed again until it is stamped under 3.21 (see Upgrade notes).**
+- **Recall reads the records it scans more cheaply.** It read each candidate's fields through the per-record change tracking, about 11 reads per candidate. It now reads them directly, and an edit you make to a record is still tracked and written. A held recall with numpy now also checks the identity of each vector once, so that it can see a replaced one: 0.4 ms at 2,000 vectors and 5.9 ms at 30,000 (AUDIT-A). Measured by AUDIT-A on a 5,000-record store in the JSON format, median of a held recall in two runs: with numpy, 0.0384 and 0.0368 s before, 0.0332 and 0.0320 s after; without numpy, 0.0458 and 0.0459 s before, 0.0422 and 0.0408 s after.
+- **New `inspeximus.errors`:** `UsageError` subclasses `ValueError`, and `UnknownName` subclasses both `UsageError` and `KeyError`. The checks the commands reach raise them, among them the action ledger's argument checks, partitions, the witness's key checks and the empty-value checks of `retire`, `grants`, objections and rectification. Code that catches `ValueError` or `KeyError` still catches them.
+
+### Known limits
+
+- **The first semantic recall without numpy after the vectors change costs about 1.9 to 2.1 s more.** On a 15,168-vector store (1,024 dimensions, Windows, Python 3.12), the extra was a median of 1.85 s and 2.12 s in two processes, 7 runs each. Building the corpus mean took 0.69 to 1.34 s of it (medians 0.87 s and 1.10 s), and the first score of each record, one more dot product than in 3.20, about 1.0 s. Later recalls cost what they did. The mean covers every record that has a vector, inactive ones included, as the numpy path's does.
+- **A stamp made under one Python is re-assessed under another Python with a different Unicode version.** The guard set includes the Unicode version, so a Python 3.12 process (Unicode 15.0.0) does not trust stamps written by a 3.14 process (Unicode 16.0.0), and the other way round. That predates 3.21.
+- **An argument that holds a lone surrogate can still end in a traceback.** On POSIX, bytes on the command line that are not valid in the locale's encoding reach the program that way (AUDIT-A: 88 cases). A Windows command line cannot pass one.
+- **Correction to a 3.20.0 known limit.** It said: "Behind a reverse proxy, every request has the proxy's address: with the default cap, 16 connections hold all of it, and with --max-per-address 0, 64 do." Measured behind Caddy 2.11.7 with `--max-per-address 0` (AUDIT-A): 64 and 80 reconnecting connections denied nothing to an honest client, and 100 did. With `--max-per-address 0`, it takes more than 64 connections (about 100 in that run), not 64. The rest of that limit stands.
+- The other 3.20.0 known limits are unchanged, except the cost of `check_conflict`, which this release fixes. The 3.19.0 known limits are also unchanged: the daemon on macOS, an in-place patch within one clock tick, a burst of more than 16 connections, a write beside busy recall threads, `refresh()` and `reload()` beside writing threads, and lineage on a shared handle.
+
+### Upgrade notes
+
+- **Re-stamp a large store once, or let it re-assess.** Every read-guard stamp made by 3.18.0 to 3.20.0 is foreign to 3.21.0, so each record is assessed again, once per fresh handle, until it is stamped again.
+  - The prompt hook re-stamps the project store in the background, as before.
+  - A decision store, or a store an MCP server reads, needs one run with the interpreter that serves it, for example `uvx --from inspeximus==3.21.0 python -m inspeximus.claude_code --stamp-guards --apply --store <store path>`.
+- **Rankings change without numpy.** A store with vectors recalled without numpy ranks with centring. If you rely on the old order, set `{"store": {"center_embeddings": false}}` in `<key home>/inspeximus/config.json`, and every handle that the MCP server, the command line, the hooks or your code opens scores raw cosines on both paths, as the pure-Python path did in 3.20. No environment variable sets it, and a repository's own config does not count, because a project can set those. In code, `center_embeddings = False` on a handle still works.
+- **Exit codes for an input mistake.** A script that read a traceback's exit code 1 as "the input was wrong" now gets 2 and one line on stderr. In a `witness` command it gets 1, "the check failed", and exit 2 there keeps its only meaning: the witness refused to co-sign a fork or a rollback. In `witness split-view`, 1 also means a split view was found, so read the message; there a mistake ended in a traceback with exit 1 on 3.20.0. `timestamp qualified` exits 2, its "undetermined", for a file it cannot read. Exit code 1 keeps its meaning wherever a command defines it, for example a verification that fails.
+- **New environment variable:** `INSPEXIMUS_TRACEBACK=1` prints a traceback for a handled input mistake. It changes what is printed, never what is written.
+- **New user config key:** `store.center_embeddings` (see "Rankings change without numpy").
+- No change to the store format.
+
+### Measured
+
+"Before" is v3.20.0 (94accf89).
+
+| What | Before | 3.21.0 | Source |
+|---|---|---|---|
+| Held handle with numpy, after a peer's `reembed` reached through `refresh()` (count unchanged): is the re-vectored record first? | no (pure path and a fresh handle: yes) | yes | Builder; test `test_a_held_handle_ranks_with_the_vectors_it_holds.py` |
+| Recall without numpy, crew-store copy, 8 questions: hybrid mean reciprocal rank / semantic-only targets in the top 50 | 0.533 / 2 of 8 | 0.617 / 8 of 8 | AUDIT-B, `audit_b_321_baseline.md` sections 6 and 7 |
+| The same, pure path against numpy: identical top 10 | 0 of 8 | 8 of 8 | AUDIT-B, section 7 |
+| The first semantic recall without numpy, 15,168 vectors of 1,024 dimensions: extra time (of which the corpus mean) | - | medians 1.85 and 2.12 s (0.87 and 1.10 s), 7 runs in each of 2 processes | Builder, `p1b_pack_cost.log` |
+| `check_conflict` on a 2,001-row store: read-guard assessments in one call | 2,001 | 1 | test `test_3210_check_conflict_guards_only_the_rows_it_judges.py` |
+| `check_conflict`, 1,500 matching rows, one standing objection: time, conflicts | 0.03 s, 720 | 0.04 s, 720 | Builder, AUDIT-A's `i20_cost.py`; the same test file |
+| `check_conflict`, random stores: same conflicts in the same order as the 3.20 order | - | 40 of 40 (AUDIT-A: 150 of 150 stores, 1,800 calls) | the same test; AUDIT-A |
+| Held recall, 5,000 records, JSON format, median of two runs: with numpy / without numpy | 0.0384, 0.0368 s / 0.0458, 0.0459 s | 0.0332, 0.0320 s / 0.0422, 0.0408 s | AUDIT-A |
+| `inspeximus` subcommands given an ordinary bad argument: tracebacks | 338 in 47 commands (first value set), 884 more (AUDIT-A's second set) | 0 in 5,862 cases | Builder sweep; AUDIT-A sweep; test `test_3210_no_command_answers_bad_input_with_a_traceback.py` |
+| `--max-connections 0`, `-1`, `--max-per-address -1` on the three servers | traceback, exit 1 | usage line, exit 2 | test `test_3200_n14b_the_connection_caps_are_settable.py` |
+
 ## 3.20.0 - UPGRADE IF you run a witness or a SCRAPI service, or you verify timestamp proofs, receipts or statements that someone else sends you: a stranger could poison a witness, grow a service by hundreds of megabytes with one 90-byte request, and make the verifier connect to an address the proof chose
 
 ### Fixed
