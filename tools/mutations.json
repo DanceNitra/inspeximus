@@ -1878,8 +1878,8 @@
  {
   "file": "inspeximus/actions.py",
   "name": "a risk source outside Art. 9(2) is accepted",
-  "old": "        if source not in RISK_SOURCES:\n            raise ValueError(f\"source must be one of {RISK_SOURCES}\")",
-  "new": "        if False:\n            raise ValueError(f\"source must be one of {RISK_SOURCES}\")",
+  "old": "        if source not in RISK_SOURCES:\n            raise UsageError(f\"source must be one of {RISK_SOURCES}\")",
+  "new": "        if False:\n            raise UsageError(f\"source must be one of {RISK_SOURCES}\")",
   "tests": [
    "tests/test_a_risk_is_a_history_and_monitoring_is_signed_into_the_ledger.py"
   ]
@@ -2194,8 +2194,8 @@
  {
   "file": "inspeximus/actions.py",
   "name": "a scored literacy vocabulary is accepted",
-  "old": "        if measure not in LITERACY_MEASURES:\n            raise ValueError(f\"measure must be one of {LITERACY_MEASURES}\")",
-  "new": "        if False:\n            raise ValueError(f\"measure must be one of {LITERACY_MEASURES}\")",
+  "old": "        if measure not in LITERACY_MEASURES:\n            raise UsageError(f\"measure must be one of {LITERACY_MEASURES}\")",
+  "new": "        if False:\n            raise UsageError(f\"measure must be one of {LITERACY_MEASURES}\")",
   "tests": [
    "tests/test_literacy_attestation_responsibilities_declaration_and_documentation_are_ledger_entries.py"
   ]
@@ -2320,8 +2320,8 @@
  {
   "file": "inspeximus/actions.py",
   "name": "an Art. 14 notice needs no source",
-  "old": "            if not source:\n                raise ValueError(\"an Art. 14 notice names the source the data came from (14(2)(f))\")",
-  "new": "            if False:\n                raise ValueError(\"an Art. 14 notice names the source the data came from (14(2)(f))\")",
+  "old": "            if not source:\n                raise UsageError(\"an Art. 14 notice names the source the data came from (14(2)(f))\")",
+  "new": "            if False:\n                raise UsageError(\"an Art. 14 notice names the source the data came from (14(2)(f))\")",
   "tests": [
    "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
   ]
@@ -2338,8 +2338,8 @@
  {
   "file": "inspeximus/actions.py",
   "name": "a processor needs no controller",
-  "old": "            if not controller:\n                raise ValueError(f\"a {role} names the controller it acts for\")",
-  "new": "            if False:\n                raise ValueError(f\"a {role} names the controller it acts for\")",
+  "old": "            if not controller:\n                raise UsageError(f\"a {role} names the controller it acts for\")",
+  "new": "            if False:\n                raise UsageError(f\"a {role} names the controller it acts for\")",
   "tests": [
    "tests/test_a_notice_an_objection_a_portable_export_and_a_processing_role_are_ledger_entries.py"
   ]
@@ -2736,8 +2736,8 @@
  {
   "file": "inspeximus/actions.py",
   "name": "3.6.0 a qms entry accepts any aspect letter",
-  "old": "        if aspect is not None and aspect not in QMS_ASPECTS:\n            raise ValueError(f\"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}\")",
-  "new": "        if False:\n            raise ValueError(f\"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}\")",
+  "old": "        if aspect is not None and aspect not in QMS_ASPECTS:\n            raise UsageError(f\"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}\")",
+  "new": "        if False:\n            raise UsageError(f\"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}\")",
   "tests": [
    "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
   ]
@@ -2745,8 +2745,8 @@
  {
   "file": "inspeximus/actions.py",
   "name": "3.6.0 a qms entry accepts an empty owner",
-  "old": "        if not owner or not str(owner).strip():\n            raise ValueError(\"a qms record names the procedure's owner\")",
-  "new": "        if False:\n            raise ValueError(\"a qms record names the procedure's owner\")",
+  "old": "        if not owner or not str(owner).strip():\n            raise UsageError(\"a qms record names the procedure's owner\")",
+  "new": "        if False:\n            raise UsageError(\"a qms record names the procedure's owner\")",
   "tests": [
    "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py"
   ]
@@ -14769,6 +14769,69 @@
   "new": "    \"\"\"Keyword stuffing: one content word repeated at least 4 times AND holding at least 12 % of all",
   "tests": [
    "tests/test_3210_the_guard_set_is_a_version.py"
+  ]
+ },
+ {
+  "name": "3.21 F-2: the handler catches no input mistake",
+  "file": "inspeximus/cli.py",
+  "old": "    except (UsageError, OSError, json.JSONDecodeError) as exc:",
+  "new": "    except () as exc:",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
+  ]
+ },
+ {
+  "name": "3.21 F-2: the handler swallows every exception",
+  "file": "inspeximus/cli.py",
+  "old": "    except (UsageError, OSError, json.JSONDecodeError) as exc:",
+  "new": "    except Exception as exc:",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
+  ]
+ },
+ {
+  "name": "3.21 F-2: INSPEXIMUS_TRACEBACK is ignored",
+  "file": "inspeximus/cli.py",
+  "old": "        if _envpolicy.raw(\"INSPEXIMUS_TRACEBACK\") == \"1\" or any(cmd[:len(k)] == k for k in _LONG_RUNNING):",
+  "new": "        if any(cmd[:len(k)] == k for k in _LONG_RUNNING):",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
+  ]
+ },
+ {
+  "name": "3.21 F-2: a command that runs until stopped is handled",
+  "file": "inspeximus/cli.py",
+  "old": "        if _envpolicy.raw(\"INSPEXIMUS_TRACEBACK\") == \"1\" or any(cmd[:len(k)] == k for k in _LONG_RUNNING):",
+  "new": "        if _envpolicy.raw(\"INSPEXIMUS_TRACEBACK\") == \"1\":",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
+  ]
+ },
+ {
+  "name": "3.21 F-2: a missing partition is a plain KeyError again",
+  "file": "inspeximus/partitions.py",
+  "old": "raise UnknownName(f\"no partition named {name!r}\")",
+  "new": "raise KeyError(f\"no partition named {name!r}\")",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
+  ]
+ },
+ {
+  "name": "3.21 F-2: a seq that is not in the ledger is a plain ValueError again",
+  "file": "inspeximus/actions.py",
+  "old": "raise UsageError(f\"seq {seq} is not in the ledger",
+  "new": "raise ValueError(f\"seq {seq} is not in the ledger",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
+  ]
+ },
+ {
+  "name": "3.21 F-2: an empty witness key reaches cryptography",
+  "file": "inspeximus/witness_pool.py",
+  "old": "    if len(raw) != 32:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
   ]
  }
 ]

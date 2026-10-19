@@ -16,6 +16,7 @@ import argparse
 
 from . import install as _install
 from ._serve import count_at_least as _count_at_least
+from .errors import UsageError
 import json
 import os
 from pathlib import Path as _Path
@@ -538,7 +539,34 @@ def _num(text: str):
             return text
 
 
+#: Commands that run until stopped: a failure inside them is a defect of a running service, so it keeps its traceback.
+_LONG_RUNNING = {("mcp",), ("hookd",), ("witness", "serve"), ("witness", "watch")}
+
+
 def main(argv=None):
+    """`inspeximus`: a command's ordinary input mistake is one line and exit code 2, never a traceback (3.21, F-2).
+
+    A UsageError (a value or a name the caller passed cannot be used), an OSError (a path that does not exist, a
+    directory where a file belongs, a file it may not write) or a json.JSONDecodeError (a file that is not JSON) prints
+    `inspeximus <command>: error: <message>` and returns 2, as argparse does for its own usage errors. Every other
+    exception keeps its traceback: it is a defect to report, not a mistake to correct. INSPEXIMUS_TRACEBACK=1 keeps the
+    traceback for the handled ones too, and the commands that run until stopped are never handled."""
+    seen = {}
+    try:
+        return _main(argv, seen)
+    except (UsageError, OSError, json.JSONDecodeError) as exc:
+        cmd = seen.get("cmd") or ()
+        from . import _envpolicy
+        if _envpolicy.raw("INSPEXIMUS_TRACEBACK") == "1" or any(cmd[:len(k)] == k for k in _LONG_RUNNING):
+            raise
+        msg = str(exc) or type(exc).__name__
+        if isinstance(exc, json.JSONDecodeError):
+            msg = "a file is not valid JSON (%s)" % msg
+        print("inspeximus%s: error: %s" % ("".join(" " + c for c in cmd), msg), file=sys.stderr)
+        return 2
+
+
+def _main(argv, seen):
     _survive_a_narrow_console()
     ap = argparse.ArgumentParser(prog="inspeximus", description="inspeximus — the self-correcting memory layer (CLI).")
     # 3.14.4: `inspeximus --version` exited 2 ("the following arguments are required: cmd"), and it is the
@@ -1454,6 +1482,7 @@ def main(argv=None):
                           "already pinned to")
 
     a = ap.parse_args(argv)
+    seen["cmd"] = tuple(v for v in (a.cmd,) + tuple(getattr(a, k, None) for k in sorted(vars(a)) if k.endswith("_cmd")) if isinstance(v, str))
     if a.cmd == "link":                       # before any store is opened: it is how a refused store becomes allowed
         from inspeximus._storelink import add_configured_link
         target = os.path.realpath(os.path.abspath(a.target))
@@ -2457,7 +2486,10 @@ def main(argv=None):
             try:
                 due_ts = float(due)
             except ValueError:
-                due_ts = _dt.datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=_dt.timezone.utc).timestamp()
+                try:
+                    due_ts = _dt.datetime.strptime(due, "%Y-%m-%d").replace(tzinfo=_dt.timezone.utc).timestamp()
+                except ValueError:
+                    raise UsageError("--review-due is a date (YYYY-MM-DD) or a Unix time, not %r" % (due,)) from None
             e = led.record_qms(a.actor, a.procedure, a.qms_version, a.owner, due_ts, aspect=a.aspect, ref=a.ref, sha256=a.sha256)
             print(f"recorded #{e['seq']} qms procedure {e['procedure']!r} v{e['version']}, owner {e['owner']}, review due "
                   + _dt.datetime.fromtimestamp(e["review_due_ts"], _dt.timezone.utc).strftime("%Y-%m-%d"))

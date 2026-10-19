@@ -104,6 +104,8 @@ POLICY = {
     "INSPEXIMUS_LLM_KEY": (ENV_SAFE, None, "the distiller; the server does not import it"),
     "INSPEXIMUS_LLM_MODEL": (ENV_SAFE, None, "the distiller; the server does not import it"),
     "INSPEXIMUS_NO_UPDATE_CHECK": (ENV_SAFE, None, "skips a network call"),
+    "INSPEXIMUS_TRACEBACK": (ENV_SAFE, None, "the command line prints a traceback for an input mistake too (3.21, F-2); "
+                             "it changes what is printed, never what is written"),
     "INSPEXIMUS_PROBES_DIR": (ENV_SAFE, None, "compliance probes: read only"),
     "INSPEXIMUS_SERVICE_SECRET": (ENV_SAFE, None, "the HTTP service, not the MCP server or the hooks"),
     "INSPEXIMUS_WITNESS_SECRET": (ENV_SAFE, None, "the witness tool, not the MCP server or the hooks"),

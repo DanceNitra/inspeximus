@@ -37,6 +37,8 @@ import shutil
 import tempfile
 import urllib.request
 
+from .errors import UsageError
+
 __all__ = ["request_bytes", "stamp", "read_status", "verify_with_openssl", "stamp_head",
            "certificates_in", "signer_certificate", "qualified_status",
            "TimestampError", "PKI_STATUS"]
@@ -95,7 +97,7 @@ def request_bytes(digest: bytes, nonce: int | None = None, cert_req: bool = True
     token verifiable later by somebody who does not already hold that certificate.
     """
     if not isinstance(digest, (bytes, bytearray)) or len(digest) != 32:
-        raise ValueError("expected a 32-byte SHA-256 digest; a timestamp over anything else is a "
+        raise UsageError("expected a 32-byte SHA-256 digest; a timestamp over anything else is a "
                          "timestamp over something you cannot recompute")
     nonce = secrets.randbits(64) if nonce is None else int(nonce)
     algid = _tlv(0x30, _tlv(0x06, _OID_SHA256) + _tlv(0x05, b""))       # sha256 + NULL params
@@ -148,6 +150,8 @@ def stamp(url: str, digest: bytes, timeout: float = 20.0, nonce: int | None = No
     because it looks like evidence.
     """
     import time
+    if not isinstance(url, str) or not url.lower().startswith(("https://", "http://")):
+        raise UsageError("a timestamp authority is an http or https URL, not %r" % (url,))
     req = request_bytes(digest, nonce=nonce)
     request = urllib.request.Request(url, data=req,
                                      headers={"Content-Type": CONTENT_TYPE_REQ}, method="POST")

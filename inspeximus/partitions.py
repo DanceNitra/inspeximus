@@ -38,6 +38,7 @@ import time
 from pathlib import Path
 
 from .core import __version__, _PARTITION_TAG
+from .errors import UnknownName, UsageError
 
 __all__ = ["Partitions", "PartitionHandle", "KINDS", "TAG_PREFIX"]
 
@@ -73,7 +74,7 @@ class PartitionHandle:
     def remember(self, text: str, tags=None, **kw):
         p = self._parts._get(self.name)
         if p.get("closed_at"):
-            raise ValueError(f"partition {self.name!r} is closed; open a new one for a new process")
+            raise UsageError(f"partition {self.name!r} is closed; open a new one for a new process")
         tags = list(tags or [])
         if _tag(self.name) not in tags:
             tags.append(_tag(self.name))
@@ -82,7 +83,7 @@ class PartitionHandle:
             live = self._parts._records(self.name)
             if len(live) >= cap:
                 if p.get("on_cap") == "refuse":
-                    raise ValueError(f"partition {self.name!r} holds {len(live)} records, its cap; refusing the write")
+                    raise UsageError(f"partition {self.name!r} holds {len(live)} records, its cap; refusing the write")
                 # evict the oldest, tombstoned and named, so the cap is a rule the store shows it applied
                 oldest = sorted(live, key=lambda r: r.get("ts") or 0)[: len(live) - cap + 1]
                 self.store.forget(ids=[r["id"] for r in oldest], basis=f"partition_cap:{self.name}")
@@ -108,7 +109,7 @@ class Partitions:
         spath = getattr(store, "path", None)
         if path is None:
             if spath is None:
-                raise ValueError("the store has no path; pass path= for the partitions registry")
+                raise UsageError("the store has no path; pass path= for the partitions registry")
             spath = Path(spath)
             path = spath.parent / (spath.name + ".partitions.json")
         self.path = Path(path)
@@ -132,7 +133,7 @@ class Partitions:
     def _get(self, name: str) -> dict:
         p = self._reg["partitions"].get(name)
         if p is None:
-            raise KeyError(f"no partition named {name!r}")
+            raise UnknownName(f"no partition named {name!r}")
         return p
 
     def _note(self, name: str, key: str, n: int):
@@ -158,15 +159,15 @@ class Partitions:
         and `max_records` are enforced by `sweep()` and on write. `delete_at_close` defaults to True for
         a context partition and False otherwise."""
         if kind not in KINDS:
-            raise ValueError(f"kind must be one of {KINDS}")
+            raise UsageError(f"kind must be one of {KINDS}")
         if on_cap not in ("evict_oldest", "refuse"):
-            raise ValueError("on_cap must be evict_oldest or refuse")
+            raise UsageError("on_cap must be evict_oldest or refuse")
         if not name or "/" in name or "\\" in name or " " in name:
-            raise ValueError("a partition name is a single token: letters, digits, dots, dashes, colons")
+            raise UsageError("a partition name is a single token: letters, digits, dots, dashes, colons")
         if name in self._reg["partitions"]:
             p = self._reg["partitions"][name]
             if p.get("closed_at"):
-                raise ValueError(f"partition {name!r} was closed at {p['closed_at']}; open a new name")
+                raise UsageError(f"partition {name!r} was closed at {p['closed_at']}; open a new name")
             return PartitionHandle(self, name)
         self._reg["partitions"][name] = {
             "name": name, "kind": kind, "agent": agent, "opened_at": time.time(),
@@ -229,14 +230,14 @@ class Partitions:
         A ledger, when given, gets a lifecycle entry naming the partition and the disposition."""
         p = self._get(name)
         if p.get("closed_at"):
-            raise ValueError(f"partition {name!r} is already closed")
+            raise UsageError(f"partition {name!r} is already closed")
         if not actor:
-            raise ValueError("closing a partition needs an actor")
+            raise UsageError("closing a partition needs an actor")
         now = time.time() if now is None else now
         if disposition is None:
             disposition = "erased" if p.get("delete_at_close") else "retained"
         if disposition not in DISPOSITIONS:
-            raise ValueError(f"disposition must be one of {DISPOSITIONS}")
+            raise UsageError(f"disposition must be one of {DISPOSITIONS}")
         live = self._records(name, held=True)
         erased = 0
         if disposition == "erased" and live:

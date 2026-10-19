@@ -53,6 +53,8 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
+from .errors import UsageError
+
 try:  # optional, only to sign
     from cryptography.hazmat.primitives.asymmetric.ed25519 import (
         Ed25519PrivateKey as _SK, Ed25519PublicKey as _PK)
@@ -339,12 +341,12 @@ class ActionLedger:
                  redact: Callable[[Any], Any] | None = None,
                  on_mandate_breach: Callable[[dict], Any] | None = None):
         if store is None and path is None:
-            raise ValueError("ActionLedger needs a store or a path")
+            raise UsageError("ActionLedger needs a store or a path")
         self.store = store
         if path is None:
             spath = getattr(store, "path", None)
             if spath is None:
-                raise ValueError("the store has no path; pass path= for the ledger file")
+                raise UsageError("the store has no path; pass path= for the ledger file")
             spath = Path(spath)
             path = spath.parent / (spath.name + ".actions.json")
         self.path = Path(path)
@@ -473,9 +475,9 @@ class ActionLedger:
         i = seq - self.base_seq if isinstance(seq, int) else -1
         if i < 0 or i >= len(self._entries):
             if self._checkpoint and isinstance(seq, int) and 0 <= seq <= self._checkpoint["archived_through"]:
-                raise ValueError(f"seq {seq} is archived (the live ledger starts at {self.base_seq}); read it from "
+                raise UsageError(f"seq {seq} is archived (the live ledger starts at {self.base_seq}); read it from "
                                  f"{self._checkpoint['archive_file']}")
-            raise ValueError(f"seq {seq} is not in the ledger ({len(self._entries)} live entries from {self.base_seq})")
+            raise UsageError(f"seq {seq} is not in the ledger ({len(self._entries)} live entries from {self.base_seq})")
         return self._entries[i]
 
     def oldest_ts(self) -> float | None:
@@ -560,12 +562,12 @@ class ActionLedger:
         in force for the actor (see `mandate()`), an action entry also carries `mandate_check`, computed
         and signed at write time, and `on_mandate_breach` is called with every entry outside it."""
         if not isinstance(action, str) or not action:
-            raise ValueError("action must be a non-empty string, for example 'tool:search'")
+            raise UsageError("action must be a non-empty string, for example 'tool:search'")
         if kind not in ("action", "oversight", "disclosure", "rights", "incident", "retention", "timestamp",
                         "lifecycle", "risk", "monitoring", "corrective", "authority", "breach",
                         "literacy", "attestation", "responsibilities", "declaration", "documentation",
                         "notice", "processing_role", "qms", "mandate"):
-            raise ValueError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
+            raise UsageError("kind must be action, oversight, disclosure, rights, incident, retention, timestamp, "
                              "lifecycle, risk, monitoring, corrective, authority, breach, literacy, attestation, "
                              "responsibilities, declaration, documentation, notice, processing_role, qms or mandate")
         self.require_readable()
@@ -659,7 +661,7 @@ class ActionLedger:
             raise TypeError("actions and targets are lists of patterns; wrap a single pattern in a list")
         acts = [str(a) for a in actions]
         if not acts:
-            raise ValueError("a mandate needs at least one allowed action pattern")
+            raise UsageError("a mandate needs at least one allowed action pattern")
         tg = None if targets is None else [str(t) for t in targets]
         body = {"actions": acts, "targets": tg, "for_actor": for_actor,
                 # the handle that wrote it, which the caller cannot choose per call; `actor` is what the
@@ -814,9 +816,9 @@ class ActionLedger:
         seq number or an entry hash, and is checked against the ledger so the reference resolves at
         write time. `decision` is what the human substituted (an override) or the review outcome."""
         if event not in OVERSIGHT_EVENTS:
-            raise ValueError(f"event must be one of {OVERSIGHT_EVENTS}")
+            raise UsageError(f"event must be one of {OVERSIGHT_EVENTS}")
         if not actor:
-            raise ValueError("an oversight event needs an actor: the person or role who decided")
+            raise UsageError("an oversight event needs an actor: the person or role who decided")
         ref = self._resolve_ref(refers_to)
         extra = {"event": event, "reason": reason, "refers_to": ref}
         if decision is not None:
@@ -836,9 +838,9 @@ class ActionLedger:
         Art. 50 cases. The text shown is stored as a digest unless `keep_content` is set; the length
         is kept in the clear so an auditor can tell an empty banner from a real one."""
         if kind not in DISCLOSURE_KINDS:
-            raise ValueError(f"kind must be one of {DISCLOSURE_KINDS}")
+            raise UsageError(f"kind must be one of {DISCLOSURE_KINDS}")
         if not session or not shown:
-            raise ValueError("a disclosure needs a session id and the text that was shown")
+            raise UsageError("a disclosure needs a session id and the text that was shown")
         extra = {"session": session, "channel": channel, "disclosure_kind": kind,
                  "shown_sha256": _content_hash(shown), "shown_chars": len(shown)}
         if locale:
@@ -866,9 +868,9 @@ class ActionLedger:
         `actor` is the person or role who opened the record. Call `incident_report(seq)` for the
         Art. 73 skeleton with the deadline and the linked evidence."""
         if severity not in INCIDENT_SEVERITIES:
-            raise ValueError(f"severity must be one of {INCIDENT_SEVERITIES}")
+            raise UsageError(f"severity must be one of {INCIDENT_SEVERITIES}")
         if not actor or not title:
-            raise ValueError("an incident needs a title and an actor: the person or role who opened it")
+            raise UsageError("an incident needs a title and an actor: the person or role who opened it")
         refs = [self._resolve_ref(r) for r in (refers_to or [])]
         aware = float(aware_ts) if aware_ts is not None else time.time()
         days = INCIDENT_DEADLINES_DAYS[severity]
@@ -890,13 +892,13 @@ class ActionLedger:
         `disposition` for the persistent memory: erased, archived, transferred or retained, the entry an
         ISO/IEC 42001 reviewer asks for. Annex IV point 6 and the deployer report list these entries."""
         if event not in LIFECYCLE_EVENTS:
-            raise ValueError(f"event must be one of {LIFECYCLE_EVENTS}")
+            raise UsageError(f"event must be one of {LIFECYCLE_EVENTS}")
         if not actor:
-            raise ValueError("a lifecycle event needs an actor: the person or role who did it")
+            raise UsageError("a lifecycle event needs an actor: the person or role who did it")
         if event == "decommission" and disposition not in DISPOSITIONS:
-            raise ValueError(f"decommission needs a disposition of the persistent memory: one of {DISPOSITIONS}")
+            raise UsageError(f"decommission needs a disposition of the persistent memory: one of {DISPOSITIONS}")
         if disposition is not None and disposition not in DISPOSITIONS:
-            raise ValueError(f"disposition must be one of {DISPOSITIONS}")
+            raise UsageError(f"disposition must be one of {DISPOSITIONS}")
         extra: dict = {"event": event}
         if note:
             extra["note"] = str(note)[:2000]
@@ -938,25 +940,25 @@ class ActionLedger:
         which were not. `affects_vulnerable_groups` is the 9(9) flag. `actor` is the person or role
         making the entry."""
         if source not in RISK_SOURCES:
-            raise ValueError(f"source must be one of {RISK_SOURCES}")
+            raise UsageError(f"source must be one of {RISK_SOURCES}")
         if harm not in RISK_HARMS:
-            raise ValueError(f"harm must be one of {RISK_HARMS}")
+            raise UsageError(f"harm must be one of {RISK_HARMS}")
         if likelihood not in RISK_LEVELS or severity not in RISK_LEVELS:
-            raise ValueError(f"likelihood and severity must be one of {RISK_LEVELS}")
+            raise UsageError(f"likelihood and severity must be one of {RISK_LEVELS}")
         if residual is not None and residual not in RISK_LEVELS:
-            raise ValueError(f"residual must be one of {RISK_LEVELS}")
+            raise UsageError(f"residual must be one of {RISK_LEVELS}")
         if measure_kind is not None and measure_kind not in RISK_MEASURES:
-            raise ValueError(f"measure_kind must be one of {RISK_MEASURES}")
+            raise UsageError(f"measure_kind must be one of {RISK_MEASURES}")
         if status not in ("open", "closed"):
-            raise ValueError("status must be 'open' or 'closed'")
+            raise UsageError("status must be 'open' or 'closed'")
         if not risk_id or not hazard or not actor:
-            raise ValueError("a risk entry needs a risk_id, a hazard and an actor")
+            raise UsageError("a risk entry needs a risk_id, a hazard and an actor")
         if residual_acceptable and residual is None:
-            raise ValueError("residual_acceptable=True needs the residual level it judges")
+            raise UsageError("residual_acceptable=True needs the residual level it judges")
         checked = []
         for t in (tests or []):
             if not isinstance(t, dict) or not t.get("metric") or "threshold" not in t:
-                raise ValueError("each test needs a metric and the threshold defined before the test (Art. 9(8))")
+                raise UsageError("each test needs a metric and the threshold defined before the test (Art. 9(8))")
             checked.append({"metric": str(t["metric"]), "threshold": t["threshold"],
                             "observed": t.get("observed"), "passed": t.get("passed"),
                             "probe": t.get("probe")})
@@ -1036,7 +1038,7 @@ class ActionLedger:
         until = time.time() if open_ended else float(until)
         since = float(since)
         if until <= since:
-            raise ValueError("until must be after since")
+            raise UsageError("until must be after since")
         inside = [e for e in self._entries
                   if since <= float(e.get("ts") or 0) and (open_ended or float(e.get("ts") or 0) < until)]
 
@@ -1127,13 +1129,13 @@ class ActionLedger:
         Art. 20 list is refused. Nothing here judges whether the right parties were informed: the
         report names which of them were and which were not."""
         if kind not in CORRECTIVE_ACTIONS:
-            raise ValueError(f"kind must be one of {CORRECTIVE_ACTIONS}")
+            raise UsageError(f"kind must be one of {CORRECTIVE_ACTIONS}")
         if not actor or not non_conformity:
-            raise ValueError("a corrective action needs an actor and the non-conformity it corrects")
+            raise UsageError("a corrective action needs an actor and the non-conformity it corrects")
         told = []
         for p in (informed or []):
             if not isinstance(p, dict) or p.get("party") not in INFORMED_PARTIES:
-                raise ValueError(f"each informed party needs a party in {INFORMED_PARTIES}")
+                raise UsageError(f"each informed party needs a party in {INFORMED_PARTIES}")
             told.append({"party": p["party"], "ts": float(p.get("ts") or time.time()), "how": p.get("how")})
         refs = [self._resolve_ref(r) for r in (refers_to or [])]
         extra = {"corrective_kind": kind, "non_conformity": str(non_conformity)[:2000], "causes": causes,
@@ -1148,7 +1150,7 @@ class ActionLedger:
         refer to this one. Read-only."""
         e = self._at(seq)
         if e.get("kind") != "corrective":
-            raise ValueError(f"entry {seq} is a {e.get('kind', 'action')}, not a corrective action")
+            raise UsageError(f"entry {seq} is a {e.get('kind', 'action')}, not a corrective action")
         told = {p["party"]: p for p in (e.get("informed") or [])}
         evidence = []
         for ref in e.get("evidence") or []:
@@ -1182,13 +1184,13 @@ class ActionLedger:
         file), never the content, because 21(3) puts what the authority receives under Art. 78
         confidentiality and the ledger is not the place for it. `language` is the 21(1) language."""
         if scope not in AUTHORITY_REQUEST_SCOPES:
-            raise ValueError(f"scope must be one of {AUTHORITY_REQUEST_SCOPES}")
+            raise UsageError(f"scope must be one of {AUTHORITY_REQUEST_SCOPES}")
         if not authority or not reference or not actor:
-            raise ValueError("an authority request needs the authority, its reference and an actor")
+            raise UsageError("an authority request needs the authority, its reference and an actor")
         items = []
         for it in (provided or []):
             if not isinstance(it, dict) or not it.get("item"):
-                raise ValueError("each provided item needs an item name, and a sha256 where it is a file")
+                raise UsageError("each provided item needs an item name, and a sha256 where it is a file")
             items.append({"item": str(it["item"]), "sha256": it.get("sha256")})
         extra = {"authority": authority, "reference": reference, "scope": scope,
                  "received_ts": float(received_ts) if received_ts is not None else time.time(),
@@ -1218,7 +1220,7 @@ class ActionLedger:
         subject reference and the request id; without it, read-only."""
         e = self._at(seq)
         if e.get("kind", "action") != "action":
-            raise ValueError(f"entry {seq} is a {e.get('kind')}, not an action")
+            raise UsageError(f"entry {seq} is a {e.get('kind')}, not an action")
         knew = self.what_it_knew(seq)
 
         def refers(u):
@@ -1268,7 +1270,7 @@ class ActionLedger:
         decides whether the subjects must be told. `refers_to` lists the ledger entries that are the
         evidence (an incident, an action) and each must resolve."""
         if not title or not actor or not nature:
-            raise ValueError("a breach needs a title, an actor and the nature of the breach")
+            raise UsageError("a breach needs a title, an actor and the nature of the breach")
         refs = [self._resolve_ref(r) for r in (refers_to or [])]
         aware = float(aware_ts) if aware_ts is not None else time.time()
         extra = {"title": title, "nature": str(nature)[:2000], "aware_ts": aware,
@@ -1289,20 +1291,20 @@ class ActionLedger:
         disproportionate), and `to` must be data_subjects."""
         e = self._at(seq)
         if e.get("kind") != "breach" or e.get("event"):
-            raise ValueError(f"entry {seq} is not a breach record")
+            raise UsageError(f"entry {seq} is not a breach record")
         if to not in BREACH_NOTIFY_TARGETS:
-            raise ValueError(f"to must be one of {BREACH_NOTIFY_TARGETS}")
+            raise UsageError(f"to must be one of {BREACH_NOTIFY_TARGETS}")
         if not actor:
-            raise ValueError("breach_notified needs an actor")
+            raise UsageError("breach_notified needs an actor")
         when = float(ts) if ts is not None else time.time()
         if exemption is not None:
             if exemption not in BREACH_EXEMPTIONS or to != "data_subjects":
-                raise ValueError(f"an exemption is one of {BREACH_EXEMPTIONS} and applies to data_subjects only")
+                raise UsageError(f"an exemption is one of {BREACH_EXEMPTIONS} and applies to data_subjects only")
             event = "subjects_exempt"
         else:
             event = "notified"
             if to == "supervisory_authority" and when > float(e["notify_deadline_ts"]) and not reasons_for_delay:
-                raise ValueError("a notification to the supervisory authority after 72 hours needs reasons_for_delay (Art. 33(1))")
+                raise UsageError("a notification to the supervisory authority after 72 hours needs reasons_for_delay (Art. 33(1))")
         extra = {"title": e.get("title"), "event": event, "to": to, "notified_ts": when,
                  "late": bool(to == "supervisory_authority" and when > float(e["notify_deadline_ts"])),
                  "reasons_for_delay": reasons_for_delay, "exemption": exemption,
@@ -1320,7 +1322,7 @@ class ActionLedger:
         evidence entries, and the fields the controller must add. Read-only."""
         e = self._at(seq)
         if e.get("kind") != "breach" or e.get("event"):
-            raise ValueError(f"entry {seq} is not a breach record")
+            raise UsageError(f"entry {seq} is not a breach record")
         now = time.time() if now is None else now
         updates = [u for u in self._entries if u.get("kind") == "breach" and u.get("event")
                    and any((r or {}).get("seq") == seq for r in (u.get("evidence") or []))]
@@ -1369,14 +1371,14 @@ class ActionLedger:
         record names the measure and never scores a person. `refers_to` links the material (a documentation
         entry, an instructions-for-use export) and each reference must resolve."""
         if measure not in LITERACY_MEASURES:
-            raise ValueError(f"measure must be one of {LITERACY_MEASURES}")
+            raise UsageError(f"measure must be one of {LITERACY_MEASURES}")
         if audience not in LITERACY_AUDIENCES:
-            raise ValueError(f"audience must be one of {LITERACY_AUDIENCES}")
+            raise UsageError(f"audience must be one of {LITERACY_AUDIENCES}")
         if not actor or not description:
-            raise ValueError("a literacy record needs an actor and a description of the measure")
+            raise UsageError("a literacy record needs an actor and a description of the measure")
         bad = [c for c in (considered or []) if c not in LITERACY_CONSIDERATIONS]
         if bad:
-            raise ValueError(f"considered must be among {LITERACY_CONSIDERATIONS}, got {bad}")
+            raise UsageError(f"considered must be among {LITERACY_CONSIDERATIONS}, got {bad}")
         refs = [self._resolve_ref(r) for r in (refers_to or [])]
         extra = {"literacy_measure": measure, "audience": audience, "description": str(description)[:2000],
                  "delivered_ts": float(ts) if ts is not None else time.time(), "system": system,
@@ -1406,13 +1408,13 @@ class ActionLedger:
         the ten classes and names the classes with none. The attestation is the operator's statement,
         signed when the ledger signs; nothing here inspects the system."""
         if practice not in PROHIBITED_PRACTICES:
-            raise ValueError(f"practice must be one of {sorted(PROHIBITED_PRACTICES)}")
+            raise UsageError(f"practice must be one of {sorted(PROHIBITED_PRACTICES)}")
         if statement not in ATTESTATION_STATEMENTS:
-            raise ValueError(f"statement must be one of {ATTESTATION_STATEMENTS}")
+            raise UsageError(f"statement must be one of {ATTESTATION_STATEMENTS}")
         if not actor:
-            raise ValueError("an attestation needs an actor")
+            raise UsageError("an attestation needs an actor")
         if statement == "not_applicable" and not basis:
-            raise ValueError("a not_applicable attestation needs its basis: what about the system rules the class out")
+            raise UsageError("a not_applicable attestation needs its basis: what about the system rules the class out")
         extra = {"practice": practice, "practice_text": PROHIBITED_PRACTICES[practice], "statement": statement,
                  "basis": (str(basis)[:2000] if basis else None),
                  "attested_ts": float(ts) if ts is not None else time.time(), "system": system}
@@ -1453,26 +1455,26 @@ class ActionLedger:
         cooperation duty, so the two are refused together. `agreement_ref` names the 25(4) written
         agreement and `agreement_sha256` pins its bytes."""
         if not actor or not agreement_ref:
-            raise ValueError("a responsibilities record needs an actor and the written agreement it records")
+            raise UsageError("a responsibilities record needs an actor and the written agreement it records")
         if not parties:
-            raise ValueError("at least one party is needed")
+            raise UsageError("at least one party is needed")
         rows = []
         for p in parties:
             if not isinstance(p, dict) or not p.get("party") or p.get("role") not in RESPONSIBILITY_ROLES:
-                raise ValueError(f"each party needs a name and a role in {RESPONSIBILITY_ROLES}")
+                raise UsageError(f"each party needs a name and a role in {RESPONSIBILITY_ROLES}")
             rows.append({"party": str(p["party"]), "role": p["role"],
                          "obligations": [str(o) for o in (p.get("obligations") or [])]})
         if not any(r["role"] in ("provider", "new_provider", "product_manufacturer") for r in rows):
-            raise ValueError("no party carries the provider's obligations; Art. 25 exists to say who does")
+            raise UsageError("no party carries the provider's obligations; Art. 25 exists to say who does")
         if trigger is not None and trigger not in PROVIDER_TRIGGERS:
-            raise ValueError(f"trigger must be one of {PROVIDER_TRIGGERS}")
+            raise UsageError(f"trigger must be one of {PROVIDER_TRIGGERS}")
         coop = {}
         for k, v in (cooperation or {}).items():
             if k not in COOPERATION_ITEMS:
-                raise ValueError(f"cooperation items are {COOPERATION_ITEMS}")
+                raise UsageError(f"cooperation items are {COOPERATION_ITEMS}")
             coop[k] = str(v)
         if coop and not_to_be_changed_into_high_risk:
-            raise ValueError("the 25(2) opt-out and cooperation items exclude each other")
+            raise UsageError("the 25(2) opt-out and cooperation items exclude each other")
         extra = {"agreement_ref": str(agreement_ref), "agreement_sha256": agreement_sha256, "parties": rows,
                  "trigger": trigger, "cooperation": coop,
                  "not_to_be_changed_into_high_risk": bool(not_to_be_changed_into_high_risk),
@@ -1518,28 +1520,28 @@ class ActionLedger:
                "signer_function": signer_function, "signed_for": signed_for}
         missing = [k for k, v in req.items() if not v]
         if missing:
-            raise ValueError(f"a declaration needs {missing} (Annex V items 1, 2 and 8)")
+            raise UsageError(f"a declaration needs {missing} (Annex V items 1, 2 and 8)")
         if conformity_procedure not in CONFORMITY_PROCEDURES:
-            raise ValueError(f"conformity_procedure must be one of {CONFORMITY_PROCEDURES}")
+            raise UsageError(f"conformity_procedure must be one of {CONFORMITY_PROCEDURES}")
         nb = None
         if conformity_procedure == "annex_vii_notified_body":
             if not isinstance(notified_body, dict) or not notified_body.get("name") or not notified_body.get("id"):
-                raise ValueError("an Annex VII assessment needs the notified body's name and identification number (Annex V item 7, Art. 48(4))")
+                raise UsageError("an Annex VII assessment needs the notified body's name and identification number (Annex V item 7, Art. 48(4))")
             nb = {"name": str(notified_body["name"]), "id": str(notified_body["id"]),
                   "procedure": str(notified_body.get("procedure") or "Annex VII"),
                   "certificate": notified_body.get("certificate")}
         elif notified_body:
-            raise ValueError("a notified body is recorded only for an Annex VII assessment")
+            raise UsageError("a notified body is recorded only for an Annex VII assessment")
         if annex_iv_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(annex_iv_sha256)):
-            raise ValueError("annex_iv_sha256 must be a 64-hex sha256 of the technical documentation")
+            raise UsageError("annex_iv_sha256 must be a 64-hex sha256 of the technical documentation")
         ce = None
         if ce_marking is not None:
             if not isinstance(ce_marking, dict):
-                raise ValueError("ce_marking is a dict: {digital_access, affixed_to, notified_body_id}")
+                raise UsageError("ce_marking is a dict: {digital_access, affixed_to, notified_body_id}")
             ce = {"digital_access": ce_marking.get("digital_access"), "affixed_to": ce_marking.get("affixed_to"),
                   "notified_body_id": ce_marking.get("notified_body_id")}
             if nb and ce.get("notified_body_id") and ce["notified_body_id"] != nb["id"]:
-                raise ValueError("the notified body id after the CE marking (Art. 48(4)) must be the assessing body's")
+                raise UsageError("the notified body id after the CE marking (Art. 48(4)) must be the assessing body's")
         extra = {"system_name": str(system_name), "system_type": str(system_type),
                  "system_reference": str(system_reference), "provider_name": str(provider_name),
                  "provider_address": str(provider_address),
@@ -1562,7 +1564,7 @@ class ActionLedger:
         the Art. 43 procedure, the Art. 48 marking, and the ledger hash that binds it. Read-only."""
         e = self._at(seq)
         if e.get("kind") != "declaration":
-            raise ValueError(f"entry {seq} is a {e.get('kind', 'action')}, not a declaration")
+            raise UsageError(f"entry {seq} is a {e.get('kind', 'action')}, not a declaration")
         items = {
             "1_system": {"name": e.get("system_name"), "type": e.get("system_type"), "reference": e.get("system_reference")},
             "2_provider": {"name": e.get("provider_name"), "address": e.get("provider_address"),
@@ -1595,24 +1597,24 @@ class ActionLedger:
         rather than judged. `text_sha256` pins the notice text without storing it. Art. 14 additionally
         needs `source` (14(2)(f)) and `timing` (14(3)). The shape is the Art. 50 disclosure receipt."""
         if article not in (13, 14):
-            raise ValueError("article must be 13 (collected from the subject) or 14 (obtained elsewhere)")
+            raise UsageError("article must be 13 (collected from the subject) or 14 (obtained elsewhere)")
         if channel not in NOTICE_CHANNELS:
-            raise ValueError(f"channel must be one of {NOTICE_CHANNELS}")
+            raise UsageError(f"channel must be one of {NOTICE_CHANNELS}")
         if not actor or not subject:
-            raise ValueError("a notice record needs the actor and the subject reference")
+            raise UsageError("a notice record needs the actor and the subject reference")
         allowed = set(NOTICE_ITEMS) | (set(NOTICE_ART14_ITEMS) if article == 14 else set())
         bad = [i for i in (items or []) if i not in allowed]
         if bad:
-            raise ValueError(f"items must be among {sorted(allowed)}, got {bad}")
+            raise UsageError(f"items must be among {sorted(allowed)}, got {bad}")
         if text_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(text_sha256)):
-            raise ValueError("text_sha256 must be a 64-hex sha256 of the notice text")
+            raise UsageError("text_sha256 must be a 64-hex sha256 of the notice text")
         if article == 14:
             if not source:
-                raise ValueError("an Art. 14 notice names the source the data came from (14(2)(f))")
+                raise UsageError("an Art. 14 notice names the source the data came from (14(2)(f))")
             if timing not in NOTICE_TIMINGS:
-                raise ValueError(f"an Art. 14 notice needs its timing (14(3)): one of {NOTICE_TIMINGS}")
+                raise UsageError(f"an Art. 14 notice needs its timing (14(3)): one of {NOTICE_TIMINGS}")
         elif timing is not None and timing != "at_collection":
-            raise ValueError("an Art. 13 notice is given at collection")
+            raise UsageError("an Art. 13 notice is given at collection")
         given = sorted(set(items or []))
         extra = {"article": article, "subject": subject, "channel": channel, "items": given,
                  "missing": [i for i in allowed if i not in given],
@@ -1649,20 +1651,20 @@ class ActionLedger:
         authorisation, so each row needs one). `purposes` and `categories` describe the processing the
         way an Art. 30(2) processor record does."""
         if role not in PROCESSING_ROLES:
-            raise ValueError(f"role must be one of {PROCESSING_ROLES}")
+            raise UsageError(f"role must be one of {PROCESSING_ROLES}")
         if not actor:
-            raise ValueError("a processing-role record needs an actor")
+            raise UsageError("a processing-role record needs an actor")
         if role in ("processor", "sub_processor"):
             if not controller:
-                raise ValueError(f"a {role} names the controller it acts for")
+                raise UsageError(f"a {role} names the controller it acts for")
             if not instructions_ref:
-                raise ValueError(f"a {role} names the written instructions it acts under (Art. 28(3))")
+                raise UsageError(f"a {role} names the written instructions it acts under (Art. 28(3))")
         if instructions_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(instructions_sha256)):
-            raise ValueError("instructions_sha256 must be a 64-hex sha256")
+            raise UsageError("instructions_sha256 must be a 64-hex sha256")
         subs = []
         for sp in sub_processors or []:
             if not isinstance(sp, dict) or not sp.get("name") or not sp.get("authorised_by"):
-                raise ValueError("each sub-processor needs a name and who authorised it (Art. 28(2))")
+                raise UsageError("each sub-processor needs a name and who authorised it (Art. 28(2))")
             subs.append({"name": str(sp["name"]), "authorised_by": str(sp["authorised_by"]),
                          "authorised_ts": sp.get("authorised_ts")})
         extra = {"role": role, "controller": controller, "instructions_ref": instructions_ref,
@@ -1696,21 +1698,21 @@ class ActionLedger:
         The QMS itself is the provider's; this is the signed record that it exists, who owns it and
         when it was last confirmed current, which is what an Art. 17 review asks for first."""
         if not actor:
-            raise ValueError("a qms record needs an actor")
+            raise UsageError("a qms record needs an actor")
         if not procedure or not str(procedure).strip():
-            raise ValueError("a qms record names the procedure it describes")
+            raise UsageError("a qms record names the procedure it describes")
         if not version or not str(version).strip():
-            raise ValueError("a qms record carries the procedure's version")
+            raise UsageError("a qms record carries the procedure's version")
         if not owner or not str(owner).strip():
-            raise ValueError("a qms record names the procedure's owner")
+            raise UsageError("a qms record names the procedure's owner")
         try:
             due = float(review_due_ts)
         except (TypeError, ValueError):
-            raise ValueError("review_due_ts is the epoch time the next review is due")
+            raise UsageError("review_due_ts is the epoch time the next review is due")
         if aspect is not None and aspect not in QMS_ASPECTS:
-            raise ValueError(f"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}")
+            raise UsageError(f"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}")
         if sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(sha256)):
-            raise ValueError("sha256 must be a 64-hex sha256")
+            raise UsageError("sha256 must be a 64-hex sha256")
         extra = {"procedure": str(procedure).strip(), "version": str(version).strip(), "owner": str(owner).strip(),
                  "review_due_ts": due, "aspect": aspect, "ref": ref, "sha256": sha256,
                  "declared_ts": float(ts) if ts is not None else time.time()}
@@ -1756,31 +1758,31 @@ class ActionLedger:
         carries the end date and whether the attestation falls inside it. `declaration_seq` links the
         declaration entry, like `attest_retention` over logs (Art. 19)."""
         if not actor:
-            raise ValueError("attest_documentation_retention needs an actor")
+            raise UsageError("attest_documentation_retention needs an actor")
         now = time.time() if now is None else float(now)
         placed = float(placed_on_market_ts)
         seen: dict = {}
         for d in documents or []:
             if not isinstance(d, dict) or d.get("kind") not in RETENTION_DOCUMENTS:
-                raise ValueError(f"each document needs a kind in {RETENTION_DOCUMENTS}")
+                raise UsageError(f"each document needs a kind in {RETENTION_DOCUMENTS}")
             present = bool(d.get("present", True))
             na = d.get("not_applicable_reason")
             if present and not (d.get("sha256") or d.get("ref")):
-                raise ValueError(f"a present {d['kind']} needs a sha256 or a ref an assessor can follow")
+                raise UsageError(f"a present {d['kind']} needs a sha256 or a ref an assessor can follow")
             if d.get("sha256") is not None and not re.fullmatch(r"[0-9a-f]{64}", str(d["sha256"])):
-                raise ValueError(f"{d['kind']}: sha256 must be 64 hex characters")
+                raise UsageError(f"{d['kind']}: sha256 must be 64 hex characters")
             seen[d["kind"]] = {"present": present, "sha256": d.get("sha256"), "ref": d.get("ref"),
                                "not_applicable_reason": (str(na)[:500] if na else None)}
         for k in ("technical_documentation", "eu_declaration_of_conformity"):
             if not seen.get(k, {}).get("present"):
-                raise ValueError(f"{k} must be present: Art. 18(1) has no case where it is not applicable")
+                raise UsageError(f"{k} must be present: Art. 18(1) has no case where it is not applicable")
         for k in ("notified_body_changes", "notified_body_decisions"):
             row = seen.get(k)
             if row is None or (not row["present"] and not row["not_applicable_reason"]):
-                raise ValueError(f"{k} is present, or not applicable with the reason (no notified body)")
+                raise UsageError(f"{k} is present, or not applicable with the reason (no notified body)")
         decl = self._resolve_ref(declaration_seq) if declaration_seq is not None else None
         if decl is not None and self._at(decl["seq"]).get("kind") != "declaration":
-            raise ValueError("declaration_seq must point at a declaration entry")
+            raise UsageError("declaration_seq must point at a declaration entry")
         end = placed + DOCUMENTATION_RETENTION_YEARS * 365.25 * 86400.0
         extra = {"event": "attest", "placed_on_market_ts": placed, "retention_years": DOCUMENTATION_RETENTION_YEARS,
                  "retention_end_ts": end, "within_period": bool(placed <= now <= end),
@@ -1800,9 +1802,9 @@ class ActionLedger:
         all treat the incident as closed once this exists."""
         e = self._at(seq)
         if e.get("kind") != "incident":
-            raise ValueError(f"entry {seq} is a {e.get('kind', 'action')}, not an incident")
+            raise UsageError(f"entry {seq} is a {e.get('kind', 'action')}, not an incident")
         if not actor or not reported_to:
-            raise ValueError("incident_reported needs an actor and reported_to")
+            raise UsageError("incident_reported needs an actor and reported_to")
         extra = {"title": e.get("title"), "severity": e.get("severity"), "event": "reported",
                  "evidence": [self._resolve_ref(seq)], "reported_to": reported_to,
                  "reported_ts": float(reported_ts) if reported_ts is not None else time.time(),
@@ -1829,7 +1831,7 @@ class ActionLedger:
         the assessment). Read-only."""
         e = self._at(seq)
         if e.get("kind") != "incident":
-            raise ValueError(f"entry {seq} is a {e.get('kind', 'action')}, not an incident")
+            raise UsageError(f"entry {seq} is a {e.get('kind', 'action')}, not an incident")
         now = time.time() if now is None else now
         deadline = e.get("report_deadline_ts")
         evidence = []
@@ -1874,7 +1876,7 @@ class ActionLedger:
         for e in self._entries:
             if e.get("hash") == refers_to:
                 return {"seq": e["seq"], "hash": e["hash"]}
-        raise ValueError("refers_to hash is not in the ledger")
+        raise UsageError("refers_to hash is not in the ledger")
 
     def oversight_report(self) -> dict:
         """Counts an auditor asks for: actions, oversight events by type and actor, actions that
@@ -2007,7 +2009,7 @@ class ActionLedger:
         and Art. 26(6) ask for logs kept at least six months; this is the periodic record that they
         were, made from the ledger rather than asserted."""
         if not actor:
-            raise ValueError("attest_retention needs an actor")
+            raise UsageError("attest_retention needs an actor")
         now = time.time() if now is None else now
         oldest = self.oldest_ts()
         if oldest is not None and (not isinstance(oldest, (int, float)) or isinstance(oldest, bool)):
@@ -2124,11 +2126,11 @@ class ActionLedger:
         (PC2: 2 instead of 3, in 4 of 4 runs)."""
         now = time.time() if now is None else now
         if before_ts is None and keep_days is None:
-            raise ValueError("archive needs keep_days or before_ts")
+            raise UsageError("archive needs keep_days or before_ts")
         self.require_readable()
         cutoff = float(before_ts) if before_ts is not None else now - float(keep_days) * 86400.0
         if self._sk is None and (any("sig" in e for e in self._entries) or (self._checkpoint and "sig" in self._checkpoint)):
-            raise ValueError("this ledger is signed; open it with its signing key to rotate it, or the checkpoint "
+            raise UsageError("this ledger is signed; open it with its signing key to rotate it, or the checkpoint "
                              "would be the one unsigned link in a signed chain")
         for e in self._entries:
             t = e.get("ts")

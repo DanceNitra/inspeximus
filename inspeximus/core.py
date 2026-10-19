@@ -10294,7 +10294,8 @@ class Inspeximus:
         for o in self._objections:
             if o.get("status") == "standing" and o.get("subject") == subject \
                     and (self.tenant is None or o.get("tenant") == self.tenant):
-                raise ValueError(f"an objection by '{subject}' is already standing (recorded {o.get('ts')})")
+                from .errors import UsageError
+                raise UsageError(f"an objection by '{subject}' is already standing (recorded {o.get('ts')})")
         row = {"subject": subject, "cands": sorted(cand), "ground": ground, "scope": scope, "actor": actor,
                "ts": time.time(), "request_id": request_id, "tenant": self.tenant, "status": "standing",
                "allow_ambiguous": bool(allow_ambiguous), "withheld_at_objection": len(ids), "resolved": None}
@@ -10325,7 +10326,8 @@ class Inspeximus:
                     and (self.tenant is None or o.get("tenant") == self.tenant):
                 row = o
         if row is None:
-            raise ValueError(f"no standing objection by '{subject}'")
+            from .errors import UsageError
+            raise UsageError(f"no standing objection by '{subject}'")
         if outcome == "overridden":
             if row.get("ground") == "direct_marketing":
                 raise ValueError("an objection to direct marketing (Art. 21(2)) cannot be overridden")

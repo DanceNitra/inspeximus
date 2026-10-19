@@ -18,6 +18,7 @@ HTTP by the caller). Zero new dependencies beyond `cryptography` (already the si
 from __future__ import annotations
 import json, os, tempfile, threading, time
 from .core import new_ed25519_keypair, witness_cosign, anchor_binds_its_fields, _HAVE_ED, _canon, _sha256_hex
+from .errors import UsageError
 if _HAVE_ED:                     # OPTIONAL, exactly as in core: the Ed25519 names exist only when
     from .core import (          # `cryptography` is installed, and importing them unconditionally
         _Ed25519SK, _Ed25519PK)  # broke `import inspeximus.witness_pool` on a base install -- which
@@ -30,7 +31,13 @@ def _public_from_secret(secret_hex: str) -> str:
         raise RuntimeError("witness keys need the `cryptography` package (pip install cryptography)")
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
     from cryptography.hazmat.primitives import serialization as _ser
-    sk = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(secret_hex))
+    try:
+        raw = bytes.fromhex(secret_hex)
+    except (ValueError, TypeError):
+        raise UsageError("a witness secret key is 64 hexadecimal characters; this one is not hexadecimal") from None
+    if len(raw) != 32:
+        raise UsageError("a witness secret key is 64 hexadecimal characters; this one has %d" % (2 * len(raw)))
+    sk = Ed25519PrivateKey.from_private_bytes(raw)
     return sk.public_key().public_bytes(_ser.Encoding.Raw, _ser.PublicFormat.Raw).hex()
 
 
@@ -221,7 +228,7 @@ class Witness:
                                 bytes.fromhex(_st["mac"]),
                                 bytes.fromhex(_sha256_hex(_canon(_mac_fields(_st)))))
                         except Exception:
-                            raise ValueError(
+                            raise UsageError(
                                 f"the witness fork-memory at {state_path} does not authenticate "
                                 f"against this witness's own key. Refusing to start: a state file "
                                 f"someone else wrote will make this witness co-sign a rollback it "
@@ -253,7 +260,7 @@ class Witness:
                 # WHAT WE LOADED, for the single-writer guard in _persist.
                 self._loaded_sig = _sha256_hex(_canon(_st))
             except (OSError, ValueError) as e:
-                raise ValueError(
+                raise UsageError(
                     f"the witness fork-memory at {state_path} exists but could not be read ({e}). "
                     f"Refusing to start: a witness that has forgotten the heads it signed will "
                     f"co-sign a rollback, which is the one thing it exists to refuse. Restore the "
@@ -331,7 +338,7 @@ class Witness:
         suppress it without the witness's key -- and holding that key, they would not need the file.
         """
         if self._require_auth_state:
-            raise ValueError(
+            raise UsageError(
                 f"the witness fork-memory at {state_path} carries no MAC, and this witness was "
                 f"started with require_authenticated_state=True. Either the file predates 2.10.6 -- "
                 f"start once without the flag to migrate it -- or someone stripped the MAC to edit "
@@ -400,7 +407,10 @@ class Witness:
         """OPERATOR: pin the Ed25519 head key of `store_id`. Replacing a different pin is a REBOUND: allowed, because
         a lost key must not lock a store out for good, and recorded with `basis`, because it is the one act that
         hands a store's witnessing to a new key without the old key's consent."""
-        bytes.fromhex(str(pubkey))                                      # a hex key or ValueError
+        try:
+            bytes.fromhex(str(pubkey))                                  # a hex key, or the caller's mistake
+        except ValueError:
+            raise UsageError("a head key is an Ed25519 public key in hexadecimal; %r is not hexadecimal" % (pubkey,)) from None
         with self._lock:
             sid, old = str(store_id), (self._pins.get(str(store_id)) or {})
             if old.get("pubkey") == str(pubkey):
@@ -463,7 +473,7 @@ class Witness:
         # attestation; making the co-signature also a veto added a denial channel and bought nothing
         # the auditor did not already get.
         if self._strict and prior is None and str(store_id) not in self._bootstrapped:
-            raise ValueError(
+            raise UsageError(
                 f"strict witness has no record of store {store_id!r}. Either this is genuinely its "
                 f"first anchor -- call bootstrap({store_id!r}) to say so deliberately -- or the "
                 f"fork-memory was deleted, in which case co-signing now would launder a rollback.")
@@ -554,7 +564,7 @@ class Witness:
         and the only honest way past that is a human deciding which one is real and saying why.
         """
         if not str(basis or "").strip():
-            raise ValueError("clear_poison(basis=...) needs a stated reason: clearing a fork alarm "
+            raise UsageError("clear_poison(basis=...) needs a stated reason: clearing a fork alarm "
                              "without one leaves no record of who decided the history was sound")
         self._poisoned.discard(str(store_id))
         self._refusals.append({"store_id": str(store_id), "ts": time.time(),
