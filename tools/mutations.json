@@ -15277,5 +15277,151 @@
   "tests": [
    "tests/test_mutation_check_parallel_takes_from_one_queue.py::test_the_slowest_entries_of_the_last_run_go_first"
   ]
+ },
+ {
+  "name": "3.22 saver: a long line is not split, so a section can pass 4,096 bytes",
+  "file": "inspeximus/context_saver.py",
+  "old": "        out += split_capped(c, limit)",
+  "new": "        out.append(c)",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_every_section_is_at_most_4096_bytes_and_they_rebuild_the_text[ascii]",
+   "tests/test_3220_context_saver.py::test_every_section_is_at_most_4096_bytes_and_they_rebuild_the_text[json]"
+  ]
+ },
+ {
+  "name": "3.22 saver: an output of exactly 5,000 bytes passes through",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if len(raw) < PASSTHROUGH_BYTES:",
+  "new": "    if len(raw) <= PASSTHROUGH_BYTES:",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_5000_bytes_is_not_passed_through"
+  ]
+ },
+ {
+  "name": "3.22 saver: an output over 100 KB without an intent is refused instead of pointed to",
+  "file": "inspeximus/context_saver.py",
+  "old": "        if len(raw) <= POINTER_BYTES:",
+  "new": "        if True:",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_an_output_over_100_kb_without_an_intent_gets_a_pointer_only"
+  ]
+ },
+ {
+  "name": "3.22 saver: without a reranker the default is hybrid alone, not a refusal",
+  "file": "inspeximus/context_saver.py",
+  "old": "_config(\"without_reranker\", \"refuse\")",
+  "new": "_config(\"without_reranker\", \"hybrid\")",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_without_a_reranker_the_default_is_to_refuse",
+   "tests/test_3220_context_saver.py::test_a_repositorys_config_cannot_choose_hybrid_only"
+  ]
+ },
+ {
+  "name": "3.22 saver: the reranker takes first place by any margin",
+  "file": "inspeximus/context_saver.py",
+  "old": "sc[rr[0]] - sc[top[0]] > FUSE_MARGIN",
+  "new": "sc[rr[0]] - sc[top[0]] > 0",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_the_reranker_takes_first_place_only_by_more_than_the_margin"
+  ]
+ },
+ {
+  "name": "3.22 saver: the wide rerank never runs",
+  "file": "inspeximus/context_saver.py",
+  "old": "        if g0 is not None and g0 < WIDE_GAP and len(chunks) > RERANK_TOP:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_the_wide_rerank_runs_only_when_the_top_two_are_within_0_01"
+  ]
+ },
+ {
+  "name": "3.22 saver: a close reranker never adds the whole 2nd section",
+  "file": "inspeximus/context_saver.py",
+  "old": "    whole_second = (not small) and len(order) > 1 and gap is not None and gap < SECOND_GAP",
+  "new": "    whole_second = False",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_close_reranker_adds_the_whole_second_section"
+  ]
+ },
+ {
+  "name": "3.22 saver: a large output gets no span of the 2nd section",
+  "file": "inspeximus/context_saver.py",
+  "old": "            parts.append(_span(chunks[order[1]], intent, SECOND_SPAN))",
+  "new": "            pass",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_large_output_gets_the_top_section_and_an_800_character_span"
+  ]
+ },
+ {
+  "name": "3.22 saver: a small output's span is half the output, not 0.45",
+  "file": "inspeximus/context_saver.py",
+  "old": "max(1, int(SMALL_SHARE * len(output)))",
+  "new": "max(1, int(0.5 * len(output)))",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_small_output_gets_one_span_of_045_of_its_characters"
+  ]
+ },
+ {
+  "name": "3.22 saver: the returned sections are not assessed by the read guard",
+  "file": "inspeximus/context_saver.py",
+  "old": "read_guard=_guard_flags([digest] + parts))",
+  "new": "read_guard=[])",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_an_instruction_in_the_output_is_flagged_and_returned_unchanged"
+  ]
+ },
+ {
+  "name": "3.22 saver: a tenant view's embedder is asked of the view, which refuses it",
+  "file": "inspeximus/context_saver.py",
+  "old": "        src = getattr(store, \"_parent\", store)",
+  "new": "        src = store",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_tenant_view_lends_its_embedder_and_its_records_are_not_touched"
+  ]
+ },
+ {
+  "name": "3.22 saver: the ranking store has a path, so it writes heads and keys to the key home",
+  "file": "inspeximus/context_saver.py",
+  "old": "    m = Inspeximus(None, embed=embed,",
+  "new": "    m = Inspeximus(\"ctx_rank.json\", embed=embed,",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_nothing_is_written_to_the_key_home"
+  ]
+ },
+ {
+  "name": "3.22 saver: no CUDA falls back to the CPU without the user's setting",
+  "file": "inspeximus/context_saver.py",
+  "old": "        if not cpu_fallback:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_no_cuda_and_no_cpu_fallback_is_refused"
+  ]
+ },
+ {
+  "name": "3.22 saver: a model id is downloaded without opt-in",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if not os.path.isdir(model) and not allow_download:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_model_id_is_never_downloaded_without_opt_in"
+  ]
+ },
+ {
+  "name": "3.22 saver: a truthy non-bool turns a switch on",
+  "file": "inspeximus/context_saver.py",
+  "old": "    return value is True",
+  "new": "    return bool(value)",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_only_a_boolean_turns_the_switches_on"
+  ]
+ },
+ {
+  "name": "3.22 saver: the command exits 0 on an input mistake",
+  "file": "inspeximus/context_saver.py",
+  "old": "        print(\"inspeximus-saver: %s\" % exc, file=sys.stderr)\n        return 2",
+  "new": "        print(\"inspeximus-saver: %s\" % exc, file=sys.stderr)\n        return 0",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_the_command_exits_2_on_an_input_mistake"
+  ]
  }
 ]
