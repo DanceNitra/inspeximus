@@ -4421,8 +4421,8 @@
  {
   "name": "the replay filter loses r\"\\brm\\s+(?:[^\\n;&|]*\\s)?(?:-\\w*r\\w*|--recursive",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\brm\\s+(?:[^\\n;&|]*\\s)?(?:-\\w*r\\w*|--recursive)\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "_NO_REPLAY.append(_RmRecursive())",
+  "new": "pass",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
