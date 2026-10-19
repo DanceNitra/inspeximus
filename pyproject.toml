@@ -134,10 +134,15 @@ crewai = ["crewai"]
 # rewritten by the NEXT bump because the warning itself spelled out the numbers. So this paragraph
 # now contains no dotted version at all: a search-and-replace has nothing here to catch.
 haystack = ["haystack-ai>=2"]
+# The context saver's optional reranker (inspeximus.context_saver.load_reranker). The saver itself is stdlib-only;
+# this extra brings the cross-encoder, and torch with it. The floor is the release the saver's equivalence run used.
+# Installing the extra downloads no model: a model is fetched only when the user opts in (saver.allow_download).
+saver = ["sentence-transformers>=5.6"]
 
 [project.scripts]
 inspeximus = "inspeximus.cli:main"
 inspeximus-mcp = "inspeximus.mcp_server:main"
+inspeximus-saver = "inspeximus.context_saver:main"
 
 # Hermes Agent discovers a memory provider from this entry-point group, so `pip install inspeximus`
 # is the whole install and no file is copied under $HERMES_HOME. The bundled provider directory in
