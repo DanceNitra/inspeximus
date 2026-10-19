@@ -12,6 +12,7 @@ the treatment it hands out.
 """
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -170,9 +171,23 @@ def test_the_committed_spec_is_not_empty_and_names_real_targets():
         # file that still exists but no longer covers the mutation, which is what actually happened --
         # the CLI arms were moved into tests/test_cli_provenance.py and their mutation kept naming the
         # file they left. Only the full gate can see that; this removes the cheaper half of the class.
+        #
+        # A pointer may be a pytest node id, `file::test` or `file::test[param]`, which mutation_check runs as given
+        # and splits at `::` for its own file checks (3.21: the release stopped on a node id this line read as a
+        # path). So the file part must exist, and the named test must be defined in it, with the parameter id
+        # written in the file: a pointer at a test or a parameter that was renamed reads as a survivor too.
         for t in (mut["tests"] if isinstance(mut["tests"], list) else [mut["tests"]]):
-            assert os.path.exists(os.path.join(ROOT, t)), \
+            fpart, _, node = t.partition("::")
+            assert os.path.exists(os.path.join(ROOT, fpart)), \
                 f"{mut['name']}: names a test file that does not exist ({t})"
+            if node:
+                func, _, param = node.partition("[")
+                body = open(os.path.join(ROOT, fpart), encoding="utf-8").read()
+                assert re.search(r"^\s*def %s\(" % re.escape(func.split("::")[-1]), body, re.M), \
+                    f"{mut['name']}: names a test that {fpart} does not define ({t})"
+                if param:
+                    assert ('"%s"' % param.rstrip("]")) in body, \
+                        f"{mut['name']}: names a parameter id that {fpart} does not write ({t})"
 
     assert not broken, (
         f"{len(broken)} of {len(spec)} mutation target(s) are absent or ambiguous. The gate would "
