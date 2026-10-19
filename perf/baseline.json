@@ -513,7 +513,7 @@
    "decision_syncs": 0,
    "partition_registry_reads": 0,
    "guard_shape_scans": 0,
-   "tracked_gets": 39284,
+   "tracked_gets": 23832,
    "foreign_stamps": 0,
    "token_builds": 1402,
    "rows_parsed": 1400,

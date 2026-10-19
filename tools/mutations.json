@@ -497,7 +497,7 @@
  {
   "name": "the recency tie-break is removed (crowded-store target is lost)",
   "file": "inspeximus/core.py",
-  "old": "        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get(\"id\"), -1)))",
+  "old": "        scored.sort(key=lambda x: (-x[0], -_pos.get(dict.get(x[2], \"id\"), -1)))",
   "new": "        scored.sort(key=lambda x: -x[0])",
   "tests": [
    "tests/test_recall_is_deterministic.py"
@@ -515,8 +515,8 @@
  {
   "name": "decay age goes back to sub-second resolution",
   "file": "inspeximus/core.py",
-  "old": "        age = float(int(max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))))",
-  "new": "        age = max(0.0, now - r.get(\"last_access\", r.get(\"ts\", now)))",
+  "old": "        age = float(int(max(0.0, now - dict.get(r, \"last_access\", dict.get(r, \"ts\", now)))))",
+  "new": "        age = max(0.0, now - dict.get(r, \"last_access\", dict.get(r, \"ts\", now)))",
   "tests": [
    "tests/test_recall_is_deterministic.py"
   ]
@@ -14706,6 +14706,51 @@
   "new": "        active = self._served_rows(active); _served = {}\n",
   "tests": [
    "tests/test_3210_check_conflict_guards_only_the_rows_it_judges.py"
+  ]
+ },
+ {
+  "name": "3.21 item 11: the decay reads its type through the tracked get",
+  "file": "inspeximus/core.py",
+  "old": "        hl = _HALFLIFE_S.get(dict.get(r, \"mtype\", \"episodic\"), _HALFLIFE_S[\"episodic\"])",
+  "new": "        hl = _HALFLIFE_S.get(r.get(\"mtype\", \"episodic\"), _HALFLIFE_S[\"episodic\"])",
+  "tests": [
+   "tests/test_3210_recall_reads_its_scan_untracked.py"
+  ]
+ },
+ {
+  "name": "3.21 item 11: the stale-derived check reads links through the tracked get",
+  "file": "inspeximus/core.py",
+  "old": "                _links = dict.get(r, \"links\")",
+  "new": "                _links = r.get(\"links\")",
+  "tests": [
+   "tests/test_3210_recall_reads_its_scan_untracked.py"
+  ]
+ },
+ {
+  "name": "3.21 item 11: the stuffed-flag check reads meta through the tracked get",
+  "file": "inspeximus/core.py",
+  "old": "        return bool(dict.get(dict.get(rec, \"meta\") or {}, \"stuffed\"))",
+  "new": "        return bool(dict.get(rec.get(\"meta\") or {}, \"stuffed\"))",
+  "tests": [
+   "tests/test_3210_recall_reads_its_scan_untracked.py"
+  ]
+ },
+ {
+  "name": "3.21 item 11: the reliability reads good through the tracked get",
+  "file": "inspeximus/core.py",
+  "old": "        g = float(dict.get(r, \"good\", 0) or 0)",
+  "new": "        g = float(r.get(\"good\", 0) or 0)",
+  "tests": [
+   "tests/test_3210_recall_reads_its_scan_untracked.py"
+  ]
+ },
+ {
+  "name": "3.21 item 11: the position sort reads ids through the tracked get",
+  "file": "inspeximus/core.py",
+  "old": "        scored.sort(key=lambda x: (-x[0], -_pos.get(dict.get(x[2], \"id\"), -1)))",
+  "new": "        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get(\"id\"), -1)))",
+  "tests": [
+   "tests/test_3210_recall_reads_its_scan_untracked.py"
   ]
  }
 ]

@@ -10488,12 +10488,12 @@ class Inspeximus:
     def _is_quarantined(rec: dict) -> bool:
         # `dict.get`, not the tracked `get`: a read, and 3.17.1 leaves an invalid stamp in `meta`, so `meta` is no
         # longer empty on an unstamped row and the tracked `get` would be a Python call per row on every recall.
-        q = dict.get(rec.get("meta") or {}, "quarantined")
+        q = dict.get(dict.get(rec, "meta") or {}, "quarantined")
         return bool(q) and not q.get("released")
 
     @staticmethod
     def _is_stuffed(rec: dict) -> bool:
-        return bool(dict.get(rec.get("meta") or {}, "stuffed"))
+        return bool(dict.get(dict.get(rec, "meta") or {}, "stuffed"))
 
     def _served_rows(self, rows, *, include_quarantined: bool = False, limit: int | None = None) -> list:
         """The subset of `rows` that recall would serve: a standing Art. 21 objection withholds its
@@ -15563,7 +15563,7 @@ class Inspeximus:
 
     def _rec_tokens(self, rec: dict) -> set:
         """Token set for a memory, cached by id — recall over N memories shouldn't re-tokenize."""
-        rid = rec.get("id") or id(rec)
+        rid = dict.get(rec, "id") or id(rec)
         t = self._tok_cache.get(rid)
         if t is None:
         # UNDER THE HANDLE LOCK (3.19, shared-state inventory F1). A text edit stores, then drops this entry under the
@@ -15714,7 +15714,7 @@ class Inspeximus:
 
     def _rec_tokcount(self, rec: dict) -> dict:
         """Term-frequency map for a memory, cached by id (for the BM25 hybrid channel)."""
-        rid = rec.get("id") or id(rec)
+        rid = dict.get(rec, "id") or id(rec)
         c = self._tc_cache.get(rid)
         if c is None:
             with _ix_lock_of(self):                   # as `_rec_tokens` (F1)
@@ -16275,8 +16275,9 @@ class Inspeximus:
             # consolidated claim can't quietly outrank the fresh memory that overturned its source.
             stale = _stale_memo.get(id(r)) if _stale_memo is not None else None
             if stale is None:
-                stale = bool(r.get("links")) and any(
-                    (_by_id.get(lid, {}).get("meta") or {}).get("superseded_by_toggle") for lid in r["links"])
+                _links = dict.get(r, "links")
+                stale = bool(_links) and any(
+                    (_by_id.get(lid, {}).get("meta") or {}).get("superseded_by_toggle") for lid in _links)
                 if _stale_memo is not None:
                     _stale_memo[id(r)] = stale        # keyed by object: the shared pool holds every record
             r["_stale_derived"] = stale                   # surfaced in the returned record
@@ -16465,10 +16466,10 @@ class Inspeximus:
         # drift.
         _pos = _shared.get("pos") if _shared is not None else None
         if _pos is None:
-            _pos = {rec.get("id"): i for i, rec in enumerate(self._items)}
+            _pos = {dict.get(rec, "id"): i for i, rec in enumerate(self._items)}
             if _shared is not None:
                 _shared["pos"] = _pos
-        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get("id"), -1)))
+        scored.sort(key=lambda x: (-x[0], -_pos.get(dict.get(x[2], "id"), -1)))
         # A keyword-stuffed record never outranks an unflagged one: a stable partition, so the order
         # inside each group is the score order above. A penalty on the score would leave the stuffed
         # entry on top under lexical overlap (it scores 1.0 by construction), which is the measured case.
@@ -17327,8 +17328,8 @@ class Inspeximus:
     def _reliability(r: dict) -> float:
         """Per-memory track record as a Beta(1+good, 1+bad) posterior MEAN: 0.5 with no outcomes yet,
         ->1 if recalls into it kept resolving WELL, ->0 if they kept resolving badly. Counts only grow."""
-        g = float(r.get("good", 0) or 0)
-        b = float(r.get("bad", 0) or 0)
+        g = float(dict.get(r, "good", 0) or 0)
+        b = float(dict.get(r, "bad", 0) or 0)
         return (g + 1.0) / (g + b + 2.0)
 
     _OUTCOME_GOOD_WORDS = ("good", "right", "correct", "reproduced", "hit", "true", "win", "+")
@@ -18139,7 +18140,7 @@ class Inspeximus:
         half-life (episodic fades fast, semantic slow, procedural barely). Access resets the clock,
         so memories that keep being useful stay alive while stored-but-never-recalled ones fade.
         Reversible: raw value/text are untouched; only the effective ranking weight decays."""
-        hl = _HALFLIFE_S.get(r.get("mtype", "episodic"), _HALFLIFE_S["episodic"])
+        hl = _HALFLIFE_S.get(dict.get(r, "mtype", "episodic"), _HALFLIFE_S["episodic"])
         # Age is quantised to WHOLE SECONDS. The half-lives here are hours to days, so sub-second
         # resolution carries no meaning -- but it did carry noise: `now` and `last_access` are wall clocks,
         # so two runs of the same code produced decay factors differing at ~1e-10, which propagated into
@@ -18147,7 +18148,7 @@ class Inspeximus:
         # the other half of that noise; this is the rest of it, and both had to go at the source because
         # the noise and the smallest MEANINGFUL score gap in a crowded store are the same size (5.7e-10),
         # so nothing downstream can separate them.
-        age = float(int(max(0.0, now - r.get("last_access", r.get("ts", now)))))
+        age = float(int(max(0.0, now - dict.get(r, "last_access", dict.get(r, "ts", now)))))
         return r["value"] * (0.5 ** (age / hl))
 
     # ── consolidation (the "dream" pass) ──────────────────────────────────────
