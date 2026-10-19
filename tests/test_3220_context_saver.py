@@ -238,9 +238,13 @@ def test_a_tenant_view_lends_its_embedder_and_its_records_are_not_touched(home, 
     assert [dict(x) for x in store.items] == before
 
 
-def test_nothing_is_written_to_the_key_home(home):
+def test_nothing_is_written_to_the_key_home_or_the_working_directory(home):
+    # The ranking store has no path: a store with one would leave its file in the working directory and, with
+    # receipts or guards on, a head and a key under the key home, one set per saved output.
+    roots = [str(home), os.getcwd()]
+
     def listing():
-        return sorted(os.path.relpath(os.path.join(d, f), home) for d, _s, fs in os.walk(home) for f in fs)
+        return sorted(os.path.join(d, f) for r in roots for d, _s, fs in os.walk(r) for f in fs)
     before = listing()
     cs.save(sections(8), "section", embed=embed, reranker=Scorer({}))
     assert listing() == before
