@@ -12316,7 +12316,7 @@
   "old": "        A READ WRITES ONLY A CHANGED VERDICT (3.17.1). This used to run",
   "new": "        A READ WRITES ONLY A CHANGED VERDICT (3.17.2). This used to run",
   "tests": [
-   "tests/test_the_guard_set_hash_is_the_3_17_1_hash.py"
+   "tests/test_3210_the_guard_set_is_a_version.py"
   ]
  },
  {
@@ -14751,6 +14751,24 @@
   "new": "        scored.sort(key=lambda x: (-x[0], -_pos.get(x[2].get(\"id\"), -1)))",
   "tests": [
    "tests/test_3210_recall_reads_its_scan_untracked.py"
+  ]
+ },
+ {
+  "name": "3.21 item 5: the guard set ignores the guards' version",
+  "file": "inspeximus/core.py",
+  "old": "            h.update(b\"inspeximus read guards v%d;\" % _GUARD_SET_VERSION)",
+  "new": "            h.update(b\"inspeximus read guards v1;\")",
+  "tests": [
+   "tests/test_3210_the_guard_set_is_a_version.py"
+  ]
+ },
+ {
+  "name": "3.21 item 5: _stuffing's docstring changes while the version stays",
+  "file": "inspeximus/core.py",
+  "old": "    \"\"\"Keyword stuffing: one content word repeated at least 4 times AND holding at least 12% of all",
+  "new": "    \"\"\"Keyword stuffing: one content word repeated at least 4 times AND holding at least 12 % of all",
+  "tests": [
+   "tests/test_3210_the_guard_set_is_a_version.py"
   ]
  }
 ]

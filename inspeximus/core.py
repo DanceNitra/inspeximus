@@ -1023,20 +1023,27 @@ def _read_stamp_env(store_path) -> "str | None":
         return None
 
 
-def _guard_set_hash() -> "str | None":
-    """What a stored verdict was computed with: the guards' source, their inputs by value, and the
-    Unicode database that IGNORECASE and \\w depend on. Any change re-assesses every record once.
+#: THE GUARDS' VERSION (3.21, item 5). A stored verdict names the guard set it was made under. Until 3.21 that was the
+#: hash of the guards' SOURCE, so any edit of `_instruction_shape`, `_stuffing` or `_assess_read_guards`, a comment
+#: included, made every stamp in every user's store foreign, and each record was assessed again on every fresh handle
+#: until something re-stamped it. Now the set is this number, the guards' inputs by value and the Unicode version.
+#: Raise it when a guard can judge a text differently. `tests/test_3210_the_guard_set_is_a_version.py` pins the guards'
+#: source to it, so an edit cannot land without someone deciding which kind of edit it is.
+_GUARD_SET_VERSION = 1
 
-    Computed on first use, once per process, never at import. None when it cannot be computed (a
-    frozen install without sources), and then no stored verdict is trusted."""
+
+def _guard_set_hash() -> "str | None":
+    """What a stored verdict was computed with: the guards' version (`_GUARD_SET_VERSION`), their inputs by value, and
+    the Unicode database that IGNORECASE and \\w depend on. Any change re-assesses every record once.
+
+    Computed on first use, once per process, never at import. None when it cannot be computed, and then no stored
+    verdict is trusted."""
     global _GUARD_SET
     if _GUARD_SET is None:
         try:
-            import inspect
             import unicodedata
             h = hashlib.sha256()
-            for fn in (_instruction_shape, _stuffing, Inspeximus._assess_read_guards):
-                h.update(inspect.getsource(fn).encode("utf-8"))
+            h.update(b"inspeximus read guards v%d;" % _GUARD_SET_VERSION)
             g = globals()
             for name in _GUARD_INPUTS:
                 h.update(f"{name}={_guard_canon(g[name])};".encode("utf-8", "surrogatepass"))
