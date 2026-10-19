@@ -2127,7 +2127,56 @@ _OVERRIDE = "AGORA_OUTREACH_APPROVED"
 #: original print-only design was afraid of, and it is how a guard gets removed rather than fixed.
 #: A match NOT in command position still WARNS -- it arrives, it just does not stop the call, so the
 #: cost of the regex being loose is a line of text instead of a wall.
-_CMD_POS = re.compile(r"(?:^|[|;&\n(])\s*(?:(?:sudo|env|time|xargs)\s+|\w+=\S*\s+)*$")
+class _CmdPos:
+    """Is the text's end a command position: the start, or a separator (| ; & newline or `(`), then only
+    whitespace and `sudo`, `env`, `time`, `xargs` or `NAME=value` prefixes, each followed by whitespace?
+
+    The question the regex below asked, in linear time (3.21.1). The regex tried every separator and every split of
+    the whitespace after it, so it was quadratic: a 2 KB prefix of newlines took 0.11 s, and the hook runs it on the
+    text before each match in a command. Here the text is read once from the end, a whitespace run and a token at a
+    time: a start inside the trailing run of whitespace and valid prefixes answers yes, and a token that is not a
+    valid prefix ends the walk, after checking the starts inside it. `pattern` is the regex this replaces."""
+    pattern = r"(?:^|[|;&\n(])\s*(?:(?:sudo|env|time|xargs)\s+|\w+=\S*\s+)*$"
+    _SEPS = "|;&\n("
+    _KW = frozenset(("sudo", "env", "time", "xargs"))
+    _WORD = re.compile(r"\w")
+
+    def _valid(self, s, p, end, nxt, base):
+        """Is s[p:end] a prefix token: a keyword, or word characters, `=`, then anything?"""
+        if s[p:end] in self._KW:
+            return True
+        q = nxt[p - base]
+        return q > p and q < end and s[q] == "="
+
+    def search(self, s):
+        n = len(s)
+        if n == 0 or not s[-1].isspace():
+            return True if n == 0 or s[-1] in self._SEPS else None
+        j = n
+        while True:
+            w0 = j
+            while w0 > 0 and s[w0 - 1].isspace():
+                w0 -= 1
+            if w0 == 0 or any(c in self._SEPS for c in s[w0 - 1:j]):
+                return True
+            t0 = w0
+            while t0 > 0 and not s[t0 - 1].isspace():
+                t0 -= 1
+            # nxt[i - t0]: the index of the first non-word character at or after i, within the token
+            nxt = [w0] * (w0 - t0 + 1)
+            for i in range(w0 - 1, t0 - 1, -1):
+                nxt[i - t0] = nxt[i - t0 + 1] if self._WORD.match(s, i) else i
+            for p in range(t0 + 1, w0):
+                if s[p - 1] in self._SEPS and self._valid(s, p, w0, nxt, t0):
+                    return True
+            if not self._valid(s, t0, w0, nxt, t0):
+                return None
+            if t0 == 0:
+                return True
+            j = t0
+
+
+_CMD_POS = _CmdPos()
 
 
 def _is_run(subject, start):
