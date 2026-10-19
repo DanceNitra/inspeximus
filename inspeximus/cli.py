@@ -134,9 +134,31 @@ def _need_ed25519() -> int:
     return 4
 
 
+def _read_arg(path, encoding="utf-8") -> str:
+    """The text of a file the caller named on the command line (3.21, AUDIT-A A-3). A file that is not text in
+    `encoding` is the caller's mistake, so it is a UsageError and one line, not a UnicodeDecodeError traceback. The
+    store's own files never come through here: a corrupt store is a fault, and it keeps its traceback."""
+    try:
+        with open(path, encoding=encoding) as f:
+            return f.read()
+    except UnicodeDecodeError as e:
+        raise UsageError("%s is not %s text (byte %d: %s)" % (path, encoding, e.start, e.reason)) from None
+
+
+def _load_arg_json(path, shape=dict, encoding="utf-8"):
+    """JSON from a file the caller named, of the shape the command reads: `shape` is a type or a tuple of types, or
+    None for any. JSON of another shape is a UsageError naming both, not an AttributeError three calls later."""
+    v = json.loads(_read_arg(path, encoding=encoding))
+    if shape is not None and not isinstance(v, shape):
+        names = {dict: "an object", list: "an array", str: "a string"}
+        want = " or ".join(names.get(t, t.__name__) for t in (shape if isinstance(shape, tuple) else (shape,)))
+        got = "null" if v is None else names.get(type(v), type(v).__name__)
+        raise UsageError("%s holds JSON %s, and this command reads %s" % (path, got, want))
+    return v
+
+
 def _read_json_file(path):
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+    return _load_arg_json(path)
 
 
 def _witness_allowlist(csv_value, file_value) -> list:
@@ -147,8 +169,7 @@ def _witness_allowlist(csv_value, file_value) -> list:
     if csv_value:
         out += [w.strip() for w in csv_value.split(",") if w.strip()]
     if file_value:
-        with open(file_value, encoding="utf-8") as f:
-            out += [ln.strip() for ln in f if ln.strip() and not ln.lstrip().startswith("#")]
+        out += [ln.strip() for ln in _read_arg(file_value).split("\n") if ln.strip() and not ln.lstrip().startswith("#")]
     return list(dict.fromkeys(out))
 
 
@@ -157,7 +178,7 @@ def _load_cosigs(paths) -> list:
     a list of them."""
     pairs = []
     for p in paths or []:
-        d = _read_json_file(p)
+        d = _load_arg_json(p, shape=(dict, list))
         for item in (d if isinstance(d, list) else [d]):
             if isinstance(item, dict) and item.get("pubkey") and item.get("sig"):
                 pairs.append((item["pubkey"], item["sig"]))
@@ -337,8 +358,7 @@ def _witness_cmd(a) -> int:
     if a.witness_cmd == "cosign":
         from .witness_pool import Witness
         anchor = _read_json_file(a.anchor)
-        with open(a.key, encoding="utf-8") as f:
-            sk = f.read().strip()
+        sk = _read_arg(a.key).strip()
         state = a.state or (a.key + ".state.json")
         w = Witness(secret_hex=sk, state_path=state, strict=a.strict,
                     require_authenticated_state=a.require_authenticated_state)
@@ -379,8 +399,7 @@ def _witness_cmd(a) -> int:
         # the amnesia defence -- and without a way to declare a genuine first contact it is not a
         # defence, it is a brick. The help text for --strict named this command before it existed.
         from .witness_pool import Witness
-        with open(a.key, encoding="utf-8") as f:
-            sk = f.read().strip()
+        sk = _read_arg(a.key).strip()
         w = Witness(secret_hex=sk, state_path=(a.state or (a.key + ".state.json")), strict=True)
         w.bootstrap(a.store_id)
         print(f"  bootstrapped {a.store_id} for witness {w.public[:16]}...")
@@ -405,8 +424,7 @@ def _witness_cmd(a) -> int:
         # OFFLINE PIN (3.20, F1), beside `witness bootstrap`: the operator names the head key a store's heads must be
         # signed by, in the witness's own state file, while its server is stopped.
         from .witness_pool import Witness
-        with open(a.key, encoding="utf-8") as f:
-            sk = f.read().strip()
+        sk = _read_arg(a.key).strip()
         w = Witness(secret_hex=sk, state_path=(a.state or (a.key + ".state.json")))
         w.pin(a.store_id, a.pubkey, basis=a.basis or "pinned offline with `inspeximus witness pin`")
         print(f"  pinned head key {a.pubkey[:16]}... for store {a.store_id} on witness {w.public[:16]}...")
@@ -417,10 +435,8 @@ def _witness_cmd(a) -> int:
         # The signature goes into the anchor file, where `witness cosign` and POST /cosign read it.
         import json as _json
         from .witness_pool import sign_head
-        with open(a.anchor, encoding="utf-8") as f:
-            anc = _json.load(f)
-        with open(a.head_key, encoding="utf-8") as f:
-            hk = f.read().strip()
+        anc = _load_arg_json(a.anchor)
+        hk = _read_arg(a.head_key).strip()
         anc.update(sign_head(a.store_id, anc, hk))
         out = _json.dumps(anc, indent=2)
         if a.out:
@@ -1571,8 +1587,7 @@ def _main(argv, seen):
     # audit-verify needs only the bundle file — never open a store (that would create one as a side effect).
     if a.cmd == "audit-verify":
         from inspeximus.audit_bundle import verify_bundle
-        with open(a.bundle, encoding="utf-8") as f:
-            bundle = json.load(f)
+        bundle = _load_arg_json(a.bundle)
         wl = [w.strip() for w in a.witnesses.split(",")] if a.witnesses else None
         items = None
         receipts = None   # bound here too: without --store the verify call would NameError
@@ -1615,16 +1630,14 @@ def _main(argv, seen):
     # written for in audit-verify, and the erasure certificate is where it was first measured.
     if a.cmd == "erasure-verify":
         from inspeximus.core import verify_erasure_certificate
-        with open(a.certificate, encoding="utf-8") as f:
-            cert = json.load(f)
+        cert = _load_arg_json(a.certificate)
         pub = a.expected_pubkey
         if a.expected_pubkey_file:
             if pub:
                 print("erasure-verify: pass --expected-pubkey OR --expected-pubkey-file, not both",
                       file=sys.stderr)
                 return 2
-            with open(a.expected_pubkey_file, encoding="utf-8") as f:
-                pub = f.read().strip()
+            pub = _read_arg(a.expected_pubkey_file).strip()
         items = None
         receipts = None
         if a.store:
@@ -1640,8 +1653,7 @@ def _main(argv, seen):
             receipts = load_store_receipts(a.store) or None
         anchor = None
         if a.expected_anchor:
-            with open(a.expected_anchor, encoding="utf-8-sig") as f:
-                anchor = json.load(f)
+            anchor = _load_arg_json(a.expected_anchor, encoding="utf-8-sig")
         res = verify_erasure_certificate(cert, store_items=items, expected_pubkey=pub,
                                          expected_anchor=anchor, store_receipts=receipts,
                                          require_signed=a.require_signed)
@@ -1695,14 +1707,12 @@ def _main(argv, seen):
         from .erasure_residue import residue_certificate, scan_residue
         values = list(a.value)
         if a.value_file:
-            with open(a.value_file, encoding="utf-8") as fh:
-                values += [ln.strip() for ln in fh if ln.strip()]
+            values += [ln.strip() for ln in _read_arg(a.value_file).split("\n") if ln.strip()]
         key = None
         if a.sign_key_file:
             try:
-                with open(a.sign_key_file, encoding="utf-8") as fh:
-                    key = fh.read().strip()
-            except OSError as e:
+                key = _read_arg(a.sign_key_file).strip()
+            except (OSError, UsageError) as e:
                 # Falling through to unsigned would produce a document that LOOKS like the signed one and
                 # names nobody. Same reasoning as the receipt key a few lines on.
                 print(f"cannot read the signing key: {e}", file=sys.stderr)
@@ -1737,8 +1747,7 @@ def _main(argv, seen):
 
     if a.cmd == "residue-verify":
         from .erasure_residue import verify_residue_certificate
-        with open(a.certificate, encoding="utf-8") as fh:
-            cert = json.load(fh)
+        cert = _load_arg_json(a.certificate)
         res = verify_residue_certificate(cert, root=a.root, expected_pubkey=a.expected_pubkey)
         if not _out(res, a.json):
             print(f"certificate for {cert.get('root_label')!r} issued {cert.get('issued_iso')}")
@@ -1886,8 +1895,7 @@ def _main(argv, seen):
         from inspeximus.compliance import compliance_check
         prior = None
         if a.prior_anchor:
-            with open(a.prior_anchor, encoding="utf-8") as f:
-                prior = json.load(f)
+            prior = _load_arg_json(a.prior_anchor)
         res = compliance_check(m, require_receipts=not a.allow_no_receipts,
                                max_pii_age_days=a.max_pii_age_days, prior_anchor=prior,
                                expected_pubkey=a.expected_pubkey)
@@ -2294,8 +2302,7 @@ def _main(argv, seen):
             def _load(pth):
                 if pth is None:
                     return None
-                with open(pth, encoding="utf-8-sig") as fh:       # a BOM is not a transcript edit
-                    return json.load(fh)
+                return _load_arg_json(pth, shape=None, encoding="utf-8-sig")   # a BOM is not a transcript edit
             try:
                 res = led.matches(a.seq, inputs=_load(a.inputs), output=_load(a.output))
             except FileNotFoundError as e:
@@ -2357,8 +2364,7 @@ def _main(argv, seen):
         elif a.actions_cmd == "post-market-report":
             plan = None
             if a.plan:
-                with open(a.plan, encoding="utf-8") as fh:
-                    plan = json.load(fh)
+                plan = _load_arg_json(a.plan)
             print(json.dumps(led.post_market_report(a.since, until=a.until, actor=a.actor, plan=plan, note=a.note),
                              indent=2, ensure_ascii=False))
         elif a.actions_cmd == "corrective":
@@ -2598,8 +2604,7 @@ def _main(argv, seen):
         from inspeximus.technical_documentation import annex_iv, render_markdown
         operator = {}
         if a.operator:
-            with open(a.operator, encoding="utf-8") as f:
-                operator = json.load(f)
+            operator = _load_arg_json(a.operator)
         doc = annex_iv(m, ledger=ActionLedger(m), operator=operator, expected_pubkey=a.expected_pubkey)
         if a.as_json:
             with open(a.as_json, "w", encoding="utf-8") as f:
@@ -2645,8 +2650,7 @@ def _main(argv, seen):
         from inspeximus.technical_documentation import registration_export
         operator = {}
         if a.operator:
-            with open(a.operator, encoding="utf-8") as f:
-                operator = json.load(f)
+            operator = _load_arg_json(a.operator)
         doc = registration_export(m, ledger=ActionLedger(m), operator=operator, section=a.section,
                                   expected_pubkey=a.expected_pubkey)
         if a.out:
@@ -2661,8 +2665,7 @@ def _main(argv, seen):
         from inspeximus.deployer import deployer_report, render_markdown as _render_deployer
         operator = {}
         if a.operator:
-            with open(a.operator, encoding="utf-8") as f:
-                operator = json.load(f)
+            operator = _load_arg_json(a.operator)
         doc = deployer_report(m, ledger=ActionLedger(m), operator=operator, expected_pubkey=a.expected_pubkey)
         if a.as_json:
             with open(a.as_json, "w", encoding="utf-8") as f:
@@ -3050,8 +3053,7 @@ def _timestamp_cmd(a):
 
     with open(a.token, "rb") as fh:
         token = fh.read()
-    with open(a.trusted_list, encoding="utf-8") as fh:
-        trusted = TrustedList.from_cache(_json.load(fh))
+    trusted = TrustedList.from_cache(_load_arg_json(a.trusted_list))
 
     status = read_status(token)
     got = qualified_status(token, trusted, when=a.when)

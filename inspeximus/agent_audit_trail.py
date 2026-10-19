@@ -222,55 +222,63 @@ def verify_jsonl(path) -> tuple[bool, list[str]]:
     nonces: set = set()
     session = None
     n = 0
-    with open(path, encoding="utf-8") as f:
-        for lineno, line in enumerate(f, 1):
-            line = line.strip()
-            if not line:
-                continue
-            n += 1
-            try:
-                r = json.loads(line)
-            except ValueError as ex:
-                problems.append(f"line {lineno}: not JSON ({ex})")
-                prev = None
-                continue
-            for k in ("record_id", "timestamp", "agent_id", "agent_version", "session_id", "action_type",
-                      "action_detail", "outcome", "trust_level", "parent_record_id", "prev_hash", "record_phase"):
-                if k not in r:
-                    problems.append(f"line {lineno}: missing mandatory field {k}")
-            if r.get("action_type") not in ACTION_TYPES:
-                problems.append(f"line {lineno}: action_type {r.get('action_type')!r} is not registered")
-            if r.get("outcome") not in OUTCOMES:
-                problems.append(f"line {lineno}: outcome {r.get('outcome')!r} is not registered")
-            if r.get("trust_level") not in TRUST_LEVELS:
-                problems.append(f"line {lineno}: trust_level {r.get('trust_level')!r} is not registered")
-            if r.get("record_phase") not in PHASES:
-                problems.append(f"line {lineno}: record_phase {r.get('record_phase')!r} is not registered")
-            rid = r.get("record_id")
-            if rid in seen:
-                problems.append(f"line {lineno}: duplicate record_id {rid}")
-            seen.add(rid)
-            if session is None:
-                session = r.get("session_id")
-            elif r.get("session_id") != session:
-                problems.append(f"line {lineno}: session_id changes within the file")
-            nonce = r.get("nonce")
-            if nonce is not None:
-                if nonce in nonces:
-                    problems.append(f"line {lineno}: duplicate nonce {nonce!r} within the session")
-                nonces.add(nonce)
-            if prev is None:
-                if r.get("parent_record_id") is not None or r.get("prev_hash") is not None:
-                    problems.append(f"line {lineno}: the first record must have null parent_record_id and prev_hash")
-            else:
-                if r.get("parent_record_id") != prev.get("record_id"):
-                    problems.append(f"line {lineno}: parent_record_id does not name the previous record")
-                if r.get("prev_hash") != _record_hash(prev):
-                    problems.append(f"line {lineno}: prev_hash does not match the previous record's canonical JSON")
-                t_now, t_prev = _parse_ts(r.get("timestamp")), _parse_ts(prev.get("timestamp"))
-                if t_now is not None and t_prev is not None and t_now < t_prev:
-                    problems.append(f"line {lineno}: timestamp goes backwards")
-            prev = r
+    try:
+        with open(path, encoding="utf-8") as f:
+            lines = f.read().split("\n")    # as iterating the file would: newlines only
+    except UnicodeDecodeError as e:                       # a verdict, not a traceback (3.21, AUDIT-A A-3)
+        return False, [f"the file is not UTF-8 text (byte {e.start}: {e.reason})"]
+    for lineno, line in enumerate(lines, 1):
+        line = line.strip()
+        if not line:
+            continue
+        n += 1
+        try:
+            r = json.loads(line)
+        except ValueError as ex:
+            problems.append(f"line {lineno}: not JSON ({ex})")
+            prev = None
+            continue
+        if not isinstance(r, dict):                     # JSON, but not a record (3.21, AUDIT-A A-3)
+            problems.append(f"line {lineno}: not a JSON object")
+            prev = None
+            continue
+        for k in ("record_id", "timestamp", "agent_id", "agent_version", "session_id", "action_type",
+                  "action_detail", "outcome", "trust_level", "parent_record_id", "prev_hash", "record_phase"):
+            if k not in r:
+                problems.append(f"line {lineno}: missing mandatory field {k}")
+        if r.get("action_type") not in ACTION_TYPES:
+            problems.append(f"line {lineno}: action_type {r.get('action_type')!r} is not registered")
+        if r.get("outcome") not in OUTCOMES:
+            problems.append(f"line {lineno}: outcome {r.get('outcome')!r} is not registered")
+        if r.get("trust_level") not in TRUST_LEVELS:
+            problems.append(f"line {lineno}: trust_level {r.get('trust_level')!r} is not registered")
+        if r.get("record_phase") not in PHASES:
+            problems.append(f"line {lineno}: record_phase {r.get('record_phase')!r} is not registered")
+        rid = r.get("record_id")
+        if rid in seen:
+            problems.append(f"line {lineno}: duplicate record_id {rid}")
+        seen.add(rid)
+        if session is None:
+            session = r.get("session_id")
+        elif r.get("session_id") != session:
+            problems.append(f"line {lineno}: session_id changes within the file")
+        nonce = r.get("nonce")
+        if nonce is not None:
+            if nonce in nonces:
+                problems.append(f"line {lineno}: duplicate nonce {nonce!r} within the session")
+            nonces.add(nonce)
+        if prev is None:
+            if r.get("parent_record_id") is not None or r.get("prev_hash") is not None:
+                problems.append(f"line {lineno}: the first record must have null parent_record_id and prev_hash")
+        else:
+            if r.get("parent_record_id") != prev.get("record_id"):
+                problems.append(f"line {lineno}: parent_record_id does not name the previous record")
+            if r.get("prev_hash") != _record_hash(prev):
+                problems.append(f"line {lineno}: prev_hash does not match the previous record's canonical JSON")
+            t_now, t_prev = _parse_ts(r.get("timestamp")), _parse_ts(prev.get("timestamp"))
+            if t_now is not None and t_prev is not None and t_now < t_prev:
+                problems.append(f"line {lineno}: timestamp goes backwards")
+        prev = r
     if n == 0:
         problems.append("the file holds no records")
     return (not problems), problems

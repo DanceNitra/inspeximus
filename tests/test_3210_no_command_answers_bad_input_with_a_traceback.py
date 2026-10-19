@@ -8,7 +8,14 @@ json.JSONDecodeError, and every input check the commands reach raises UsageError
 
 This walks every subcommand in-process and gives each argument, in turn, a path whose parent directory does not exist,
 a file that does not exist, a directory, an empty file, a file of invalid JSON, -1 and "x". An exception that escapes
-`main` is a finding. Servers, network calls and daemons are left out by name. Each case runs in a directory of its own.
+`main` is a finding. Each case runs in a directory of its own.
+
+AUDIT-A A-3 widened it, and every argument now also gets: a file that is not UTF-8, valid JSON of the wrong shape
+(an array, a string, null, an object with the wrong fields), a number too large for a date, nan, -0.0, an empty
+string, a path of 5,000 characters, a path through a file, non-ASCII text and "-". On a09dc529 that found 40
+tracebacks in 21 commands. Two values stay out: a NUL byte and a lone surrogate, which a Windows command line
+cannot pass (a lone surrogate reaches argv on POSIX from undecodable bytes; that is a known limit). The commands
+in SKIP are left out by name, each for the reason it gives.
 """
 import argparse
 import contextlib
@@ -20,12 +27,24 @@ import pytest
 from inspeximus import cli
 from inspeximus.errors import UnknownName, UsageError
 
-SKIP = {("witness", "serve"), ("witness", "watch"), ("ots", "upgrade"), ("distill",), ("hookd",), ("reembed",),
-        ("timestamp", "qualified"), ("timestamp", "trusted-lists"), ("demo",), ("browse",), ("mcp",), ("actions", "timestamp")}
+#: The 9 commands the walk does not run, and why. The CHANGELOG names the same 9. a09dc529 skipped 12; `timestamp
+#: qualified`, `browse` and `demo` read and write only local files, so A-3 walks them too.
+SKIP = {("witness", "serve"): "a server: it runs until stopped",
+        ("witness", "watch"): "polls a transparency log over HTTPS until stopped",
+        ("hookd",): "a daemon: it runs until stopped",
+        ("mcp",): "an MCP server on stdin: it runs until stopped",
+        ("ots", "upgrade"): "asks the OpenTimestamps calendars over the network",
+        ("timestamp", "trusted-lists"): "downloads the EU trusted lists",
+        ("actions", "timestamp"): "asks an RFC 3161 timestamp authority over the network",
+        ("distill",): "calls a language model endpoint",
+        ("reembed",): "calls the configured embedder for every record"}
 SIMPLE = (argparse._HelpAction, argparse._StoreTrueAction, argparse._StoreFalseAction, argparse._StoreConstAction,
           argparse._CountAction, argparse._VersionAction)
 BAD_PATHS = ("missing_parent", "missing_file", "directory", "empty_file", "bad_json")
 BAD_NUMS = ("-1", "x")
+#: AUDIT-A A-3: given to every argument, whatever its type.
+WIDER = ("bad_utf8", "json_list", "json_str", "json_null", "json_obj_wrong", "huge", "nan", "neg_zero_float", "empty",
+         "longpath", "file_as_dir", "unicode", "dash")
 
 
 def _root_parser():
@@ -59,7 +78,7 @@ def _leaves(parser, prefix=()):
             yield from _leaves(p, prefix + (name,))
 
 
-def _cases():
+def _cases(group="builder"):
     out = []
     for prefix, p in _leaves(_root_parser()):
         if any(prefix[:len(s)] == s for s in SKIP):
@@ -69,7 +88,7 @@ def _cases():
         for target in acts:
             if target.choices:
                 continue
-            for bad in (BAD_NUMS if target.type in (int, float) else BAD_PATHS):
+            for bad in ((BAD_NUMS if target.type in (int, float) else BAD_PATHS) if group == "builder" else (group,)):
                 out.append((prefix, base, target, bad))
     return out
 
@@ -77,7 +96,12 @@ def _cases():
 def _value(bad, d):
     paths = {"missing_parent": os.path.join(d, "no", "such", "dir", "f.json"), "missing_file": os.path.join(d, "nope.json"),
              "directory": os.path.join(d, "adir"), "empty_file": os.path.join(d, "empty.txt"),
-             "bad_json": os.path.join(d, "bad.json")}
+             "bad_json": os.path.join(d, "bad.json"), "bad_utf8": os.path.join(d, "bad_utf8.json"),
+             "json_list": os.path.join(d, "list.json"), "json_str": os.path.join(d, "str.json"),
+             "json_null": os.path.join(d, "null.json"), "json_obj_wrong": os.path.join(d, "obj.json"),
+             "huge": "9" * 40, "nan": "nan", "neg_zero_float": "-0.0", "empty": "",
+             "longpath": os.path.join(d, "x" * 5000), "file_as_dir": os.path.join(d, "empty.txt", "child.json"),
+             "unicode": "\u00e9\u4e2d\U0001F600", "dash": "-"}
     return paths.get(bad, bad)
 
 
@@ -102,17 +126,22 @@ def _run(argv):
     return rc, err.getvalue(), None
 
 
-def test_no_command_lets_an_exception_escape_on_bad_input(tmp_path, monkeypatch):
+@pytest.mark.parametrize("group", ("builder",) + WIDER)
+def test_no_command_lets_an_exception_escape_on_bad_input(group, tmp_path, monkeypatch):
     monkeypatch.delenv("INSPEXIMUS_TRACEBACK", raising=False)
     monkeypatch.setattr("sys.stdin", io.StringIO(""))
-    cases = _cases()
-    assert len(cases) > 1000, "CONTROL: the walk found the subcommands (%d cases)" % len(cases)
+    cases = _cases(group)
+    assert len(cases) > (1000 if group == "builder" else 250), "CONTROL: the walk found the subcommands (%d cases)" % len(cases)
     escaped = []
     for i, (prefix, base, target, bad) in enumerate(cases):
         d = tmp_path / str(i)
         (d / "adir").mkdir(parents=True)
         (d / "empty.txt").write_bytes(b"")
         (d / "bad.json").write_bytes(b"{not json")
+        (d / "bad_utf8.json").write_bytes(b"\xff\xfe\x00{\x80")
+        for name, body in (("list.json", b"[]"), ("str.json", b'"x"'), ("null.json", b"null"),
+                           ("obj.json", b'{"a": 1, "entries": 5, "heads": "x"}')):
+            (d / name).write_bytes(body)
         monkeypatch.chdir(d)
         monkeypatch.setenv("INSPEXIMUS_PATH", str(d / "store.json"))
         argv = list(prefix)
@@ -169,3 +198,47 @@ def test_the_input_errors_are_still_the_exceptions_callers_caught_before():
     assert issubclass(UsageError, ValueError)
     assert issubclass(UnknownName, KeyError) and issubclass(UnknownName, UsageError)
     assert str(UnknownName("no partition named 'x'")) == "no partition named 'x'"
+
+
+def test_the_walk_skips_exactly_the_nine_named_commands():
+    """The CHANGELOG names these 9. A command added to SKIP without a reason, or a skipped name that no longer
+    exists, fails here."""
+    assert len(SKIP) == 9 and all(isinstance(v, str) and v for v in SKIP.values())
+    leaves = {prefix for prefix, _p in _leaves(_root_parser())}
+    assert all(any(leaf[:len(k)] == k for leaf in leaves) for k in SKIP), "a skipped command does not exist"
+
+
+@pytest.mark.parametrize("body", [b"{not json", b"\xff\xfe\x00{\x80"])
+def test_a_corrupt_store_keeps_its_traceback(body, tmp_path, monkeypatch):
+    """CONTROL for A-3: the caller's files are mistakes, the store's own file is a fault. A store that is not JSON
+    or not UTF-8 still raises, so it is reported rather than read as a typo."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("INSPEXIMUS_TRACEBACK", raising=False)
+    store = tmp_path / "store.json"
+    store.write_bytes(body)
+    monkeypatch.setenv("INSPEXIMUS_PATH", str(store))
+    rc, err, exc = _run(["stats"])
+    assert exc is not None and not isinstance(exc, UsageError), (rc, err, exc)
+
+
+def test_a_file_of_the_wrong_shape_is_one_line(tmp_path, monkeypatch):
+    """A-3: valid JSON of the wrong shape names both shapes, in one line, instead of an AttributeError."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("INSPEXIMUS_TRACEBACK", raising=False)
+    (tmp_path / "list.json").write_bytes(b"[]")
+    for argv in (["erasure-verify", "list.json"], ["residue-verify", "list.json"]):
+        rc, err, exc = _run(argv)
+        assert exc is None and rc == 2, (argv, rc, exc)
+        assert "holds JSON an array, and this command reads an object" in err and err.count("\n") == 1, err
+
+
+def test_a_trail_line_that_is_not_a_record_fails_the_verification(tmp_path, monkeypatch):
+    """A-3: `actions export-trail --verify` is a verifier, so JSON that is not a record is a FAIL (exit 1) with the
+    line named, and a file that is not UTF-8 is a FAIL too, never a traceback."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("INSPEXIMUS_PATH", str(tmp_path / "store.json"))
+    for name, body, want in (("list.jsonl", b"[]\n", "line 1: not a JSON object"),
+                             ("bad.jsonl", b"\xff\xfe\x00{\x80", "not UTF-8 text")):
+        (tmp_path / name).write_bytes(body)
+        rc, err, exc = _run(["actions", "export-trail", "--verify", name])
+        assert exc is None and rc == 1, (name, rc, exc)

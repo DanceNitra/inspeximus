@@ -10287,7 +10287,8 @@ class Inspeximus:
         if scope not in ("all", "profiling"):
             raise ValueError("scope must be all or profiling")
         if not actor or not subject:
-            raise ValueError("an objection needs the subject and the actor who recorded it")
+            from .errors import UsageError
+            raise UsageError("an objection needs the subject and the actor who recorded it")
         cand, ids, collisions = self._resolve_subject(subject, allow_ambiguous=allow_ambiguous, destructive=True)
         if collisions and not allow_ambiguous:
             raise self._ambiguous_error(subject, collisions, "object_processing")
@@ -10319,7 +10320,8 @@ class Inspeximus:
         if outcome not in ("upheld", "overridden"):
             raise ValueError("outcome must be upheld or overridden")
         if not actor:
-            raise ValueError("resolving an objection needs an actor")
+            from .errors import UsageError
+            raise UsageError("resolving an objection needs an actor")
         row = None
         for o in self._objections:
             if o.get("status") == "standing" and o.get("subject") == subject \
@@ -12522,7 +12524,8 @@ class Inspeximus:
             raise ValueError(f"agent id must be a string, got {type(agent).__name__}")
         a = agent.strip()
         if not a:
-            raise ValueError("agent id must not be empty")
+            from .errors import UsageError
+            raise UsageError("agent id must not be empty")
         if "::" in a or a == "*":
             raise ValueError(f"agent id must not contain '::' or be '*' (reserved in the grant keyspace): {agent!r}")
         return a
@@ -14295,10 +14298,12 @@ class Inspeximus:
         """
         k = str(key or "").strip()
         if not k:
-            raise ValueError("retire() needs a key")
+            from .errors import UsageError
+            raise UsageError("retire() needs a key")
         why = str(reason or "").strip()
         if not why:
-            raise ValueError("retire() needs a reason: an ended key with no reason is the ambiguity "
+            from .errors import UsageError
+            raise UsageError("retire() needs a reason: an ended key with no reason is the ambiguity "
                              "this call exists to remove")
         if k.startswith(_ACL_PREFIX):
             raise ValueError("access-control keys are ended with revoke(), not retire()")

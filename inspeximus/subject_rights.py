@@ -230,7 +230,8 @@ def rectify(store, key: str, text: str, actor: str, reason: str, ledger=None, su
 
     Returns {previous_id, new_id, key, receipt} and the ledger entry when one was written."""
     if not actor or not reason:
-        raise ValueError("a rectification needs an actor (who asked or approved) and a reason")
+        from .errors import UsageError
+        raise UsageError("a rectification needs an actor (who asked or approved) and a reason")
     _ledger_can_take_the_entry(ledger)
     prev = None
     for r in store.items:

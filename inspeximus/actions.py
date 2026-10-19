@@ -1705,10 +1705,13 @@ class ActionLedger:
             raise UsageError("a qms record carries the procedure's version")
         if not owner or not str(owner).strip():
             raise UsageError("a qms record names the procedure's owner")
+        import datetime as _dt
         try:
             due = float(review_due_ts)
-        except (TypeError, ValueError):
-            raise UsageError("review_due_ts is the epoch time the next review is due")
+            _dt.datetime.fromtimestamp(due, _dt.timezone.utc)   # nan, inf and out-of-range years fail here (A-3)
+        except (TypeError, ValueError, OverflowError, OSError):
+            raise UsageError("review_due_ts is the epoch time the next review is due, a finite number of a real "
+                             "date, not %r" % (review_due_ts,)) from None
         if aspect is not None and aspect not in QMS_ASPECTS:
             raise UsageError(f"aspect must be one of the Art. 17(1) letters {sorted(QMS_ASPECTS)}")
         if sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", str(sha256)):

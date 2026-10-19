@@ -1752,8 +1752,8 @@
  {
   "file": "inspeximus/cli.py",
   "name": "a BOM on a transcript file reads as an edit or a traceback",
-  "old": "                with open(pth, encoding=\"utf-8-sig\") as fh:       # a BOM is not a transcript edit\n",
-  "new": "                with open(pth, encoding=\"utf-8\") as fh:\n",
+  "old": "                return _load_arg_json(pth, shape=None, encoding=\"utf-8-sig\")   # a BOM is not a transcript edit\n",
+  "new": "                return _load_arg_json(pth, shape=None, encoding=\"utf-8\")\n",
   "tests": [
    "tests/test_a_trimmed_certificate_is_not_a_certificate.py"
   ]
@@ -14886,6 +14886,61 @@
   "new": "        return 1",
   "tests": [
    "tests/test_3210_a2_a_witness_exit_2_still_means_refused.py"
+  ]
+ },
+ {
+  "name": "3.21 A-3: a caller's file that is not UTF-8 ends in a traceback",
+  "file": "inspeximus/cli.py",
+  "old": "    except UnicodeDecodeError as e:\n        raise UsageError(\"%s is not %s text (byte %d: %s)\" % (path, encoding, e.start, e.reason)) from None",
+  "new": "    except KeyError as e:\n        raise UsageError(\"%s is not %s text (byte %d: %s)\" % (path, encoding, e.start, e.reason)) from None",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_no_command_lets_an_exception_escape_on_bad_input[bad_utf8]"
+  ]
+ },
+ {
+  "name": "3.21 A-3: JSON of the wrong shape reaches the command",
+  "file": "inspeximus/cli.py",
+  "old": "    if shape is not None and not isinstance(v, shape):",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_a_file_of_the_wrong_shape_is_one_line"
+  ]
+ },
+ {
+  "name": "3.21 A-3: a trail line that is JSON but not a record crashes the verifier",
+  "file": "inspeximus/agent_audit_trail.py",
+  "old": "        if not isinstance(r, dict):                     # JSON, but not a record (3.21, AUDIT-A A-3)",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_a_trail_line_that_is_not_a_record_fails_the_verification"
+  ]
+ },
+ {
+  "name": "3.21 A-3: a qms review date of nan or a huge number is accepted",
+  "file": "inspeximus/actions.py",
+  "old": "            _dt.datetime.fromtimestamp(due, _dt.timezone.utc)   # nan, inf and out-of-range years fail here (A-3)",
+  "new": "            pass",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_no_command_lets_an_exception_escape_on_bad_input[nan]",
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_no_command_lets_an_exception_escape_on_bad_input[huge]"
+  ]
+ },
+ {
+  "name": "3.21 A-3: retire with an empty key raises a plain ValueError",
+  "file": "inspeximus/core.py",
+  "old": "            raise UsageError(\"retire() needs a key\")",
+  "new": "            raise ValueError(\"retire() needs a key\")",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_no_command_lets_an_exception_escape_on_bad_input[empty]"
+  ]
+ },
+ {
+  "name": "3.21 A-3: a mem0 export of the wrong shape raises a plain ValueError",
+  "file": "inspeximus/migrate.py",
+  "old": "        raise UsageError(\"expected a mem0 get_all() dict, a list of memory items, or JSON lines\")",
+  "new": "        raise ValueError(\"expected a mem0 get_all() dict, a list of memory items, or JSON lines\")",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_no_command_lets_an_exception_escape_on_bad_input[json_str]"
   ]
  }
 ]

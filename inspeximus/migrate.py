@@ -141,8 +141,12 @@ def _hk(store, identity: str) -> str:
 
 def load_export(path: str) -> list[dict]:
     """A mem0 `get_all()` dict, a bare list of items, or one item per line."""
-    with open(path, encoding="utf-8-sig") as fh:
-        raw = fh.read()
+    from .errors import UsageError
+    try:
+        with open(path, encoding="utf-8-sig") as fh:
+            raw = fh.read()
+    except UnicodeDecodeError as e:                       # the caller's file, not ours (3.21, AUDIT-A A-3)
+        raise UsageError("%s is not UTF-8 text (byte %d: %s)" % (path, e.start, e.reason)) from None
     try:
         data = json.loads(raw)
     except ValueError:
@@ -150,7 +154,7 @@ def load_export(path: str) -> list[dict]:
     if isinstance(data, dict):
         data = data.get("results", data.get("memories", []))
     if not isinstance(data, list):
-        raise ValueError("expected a mem0 get_all() dict, a list of memory items, or JSON lines")
+        raise UsageError("expected a mem0 get_all() dict, a list of memory items, or JSON lines")
     return data
 
 
