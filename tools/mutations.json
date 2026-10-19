@@ -15423,5 +15423,14 @@
   "tests": [
    "tests/test_3220_context_saver.py::test_the_command_exits_2_on_an_input_mistake"
   ]
+ },
+ {
+  "name": "3.22 extras lint: an import inside a function makes a first-party carrier again",
+  "file": "tests/test_a_test_that_needs_an_extra_must_guard_it.py",
+  "old": "        hit = sorted({m.split(\".\")[0] for m in _imports_run_on_import(text)} & guard)",
+  "new": "        hit = sorted({m.split(\".\")[0] for m in IMPORT.findall(text)} & guard)",
+  "tests": [
+   "tests/test_a_test_that_needs_an_extra_must_guard_it.py::test_an_unguarded_extra_import_would_error_on_collection[test_3220_context_saver.py]"
+  ]
  }
 ]

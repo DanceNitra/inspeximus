@@ -21,6 +21,7 @@ than a lookup table. Where it is incomplete the check UNDER-reports, which is th
 miss a new unguarded import, and it cannot fail a file that is already correct. A false alarm here
 would be worse than a miss, because a guard that cries wolf is a guard somebody switches off.
 """
+import functools
 import io
 import os
 import re
@@ -92,6 +93,7 @@ def test_the_derived_set_is_not_empty():
         "cryptography IS installed by ci.yml, so requiring a guard for it would be a false alarm")
 
 
+@functools.lru_cache(maxsize=None)
 def _first_party_carriers():
     """Our OWN modules that import an unguarded extra at module scope.
 
@@ -111,10 +113,36 @@ def _first_party_carriers():
         if not fn.endswith(".py"):
             continue
         text = io.open(os.path.join(pkg, fn), encoding="utf-8", errors="replace").read()
-        hit = sorted({m.split(".")[0] for m in IMPORT.findall(text)} & guard)
+        hit = sorted({m.split(".")[0] for m in _imports_run_on_import(text)} & guard)
         if hit:
             out["inspeximus." + fn[:-3]] = hit
     return out
+
+
+def _imports_run_on_import(text):
+    """The modules `text` imports when it is itself imported: every import except those inside a function body.
+
+    3.22: a regex over every `import` line counted inspeximus.context_saver as carrying sentence_transformers, whose
+    only import sits inside load_reranker(), which collecting a test never calls, so a test of the saver needed no
+    guard and was flagged anyway. A false alarm is the worse failure here (see the module docstring). Module-level
+    `try:` and `if` blocks still count: mcp_server imports the MCP SDK inside a module-level `try:`."""
+    import ast
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return IMPORT.findall(text)                    # unparsable: the old, stricter reading
+    found = []
+
+    def walk(node, in_function):
+        for child in ast.iter_child_nodes(node):
+            fn = in_function or isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda))
+            if not in_function and isinstance(child, ast.Import):
+                found.extend(a.name for a in child.names)
+            elif not in_function and isinstance(child, ast.ImportFrom) and child.module and not child.level:
+                found.append(child.module)
+            walk(child, fn)
+    walk(tree, False)
+    return found
 
 
 def test_the_carrier_set_names_a_module_we_actually_ship():
