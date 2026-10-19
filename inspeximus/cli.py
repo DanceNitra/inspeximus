@@ -148,7 +148,14 @@ def _read_arg(path, encoding="utf-8") -> str:
 def _load_arg_json(path, shape=dict, encoding="utf-8"):
     """JSON from a file the caller named, of the shape the command reads: `shape` is a type or a tuple of types, or
     None for any. JSON of another shape is a UsageError naming both, not an AttributeError three calls later."""
-    v = json.loads(_read_arg(path, encoding=encoding))
+    try:
+        v = json.loads(_read_arg(path, encoding=encoding))
+    except RecursionError:                                # a file nested thousands deep (3.21, AUDIT-A R-3)
+        raise UsageError("%s nests its JSON deeper than Python can read" % path) from None
+    except ValueError as e:
+        if isinstance(e, json.JSONDecodeError):          # not JSON at all: main() names it
+            raise
+        raise UsageError("%s holds JSON this command cannot read: %s" % (path, e)) from None   # 4,300+ digits
     if shape is not None and not isinstance(v, shape):
         names = {dict: "an object", list: "an array", str: "a string"}
         want = " or ".join(names.get(t, t.__name__) for t in (shape if isinstance(shape, tuple) else (shape,)))

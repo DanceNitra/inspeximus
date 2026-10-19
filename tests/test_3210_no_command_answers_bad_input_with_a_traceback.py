@@ -242,3 +242,18 @@ def test_a_trail_line_that_is_not_a_record_fails_the_verification(tmp_path, monk
         (tmp_path / name).write_bytes(body)
         rc, err, exc = _run(["actions", "export-trail", "--verify", name])
         assert exc is None and rc == 1, (name, rc, exc)
+
+
+@pytest.mark.parametrize("name, body", [("deep.json", b"[" * 200000 + b"]" * 200000),
+                                        ("bigint.json", b"1" * 6000)], ids=["nested-200000-deep", "6000-digits"])
+def test_json_python_cannot_parse_is_one_line(name, body, tmp_path, monkeypatch):
+    """AUDIT-A recheck R-3: a JSON file nested 200,000 deep raised RecursionError, and an integer of 6,000 digits
+    raised ValueError (CPython 3.11 and later cap integer parsing at 4,300 digits). Both are the caller's file, so
+    each is one line and exit 2. On a Python without the cap, the integer parses and is the wrong shape instead."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("INSPEXIMUS_TRACEBACK", raising=False)
+    (tmp_path / name).write_bytes(body)
+    for argv in (["erasure-verify", name], ["residue-verify", name], ["audit-verify", name]):
+        rc, err, exc = _run(argv)
+        assert exc is None and rc == 2, (argv, rc, exc)
+        assert err.startswith("inspeximus %s: error: " % argv[0]) and err.count("\n") == 1, err

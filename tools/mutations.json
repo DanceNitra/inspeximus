@@ -14996,5 +14996,41 @@
   "tests": [
    "tests/test_3210_a4_the_user_config_switches_centring.py"
   ]
+ },
+ {
+  "name": "3.21 R-3: a JSON file nested thousands deep ends in a RecursionError traceback",
+  "file": "inspeximus/cli.py",
+  "old": "    except RecursionError:                                # a file nested thousands deep (3.21, AUDIT-A R-3)",
+  "new": "    except ZeroDivisionError:",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_json_python_cannot_parse_is_one_line"
+  ]
+ },
+ {
+  "name": "3.21 R-3: an integer of 6,000 digits ends in a ValueError traceback",
+  "file": "inspeximus/cli.py",
+  "old": "        raise UsageError(\"%s holds JSON this command cannot read: %s\" % (path, e)) from None   # 4,300+ digits",
+  "new": "        raise",
+  "tests": [
+   "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_json_python_cannot_parse_is_one_line"
+  ]
+ },
+ {
+  "name": "3.21 R-1: the stuffing minimum moves from 12 words to 13, and only the verdict pin may notice",
+  "file": "inspeximus/core.py",
+  "old": "    if n < 12:\n        return None",
+  "new": "    if n < 13:\n        return None",
+  "tests": [
+   "tests/test_3210_the_guard_set_is_a_version.py::test_the_guards_verdicts_are_pinned_to_the_version"
+  ]
+ },
+ {
+  "name": "3.21 R-1: a forged clean stamp is trusted, and only the verdict pin may notice",
+  "file": "inspeximus/core.py",
+  "old": "                if _guard_mac_ok(held.get(\"mac\"), key, \"clean\", rid, th, gset):",
+  "new": "                if True:",
+  "tests": [
+   "tests/test_3210_the_guard_set_is_a_version.py::test_the_guards_verdicts_are_pinned_to_the_version"
+  ]
  }
 ]
