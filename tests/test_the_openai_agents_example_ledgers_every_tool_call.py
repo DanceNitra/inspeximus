@@ -34,7 +34,9 @@ LEDGER = "memory.json.actions.json"
 def _sdk():
     """The example's modules. The guard sits here, not at module level, so a base install without the
     SDK shows each skipped test by name (see test_skip_census.py)."""
-    pytest.importorskip("agents", reason=f"needs openai-agents (the example pins {PINNED})")
+    # `agents.testing`, not `agents` (3.21 item 21): openai-agents 0.20.0 has no `agents.testing`, the stub model
+    # every test here runs on, so those tests ERRORED where it was installed instead of skipping.
+    pytest.importorskip("agents.testing", reason=f"needs openai-agents with agents.testing (the example pins {PINNED})")
     pytest.importorskip("cryptography", reason="the store's receipts and the ledger are Ed25519-signed")
     if EXAMPLE not in sys.path:
         sys.path.insert(0, EXAMPLE)
@@ -90,6 +92,17 @@ def _rows(data):
         return [json.loads(doc) for (doc,) in con.execute("SELECT doc FROM records ORDER BY ord")]
     finally:
         con.close()
+
+
+def test_an_sdk_without_agents_testing_skips_instead_of_erroring(monkeypatch):
+    """3.21 item 21: openai-agents 0.20.0 imports, but has no `agents.testing`. The guard asked for `agents` only, so
+    the example's own import of `agents.testing` raised at setup and 19 tests ERRORED on PC1 instead of skipping.
+    Forced here on any environment: `agents.testing` cannot be imported, and the example modules are not cached."""
+    monkeypatch.setitem(sys.modules, "agents.testing", None)
+    for name in ("agent", "ledger_hooks", "verify_ledger"):
+        monkeypatch.delitem(sys.modules, name, raising=False)
+    with pytest.raises(pytest.skip.Exception):
+        _sdk()
 
 
 def _write_canonical(path, entries):

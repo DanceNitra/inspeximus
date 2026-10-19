@@ -14671,5 +14671,14 @@
   "tests": [
    "tests/test_3200_n14b_the_connection_caps_are_settable.py"
   ]
+ },
+ {
+  "name": "3.21 item 21: the openai-agents guard asks for agents only",
+  "file": "tests/test_the_openai_agents_example_ledgers_every_tool_call.py",
+  "old": "    pytest.importorskip(\"agents.testing\", reason=f\"needs openai-agents with agents.testing (the example pins {PINNED})\")",
+  "new": "    pytest.importorskip(\"agents\", reason=f\"needs openai-agents (the example pins {PINNED})\")",
+  "tests": [
+   "tests/test_the_openai_agents_example_ledgers_every_tool_call.py"
+  ]
  }
 ]
