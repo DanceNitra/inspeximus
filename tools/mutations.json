@@ -14942,5 +14942,23 @@
   "tests": [
    "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py::test_no_command_lets_an_exception_escape_on_bad_input[json_str]"
   ]
+ },
+ {
+  "name": "3.21 A-5: keyword stuffing never fires, and only the verdict pin may notice",
+  "file": "inspeximus/core.py",
+  "old": "    if c >= 4 and share >= 0.12:",
+  "new": "    if False:",
+  "tests": [
+   "tests/test_3210_the_guard_set_is_a_version.py::test_the_guards_verdicts_are_pinned_to_the_version"
+  ]
+ },
+ {
+  "name": "3.21 A-5: the concealment shape stops firing, and only the verdict pin may notice",
+  "file": "inspeximus/core.py",
+  "old": "        if all(any(w in low for w in g) for g in groups) and rx.search(t):\n            out.append(name)",
+  "new": "        if all(any(w in low for w in g) for g in groups) and rx.search(t) and name != \"concealment_order\":\n            out.append(name)",
+  "tests": [
+   "tests/test_3210_the_guard_set_is_a_version.py::test_the_guards_verdicts_are_pinned_to_the_version"
+  ]
  }
 ]
