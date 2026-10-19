@@ -14635,5 +14635,41 @@
   "tests": [
    "tests/test_a_held_handle_ranks_with_the_vectors_it_holds.py"
   ]
+ },
+ {
+  "name": "3.21 item 19: the range check accepts any number",
+  "file": "inspeximus/_serve.py",
+  "old": "        if value < low:",
+  "new": "        if False:",
+  "tests": [
+   "tests/test_3200_n14b_the_connection_caps_are_settable.py"
+  ]
+ },
+ {
+  "name": "3.21 item 19: SCRAPI takes --max-connections unchecked",
+  "file": "inspeximus/scrapi.py",
+  "old": "\"--max-connections\", type=_count_at_least(1),",
+  "new": "\"--max-connections\", type=int,",
+  "tests": [
+   "tests/test_3200_n14b_the_connection_caps_are_settable.py"
+  ]
+ },
+ {
+  "name": "3.21 item 19: the witness server takes --max-connections unchecked",
+  "file": "inspeximus/witness_server.py",
+  "old": "\"--max-connections\", type=_count_at_least(1),",
+  "new": "\"--max-connections\", type=int,",
+  "tests": [
+   "tests/test_3200_n14b_the_connection_caps_are_settable.py"
+  ]
+ },
+ {
+  "name": "3.21 item 19: inspeximus witness serve takes --max-connections unchecked",
+  "file": "inspeximus/cli.py",
+  "old": "\"--max-connections\", type=_count_at_least(1),",
+  "new": "\"--max-connections\", type=int,",
+  "tests": [
+   "tests/test_3200_n14b_the_connection_caps_are_settable.py"
+  ]
  }
 ]

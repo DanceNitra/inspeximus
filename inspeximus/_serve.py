@@ -27,6 +27,25 @@ _BUSY = (b"HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain\r\nConte
          b"Connection: close\r\nRetry-After: 1\r\n\r\ntoo many connections")
 
 
+def count_at_least(low):
+    """An argparse `type` for a whole number of at least `low` (3.21, item 19).
+
+    The three command lines passed `--max-connections 0` or `-1` straight to `make_http_server`, which raised
+    ValueError, so the operator saw a Python traceback. argparse turns ArgumentTypeError into a usage line and exit
+    code 2."""
+    def parse(text):
+        import argparse
+        try:
+            value = int(text)
+        except ValueError:
+            raise argparse.ArgumentTypeError("%r is not a whole number" % (text,)) from None
+        if value < low:
+            raise argparse.ArgumentTypeError("must be at least %d, got %d" % (low, value))
+        return value
+    parse.__name__ = "count"
+    return parse
+
+
 def make_http_server(address, handler_class, max_connections=None, read_timeout=None, max_per_address=None):
     """A ThreadingHTTPServer on `address` for `handler_class`, with a read timeout, a deadline and connection caps.
 

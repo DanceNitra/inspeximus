@@ -39,7 +39,7 @@ your own TLS/reverse-proxy for a real deployment.
 from __future__ import annotations
 import json, argparse, os, sys
 from http.server import BaseHTTPRequestHandler
-from ._serve import make_http_server
+from ._serve import count_at_least as _count_at_least, make_http_server
 from .witness_pool import Unauthenticated, Witness
 
 
@@ -293,9 +293,9 @@ def main(argv=None):
                     help="pin the Ed25519 head key of a store; its heads must then be signed by it (repeatable)")
     ap.add_argument("--require-signed-heads", action="store_true",
                     help="refuse (403) any head not signed by its store's pinned key; off by default in 3.20")
-    ap.add_argument("--max-connections", type=int, default=None, metavar="N",
+    ap.add_argument("--max-connections", type=_count_at_least(1), default=None, metavar="N",
                     help="at most N requests handled at once (default 64); a connection beyond it is answered 503")
-    ap.add_argument("--max-per-address", type=int, default=None, metavar="N",
+    ap.add_argument("--max-per-address", type=_count_at_least(0), default=None, metavar="N",
                     help="at most N requests at once from one client address (default 16); 0 turns this cap off, which a server "
                          "behind a reverse proxy needs, because every request then has the proxy's address. "
                          "X-Forwarded-For is not read: a client can write it")

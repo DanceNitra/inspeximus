@@ -126,3 +126,23 @@ def test_the_command_lines_take_both_caps(cmd):
     r = subprocess.run([sys.executable] + cmd + ["--help"], capture_output=True, text=True, encoding="utf-8",
                        errors="replace", timeout=60, cwd=ROOT)
     assert "--max-connections" in r.stdout and "--max-per-address" in r.stdout, r.stdout[-600:]
+
+
+@pytest.mark.parametrize("cmd", [["-m", "inspeximus.scrapi"], ["-m", "inspeximus.witness_server"],
+                                 ["-m", "inspeximus.cli", "witness", "serve"]],
+                         ids=["scrapi", "witness_server", "inspeximus witness serve"])
+@pytest.mark.parametrize("flag", [["--max-connections", "0"], ["--max-connections", "-1"], ["--max-per-address", "-1"],
+                                  ["--max-connections", "x"]], ids=["total 0", "total -1", "per address -1", "not a number"])
+def test_a_cap_out_of_range_is_a_usage_error_not_a_traceback(cmd, flag, tmp_path):
+    """3.21 item 19: the flags went straight to make_http_server, whose ValueError ended in a traceback.
+
+    Every other argument is valid, so on 3.20.0 each case reached make_http_server: SCRAPI needs its log and an issuer
+    rule, and without them it stopped at argparse for another reason, which would pass this test without testing it."""
+    rest = ["--port", "0"]
+    if cmd[-1] == "inspeximus.scrapi":
+        rest += ["--log", str(tmp_path / "log.jsonl"), "--accept-any-issuer"]
+    r = subprocess.run([sys.executable] + cmd + rest + flag, capture_output=True, text=True, encoding="utf-8",
+                       errors="replace", timeout=60, cwd=ROOT)
+    assert "Traceback" not in r.stderr, r.stderr[-800:]
+    assert r.returncode == 2, (r.returncode, r.stderr[-800:])
+    assert "usage:" in r.stderr and flag[0] in r.stderr, r.stderr[-800:]

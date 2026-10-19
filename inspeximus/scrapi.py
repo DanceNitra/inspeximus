@@ -41,7 +41,7 @@ import sys
 from http.server import BaseHTTPRequestHandler
 
 from . import cose, scitt
-from ._serve import make_http_server
+from ._serve import count_at_least as _count_at_least, make_http_server
 from .transparency import RegistrationPolicy, RegistrationRefused, TransparencyService
 
 __all__ = ["make_server", "main", "CBOR", "COSE", "PROBLEM"]
@@ -339,9 +339,9 @@ def main(argv=None) -> int:
                     help="bind an issuer name to its Ed25519 public key (hex); repeatable (3.20). A "
                          "statement that claims NAME is verified against that key only, and no other key "
                          "may claim NAME")
-    ap.add_argument("--max-connections", type=int, default=None, metavar="N",
+    ap.add_argument("--max-connections", type=_count_at_least(1), default=None, metavar="N",
                     help="at most N requests handled at once (default 64); a connection beyond it is answered 503")
-    ap.add_argument("--max-per-address", type=int, default=None, metavar="N",
+    ap.add_argument("--max-per-address", type=_count_at_least(0), default=None, metavar="N",
                     help="at most N requests at once from one client address (default 16); 0 turns this cap off, which a server "
                          "behind a reverse proxy needs, because every request then has the proxy's address. "
                          "X-Forwarded-For is not read: a client can write it")

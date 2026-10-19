@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 
 from . import install as _install
+from ._serve import count_at_least as _count_at_least
 import json
 import os
 from pathlib import Path as _Path
@@ -1012,9 +1013,9 @@ def main(argv=None):
     wsr.add_argument("--pin", action="append", default=[], metavar="STORE=PUBKEY",
                      help="pin a store's Ed25519 head key; that store's heads must then be signed by it, and "
                           "an unsigned or wrongly signed head gets 403 and changes nothing (repeatable)")
-    wsr.add_argument("--max-connections", type=int, default=None, metavar="N",
+    wsr.add_argument("--max-connections", type=_count_at_least(1), default=None, metavar="N",
                      help="at most N requests handled at once (default 64); a connection beyond it is answered 503")
-    wsr.add_argument("--max-per-address", type=int, default=None, metavar="N",
+    wsr.add_argument("--max-per-address", type=_count_at_least(0), default=None, metavar="N",
                      help="at most N requests at once from one client address (default 16); 0 turns this cap off, which a server "
                           "behind a reverse proxy needs, because every request then has the proxy's address. "
                           "X-Forwarded-For is not read: a client can write it")
