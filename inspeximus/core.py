@@ -341,6 +341,59 @@ def _reject_frame_markup(text):
     return None
 
 
+_RESTORE_INTENT = r"^restore:(.+?)=([^@#]*)(?:@([0-9a-f]*))?#([0-9a-f]+)$"
+_HEX = frozenset("0123456789abcdef")
+
+
+class _IntentGroups:
+    __slots__ = ("_g",)
+
+    def __init__(self, groups):
+        self._g = (None,) + groups
+
+    def group(self, i):
+        return self._g[i]
+
+
+def _restore_intent(intent):
+    """`re.match(_RESTORE_INTENT, intent)`, in linear time and with the same groups (3.21.1).
+
+    The regex's lazy key followed by `[^@#]*` was quadratic: about 54 ms at 3 KB and 5 s at 30 KB. The same parse,
+    read from the end: the nonce is the hex after the last `#` (before an optional final newline); the part between
+    the key's `=` and that `#` holds no `#` and at most one `@`, which must be followed by hex only; and the key is
+    the shortest one, so its `=` is the first one after every `#` and every `@` that part cannot hold, with no
+    newline in the key. Returns an object with `.group(1..4)` as the regex's match had, or None."""
+    if not isinstance(intent, str):
+        return re.match(_RESTORE_INTENT, intent)            # the same TypeError for a non-text intent
+    s = intent
+    if not s.startswith("restore:"):
+        return None
+    b = len("restore:")
+    end = len(s) - 1 if s.endswith("\n") else len(s)
+    k = s.rfind("#", b, end)
+    if k < 0 or k + 1 >= end or any(c not in _HEX for c in s[k + 1:end]):
+        return None
+    floor = s.rfind("#", b, k)                          # the value part holds no '#'
+    at = s.rfind("@", b, k)
+    if at >= 0:
+        if all(c in _HEX for c in s[at + 1:k]):
+            floor = max(floor, s.rfind("@", b, at))     # one '@' with hex after it is allowed, not two
+        else:
+            floor = max(floor, at)
+    newline = s.find("\n", b, k)
+    stop = k if newline < 0 else min(k, newline)          # the key holds no newline
+    e = s.find("=", max(b + 1, floor), stop)
+    if e < 0:
+        return None
+    value = s[e + 1:k]
+    if "@" in value:
+        cut = value.index("@")
+        target, tid = value[:cut], value[cut + 1:]
+    else:
+        target, tid = value, None
+    return _IntentGroups((s[b:e], target, tid, s[k + 1:end]))
+
+
 def _serving_class(rec: dict) -> str:
     """`withheld` or `served`: will this record ever reach a reader?
 
@@ -14704,7 +14757,7 @@ class Inspeximus:
         if not self._intent_authorized(intent, capability):
             return {"ok": False, "reason": "authorization_required", "intent": intent}
         m_rel = re.match(r"^revert:(.+)@([0-9a-f]*)#([0-9a-f]+)$", intent)
-        m_abs = re.match(r"^restore:(.+?)=([^@#]*)(?:@([0-9a-f]*))?#([0-9a-f]+)$", intent)
+        m_abs = _restore_intent(intent)
         if not m_rel and not m_abs:
             return {"ok": False, "reason": "malformed_intent", "intent": intent}
         nonce = m_rel.group(3) if m_rel else m_abs.group(4)
