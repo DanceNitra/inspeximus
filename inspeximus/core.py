@@ -15570,6 +15570,61 @@ class Inspeximus:
         self._vec_matrix()
         return getattr(self, "_vec_pack", None) or (None, {}, None)
 
+    def _center_pack(self):
+        """The corpus mean for the pure-Python path, one build per vector set (3.21, 1b), or None without vectors.
+
+        `center_embeddings` is documented and on by default, and only the numpy path honoured it: without numpy, recall
+        scored raw cosines. Measured by AUDIT-B on the crew-store copy (audit_b_321_baseline.md section 6): centred, the
+        pure path's hybrid MRR goes from 0.533 to 0.617, and its top 10 equals numpy's on 8 of 8 queries. The mean is
+        over the same records `_vec_matrix` averages, and the build is kept under the same rule as the matrix (item 1):
+        the record count, `_vec_gen` and the vector objects themselves. `per` holds, per record, (its vector, v.m,
+        |v - m|), filled on first use, so a recall still costs one dot product per vector."""
+        p = getattr(self, "_cpack", None)
+        n = len(self.items)
+        gen = getattr(self, "_vec_gen", 0)
+        if p is not None and p["n"] == n and p["gen"] == gen:
+            now = [v for v in (dict.get(r, "vec") for r in self.items) if v]
+            if len(now) == len(p["refs"]) and all(a is b for a, b in zip(now, p["refs"])):
+                return p if p["mean"] is not None else None
+        rows = [v for v in (r.get("vec") for r in self.items) if v]
+        mean = None
+        if rows and all(len(v) == len(rows[0]) for v in rows):
+            k = float(len(rows))
+            mean = [s / k for s in map(sum, zip(*rows))]
+        p = {"n": n, "gen": gen, "refs": tuple(rows), "mean": mean,
+             "mm": _dot(mean, mean) if mean is not None else 0.0, "per": {}}
+        with _ix_lock_of(self):
+            self._cpack = p
+        return p if mean is not None else None
+
+    def _pure_scorer(self, qvec):
+        """`score(record)`: the cosine recall ranks by on the pure-Python path (3.21, 1b). Centred on the corpus mean when
+        `center_embeddings` is on, as the numpy path is: cos(v - m, q - m) = (v.q - v.m - q.m + m.m) / (|v - m| |q - m|),
+        with v.m and |v - m| kept per vector, so a recall pays one dot product per vector, as before. Off, or with no
+        mean, it is `_rec_cos`, byte for byte. `why_recalled` explains with the same function."""
+        qn = _norm(qvec)
+        pack = self._center_pack() if self.center_embeddings else None
+        if pack is None or len(qvec) != len(pack["mean"]):
+            return lambda r: self._rec_cos(qvec, r, qn)
+        mean, mm, per = pack["mean"], pack["mm"], pack["per"]
+        qm = _dot(qvec, mean)
+        qc = _norm([a - b for a, b in zip(qvec, mean)])
+        lock = _ix_lock_of(self)
+
+        def score(r) -> float:
+            v = r["vec"]
+            rid = r.get("id")
+            e = per.get(rid)
+            if e is None or e[0] is not v:
+                # |v - m| from |v|^2 - 2 v.m + m.m: two passes over the vector, not three. A pass is the cost here: on
+                # the crew-store copy a full |v - m| pass added about 1.5 s to the first recall.
+                vm = _dot(v, mean)
+                e = (v, vm, math.sqrt(max(_dot(v, v) - 2.0 * vm + mm, 0.0)) or 1.0)
+                with lock:
+                    per[rid] = e
+            return (_dot(v, qvec) - e[1] - qm + mm) / (e[2] * qc)
+        return score
+
     def _rec_tokens(self, rec: dict) -> set:
         """Token set for a memory, cached by id — recall over N memories shouldn't re-tokenize."""
         rid = dict.get(rec, "id") or id(rec)
@@ -16269,11 +16324,15 @@ class Inspeximus:
             if _shared is not None:
                 _shared["by_id"] = _by_id
         _stale_memo = _shared["stale"] if _shared is not None else None
-        _qn = _norm(qvec) if qvec is not None else None
+        _pscore = []                                       # the pure-path scorer, built on first use (3.21, 1b)
         def _semsim(r) -> float:
             if sims_vec is not None and r.get("vec") and r["id"] in _rowof:
                 return max(0.0, float(sims_vec[_rowof[r["id"]]]))
-            return max(0.0, self._rec_cos(qvec, r, _qn)) if (qvec is not None and r.get("vec")) else 0.0
+            if qvec is None or not r.get("vec"):
+                return 0.0
+            if not _pscore:
+                _pscore.append(self._pure_scorer(qvec))
+            return max(0.0, _pscore[0](r))
         def _lexsim(r) -> float:
             t = self._rec_tokens(r)
             return (len(qtok & t) / min(len(qtok), len(t))) if (qtok and t) else 0.0
@@ -18357,7 +18416,9 @@ class Inspeximus:
         scope would be shown, and quoted, records its own recall never returns."""
         now = time.time()
         qvec = self._qvec(query) if self.embed else None
-        _qn = _norm(qvec) if qvec is not None else None
+        # THE SCORE THAT RANKED IT (3.21, 1b): the pure path's scorer, centred as recall's is. This reported a raw cosine
+        # while recall ranked by a centred one, so it explained a ranking with a number recall did not use.
+        _wscore = self._pure_scorer(qvec) if qvec is not None else None
         qtok = _tokens(query)
         # reinforce=False, passed EXPLICITLY. The reason written here was wrong: it said
         # "recall() defaults reinforce=True", and the signature two thousand lines up says
@@ -18383,7 +18444,7 @@ class Inspeximus:
 
         def _brk(rec):
             r = _full.get(rec["id"], rec)                 # resolve the full record so the vec is present
-            sem = max(0.0, self._rec_cos(qvec, r, _qn)) if (qvec is not None and r.get("vec")) else 0.0
+            sem = max(0.0, _wscore(r)) if (qvec is not None and r.get("vec")) else 0.0
             t = self._rec_tokens(r)
             lex = (len(qtok & t) / min(len(qtok), len(t))) if (qtok and t) else 0.0
             return {"id": r["id"], "text": (r.get("text") or "")[:80],

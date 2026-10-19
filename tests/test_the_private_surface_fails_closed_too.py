@@ -43,7 +43,7 @@ CORE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 # bytes on disk, or its own embedding matrix. Every entry is a decision, not an oversight.
 _STORE_WIDE_PRIVATE = {
     "__init__", "_save", "_load_from_disk", "_atomic_write",
-    "_vec_matrix", "_null_context",
+    "_vec_matrix", "_center_pack", "_null_context",
     # THE FILE-LEVEL HALF OF THE ROW STORE, declared here for the same reason `_save` and
     # `_load_from_disk` are. `_merge_with_disk` reconciles this handle with what another PROCESS
     # wrote: scoped to one tenant it would drop every other tenant's rows, which is the exact bug

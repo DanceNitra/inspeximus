@@ -329,20 +329,26 @@ def test_a_semantic_recall_scores_with_one_build_of_the_vector_matrix(tmp_path, 
     h = Inspeximus(str(tmp_path / "v.db"), embed=emb)       # one handle: vectors are not stored by default
     ids = {w: h.remember("the %s record" % w) for w in words}
     assert h.recall("delta", k=1, mode="semantic")[0]["id"] == ids["delta"], "CONTROL: delta ranks first"
-    real_q, real_norm, armed, fired = Inspeximus._qvec, core._norm, [], []
+    real_q, real_time, armed, fired = Inspeximus._qvec, core.time, [], []
 
     def qvec(self, *a, **k):
         armed.append(1)
         return real_q(self, *a, **k)
 
-    def norm(v):
-        if armed and not fired:
-            fired.append(1)
-            h.forget(ids["alpha"])                           # the first row goes; every later row moves up one
-            h._vec_matrix()
-        return real_norm(v)
+    class _Time:
+        """`time` for core: its first `time()` after the query vector is recall's, between the scores and the lookups.
+        (3.21, 1b: this hooked `_norm`, which recall no longer calls there; the pure path computes it on first use.)"""
+        def __getattr__(self, name):
+            return getattr(real_time, name)
+
+        def time(self):
+            if armed and not fired:
+                fired.append(1)
+                h.forget(ids["alpha"])                       # the first row goes; every later row moves up one
+                h._vec_matrix()
+            return real_time.time()
     monkeypatch.setattr(Inspeximus, "_qvec", qvec)
-    monkeypatch.setattr(core, "_norm", norm)
+    monkeypatch.setattr(core, "time", _Time())
     top = h.recall("delta", k=1, mode="semantic")
     monkeypatch.undo()
     assert fired, "CONTROL: the matrix was rebuilt during the recall"

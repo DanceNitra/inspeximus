@@ -14833,5 +14833,32 @@
   "tests": [
    "tests/test_3210_no_command_answers_bad_input_with_a_traceback.py"
   ]
+ },
+ {
+  "name": "3.21 1b: the pure path does not centre",
+  "file": "inspeximus/core.py",
+  "old": "        pack = self._center_pack() if self.center_embeddings else None",
+  "new": "        pack = None",
+  "tests": [
+   "tests/test_3210_recall_without_numpy_centres_as_documented.py"
+  ]
+ },
+ {
+  "name": "3.21 1b: the pure path keeps a stale mean",
+  "file": "inspeximus/core.py",
+  "old": "            if len(now) == len(p[\"refs\"]) and all(a is b for a, b in zip(now, p[\"refs\"])):",
+  "new": "            if True:",
+  "tests": [
+   "tests/test_3210_recall_without_numpy_centres_as_documented.py"
+  ]
+ },
+ {
+  "name": "3.21 1b: why_recalled explains with an uncentred cosine",
+  "file": "inspeximus/core.py",
+  "old": "        _wscore = self._pure_scorer(qvec) if qvec is not None else None",
+  "new": "        _wscore = (lambda r: self._rec_cos(qvec, r, _norm(qvec))) if qvec is not None else None",
+  "tests": [
+   "tests/test_3210_recall_without_numpy_centres_as_documented.py"
+  ]
  }
 ]
