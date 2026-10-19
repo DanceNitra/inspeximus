@@ -14860,5 +14860,14 @@
   "tests": [
    "tests/test_3210_recall_without_numpy_centres_as_documented.py"
   ]
+ },
+ {
+  "name": "3.21 A-1: check_conflict resolves the objection once per candidate row",
+  "file": "inspeximus/core.py",
+  "old": "                v = _served[r[\"id\"]] = bool(self._served_rows([r], withheld=_withheld[0]))",
+  "new": "                v = _served[r[\"id\"]] = bool(self._served_rows([r]))",
+  "tests": [
+   "tests/test_3210_check_conflict_guards_only_the_rows_it_judges.py"
+  ]
  }
 ]

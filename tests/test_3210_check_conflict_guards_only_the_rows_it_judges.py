@@ -119,3 +119,50 @@ def test_one_check_assesses_only_the_rows_it_judges(tmp_path, monkeypatch):
     hits = m.check_conflict("the connection limit is 7", key="db::limit", object="7")
     assert [h["kind"] for h in hits] == ["keyed_value_change"], "CONTROL: the keyed conflict is still found: %r" % hits
     assert len(calls) <= 5, "one check_conflict assessed %d read guards on a 2,001-row store" % len(calls)
+
+
+def _objected_store(n):
+    """AUDIT-A A-1's shape: n rows that all match the new text, every second one from the objected subject."""
+    m = Inspeximus()                                          # in memory: the cost under test is the objection
+    for i in range(n):
+        text = "the deploy window is tuesday number %d" % (i % 5) + (" " + INJ.format(n=i) if i % 50 == 0 else "")
+        m.remember(text, source={"doc": "crm/bob" if i % 2 else "crm/alice"})   # no key: a shared key would supersede
+    m.object_processing("crm/bob", actor="bob", ground="own_situation")
+    return m
+
+
+def test_one_check_resolves_a_standing_objection_once(tmp_path, monkeypatch):
+    """3.21 A-1: the objection set is resolved once per call, not once per candidate row. a09dc529 resolved it for
+    every row (AUDIT-A: 24.6 s for 1,500 rows against 0.04 s in 3.20.0)."""
+    m = _objected_store(60)
+    calls = []
+    real = Inspeximus._withheld_ids
+
+    def counted(self, *a, **k):
+        calls.append(1)
+        return real(self, *a, **k)
+    monkeypatch.setattr(Inspeximus, "_withheld_ids", counted)
+    hits = m.check_conflict("the deploy window is not tuesday", key="k", object="friday", sim_threshold=0.3)
+    assert hits, "CONTROL: the store produces conflicts"
+    assert len(calls) == 1, "one check_conflict resolved the objection %d times" % len(calls)
+
+
+def test_the_1500_row_objection_case_equals_the_3_20_order(monkeypatch):
+    """The cost case itself, against the 3.20 order of operations: the same hits, the objection resolved once, and the
+    objected subject's rows withheld from the result."""
+    m = _objected_store(1500)
+    unserved = m._unserved_ids([r for r in m.items if r.get("status") == "active"])
+    assert len(unserved) >= 750, "CONTROL: the objection withholds Bob's rows (%d)" % len(unserved)
+    want = _reference(m, "the deploy window is not tuesday", key="k", object="friday", sim_threshold=0.3)
+    calls = []
+    real = Inspeximus._withheld_ids
+
+    def counted(self, *a, **k):
+        calls.append(1)
+        return real(self, *a, **k)
+    monkeypatch.setattr(Inspeximus, "_withheld_ids", counted)
+    got = m.check_conflict("the deploy window is not tuesday", key="k", object="friday", sim_threshold=0.3)
+    assert got == want
+    assert len(got) >= 700, "CONTROL: the case produces AUDIT-A's 720 conflicts (%d)" % len(got)
+    assert not ({h["id"] for h in got} & unserved), "a withheld row was returned"
+    assert len(calls) == 1, "the 1,500-row check resolved the objection %d times" % len(calls)

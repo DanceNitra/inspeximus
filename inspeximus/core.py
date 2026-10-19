@@ -10504,7 +10504,8 @@ class Inspeximus:
     def _is_stuffed(rec: dict) -> bool:
         return bool(dict.get(dict.get(rec, "meta") or {}, "stuffed"))
 
-    def _served_rows(self, rows, *, include_quarantined: bool = False, limit: int | None = None) -> list:
+    def _served_rows(self, rows, *, include_quarantined: bool = False, limit: int | None = None,
+                     withheld=None) -> list:
         """The subset of `rows` that recall would serve: a standing Art. 21 objection withholds its
         subject, and the read guard withholds an instruction-shaped record until release_quarantine.
 
@@ -10519,10 +10520,15 @@ class Inspeximus:
 
         `limit` stops at that many served rows, in input order. Assessing a record that carries no
         stamp costs about 135 us, and a hook is a fresh process every time, so a list cut to ten
-        entries must not assess three thousand: measured 404 ms for 3,000 file rows unbounded."""
+        entries must not assess three thousand: measured 404 ms for 3,000 file rows unbounded.
+
+        `withheld` is the objection set, already resolved: a caller that asks about one row at a time resolves it once
+        per call instead of once per row (3.21, AUDIT-A A-1: check_conflict took 24.6 s for 1,500 rows under one
+        standing objection, against 0.04 s in 3.20)."""
         if limit is not None and limit <= 0:
             return []
-        withheld = self._withheld_ids() if self._objections else ()
+        if withheld is None:
+            withheld = self._withheld_ids() if self._objections else ()
         guard = self.read_guards and not include_quarantined
         out = []
         for r in rows:
@@ -19775,12 +19781,14 @@ class Inspeximus:
         # alone, so dropping the rows recall would not serve after the match gives the same hits in the same order.
         # The guard still runs before `incompatible` sees a row's text, so a judge (an LLM) is never handed a withheld
         # record, as in 3.20.
-        _served = {}
+        _served, _withheld = {}, []                          # the objection set, resolved once per call (A-1)
 
         def served(r):
             v = _served.get(r["id"])
             if v is None:
-                v = _served[r["id"]] = bool(self._served_rows([r]))
+                if not _withheld:
+                    _withheld.append(self._withheld_ids() if self._objections else ())
+                v = _served[r["id"]] = bool(self._served_rows([r], withheld=_withheld[0]))
             return v
         hits, seen = [], set()
         if key is not None:                                    # (1) value change on a managed key
