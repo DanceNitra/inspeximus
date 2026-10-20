@@ -1499,24 +1499,98 @@ def _report_write_failure(cwd, err):
 # past what the agent started: processes by name, recursive deletes, discarded git history and work,
 # dropped tables, whole disks. `_PRE_PATTERNS` further down warns before the agent's OWN next action
 # and has a different job; this list only decides what is not handed back as a suggestion.
-_NO_REPLAY = [re.compile(p, re.I) for p in (
-    r"\btaskkill\b[^\n]*?\s/im\b",                                   # kill by image name
-    r"\b(?:stop-process|spps|kill)\b[^\n]*?\s-name\b",
-    r"\bget-process\b[^|\n]*\|\s*stop-process\b",
-    r"\b(?:pkill|killall)\b",
-    r"\bremove-item\b[^\n]*?\s-r(?:ecurse)?\b",
-    r"\b(?:del|erase|rmdir|rd)\b[^\n]*?\s/s\b",
-    r"\bgit\s+reset\b[^\n]*?\s--hard\b",
-    r"\bgit\s+clean\b[^\n]*?\s(?:-\w*f|--force)",
-    r"\bgit\s+push\b[^\n]*?\s(?:--force\b|--force-with-lease\b|-f\b|\+\S)",
-    r"\bgit\s+checkout\b[^\n]*?\s(?:--\s|-f\b|--force\b)",
-    r"\bgit\s+branch\b[^\n]*?\s(?-i:-D)\b",
-    r"\bgit\s+stash\s+(?:drop|clear)\b",
-    r"\bgit\s+worktree\s+(?:remove|prune)\b",
-    r"\bdrop\s+(?:table|database|schema)\b|\btruncate\s+table\b",
-    r"\bmkfs\b|\bdd\b[^\n]*?\bof=/dev/|\bformat(?:\.com)?\s+[a-z]:",
-    r"\b(?:shutdown|restart-computer|stop-computer)\b",
-)]
+class _LineFlag:
+    r"""`KEYWORD[^\n]*?\sFLAG` (or, with `ws=False`, `KEYWORD[^\n]*?FLAG`): a keyword, then on the same line a flag
+    that follows a whitespace character, which may be the line's own newline. In linear time (3.21.1, AUDIT-A F-1).
+
+    The regex tried every keyword and, from each, every position to the line's end: a line repeating the keyword
+    was quadratic (`"git checkout " * 8000` took 7.2 s). Here each line is read once, from its earliest keyword: a
+    later keyword on the same line can only see a part of what the earliest one saw, so it cannot succeed where
+    that one failed. `pattern` is the regex this replaces."""
+
+    def __init__(self, pattern, kw, flag, ws=True):
+        self.pattern, self.flags = pattern, re.I
+        self._kw, self._flag, self._ws = re.compile(kw, re.I), re.compile(flag, re.I), ws
+
+    def search(self, text):
+        n, done = len(text), -1
+        for m in self._kw.finditer(text):
+            ke = m.end()
+            if ke <= done:
+                continue
+            nl = text.find("\n", ke)
+            end = n if nl < 0 else nl
+            if self._ws:
+                last = end + 1 if nl >= 0 else end          # the whitespace before the flag may be the newline
+                for f in range(ke + 1, last + 1):
+                    if text[f - 1].isspace() and self._flag.match(text, f):
+                        return True
+            else:
+                for f in range(ke, end + 1):
+                    if self._flag.match(text, f):
+                        return True
+            done = end
+        return None
+
+
+class _PipeThen:
+    r"""`KEYWORD[^|\n]*\|\s*AFTER`: a keyword, then the first `|` on its line, whitespace, then AFTER. One read per
+    pipe segment, in linear time (3.21.1, AUDIT-A F-1); a later keyword in the same segment reaches the same `|`."""
+
+    def __init__(self, pattern, kw, after):
+        self.pattern, self.flags = pattern, re.I
+        self._kw, self._after = re.compile(kw, re.I), re.compile(after, re.I)
+        self._stop = re.compile(r"[|\n]")
+
+    def search(self, text):
+        done = -1
+        for m in self._kw.finditer(text):
+            if m.end() <= done:
+                continue
+            st = self._stop.search(text, m.end())
+            if st is None:
+                return None
+            if text[st.start()] == "|":
+                j = st.start() + 1
+                while j < len(text) and text[j].isspace():  # the regex's \s*, skipped once here: as a pattern of
+                    j += 1                                  # its own, \s*X is quadratic under search()
+                if self._after.match(text, j):
+                    return True
+            done = st.start()
+        return None
+
+
+class _AnyOf:
+    """An alternation of rules, each answered on its own: true when one of them is."""
+
+    def __init__(self, pattern, parts):
+        self.pattern, self.flags, self._parts = pattern, re.I, parts
+
+    def search(self, text):
+        return True if any(p.search(text) for p in self._parts) else None
+
+
+_NO_REPLAY = [
+    _LineFlag(r"\btaskkill\b[^\n]*?\s/im\b", r"\btaskkill\b", r"/im\b"),               # kill by image name
+    _LineFlag(r"\b(?:stop-process|spps|kill)\b[^\n]*?\s-name\b", r"\b(?:stop-process|spps|kill)\b", r"-name\b"),
+    _PipeThen(r"\bget-process\b[^|\n]*\|\s*stop-process\b", r"\bget-process\b", r"stop-process\b"),
+    re.compile(r"\b(?:pkill|killall)\b", re.I),
+    _LineFlag(r"\bremove-item\b[^\n]*?\s-r(?:ecurse)?\b", r"\bremove-item\b", r"-r(?:ecurse)?\b"),
+    _LineFlag(r"\b(?:del|erase|rmdir|rd)\b[^\n]*?\s/s\b", r"\b(?:del|erase|rmdir|rd)\b", r"/s\b"),
+    _LineFlag(r"\bgit\s+reset\b[^\n]*?\s--hard\b", r"\bgit\s+reset\b", r"--hard\b"),
+    _LineFlag(r"\bgit\s+clean\b[^\n]*?\s(?:-\w*f|--force)", r"\bgit\s+clean\b", r"(?:-\w*f|--force)"),
+    _LineFlag(r"\bgit\s+push\b[^\n]*?\s(?:--force\b|--force-with-lease\b|-f\b|\+\S)", r"\bgit\s+push\b",
+              r"(?:--force\b|--force-with-lease\b|-f\b|\+\S)"),
+    _LineFlag(r"\bgit\s+checkout\b[^\n]*?\s(?:--\s|-f\b|--force\b)", r"\bgit\s+checkout\b", r"(?:--\s|-f\b|--force\b)"),
+    _LineFlag(r"\bgit\s+branch\b[^\n]*?\s(?-i:-D)\b", r"\bgit\s+branch\b", r"(?-i:-D)\b"),
+    re.compile(r"\bgit\s+stash\s+(?:drop|clear)\b", re.I),
+    re.compile(r"\bgit\s+worktree\s+(?:remove|prune)\b", re.I),
+    re.compile(r"\bdrop\s+(?:table|database|schema)\b|\btruncate\s+table\b", re.I),
+    _AnyOf(r"\bmkfs\b|\bdd\b[^\n]*?\bof=/dev/|\bformat(?:\.com)?\s+[a-z]:",
+           [re.compile(r"\bmkfs\b", re.I), _LineFlag(r"\bdd\b[^\n]*?\bof=/dev/", r"\bdd\b", r"\bof=/dev/", ws=False),
+            re.compile(r"\bformat(?:\.com)?\s+[a-z]:", re.I)]),
+    re.compile(r"\b(?:shutdown|restart-computer|stop-computer)\b", re.I),
+]
 
 
 class _RmRecursive:
@@ -2143,8 +2217,8 @@ class _CmdPos:
 
     def _valid(self, s, p, end, nxt, base):
         """Is s[p:end] a prefix token: a keyword, or word characters, `=`, then anything?"""
-        if s[p:end] in self._KW:
-            return True
+        if end - p <= 5 and any(end - p == len(k) and s.startswith(k, p) for k in self._KW):
+            return True                                 # no slice: a slice per separator was quadratic (AUDIT-A F-2)
         q = nxt[p - base]
         return q > p and q < end and s[q] == "="
 
@@ -2214,6 +2288,86 @@ def _api_is_write(subject, start, matched):
 #: (pattern, severity, the question to force). Every entry is a mistake actually made here, not a
 #: hazard someone imagined -- a list of hypotheticals trains the reader to skim past the real ones.
 #: severity "block" stops the call; "warn" arrives in context and does not.
+class _Found:
+    """The two things pre_tool_use reads from a match: where it starts, and its text."""
+    __slots__ = ("_start", "_text")
+
+    def __init__(self, start, text):
+        self._start, self._text = start, text
+
+    def start(self):
+        return self._start
+
+    def group(self, i=0):
+        if i != 0:
+            raise IndexError("only group 0 is kept")
+        return self._text
+
+
+class _ForcePush:
+    r"""`git\s+push\s+.*--force` (case-insensitive), in linear time (3.21.1, AUDIT-A F-1).
+
+    The regex was quadratic on a command repeating `git push `. A match needs `--force` on the line where the
+    whitespace after `push` ends, at or after that point, so each push is checked once against that part of its line,
+    and a later push on a line that already failed is skipped. pre_tool_use reads only whether it matched."""
+    pattern = r"git\s+push\s+.*--force"
+    flags = re.I
+    _PUSH = re.compile(r"git\s+push\s+", re.I)
+    _FORCE = re.compile(r"--force", re.I)
+
+    def search(self, text):
+        n, done = len(text), -1
+        for m in self._PUSH.finditer(text):
+            r = m.end()
+            if r <= done:                       # on a line that already failed: skipped before any scan
+                continue
+            nl = text.find("\n", r)
+            end = n if nl < 0 else nl
+            f = None
+            for f in self._FORCE.finditer(text, r, end):
+                pass
+            if f is not None:
+                return _Found(m.start(), text[m.start():f.end()])
+            done = end
+        return None
+
+
+class _GhComments:
+    r"""`gh\s+(issue|pr)\s+comment\b|gh\s+api[^|]*\bcomments\b` (case-insensitive), with the regex's leftmost
+    match and its text, in linear time (3.21.1, AUDIT-A F-1).
+
+    The `gh api` half was quadratic on a command repeating `gh api ` (56 KB took 5.0 s on every Bash call). Its
+    `[^|]*` stops at the next `|`, so each pipe segment is read once from its earliest `gh api`, and the match runs to
+    the last `comments` in that segment, as the greedy regex's did. The first half is linear as a regex and is kept."""
+    pattern = r"gh\s+(issue|pr)\s+comment\b|gh\s+api[^|]*\bcomments\b"
+    flags = re.I
+    _ISSUE = re.compile(r"gh\s+(issue|pr)\s+comment\b", re.I)
+    _API = re.compile(r"gh\s+api", re.I)
+    _COMMENTS = re.compile(r"\bcomments\b", re.I)
+
+    def _api(self, text):
+        n, done = len(text), -1
+        for m in self._API.finditer(text):
+            if m.end() <= done:                 # in a segment that already failed: skipped before any scan
+                continue
+            bar = text.find("|", m.end())
+            end = n if bar < 0 else bar
+            last = None
+            for last in self._COMMENTS.finditer(text, m.end(), end):
+                pass
+            if last is not None:
+                return _Found(m.start(), text[m.start():last.end()])
+            done = end
+        return None
+
+    def search(self, text):
+        a = self._ISSUE.search(text)
+        b = self._api(text)
+        if a is None or (b is not None and b.start() < a.start()):
+            return b
+        return _Found(a.start(), a.group(0))
+
+
 _PRE_PATTERNS = [
     (r"git\s+add\s+(-f|--force)\b", "warn",
      "a path needing -f is IGNORED ON PURPOSE. An ignore is a decision about where things belong, and "
@@ -2223,7 +2377,7 @@ _PRE_PATTERNS = [
      "deletions. Name the files."),
     (r"git\s+(reset|checkout)\s+--hard", "warn",
      "this discards uncommitted work irreversibly. Look at the tree first."),
-    (r"git\s+push\s+.*--force", "warn",
+    (_ForcePush(), "warn",
      "a force push can make a commit SHA cited in a published artifact unreachable."),
     # OUTREACH. Anything that posts to another person's repository, or edits what was posted. The
     # rule it enforces was given twice on 2026-08-11 and broken twice the same day, which is the whole
@@ -2232,7 +2386,7 @@ _PRE_PATTERNS = [
     # were all the same shape -- a generalisation from a sample nobody sized ("43 comments" when it
     # was 23, "every metric calls recall" when it was 12 of 25, "createVerify appears once" when it
     # was twice) -- and each was found within a minute of someone asking whether I had counted.
-    (r"gh\s+(issue|pr)\s+comment\b|gh\s+api[^|]*\bcomments\b", "block",
+    (_GhComments(), "block",
      "this POSTS TO SOMEONE ELSE'S REPOSITORY, and the owner's rule is that nothing goes outward "
      "before he has seen the draft. Blocked, not because the draft is wrong, but because on 2026-08-11 "
      "three posts went out ungated and the gate then found four real defects in twenty minutes. "
@@ -2283,7 +2437,7 @@ def pre_tool_use(ev):
     approved = _OVERRIDE in subject
     lines, blocks = [], []
     for pat, sev, why in _PRE_PATTERNS:
-        m = re.search(pat, subject, re.I)
+        m = re.search(pat, subject, re.I) if isinstance(pat, str) else pat.search(subject)
         if not m:
             continue
         if sev != "block":
