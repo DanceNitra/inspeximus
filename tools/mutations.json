@@ -15657,5 +15657,41 @@
   "tests": [
    "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_a_credit_is_one_ledger_entry_with_its_inputs_and_the_counts_it_left"
   ]
+ },
+ {
+  "name": "3.22 full suite: the cited probes run on one process again",
+  "file": "tools/full_suite.py",
+  "old": "            list(SERIAL) + [\"-n\", str(n), \"--dist\", \"load\", \"--timeout\", \"300\"] + COMMON]",
+  "new": "            list(SERIAL) + [\"-n\", \"0\", \"--timeout\", \"300\"] + COMMON]",
+  "tests": [
+   "tests/test_full_suite_covers_every_test.py::test_both_steps_name_their_failures_and_skips"
+  ]
+ },
+ {
+  "name": "3.22 full suite: a run that does not add up to the collection is green",
+  "file": "tools/full_suite.py",
+  "old": "    adds_up = ran == total",
+  "new": "    adds_up = True",
+  "tests": [
+   "tests/test_full_suite_covers_every_test.py::test_a_run_that_does_not_add_up_is_red"
+  ]
+ },
+ {
+  "name": "3.22 full suite: the serial retry's result is ignored",
+  "file": "tools/full_suite.py",
+  "old": "                c = dict(c, failures=r[\"failures\"], errors=r[\"errors\"])",
+  "new": "                c = dict(c, failures=0, errors=0)",
+  "tests": [
+   "tests/test_full_suite_covers_every_test.py::test_a_probe_that_fails_alone_too_is_red"
+  ]
+ },
+ {
+  "name": "3.22 full suite: step 1 runs the cited probes too",
+  "file": "tools/full_suite.py",
+  "old": "    ignore = [\"--ignore=\" + p for p in SERIAL]",
+  "new": "    ignore = []",
+  "tests": [
+   "tests/test_full_suite_covers_every_test.py::test_the_two_steps_collect_every_test_exactly_once"
+  ]
  }
 ]
