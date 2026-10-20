@@ -391,9 +391,32 @@ def attack(fn, units):
                     break
             (l0, t0), (l1, t1) = pts[0], pts[-1]
             expo = math.log(max(t1, 1e-7) / max(t0, 1e-7)) / math.log(l1 / l0)
-            if expo > 1.6 and t1 > 0.01:
+            if expo > 1.6 and t1 > 0.01 and (t1 > SLOW_SECONDS or _confirmed(fn, pre, unit, suf, k, pts)):
                 return pre + unit, suf, pts, (pre, unit)
     return None
+
+
+#: The CONFIRMATION a growth verdict needs (3.21.1, CI run 39372338135). The ladder reads its exponent on calls of 1 to
+#: 20 ms, where one scheduler stall decides the verdict: on a loaded CI runner `_secrets._ASSIGN` read 0.001 s at
+#: 7,047 characters and 0.015 s at 28,863, while it is linear to 4 MB (0.026 s at 200 KB, 0.136 s at 1 MB, 0.556 s at 4 MB, the minimum of 3). So a flag
+#: stands only if 4x the input takes more than CONFIRM_RATIO times as long and the larger call is over CONFIRM_FLOOR,
+#: both as the minimum of 3, measured afresh. Linear takes about 4x, quadratic 16x. Noise only adds time, so a single
+#: call under the bar clears the pattern without the repeats.
+CONFIRM_RATIO = 8.0
+CONFIRM_FLOOR = 0.05
+
+
+def _confirmed(fn, pre, unit, suf, k, pts):
+    small, big = pre + unit * k + suf, pre + unit * (4 * k) + suf
+    t_big = _best(fn, big, reps=1)
+    if t_big < CONFIRM_FLOOR or t_big < CONFIRM_RATIO * _best(fn, small):
+        return False
+    if t_big > 2.0:                                           # seconds on a 4x step: no stall makes that, skip repeats
+        pts.append((len(big) - len(pre) - len(suf), t_big))
+        return True
+    t_small, t_big = _best(fn, small), _best(fn, big)
+    pts.append((len(big) - len(pre) - len(suf), t_big))
+    return t_big >= CONFIRM_FLOOR and t_big > CONFIRM_RATIO * t_small
 
 
 class _FunctionStandIn:
