@@ -93,12 +93,27 @@ def test_the_cases_reach_every_rewrite(timings):
     assert len(timings) >= 50, len(timings)
 
 
+def _under(timings):
+    return {name: v for name, v in timings.items() if v[2] < FLOOR and v[0] < CAP}
+
+
+def under_the_floor(timings, remeasure):
+    """{name: [first reading, fresh reading]} of the cases under the floor twice: once here, once in `remeasure`
+    (a fresh child that sizes the named cases again). A stall at n stops the doubling early, so one reading is no
+    verdict here either (3.21.1 stress run 2: _LineFlag 'git clean ' read 0.077 s at 40 KB and 0.049 s at 160 KB)."""
+    under = _under(timings)
+    if not under:
+        return {}
+    again = _under(remeasure(sorted(under)))
+    return {name: [under[name], again[name]] for name in under if name in again}
+
+
 def test_every_rewrite_is_judged_above_the_floor(timings):
     # CONTROL: a floor nothing crosses makes the ratio test vacuous. Every case's larger call is over FLOOR, or its
     # n reached CAP: 41 MB in under 50 ms is linear time on its own (frame cells and cmdpos newlines return at once,
     # on an early rejection). And every rewrite has at least one case judged over the floor.
-    under = {name: v for name, v in timings.items() if v[2] < FLOOR and v[0] < CAP}
-    assert not under, under
+    under = under_the_floor(timings, lambda names: _measure(names))
+    assert not under, "under the floor twice ([n, seconds at n, seconds at 4n]): %s" % under
     judged = " ".join(name for name, v in timings.items() if v[2] >= FLOOR)
     assert all(part in judged for part in FAMILIES), [part for part in FAMILIES if part not in judged]
 
@@ -120,6 +135,18 @@ def verdict(timings, remeasure):
 def test_no_rewrite_takes_more_than_8x_the_time_for_4x_the_input(timings):
     worse = verdict(timings, lambda fixed: _measure(fixed, fixed))
     assert not worse, "grows faster than linear twice ([n, seconds at n, seconds at 4n]): %s" % worse
+
+
+def test_one_stalled_reading_is_not_under_the_floor():
+    # The reading stress run 2 failed on: a stall at n stopped the doubling, and the clean 4n call came in under FLOOR.
+    stalled = {"_LineFlag 'git clean '": [40000, 0.0766, 0.0492], "_PipeThen 'get-process ' |": [640000, 0.05, 0.21]}
+    asked = []
+    sized = {"_LineFlag 'git clean '": [160000, 0.049, 0.2]}              # the fresh child doubles past the stall
+    assert under_the_floor(stalled, lambda names: asked.append(names) or sized) == {}
+    assert asked == [["_LineFlag 'git clean '"]], "the first pass no longer flags the stalled reading: " + repr(asked)
+    # CONTROL: a case the fresh child also leaves under the floor still fails.
+    still = {"_LineFlag 'git clean '": [40000, 0.012, 0.0492]}
+    assert list(under_the_floor(stalled, lambda names: still)) == ["_LineFlag 'git clean '"]
 
 
 def test_one_noisy_step_is_not_a_verdict():

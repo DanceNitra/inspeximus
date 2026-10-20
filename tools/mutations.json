@@ -15250,5 +15250,14 @@
   "tests": [
    "tests/test_3211_a_mutant_run_without_a_verdict_is_not_evaluated.py::test_a_timeout_is_not_evaluated"
   ]
+ },
+ {
+  "name": "3.21.1 stress run 2: the floor control fails a case on its first reading, without the fresh child",
+  "file": "tests/test_3211_every_rewrite_grows_linearly.py",
+  "old": "    again = _under(remeasure(sorted(under)))\n    return {name: [under[name], again[name]] for name in under if name in again}\n",
+  "new": "    return {name: [v, v] for name, v in under.items()}\n",
+  "tests": [
+   "tests/test_3211_every_rewrite_grows_linearly.py::test_one_stalled_reading_is_not_under_the_floor"
+  ]
  }
 ]
