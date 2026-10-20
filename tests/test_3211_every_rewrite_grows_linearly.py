@@ -40,6 +40,8 @@ cases = {
     "cmdpos newlines": (cc._CMD_POS.search, lambda n: "x" + rep("\n", n, " y ")),
     "intent =": (core._restore_intent, lambda n: "restore:" + rep("=", n, "#a")),
     "intent @a": (core._restore_intent, lambda n: "restore:k=" + rep("@a", n, "#a")),
+    # A judged intent case with margin: "intent =" reads about 0.06 s at 41 MB, on the floor; this one 0.13 s at 2.56 MB.
+    "intent hex tail": (core._restore_intent, lambda n: "restore:k=v#" + rep("a", n)),
     "link ](x": (mir.LINK.findall, lambda n: rep("](x", n, ".md)")),
     "link ](": (mir.LINK.findall, lambda n: rep("](", n)),
     "link ](b.md)": (mir.LINK.findall, lambda n: rep("](b.md)", n)),        # every unit a match: a call over the floor
