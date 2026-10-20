@@ -3,14 +3,15 @@
 The regex ^restore:(.+?)=([^@#]*)(?:@([0-9a-f]*))?#([0-9a-f]+)$ was quadratic on a long intent (about 54 ms at
 3 KB, 5 s at 30 KB). It runs after the capability check, so only an authorised caller reaches it, but the intent is
 still caller text. `_restore_intent` returns the same four groups; the regex stays as `_RESTORE_INTENT`."""
-import json
 import os
 import random
 import re
-import subprocess
 import sys
 
 import pytest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _timing  # noqa: E402
 
 from inspeximus import core
 
@@ -51,26 +52,18 @@ def test_a_non_text_intent_raises_as_before():
 
 
 CHILD = r"""
-import json, time
+import json
 from inspeximus import core
 shapes = {"aa": "restore:a=a@0#0" + "aa=" * 10000 + " !", "eq": "restore:" + "=" * 30000 + "#g"}
-out = {}
-for name, text in shapes.items():
-    t = time.perf_counter()
-    core._restore_intent(text)
-    out[name] = time.perf_counter() - t
+out = {name: best(core._restore_intent, text, 0.1) for name, text in shapes.items() if not ONLY or name in ONLY}
 print(json.dumps(out))
 """
 
 
 def test_a_30_kb_intent_takes_under_a_tenth_of_a_second():
-    env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
-    env.update(PYTHONPATH=ROOT, INSPEXIMUS_KEY_HOME=os.environ.get("INSPEXIMUS_KEY_HOME", ""), INSPEXIMUS_NO_UPDATE_CHECK="1")
-    try:
-        p = subprocess.run([sys.executable, "-c", CHILD], capture_output=True, text=True, encoding="utf-8",
-                           timeout=20, env=env, cwd=ROOT)
-    except subprocess.TimeoutExpired:
-        pytest.fail("the 30 KB intents did not finish in 20 s")
-    assert p.returncode == 0, p.stderr[-2000:]
-    for name, seconds in json.loads(p.stdout.strip().splitlines()[-1]).items():
-        assert seconds < 0.1, "%s took %.3f s" % (name, seconds)
+    # Each reading is the minimum of 3, and a shape over the bound is timed again in a fresh child (tests/_timing.py).
+    what = "the 30 KB intents"
+    took = _timing.child(CHILD, timeout=20, what=what)
+    assert set(took) == {"aa", "eq"}, took
+    slow = _timing.over_bound(CHILD, took, 0.1, timeout=20, what=what)
+    assert not slow, "over 0.1 s twice: %s" % slow

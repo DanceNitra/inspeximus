@@ -15146,10 +15146,37 @@
  {
   "name": "3.21.1 CI 39377281135: the growth ratio test fails on one noisy step, without the fresh confirmation",
   "file": "tests/test_3211_every_rewrite_grows_linearly.py",
-  "old": "    again = remeasure(worse)\n    return {name: worse[name] + [round(t, 4) for t in again[name]] for name in worse\n            if again[name][1] >= CONFIRM_FLOOR and again[name][1] / max(again[name][0], 1e-6) > MAX_RATIO}",
-  "new": "    return worse",
+  "old": "    again = _flags(remeasure({name: v[0] for name, v in flagged.items()}))\n    return {name: [flagged[name], again[name]] for name in flagged if name in again}",
+  "new": "    return {name: [v, v] for name, v in flagged.items()}",
   "tests": [
    "tests/test_3211_every_rewrite_grows_linearly.py::test_one_noisy_step_is_not_a_verdict"
+  ]
+ },
+ {
+  "name": "3.21.1 timing rule: over_bound fails a case on its first reading, without the fresh child",
+  "file": "tests/_timing.py",
+  "old": "    again = child(code, flagged, arg, timeout, what)\n    return {name: [took[name], again[name]] for name in sorted(flagged) if seconds(again[name]) >= bound}",
+  "new": "    return {name: [took[name], took[name]] for name in sorted(flagged)}",
+  "tests": [
+   "tests/test_3211_timing_rule.py::test_a_case_over_the_bound_once_is_measured_again_and_cleared"
+  ]
+ },
+ {
+  "name": "3.21.1 timing rule: best() is one call, not the minimum of 3",
+  "file": "tests/_timing.py",
+  "old": "        if bound is not None and (b < bound or b > 10 * bound):",
+  "new": "        if True:",
+  "tests": [
+   "tests/test_3211_timing_rule.py::test_best_is_the_minimum_of_three"
+  ]
+ },
+ {
+  "name": "3.21.1 timing rule: the ratio test keeps n at 40 KB, under the floor",
+  "file": "tests/test_3211_every_rewrite_grows_linearly.py",
+  "old": "    while name not in FIXED and t < FLOOR and n * 2 <= CAP:",
+  "new": "    while False:",
+  "tests": [
+   "tests/test_3211_every_rewrite_grows_linearly.py::test_every_rewrite_is_judged_above_the_floor"
   ]
  }
 ]

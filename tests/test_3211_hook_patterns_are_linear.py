@@ -4,14 +4,15 @@ Found by the class scan after the frame-guard fix (agora_output/strategy/builder
 the package was attacked with growing input, and the ones that read caller text and grew worse than linear were
 rewritten. Each replacement keeps the regex as `.pattern`, agrees with it on a fuzzed corpus short enough for the
 regex to finish, and is timed in a child process with a timeout, so a regression fails quickly."""
-import json
 import os
 import random
 import re
-import subprocess
 import sys
 
 import pytest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _timing  # noqa: E402
 
 from inspeximus import claude_code as cc
 
@@ -68,49 +69,39 @@ def test_the_command_position_check_on_known_prefixes(prefix, hit):
 
 
 CHILD = r"""
-import json, time
+import json
 from inspeximus import claude_code as cc
 rm = next(p for p in cc._NO_REPLAY if getattr(p, "pattern", "").startswith(r"\brm"))
 shapes = {"rm_spaces": (rm, "rm" + " " * 20000 + "x"), "rm_many": (rm, "rm " * 20000 + "x"),
           "cmd_newlines": (cc._CMD_POS, "x" + "\n" * 20000 + " y "), "cmd_spaces": (cc._CMD_POS, "|" + " " * 20000 + "y ")}
-out = {}
-for name, (rx, text) in shapes.items():
-    t = time.perf_counter()
-    rx.search(text)
-    out[name] = time.perf_counter() - t
+out = {name: best(rx.search, text, 0.1) for name, (rx, text) in shapes.items() if not ONLY or name in ONLY}
 print(json.dumps(out))
 """
 
 
-def _child(code, timeout=20):
-    env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
-    env.update(PYTHONPATH=ROOT, INSPEXIMUS_KEY_HOME=os.environ.get("INSPEXIMUS_KEY_HOME", ""), INSPEXIMUS_NO_UPDATE_CHECK="1")
-    try:
-        p = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, encoding="utf-8",
-                           timeout=timeout, env=env, cwd=ROOT)
-    except subprocess.TimeoutExpired:
-        pytest.fail("the shapes did not finish in %d s" % timeout)
-    assert p.returncode == 0, p.stderr[-2000:]
-    return json.loads(p.stdout.strip().splitlines()[-1])
+def _slow(code, bound, prefix=(), timeout=20):
+    # Each reading is the minimum of 3, and a shape over the bound is timed again in a fresh child (tests/_timing.py).
+    took = _timing.child(code, timeout=timeout)
+    took = {k: v for k, v in took.items() if not prefix or k.startswith(prefix)}
+    assert took, "no shape starts with %r" % (prefix,)
+    return took, _timing.over_bound(code, took, bound, timeout=timeout)
 
 
 def test_the_rm_rule_takes_under_a_tenth_of_a_second_on_20_kb():
     # The regex takes about 3 s on the first shape; the child is stopped after 20 s.
-    for name, seconds in _child(CHILD).items():
-        if name.startswith("rm_"):
-            assert seconds < 0.1, "%s took %.3f s" % (name, seconds)
+    _took, slow = _slow(CHILD, 0.1, "rm_")
+    assert not slow, "over 0.1 s twice: %s" % slow
 
 
 def test_the_command_position_check_takes_under_a_tenth_of_a_second_on_20_kb():
     # The regex takes about 11 s on 20 KB of newlines; the child is stopped after 20 s.
-    for name, seconds in _child(CHILD).items():
-        if name.startswith("cmd_"):
-            assert seconds < 0.1, "%s took %.3f s" % (name, seconds)
+    _took, slow = _slow(CHILD, 0.1, "cmd_")
+    assert not slow, "over 0.1 s twice: %s" % slow
 
 
 # ---- 3.21.1 round 2 (AUDIT-A F-1): every replay rule and warning pattern that is a stand-in ----
 FAST = r"""
-import json, re, time
+import json, re
 from inspeximus import claude_code as cc
 from inspeximus import memory_index_receipt as mir
 KEYS = {"taskkill": "taskkill ", "get-process": "get-process ", "stop-process": "kill ", "remove-item": "remove-item ",
@@ -126,11 +117,14 @@ for pattern, search in objs:
     if unit:
         size = 160000 if ".*" in pattern else 40000     # the force-push regex is mildly quadratic: 1 s at 160 KB
         text = unit * (size // len(unit))
-        t = time.perf_counter(); search(text); out["%s %r" % (pattern[:24], unit)] = time.perf_counter() - t
+        name = "%s %r" % (pattern[:24], unit)
+        if not ONLY or name in ONLY:
+            out[name] = best(search, text, 0.2)
 for name, text in (("cmdpos a;", "a;" * 20000 + "y "), ("cmdpos ((", "((" * 20000 + "y "), ("link ](", "](x" * 13000 + ".md)"),
                    ("link ]( no close", "](" * 20000)):
     fn = mir.LINK.findall if name.startswith("link") else cc._CMD_POS.search
-    t = time.perf_counter(); fn(text); out[name] = time.perf_counter() - t
+    if not ONLY or name in ONLY:
+        out[name] = best(fn, text, 0.2)
 print(json.dumps(out))
 """
 
@@ -138,10 +132,9 @@ print(json.dumps(out))
 def test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb():
     # The regexes take about a second or more here (git checkout: 7.2 s at 104 KB; AUDIT-A F-1), and the old
     # _CmdPos slice 0.3 s on 40 KB of "a;" (F-2). The child is stopped after 60 s.
-    took = _child(FAST, timeout=60)
+    took, slow = _slow(FAST, 0.2, timeout=60)
     assert len([k for k in took if not k.startswith(("cmdpos", "link"))]) >= 13, took
-    slow = {k: round(v, 3) for k, v in took.items() if v >= 0.2}
-    assert not slow, slow
+    assert not slow, "over 0.2 s twice: %s" % slow
 WS = [" ", "\n", "\t", "\r\n", "\u00a0", "\u2028", "\x1c", "\x85", "\x0b", "\x0c", "\u3000", "\u200b"]
 COMMON = ["x", "a", "-", "--", "/", "|", ";", "&", "+", "=", "'", "\"", "\u212a", "\u017f", "K", "S"]
 EXTRA = ["comments", "Comments", "gh issue comment", "gh pr comment", "GH PR comment", "--force-with-lease", "+x",

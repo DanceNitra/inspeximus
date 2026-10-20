@@ -5,18 +5,19 @@ One shape per rewrite was not enough: `_CmdPos` passed its whitespace test at 20
 and each call must take under 0.5 s. The rewrites take 0.2 s at most there on this machine; the regexes they replace
 take seconds at a third of that size, so the bound leaves a wide margin both ways. The shapes run in one child
 process with a timeout, so a quadratic regression fails here in minutes at most instead of stalling the suite."""
-import json
 import os
-import subprocess
 import sys
 
 import pytest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _timing  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BOUND = 0.5
 
 CHILD = r"""
-import json, re, sys, time
+import json, re
 from inspeximus import core, claude_code as cc
 N = 160000
 def rep(unit, tail=""):
@@ -76,26 +77,18 @@ for o in stand_ins:
     for tail_name, tail in (("", ""), (" then newline", "\n"), (" then pipe", "|")):
         shapes["%s %r%s" % (type(o).__name__, unit, tail_name)] = (o.search, rep(unit) + tail)
         shapes["%s %r%s, no spaces" % (type(o).__name__, unit, tail_name)] = (o.search, rep(unit.replace(" ", "\t")) + tail)
-out = {}
-for name, (fn, text) in shapes.items():
-    t = time.perf_counter()
-    fn(text)
-    out[name] = [len(text), time.perf_counter() - t]
+out = {name: [len(text), best(fn, text, 0.5)] for name, (fn, text) in shapes.items() if not ONLY or name in ONLY}
 print(json.dumps(out))
 """
 
 
+WHAT = "the adversarial shapes"
+
+
 @pytest.fixture(scope="module")
 def timings():
-    env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_")}
-    env.update(PYTHONPATH=ROOT, INSPEXIMUS_KEY_HOME=os.environ.get("INSPEXIMUS_KEY_HOME", ""), INSPEXIMUS_NO_UPDATE_CHECK="1")
-    try:
-        p = subprocess.run([sys.executable, "-c", CHILD], capture_output=True, text=True, encoding="utf-8",
-                           timeout=300, env=env, cwd=ROOT)
-    except subprocess.TimeoutExpired:
-        pytest.fail("the adversarial shapes did not finish in 300 s: a rewrite is quadratic again")
-    assert p.returncode == 0, p.stderr[-3000:]
-    return json.loads(p.stdout.strip().splitlines()[-1])
+    # Each reading is the minimum of 3, and a shape over the bound is timed again in a fresh child (tests/_timing.py).
+    return _timing.child(CHILD, timeout=300, what=WHAT)
 
 
 def test_the_shapes_cover_every_rewrite(timings):
@@ -108,8 +101,8 @@ def test_the_shapes_cover_every_rewrite(timings):
 
 
 def test_every_rewrite_takes_under_half_a_second_at_160_kb(timings):
-    slow = {k: round(s, 3) for k, (chars, s) in timings.items() if s >= BOUND}
-    assert not slow, "over %.1f s at 160 KB or more: %s" % (BOUND, slow)
+    slow = _timing.over_bound(CHILD, timings, BOUND, seconds=lambda v: v[1], timeout=300, what=WHAT)
+    assert not slow, "over %.1f s twice at 160 KB or more: %s" % (BOUND, slow)
 
 
 def test_the_link_reader_returns_the_regexs_findall():
