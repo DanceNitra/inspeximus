@@ -5834,7 +5834,7 @@
  {
   "name": "parallel mutation gate: a worker's output is not written to its log",
   "file": "tools/mutation_check_parallel.py",
-  "old": "fh.write(f\"--- stdout ---\\n{p.stdout}\\n--- stderr ---\\n{p.stderr}\\n\")",
+  "old": "fh.write(f\"--- stdout ---\\n{p_stdout}\\n--- stderr ---\\n{p_stderr}\\n\")",
   "new": "fh.write(\"\")",
   "tests": [
    "tests/test_a_red_preflight_names_its_failing_test.py"
