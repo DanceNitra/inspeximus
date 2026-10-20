@@ -1,3 +1,44 @@
+## 3.21.1 - UPGRADE IF you call remember() with text that holds HTML, XML or other runs of tags, or run the Claude Code hooks: eighteen text checks backtracked on ordinary input. remember() could take over 30 s on 4 KB, and a hook could take seconds on tens of kilobytes. Every check now runs in linear time with the same result. No change to the store format, the API or any result.
+
+### Fixed
+
+- **remember() no longer stalls on tag-dense text.** Every `remember()` checks whether the text ends in tool-call markup that leaked into a parameter. The smuggled-parameters regex, first released in 2.21.0, backtracked exponentially on runs of tags.
+  - One 3,776-character section of an ordinary tool output, with 47 closing tags, took 67 s.
+  - On `"</tr>" + "<td>v</td>" * n + " end"`, each added cell doubled the time: 8.07 s at n = 24, a 249-character text, and over 30 s at 4 KB.
+
+  The check now takes under 0.1 ms on 160 KB of the same shape. It reaches every caller of `remember()`, the MCP `remember` tool included.
+- **The Claude Code hook's checks on a Bash command run in linear time.** They read the raw command of every Bash call.
+  - The outbound-post block (`gh ... comment`, `gh api ... comments`) took 1.97 s on 40 KB of `gh api `. It now takes 8.7 ms on 160 KB.
+  - The force-push warning took 0.074 s on 40 KB of `git push `. It now takes 3.6 ms on 160 KB.
+  - The command-position check decides whether a matched command is run or only mentioned. It took 0.43 s on 4 KB of newlines and over 30 s on 40 KB. It now takes 0.1 ms on 160 KB.
+- **The twelve replay rules run in linear time.** They decide whether a record tagged `bash` must not be offered for replay: `rm -r`, `taskkill /im`, `kill -name`, `get-process | stop-process`, `remove-item -r`, `del /s`, `git reset --hard`, `git clean -f`, `git push --force`, `git checkout --`, `git branch -D` and `dd of=/dev/`.
+  - On 40 KB of their own keyword repeated, they took 0.33 to 6.08 s. Each now takes under 0.05 s on 160 KB.
+  - The hook stores at most 206 characters of a command it captures. Only a long record written another way, through the library or the MCP `remember` tool, reaches these rules.
+- **The SessionStart hook reads the memory index's links in linear time.** On 40 KB of `](x`, the link reader took 0.30 s. It now takes under 0.1 ms on 160 KB.
+- **A `restore:` intent is parsed in linear time.** It took 0.28 s at 4 KB and 28.8 s at 40 KB, and it now takes under 0.1 ms on 160 KB. It runs only after the capability check.
+
+The figures before and after are one run each, measured on a machine running a second job. Repeat runs differ by up to 30 %.
+
+### Measured
+
+- **Same results:** each replacement keeps the regex it replaces and agrees with it on fuzzed input, with 0 differences.
+  - The replay rules and the two warnings: 150,000 strings each from each pattern's own keywords, and 150,000 from a structured alphabet, with hundreds to tens of thousands of matches per rule.
+  - The outbound block is also compared on its match position and matched text, because the hook reads both.
+  - The memory index links: 300,000 strings.
+  - AUDIT-A's independent review, on all 18: about 69 million exhaustive and 82 million random strings.
+
+  `tests/test_frame_markup_is_refused.py` passes unchanged.
+- **The class, on every push:** a test attacks each pattern in the package with input built from its own keywords, after its own leading text. It fails if any pattern grows worse than linear. The five old patterns are its positive controls: the frame guard, a replay rule, both warnings and the link reader.
+  - **What it attacks:** every compiled pattern; every regex-looking string literal in a module that imports `re`; every pattern built from literals and module-level strings with `+`; and every object that stands in for a regex, through its own code.
+  - **A pattern built at run time** (by `join`, `format`, an f-string or a helper) cannot be attacked from the source. Every call of an `re` function with such a pattern must be on a reviewed list, with its reason, or the test fails. There are 25 such calls, each an escaped value between fixed lookarounds or a pattern the test attacks elsewhere.
+  - **Limits:** the attack stops at 10,000 characters, so a second test times each rewrite at 40, 80, 160 and 320 KB. That test fails if a 4x step in size takes more than 8x the time, which catches a slowdown that only copies memory.
+- **Excluded, with the reason checked:** the seven key-extraction patterns and the clause split inside `derive_key` grow worse than linear on their own.
+  - A walk of the whole package shows `derive_key` is their only caller, counting imports, aliases and names written as strings.
+  - On the exact input that slows each one down, `derive_key` stays linear, because it collapses every whitespace run before they run (since 3.20).
+- **Timing tests:** each fixed pattern is timed on its adversarial shapes at 160 KB or more, AUDIT-A's among them. Each call must finish under 0.5 s, and the slowest takes 0.14 s.
+  - The shapes run in a child process with a timeout, so a regression fails in minutes at most.
+  - A registered mutant restores each old regex, and one more restores the copying slowdown. Each mutant is killed.
+
 ## 3.21.0 - UPGRADE IF you recall without numpy, or you hold a store open beside another process that re-embeds it: recall without numpy now centres the vectors as the documented default says, and a held handle with numpy no longer ranks against vectors from before a peer's reembed. ACTION: every read-guard stamp from 3.18 to 3.20 is assessed again until it is stamped under 3.21; re-stamp a large store with `--stamp-guards --apply`
 
 ### Fixed
