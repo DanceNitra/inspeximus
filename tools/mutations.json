@@ -15376,5 +15376,41 @@
   "tests": [
    "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_only_run_roots_are_considered"
   ]
+ },
+ {
+  "name": "3.22 credit ledger: a credit with a ledger records nothing",
+  "file": "inspeximus/core.py",
+  "old": "        if ledger is not None:\n            counts = {i: {k: float(by_id[i].get(k, 0) or 0)",
+  "new": "        if False:\n            counts = {i: {k: float(by_id[i].get(k, 0) or 0)",
+  "tests": [
+   "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_a_credit_is_one_ledger_entry_with_its_inputs_and_the_counts_it_left"
+  ]
+ },
+ {
+  "name": "3.22 credit ledger: the warrant is left out of the entry",
+  "file": "inspeximus/core.py",
+  "old": "                                                   \"warrant\": warrant},\n",
+  "new": "                                                   \"warrant\": None},\n",
+  "tests": [
+   "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_a_changed_warrant_or_count_no_longer_matches"
+  ]
+ },
+ {
+  "name": "3.22 credit ledger: the counts after the credit are left out",
+  "file": "inspeximus/core.py",
+  "old": "                          output=dict(out, counts=counts))\n",
+  "new": "                          output=out)\n",
+  "tests": [
+   "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_a_changed_warrant_or_count_no_longer_matches"
+  ]
+ },
+ {
+  "name": "3.22 credit ledger: good_warranted is not in the counts",
+  "file": "inspeximus/core.py",
+  "old": "for k in (\"good\", \"bad\", \"good_warranted\")}",
+  "new": "for k in (\"good\", \"bad\")}",
+  "tests": [
+   "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_a_credit_is_one_ledger_entry_with_its_inputs_and_the_counts_it_left"
+  ]
  }
 ]
