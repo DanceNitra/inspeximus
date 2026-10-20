@@ -60,6 +60,8 @@ def _run(monkeypatch, tmp_path, step2, retry, total=4):
             return R(1 if any(b for _, b in step2) else 0)
         _xml(xml, retry)
         return R(1 if any(b for _, b in retry) else 0)
+    # A run started through full_suite itself passes FULL_SUITE_YIELD_TO down; here it would reach the fake run.
+    monkeypatch.delenv("FULL_SUITE_YIELD_TO", raising=False)
     monkeypatch.setattr(fs.subprocess, "run", fake_run)
     monkeypatch.setattr(fs, "collected", lambda args: ["n%d" % i for i in range(total)])
     monkeypatch.setattr(fs, "wait_for_memory", lambda: 20.0)
