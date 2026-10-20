@@ -399,24 +399,41 @@ def attack(fn, units):
 #: The CONFIRMATION a growth verdict needs (3.21.1, CI run 39372338135). The ladder reads its exponent on calls of 1 to
 #: 20 ms, where one scheduler stall decides the verdict: on a loaded CI runner `_secrets._ASSIGN` read 0.001 s at
 #: 7,047 characters and 0.015 s at 28,863, while it is linear to 4 MB (0.026 s at 200 KB, 0.136 s at 1 MB, 0.556 s at 4 MB, the minimum of 3). So a flag
-#: stands only if 4x the input takes more than CONFIRM_RATIO times as long and the larger call is over CONFIRM_FLOOR,
-#: both as the minimum of 3, measured afresh. Linear takes about 4x, quadratic 16x. Noise only adds time, so a single
-#: call under the bar clears the pattern without the repeats.
+#: stands only if 4x the input takes more than CONFIRM_RATIO times as long. Linear takes about 4x, quadratic 16x.
+#:
+#: THE FLOOR IS ON THE SMALLER CALL, AND THE TWO SIDES ARE READ INTERLEAVED (3.21.1, stress run 1 under load). The
+#: first confirmation put the floor on the larger call and read each side's minimum of 3 back to back. Under load
+#: `core._INSTRUCTION_SHAPES`, which is linear, read 0.056 s at 164,088 characters against under 0.007 s at 41,022:
+#: one load phase inflated all three larger readings past the floor, while the smaller side read clean. So the smaller
+#: call grows by eighths until it alone takes CONFIRM_FLOOR (up to CONFIRM_CAP characters, where under 50 ms is
+#: linear on its own), and the minimum of 3 is taken over small and large readings that alternate, so a load phase
+#: falls on both sides. A doubling is read first: a pattern that is exponential never reaches the 4x call.
 CONFIRM_RATIO = 8.0
 CONFIRM_FLOOR = 0.05
+CONFIRM_CAP = 4000000
 
 
 def _confirmed(fn, pre, unit, suf, k, pts):
-    small, big = pre + unit * k + suf, pre + unit * (4 * k) + suf
-    t_big = _best(fn, big, reps=1)
-    if t_big < CONFIRM_FLOOR or t_big < CONFIRM_RATIO * _best(fn, small):
-        return False
-    if t_big > 2.0:                                           # seconds on a 4x step: no stall makes that, skip repeats
-        pts.append((len(big) - len(pre) - len(suf), t_big))
-        return True
-    t_small, t_big = _best(fn, small), _best(fn, big)
-    pts.append((len(big) - len(pre) - len(suf), t_big))
-    return t_big >= CONFIRM_FLOOR and t_big > CONFIRM_RATIO * t_small
+    def text(m):
+        return pre + unit * m + suf
+    t, steps = _best(fn, text(k), reps=1), 0
+    while t < CONFIRM_FLOOR and len(unit) * k < CONFIRM_CAP and steps < 64:
+        k, steps = k + max(1, k // 8), steps + 1
+        t = _best(fn, text(k), reps=1)
+    if t < CONFIRM_FLOOR:
+        return False                                          # CONFIRM_CAP characters in under 50 ms: linear
+    t2 = _best(fn, text(2 * k), reps=1)
+    if t2 > 16 * t:                                           # 16x for 2x: exponential; confirm it on the doubling
+        t, t2 = min(t, _best(fn, text(k), reps=1)), min(t2, _best(fn, text(2 * k), reps=1))
+        pts.append((len(unit) * 2 * k, t2))
+        return t2 > 16 * t
+    small, big = [], []
+    for _ in range(3):                                        # interleaved: a load phase falls on both sides
+        small.append(_best(fn, text(k), reps=1))
+        big.append(_best(fn, text(4 * k), reps=1))
+    t_small, t_big = min(small), min(big)
+    pts.extend([(len(unit) * k, t_small), (len(unit) * 4 * k, t_big)])
+    return t_big > CONFIRM_RATIO * t_small
 
 
 class _FunctionStandIn:

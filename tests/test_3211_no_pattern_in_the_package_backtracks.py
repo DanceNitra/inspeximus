@@ -64,6 +64,8 @@ class _Modeled:
 
     def read(self, n, reps):
         t = self.seconds(n)
+        if self.growth and n > 2 * max(self.growth):
+            t += getattr(self, "spike", 0.0)              # a load phase on the confirmation's larger calls only
         if reps > 1 and n not in self.growth:
             self.growth.append(n)
             if len(self.growth) == self.stall_step and not self.stalled:
@@ -93,6 +95,18 @@ def test_one_stall_on_a_linear_call_is_not_a_verdict(modeled):
         ra._confirmed = real
     # CONTROL: the confirmation passes a call that is quadratic (4 ms at 10,000 characters, 64 ms at 40,000).
     assert ra.attack(_Modeled(lambda n: 4e-11 * n * n), [("", "ab")])
+
+
+def test_a_load_spike_on_the_larger_confirmation_calls_is_not_a_verdict(modeled):
+    # Stress run 1 under load: core._INSTRUCTION_SHAPES, which is linear, read 0.056 s at 164,088 characters against
+    # under 0.007 s at 41,022, because one load phase fell on the larger side only. Modeled here: a linear call
+    # (4 ms at 10,000 characters) with a stall on its way up the ladder, then 60 ms more on every confirmation read
+    # over twice the ladder's largest size. With the floor on the larger call, read back to back, this was a verdict;
+    # with the smaller call grown to the floor itself and the sides interleaved, it is not.
+    spiked = _Modeled(lambda n: 4e-7 * n, stall_step=6, stall=0.04)
+    spiked.spike = 0.06
+    assert ra.attack(spiked, [("", "ab")]) is None
+    assert spiked.stalled, "the stall was never read, so the confirmation never ran: the test proves nothing"
 
 
 def test_control_the_collection_reaches_the_patterns_the_first_scan_missed(collected):
