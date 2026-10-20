@@ -15124,5 +15124,14 @@
    "tests/test_3211_hook_patterns_are_linear.py::test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb",
    "tests/test_3211_every_rewrite_on_adversarial_shapes.py::test_every_rewrite_takes_under_half_a_second_at_160_kb"
   ]
+ },
+ {
+  "name": "3.21.1 R2-3: _PipeThen copies the tail at every pipe (same answers, quadratic)",
+  "file": "inspeximus/claude_code.py",
+  "old": "                if self._after.match(text, j):",
+  "new": "                if self._after.match(text[j:]):",
+  "tests": [
+   "tests/test_3211_every_rewrite_grows_linearly.py::test_no_rewrite_takes_more_than_8x_the_time_for_4x_the_input"
+  ]
  }
 ]
