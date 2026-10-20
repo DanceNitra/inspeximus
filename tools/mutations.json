@@ -15738,5 +15738,14 @@
   "tests": [
    "tests/test_mutation_check_parallel_isolates_its_workers.py::test_two_runs_in_one_tree_use_separate_worktree_directories"
   ]
+ },
+ {
+  "name": "3.22 inject once: every write lists the seen directory",
+  "file": "inspeximus/_seen.py",
+  "old": "            if new:\n                _expire(now)\n",
+  "new": "            if True:\n                _expire(now)\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_only_a_sessions_first_write_lists_the_directory"
+  ]
  }
 ]
