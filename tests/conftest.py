@@ -460,6 +460,8 @@ def _own_temp_root(config):
     if hasattr(config, "workerinput"):
         return                                    # a worker inherits the controller's root
     import tempfile as _tempfile
+    for stale in _stale_run_roots(_tempfile.gettempdir()):
+        shutil.rmtree(stale, ignore_errors=True)
     root = _tempfile.mkdtemp(prefix="inspeximus-run-")
     names = ("TEMP", "TMP", "TMPDIR", RUN_TMP_ENV)
     config._run_tmp_env_before = {k: os.environ.get(k) for k in names + (RUN_TOKEN_ENV,)}
@@ -513,12 +515,52 @@ def _nested_in_a_live_run():
         return False
     if not isinstance(owner, dict) or owner.get("token") != token or owner.get("pid") == os.getpid():
         return False
+    return _owner_alive(owner)
+
+
+def _owner_alive(owner):
+    """True when the pid in a run's owner file is alive and has the start time the run recorded."""
     from inspeximus import hookd as _hookd
     from inspeximus.claude_code import _pid_alive
     if not _pid_alive(owner.get("pid")):                  # an exited process can still report its start time on Windows
         return False
     start = _hookd._proc_start(owner.get("pid"))
     return start is not None and start == owner.get("start")
+
+
+#: A run root with no owner file is left alone for this long: a run writes its file right after it creates the root.
+UNOWNED_ROOT_GRACE_S = 24 * 3600
+
+
+def _stale_run_roots(tmpdir):
+    """The `inspeximus-run-*` roots under `tmpdir` whose run is gone, so the next run removes them (3.22, item 27).
+
+    A run removes its root at the end (`_restore_temp_root`), but a run stopped by its pid never reaches the end, and its
+    root stayed in the user's Temp for good. A root is stale when its owner file names a pid that is dead or now has
+    another start time, or when it has no owner file and is older than UNOWNED_ROOT_GRACE_S. A live run's root is kept,
+    whoever started it."""
+    import json as _json
+    import time as _time
+    try:
+        names = os.listdir(tmpdir)
+    except OSError:
+        return []
+    stale = []
+    for name in names:
+        root = os.path.join(tmpdir, name)
+        if not name.startswith("inspeximus-run-") or not os.path.isdir(root):
+            continue
+        try:
+            with open(os.path.join(root, RUN_OWNER_FILE), encoding="utf-8") as fh:
+                owner = _json.load(fh)
+        except (OSError, ValueError):
+            owner = None
+        if isinstance(owner, dict):
+            if not _owner_alive(owner):
+                stale.append(root)
+        elif _time.time() - os.path.getmtime(root) > UNOWNED_ROOT_GRACE_S:
+            stale.append(root)
+    return stale
 
 
 #: The INSPEXIMUS_* variables a run may keep from its caller. INSPEXIMUS_PYTHON names an interpreter, not a store or a
