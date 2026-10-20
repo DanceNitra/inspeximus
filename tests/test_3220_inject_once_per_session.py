@@ -155,3 +155,20 @@ def test_an_old_session_set_expires(tmp_path, monkeypatch):
     os.utime(old, (t, t))
     _seen.once("new", ["y"])
     assert not os.path.exists(old) and os.path.exists(_seen._path("new"))
+
+def test_a_recall_that_fails_partway_still_shows_what_it_printed(project, capsys, monkeypatch):
+    # Before 3.22 the hook printed straight to stdout, so a recall that raised left its partial output there.
+    def partial(ev):
+        print("[inspeximus] partial block")
+        raise RuntimeError("recall broke")
+    monkeypatch.setattr(cc, "recall", partial)
+    import io
+    import sys
+    ev = {"hook_event_name": "UserPromptSubmit", "cwd": str(project), "session_id": "s1", "prompt": "x"}
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(ev)))
+    monkeypatch.setattr(sys, "argv", ["inspeximus.claude_code"])
+    try:
+        cc.main()
+    except (RuntimeError, SystemExit):
+        pass
+    assert "[inspeximus] partial block" in capsys.readouterr().out

@@ -2758,8 +2758,12 @@ def main():
                 import io
                 from contextlib import redirect_stdout
                 _buf = io.StringIO()
-                with redirect_stdout(_buf):
-                    recall(ev)
+                try:
+                    with redirect_stdout(_buf):
+                        recall(ev)
+                except BaseException:
+                    sys.stdout.write(_buf.getvalue())         # a failing recall shows what it printed, as before
+                    raise
                 sys.stdout.write(_once_envelope(_buf.getvalue(), ev.get("session_id")))
             maybe_archive_in_background(_cwd)
             if _served is not None:

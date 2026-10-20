@@ -17598,6 +17598,8 @@ class Inspeximus:
         "memory:credit" entry, hash-chained and signed when the ledger signs, whose inputs are the ids, the
         outcome, the weight and the warrant, and whose output is the result plus every updated record's
         good, bad and good_warranted after the credit. A refused call (a bad weight or outcome) records nothing.
+        The credit is saved before the entry is written, so a ledger that fails to record does not undo it: the
+        exception carries `credit_applied` (this call's result), and a caller that retries would credit twice.
         The MCP `credit` tool is already recorded as "mcp:credit" when INSPEXIMUS_ACTIONS is on.
         """
         good = Inspeximus._outcome_good(outcome)
@@ -17638,9 +17640,13 @@ class Inspeximus:
         if ledger is not None:
             counts = {i: {k: float(by_id[i].get(k, 0) or 0) for k in ("good", "bad", "good_warranted")}
                       for i in updated}
-            ledger.record("memory:credit", inputs={"ids": _as_ids(ids), "outcome": outcome, "weight": weight,
-                                                   "warrant": warrant},
-                          output=dict(out, counts=counts))
+            try:
+                ledger.record("memory:credit", inputs={"ids": _as_ids(ids), "outcome": outcome, "weight": weight,
+                                                       "warrant": warrant},
+                              output=dict(out, counts=counts))
+            except Exception as ex:
+                ex.credit_applied = out
+                raise
         return out
 
     def _warrant_is_exogenous(self, rec: dict, warrant) -> bool:

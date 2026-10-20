@@ -53,3 +53,14 @@ def test_without_a_ledger_nothing_is_recorded(store):
     m, led, rid = store
     m.credit([rid], outcome="good")
     assert led.entries() == []
+
+def test_a_ledger_that_fails_to_record_does_not_undo_the_credit_and_says_so(store):
+    m, led, rid = store
+
+    class Broken:
+        def record(self, *a, **k):
+            raise OSError("disk full")
+    with pytest.raises(OSError) as info:
+        m.credit([rid], outcome="good", ledger=Broken())
+    assert info.value.credit_applied["updated"] == [rid]
+    assert next(r for r in m.items if r["id"] == rid)["good"] == 1.0
