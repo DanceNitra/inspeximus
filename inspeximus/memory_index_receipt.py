@@ -30,7 +30,35 @@ import re
 import sys
 
 LINE_CAP, UNIT_CAP = 200, 25_000
-LINK = re.compile(r"\]\(([^)]+\.md)\)")
+class _MdLinks:
+    r"""`re.compile(r"\]\(([^)]+\.md)\)").findall`, the same list in linear time (3.21.1).
+
+    The regex read from every `](` to the next `)`, so a file repeating `](` with no `)` cost the square of its length
+    (the attack in tests/_redos_attack.py: 0.10 s at 20 KB, 1.65 s at 80 KB, on the MEMORY.md the SessionStart hook
+    reads). Every `](` before the same `)` sees a tail of the same text, so the first one decides for all of them: the
+    text up to that `)` is a link when it is at least four characters and ends in `.md`, and the next search starts
+    after the `)`. `pattern` is the regex this replaces."""
+    pattern = r"\]\(([^)]+\.md)\)"
+
+    def findall(self, text):
+        out, pos = [], 0
+        while True:
+            k = text.find("](", pos)
+            if k < 0:
+                return out
+            close = text.find(")", k + 2)
+            if close < 0:
+                return out
+            seg = text[k + 2:close]
+            if len(seg) >= 4 and seg.endswith(".md"):
+                out.append(seg)
+            pos = close + 1
+
+    def search(self, text):
+        return self.findall(text) or None
+
+
+LINK = _MdLinks()
 
 
 def u16(text: str) -> int:
