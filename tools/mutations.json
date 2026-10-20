@@ -15259,5 +15259,23 @@
   "tests": [
    "tests/test_3211_every_rewrite_grows_linearly.py::test_one_stalled_reading_is_not_under_the_floor"
   ]
+ },
+ {
+  "name": "3.21.1 parallel gate: the entries are dealt out before the run again, not taken from one queue",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "    views = [work.view(i) for i in range(n)]",
+  "new": "    views = [mutations[i::n] for i in range(n)]",
+  "tests": [
+   "tests/test_mutation_check_parallel_takes_from_one_queue.py::test_a_worker_that_finishes_takes_the_next_entry"
+  ]
+ },
+ {
+  "name": "3.21.1 parallel gate: the queue ignores the last run's durations",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "        self._left = sorted(mutations, key=lambda m: -durations.get(m[\"name\"], float(\"inf\")))",
+  "new": "        self._left = list(mutations)",
+  "tests": [
+   "tests/test_mutation_check_parallel_takes_from_one_queue.py::test_the_slowest_entries_of_the_last_run_go_first"
+  ]
  }
 ]

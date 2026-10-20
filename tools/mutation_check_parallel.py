@@ -135,7 +135,59 @@ def worker_env(home: str, wt: str, base: str, environ=None) -> dict:
     return env
 
 
-def _run_worker(idx: int, mutations: list[dict], base: str, keep: bool) -> dict:
+class _Work:
+    """ONE QUEUE FOR ALL WORKERS (owner, 2026-10-20). The entries used to be dealt out before the run, three each, so
+    a worker that drew three fast entries stood idle after a minute while the one that drew the slow timing tests ran
+    for six: 16 workers, and 5 busy at the end. Now a worker takes the next entry when it finishes one, and the
+    slowest entries of the previous run go first, so the run ends when its slowest entry does."""
+
+    def __init__(self, mutations, durations=None):
+        durations = durations or {}
+        # Longest first. An entry with no recorded time goes first too: it might be the slow one.
+        self._left = sorted(mutations, key=lambda m: -durations.get(m["name"], float("inf")))
+        self._lock = threading.Lock()
+        self.taken = {}
+
+    def take(self, idx):
+        with self._lock:
+            if not self._left:
+                return None
+            m = self._left.pop(0)
+            self.taken.setdefault(idx, []).append(m)
+            return m
+
+    def view(self, idx):
+        """What one worker iterates: the entries it takes from the queue, one at a time."""
+        return _View(self, idx)
+
+
+class _View:
+    def __init__(self, work, idx):
+        self.work, self.idx = work, idx
+
+    def __iter__(self):
+        while True:
+            m = self.work.take(self.idx)
+            if m is None:
+                return
+            yield m
+
+
+def _durations_path(base):
+    return os.path.join(base, "durations.json")
+
+
+def _load_durations(base):
+    try:
+        with open(_durations_path(base), encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, ValueError):
+        return {}
+
+
+def _run_worker(idx: int, mutations, base: str, keep: bool) -> dict:
+    """Run every entry `mutations` yields, one `mutation_check.py` call per entry, in this worker's own worktree.
+    `mutations` is a list or a `_View` of the shared queue."""
     wt = os.path.join(base, f"w{idx}")
     # OUTSIDE THE REPOSITORY: `base` is inside the work tree, where a key home from the environment is refused (F-13),
     # so every test would read the caller's default key home and print the refusal.
@@ -144,31 +196,48 @@ def _run_worker(idx: int, mutations: list[dict], base: str, keep: bool) -> dict:
     with _GIT_LOCK:
         r = _git("worktree", "add", "--detach", "--force", wt, "HEAD")
     if r.returncode != 0:
+        # Nothing is taken from the queue here, so the other workers still run every entry.
         return {"idx": idx, "error": f"worktree add failed: {r.stderr.strip()[:300]}",
-                "expected": [m["name"] for m in mutations]}
+                "expected": [m["name"] for m in mutations] if isinstance(mutations, list) else []}
 
     spec = os.path.join(wt, "tools", "_mut_shard.json")
-    with open(spec, "w", encoding="utf-8") as fh:
-        json.dump(mutations, fh)
-
     env = worker_env(home, wt, base)
     t0 = time.time()
-    p = subprocess.run([sys.executable, "-X", "utf8", os.path.join("tools", "mutation_check.py"),
-                        os.path.join("tools", "_mut_shard.json")],
-                       cwd=wt, capture_output=True, text=True, env=env, timeout=7200)
-    out = _parse(p.stdout)
+    out = {"totals": (0, 0, 0, 0), "survived": [], "skipped": [], "killed_clipped": []}
+    names, stdout, stderr, rc, secs = [], [], [], 0, {}
+    for m in mutations:
+        names.append(m["name"])
+        with open(spec, "w", encoding="utf-8") as fh:
+            json.dump([m], fh)
+        t1 = time.time()
+        p = subprocess.run([sys.executable, "-X", "utf8", os.path.join("tools", "mutation_check.py"),
+                            os.path.join("tools", "_mut_shard.json")],
+                           cwd=wt, capture_output=True, text=True, env=env, timeout=7200)
+        secs[m["name"]] = round(time.time() - t1, 1)
+        one = _parse(p.stdout)
+        if one["totals"] is None:
+            # A call with no summary line accounts for nothing, and the reconciliation in main() reports it.
+            out["totals"] = None
+        elif out["totals"] is not None:
+            out["totals"] = tuple(a + b for a, b in zip(out["totals"], one["totals"]))
+        for k in ("survived", "skipped", "killed_clipped"):
+            out[k].extend(one[k])
+        stdout.append(p.stdout)
+        stderr.append(p.stderr)
+        rc = rc or p.returncode
+    p_stdout, p_stderr = "".join(stdout), "".join(stderr)
     # KEEP THE WORKER'S OUTPUT. It lived only in this dict and was never written or printed, so a
     # pre-flight that went red once and not again could not be diagnosed after the run (PC2, 515a7439).
     log = os.path.join(base, f"worker{idx}.log")
     try:
         with open(log, "w", encoding="utf-8") as fh:
-            fh.write(f"--- stdout ---\n{p.stdout}\n--- stderr ---\n{p.stderr}\n")
+            fh.write(f"--- stdout ---\n{p_stdout}\n--- stderr ---\n{p_stderr}\n")
     except OSError:
         log = None
-    out.update({"idx": idx, "rc": p.returncode, "secs": round(time.time() - t0, 1), "log": log,
+    out.update({"idx": idx, "rc": rc, "secs": round(time.time() - t0, 1), "log": log, "durations": secs,
                 "preflight_red": [s for s in out["skipped"] if "not green before mutating" in s],
-                "expected": [m["name"] for m in mutations],
-                "stderr_tail": p.stderr.strip()[-400:], "stdout": p.stdout})
+                "expected": names,
+                "stderr_tail": p_stderr.strip()[-400:], "stdout": p_stdout})
     if not keep:
         with _GIT_LOCK:
             _git("worktree", "remove", "--force", wt)
@@ -231,25 +300,26 @@ def main() -> int:
         return 0
     n = args.workers or max(2, min(10, (os.cpu_count() or 4) - 4))
     n = min(n, len(mutations))
-    shards = [mutations[i::n] for i in range(n)]                  # round-robin: balances uneven costs
     base = os.path.join(ROOT, ".mutwt")
     os.makedirs(base, exist_ok=True)
+    work = _Work(mutations, _load_durations(base))
+    views = [work.view(i) for i in range(n)]
 
     head = _git("rev-parse", "--short", "HEAD").stdout.strip()
     print(f"{len(mutations)} mutations from {_shown(path)} across {n} worker(s) at {head}")
-    print(f"  shard sizes: {[len(s) for s in shards]}\n")
+    print("  one queue, the slowest entries of the last run first\n")
 
     t0 = time.time()
     results = []
     with cf.ThreadPoolExecutor(max_workers=n) as pool:
-        futs = {pool.submit(_run_worker, i, shards[i], base, args.keep): i for i in range(n)}
+        futs = {pool.submit(_run_worker, i, views[i], base, args.keep): i for i in range(n)}
         for fut in cf.as_completed(futs):
             i = futs[fut]
             try:
                 r = fut.result()
             except Exception as exc:                              # a crashed worker must not vanish
                 r = {"idx": i, "error": f"{type(exc).__name__}: {exc}",
-                     "expected": [m["name"] for m in shards[i]]}
+                     "expected": [m["name"] for m in work.taken.get(i, [])]}
             results.append(r)
             if "error" in r:
                 print(f"  worker {i}: ERROR -- {r['error']}")
@@ -258,6 +328,14 @@ def main() -> int:
                 print(f"  worker {i}: {t[0]}/{t[1]} killed, {t[2]} survived, {t[3]} skipped "
                       f"({r['secs']}s, rc={r['rc']})")
     wall = time.time() - t0
+    durations = _load_durations(base)
+    for r in results:
+        durations.update(r.get("durations") or {})
+    try:
+        with open(_durations_path(base), "w", encoding="utf-8") as fh:
+            json.dump(durations, fh, indent=1, sort_keys=True)
+    except OSError:
+        pass
 
     survived = sorted({s for r in results for s in r.get("survived", [])})
     skipped = sorted({s for r in results for s in r.get("skipped", [])})
