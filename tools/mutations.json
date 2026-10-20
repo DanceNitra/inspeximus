@@ -4385,8 +4385,8 @@
  {
   "name": "the replay filter loses r\"\\btaskkill\\b[^\\n]*?\\s/im\\b\"",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\btaskkill\\b[^\\n]*?\\s/im\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\btaskkill\\b[^\\n]*?\\s/im\\b\", r\"\\btaskkill\\b\"",
+  "new": "r\"\\btaskkill\\b[^\\n]*?\\s/im\\b\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4394,8 +4394,8 @@
  {
   "name": "the replay filter loses r\"\\b(?:stop-process|spps|kill)\\b[^\\n]*?\\s-name\\b",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\b(?:stop-process|spps|kill)\\b[^\\n]*?\\s-name\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\b(?:stop-process|spps|kill)\\b[^\\n]*?\\s-name\\b\", r\"\\b(?:stop-process|spps|kill)\\b\"",
+  "new": "r\"\\b(?:stop-process|spps|kill)\\b[^\\n]*?\\s-name\\b\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4403,8 +4403,8 @@
  {
   "name": "the replay filter loses r\"\\bget-process\\b[^|\\n]*\\|\\s*stop-process\\b\"",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bget-process\\b[^|\\n]*\\|\\s*stop-process\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\bget-process\\b[^|\\n]*\\|\\s*stop-process\\b\", r\"\\bget-process\\b\"",
+  "new": "r\"\\bget-process\\b[^|\\n]*\\|\\s*stop-process\\b\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4430,8 +4430,8 @@
  {
   "name": "the replay filter loses r\"\\bremove-item\\b[^\\n]*?\\s-r(?:ecurse)?\\b\"",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bremove-item\\b[^\\n]*?\\s-r(?:ecurse)?\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\bremove-item\\b[^\\n]*?\\s-r(?:ecurse)?\\b\", r\"\\bremove-item\\b\"",
+  "new": "r\"\\bremove-item\\b[^\\n]*?\\s-r(?:ecurse)?\\b\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4439,8 +4439,8 @@
  {
   "name": "the replay filter loses r\"\\b(?:del|erase|rmdir|rd)\\b[^\\n]*?\\s/s\\b\"",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\b(?:del|erase|rmdir|rd)\\b[^\\n]*?\\s/s\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\b(?:del|erase|rmdir|rd)\\b[^\\n]*?\\s/s\\b\", r\"\\b(?:del|erase|rmdir|rd)\\b\"",
+  "new": "r\"\\b(?:del|erase|rmdir|rd)\\b[^\\n]*?\\s/s\\b\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4448,8 +4448,8 @@
  {
   "name": "the replay filter loses r\"\\bgit\\s+reset\\b[^\\n]*?\\s--hard\\b\"",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bgit\\s+reset\\b[^\\n]*?\\s--hard\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\bgit\\s+reset\\b[^\\n]*?\\s--hard\\b\", r\"\\bgit\\s+reset\\b\"",
+  "new": "r\"\\bgit\\s+reset\\b[^\\n]*?\\s--hard\\b\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4457,8 +4457,8 @@
  {
   "name": "the replay filter loses r\"\\bgit\\s+clean\\b[^\\n]*?\\s(?:-\\w*f|--force)\"",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bgit\\s+clean\\b[^\\n]*?\\s(?:-\\w*f|--force)\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\bgit\\s+clean\\b[^\\n]*?\\s(?:-\\w*f|--force)\", r\"\\bgit\\s+clean\\b\"",
+  "new": "r\"\\bgit\\s+clean\\b[^\\n]*?\\s(?:-\\w*f|--force)\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4466,8 +4466,8 @@
  {
   "name": "the replay filter loses r\"\\bgit\\s+push\\b[^\\n]*?\\s(?:--force\\b|--force-wi",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bgit\\s+push\\b[^\\n]*?\\s(?:--force\\b|--force-with-lease\\b|-f\\b|\\+\\S)\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\bgit\\s+push\\b[^\\n]*?\\s(?:--force\\b|--force-with-lease\\b|-f\\b|\\+\\S)\", r\"\\bgit\\s+push\\b\"",
+  "new": "r\"\\bgit\\s+push\\b[^\\n]*?\\s(?:--force\\b|--force-with-lease\\b|-f\\b|\\+\\S)\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4475,8 +4475,8 @@
  {
   "name": "the replay filter loses r\"\\bgit\\s+checkout\\b[^\\n]*?\\s(?:--\\s|-f\\b|--forc",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bgit\\s+checkout\\b[^\\n]*?\\s(?:--\\s|-f\\b|--force\\b)\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\bgit\\s+checkout\\b[^\\n]*?\\s(?:--\\s|-f\\b|--force\\b)\", r\"\\bgit\\s+checkout\\b\"",
+  "new": "r\"\\bgit\\s+checkout\\b[^\\n]*?\\s(?:--\\s|-f\\b|--force\\b)\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4484,8 +4484,8 @@
  {
   "name": "the replay filter loses r\"\\bgit\\s+branch\\b[^\\n]*?\\s(?-i:-D)\\b\"",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bgit\\s+branch\\b[^\\n]*?\\s(?-i:-D)\\b\",",
-  "new": "r\"(?!x)x\",",
+  "old": "r\"\\bgit\\s+branch\\b[^\\n]*?\\s(?-i:-D)\\b\", r\"\\bgit\\s+branch\\b\"",
+  "new": "r\"\\bgit\\s+branch\\b[^\\n]*?\\s(?-i:-D)\\b\", r\"(?!x)x\"",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
@@ -4520,8 +4520,8 @@
  {
   "name": "the replay filter loses r\"\\bmkfs\\b|\\bdd\\b[^\\n]*?\\bof=/dev/|\\bformat(?:\\.",
   "file": "inspeximus/claude_code.py",
-  "old": "r\"\\bmkfs\\b|\\bdd\\b[^\\n]*?\\bof=/dev/|\\bformat(?:\\.com)?\\s+[a-z]:\",",
-  "new": "r\"(?!x)x\",",
+  "old": "           [re.compile(r\"\\bmkfs\\b\", re.I),",
+  "new": "           [] and [re.compile(r\"\\bmkfs\\b\", re.I),",
   "tests": [
    "tests/test_the_hook_does_not_replay_destructive_commands.py"
   ]
