@@ -17467,7 +17467,7 @@ class Inspeximus:
                          f"{', '.join(Inspeximus._OUTCOME_BAD_WORDS)} (bad)")
 
     @_decides(save=True)
-    def credit(self, ids, outcome, weight: float = 1.0, warrant=None) -> dict:
+    def credit(self, ids, outcome, weight: float = 1.0, warrant=None, ledger=None) -> dict:
         """Close the accuracy loop onto the substrate. When the work a set of memories was recalled into
         gets a real verdict (a forecast resolves, a replication is ruled REPRODUCED/FAILED, a hypothesis is
         severe-tested), call credit(recalled_ids, outcome): each memory's Beta(good,bad) track record is
@@ -17498,6 +17498,12 @@ class Inspeximus:
         risk is already disclaimed via credit_requires_warrant (a warrant STRING is spoofable); what was not
         said is that the promotion leaves no trace to audit afterwards. If outcomes come from anywhere an
         attacker influences, gate them at the source — there is no after-the-fact check here.
+
+        `ledger`, an ActionLedger, closes that gap for callers who pass it (3.22): each call appends one
+        "memory:credit" entry, hash-chained and signed when the ledger signs, whose inputs are the ids, the
+        outcome, the weight and the warrant, and whose output is the result plus every updated record's
+        good, bad and good_warranted after the credit. A refused call (a bad weight or outcome) records nothing.
+        The MCP `credit` tool is already recorded as "mcp:credit" when INSPEXIMUS_ACTIONS is on.
         """
         good = Inspeximus._outcome_good(outcome)
         # COUNTS ONLY GROW. A negative weight was added as-is, so credit(bad, weight=-5) took back a
@@ -17532,8 +17538,15 @@ class Inspeximus:
             # this handle's memory and a server that exited before its next forced save lost it
             # (mcp-tools-review M1).
             self._save(force=True)
-        return {"updated": updated, "outcome": key, "weight": weight,
-                **({"collapsed": collapsed} if collapsed else {})}
+        out = {"updated": updated, "outcome": key, "weight": weight,
+               **({"collapsed": collapsed} if collapsed else {})}
+        if ledger is not None:
+            counts = {i: {k: float(by_id[i].get(k, 0) or 0) for k in ("good", "bad", "good_warranted")}
+                      for i in updated}
+            ledger.record("memory:credit", inputs={"ids": _as_ids(ids), "outcome": outcome, "weight": weight,
+                                                   "warrant": warrant},
+                          output=dict(out, counts=counts))
+        return out
 
     def _warrant_is_exogenous(self, rec: dict, warrant) -> bool:
         """A warrant vouches for an outcome the record did NOT author itself. Exogenous = a non-empty token
