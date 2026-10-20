@@ -15142,5 +15142,14 @@
   "tests": [
    "tests/test_3211_no_pattern_in_the_package_backtracks.py::test_one_stall_on_a_linear_call_is_not_a_verdict"
   ]
+ },
+ {
+  "name": "3.21.1 CI 39377281135: the growth ratio test fails on one noisy step, without the fresh confirmation",
+  "file": "tests/test_3211_every_rewrite_grows_linearly.py",
+  "old": "    again = remeasure(worse)\n    return {name: worse[name] + [round(t, 4) for t in again[name]] for name in worse\n            if again[name][1] >= CONFIRM_FLOOR and again[name][1] / max(again[name][0], 1e-6) > MAX_RATIO}",
+  "new": "    return worse",
+  "tests": [
+   "tests/test_3211_every_rewrite_grows_linearly.py::test_one_noisy_step_is_not_a_verdict"
+  ]
  }
 ]
