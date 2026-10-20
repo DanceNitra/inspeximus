@@ -78,7 +78,7 @@ class Fake:
         if "--workflow ci.yml" in cmd:
             return 0, json.dumps([_dispatched(), _pushed()])
         if "--workflow one-memory.yml" in cmd or "--workflow clean-install.yml" in cmd:
-            return 0, json.dumps([_dispatched(run_id=4)])
+            return 0, json.dumps([_dispatched(run_id=4), _pushed()])
         if cmd == "git ls-remote origin refs/heads/main":
             return 0, HEAD + "\trefs/heads/main\n"
         if cmd.startswith("gh run view"):
@@ -179,8 +179,8 @@ def test_an_install_change_runs_the_install_workflows_and_a_red_one_keeps_main_u
     assert rc == 0, out
     for wf in ("ci.yml", "one-memory.yml", "clean-install.yml"):
         assert fake.index("gh workflow run %s -R" % wf) is not None, (wf, fake.calls)
-        first = (fake.index if wf == "ci.yml" else fake.last)("gh run list -R %s --workflow %s" % (_load().REPO, wf))
-        assert first < fake.index(MAIN_PUSH), wf              # ci.yml is polled again on main, after the push
+        polls = [i for i, c in enumerate(fake.calls) if c.startswith("gh run list -R %s --workflow %s" % (_load().REPO, wf))]
+        assert polls[0] < fake.index(MAIN_PUSH) < polls[-1], wf    # each is polled on the branch, then on main
     fake = Fake(**diff, **{"--workflow clean-install.yml": (0, json.dumps([_dispatched("failure", run_id=5)]))})
     rc, out = _run(root, fake)
     assert rc == 1 and "clean-install.yml run 5" in out and "main was not touched" in out, out
@@ -240,7 +240,7 @@ def test_main_ci_not_green_on_the_exact_commit_stops_before_the_tag(root, name, 
     """Green on the branch and red on main can still happen (a flaky test, a runner change)."""
     fake = Fake(**{"--workflow ci.yml": (0, json.dumps([_dispatched(), run]))})
     rc, out = _run(root, fake)
-    assert rc == 1 and "STOP:" in out and "main CI run 1 is" in out and "not success on" in out, (name, out)
+    assert rc == 1 and "STOP:" in out and "main ci.yml run 1 is" in out and "not success on" in out, (name, out)
     assert fake.index(MAIN_PUSH) is not None
     assert fake.index("git tag") is None, fake.calls
 
@@ -359,3 +359,14 @@ def test_the_pre_flight_passes_the_flag_that_leaves_the_work_counters_to_ci(root
     assert rc == 0, out
     calls = [c for c in fake.calls if "release_check.py" in c]
     assert len(calls) == 1 and calls[0].endswith("--skip-tests " + rc_mod.SKIP_COUNTERS_FLAG), calls
+
+
+def test_a_red_install_workflow_on_main_stops_the_tag(root):
+    # 3.21.1, 2026-10-20: clean-install.yml on main was red from cancelled macOS jobs, and the script waited for
+    # ci.yml alone, so it would have tagged. Every install workflow the branch ran must be green on main too.
+    diff = {"git diff --name-only origin/main HEAD": (0, "inspeximus/install_all.py\n")}
+    red = json.dumps([_dispatched(run_id=4), dict(_pushed("failure"), databaseId=7)])
+    fake = Fake(**diff, **{"--workflow clean-install.yml": (0, red)})
+    rc, out = _run(root, fake)
+    assert rc == 1 and "main clean-install.yml run 7 is failure" in out, out
+    assert fake.index(MAIN_PUSH) is not None and fake.index("git tag -a v" + V) is None

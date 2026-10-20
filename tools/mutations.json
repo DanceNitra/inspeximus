@@ -3953,8 +3953,8 @@
  {
   "name": "the release script tags after a red CI run",
   "file": "tools/release.py",
-  "old": "        if run.get(\"conclusion\") != \"success\" or run.get(\"headSha\") != head:\n            raise Stop(\"main CI run %s is %s on %s, not success on %s\" % (\n",
-  "new": "        if False:\n            raise Stop(\"main CI run %s is %s on %s, not success on %s\" % (\n",
+  "old": "            if run.get(\"conclusion\") != \"success\" or run.get(\"headSha\") != head:\n                raise Stop(\"main %s run %s is %s on %s, not success on %s\" % (\n",
+  "new": "            if False:\n                raise Stop(\"main %s run %s is %s on %s, not success on %s\" % (\n",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
@@ -5200,8 +5200,8 @@
  {
   "name": "HEAD goes to main without waiting for the branch runs",
   "file": "tools/release.py",
-  "old": "        for wf in workflows:\n            run = finished_run(",
-  "new": "        for wf in []:\n            run = finished_run(",
+  "old": "        for wf in workflows:\n            run = finished_run(head, wf, \"workflow_dispatch\"",
+  "new": "        for wf in []:\n            run = finished_run(head, wf, \"workflow_dispatch\"",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]
@@ -13171,8 +13171,8 @@
  {
   "name": "3.19 release: guard 5 does not look at the ci.yml run's perf job",
   "file": "tools/release.py",
-  "old": "            if wf == \"ci.yml\":\n",
-  "new": "            if False:\n",
+  "old": "            if wf == \"ci.yml\":\n                require_perf_job(run, sh, \"on %s; main was not touched\" % branch)\n",
+  "new": "            if False:\n                require_perf_job(run, sh, \"on %s; main was not touched\" % branch)\n",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py"
   ]

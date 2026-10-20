@@ -109,3 +109,30 @@ def test_a_worker_can_start_its_own_pytest(tmp_path):
              "'-c', 'print(7)'], capture_output=True, text=True, encoding='utf-8', errors='replace'); "
              "print(r.stdout.strip())")
     assert _py(inner, env) == "7"
+
+def test_two_runs_in_one_tree_use_separate_worktree_directories(monkeypatch, tmp_path):
+    # Measured 2026-10-20: two runs shared .mutwt/w0, and the second run lost worker 0 to "already exists".
+    seen = []
+
+    def fake_worker(idx, mutations, base, keep):
+        seen.append(base)
+        names = [m["name"] for m in mutations]
+        return {"idx": idx, "rc": 0, "secs": 0.0, "log": None, "totals": (len(names), len(names), 0, 0),
+                "survived": [], "skipped": [], "preflight_red": [], "expected": names, "killed_clipped": [],
+                "stderr_tail": "", "stdout": ""}
+    spec = tmp_path / "spec.json"
+    spec.write_text(json.dumps([{"name": "m0", "file": "inspeximus/core.py", "old": "x", "new": "y", "tests": []}]),
+                    encoding="utf-8")
+    monkeypatch.setattr(mcp, "_run_worker", fake_worker)
+    monkeypatch.setattr(mcp, "_dirty_tracked", lambda: [])
+    monkeypatch.setattr(sys, "argv", ["mutation_check_parallel.py", str(spec), "--workers", "1"])
+    try:
+        for pid in (111, 222):
+            monkeypatch.setattr(os, "getpid", lambda pid=pid: pid)
+            assert mcp.main() == 0
+        assert len(set(seen)) == 2
+        assert all(os.path.dirname(b) == os.path.join(mcp.ROOT, ".mutwt") for b in seen)
+    finally:
+        import shutil
+        for b in seen:
+            shutil.rmtree(b, ignore_errors=True)

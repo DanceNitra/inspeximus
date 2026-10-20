@@ -301,7 +301,11 @@ def main() -> int:
     n = args.workers or max(2, min(10, (os.cpu_count() or 4) - 4))
     n = min(n, len(mutations))
     base = os.path.join(ROOT, ".mutwt")
-    os.makedirs(base, exist_ok=True)
+    # ONE DIRECTORY PER RUN for the worktrees, logs and pre-flight output (3.22). Two runs in one tree shared
+    # .mutwt/w0..wN, and the second run's worker 0 failed with "worktree add failed: .mutwt/w0 already exists"
+    # (measured 2026-10-20). The durations of past runs stay shared in `base`, where every run reads them.
+    run = os.path.join(base, "run-%d" % os.getpid())
+    os.makedirs(run, exist_ok=True)
     work = _Work(mutations, _load_durations(base))
     views = [work.view(i) for i in range(n)]
 
@@ -312,7 +316,7 @@ def main() -> int:
     t0 = time.time()
     results = []
     with cf.ThreadPoolExecutor(max_workers=n) as pool:
-        futs = {pool.submit(_run_worker, i, views[i], base, args.keep): i for i in range(n)}
+        futs = {pool.submit(_run_worker, i, views[i], run, args.keep): i for i in range(n)}
         for fut in cf.as_completed(futs):
             i = futs[fut]
             try:
@@ -359,7 +363,7 @@ def main() -> int:
     for s in skipped:
         print(f"  skipped: {s}")
     if any(r.get("preflight_red") for r in results):
-        print(f"  red pre-flight output: {os.path.join(base, 'preflight')}; worker logs: {base}")
+        print(f"  red pre-flight output: {os.path.join(run, 'preflight')}; worker logs: {run}")
     for s in survived:
         print(f"  {s}")
     for s in sorted(set(lost))[:40]:

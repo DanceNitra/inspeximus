@@ -33,7 +33,9 @@ names. Before main moves:
 Then HEAD is pushed to main as a fast-forward, and before the tag:
   6. origin/main is HEAD, so the tag names the commit CI cleared.
   7. the `push` run of ci.yml on main for exactly HEAD finished with conclusion success, and its job
-     "work counters must not grow" exists and concluded success.
+     "work counters must not grow" exists and concluded success. So did the `push` run on main of every
+     install workflow the branch ran (3.22): on 3.21.1 the script waited for ci.yml alone, and would have
+     tagged while clean-install.yml on main was red from cancelled macOS jobs.
 Then the tag is created and pushed, and the script finds the release run and STOPS at its `pypi` gate.
 The release branch stays on origin; nothing here deletes a ref.
 
@@ -252,12 +254,14 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
         if not now or now[0] != head:
             raise Stop("origin/main moved to %s after the push; the tag would not name what CI cleared"
                        % (now[0][:12] if now else "nothing"))
-        run = finished_run(head, "ci.yml", "push", sh, sleep)
-        if run.get("conclusion") != "success" or run.get("headSha") != head:
-            raise Stop("main CI run %s is %s on %s, not success on %s" % (
-                run.get("databaseId"), run.get("conclusion"), str(run.get("headSha"))[:12], head[:12]))
-        require_perf_job(run, sh, "on main")
-        out("main CI run %s: success on %s" % (run.get("databaseId"), head[:12]))
+        for wf in workflows:
+            run = finished_run(head, wf, "push", sh, sleep)
+            if run.get("conclusion") != "success" or run.get("headSha") != head:
+                raise Stop("main %s run %s is %s on %s, not success on %s" % (
+                    wf, run.get("databaseId"), run.get("conclusion"), str(run.get("headSha"))[:12], head[:12]))
+            if wf == "ci.yml":
+                require_perf_job(run, sh, "on main")
+            out("main %s run %s: success on %s" % (wf, run.get("databaseId"), head[:12]))
         now = sh(["git", "ls-remote", "origin", "refs/heads/main"])[1].split()
         if not now or now[0] != head:
             raise Stop("origin/main moved to %s during main CI; the tag would not name what CI cleared"
