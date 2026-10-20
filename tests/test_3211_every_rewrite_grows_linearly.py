@@ -1,7 +1,7 @@
 """Every 3.21.1 rewrite grows linearly from 40 KB to 320 KB (AUDIT-A R2-3).
 
 An absolute bound cannot see a slowdown that only copies memory. A variant of _PipeThen that copies the text's tail at
-every pipe gives the same answers and stays under every bound at 160 KB (0.055 s), yet is quadratic: 0.13 s at 320 KB,
+every pipe gives the same answers and stays under every bound at 160 KB (0.055 s), yet is quadratic: 0.139 s at 320 KB,
 up to 1.1 s at 640 KB, and it passed all 85 tests of round 2. So each rewrite is timed here at 40, 80, 160 and 320 KB,
 as the minimum of 3 runs, and a 4x step in size must not take more than 8x the time. A linear rewrite takes about 4x;
 a quadratic one 16x. Steps whose larger call is under 10 ms are not judged: there the clock is the noise. The
