@@ -64,7 +64,7 @@ shapes.update({
     "link ]( newline": (mir.LINK.findall, rep("](\n")), "link [t](": (mir.LINK.findall, rep("[t](", ")")),
 })
 # every replay rule and warning stand-in, on its own keyword repeated, alone and before a newline or a pipe
-KEYS = {"taskkill": "taskkill ", "stop-process": "kill ", "get-process": "get-process ", "remove-item": "remove-item ",
+KEYS = {"taskkill": "taskkill ", "get-process": "get-process ", "stop-process": "kill ", "remove-item": "remove-item ",
         "(?:del": "rd ", "git\\s+reset": "git reset ", "git\\s+clean": "git clean ", "git\\s+push\\b": "git push ",
         "git\\s+checkout": "git checkout ", "git\\s+branch": "git branch ", "mkfs": "dd ", "gh\\s+(issue": "gh api ",
         "git\\s+push\\s+.*": "git push "}

@@ -113,7 +113,7 @@ FAST = r"""
 import json, re, time
 from inspeximus import claude_code as cc
 from inspeximus import memory_index_receipt as mir
-KEYS = {"taskkill": "taskkill ", "stop-process": "kill ", "get-process": "get-process ", "remove-item": "remove-item ",
+KEYS = {"taskkill": "taskkill ", "get-process": "get-process ", "stop-process": "kill ", "remove-item": "remove-item ",
         "(?:del": "rd ", "git\\s+reset": "git reset ", "git\\s+clean": "git clean ", "git\\s+push\\b": "git push ",
         "git\\s+checkout": "git checkout ", "git\\s+branch": "git branch ", "mkfs": "dd ", "gh\\s+(issue": "gh api ",
         "git\\s+push\\s+.*": "git push "}
@@ -124,7 +124,8 @@ out = {}
 for pattern, search in objs:
     unit = next((u for k, u in KEYS.items() if k in pattern), None)
     if unit:
-        text = unit * (40000 // len(unit))
+        size = 160000 if ".*" in pattern else 40000     # the force-push regex is mildly quadratic: 1 s at 160 KB
+        text = unit * (size // len(unit))
         t = time.perf_counter(); search(text); out["%s %r" % (pattern[:24], unit)] = time.perf_counter() - t
 for name, text in (("cmdpos a;", "a;" * 20000 + "y "), ("cmdpos ((", "((" * 20000 + "y "), ("link ](", "](x" * 13000 + ".md)"),
                    ("link ]( no close", "](" * 20000)):
