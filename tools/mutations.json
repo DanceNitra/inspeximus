@@ -15711,5 +15711,32 @@
   "tests": [
    "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_a_ledger_that_fails_to_record_does_not_undo_the_credit_and_says_so"
   ]
+ },
+ {
+  "name": "3.22 release: main waits for ci.yml alone, not every install workflow the branch ran",
+  "file": "tools/release.py",
+  "old": "        for wf in workflows:\n            run = finished_run(head, wf, \"push\"",
+  "new": "        for wf in [\"ci.yml\"]:\n            run = finished_run(head, wf, \"push\"",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py::test_a_red_install_workflow_on_main_stops_the_tag"
+  ]
+ },
+ {
+  "name": "3.22 release: guard 7 does not look at the main ci.yml run's perf job",
+  "file": "tools/release.py",
+  "old": "            if wf == \"ci.yml\":\n                require_perf_job(run, sh, \"on main\")\n",
+  "new": "            if False:\n                require_perf_job(run, sh, \"on main\")\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py"
+  ]
+ },
+ {
+  "name": "3.22 mutation_check_parallel: two runs share one worktree directory",
+  "file": "tools/mutation_check_parallel.py",
+  "old": "    run = os.path.join(base, \"run-%d\" % os.getpid())\n",
+  "new": "    run = base\n",
+  "tests": [
+   "tests/test_mutation_check_parallel_isolates_its_workers.py::test_two_runs_in_one_tree_use_separate_worktree_directories"
+  ]
  }
 ]
