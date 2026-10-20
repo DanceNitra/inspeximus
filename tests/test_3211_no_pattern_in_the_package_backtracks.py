@@ -59,20 +59,182 @@ def test_control_the_collection_reaches_the_patterns_the_first_scan_missed(colle
     assert len(rows) > 300, len(rows)
 
 
-def test_the_excluded_patterns_are_used_only_inside_derive_key():
+# ---- R2-2: who may use the excluded patterns, across the whole package ----
+GUARDED = set(EXCLUDED_NAMES) | {"_ex_parse_clause"}
+
+
+def _excluded_uses(sources):
+    """Every use of an excluded pattern, or of _ex_parse_clause, that is not one of the three allowed ones: the
+    module-level definition in core.py, a use inside _ex_parse_clause, and the call inside derive_key. Counted by name
+    anywhere in the package: an import from .core, an alias, an attribute (`core._EX_REL`), and a string that names
+    one (`globals()["_EX_OF"]`, `getattr(core, "_EX_OF")`)."""
+    bad = []
+    for rel, src in sources.items():
+        tree = ast.parse(src)
+        parents = {}
+        for n in ast.walk(tree):
+            for c in ast.iter_child_nodes(n):
+                parents[c] = n
+
+        def inside(node):
+            while node in parents:
+                node = parents[node]
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    return node.name
+            return None
+        for n in ast.walk(tree):
+            name = (n.id if isinstance(n, ast.Name) else n.attr if isinstance(n, ast.Attribute)
+                    else n.name.split(".")[-1] if isinstance(n, ast.alias)
+                    else n.value if isinstance(n, ast.Constant) and isinstance(n.value, str) else None)
+            if name not in GUARDED:
+                continue
+            fn = inside(n)
+            ok = rel.endswith("inspeximus/core.py") and (
+                (isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store) and fn is None
+                 and isinstance(parents.get(n), ast.Assign))                       # the definition
+                or (fn == "_ex_parse_clause" and name in EXCLUDED_NAMES)
+                or (fn == "derive_key" and name == "_ex_parse_clause" and isinstance(parents.get(n), ast.Call)))
+            if not ok:
+                bad.append("%s:%d %s (%s)" % (rel, getattr(n, "lineno", 0), name, type(n).__name__))
+    return bad
+
+
+def _package_sources():
+    out = {}
+    for dp, _d, fs in os.walk(os.path.dirname(core.__file__)):
+        for f in fs:
+            if f.endswith(".py"):
+                p = os.path.join(dp, f)
+                out[p.replace(os.sep, "/")] = open(p, encoding="utf-8").read()
+    return out
+
+
+def test_the_excluded_patterns_are_used_only_inside_derive_key_anywhere_in_the_package():
     src = open(core.__file__, encoding="utf-8").read()
-    tree = ast.parse(src)
-    users = {}
-    for fn in ast.walk(tree):
-        if isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            for n in ast.walk(fn):
-                if isinstance(n, ast.Name) and n.id in EXCLUDED_NAMES:
-                    users.setdefault(n.id, set()).add(fn.name)
-    assert users and all(v == {"_ex_parse_clause"} for v in users.values()), users
-    callers = {fn.name for fn in ast.walk(tree) if isinstance(fn, ast.FunctionDef)
-               and any(isinstance(c, ast.Call) and getattr(c.func, "id", "") == "_ex_parse_clause" for c in ast.walk(fn))}
-    assert callers == {"derive_key"}, callers
     assert CLAUSE_SPLIT in src and src.count(CLAUSE_SPLIT) == 1
+    assert _excluded_uses(_package_sources()) == []
+
+
+AUDIT_A_BYPASSES = {
+    # AUDIT-A R2-2: each passed the first version of the check above
+    "inspeximus/_ex_user.py": "from .core import _EX_REL, _ex_parse_clause\n\ndef raw_match(text):\n"
+                              "    return _EX_REL.match(text)\n",
+    "inspeximus/core.py": "import re\n_EX_REL = re.compile('x')\n_ALIAS = _EX_REL\n\ndef f(t):\n    return _ALIAS.match(t)\n\n"
+                          "def g(t):\n    return globals()['_EX_OF'].match(t)\n",
+}
+
+
+def test_control_the_walk_reports_audit_as_three_bypasses():
+    bad = _excluded_uses(AUDIT_A_BYPASSES)
+    assert any("_ex_user.py" in b and "_EX_REL" in b for b in bad), bad            # another module imports it
+    assert any("core.py:3 _EX_REL" in b for b in bad), bad                          # a module-level alias
+    assert any("core.py:9 _EX_OF (Constant)" in b for b in bad), bad               # globals()['_EX_OF']
+
+
+# ---- R2-1: every re call whose pattern is not a plain literal is on this reviewed list ----
+# (file, enclosing function, pattern source) -> why it cannot backtrack, or which attack covers it. A new site, or a
+# changed one, fails test_every_re_call_with_a_built_pattern_is_reviewed until it is read and added here.
+REVIEWED = {
+    ("inspeximus/_storelink.py", "_components", "'[' + re.escape(seps) + ']+'"):
+        "one character class with +: linear",
+    ("inspeximus/archive.py", "_segment_rx", "re.escape(p.stem) + '\\\\.archive-\\\\d{4}-\\\\d{2}\\\\.\\\\d+' + re.escape(p.suffix) + '$'"):
+        "an escaped file stem, fixed digit runs and an escaped suffix, anchored at $: linear; reads file names",
+    ("inspeximus/archive.py", "segment_files", "rx.pattern[:-1] + '\\\\.tmp\\\\.\\\\d+$'"):
+        "_segment_rx's pattern plus a fixed digit tail: linear",
+    ("inspeximus/claude_code.py", "_LineFlag.__init__", "flag"):
+        "compiled from a literal in _NO_REPLAY; collected at runtime from the stand-in and attacked",
+    ("inspeximus/claude_code.py", "_LineFlag.__init__", "kw"):
+        "compiled from a literal in _NO_REPLAY; collected at runtime from the stand-in and attacked",
+    ("inspeximus/claude_code.py", "_PipeThen.__init__", "after"):
+        "compiled from a literal in _NO_REPLAY; collected at runtime from the stand-in and attacked",
+    ("inspeximus/claude_code.py", "_PipeThen.__init__", "kw"):
+        "compiled from a literal in _NO_REPLAY; collected at runtime from the stand-in and attacked",
+    ("inspeximus/claude_code.py", "pre_tool_use", "pat"):
+        "the _PRE_PATTERNS strings: each a literal, collected by the literal pass and attacked",
+    ("inspeximus/code_guard.py", "_pattern_for", "_ident(subject)"):
+        "_ident: an escaped symbol between fixed lookarounds: linear",
+    ("inspeximus/code_guard.py", "check_code", "_pattern_for(sym, code)"):
+        "_pattern_for returns _ident(...): an escaped symbol between fixed lookarounds: linear",
+    ("inspeximus/code_guard.py", "scan_lines", "_pattern_for(sym, code or '')"):
+        "_pattern_for returns _ident(...): an escaped symbol between fixed lookarounds: linear",
+    ("inspeximus/core.py", "<module>", "'[' + ''.join(map(chr, _RE_I_ASCII_FOLD)) + ']'"):
+        "one character class: linear",
+    ("inspeximus/core.py", "<module>", "'^\\\\s*(?:(?:' + '|'.join(_EX_MARK_ADV) + ')\\\\b[\\\\s]*[:,;.!-]*\\\\s*|(?:' + "
+     "'|'.join(_EX_MARK_NOUN) + ')\\\\b\\\\s*[:,;-]+\\\\s*)+'"):
+        "_EX_LEAD: kept at module level, collected at runtime and attacked",
+    ("inspeximus/core.py", "Inspeximus._route_key", "'(?<![a-z0-9])' + re.escape(k.lower()) + '(?![a-z0-9])'"):
+        "an escaped key between fixed lookarounds: linear",
+    ("inspeximus/core.py", "Inspeximus._save_temps", "re.escape(base) + '\\\\.[a-z0-9_]{8}\\\\.tmp$'"):
+        "an escaped file name and a fixed tail, anchored: linear; reads file names",
+    ("inspeximus/core.py", "Inspeximus._save_temps", "re.escape(base) + '\\\\.rows-tmp$'"):
+        "an escaped file name and a fixed tail, anchored: linear; reads file names",
+    ("inspeximus/core.py", "Inspeximus._store_siblings", "Inspeximus._OWN_COPY_RE.pattern"):
+        "a class attribute compiled at import: collected at runtime and attacked",
+    ("inspeximus/core.py", "Inspeximus._store_siblings", "Inspeximus._SIDECAR_RE.pattern"):
+        "a class attribute compiled at import: collected at runtime and attacked",
+    ("inspeximus/core.py", "Inspeximus._store_siblings", "re.escape(base) + '\\\\.'"):
+        "an escaped file name and a dot: linear",
+    ("inspeximus/core.py", "Inspeximus.check_self_narration", "'(?<![a-z])' + re.escape(phrase) + '(?![a-z])'"):
+        "an escaped phrase between fixed lookarounds: linear",
+    ("inspeximus/core.py", "Inspeximus.erasure_audit",
+     "'(?<![\\\\w\\\\-/:+])(?<!\\\\w\\\\.)' + re.escape(v) + '(?![\\\\w\\\\-/:+])(?!\\\\.\\\\w)'"):
+        "an escaped value between fixed lookarounds: linear",
+    ("inspeximus/core.py", "Inspeximus.rederive.rewrite", "re.escape(old)"):
+        "an escaped literal: linear",
+    ("inspeximus/core.py", "Inspeximus.route", "f'\\\\b{re.escape(str(v).lower())}\\\\b'"):
+        "an escaped value between word boundaries: linear",
+    ("inspeximus/core.py", "Inspeximus.verify_claim._matches", "'(?<![a-z0-9])' + re.escape(v) + '(?![a-z0-9])'"):
+        "an escaped value between fixed lookarounds: linear",
+    ("inspeximus/erasure_auditor.py", "TextStoreProbe.recover",
+     "'(?<![a-z0-9])' + re.escape(v.lower()) + '(?![a-z0-9])'"):
+        "an escaped value between fixed lookarounds: linear",
+}
+
+
+def test_every_re_call_with_a_built_pattern_is_reviewed():
+    sites, _folded = ra.dynamic_sites()
+    new = sorted(k for k in sites if k not in REVIEWED)
+    gone = sorted(k for k in REVIEWED if k not in sites)
+    assert not new, "re calls with a built pattern that nobody has reviewed (add each to REVIEWED with its reason):\n" + \
+        "\n".join("  %s :: %s :: %s (line %d)" % (k + (sites[k],)) for k in new)
+    assert not gone, "REVIEWED names sites that no longer exist: %s" % gone
+
+
+AUDIT_A_PLANTED = r"""
+import re
+def control_literal(t):
+    return re.search(r"\bdemoa\b[^\n]*?\s-zz\b", t)
+def by_concat_in_function(t):
+    return re.search(r"\bdemob\b" + r"[^\n]*?\s-zz\b", t)
+def by_join_in_function(t):
+    return re.compile("(?:" + "|".join(["democ", "demod"]) + r")\b[^\n]*?\s-zz\b").search(t)
+_PAT = r"\bdemoe\b" + r"[^\n]*?\s-zz\b"
+def by_global_string(t):
+    return re.search(_PAT, t)
+def by_format(t, kw="demof"):
+    return re.search(r"\b{}\b[^\n]*?\s-zz\b".format(kw), t)
+def by_fstring(t, kw="demog"):
+    return re.search(rf"\b{kw}\b[^\n]*?\s-zz\b", t)
+def _mk(a, b):
+    return a + b
+def by_helper(t):
+    p = _mk(r"\bdemoh\b", r"[^\n]*?\s-zz\b")
+    return re.search(p, t)
+"""
+
+
+def test_control_every_pattern_audit_a_planted_is_caught():
+    # AUDIT-A R2-1: seven quadratic patterns ("demoX " * n: 3.0 s at 8,000 repeats). Three are attacked and flagged:
+    # the plain literal, the `+` of two literals inside a function and the module-level string built by `+` (both
+    # fold to literals). The four built at run time (join, format, f-string, helper) are sites nobody has reviewed.
+    sites, folded = ra.dynamic_sites({"inspeximus/_evade_demo.py": AUDIT_A_PLANTED})
+    unreviewed = {k[1] for k in sites if k not in REVIEWED}
+    assert unreviewed == {"by_join_in_function", "by_format", "by_fstring", "by_helper"}, sites
+    attacked = [p for (p, _f) in folded] + [r"\bdemoa\b[^\n]*?\s-zz\b"]
+    assert len(attacked) == 3, folded
+    for pat in attacked:
+        rx = re.compile(pat, re.I)
+        assert ra.attack(rx.search, ra.pumps(pat, re.I)), "not flagged: %s" % pat
 
 
 def test_derive_key_is_linear_on_the_input_that_blows_each_excluded_pattern_up():

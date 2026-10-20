@@ -46,6 +46,7 @@ SEPARATORS = (" ", "\n", ";", "|", "", "a")
 SINGLES = (" ", "\n", "\t", "a", "1", ".", "-", "<a>", "a=", "a;", "|", "/")
 SUFFIXES = ("", "\x00!")
 SCREEN_CHARS = 10000
+FUNCS = frozenset(("compile", "search", "match", "fullmatch", "findall", "finditer", "sub", "subn", "split"))
 SCREEN_SECONDS = 0.002
 SLOW_SECONDS = 0.5
 
@@ -103,6 +104,94 @@ def literal_strings():
                         continue
                     out.setdefault((n.value, 0), "%s:%d" % (rel, n.lineno))
     return out
+
+
+def _fold(node, consts):
+    """The string a module-level expression evaluates to, when it is literals, `+` of literals or names of such:
+    `_PAT = r"\\bdemoe\\b" + r"..."` (AUDIT-A R2-1 c). None for anything else."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.Name):
+        return consts.get(node.id)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        a, b = _fold(node.left, consts), _fold(node.right, consts)
+        return a + b if a is not None and b is not None else None
+    return None
+
+
+def _re_names(tree):
+    """The names that mean the `re` module or one of its functions here: `import re`, `import re as _re`,
+    `from re import compile as c`."""
+    mods, funcs = set(), {}
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Import):
+            for a in n.names:
+                if a.name == "re":
+                    mods.add(a.asname or "re")
+        elif isinstance(n, ast.ImportFrom) and n.module == "re":
+            for a in n.names:
+                if a.name in FUNCS:
+                    funcs[a.asname or a.name] = a.name
+    return mods, funcs
+
+
+def dynamic_sites(sources=None):
+    """({(file, enclosing function, pattern source): line}, {(folded pattern, 0): 'file:line'}).
+
+    Every call of an `re` function whose pattern argument is not a plain string literal is a SITE: a pattern built
+    by `+`, by `join`, by `format`, by an f-string, by a helper or from a parameter (AUDIT-A R2-1). The test requires
+    each site to be on a reviewed allowlist, so a new one fails until someone reads it. A site whose argument is a
+    module-level string that folds to a literal (`_PAT = r"..." + r"..."`) is not a site: the folded pattern is
+    returned and attacked like a literal. `sources` maps a name to source text, for the controls; by default every
+    module of the package is read."""
+    if sources is None:
+        sources = {}
+        for dp, _d, fs in os.walk(PKG):
+            for f in sorted(fs):
+                if f.endswith(".py"):
+                    p = os.path.join(dp, f)
+                    sources[os.path.relpath(p, ROOT).replace(os.sep, "/")] = open(p, encoding="utf-8").read()
+    sites, folded = {}, {}
+    for rel, src in sources.items():
+        tree = ast.parse(src)
+        mods, funcs = _re_names(tree)
+        if not mods and not funcs:
+            continue
+        consts = {}
+        for st in tree.body:                                   # module-level strings, in order
+            if isinstance(st, ast.Assign) and len(st.targets) == 1 and isinstance(st.targets[0], ast.Name):
+                v = _fold(st.value, consts)
+                if v is not None:
+                    consts[st.targets[0].id] = v
+        parents = {}
+        for n in ast.walk(tree):
+            for c in ast.iter_child_nodes(n):
+                parents[c] = n
+
+        def where(node):
+            names = []
+            while node in parents:
+                node = parents[node]
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    names.append(node.name)
+            return ".".join(reversed(names)) or "<module>"
+        for n in ast.walk(tree):
+            if not isinstance(n, ast.Call):
+                continue
+            f = n.func
+            is_re = (isinstance(f, ast.Attribute) and f.attr in FUNCS and isinstance(f.value, ast.Name)
+                     and f.value.id in mods) or (isinstance(f, ast.Name) and f.id in funcs)
+            if not is_re:
+                continue
+            arg = n.args[0] if n.args else next((k.value for k in n.keywords if k.arg == "pattern"), None)
+            if arg is None or (isinstance(arg, ast.Constant) and isinstance(arg.value, str)):
+                continue
+            value = _fold(arg, consts)                         # a name of, or a `+` of, module-level literals
+            if value is not None:
+                folded.setdefault((value, 0), "%s:%d" % (rel, n.lineno))
+                continue
+            sites[(rel, where(n), ast.unparse(arg))] = n.lineno
+    return sites, folded
 
 
 def runtime_objects():
@@ -326,6 +415,7 @@ def everything():
     for the record and for the equivalence tests, and no caller text reaches it, so it is listed, not attacked. The
     stand-in itself is attacked, with that pattern's pumps."""
     lits = literal_strings()
+    lits.update({k: v for k, v in dynamic_sites()[1].items() if k not in lits})
     pats, objs, failed = runtime_objects()
     objs = objs + _function_stand_ins()
     references = {o.pattern for _w, o in objs}
