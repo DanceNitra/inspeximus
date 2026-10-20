@@ -276,8 +276,11 @@ def test_one_changed_character_in_the_output_or_in_what_was_shown_no_longer_matc
     i = len(out) // 2
     edited = out[:i] + ("x" if out[i] != "x" else "y") + out[i + 1:]
     assert led.matches(r["ledger_seq"], output=edited)["output"] is False
-    shown = dict(cs.ledger_inputs(r), follow_up=r["follow_up"] + ".")
-    assert led.matches(r["ledger_seq"], inputs=shown)["inputs"] is False
+    # What the agent was shown, written out here rather than taken from ledger_inputs, so a field it drops shows.
+    shown = {"intent": "section", "mode": r["mode"], "bytes_in": r["bytes_in"], "sections": r["sections"],
+             "order": r["order"], "text": r["text"], "follow_up": r["follow_up"]}
+    assert led.matches(r["ledger_seq"], inputs=shown)["inputs"] is True
+    assert led.matches(r["ledger_seq"], inputs=dict(shown, follow_up=r["follow_up"] + "."))["inputs"] is False
 
 
 def test_the_ledger_holds_salted_digests_only(home):
