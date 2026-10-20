@@ -34,15 +34,29 @@ def test_a_bound_under_the_floor_is_refused():
         _timing.over_bound(ECHO, {"a": 0.0}, _timing.FLOOR / 2)
 
 
-BEST = "import json\nimport time\nn = [0]\ndef call(x):\n    n[0] += 1\n    time.sleep(x[n[0] - 1])\nprint(json.dumps({'best': best(call, ARG['sleeps'], ARG['bound']), 'calls': n[0]}))\n"
+#: CLOCK-FREE (3.21.1, mutload pass 1): the child's clock is a fixed sequence of instants, two per call, so each call
+#: "takes" exactly the time the test names. The first version slept, and sleep overshoots on a loaded runner.
+BEST = ("import json\nticks = iter(ARG['ticks'])\n_time.perf_counter = lambda: next(ticks)\nn = [0]\n"
+        "def call(x):\n    n[0] += 1\n"
+        "print(json.dumps({'best': best(call, None, ARG['bound']), 'calls': n[0]}))\n")
+
+
+def _ticks(*seconds):
+    return [t for i, s in enumerate(seconds) for t in (10.0 * i, 10.0 * i + s)]
 
 
 def test_best_is_the_minimum_of_three():
     # Three calls of 0.12, 0.06 and 0.09 s with a 0.05 s bound: none is under it, so all three run.
-    r = _timing.child(BEST, arg={"sleeps": [0.12, 0.06, 0.09], "bound": 0.05})
-    assert r["calls"] == 3 and 0.06 <= r["best"] < 0.09, r
+    r = _timing.child(BEST, arg={"ticks": _ticks(0.12, 0.06, 0.09), "bound": 0.05})
+    assert r["calls"] == 3 and abs(r["best"] - 0.06) < 1e-9, r
 
 
 def test_best_stops_at_one_call_under_the_bound():
-    r = _timing.child(BEST, arg={"sleeps": [0.0, 0.5, 0.5], "bound": 0.05})
-    assert r["calls"] == 1, r
+    r = _timing.child(BEST, arg={"ticks": _ticks(0.0, 0.5, 0.5), "bound": 0.05})
+    assert r["calls"] == 1 and r["best"] == 0.0, r
+
+
+def test_best_stops_at_one_call_over_ten_times_the_bound():
+    # A regression takes seconds; the fresh child confirms it, so no repeats are spent on it.
+    r = _timing.child(BEST, arg={"ticks": _ticks(0.6, 0.01, 0.01), "bound": 0.05})
+    assert r["calls"] == 1 and abs(r["best"] - 0.6) < 1e-9, r

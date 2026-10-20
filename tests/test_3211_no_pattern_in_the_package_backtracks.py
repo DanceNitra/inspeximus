@@ -13,7 +13,6 @@ import ast
 import os
 import re
 import sys
-import time
 
 import pytest
 
@@ -47,40 +46,53 @@ def test_control_the_attack_flags_the_old_frame_guard_and_an_old_replay_rule():
         assert ra.attack(rx.search, ra.pumps(pat, flags)), "the harness cannot see a known quadratic pattern: %s" % pat
 
 
-class _Clocked:
-    """A callable that takes `seconds(len(text))` of busy time, and stalls once at one size, as a loaded runner does."""
+class _Modeled:
+    """A callable whose time is MODELED, never measured: `seconds(len(text))`, plus `stall` on the first reading of
+    the `stall_step`-th size the ladder reads as the minimum of 3, that is, a step of its growth phase.
 
-    def __init__(self, seconds, stall_at=None, stall=0.0):
-        self.seconds, self.stall_at, self.stall, self.calls = seconds, stall_at, stall, {}
+    CLOCK-FREE (3.21.1, mutload pass 1): the first version busy-waited on the clock and stalled at a fixed size. Under
+    load its screening calls crossed 2 ms at a smaller size, the growth window ended before that size, the stall was
+    never read, and the control failed on correct code. A test of the rule must not depend on the clock it guards
+    against, so `ra._best` reads this model instead (see the fixture `modeled`)."""
+
+    def __init__(self, seconds, stall_step=None, stall=0.0):
+        self.seconds, self.stall_step, self.stall = seconds, stall_step, stall
+        self.growth, self.stalled = [], False
 
     def __call__(self, text):
-        n = len(text)
-        self.calls[n] = self.calls.get(n, 0) + 1
-        wait = self.seconds(n)
-        if self.stall_at is not None and n >= self.stall_at and self.calls[n] <= 3 and not getattr(self, "_hit", 0):
-            wait += self.stall
-            if self.calls[n] == 3:
-                self._hit = 1                                  # the stall hits the three calls of ONE size only
-        end = time.perf_counter() + wait
-        while time.perf_counter() < end:
-            pass
+        raise AssertionError("a modeled callable is read through ra._best, never called")
+
+    def read(self, n, reps):
+        t = self.seconds(n)
+        if reps > 1 and n not in self.growth:
+            self.growth.append(n)
+            if len(self.growth) == self.stall_step and not self.stalled:
+                self.stalled = True                       # one stall, on the first reading of one size only
+                t += self.stall
+        return t
 
 
-def test_one_stall_on_a_linear_call_is_not_a_verdict():
+@pytest.fixture
+def modeled(monkeypatch):
+    monkeypatch.setattr(ra, "_best", lambda fn, s, reps=3: fn.read(len(s), reps))
+
+
+def test_one_stall_on_a_linear_call_is_not_a_verdict(modeled):
     # CI run 39372338135 flagged the linear _secrets._ASSIGN on one stall: 0.001 s at 7,047 characters, 0.015 s at
-    # 28,863. Here a linear call (4 ms at 10,000 characters) stalls 40 ms once on its way up the ladder. The exponent
-    # over the ladder reads above 1.6, so the old rule flagged it; the confirmation at 4x the input must clear it.
-    linear = _Clocked(lambda n: 4e-7 * n, stall_at=15000, stall=0.04)
+    # 28,863. Here a linear call (4 ms at 10,000 characters) stalls 40 ms once, at the 6th step of the growth phase.
+    # The exponent over the ladder reads above 1.6, so the old rule flagged it; the confirmation at 4x must clear it.
+    linear = _Modeled(lambda n: 4e-7 * n, stall_step=6, stall=0.04)
     assert ra.attack(linear, [("", "ab")]) is None
+    assert linear.stalled, "the stall was never read: the test proves nothing"
     # CONTROL: the stall really reaches the ladder, and without the confirmation it is a verdict.
-    seen = _Clocked(lambda n: 4e-7 * n, stall_at=15000, stall=0.04)
+    seen = _Modeled(lambda n: 4e-7 * n, stall_step=6, stall=0.04)
     real, ra._confirmed = ra._confirmed, lambda *a: True
     try:
         assert ra.attack(seen, [("", "ab")]), "the stall no longer moves the exponent: the test proves nothing"
     finally:
         ra._confirmed = real
     # CONTROL: the confirmation passes a call that is quadratic (4 ms at 10,000 characters, 64 ms at 40,000).
-    assert ra.attack(_Clocked(lambda n: 4e-11 * n * n), [("", "ab")])
+    assert ra.attack(_Modeled(lambda n: 4e-11 * n * n), [("", "ab")])
 
 
 def test_control_the_collection_reaches_the_patterns_the_first_scan_missed(collected):
