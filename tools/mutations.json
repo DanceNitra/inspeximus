@@ -15068,5 +15068,61 @@
   "tests": [
    "tests/test_3211_restore_intent_is_linear.py::test_a_30_kb_intent_takes_under_a_tenth_of_a_second"
   ]
+ },
+ {
+  "name": "3.21.1 F-2: _CmdPos slices the token again for every separator",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if end - p <= 5 and any(end - p == len(k) and s.startswith(k, p) for k in self._KW):",
+  "new": "        if s[p:end] in self._KW:",
+  "tests": [
+   "tests/test_3211_hook_patterns_are_linear.py::test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb",
+   "tests/test_3211_every_rewrite_on_adversarial_shapes.py::test_every_rewrite_takes_under_half_a_second_at_160_kb"
+  ]
+ },
+ {
+  "name": "3.21.1 F-1: the KEYWORD...FLAG replay rules are their backtracking regexes again",
+  "file": "inspeximus/claude_code.py",
+  "old": "        self._kw, self._flag, self._ws = re.compile(kw, re.I), re.compile(flag, re.I), ws",
+  "new": "        self._kw, self._flag, self._ws = re.compile(kw, re.I), re.compile(flag, re.I), ws; self.search = re.compile(pattern, re.I).search",
+  "tests": [
+   "tests/test_3211_hook_patterns_are_linear.py::test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb"
+  ]
+ },
+ {
+  "name": "3.21.1 F-1: the get-process | stop-process rule is its backtracking regex again",
+  "file": "inspeximus/claude_code.py",
+  "old": "        self._stop = re.compile(r\"[|\\n]\")",
+  "new": "        self._stop = re.compile(r\"[|\\n]\"); self.search = re.compile(pattern, re.I).search",
+  "tests": [
+   "tests/test_3211_hook_patterns_are_linear.py::test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb"
+  ]
+ },
+ {
+  "name": "3.21.1 F-1: the force-push warning is its backtracking regex again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    (_ForcePush(), \"warn\",",
+  "new": "    (r\"git\\s+push\\s+.*--force\", \"warn\",",
+  "tests": [
+   "tests/test_3211_hook_patterns_are_linear.py::test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb"
+  ]
+ },
+ {
+  "name": "3.21.1 F-1: the gh comments block is its backtracking regex again",
+  "file": "inspeximus/claude_code.py",
+  "old": "    (_GhComments(), \"block\",",
+  "new": "    (r\"gh\\s+(issue|pr)\\s+comment\\b|gh\\s+api[^|]*\\bcomments\\b\", \"block\",",
+  "tests": [
+   "tests/test_3211_hook_patterns_are_linear.py::test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb"
+  ]
+ },
+ {
+  "name": "3.21.1: the memory index link reader is its backtracking regex again",
+  "file": "inspeximus/memory_index_receipt.py",
+  "old": "LINK = _MdLinks()",
+  "new": "LINK = re.compile(_MdLinks.pattern)",
+  "tests": [
+   "tests/test_3211_hook_patterns_are_linear.py::test_every_stand_in_takes_under_a_fifth_of_a_second_on_its_keyword_at_40_kb",
+   "tests/test_3211_every_rewrite_on_adversarial_shapes.py::test_every_rewrite_takes_under_half_a_second_at_160_kb"
+  ]
  }
 ]
