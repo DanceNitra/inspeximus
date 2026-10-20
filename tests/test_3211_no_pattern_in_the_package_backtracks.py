@@ -198,6 +198,8 @@ def test_control_the_walk_reports_audit_as_three_bypasses():
 # (file, enclosing function, pattern source) -> why it cannot backtrack, or which attack covers it. A new site, or a
 # changed one, fails test_every_re_call_with_a_built_pattern_is_reviewed until it is read and added here.
 REVIEWED = {
+    ("inspeximus/context_saver.py", "_span", "re.escape(s)"):
+        "an escaped question stem: a literal with no quantifier, so finditer scans once: linear",
     ("inspeximus/_storelink.py", "_components", "'[' + re.escape(seps) + ']+'"):
         "one character class with +: linear",
     ("inspeximus/archive.py", "_segment_rx", "re.escape(p.stem) + '\\\\.archive-\\\\d{4}-\\\\d{2}\\\\.\\\\d+' + re.escape(p.suffix) + '$'"):
