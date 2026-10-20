@@ -71,10 +71,17 @@ def _pytest(tests: list[str], env: dict, tb: str = "no") -> subprocess.Completed
     # The PRE-FLIGHT keeps its tracebacks (tb="short"): when it is red, they are the only record of why,
     # and a re-run is exactly what failed to reproduce PC2's two red pre-flights. The mutant run keeps
     # `--tb=no`; only its summary lines are read.
-    return subprocess.run(
-        [os.environ.get("MUTATION_PYTHON") or sys.executable, "-m", "pytest", *tests, "-q", "--no-header", f"--tb={tb}", "-rfEs", "-p", "no:randomly",
-         *extra],
-        cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
+    cmd = [os.environ.get("MUTATION_PYTHON") or sys.executable, "-m", "pytest", *tests, "-q", "--no-header", f"--tb={tb}",
+           "-rfEs", "-p", "no:randomly", *extra]
+    try:
+        return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=1800, env=env)
+    except subprocess.TimeoutExpired as e:
+        # A TIMEOUT IS NO VERDICT (3.21.1 stress run, 2026-10-20). It used to end the whole gate with a
+        # traceback; now it is a run with no exit code, which `_verdict` reports as NOT EVALUATED.
+        def text(b):
+            return b.decode("utf-8", "replace") if isinstance(b, bytes) else (b or "")
+        return subprocess.CompletedProcess(cmd, None, text(e.stdout),
+                                           text(e.stderr) + f"\ntimed out after {e.timeout} s")
 
 
 #: What a survivor is re-run against (session 1, 2026-09-28).
@@ -148,6 +155,80 @@ def _killers(stdout: str) -> list[str]:
         if line.startswith(("FAILED ", "ERROR ")):
             out.append(line.split()[1].split("::")[-1])
     return sorted(set(out))
+
+
+def _parts(path: str) -> list[str]:
+    return [c for c in os.path.normcase(path).replace("\\", "/").split("/") if c not in ("", ".")]
+
+
+def _is_listed(nodeid: str, tests: list[str]) -> bool:
+    """Whether a reported node id is one of `tests`: a listed file, a test inside a listed directory, or a
+    listed node id with or without its parameter. pytest prints the path relative to the directory it ran in
+    (ROOT), `..` included, for a file outside it, or relative to its rootdir; so both paths are first made
+    absolute against ROOT, and then also matched by TAIL, component by component."""
+    path, _, rest = nodeid.partition("::")
+    got_abs = _parts(os.path.normpath(os.path.join(ROOT, path)))
+    got = [c for c in _parts(path) if c != ".."]
+    for t in tests:
+        tpath, _, tnode = t.partition("::")
+        want = _parts(os.path.normpath(os.path.join(ROOT, tpath)))
+        node_ok = not tnode or rest == tnode or rest.startswith((tnode + "[", tnode + "::"))
+        if got_abs == want and node_ok or got_abs[:len(want)] == want and len(got_abs) > len(want) and not tnode:
+            return True
+        for k in range(1, len(got) + 1):
+            if got[:k] != want[-k:]:
+                continue
+            if k < len(got) and tnode:
+                continue                                 # a directory match, but a node was named
+            if not tnode or rest == tnode or rest.startswith((tnode + "[", tnode + "::")):
+                return True
+    return False
+
+
+def _own_killers(stdout: str, tests: list[str]) -> list[str]:
+    """`_killers`, restricted to TESTS: a FAILED or ERROR line whose node id names a test (it has a `::`)
+    from the mutant's own list. A collection error names a file, not a test, and is no kill."""
+    out = []
+    for line in stdout.splitlines():
+        if line.startswith(("FAILED ", "ERROR ")) and len(line.split()) > 1:
+            nodeid = line.split()[1]
+            if "::" in nodeid and _is_listed(nodeid, tests):
+                out.append(nodeid.split("::")[-1])
+    return sorted(set(out))
+
+
+def _tail(text: str, n: int = 3) -> str:
+    lines = [ln.strip() for ln in (text or "").splitlines() if ln.strip()]
+    return " | ".join(lines[-n:])[:300] or "empty"
+
+
+def _verdict(post: subprocess.CompletedProcess, tests: list[str], pre_passed: int) -> tuple[str, object]:
+    """What a mutant run proves, two-sided (3.21.1 stress run 1, 2026-10-20).
+
+    The gate called a mutant SURVIVED whenever the run printed no FAILED or ERROR line, and KILLED whenever
+    it printed one. Neither read the exit code or the count. In a CI-like load pass, a mutant its test
+    kills on every idle run (`git checkout -- .` against a never-matching prefilter, a pure function call)
+    came back SURVIVED, with nothing kept to say why: a run that crashed or printed nothing reads exactly
+    like one in which every test passed. The same blindness works the other way, so:
+
+    - ("killed", names): exit 1 and a FAILED or ERROR line naming a test from `tests`;
+    - ("skipped", reasons): exit 0 but a listed test skipped (A-26);
+    - ("survived", None): exit 0 and exactly as many tests passed as before mutating;
+    - ("not evaluated", reason): everything else -- a collection error, an internal error (exit 2 to 4),
+      a timeout (no exit code), a crash, or fewer tests run. It fails the gate, as a skip does."""
+    killers = _own_killers(post.stdout or "", tests)
+    if post.returncode == 1 and killers:
+        return "killed", killers
+    passed, skips = _ran(post.stdout or "")
+    if post.returncode == 0 and skips:
+        return "skipped", sorted(set(skips))
+    if post.returncode == 0 and passed == pre_passed:
+        return "survived", None
+    return "not evaluated", (
+        f"no verdict from the mutant run (exit {post.returncode}; {passed} passed, {pre_passed} before "
+        f"mutating; FAILED or ERROR: {', '.join(_failed_ids(post.stdout or '')) or 'none'}, of them in the "
+        f"listed tests: {', '.join(killers) or 'none'}; stdout tail: {_tail(post.stdout)}; "
+        f"stderr tail: {_tail(post.stderr)})")
 
 
 def _ran(stdout: str) -> tuple[int, list[str]]:
@@ -375,7 +456,7 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
         try:
             io.open(path, "w", encoding="utf-8", newline="").write(src.replace(old, new, 1))
             post = _pytest(tests, env)
-            killers = _killers(post.stdout)
+            verdict, detail = _verdict(post, tests, ran)
         finally:
             io.open(path, "w", encoding="utf-8", newline="").write(src)
             # RESTORE THE MUTANT'S ARTIFACTS NOW, NOT AT THE END OF THE RUN. The source was always put
@@ -389,19 +470,24 @@ def run(mutations: list[dict], verbose: bool = True) -> int:
             for _p in _restore(_dirty_tracked() - dirty_before):
                 restored_all.add(_p)
 
-        if killers:
+        if verdict == "killed":
+            killers = detail
             if verbose:
                 print(f"  {name[:58]:58s} -> killed by {', '.join(killers[:3])}"
                       f"{f' (+{len(killers) - 3})' if len(killers) > 3 else ''}")
-        elif _ran(post.stdout)[1]:
+        elif verdict == "skipped":
             # NOT caught, but a listed test did not run against the mutant, and it may be the one that
             # would have. That is not a survival and not a kill: it is an entry this machine cannot
             # judge, and it fails the gate as a skip does (A-26, PC2's three verify-page "survivors").
-            why = sorted(set(_ran(post.stdout)[1]))
+            why = detail
             skipped.append(f"{name}: NOT EVALUATED, not caught while {len(why)} listed test reason(s) "
                            f"skipped: {'; '.join(why)}")
             if verbose:
                 print(f"  {name[:58]:58s} -> NOT EVALUATED (a listed test skipped: {why[0][:60]})")
+        elif verdict == "not evaluated":
+            skipped.append(f"{name}: NOT EVALUATED, {detail}")
+            if verbose:
+                print(f"  {name[:58]:58s} -> NOT EVALUATED ({detail[:160]})")
         else:
             gap = _spec_gap(tests, env, path, src.replace(old, new, 1), src)
             restored_all.update(_restore(_dirty_tracked() - dirty_before))   # the full suite's receipts

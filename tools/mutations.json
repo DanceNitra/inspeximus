@@ -4736,8 +4736,8 @@
  {
   "name": "a mutant whose catching test skipped is called a survivor again",
   "file": "tools/mutation_check.py",
-  "old": "        elif _ran(post.stdout)[1]:\n",
-  "new": "        elif False:\n",
+  "old": "    if post.returncode == 0 and skips:\n",
+  "new": "    if False:\n",
   "tests": [
    "tests/test_a_skipped_test_is_not_a_survivor.py"
   ]
@@ -15195,6 +15195,60 @@
   "new": "    while False:",
   "tests": [
    "tests/test_3211_no_pattern_in_the_package_backtracks.py::test_one_stall_on_a_linear_call_is_not_a_verdict"
+  ]
+ },
+ {
+  "name": "3.21.1 mutation verdict: SURVIVED ignores the exit code",
+  "file": "tools/mutation_check.py",
+  "old": "    if post.returncode == 0 and passed == pre_passed:",
+  "new": "    if passed == pre_passed:",
+  "tests": [
+   "tests/test_3211_a_mutant_run_without_a_verdict_is_not_evaluated.py::test_an_internal_error_after_a_full_pass_line_is_not_evaluated"
+  ]
+ },
+ {
+  "name": "3.21.1 mutation verdict: SURVIVED ignores the passed count",
+  "file": "tools/mutation_check.py",
+  "old": "    if post.returncode == 0 and passed == pre_passed:",
+  "new": "    if post.returncode == 0:",
+  "tests": [
+   "tests/test_3211_a_mutant_run_without_a_verdict_is_not_evaluated.py::test_a_passing_run_with_fewer_tests_than_the_pre_flight_is_not_a_survivor"
+  ]
+ },
+ {
+  "name": "3.21.1 mutation verdict: KILLED ignores the exit code",
+  "file": "tools/mutation_check.py",
+  "old": "    if post.returncode == 1 and killers:",
+  "new": "    if killers:",
+  "tests": [
+   "tests/test_3211_a_mutant_run_without_a_verdict_is_not_evaluated.py::test_an_internal_error_beside_a_failed_line_is_not_a_kill"
+  ]
+ },
+ {
+  "name": "3.21.1 mutation verdict: a collection error counts as a kill",
+  "file": "tools/mutation_check.py",
+  "old": "            if \"::\" in nodeid and _is_listed(nodeid, tests):",
+  "new": "            if _is_listed(nodeid, tests):",
+  "tests": [
+   "tests/test_3211_a_mutant_run_without_a_verdict_is_not_evaluated.py::test_a_collection_error_is_not_a_kill"
+  ]
+ },
+ {
+  "name": "3.21.1 mutation verdict: a failure outside the listed tests counts as a kill",
+  "file": "tools/mutation_check.py",
+  "old": "            if \"::\" in nodeid and _is_listed(nodeid, tests):",
+  "new": "            if \"::\" in nodeid:",
+  "tests": [
+   "tests/test_3211_a_mutant_run_without_a_verdict_is_not_evaluated.py::test_a_failure_of_a_test_outside_the_list_is_not_a_kill"
+  ]
+ },
+ {
+  "name": "3.21.1 mutation verdict: a timeout ends the gate instead of being NOT EVALUATED",
+  "file": "tools/mutation_check.py",
+  "old": "    except subprocess.TimeoutExpired as e:",
+  "new": "    except ArithmeticError as e:",
+  "tests": [
+   "tests/test_3211_a_mutant_run_without_a_verdict_is_not_evaluated.py::test_a_timeout_is_not_evaluated"
   ]
  }
 ]
