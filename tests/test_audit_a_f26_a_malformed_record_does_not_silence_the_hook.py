@@ -28,6 +28,7 @@ def project(tmp_path, monkeypatch):
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "keyhome"))
+    monkeypatch.setenv("INSPEXIMUS_HOOK_DEDUPE", "0")              # compares whole blocks (3.22, _seen.py)
     monkeypatch.setenv("INSPEXIMUS_NO_UPDATE_CHECK", "1")
     proj = tmp_path / "repo"
     (proj / ".git").mkdir(parents=True)

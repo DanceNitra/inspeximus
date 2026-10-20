@@ -37,6 +37,7 @@ T0 = 1790000000.0            # the frozen "now"
 def _no_env(monkeypatch):
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)
+    monkeypatch.setenv("INSPEXIMUS_HOOK_DEDUPE", "0")              # compares whole blocks (3.22, _seen.py)
 
 
 def _write(path, rows, monkeypatch):
@@ -203,6 +204,7 @@ def test_a_segment_written_before_a_crash_is_reused(tmp_path, monkeypatch):
     monkeypatch.undo()
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)
+    monkeypatch.setenv("INSPEXIMUS_HOOK_DEDUPE", "0")              # compares whole blocks (3.22, _seen.py)
     monkeypatch.setattr(core.time, "time", lambda: T0)
     segs = [f for f in _files(tmp_path) if ".archive-" in f]
     assert len(segs) == 1 and not archive.read_log(p)
@@ -242,6 +244,7 @@ def test_a_json_pinned_store_is_refused(tmp_path, monkeypatch):
 
 def _hook(proj, home, ev):
     env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_") and k != "PYTHONPATH"}
+    env["INSPEXIMUS_HOOK_DEDUPE"] = "0"                          # compares whole blocks (3.22, _seen.py)
     env.update(HOME=str(home), USERPROFILE=str(home), APPDATA=str(home), INSPEXIMUS_NO_UPDATE_CHECK="1",
                PYTHONPATH=ROOT)
     ev = dict(ev, cwd=str(proj).replace("\\", "/"), session_id="identity")
@@ -285,6 +288,7 @@ def test_the_cli_is_a_dry_run_until_apply(tmp_path):
     home = tmp_path / "home"
     home.mkdir()
     env = {k: v for k, v in os.environ.items() if not k.startswith("INSPEXIMUS_") and k != "PYTHONPATH"}
+    env["INSPEXIMUS_HOOK_DEDUPE"] = "0"                          # compares whole blocks (3.22, _seen.py)
     env.update(HOME=str(home), USERPROFILE=str(home), APPDATA=str(home), INSPEXIMUS_NO_UPDATE_CHECK="1",
                PYTHONPATH=ROOT)
     st = proj / ".inspeximus"

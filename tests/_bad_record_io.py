@@ -44,6 +44,7 @@ def sandbox(tmp_path, monkeypatch):
     for k in [k for k in os.environ if k.startswith("INSPEXIMUS_")]:
         monkeypatch.delenv(k)
     monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path / "kh"))
+    monkeypatch.setenv("INSPEXIMUS_HOOK_DEDUPE", "0")              # compares whole blocks (3.22, _seen.py)
     monkeypatch.setenv("INSPEXIMUS_NO_UPDATE_CHECK", "1")
     monkeypatch.setenv("INSPEXIMUS_NO_NUDGE", "1")
     monkeypatch.setenv("HOME", str(tmp_path / "home"))

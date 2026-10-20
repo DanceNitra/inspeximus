@@ -89,6 +89,7 @@ POLICY = {
     "INSPEXIMUS_EMBED_HOOKS": (CONFIG_ONLY, "embed.hooks", "sends record text to an embedder and writes vectors under "
                                "its recipe"),
     "INSPEXIMUS_NO_INJECT": (ENV_SAFE, None, "hook only: injects less"),
+    "INSPEXIMUS_HOOK_DEDUPE": (ENV_SAFE, None, "hook only: off injects a line again on every prompt"),
     "INSPEXIMUS_NO_NUDGE": (ENV_SAFE, None, "hook only: prints less"),
     "INSPEXIMUS_SESSION_DIGEST": (ENV_SAFE, None, "hook only"),
     "INSPEXIMUS_STAMP_AUTO": (ENV_SAFE, None, "hook only; the policy is the user's config"),
