@@ -172,3 +172,17 @@ def test_a_recall_that_fails_partway_still_shows_what_it_printed(project, capsys
     except (RuntimeError, SystemExit):
         pass
     assert "[inspeximus] partial block" in capsys.readouterr().out
+
+def test_only_a_sessions_first_write_lists_the_directory(tmp_path, monkeypatch):
+    # perf/gate.py's prompt_hook_n1200 counts directory listings: expiry runs once per session, not on every prompt.
+    import os
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path))
+    monkeypatch.delenv("INSPEXIMUS_HOOK_DEDUPE", raising=False)
+    calls = []
+    real = os.listdir
+    monkeypatch.setattr(_seen.os, "listdir", lambda d: calls.append(d) or real(d))
+    _seen.once("s", ["a"])
+    assert len(calls) == 1
+    _seen.once("s", ["b"])
+    _seen.once("s", ["c"])
+    assert len(calls) == 1

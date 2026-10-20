@@ -494,7 +494,7 @@
    "observed": "rows"
   },
   "counters": {
-   "replace_store": 0,
+   "replace_store": 1,
    "replace_tombstones": 0,
    "replace_receipts": 0,
    "full_serializations": 0,
@@ -503,7 +503,7 @@
    "guard_regex_searches": 0,
    "order_updates": 0,
    "full_diff_saves": 0,
-   "dir_listings": 2,
+   "dir_listings": 3,
    "type_inferences": 0,
    "current_active_scans": 0,
    "row_serializations": 0,

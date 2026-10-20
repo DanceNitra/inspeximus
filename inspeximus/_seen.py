@@ -13,7 +13,8 @@ This module remembers, per session, the lines a hook has already put into the ag
   * INSPEXIMUS_HOOK_DEDUPE=0 turns it off.
 
 The state is one small JSON file per session under the key home (`<key home>/inspeximus/seen/`), never in the
-project and never in a temporary directory. Files untouched for `EXPIRE_S` are removed on the next write. Every
+project and never in a temporary directory. Files untouched for `EXPIRE_S` are removed when a session writes its
+first set, so a prompt in a running session lists nothing (perf/gate.py: prompt_hook_n1200.dir_listings). Every
 failure is open: a state file that cannot be read or written means the line is printed, never lost.
 """
 import hashlib
@@ -77,6 +78,7 @@ def once(session_id, lines) -> list:
         return lines
     try:
         path = _path(session_id)
+        new = not os.path.exists(path)
         seen = _load(path)
         keep, added = [], False
         for line in lines:
@@ -91,7 +93,8 @@ def once(session_id, lines) -> list:
             os.makedirs(_dir(), exist_ok=True)
             now = time.time()
             write_atomic(path, json.dumps({"seen": sorted(seen), "at": int(now)}))
-            _expire(now)
+            if new:
+                _expire(now)
         return keep
     except Exception:                                   # noqa: BLE001 -- fail open: print, never withhold
         return lines
