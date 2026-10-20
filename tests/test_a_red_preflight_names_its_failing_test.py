@@ -89,7 +89,9 @@ def test_the_parallel_runner_reports_the_failing_test_and_keeps_worker_output(tm
     path = re.search(r"full output: (.+?\.log)\)", reason[0]).group(1)
     assert os.path.exists(path), "the full output was lost with the worker's worktree"
     assert "the reason is kept" in open(path, encoding="utf-8").read()
-    worker_log = os.path.join(ROOT, ".mutwt", "worker0.log")
+    # Each run keeps its worker logs in a directory of its own (3.22), which the report names.
+    logs = re.search(r"worker logs: (.+)$", p.stdout, re.M).group(1).strip()
+    worker_log = os.path.join(logs, "worker0.log")
     assert "forced red pre-flight (parallel)" in open(worker_log, encoding="utf-8").read()
 
 
