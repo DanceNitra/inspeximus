@@ -15693,5 +15693,23 @@
   "tests": [
    "tests/test_full_suite_covers_every_test.py::test_the_two_steps_collect_every_test_exactly_once"
   ]
+ },
+ {
+  "name": "3.22 review: a failing recall's output is dropped",
+  "file": "inspeximus/claude_code.py",
+  "old": "                    sys.stdout.write(_buf.getvalue())         # a failing recall shows what it printed, as before\n",
+  "new": "                    pass\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_recall_that_fails_partway_still_shows_what_it_printed"
+  ]
+ },
+ {
+  "name": "3.22 review: a ledger error hides that the credit was applied",
+  "file": "inspeximus/core.py",
+  "old": "                ex.credit_applied = out\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_a_ledger_that_fails_to_record_does_not_undo_the_credit_and_says_so"
+  ]
  }
 ]
