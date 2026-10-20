@@ -228,7 +228,7 @@ def _guard_flags(texts):
 
 
 def save(output, intent=None, *, embed=None, embed_query=None, store=None, reranker=None,
-         without_reranker=None) -> dict:
+         without_reranker=None, ledger=None) -> dict:
     """Return what goes into the agent's context instead of `output`.
 
     `embed` (text -> vector) is required for a digest; `store` lends its embedder instead (`store.embed` and
@@ -239,14 +239,36 @@ def save(output, intent=None, *, embed=None, embed_query=None, store=None, reran
 
     The result: `mode` ("passthrough", "pointer" or "digest"), `text` (what goes into context: the output, the
     pointer, or the digest), `follow_up`, byte counts, `sha256` of the output, the `ranking` used, whether the 2nd
-    section was added whole, whether the wide rerank ran, and `read_guard` flags."""
+    section was added whole, whether the wide rerank ran, and `read_guard` flags.
+
+    `ledger`, an ActionLedger, records every call as one "context_save" entry, in every mode: the inputs are what
+    the agent was shown (`ledger_inputs`), the output is the whole tool output. The ledger keeps only their salted
+    digests unless it was opened with keep_content, so `ledger.matches(seq, ledger_inputs(r), output)` later proves
+    which output a digest stood for, and an output changed by one character no longer matches. The result then
+    carries `ledger_seq`. Without a ledger nothing is written anywhere."""
+    r = _save(output, intent, embed=embed, embed_query=embed_query, store=store, reranker=reranker,
+              without_reranker=without_reranker)
+    if ledger is not None:
+        r["ledger_seq"] = ledger.record("context_save", inputs=ledger_inputs(r), output=output)["seq"]
+    return r
+
+
+def ledger_inputs(result) -> dict:
+    """What a "context_save" ledger entry digests as its inputs: what the agent was shown and how it was chosen.
+    The output's unsalted sha256 is left out, because a ledger holds salted digests only."""
+    return {"intent": result.get("intent"), "mode": result["mode"], "bytes_in": result["bytes_in"],
+            "sections": result.get("sections"), "order": result.get("order"), "text": result["text"],
+            "follow_up": result["follow_up"]}
+
+
+def _save(output, intent, *, embed, embed_query, store, reranker, without_reranker) -> dict:
     if not isinstance(output, str):
         raise UsageError("save() takes the output as text, not %s" % type(output).__name__)
     if intent is not None and not isinstance(intent, str):
         raise UsageError("the intent is text, not %s" % type(intent).__name__)
     intent = (intent or "").strip() or None
     raw = output.encode("utf-8")
-    base = {"bytes_in": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+    base = {"bytes_in": len(raw), "sha256": hashlib.sha256(raw).hexdigest(), "intent": intent}
     if len(raw) < PASSTHROUGH_BYTES:
         return dict(base, mode="passthrough", text=output, follow_up="", digest_bytes=len(raw), follow_up_bytes=0,
                     ranking=None, read_guard=_guard_flags([output]))

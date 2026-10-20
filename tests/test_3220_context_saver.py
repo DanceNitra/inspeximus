@@ -246,8 +246,78 @@ def test_nothing_is_written_to_the_key_home_or_the_working_directory(home):
     def listing():
         return sorted(os.path.join(d, f) for r in roots for d, _s, fs in os.walk(r) for f in fs)
     before = listing()
-    cs.save(sections(8), "section", embed=embed, reranker=Scorer({}))
-    assert listing() == before
+    r = cs.save(sections(8), "section", embed=embed, reranker=Scorer({}))
+    assert listing() == before and "ledger_seq" not in r
+
+
+
+# ---- the action ledger ----
+def _ledger(home):
+    from inspeximus.actions import ActionLedger
+    (home / "ledger").mkdir(exist_ok=True)
+    return ActionLedger(path=str(home / "ledger" / "actions.json"), actor="agent")
+
+
+def test_a_digest_is_one_ledger_entry_that_binds_what_was_shown_to_the_whole_output(home):
+    led = _ledger(home)
+    out = sections(8, {3: "the needle sentence"})
+    r = cs.save(out, "needle sentence", embed=embed, reranker=Scorer({}), ledger=led)
+    e = led.entries()[-1]
+    assert len(led.entries()) == 1 and e["action"] == "context_save" and r["ledger_seq"] == e["seq"]
+    m = led.matches(e["seq"], cs.ledger_inputs(r), out)
+    assert m["inputs"] is True and m["output"] is True
+    assert led.verify(bind_to_store=False) == (True, [])
+
+
+def test_one_changed_character_in_the_output_or_in_what_was_shown_no_longer_matches(home):
+    led = _ledger(home)
+    out = sections(8)
+    r = cs.save(out, "section", embed=embed, reranker=Scorer({}), ledger=led)
+    i = len(out) // 2
+    edited = out[:i] + ("x" if out[i] != "x" else "y") + out[i + 1:]
+    assert led.matches(r["ledger_seq"], output=edited)["output"] is False
+    shown = dict(cs.ledger_inputs(r), follow_up=r["follow_up"] + ".")
+    assert led.matches(r["ledger_seq"], inputs=shown)["inputs"] is False
+
+
+def test_the_ledger_holds_salted_digests_only(home):
+    led = _ledger(home)
+    out = sections(30)
+    r = cs.save(out, ledger=led)
+    e = led.entries()[-1]
+    assert r["mode"] == "pointer" and "inputs" not in e and "output" not in e
+    on_disk = (home / "ledger" / "actions.json").read_text(encoding="utf-8")
+    assert r["sha256"] not in on_disk and r["sha256"][:16] not in on_disk
+    assert "sha256" not in cs.ledger_inputs(r)
+    # Control: the unsalted digest of the same inputs is not what the entry holds.
+    from inspeximus.actions import _content_hash
+    assert e["inputs_sha256"] != _content_hash(cs.ledger_inputs(r))
+
+
+def test_a_pass_through_and_a_pointer_are_recorded_too(home):
+    led = _ledger(home)
+    small = "short output\n" * 300
+    cs.save(small, "anything", ledger=led)
+    cs.save(sections(30), ledger=led)
+    assert [e["action"] for e in led.entries()] == ["context_save", "context_save"]
+    assert led.matches(0, output=small)["output"] is True
+
+
+def test_an_input_mistake_records_nothing(home):
+    led = _ledger(home)
+    with pytest.raises(UsageError):
+        cs.save(sections(5), ledger=led)
+    assert led.entries() == []
+
+
+def test_the_entry_is_in_the_exported_audit_trail(home, tmp_path):
+    from inspeximus.agent_audit_trail import export_jsonl
+    led = _ledger(home)
+    cs.save(sections(8), "section", embed=embed, reranker=Scorer({}), ledger=led)
+    path = tmp_path / "trail.jsonl"
+    export_jsonl(led, str(path), agent_id="urn:test:agent", agent_version="1.0.0")
+    rows = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
+    assert len(rows) == 1 and "context_save" in json.dumps(rows[0])
 
 
 # ---- the reranker loader ----
