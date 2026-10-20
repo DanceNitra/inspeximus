@@ -69,13 +69,16 @@ def _run(monkeypatch, tmp_path, step2, retry, total=4):
 
 def test_a_probe_that_failed_under_load_and_passes_alone_is_green(monkeypatch, tmp_path, capsys):
     rc, calls = _run(monkeypatch, tmp_path, [("c", False), ("d", True)], [("d", False)])
-    assert rc == 0, capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert rc == 0 and "2 tests, 0 failed" in out, out
     assert calls[-1][3:4] == ["tests/test_x.py::d"] and "-n" in calls[-1] and calls[-1][calls[-1].index("-n") + 1] == "0"
 
 
 def test_a_probe_that_fails_alone_too_is_red(monkeypatch, tmp_path, capsys):
     rc, _ = _run(monkeypatch, tmp_path, [("c", False), ("d", True)], [("d", True)])
-    assert rc == 1 and "NOT GREEN" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    # The summary carries the retry's own count: one probe failed alone too.
+    assert rc == 1 and "NOT GREEN" in out and "2 tests, 1 failed" in out, out
 
 
 def test_a_run_that_does_not_add_up_is_red(monkeypatch, tmp_path, capsys):

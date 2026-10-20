@@ -101,8 +101,9 @@ def steps(n) -> list:
 
 
 def retry_args(nodeids) -> list:
-    """The serial rerun of the step 2 node ids that failed under load."""
-    return list(nodeids) + ["-n", "0", "--timeout", "300"] + COMMON
+    """The serial rerun of the step 2 node ids that failed under load. No --timeout here: the pytest.ini ceiling
+    (900 s) applies, because alone the slowest cited probe still takes 289 s (2026-10-20), too close to 300."""
+    return list(nodeids) + ["-n", "0"] + COMMON
 
 
 def collected(args) -> list:
