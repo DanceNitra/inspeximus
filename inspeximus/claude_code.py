@@ -1703,6 +1703,72 @@ def recall(ev, store=None, decision_store=None, count_foreign=None):
               notice, system_message=ask)
 
 
+#: The section headers of the prompt block, whose item lines `_once_envelope` filters.
+_SECTION_HEADERS = ("decisions/rules (what we concluded, and why):", "curated knowledge (from memory):",
+                    "recent mechanics (files/commands):")
+_MEMORY_HEADER = "[inspeximus] relevant project memory (deterministic, corrections already applied):"
+
+
+def _once_envelope(envelope, session_id):
+    """The prompt hook's printed envelope with every memory line this session was already given removed (3.22).
+
+    Applied where the block leaves the hook, so `recall()` and the prompt daemon compute today's block unchanged and
+    both are filtered the same way. A section left without lines loses its header, and a memory block left without
+    sections loses its header too. Everything else in the envelope (the secrets notice, the systemMessage) passes as
+    it is. See inspeximus/_seen.py for the measurement and the rules. On anything unexpected the envelope is returned
+    unchanged: a line printed twice costs tokens, a line withheld costs a decision."""
+    if not envelope or not session_id:
+        return envelope
+    try:
+        from ._seen import once, enabled
+        if not enabled():
+            return envelope
+        obj = json.loads(envelope)
+        hso = obj.get("hookSpecificOutput") or {}
+        text = hso.get("additionalContext")
+        if not isinstance(text, str) or _MEMORY_HEADER not in text:
+            return envelope
+        lines = text.split("\n")
+        start = lines.index(_MEMORY_HEADER)
+        end = start + 1
+        while end < len(lines) and (lines[end] in _SECTION_HEADERS or lines[end].startswith("  ")):
+            end += 1
+        kept, header, items = [], None, []
+
+        def close():
+            if header is not None and items:
+                kept.append(header)
+                kept.extend(items)
+        for ln in lines[start + 1:end]:
+            if ln in _SECTION_HEADERS:
+                close()
+                header, items = ln, []
+            else:
+                items.append(ln)
+        close()
+        # One call for every item, so the state is written once per prompt.
+        all_items = [ln for ln in kept if ln not in _SECTION_HEADERS]
+        survivors = set(once(session_id, all_items))
+        if len(survivors) == len(set(all_items)):
+            return envelope                             # nothing was given before: today's bytes, unchanged
+        block, header, items = [], None, []
+        for ln in kept + [None]:
+            if ln is None or ln in _SECTION_HEADERS:
+                if header is not None and items:
+                    block += [header] + items
+                header, items = ln, []
+            elif ln in survivors:
+                items.append(ln)
+        new = "\n".join(lines[:start] + ([_MEMORY_HEADER] + block if block else []) + lines[end:]).strip("\n")
+        if not new:
+            obj.pop("hookSpecificOutput", None)
+            return json.dumps(obj) + "\n" if obj else ""
+        hso["additionalContext"] = new
+        return json.dumps(obj) + "\n"
+    except Exception:                                   # noqa: BLE001 -- fail open: print, never withhold
+        return envelope
+
+
 _LAST_STORES: list = []        #: the stores the last `recall` read: (path, is_decision_store, stamps from another guard set)
 
 
@@ -1766,6 +1832,10 @@ def session_start(ev):
         except Exception:
             pass
         return
+    if (ev.get("source") or "") == "compact":
+        # The compaction dropped what the agent was shown, so the prompt hook may show it again (3.22, _seen.py).
+        from ._seen import forget_session
+        forget_session(ev.get("session_id"))
     cfg = _session_cfg(cwd)
     m = _store(cwd)
     emit = []          # every block this handler would have printed, joined into ONE envelope below
@@ -2247,6 +2317,10 @@ def pre_tool_use(ev):
                     hits.append("  - " + t[:200])
         except Exception:
             pass
+        # A decision this session was already shown beside an earlier action is not repeated (3.22, _seen.py). The
+        # warnings and the block are never filtered: a guard that speaks once and then goes quiet is no guard.
+        from ._seen import once
+        hits = once(ev.get("session_id"), hits)
 
     if not lines and not hits and not blocks:
         return
@@ -2440,9 +2514,15 @@ def main():
                 if hookd.LAST.get("err"):
                     sys.stderr.write(hookd.LAST["err"])       # what today's path prints there (AUDIT-A D-7)
                 if _served:
-                    sys.stdout.write(_served)
+                    sys.stdout.write(_once_envelope(_served, ev.get("session_id")))
             else:
-                recall(ev)                                      # today's path, unchanged
+                # Today's path, unchanged, then each memory line once per session (3.22, `_once_envelope`).
+                import io
+                from contextlib import redirect_stdout
+                _buf = io.StringIO()
+                with redirect_stdout(_buf):
+                    recall(ev)
+                sys.stdout.write(_once_envelope(_buf.getvalue(), ev.get("session_id")))
             maybe_archive_in_background(_cwd)
             if _served is not None:
                 if hookd.LAST.get("foreign"):

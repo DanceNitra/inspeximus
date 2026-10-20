@@ -15187,5 +15187,95 @@
   "tests": [
    "tests/test_a_test_that_needs_an_extra_must_guard_it.py::test_an_import_inside_a_function_does_not_make_a_carrier"
   ]
+ },
+ {
+  "name": "3.22 inject once: a line already seen is injected again",
+  "file": "inspeximus/_seen.py",
+  "old": "            if k in seen:\n                continue\n",
+  "new": "            if False:\n                continue\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_line_is_injected_once_per_session"
+  ]
+ },
+ {
+  "name": "3.22 inject once: a compaction does not reset the session",
+  "file": "inspeximus/claude_code.py",
+  "old": "        forget_session(ev.get(\"session_id\"))\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_compaction_injects_again"
+  ]
+ },
+ {
+  "name": "3.22 inject once: the set is shared by every session",
+  "file": "inspeximus/_seen.py",
+  "old": "    name = hashlib.sha256(str(session_id).encode(\"utf-8\")).hexdigest()[:32]\n",
+  "new": "    name = \"all\"\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_two_sessions_do_not_share_a_set"
+  ]
+ },
+ {
+  "name": "3.22 inject once: the key ignores the text, so a superseded value is withheld",
+  "file": "inspeximus/_seen.py",
+  "old": "    return hashlib.sha256(\" \".join(str(line).split()).encode(\"utf-8\")).hexdigest()[:24]\n",
+  "new": "    return str(line)[:12]\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_superseded_decision_is_injected_again_with_its_new_value"
+  ]
+ },
+ {
+  "name": "3.22 inject once: the off switch is ignored",
+  "file": "inspeximus/_seen.py",
+  "old": "    return _envpolicy.raw(\"INSPEXIMUS_HOOK_DEDUPE\", \"\").strip().lower() not in _OFF\n",
+  "new": "    return True\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_the_off_switch_injects_every_time"
+  ]
+ },
+ {
+  "name": "3.22 inject once: an unreadable state file raises instead of failing open",
+  "file": "inspeximus/_seen.py",
+  "old": "    except Exception:                                   # noqa: BLE001 -- fail open: print, never withhold\n        return lines\n",
+  "new": "    except Exception:                                   # noqa: BLE001 -- fail open: print, never withhold\n        raise\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_state_directory_that_cannot_be_written_fails_open"
+  ]
+ },
+ {
+  "name": "3.22 inject once: old session sets never expire",
+  "file": "inspeximus/_seen.py",
+  "old": "            _expire(now)\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_an_old_session_set_expires"
+  ]
+ },
+ {
+  "name": "3.22 inject once: the hook prints recall's block unfiltered",
+  "file": "inspeximus/claude_code.py",
+  "old": "                sys.stdout.write(_once_envelope(_buf.getvalue(), ev.get(\"session_id\")))\n",
+  "new": "                sys.stdout.write(_buf.getvalue())\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_line_is_injected_once_per_session"
+  ]
+ },
+ {
+  "name": "3.22 inject once: an emptied block drops the notice beside it",
+  "file": "inspeximus/claude_code.py",
+  "old": "        new = \"\\n\".join(lines[:start] + ([_MEMORY_HEADER] + block if block else []) + lines[end:]).strip(\"\\n\")\n",
+  "new": "        new = \"\\n\".join(lines[:start] + ([_MEMORY_HEADER] + block if block else [])).strip(\"\\n\")\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_notice_beside_the_block_is_kept_when_the_block_empties"
+  ]
+ },
+ {
+  "name": "3.22 inject once: an unchanged envelope is rebuilt instead of returned as it came",
+  "file": "inspeximus/claude_code.py",
+  "old": "            return envelope                             # nothing was given before: today's bytes, unchanged\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_an_envelope_with_nothing_seen_before_is_returned_byte_for_byte"
+  ]
  }
 ]

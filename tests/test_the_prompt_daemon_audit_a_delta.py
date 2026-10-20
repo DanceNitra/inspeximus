@@ -87,6 +87,7 @@ NOT_PATHS = {
     "INSPEXIMUS_SUPERSESSION", "INSPEXIMUS_TRUST_SEEDS", "INSPEXIMUS_WITNESS_SECRET", "INSPEXIMUS_WRITER_KEY",
     "INSPEXIMUS_RECALL_INDEX",
     "INSPEXIMUS_TRACEBACK",                                  # 3.21 F-2: a flag for the command line
+    "INSPEXIMUS_HOOK_DEDUPE",                                # 3.22: an off switch
     # found by the AST scan (F-3), which the old regex missed: keys, URLs, flags, names and numbers
     "INSPEXIMUS_EMBED_KEY", "INSPEXIMUS_EMBED_URL", "INSPEXIMUS_LLM_KEY", "INSPEXIMUS_LLM_URL",
     "INSPEXIMUS_OBSERVE_RECALL", "INSPEXIMUS_PERSIST_VECTORS", "INSPEXIMUS_PII_DETECT", "INSPEXIMUS_PROJECT",

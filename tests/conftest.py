@@ -275,6 +275,16 @@ def _heads_and_keys_in_a_temporary_config_home(tmp_path_factory, request):
     yield
 
 
+@pytest.fixture(autouse=True, scope="session")
+def _every_hook_run_prints_its_whole_block():
+    """INSPEXIMUS_HOOK_DEDUPE=0 for the suite (3.22). The suite shares one config home, and many tests run the prompt
+    hook twice with one session id to compare the two answers; with the once-per-session filter on, the second answer
+    is empty by design. tests/test_3220_inject_once_per_session.py switches the filter back on for itself."""
+    import os
+    os.environ.setdefault("INSPEXIMUS_HOOK_DEDUPE", "0")
+    yield
+
+
 def tail_config(on=True):
     """Switch the receipt tail on or off in the user's config, the only place that switches it (3.17.0).
 
