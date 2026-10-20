@@ -15522,5 +15522,104 @@
   "tests": [
    "tests/test_3220_inject_once_per_session.py::test_an_envelope_with_nothing_seen_before_is_returned_byte_for_byte"
   ]
+ },
+ {
+  "name": "3.22 saver ledger: a save with a ledger records nothing",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if ledger is not None:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_digest_is_one_ledger_entry_that_binds_what_was_shown_to_the_whole_output"
+  ]
+ },
+ {
+  "name": "3.22 saver ledger: the whole output is not bound",
+  "file": "inspeximus/context_saver.py",
+  "old": "        r[\"ledger_seq\"] = ledger.record(\"context_save\", inputs=ledger_inputs(r), output=output)[\"seq\"]\n",
+  "new": "        r[\"ledger_seq\"] = ledger.record(\"context_save\", inputs=ledger_inputs(r), output=None)[\"seq\"]\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_one_changed_character_in_the_output_or_in_what_was_shown_no_longer_matches"
+  ]
+ },
+ {
+  "name": "3.22 saver ledger: the follow-up is left out of what was shown",
+  "file": "inspeximus/context_saver.py",
+  "old": "            \"follow_up\": result[\"follow_up\"]}\n",
+  "new": "            \"follow_up\": None}\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_one_changed_character_in_the_output_or_in_what_was_shown_no_longer_matches"
+  ]
+ },
+ {
+  "name": "3.22 saver ledger: the output's unsalted sha256 goes into the entry",
+  "file": "inspeximus/context_saver.py",
+  "old": "            \"follow_up\": result[\"follow_up\"]}\n",
+  "new": "            \"follow_up\": result[\"follow_up\"], \"sha256\": result[\"sha256\"]}\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_the_ledger_holds_salted_digests_only"
+  ]
+ },
+ {
+  "name": "3.22 saver ledger: the result names the wrong entry",
+  "file": "inspeximus/context_saver.py",
+  "old": "        r[\"ledger_seq\"] = ledger.record(\"context_save\", inputs=ledger_inputs(r), output=output)[\"seq\"]\n",
+  "new": "        r[\"ledger_seq\"] = ledger.record(\"context_save\", inputs=ledger_inputs(r), output=output)[\"seq\"] + 1\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_digest_is_one_ledger_entry_that_binds_what_was_shown_to_the_whole_output"
+  ]
+ },
+ {
+  "name": "3.22 item 27: a run does not sweep before it creates its root",
+  "file": "tests/conftest.py",
+  "old": "        shutil.rmtree(stale, ignore_errors=True)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_run_sweeps_before_it_creates_its_own_root"
+  ]
+ },
+ {
+  "name": "3.22 item 27: a dead run's root is kept",
+  "file": "tests/conftest.py",
+  "old": "            if not _owner_alive(owner):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_root_whose_run_is_dead_is_stale_and_a_live_runs_root_is_kept"
+  ]
+ },
+ {
+  "name": "3.22 item 27: a live run's root is swept",
+  "file": "tests/conftest.py",
+  "old": "            if not _owner_alive(owner):\n",
+  "new": "            if True:\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_root_whose_run_is_dead_is_stale_and_a_live_runs_root_is_kept"
+  ]
+ },
+ {
+  "name": "3.22 item 27: a reused pid counts as the same run",
+  "file": "tests/conftest.py",
+  "old": "    return start is not None and start == owner.get(\"start\")\n",
+  "new": "    return True\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_reused_pid_with_another_start_time_is_stale"
+  ]
+ },
+ {
+  "name": "3.22 item 27: an unowned root is swept at once",
+  "file": "tests/conftest.py",
+  "old": "        elif _time.time() - os.path.getmtime(root) > UNOWNED_ROOT_GRACE_S:\n",
+  "new": "        else:\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_root_without_an_owner_file_is_kept_until_the_grace_period_ends"
+  ]
+ },
+ {
+  "name": "3.22 item 27: any directory name is swept",
+  "file": "tests/conftest.py",
+  "old": "        if not name.startswith(\"inspeximus-run-\") or not os.path.isdir(root):\n",
+  "new": "        if not os.path.isdir(root):\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_only_run_roots_are_considered"
+  ]
  }
 ]
