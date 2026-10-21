@@ -701,3 +701,48 @@ def user_config(monkeypatch, tmp_path_factory):
         _userconfig_env.write_user_config(kh, cfg)
         return kh
     return setter
+
+
+# ---- DIAGNOSTIC, diag/** branches only (2026-10-21): test (3.12) hung at 99% in 2 of 3 CI runs. ----
+# Every pytest process registers SIGUSR1 to dump all its threads. The controller starts a watchdog that, after
+# 20 min, prints the process tree, signals every descendant, dumps itself, and ends the run with exit 99.
+if os.environ.get("GITHUB_ACTIONS") and os.environ.get("GITHUB_REF_NAME", "").startswith("diag/"):
+    import faulthandler as _fh
+    import signal as _sig
+    import sys as _sys
+    import threading as _th
+    _fh.register(_sig.SIGUSR1, file=_sys.__stderr__, all_threads=True)
+    if not os.environ.get("PYTEST_XDIST_WORKER") and not os.environ.get("_DIAG_WATCHDOG"):
+        os.environ["_DIAG_WATCHDOG"] = "1"
+
+        def _diag_watchdog():
+            _time.sleep(1200)
+            err = _sys.__stderr__
+            err.write("\n=== DIAG HUNG after 20 min ===\n")
+            err.write(_subprocess.run(["ps", "-eo", "pid,ppid,etimes,stat,wchan:30,args", "--forest"],
+                                      capture_output=True, text=True).stdout)
+            err.flush()
+            me = str(os.getpid())
+            kids = _subprocess.run(["pgrep", "-f", "python"], capture_output=True, text=True).stdout.split()
+            for pid in kids:
+                if pid != me:
+                    try:
+                        err.write("\n=== SIGUSR1 -> %s ===\n" % pid)
+                        err.flush()
+                        os.kill(int(pid), _sig.SIGUSR1)
+                        _time.sleep(2)
+                    except OSError:
+                        pass
+            err.write("\n=== controller %s ===\n" % me)
+            err.flush()
+            _fh.dump_traceback(file=err, all_threads=True)
+            err.flush()
+            _time.sleep(5)
+            for pid in kids:
+                try:
+                    os.kill(int(pid), _sig.SIGKILL)
+                except OSError:
+                    pass
+            os._exit(99)
+
+        _th.Thread(target=_diag_watchdog, daemon=True).start()
