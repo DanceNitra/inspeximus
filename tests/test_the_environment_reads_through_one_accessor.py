@@ -487,7 +487,11 @@ def test_another_program_gets_none_of_our_variables(monkeypatch):
 #: Our own processes, which inherit the environment on purpose (`env=_envpolicy.INHERIT`): each is `python -m inspeximus...`
 #: and applies the rule to what it reads.
 OWN_LAUNCHES = {("inspeximus/claude_code.py", "maybe_archive_in_background"),
-                ("inspeximus/claude_code.py", "_start_detached")}
+                ("inspeximus/claude_code.py", "_start_detached"),
+                # 3.23: `inspeximus-saver run -- <command>` runs the command its user typed, with the environment the
+                # user's shell gives it, so the command behaves as it would without the saver. It is not a program
+                # inspeximus chose: no variable, config or repository file names it.
+                ("inspeximus/context_saver.py", "run")}
 #: Nothing is exempt by name (3.18, AUDIT-B R-2): `webbrowser` was, for `browse --open`, and on POSIX it runs the command
 #: in $BROWSER with this process's environment. The browser opens through `_envpolicy.open_in_browser` now.
 ALLOWED_OTHER = set()

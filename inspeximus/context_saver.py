@@ -458,39 +458,21 @@ def sweep_captures(now=None) -> list:
 
 
 def _embedders_for_capture():
-    """The embedder for a capture: INSPEXIMUS_EMBED_URL as `make_embedders` reads it (loopback, or a host the user's
-    config names), else the user config's embed.url. Never a repository's file: tool output goes to this URL. A
-    literal `localhost` host is called as 127.0.0.1, because the name costs 2 to 3 s per call on Windows (it
-    resolves to ::1 first and fails over to IPv4; measured 2026-08-29)."""
-    from . import _envpolicy, _userconfig
+    """The embedder for a capture: INSPEXIMUS_EMBED_URL when its host is allowed (loopback, or a host the user's config
+    names), else the user config's embed.url, never a repository's file: tool output goes to this URL. A literal
+    `localhost` host is called as 127.0.0.1, because the name costs 2 to 3 s per call on Windows (it resolves to ::1
+    first and fails over to IPv4; measured 2026-08-29). Nothing in the environment is changed."""
+    from . import _userconfig
     from ._embedders import make_embedders
-    url = (_envpolicy.raw("INSPEXIMUS_EMBED_URL") or "").strip()
+    from ._http import env_url
+    uc = _userconfig.get("embed", default={})
+    uc = uc if isinstance(uc, dict) else {}
+    url = env_url("INSPEXIMUS_EMBED_URL", uc) or (uc.get("url") if isinstance(uc.get("url"), str) else "").strip()
     if not url:
-        u = _userconfig.get("embed", "url", default="")
-        url = u.strip() if isinstance(u, str) else ""
-        model = _userconfig.get("embed", "model", default=None)
-        if not url:
-            return None, None, None
-        return _with_env(url, model if isinstance(model, str) else None)
-    return _with_env(url, None) if "//localhost" in url else make_embedders()
-
-
-def _with_env(url, model):
-    import os
-    from ._embedders import make_embedders
+        return None, None, None
     url = url.replace("//localhost:", "//127.0.0.1:").replace("//localhost/", "//127.0.0.1/")
-    saved = {k: os.environ.get(k) for k in ("INSPEXIMUS_EMBED_URL", "INSPEXIMUS_EMBED_MODEL")}
-    os.environ["INSPEXIMUS_EMBED_URL"] = url
-    if model:
-        os.environ["INSPEXIMUS_EMBED_MODEL"] = model
-    try:
-        return make_embedders()
-    finally:
-        for k, v in saved.items():
-            if v is None:
-                os.environ.pop(k, None)
-            else:
-                os.environ[k] = v
+    model = uc.get("model") if isinstance(uc.get("model"), str) else None
+    return make_embedders(url=url, config_model=model)
 
 
 def print_capture(path, intent=None, *, out=None, err=None, embedders=None, reranker=None) -> str:
@@ -551,12 +533,13 @@ def run(argv, intent=None) -> int:
     """`inspeximus-saver run -- <command>`: run a command, capture its stdout and stderr, print them through the saver,
     and return the command's own exit code. The path that works in every permission mode, because nothing is
     rewritten: the command line the user or the agent wrote is the one that runs."""
-    import subprocess
+    from . import _envpolicy
     if not argv:
         raise UsageError("inspeximus-saver run needs a command after --")
     path = new_capture_path()
     with open(path, "wb") as f:
-        rc = subprocess.run(argv, stdout=f, stderr=subprocess.STDOUT).returncode
+        # The user's own command, with the environment their shell gives it, as if it ran without the saver.
+        rc = _envpolicy.start(argv, env=_envpolicy.INHERIT, stdout=f, stderr=_envpolicy.STDOUT).returncode
     print_capture(path, intent or " ".join(argv)[:300])
     sweep_captures()
     return rc
@@ -624,10 +607,10 @@ def hook_rewrite(ev, *, python=None):
     KNOWN LIMIT: Claude Code's auto permission mode reviews the command text and refuses a rewritten call, because
     the text that runs differs from the text reviewed (measured twice, 2026-10-21). Switch the hook off there and
     use `inspeximus-saver run -- <command>` instead."""
-    import os
+    from . import _envpolicy
     if ev.get("tool_name") != "Bash":
         return None
-    if os.environ.get("INSPEXIMUS_SAVER_HOOK", "").strip().lower() in ("0", "false", "no", "off"):
+    if (_envpolicy.raw("INSPEXIMUS_SAVER_HOOK") or "").strip().lower() in ("0", "false", "no", "off"):
         return None
     from . import _userconfig
     if _userconfig.get("saver", "hook") is not True:
