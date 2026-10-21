@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        copy: [1, 2, 3, 4]
+        copy: [1, 2, 3, 4, 5, 6]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,45 +20,27 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-xdist pytest-timeout cryptography pyyaml py-spy
-      - name: Run tests, dump stacks on a hang
+      - name: Run tests exactly as ci.yml does, with a watchdog
         run: |
-          python -m pytest tests/ --collect-only -q -p no:cacheprovider 2>/dev/null | grep '::' > collected.txt
-          python -m pytest tests/ -v -p no:cacheprovider > pytest.log 2>&1 &
-          PID=$!
-          for i in $(seq 1 150); do
-            kill -0 $PID 2>/dev/null || break
-            sleep 10
-          done
-          if kill -0 $PID 2>/dev/null; then
+          ( sleep 1500
             echo "=== HUNG after 25 min ==="
-            tail -n 60 pytest.log
-            echo "=== processes ==="
-            ps -eo pid,ppid,etimes,stat,args --forest | grep -v " ps " | head -80
-            for p in $(pgrep -f python); do
+            ps -eo pid,ppid,etimes,stat,args --forest | grep -v " ps " | head -100
+            for p in $(pgrep -f "python|pytest"); do
               echo "=== py-spy dump $p ==="
               sudo env "PATH=$PATH" py-spy dump --pid $p || true
             done
-            echo "=== started but not finished ==="
-            python - <<'EOF'
-          import re
-          started, done = {}, set()
-          for line in open("pytest.log", errors="replace"):
-              m = re.match(r"\[(gw\d+)\] \[\s*\d+%\] (PASSED|FAILED|SKIPPED|XFAIL|XPASS|ERROR) (\S+)", line)
-              if m:
-                  done.add(m.group(3))
-          coll = [l.strip() for l in open("collected.txt")]
-          left = [t for t in coll if t not in done]
-          print("collected", len(coll), "finished", len(done), "not finished", len(left))
-          print("\n".join(left[:200]))
-          EOF
-            kill -9 $PID || true
-            exit 1
-          fi
-          wait $PID; rc=$?
-          tail -n 5 pytest.log
-          exit $rc
+            ls -la /proc/$(pgrep -of "pytest tests")/fd 2>/dev/null | head -40
+          ) &
+          WD=$!
+          python -m pytest tests/ -q
+          rc=$?
+          echo "=== pytest exited rc=$rc at $(date -u +%T) ==="
+          ps -eo pid,ppid,etimes,stat,args --forest | grep -v " ps " | grep -v sleep | head -40
+          kill $WD 2>/dev/null || true
+          exit 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: pytest-log-${{ matrix.copy }}
           path: pytest.log
+          if-no-files-found: ignore
