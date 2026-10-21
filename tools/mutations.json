@@ -16056,5 +16056,14 @@
   "tests": [
    "tests/test_probes_cited_by_docs.py::test_every_probe_run_outlives_its_own_budget"
   ]
+ },
+ {
+  "name": "Git Bash install page tests: the file loses its one xdist group",
+  "file": "tests/test_install_page_survives_hermes_git_bash.py",
+  "old": "pytestmark = pytest.mark.xdist_group(\"c_drive_mirror\")\n",
+  "new": "pytestmark = []\n",
+  "tests": [
+   "tests/test_install_page_survives_hermes_git_bash.py::test_every_test_in_this_file_runs_in_one_xdist_group"
+  ]
  }
 ]

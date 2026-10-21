@@ -151,3 +151,18 @@ def test_every_page_line_names_the_venvs_program_by_path():
 def test_no_gitbash_line_nests_quotes():
     for ln in _page_gitbash_lines():
         assert '\\"' not in ln and not ln.startswith('"\\'), ln
+
+
+def test_every_test_in_this_file_runs_in_one_xdist_group(request):
+    """Every test collected from this file carries the same xdist_group, so under --dist loadgroup they run one
+    after another on one worker.
+
+    This checks the marker, on any platform. It does NOT reproduce the Windows race the marker is for (two
+    workers, one fixture teardown removing the C:\\c mirror while another test's venv was being created, ci.yml
+    run 39651825248): that needs a runner where C:\\c does not exist, and it cannot be forced here."""
+    items = [i for i in request.node.parent.collect() if isinstance(i, pytest.Function)]
+    names = {i.originalname for i in items}
+    assert {"test_hermes_call_1_lands_under_c_when_bash_does_not_convert",
+            "test_the_page_line_creates_the_venv_in_the_home"} <= names, names
+    groups = {i.nodeid: [m.args[0] for m in i.iter_markers("xdist_group")] for i in items}
+    assert all(g == ["c_drive_mirror"] for g in groups.values()), groups
