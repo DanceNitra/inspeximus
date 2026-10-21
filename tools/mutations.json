@@ -1500,8 +1500,8 @@
  {
   "name": "the recall block drops its per-record bound",
   "file": "inspeximus/claude_code.py",
-  "old": "        out += [f\"  * {_injected(d['text'], 480)}\" for d in decisions]",
-  "new": "        out += [f\"  * {d['text']}\" for d in decisions]",
+  "old": "        out += [_subject(subjects, f\"  * {_injected(d['text'], 480)}\", d) for d in decisions]",
+  "new": "        out += [_subject(subjects, f\"  * {d['text']}\", d) for d in decisions]",
   "tests": [
    "tests/test_claude_code_recall_surfaces_decisions.py"
   ]
@@ -11157,8 +11157,8 @@
  {
   "name": "3.18 daemon D-7: the daemon drops what the answer wrote to stderr",
   "file": "inspeximus/hookd.py",
-  "old": "        return {\"ok\": True, \"out\": out.getvalue(), \"err\": err.getvalue(), \"foreign\": foreign}\n",
-  "new": "        return {\"ok\": True, \"out\": out.getvalue(), \"err\": \"\", \"foreign\": foreign}\n",
+  "old": "            return {\"ok\": True, \"out\": out.getvalue(), \"err\": err.getvalue(), \"foreign\": foreign,\n",
+  "new": "            return {\"ok\": True, \"out\": out.getvalue(), \"err\": \"\", \"foreign\": foreign,\n",
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py"
   ]
@@ -15436,8 +15436,8 @@
  {
   "name": "3.22 inject once: a line already seen is injected again",
   "file": "inspeximus/_seen.py",
-  "old": "            if k in seen:\n                continue\n",
-  "new": "            if False:\n                continue\n",
+  "old": "            elif k in seen:\n                continue\n",
+  "new": "            elif False:\n                continue\n",
   "tests": [
    "tests/test_3220_inject_once_per_session.py::test_a_line_is_injected_once_per_session"
   ]
@@ -15499,8 +15499,8 @@
  {
   "name": "3.22 inject once: the hook prints recall's block unfiltered",
   "file": "inspeximus/claude_code.py",
-  "old": "                sys.stdout.write(_once_envelope(_buf.getvalue(), ev.get(\"session_id\")))\n",
-  "new": "                sys.stdout.write(_buf.getvalue())\n",
+  "old": "                sys.stdout.write(_once_envelope(_buf.getvalue(), ev.get(\"session_id\"), dict(_LAST_SUBJECTS)))",
+  "new": "                sys.stdout.write(_buf.getvalue())",
   "tests": [
    "tests/test_3220_inject_once_per_session.py::test_a_line_is_injected_once_per_session"
   ]
