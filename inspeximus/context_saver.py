@@ -283,7 +283,7 @@ def _save(output, intent, *, embed, embed_query, store, reranker, without_rerank
         text = "\n".join(["Output of %d bytes (sha256 %s), %d sections, not shown. Ask again with an intent."
                           % (len(raw), base["sha256"][:16], len(chunks))] + ["- " + t for t in titles])
         return dict(base, mode="pointer", text=text, follow_up="", digest_bytes=len(text.encode("utf-8")),
-                    follow_up_bytes=0, ranking=None, sections=len(chunks), read_guard=[])
+                    follow_up_bytes=0, ranking=None, sections=len(chunks), read_guard=_guard_flags(titles))
     if store is not None:
         # Only the embedding functions are borrowed, never a record. A tenant or agent view refuses every callable it
         # has not classified (embed included, see _TenantView.__getattr__), so they are read from the store it views.

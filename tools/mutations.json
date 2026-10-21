@@ -15765,5 +15765,14 @@
   "tests": [
    "tests/test_3220_context_saver.py::test_a_store_still_refuses_leaked_call_markup"
   ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-5: a pointer returns its titles without the read guard",
+  "file": "inspeximus/context_saver.py",
+  "old": "sections=len(chunks), read_guard=_guard_flags(titles))",
+  "new": "sections=len(chunks), read_guard=[])",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_pointer_assesses_the_titles_it_returns"
+  ]
  }
 ]
