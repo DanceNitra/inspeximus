@@ -126,10 +126,75 @@ def push_paths(workflow_text):
     return globs
 
 
-def branch_workflows(sh, root=ROOT):
+def push_trigger(workflow_text):
+    """The `on: push:` filters of a workflow as {"branches", "tags", "paths"}, each a list or None when absent,
+    or None when the workflow has no push trigger. Read line by line, like `push_paths`."""
+    trig, key, in_on, in_push = None, None, False, False
+    for ln in workflow_text.splitlines():
+        if not ln.strip() or ln.lstrip().startswith("#"):
+            continue
+        if re.match(r"^\S", ln):
+            in_on, in_push = ln.split("#")[0].strip() == "on:", False
+            continue
+        if not in_on:
+            continue
+        m = re.match(r"^  (\S+?):", ln)
+        if m:
+            in_push, key = m.group(1) == "push", None
+            if in_push:
+                trig = {"branches": None, "tags": None, "paths": None}
+            continue
+        if not in_push:
+            continue
+        m = re.match(r"^    (\S+?):\s*(.*)$", ln)
+        if m:
+            key = m.group(1) if m.group(1) in trig else None
+            rest = m.group(2).split("#")[0].strip()
+            if key and rest.startswith("["):
+                trig[key] = [x.strip().strip("'\"") for x in rest.strip("[]").split(",") if x.strip()]
+                key = None
+            elif key:
+                trig[key] = []
+            continue
+        m = re.match(r"^\s+-\s+(.+?)\s*$", ln.split(" #")[0])
+        if key and m:
+            trig[key].append(m.group(1).strip("'\""))
+    return trig
+
+
+#: Workflows that run on a push to main but check nothing: a failure there says nothing about the release.
+NOT_GATING = ("sentinel-notify.yml",)
+
+
+def main_workflows(changed, root=ROOT):
+    """Every workflow a push of `changed` to main starts, ci.yml first (AUDIT-A F-11).
+
+    The install workflows were the only ones named, so a release could tag while published-key.yml went red on a
+    README change. Read from the workflow files, so a workflow added later is waited for without an edit here."""
+    found = []
+    for path in sorted((pathlib.Path(root) / ".github" / "workflows").glob("*.yml")):
+        if path.name in NOT_GATING:
+            continue
+        t = push_trigger(path.read_text(encoding="utf-8"))
+        if t is None or (t["branches"] is None and t["tags"] is not None):
+            continue                                    # no push trigger, or tags only
+        if t["branches"] is not None and "main" not in t["branches"]:
+            continue
+        if t["paths"] is not None and not any(fnmatch.fnmatch(p, g) for p in changed for g in t["paths"]):
+            continue
+        found.append(path.name)
+    return sorted(found, key=lambda n: n != "ci.yml")
+
+
+def changed_files(sh):
+    """The files HEAD changes against origin/main."""
+    return [p.strip() for p in sh(["git", "diff", "--name-only", "origin/main", "HEAD"])[1].splitlines()
+            if p.strip()]
+
+
+def branch_workflows(sh, root=ROOT, changed=None):
     """ci.yml, plus each install workflow whose own push paths HEAD changes against origin/main."""
-    changed = [p.strip() for p in sh(["git", "diff", "--name-only", "origin/main", "HEAD"])[1].splitlines()
-               if p.strip()]
+    changed = changed_files(sh) if changed is None else changed
     chosen = ["ci.yml"]
     for wf in INSTALL_WORKFLOWS:
         path = pathlib.Path(root) / ".github" / "workflows" / wf
@@ -219,7 +284,9 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
         if reasons:
             raise Stop("; ".join(reasons))
         head = sh(["git", "rev-parse", "HEAD"])[1].strip()
-        workflows = branch_workflows(sh, root)
+        changed = changed_files(sh)
+        workflows = branch_workflows(sh, root, changed)
+        on_main = main_workflows(changed, root)
         if a.dry_run:
             out("pre-flight clear for v%s at %s; would run %s on %s first; --dry-run, nothing pushed"
                 % (v, head[:12], ", ".join(workflows), branch))
@@ -254,8 +321,8 @@ def main(argv=None, sh=default_sh, sleep=time.sleep, out=print, root=ROOT):
         if not now or now[0] != head:
             raise Stop("origin/main moved to %s after the push; the tag would not name what CI cleared"
                        % (now[0][:12] if now else "nothing"))
-        for wf in workflows:
-            run = finished_run(head, wf, "push", sh, sleep)
+        for wf in on_main:
+            run = finished_run(head, wf, "push", sh, sleep, branch="main")
             if run.get("conclusion") != "success" or run.get("headSha") != head:
                 raise Stop("main %s run %s is %s on %s, not success on %s" % (
                     wf, run.get("databaseId"), run.get("conclusion"), str(run.get("headSha"))[:12], head[:12]))

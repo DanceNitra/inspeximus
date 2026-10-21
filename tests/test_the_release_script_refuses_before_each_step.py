@@ -370,3 +370,47 @@ def test_a_red_install_workflow_on_main_stops_the_tag(root):
     rc, out = _run(root, fake)
     assert rc == 1 and "main clean-install.yml run 7 is failure" in out, out
     assert fake.index(MAIN_PUSH) is not None and fake.index("git tag -a v" + V) is None
+
+
+def _with(root, *names):
+    for name in names:
+        shutil.copyfile(os.path.join(REPO, ".github", "workflows", name), str(root / ".github" / "workflows" / name))
+    return root
+
+
+def test_a_red_main_workflow_outside_the_install_list_stops_the_tag(root):
+    # AUDIT-A 3.22 F-11: on main the script waited for ci.yml and the install workflows only, so a README change that
+    # turned published-key.yml red on main would still have been tagged.
+    _with(root, "published-key.yml", "sentinel-notify.yml", "release.yml")
+    diff = {"git diff --name-only origin/main HEAD": (0, "README.md\n")}
+    red = json.dumps([dict(_pushed("failure"), databaseId=8)])
+    fake = Fake(**diff, **{"--workflow published-key.yml": (0, red)})
+    rc, out = _run(root, fake)
+    assert rc == 1 and "main published-key.yml run 8 is failure" in out, out
+    assert fake.index(MAIN_PUSH) is not None and fake.index("git tag -a v" + V) is None
+    fake = Fake(**diff, **{"--workflow published-key.yml": (0, json.dumps([_pushed()]))})
+    rc, out = _run(root, fake)
+    assert rc == 0, out                                                    # control: green on main, tagged
+    polls = [i for i, c in enumerate(fake.calls) if "--workflow published-key.yml" in c]
+    assert polls and polls[0] > fake.index(MAIN_PUSH), fake.calls
+    assert not [c for c in fake.calls if "--workflow sentinel-notify.yml" in c]       # a notifier gates nothing
+    assert not [c for c in fake.calls if "--workflow release.yml --commit" in c]      # tags only
+
+
+def test_a_push_run_of_another_branch_is_not_taken_for_main(root):
+    # AUDIT-A 3.22 F-11: the main-side wait passed no branch, so a push run of the same sha on another branch counted.
+    other = dict(_pushed(), headBranch="ci-clean-install")
+    fake = Fake(**{"--workflow ci.yml": (0, json.dumps([_dispatched(), other]))})
+    rc, out = _run(root, fake)
+    assert rc == 1 and "no finished push run of ci.yml" in out, out
+    assert fake.index("git tag -a v" + V) is None
+
+
+def test_the_main_workflows_are_read_from_the_push_triggers():
+    mod = _load()
+    assert mod.main_workflows([], REPO)[0] == "ci.yml"
+    assert "published-key.yml" not in mod.main_workflows([], REPO)                 # control: its paths do not match
+    wfs = mod.main_workflows(["README.md", "inspeximus/witness_log.py"], REPO)
+    assert "published-key.yml" in wfs and "witness-template-smoke.yml" in wfs, wfs
+    assert "sentinel-notify.yml" not in wfs and "release.yml" not in wfs, wfs
+    assert mod.push_trigger("on:\n  workflow_dispatch:\n") is None

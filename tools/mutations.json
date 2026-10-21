@@ -15715,8 +15715,8 @@
  {
   "name": "3.22 release: main waits for ci.yml alone, not every install workflow the branch ran",
   "file": "tools/release.py",
-  "old": "        for wf in workflows:\n            run = finished_run(head, wf, \"push\"",
-  "new": "        for wf in [\"ci.yml\"]:\n            run = finished_run(head, wf, \"push\"",
+  "old": "        for wf in on_main:\n            run = finished_run(head, wf, \"push\", sh, sleep, branch=\"main\")",
+  "new": "        for wf in [\"ci.yml\"]:\n            run = finished_run(head, wf, \"push\", sh, sleep, branch=\"main\")",
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py::test_a_red_install_workflow_on_main_stops_the_tag"
   ]
@@ -15845,6 +15845,51 @@
   "new": "    return start is not None and start == owner.get(\"start\")\n",
   "tests": [
    "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_live_run_is_kept_where_no_start_time_can_be_read"
+  ]
+ },
+ {
+  "name": "3.22 F-11 release: main waits for the branch workflows, not every workflow a push to main starts",
+  "file": "tools/release.py",
+  "old": "        for wf in on_main:\n",
+  "new": "        for wf in workflows:\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py::test_a_red_main_workflow_outside_the_install_list_stops_the_tag"
+  ]
+ },
+ {
+  "name": "3.22 F-11 release: a push run of any branch counts as the main run",
+  "file": "tools/release.py",
+  "old": "            run = finished_run(head, wf, \"push\", sh, sleep, branch=\"main\")",
+  "new": "            run = finished_run(head, wf, \"push\", sh, sleep)",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py::test_a_push_run_of_another_branch_is_not_taken_for_main"
+  ]
+ },
+ {
+  "name": "3.22 F-11 release: a workflow's push paths are not checked on main",
+  "file": "tools/release.py",
+  "old": "        if t[\"paths\"] is not None and not any(",
+  "new": "        if False and not any(",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py::test_the_main_workflows_are_read_from_the_push_triggers"
+  ]
+ },
+ {
+  "name": "3.22 F-11 release: the notifier is waited for as a gate",
+  "file": "tools/release.py",
+  "old": "        if path.name in NOT_GATING:\n            continue\n",
+  "new": "        if False:\n            continue\n",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py::test_the_main_workflows_are_read_from_the_push_triggers"
+  ]
+ },
+ {
+  "name": "3.22 F-11 release: a tags-only workflow is waited for on main",
+  "file": "tools/release.py",
+  "old": "        if t is None or (t[\"branches\"] is None and t[\"tags\"] is not None):",
+  "new": "        if t is None:",
+  "tests": [
+   "tests/test_the_release_script_refuses_before_each_step.py::test_the_main_workflows_are_read_from_the_push_triggers"
   ]
  }
 ]
