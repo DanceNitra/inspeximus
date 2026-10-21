@@ -38,6 +38,25 @@ def _start(sp, proj, **kw):
     return d, th
 
 
+def _spy_connect(monkeypatch, addr):
+    """Record the connections to `addr` only, and every connection apart.
+
+    The patch covers the whole worker process. A daemon an earlier test started on its own thread keeps its watchdog,
+    and when it stops, Daemon._wake() connects to its own endpoint to unblock accept(). Counting that connection
+    failed test_a_token_without_a_live_record_is_never_used on 3.11 (run 39626132573) although ask() never connected.
+    """
+    mine, every = [], []
+    real = hookd._connect
+
+    def spy(*a):
+        every.append(a)
+        if a[0] == addr:
+            mine.append(a)
+        return real(*a)
+    monkeypatch.setattr(hookd, "_connect", spy)
+    return mine, every
+
+
 def _wait_idle(d, timeout=10.0):
     """Until no connection is in flight: every connection permit can be taken. A fixed sleep stood in for this, and
     under load the abandoned answers could still hold the answer lock when the next ask came (3.18)."""
@@ -229,9 +248,12 @@ def test_a_token_without_a_live_record_is_never_used(project, monkeypatch):
     _write(hookd._token_path(kh, t), token)
     _write(hookd._pid_path(kh, t), json.dumps(
         {"pid": 2 ** 22 + 17, "proc_start": 1, "token_sha": hashlib.sha256(token).hexdigest()[:32]}))
-    connected = []
-    real = hookd._connect
-    monkeypatch.setattr(hookd, "_connect", lambda *a: (connected.append(a), real(*a))[1])
+    connected, every = _spy_connect(monkeypatch, hookd.address(kh, t))
+    # CONTROL: another daemon's wake-up connection, from another thread, is not counted as this ask's.
+    other = threading.Thread(target=hookd._connect, args=(hookd.address(kh, "another-daemon"), time.monotonic() + 0.1))
+    other.start()
+    other.join()
+    assert len(every) == 1 and not connected, "CONTROL: the spy separates this endpoint from another"
     try:
         assert hookd.ask(_ev(proj), sp, timeout=1.0) is None and hookd.LAST["outcome"] == "absent"
         assert not connected, "the client connected on a token no live daemon owns"
@@ -244,9 +266,7 @@ def test_a_token_without_a_live_record_is_never_used(project, monkeypatch):
 def test_a_token_its_live_record_does_not_name_is_never_used(project, daemon, monkeypatch):
     proj, sp = project
     _write(hookd._token_path(daemon.kh, daemon.tag), os.urandom(32))    # replaced under the live daemon
-    connected = []
-    real = hookd._connect
-    monkeypatch.setattr(hookd, "_connect", lambda *a: (connected.append(a), real(*a))[1])
+    connected, _ = _spy_connect(monkeypatch, hookd.address(daemon.kh, daemon.tag))
     assert hookd.ask(_ev(proj), sp, timeout=1.0) is None and hookd.LAST["outcome"] == "absent" and not connected
 
 
