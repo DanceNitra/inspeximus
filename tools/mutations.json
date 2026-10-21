@@ -15819,5 +15819,14 @@
   "tests": [
    "tests/test_3220_context_saver.py::test_the_command_prints_a_file_the_console_cannot_show"
   ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-8: the credit ledger reads the ids a second time",
+  "file": "inspeximus/core.py",
+  "old": "                ledger.record(\"memory:credit\", inputs={\"ids\": id_list, ",
+  "new": "                ledger.record(\"memory:credit\", inputs={\"ids\": _as_ids(ids), ",
+  "tests": [
+   "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_ids_from_a_generator_are_the_ids_the_entry_records"
+  ]
  }
 ]

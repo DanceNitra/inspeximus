@@ -17618,7 +17618,10 @@ class Inspeximus:
         by_id = {x["id"]: x for x in self._tenant_rows()}
         key, updated = ("good" if good else "bad"), []
         win, now, collapsed = self.credit_burst_window, time.time(), []
-        for i in _as_ids(ids):
+        # ONE list for the loop and the ledger: a second _as_ids(ids) found a generator already used up and
+        # recorded "ids": [] beside two updated records (AUDIT-A F-8).
+        id_list = _as_ids(ids)
+        for i in id_list:
             rec = by_id.get(i)
             if rec is None:
                 continue
@@ -17645,7 +17648,7 @@ class Inspeximus:
             counts = {i: {k: float(by_id[i].get(k, 0) or 0) for k in ("good", "bad", "good_warranted")}
                       for i in updated}
             try:
-                ledger.record("memory:credit", inputs={"ids": _as_ids(ids), "outcome": outcome, "weight": weight,
+                ledger.record("memory:credit", inputs={"ids": id_list, "outcome": outcome, "weight": weight,
                                                        "warrant": warrant},
                               output=dict(out, counts=counts))
             except Exception as ex:
