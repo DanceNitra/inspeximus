@@ -513,7 +513,7 @@ def print_capture(path, intent=None, *, out=None, err=None, embedders=None, rera
             out.write(data.decode("utf-8", "replace"))
         out.flush()
 
-    if len(raw) < PASSTHROUGH_BYTES:
+    if PASSTHROUGH_BYTES > len(raw):                 # the same bound as save(), so a short output is untouched
         put(raw)
         return "passthrough"
     if len(raw) > CAPTURE_DIGEST_MAX_BYTES:
