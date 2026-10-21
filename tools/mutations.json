@@ -16028,5 +16028,14 @@
   "tests": [
    "tests/test_3220_a_stalled_run_end_is_bounded.py::test_this_suite_runs_with_the_guard"
   ]
+ },
+ {
+  "name": "3.22 daemon tests: the connect spy counts every endpoint again",
+  "file": "tests/test_the_prompt_daemon_audit_a_findings.py",
+  "old": "        if a[0] == addr:\n",
+  "new": "        if True:\n",
+  "tests": [
+   "tests/test_the_prompt_daemon_audit_a_findings.py::test_a_token_without_a_live_record_is_never_used"
+  ]
  }
 ]
