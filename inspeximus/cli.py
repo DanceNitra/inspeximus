@@ -1493,6 +1493,9 @@ def _main(argv, seen):
     ins.add_argument("--hermes-provider", choices=["yes", "no"], default="no",
                      help="with --all: switch Hermes' memory.provider from another provider to inspeximus "
                           "(default no: another provider is kept; the installer never asks)")
+    ins.add_argument("--saver-hook", dest="saver_hook", choices=["on", "off"], default=None,
+                     help="switch the context saver's Bash capture in the Claude Code hook on or off (user config "
+                          "saver.hook); alone, it changes nothing else")
     ins.add_argument("--scope", choices=["user", "project"], default=None,
                      help="user-level (default) or project-level config, where the host supports it")
     ins.add_argument("--project", default=None, help="project directory for project scope (default: cwd)")
@@ -1541,6 +1544,16 @@ def _main(argv, seen):
         from . import mcp_server
         return mcp_server.main(a.mcp_args)
 
+    if a.cmd == "install" and a.saver_hook:
+        from . import context_saver as _cs
+        from .errors import UsageError as _UE
+        try:
+            _cs.set_saver_hook(a.saver_hook == "on")
+        except _UE as exc:
+            print("ERROR: %s" % exc)
+            return 2
+        if not (a.check or a.all_hosts or a.ide):
+            return 0
     if a.cmd == "install" and a.check:
         from . import install_all as _all
         return _all.check(store=a.store, only=a.only or (a.ide if a.ide else None))

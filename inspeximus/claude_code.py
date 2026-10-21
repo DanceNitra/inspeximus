@@ -2597,6 +2597,55 @@ def pre_tool_use(ev):
         "hookEventName": "PreToolUse", "additionalContext": text}}))
 
 
+def _pre_tool_use_and_saver(ev):
+    """PreToolUse: the decision guard first, then the context saver's Bash rewrite, in ONE envelope (3.23).
+
+    The guard runs on the call as the agent wrote it and decides first: when it blocks (exit 2) the call stops and
+    nothing is rewritten, and the saver is not even consulted. Otherwise its additionalContext and the saver's
+    updatedInput leave in the same JSON, because a second hook entry would cost a second process per Bash call and
+    leave the order of two rewriters to the host. With the saver off this is exactly `pre_tool_use(ev)`."""
+    import io
+    real = sys.stdout
+    buf = io.StringIO()
+    sys.stdout = buf
+    try:
+        pre_tool_use(ev)                                 # may sys.exit(2): a block, and then nothing below runs
+    finally:
+        sys.stdout = real
+    printed = buf.getvalue()
+    try:
+        out = _with_saver_rewrite(ev, printed)
+    except Exception:                                    # noqa: BLE001 -- a saver failure never silences the guard
+        out = printed
+    sys.stdout.write(out)
+
+
+def _with_saver_rewrite(ev, printed):
+    """What the hook prints: `printed` (the guard's own output) unchanged, or its envelope plus updatedInput."""
+    from . import _userconfig
+    # The saver module is imported only for a Bash call with the switch on, so a call it never rewrites pays one
+    # config read and nothing more (the config is cached by its stat).
+    if ev.get("tool_name") != "Bash" or _userconfig.get("saver", "hook") is not True:
+        return printed
+    from .context_saver import hook_rewrite
+    new_input = hook_rewrite(ev)
+    if new_input is None:
+        return printed
+    env = None
+    for line in reversed(printed.strip().splitlines()):
+        try:
+            env = json.loads(line)
+            break
+        except ValueError:
+            continue
+    if not isinstance(env, dict) or not isinstance(env.get("hookSpecificOutput"), dict):
+        if printed.strip():
+            return printed                               # something the guard printed that is not its envelope
+        env = {"hookSpecificOutput": {"hookEventName": "PreToolUse"}}
+    env["hookSpecificOutput"]["updatedInput"] = new_input
+    return json.dumps(env) + chr(10)
+
+
 def main():
     # A HOOK MUST NEVER BE SILENCED BY THE CONSOLE CODEPAGE, AND THIS ONE WAS.
     #
@@ -2736,7 +2785,7 @@ def main():
     try:
         name = ev.get("hook_event_name", "")
         if name == "PreToolUse":
-            pre_tool_use(ev)
+            _pre_tool_use_and_saver(ev)
         elif name == "PostToolUse":
             capture(ev)
         elif name == "UserPromptSubmit":

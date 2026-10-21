@@ -191,6 +191,19 @@ Microsoft Store install, `%LOCALAPPDATA%\Packages\Claude_*\LocalCache\Roaming\Cl
 Windows and `~/Library/Application Support/Claude/claude-code/` on macOS, so no `claude` command is needed
 on the PATH. Restart Claude Desktop.
 
+**Context saver for Bash output (optional, off by default).** To send large Bash output to Claude Code as a
+short digest instead of whole, run `inspeximus install --saver-hook on`. A Bash call whose output is under
+5,000 bytes is unchanged. A larger output reaches the agent as a digest of the sections that match the call's
+description, plus the path of the full output, which is kept for 2 days under the key home in
+`inspeximus/saver-out`. The ranking needs an embedder: `INSPEXIMUS_EMBED_URL`, or `embed.url` in your config.
+Without one, the whole output is shown and one line says why. To switch it off, run
+`inspeximus install --saver-hook off`, or set `INSPEXIMUS_SAVER_HOOK=0` for one session.
+
+Known limit: in Claude Code's **auto** permission mode, a Bash call the hook rewrote is refused, because the
+mode reviews the command text and the text that runs is different. Switch the hook off in that mode and run
+`inspeximus-saver run -- <command>` instead, which prints a command's output through the saver without any
+rewrite.
+
 <a id="gemini-cli"></a>
 ### Gemini CLI
 

@@ -570,4 +570,11 @@ def test_nothing_in_the_package_calls_the_saver():
                 with open(os.path.join(d, f), encoding="utf-8") as fh:
                     if "context_saver" in fh.read():
                         users.append(f)
-    assert users == [], "the saver is off by default: no module imports it (%s)" % users
+    # 3.23: two callers, both behind the user's opt-in. claude_code's PreToolUse hook asks hook_rewrite, which returns
+    # None unless saver.hook is true; cli's `install --saver-hook` writes that switch. Neither imports the saver at
+    # module level, so a hook process that never reaches them does not load it.
+    assert sorted(users) == ["claude_code.py", "cli.py"], "the saver is off by default: who imports it (%s)" % users
+    for f in users:
+        with open(os.path.join(root, f), encoding="utf-8") as fh:
+            top = [ln for ln in fh.read().splitlines() if ln.startswith(("import ", "from ")) and "context_saver" in ln]
+        assert top == [], "%s imports the saver at module level: %s" % (f, top)
