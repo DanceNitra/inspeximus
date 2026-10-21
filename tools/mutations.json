@@ -15439,7 +15439,8 @@
   "old": "            elif k in seen:\n                continue\n",
   "new": "            elif False:\n                continue\n",
   "tests": [
-   "tests/test_3220_inject_once_per_session.py::test_a_line_is_injected_once_per_session"
+   "tests/test_3220_inject_once_per_session.py::test_a_line_is_injected_once_per_session",
+   "tests/test_3220_inject_once_per_session.py::test_a_keyed_line_is_withheld_only_while_it_is_the_last_shown_for_its_key"
   ]
  },
  {
