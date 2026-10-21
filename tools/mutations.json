@@ -16291,5 +16291,14 @@
   "tests": [
    "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_run_gives_the_command_exactly_the_environment_it_was_called_with"
   ]
+ },
+ {
+  "name": "3.23 environment: git gets a full copy of the environment, from an unlisted caller",
+  "file": "inspeximus/_storelink.py",
+  "old": "    env = _envpolicy.child_env(keep=lambda k: k.upper() in _GIT_ENV_KEEP)\n",
+  "new": "    env = _envpolicy.child_env()\n",
+  "tests": [
+   "tests/test_the_environment_reads_through_one_accessor.py::test_every_full_copy_of_the_environment_is_a_listed_caller"
+  ]
  }
 ]

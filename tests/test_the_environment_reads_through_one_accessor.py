@@ -490,10 +490,12 @@ OWN_LAUNCHES = {("inspeximus/claude_code.py", "maybe_archive_in_background"),
                 ("inspeximus/claude_code.py", "_start_detached")}
 #: Every caller of `child_env()` with no `keep`: a full copy of this process's environment, INSPEXIMUS_* names included,
 #: which is INHERIT by another name, so it is listed the same way (3.23).
+#: THE CRITERION, and the only one: the child is the USER'S OWN COMMAND, so it gets the user's own environment, nothing
+#: added and nothing removed. A program inspeximus chooses, or one a variable, a config or a repository file names, never
+#: qualifies; it gets `tool_env`. An entry here needs a test that the child's environment equals the parent's exactly.
 FULL_COPY_CALLERS = {
-    # `inspeximus-saver run -- <command>` runs the command its user typed, with exactly the os.environ the user's
-    # shell gave this process. It is not a program inspeximus chose: no variable, config or repository file names it.
-    # tests/test_3230_the_saver_captures_bash_output_in_the_hook.py holds the equality.
+    # `inspeximus-saver run -- <command>` runs the command its user typed after `--`. The equality is held by
+    # tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_run_gives_the_command_exactly_the_environment_...
     ("inspeximus/context_saver.py", "run"),
 }
 #: Nothing is exempt by name (3.18, AUDIT-B R-2): `webbrowser` was, for `browse --open`, and on POSIX it runs the command
