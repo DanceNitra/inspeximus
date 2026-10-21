@@ -563,7 +563,17 @@ def _run_probe(probe, extra_env=None):
             "the probe." % (probe, _budget(probe)))
 
 
-@pytest.mark.parametrize("probe", _standalone())
+#: Seconds pytest-timeout waits beyond a probe's own budget. Without a per-test mark, a flat --timeout below
+#: the budget (tools/full_suite.py step 2 passes 300) ends the WORKER first: measured 2026-10-21, three probes
+#: with budgets of 600 to 1800 s crashed their workers at 300 s ("node down: Not properly terminated").
+_PYTEST_TIMEOUT_MARGIN = 60
+
+
+def _with_its_budget(probes):
+    return [pytest.param(p, marks=pytest.mark.timeout(_budget(p) + _PYTEST_TIMEOUT_MARGIN)) for p in probes]
+
+
+@pytest.mark.parametrize("probe", _with_its_budget(_standalone()))
 def test_a_standalone_cited_probe_still_runs(probe):
     """Against THIS repository, not whatever pip installed -- the same mistake that made the examples
     suite pass while never exercising the working tree.
@@ -723,7 +733,7 @@ def test_every_probe_on_disk_is_covered_somehow():
 # Serial they queue; under xdist they raced and clobbered it (1 failed + 4 errors that
 # do not occur serially). Same worker, so they cannot overlap.
 @pytest.mark.xdist_group("echo_policy_panel")
-@pytest.mark.parametrize("probe", _uncited())
+@pytest.mark.parametrize("probe", _with_its_budget(_uncited()))
 def test_an_uncited_probe_still_runs(probe):
     """Same standard as the cited half, same skip rule: a declared optional dependency excuses the run,
     anything else is a defect. An uncited probe that fails is either rot or -- as it turned out twice --
@@ -769,3 +779,14 @@ def test_the_installer_check_sees_the_probes_that_install():
         assert _INSTALLER.search(open(os.path.join(PROBES, f), encoding="utf-8").read()), f
         assert f in NOT_STANDALONE, f
     assert not _INSTALLER.search('raise SystemExit("--dense needs torch:  pip install torch transformers")')
+
+
+def test_every_probe_run_outlives_its_own_budget():
+    """pytest-timeout ends the whole worker, the subprocess budget ends only the probe with a readable message.
+    So the pytest limit on every probe test sits above that probe's budget, whatever --timeout the run passes."""
+    params = _with_its_budget(_standalone()) + _with_its_budget(_uncited())
+    assert params, "no probe is collected, so the marks were never checked"
+    for p in params:
+        (probe,) = p.values
+        limits = [m.args[0] for m in p.marks if m.name == "timeout"]
+        assert limits and limits[0] > _budget(probe), (probe, limits, _budget(probe))

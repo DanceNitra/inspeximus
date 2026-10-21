@@ -16037,5 +16037,24 @@
   "tests": [
    "tests/test_the_prompt_daemon_audit_a_findings.py::test_a_token_without_a_live_record_is_never_used"
   ]
+ },
+ {
+  "name": "3.22 exit guard: an idle xdist worker is timed again (Linux only: its test skips elsewhere, so a Windows mutation_check run never kills it; killed by hand on WSL 2026-10-21)",
+  "file": "tests/_exit_guard.py",
+  "old": "        if hasattr(session.config, \"workerinput\"):\n            return\n",
+  "new": "        if False:\n            return\n",
+  "tests": [
+   "tests/test_3220_a_stalled_run_end_is_bounded.py::test_an_idle_xdist_worker_waiting_for_a_sibling_is_not_a_stall"
+  ],
+  "platform": "posix"
+ },
+ {
+  "name": "3.22 cited probes: a probe test has no pytest limit above its budget",
+  "file": "tests/test_probes_cited_by_docs.py",
+  "old": "    return [pytest.param(p, marks=pytest.mark.timeout(_budget(p) + _PYTEST_TIMEOUT_MARGIN)) for p in probes]\n",
+  "new": "    return [pytest.param(p, marks=()) for p in probes]\n",
+  "tests": [
+   "tests/test_probes_cited_by_docs.py::test_every_probe_run_outlives_its_own_budget"
+  ]
  }
 ]

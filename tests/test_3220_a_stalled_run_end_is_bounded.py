@@ -156,3 +156,38 @@ def test_without_psutil_children_are_read_from_proc(tmp_path, monkeypatch):
     finally:
         if child.poll() is None:
             child.kill()
+
+
+XDIST_TESTS = """
+    import time
+
+    def test_fast():
+        pass
+
+    def test_slow():
+        time.sleep(10)
+"""
+
+
+def test_an_idle_xdist_worker_waiting_for_a_sibling_is_not_a_stall(tmp_path):
+    # Measured 2026-10-21 in ci.yml: after its session an xdist worker waits for the controller until every
+    # sibling is done, and the guard ended three such workers in four legs. With two workers here, the one
+    # that ran test_fast waits about 10 s, past the 3 s limit. Only Linux keeps that worker alive: on Windows it
+    # exits right after its session (measured the same day), so the case never arises there and a pass would
+    # say nothing. CI runs this on Linux, where the guard without the worker check fires.
+    import pytest
+    pytest.importorskip("xdist")
+    if not sys.platform.startswith("linux"):
+        pytest.skip("an idle xdist worker exits at once off Linux, so there is no wait to mistake for a stall")
+    d = tmp_path / "inner"
+    d.mkdir()
+    (d / "conftest.py").write_text(textwrap.dedent(INNER_CONFTEST % TESTS), encoding="utf-8")
+    (d / "test_inner.py").write_text(textwrap.dedent(XDIST_TESTS), encoding="utf-8")
+    (d / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
+    env = dict(os.environ, EXIT_GUARD_LIMIT_S="3", CI="")
+    p = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-n", "2", "--dist", "load",
+                        str(d)], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
+                       cwd=str(d), env=env, stdin=subprocess.DEVNULL)
+    assert "2 passed" in p.stdout, p.stdout[-2000:] + p.stderr[-2000:]
+    assert p.returncode == 0, (p.returncode, p.stderr[-2000:])
+    assert "[exit guard]" not in p.stderr + p.stdout, (p.stderr + p.stdout)[-2000:]

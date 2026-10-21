@@ -198,6 +198,12 @@ class Plugin:
         # Registered as tryfirst below: on the controller, xdist's own sessionfinish waits for the workers, and
         # a stalled worker exit is one of the stalls this guard is for. EXIT_GUARD_LIMIT_S shortens the limit for
         # the guard's own tests (test_3220_a_stalled_run_end_is_bounded).
+        # Not on an xdist worker: after its session a worker waits for the controller until every sibling is
+        # done, and that wait is not a stall. Measured 2026-10-21 in ci.yml runs 39642830294 and 39646443034:
+        # the guard ended 3 idle workers in 4 legs while a fourth still ran tests. A stalled worker keeps the
+        # controller in its test loop, where the session watchdog (arm_session) covers it.
+        if hasattr(session.config, "workerinput"):
+            return
         arm(int(session.exitstatus or 0), delay=float(os.environ.get("EXIT_GUARD_LIMIT_S") or EXIT_LIMIT_S),
             fd=original_stderr_fd(session.config))
 
