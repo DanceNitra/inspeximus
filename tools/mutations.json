@@ -16138,5 +16138,149 @@
   "tests": [
    "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_site_c_keeps_an_empty_directory_someone_else_made"
   ]
+ },
+ {
+  "name": "3.23 saver hook: a blocked call is swallowed and the saver runs",
+  "file": "inspeximus/claude_code.py",
+  "old": "        pre_tool_use(ev)                                 # may sys.exit(2): a block, and then nothing below runs\n",
+  "new": "        try:\n            pre_tool_use(ev)\n        except SystemExit:\n            pass\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_blocked_call_is_never_rewritten_and_the_saver_is_not_consulted"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: a saver failure drops the guard's output",
+  "file": "inspeximus/claude_code.py",
+  "old": "    except Exception:                                    # noqa: BLE001 -- a saver failure never silences the guard\n        out = printed\n",
+  "new": "    except Exception:                                    # noqa: BLE001 -- a saver failure never silences the guard\n        out = \"\"\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_saver_failure_never_silences_the_guard"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: the rewrite is not merged into the envelope",
+  "file": "inspeximus/claude_code.py",
+  "old": "    env[\"hookSpecificOutput\"][\"updatedInput\"] = new_input\n",
+  "new": "    pass\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_the_guards_warning_and_the_rewrite_leave_in_one_envelope"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: any truthy config value switches it on",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if _userconfig.get(\"saver\", \"hook\") is not True:\n        return None\n",
+  "new": "    if not _userconfig.get(\"saver\", \"hook\"):\n        return None\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_off_by_default_and_on_only_through_the_users_config"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: the one-session escape is ignored",
+  "file": "inspeximus/context_saver.py",
+  "old": "in (\"0\", \"false\", \"no\", \"off\"):\n        return None\n",
+  "new": "in ():\n        return None\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_off_by_default_and_on_only_through_the_users_config"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: a background command is wrapped",
+  "file": "inspeximus/context_saver.py",
+  "old": " or ti.get(\"run_in_background\") or CAPTURE_MARKER in cmd:",
+  "new": " or CAPTURE_MARKER in cmd:",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_these_calls_are_never_rewritten"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: a wrapped command is wrapped again",
+  "file": "inspeximus/context_saver.py",
+  "old": " or ti.get(\"run_in_background\") or CAPTURE_MARKER in cmd:",
+  "new": " or ti.get(\"run_in_background\"):",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_these_calls_are_never_rewritten"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: an exit in the command loses the capture",
+  "file": "inspeximus/context_saver.py",
+  "old": "exit $__isx_rc' EXIT\\n\"",
+  "new": "exit $__isx_rc' USR2\\n\"",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_an_exit_in_the_command_still_prints_the_capture"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: the call reports success whatever the command returned",
+  "file": "inspeximus/context_saver.py",
+  "old": "        \"(exit $__isx_rc)\"\n",
+  "new": "        \"(exit 0)\"\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_short_output_passes_through_unchanged_with_its_exit_code"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: a saver failure hides the output",
+  "file": "inspeximus/context_saver.py",
+  "old": "        put(raw)\n        err.write(\"[inspeximus-saver] not saved",
+  "new": "        pass\n        err.write(\"[inspeximus-saver] not saved",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_large_output_without_an_embedder_is_printed_whole"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: the read guard line is not printed",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if r[\"read_guard\"]:\n        lines.append(",
+  "new": "    if False:\n        lines.append(",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_the_read_guard_line_is_printed_for_a_capture"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: a huge capture is embedded past the timeout",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if len(raw) > CAPTURE_DIGEST_MAX_BYTES:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_capture_over_the_digest_cap_is_a_pointer_and_calls_no_embedder"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: the sweep removes any old file in the folder",
+  "file": "inspeximus/context_saver.py",
+  "old": "        if not (name.startswith(_CAPTURE_PREFIX) and name.endswith(\".txt\")) or not _in_capture_dir(p):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_the_sweep_removes_only_old_captures_it_named"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: a path outside the capture folder counts as a capture",
+  "file": "inspeximus/context_saver.py",
+  "old": "    return os.path.dirname(p) == d and os.path.basename(p).startswith(_CAPTURE_PREFIX)\n",
+  "new": "    return os.path.basename(p).startswith(_CAPTURE_PREFIX)\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_the_sweep_removes_only_old_captures_it_named"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: localhost is called by name",
+  "file": "inspeximus/context_saver.py",
+  "old": "    url = url.replace(\"//localhost:\", \"//127.0.0.1:\")",
+  "new": "    url = url.replace(\"//localhost:\", \"//localhost:\")",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_the_capture_embedder_calls_localhost_by_address"
+  ]
+ },
+ {
+  "name": "3.23 saver hook: the installer leaves a capture with no ranking mode",
+  "file": "inspeximus/context_saver.py",
+  "old": "        sv[\"without_reranker\"] = \"hybrid\"\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_the_installer_switch_keeps_every_other_key"
+  ]
  }
 ]
