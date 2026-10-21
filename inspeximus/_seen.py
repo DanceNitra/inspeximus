@@ -8,6 +8,9 @@ This module remembers, per session, the lines a hook has already put into the ag
 
   * the key is the line's text, whitespace collapsed, so a CHANGED line (a superseded decision now reading its new
     value) is new and is injected again, as the correction it is;
+  * a line from a keyed record (a decision on a topic) is withheld only while it is the LAST text this session was
+    shown for that key. A revert back to an earlier value is a change too: the session saw the retired value last,
+    so the restored one is injected again (AUDIT-A 3.22 F-2);
   * a compaction drops what the agent saw, so `forget_session` clears the set and the next prompt injects again;
   * without a session id nothing is remembered and nothing is dropped, because two sessions must never share a set;
   * INSPEXIMUS_HOOK_DEDUPE=0 turns it off.
@@ -50,13 +53,17 @@ def _key(line) -> str:
     return hashlib.sha256(" ".join(str(line).split()).encode("utf-8")).hexdigest()[:24]
 
 
-def _load(path) -> set:
+def _load(path):
+    """(the text keys seen, {subject key: the text key last shown for it}); empty on any error."""
     try:
         with open(path, encoding="utf-8") as fh:
             data = json.load(fh)
-        return set(data.get("seen") or []) if isinstance(data, dict) else set()
-    except (OSError, ValueError):
-        return set()
+        if not isinstance(data, dict):
+            return set(), {}
+        last = data.get("last")
+        return set(data.get("seen") or []), dict(last) if isinstance(last, dict) else {}
+    except (OSError, ValueError, TypeError):
+        return set(), {}
 
 
 def _expire(now) -> None:
@@ -69,21 +76,30 @@ def _expire(now) -> None:
         pass
 
 
-def once(session_id, lines) -> list:
+def once(session_id, lines, subjects=None) -> list:
     """`lines` without those already injected in this session, in their order; the kept ones are remembered.
 
-    A repeat inside `lines` itself is kept once. On any error every line is returned, so nothing is withheld."""
+    `subjects` maps a line to the key of the record it renders (a decision's `decision::<topic>`). A keyed line is
+    withheld only when it is the last text shown for its key in this session; an unkeyed line, when its text was
+    shown before. A repeat inside `lines` itself is kept once. On any error every line is returned, so nothing is
+    withheld."""
     lines = list(lines)
     if not session_id or not enabled() or not lines:
         return lines
     try:
+        subjects = subjects or {}
         path = _path(session_id)
         new = not os.path.exists(path)
-        seen = _load(path)
+        seen, last = _load(path)
         keep, added = [], False
         for line in lines:
-            k = _key(line)
-            if k in seen:
+            k, subject = _key(line), subjects.get(line)
+            if subject:
+                sk = _key("subject\x00" + str(subject))
+                if last.get(sk) == k:
+                    continue
+                last[sk] = k
+            elif k in seen:
                 continue
             seen.add(k)
             keep.append(line)
@@ -92,7 +108,7 @@ def once(session_id, lines) -> list:
             from ._safewrite import write_atomic
             os.makedirs(_dir(), exist_ok=True)
             now = time.time()
-            write_atomic(path, json.dumps({"seen": sorted(seen), "at": int(now)}))
+            write_atomic(path, json.dumps({"seen": sorted(seen), "last": last, "at": int(now)}))
             if new:
                 _expire(now)
         return keep

@@ -186,3 +186,50 @@ def test_only_a_sessions_first_write_lists_the_directory(tmp_path, monkeypatch):
     _seen.once("s", ["b"])
     _seen.once("s", ["c"])
     assert len(calls) == 1
+
+
+def test_a_decision_reverted_to_its_earlier_value_is_injected_again(project, capsys):
+    # AUDIT-A 3.22 F-2: the set was keyed on text alone. A shown, then B, then a revert back to A: the session's
+    # last view was B, the retired value, and A was withheld as "seen".
+    assert "tools/release.py" in _prompt(project, "s1", capsys)
+    m = Inspeximus(str(project / ".inspeximus" / "coding_memory.json"))
+    m.remember_decision("Release only through tools/release2.py", because="the new gate", topic="release")
+    m.flush()
+    assert "tools/release2.py" in _prompt(project, "s1", capsys)
+    m = Inspeximus(str(project / ".inspeximus" / "coding_memory.json"))
+    assert m.revert("decision::release").get("ok") is not False
+    m.flush()
+    back = _prompt(project, "s1", capsys)
+    assert "tools/release.py" in back and "release2" not in back, back
+    assert "tools/release.py" not in _prompt(project, "s1", capsys)          # control: unchanged, withheld again
+
+
+def test_a_keyed_line_is_withheld_only_while_it_is_the_last_shown_for_its_key(tmp_path, monkeypatch):
+    monkeypatch.setenv("INSPEXIMUS_KEY_HOME", str(tmp_path))
+    monkeypatch.delenv("INSPEXIMUS_HOOK_DEDUPE", raising=False)
+    a, b, s = "  * DECISION: A", "  * DECISION: B", {"  * DECISION: A": "decision::x", "  * DECISION: B": "decision::x"}
+    assert _seen.once("s", [a], s) == [a]
+    assert _seen.once("s", [a], s) == []
+    assert _seen.once("s", [b], s) == [b]
+    assert _seen.once("s", [a], s) == [a]
+    assert _seen.once("s", [a], s) == []
+    assert _seen.once("t", [a]) == [a] and _seen.once("t", [b]) == [b] and _seen.once("t", [a]) == []  # unkeyed
+
+
+def _pre_tool(proj, ev_extra, capsys):
+    ev = {"hook_event_name": "PreToolUse", "cwd": str(proj), "session_id": "s1", "tool_name": "Write",
+          "tool_input": {"file_path": str(proj / "new_release_notes.py")}, **ev_extra}
+    cc.pre_tool_use(ev)
+    out = capsys.readouterr().out.strip()
+    return json.loads(out)["hookSpecificOutput"]["additionalContext"] if out else ""
+
+
+def test_a_subagent_gets_the_decisions_its_parent_was_shown(project, capsys):
+    # AUDIT-A 3.22 F-3: a subagent's PreToolUse carries the parent's session_id and starts with a fresh context.
+    first = _pre_tool(project, {}, capsys)
+    assert "decided before" in first and "tools/release.py" in first, first
+    assert "decided before" not in _pre_tool(project, {}, capsys)              # control: the parent's repeat
+    sub = _pre_tool(project, {"agent_id": "agent-7"}, capsys)
+    assert "decided before" in sub and "tools/release.py" in sub, sub
+    assert "decided before" not in _pre_tool(project, {"agent_id": "agent-7"}, capsys)
+    assert "decided before" in _pre_tool(project, {"agent_id": "agent-8"}, capsys)

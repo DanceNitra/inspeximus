@@ -15918,5 +15918,69 @@
   "tests": [
    "tests/test_3220_the_gate_counts_the_seen_set_apart_from_the_store.py"
   ]
+ },
+ {
+  "name": "3.22 F-2 seen: a keyed line is withheld when its text was ever shown",
+  "file": "inspeximus/_seen.py",
+  "old": "                if last.get(sk) == k:\n",
+  "new": "                if k in seen:\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py"
+  ]
+ },
+ {
+  "name": "3.22 F-2 hook: a rendered line does not carry its record's key",
+  "file": "inspeximus/claude_code.py",
+  "old": "        subjects[line] = str(key)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py",
+   "tests/test_3220_the_daemon_hands_the_record_keys_to_the_filter.py"
+  ]
+ },
+ {
+  "name": "3.22 F-2 recall: a hit from a keyed record does not name its key",
+  "file": "inspeximus/core.py",
+  "old": "                _o[\"key\"] = _key\n",
+  "new": "                pass\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_decision_reverted_to_its_earlier_value_is_injected_again"
+  ]
+ },
+ {
+  "name": "3.22 F-2 hook: today's path hands the filter no keys",
+  "file": "inspeximus/claude_code.py",
+  "old": "ev.get(\"session_id\"), dict(_LAST_SUBJECTS)))",
+  "new": "ev.get(\"session_id\"), {}))",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_decision_reverted_to_its_earlier_value_is_injected_again"
+  ]
+ },
+ {
+  "name": "3.22 F-2 daemon: the answer carries no keys",
+  "file": "inspeximus/hookd.py",
+  "old": "                    \"subjects\": subjects}",
+  "new": "                    \"subjects\": {}}",
+  "tests": [
+   "tests/test_3220_the_daemon_hands_the_record_keys_to_the_filter.py"
+  ]
+ },
+ {
+  "name": "3.22 F-2 daemon: ask drops the keys of a served answer",
+  "file": "inspeximus/hookd.py",
+  "old": "subjects={str(k): str(v) for k, v in subjects.items()} if isinstance(subjects, dict) else None,",
+  "new": "subjects=None,",
+  "tests": [
+   "tests/test_3220_the_daemon_hands_the_record_keys_to_the_filter.py::test_ask_hands_the_keys_to_the_hook"
+  ]
+ },
+ {
+  "name": "3.22 F-3 pre-tool: a subagent shares its parent's seen set",
+  "file": "inspeximus/claude_code.py",
+  "old": "        if sid and ev.get(\"agent_id\"):\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_3220_inject_once_per_session.py::test_a_subagent_gets_the_decisions_its_parent_was_shown"
+  ]
  }
 ]

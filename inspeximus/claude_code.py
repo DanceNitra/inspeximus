@@ -1713,6 +1713,8 @@ def recall(ev, store=None, decision_store=None, count_foreign=None):
     INSPEXIMUS_DECISION_STORE, read-only, and `count_foreign(m)` the stamps of another guard set."""
     store = store or _store
     count_foreign = count_foreign or foreign_stamp_count
+    subjects = _LAST_SUBJECTS
+    subjects.clear()
     cwd = ev.get("cwd") or os.getcwd()
     if not injection_enabled(cwd):
         return
@@ -1796,13 +1798,13 @@ def recall(ev, store=None, decision_store=None, count_foreign=None):
         # typing. The block is a POINTER -- the subject plus the head of the `because` is what makes an
         # agent stop and go read the record, and the full text is one `recall` away. Measured: 18,032
         # bytes unbounded against ~4 KB at this cap, on the same eight decisions.
-        out += [f"  * {_injected(d['text'], 480)}" for d in decisions]
+        out += [_subject(subjects, f"  * {_injected(d['text'], 480)}", d) for d in decisions]
     if knowledge:
         out.append("curated knowledge (from memory):")
-        out += [f"  = {_injected(k['text'])}" for k in knowledge]
+        out += [_subject(subjects, f"  = {_injected(k['text'])}", k) for k in knowledge]
     if mechanics:
         out.append("recent mechanics (files/commands):")
-        out += [f"  - {_injected(mm['text'])}" for mm in mechanics]
+        out += [_subject(subjects, f"  - {_injected(mm['text'])}", mm) for mm in mechanics]
     notice = _secrets_notice(cwd, m)
     ask = _star_ask(cwd)
     if out or notice or ask:
@@ -1812,13 +1814,21 @@ def recall(ev, store=None, decision_store=None, count_foreign=None):
               notice, system_message=ask)
 
 
+def _subject(subjects, line, record):
+    """`line`, after noting in `subjects` the key of the record it renders, when it has one (AUDIT-A 3.22 F-2)."""
+    key = dict.get(record, "key")          # a scalar, read without the record's Python-level `get` (perf/gate.py)
+    if subjects is not None and key:
+        subjects[line] = str(key)
+    return line
+
+
 #: The section headers of the prompt block, whose item lines `_once_envelope` filters.
 _SECTION_HEADERS = ("decisions/rules (what we concluded, and why):", "curated knowledge (from memory):",
                     "recent mechanics (files/commands):")
 _MEMORY_HEADER = "[inspeximus] relevant project memory (deterministic, corrections already applied):"
 
 
-def _once_envelope(envelope, session_id):
+def _once_envelope(envelope, session_id, subjects=None):
     """The prompt hook's printed envelope with every memory line this session was already given removed (3.22).
 
     Applied where the block leaves the hook, so `recall()` and the prompt daemon compute today's block unchanged and
@@ -1857,7 +1867,7 @@ def _once_envelope(envelope, session_id):
         close()
         # One call for every item, so the state is written once per prompt.
         all_items = [ln for ln in kept if ln not in _SECTION_HEADERS]
-        survivors = set(once(session_id, all_items))
+        survivors = set(once(session_id, all_items, subjects))
         if len(survivors) == len(set(all_items)):
             return envelope                             # nothing was given before: today's bytes, unchanged
         block, header, items = [], None, []
@@ -1878,6 +1888,7 @@ def _once_envelope(envelope, session_id):
         return envelope
 
 
+_LAST_SUBJECTS: dict = {}      #: each line the last `recall` rendered from a keyed record -> that record's key (F-2)
 _LAST_STORES: list = []        #: the stores the last `recall` read: (path, is_decision_store, stamps from another guard set)
 
 
@@ -2544,7 +2555,7 @@ def pre_tool_use(ev):
     # arbitrary decisions to ordinary commands like `pytest -n auto tests/`. A guard that fires on
     # everything is one you learn to ignore. It also means the store is not loaded at all unless
     # something already matched, which is where most of the ~0.77 s per call went.
-    hits = []
+    hits, hit_subjects = [], {}
     if lines or blocks:
         try:
             m = _store(ev.get("cwd") or os.getcwd())
@@ -2552,13 +2563,18 @@ def pre_tool_use(ev):
                                where={"tags": {"$contains": "decision"}}) or []):
                 t = " ".join((h.get("text") or "").split())
                 if t:
-                    hits.append("  - " + t[:200])
+                    hits.append(_subject(hit_subjects, "  - " + t[:200], h))
         except Exception:
             pass
         # A decision this session was already shown beside an earlier action is not repeated (3.22, _seen.py). The
         # warnings and the block are never filtered: a guard that speaks once and then goes quiet is no guard.
+        # A subagent starts with a fresh context and its events carry the parent's session_id, so the set is kept per
+        # agent: Claude Code adds agent_id to a subagent's events (AUDIT-A 3.22 F-3).
         from ._seen import once
-        hits = once(ev.get("session_id"), hits)
+        sid = ev.get("session_id")
+        if sid and ev.get("agent_id"):
+            sid = "%s\x00agent\x00%s" % (sid, ev.get("agent_id"))
+        hits = once(sid, hits, hit_subjects)
 
     if not lines and not hits and not blocks:
         return
@@ -2752,19 +2768,20 @@ def main():
                 if hookd.LAST.get("err"):
                     sys.stderr.write(hookd.LAST["err"])       # what today's path prints there (AUDIT-A D-7)
                 if _served:
-                    sys.stdout.write(_once_envelope(_served, ev.get("session_id")))
+                    sys.stdout.write(_once_envelope(_served, ev.get("session_id"), hookd.LAST.get("subjects")))
             else:
                 # Today's path, unchanged, then each memory line once per session (3.22, `_once_envelope`).
                 import io
                 from contextlib import redirect_stdout
                 _buf = io.StringIO()
+                _LAST_SUBJECTS.clear()
                 try:
                     with redirect_stdout(_buf):
                         recall(ev)
                 except BaseException:
                     sys.stdout.write(_buf.getvalue())         # a failing recall shows what it printed, as before
                     raise
-                sys.stdout.write(_once_envelope(_buf.getvalue(), ev.get("session_id")))
+                sys.stdout.write(_once_envelope(_buf.getvalue(), ev.get("session_id"), dict(_LAST_SUBJECTS)))
             maybe_archive_in_background(_cwd)
             if _served is not None:
                 if hookd.LAST.get("foreign"):

@@ -504,7 +504,7 @@ def ask(ev, store_path, timeout=REPLY_TIMEOUT_S):
 
     The block comes with what the daemon wrote to stderr while it was computed, in LAST["err"], so the hook can print it
     where today's path prints it (AUDIT-A D-7)."""
-    LAST.update(outcome=None, foreign=0, err="")
+    LAST.update(outcome=None, foreign=0, err="", subjects=None)
     try:
         deadline = time.monotonic() + timeout
         kh = key_home_for(store_path)
@@ -567,7 +567,9 @@ def ask(ev, store_path, timeout=REPLY_TIMEOUT_S):
         if not r.get("ok"):
             LAST["outcome"] = "refused:" + str(r.get("reason"))
             return None
+        subjects = r.get("subjects")
         LAST.update(outcome="served", foreign=int(r.get("foreign") or 0), answer_ms=r.get("answer_ms"),
+                    subjects={str(k): str(v) for k, v in subjects.items()} if isinstance(subjects, dict) else None,
                     err=str(r.get("err") or ""), total_ms=round(1000 * (time.monotonic() - (deadline - timeout)), 1))
         return str(r.get("out") or "")
     except TimeoutError:
@@ -798,12 +800,16 @@ class Daemon:
                 # later hook. They are reset here, so every answer prints what a fresh process would.
                 reset_process_state()
                 with warnings.catch_warnings():                     # entering resets the shown-once registries
+                    cc._LAST_SUBJECTS.clear()
                     cc.recall(ev, store=held_store, decision_store=held_decisions, count_foreign=counted_once)
             finally:
                 sys.stdout, sys.stderr = saved
             foreign = sum(n for _p, _e, n in cc._LAST_STORES)
             cc._LAST_STORES.clear()
-            return {"ok": True, "out": out.getvalue(), "err": err.getvalue(), "foreign": foreign}
+            subjects = dict(cc._LAST_SUBJECTS)
+            cc._LAST_SUBJECTS.clear()
+            return {"ok": True, "out": out.getvalue(), "err": err.getvalue(), "foreign": foreign,
+                    "subjects": subjects}
 
     # -- the channel ------------------------------------------------------------------------------------------------
     def _hello(self, conn):

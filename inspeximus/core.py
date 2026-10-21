@@ -16886,7 +16886,12 @@ class Inspeximus:
                   "reliability": round(self._reliability(r), 3),
                   "source": r.get("source"),    # re-checkable origin (provenance), surfaced so a recalled fact can be traced back
                   "stale_derived": bool(r.get("_stale_derived"))}
-            if r.get("key") == self.SESSION_DIGEST_KEY:
+            _key = r.get("key")
+            if _key:
+                # A keyed record names its subject, so a reader can tell a changed value from an unrelated
+                # record (3.22, AUDIT-A F-2: the prompt hook withholds a line by the last text shown per key).
+                _o["key"] = _key
+            if _key == self.SESSION_DIGEST_KEY:
                 # A digest stores ids (A-04); the reader gets its entries as the live store has them.
                 _o["text"] = self._digest_live_text(r)
             if (r.get("status") or "") == "superseded":
