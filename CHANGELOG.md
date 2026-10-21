@@ -1,3 +1,52 @@
+## 3.22.0 - UPGRADE IF you run the Claude Code hooks, or you keep an action ledger: the prompt hook gives a session each memory line once instead of on every prompt, credit() and the new context saver can record themselves in the ledger, and a new opt-in context saver puts a large tool output into context as a digest. ACTION: none; set INSPEXIMUS_HOOK_DEDUPE=0 to keep the old injection on every prompt
+
+### Changed
+
+- **The prompt hook injects each memory line once per session.** The UserPromptSubmit hook printed the same decisions and knowledge on every prompt. Measured over 3,666 local transcripts: the hook injected 49.7 MB over 130 sessions, and 92.7 % of it repeated a line the same session had already received. The bytes sit in long sessions; the median session gets one injection and saves about nothing.
+  - A line from a keyed record, such as a decision on a topic, is withheld only while it is the last text the session was shown for that key. A superseded decision is injected with its new value, and a revert back to the earlier value is injected again.
+  - Any other line is keyed on its text with white space collapsed.
+  - A compaction clears the session's set, and the next prompt injects again.
+  - Two sessions never share a set. Without a session id nothing is withheld.
+  - The "decided before" lines of the PreToolUse hook follow the same rule, with one set per subagent when the event carries an `agent_id`. Warnings and blocks are never filtered.
+  - The state is one small file per session under the key home, removed after 7 days without a write. Any read or write error prints the line.
+  - `INSPEXIMUS_HOOK_DEDUPE=0` turns it off.
+
+### Added
+
+- **The context saver, off by default** (`inspeximus.context_saver.save`, the `inspeximus-saver` command). It returns what goes into an agent's context instead of a large tool output:
+  - under 5,000 bytes, the output unchanged;
+  - over 100,000 bytes without an intent, a pointer (size, sha256, section titles);
+  - otherwise a digest of the 5 sections ranked best for the intent, plus one follow-up: the top section and part or all of the second.
+
+  Nothing in the package calls it. The optional reranker is the new `saver` extra, and a model is downloaded only with `saver.allow_download`. On a blind set of 50 real tool outputs, the frozen system answered 48 of 50 (a same-size random control: 17 of 50), with a pooled digest saving of 93.7 % and a pooled net saving of 71.5 %. Weighted by that set's mix, the net saving is 62.7 %.
+- **`save(..., ledger=)` records each call in an ActionLedger**, in every mode, as one `context_save` entry. The entry holds only salted digests of what the agent was shown and of the whole output; the output's unsalted sha256 is never written. `ledger.matches(seq, ledger_inputs(result), output)` later shows which output a digest stood for, and an output changed by one character no longer matches.
+- **A `recall()` hit from a keyed record carries its `key`.** A reader can tell a changed value from an unrelated record without a second lookup.
+- **`credit(..., ledger=)` records each credit in an ActionLedger** as one `memory:credit` entry: the ids, the outcome, the weight, the warrant, and every updated record's `good`, `bad` and `good_warranted` after the credit. A credit changes what the influence gate serves, and until now it left no receipt. A refused call records nothing. The credit is saved before the entry is written; if the ledger fails, the exception carries `credit_applied`, and a retry would credit twice. The MCP `credit` tool was already recorded as `mcp:credit` when `INSPEXIMUS_ACTIONS` is on.
+
+### Fixed
+
+- **The context saver, before release (AUDIT-A on the 3.22 diff):**
+  - Output that the store's write guards refuse, such as an HTML table, JUnit XML or a transcript holding a closing parameter tag, is ranked and digested instead of exiting with a traceback.
+  - Output of 5,000 bytes or more that holds only white space returns a pointer with 0 sections instead of raising IndexError.
+  - Each section title in a pointer is assessed by the read guard.
+  - `inspeximus-saver` reads its input as UTF-8 bytes on every console code page, so `bytes_in` and the sha256 are those of the bytes given. Input that is not UTF-8 exits with code 2. With `--file`, a CRLF file now keeps its carriage returns in `bytes_in` and the sha256.
+  - Splitting output with many short lines no longer rejoins the current section on every line. A 100,000-line input splits more than 4 times faster, into the same sections.
+- **`credit(ids=<a generator>, ledger=)` recorded an empty id list** while it updated the records. The ids are read once.
+- **The extras lint no longer counts an import inside a function as a carrier.** It read every `import` line, function bodies included, and flagged the saver's test for an import that only runs on request.
+
+### For contributors
+
+- **A stopped test run no longer leaves its temporary root behind.** A run removes its `inspeximus-run-*` root at the end, but a run stopped by its pid never reached the end. The next run now removes roots whose owner pid is dead or has another start time, and roots with no owner file that are older than 24 hours. A live run's root is kept. Where no start time can be read, as on macOS, a live pid alone keeps the root.
+- **`tools/full_suite.py` runs the local suite in two steps.** The cited probes ran serially on one worker while the other workers held their memory: about 15 GB idle for the length of the serial tail at 16 workers. Step 1 runs every other test; step 2 spreads the cited probes over the workers and runs a failed probe once more on its own, and only that second result counts. The run is green only when both steps are green and the counts equal the collected total.
+- **Two mutation runs in one tree no longer collide.** `tools/mutation_check_parallel.py` gives each run its own directory for worktrees, logs and pre-flight output. Two runs shared `.mutwt/w0`, and the second run lost worker 0 to "already exists". The run reported it as UNACCOUNTED, not as a pass.
+- **`tools/release.py` waits on main for every workflow that the push to main starts, not only `ci.yml`.** The list is read from each workflow's push filters. On 3.21.1 the script would have tagged while `clean-install.yml` on main was red from cancelled macOS jobs, and the release was held by hand until a rerun was green. A run counts only when it is a push run on main.
+- **The perf gate counts the hook's per-session set apart from the store** (`replace_seen`, `seen_listings`). `prompt_hook_n1200` is back to 0 store replaces, so a change that rewrites the store once per prompt fails the gate.
+
+### Measured
+
+- Every change above has registered mutants, each killed. The registry holds 1,755 entries, with 0 applied, 0 stranded and 0 ambiguous.
+- The hook repeat figures come from a census of local transcripts (aggregates only, no transcript text kept). They are bytes in transcripts, not billed tokens, so the cost saved is not known from this measurement.
+
 ## 3.21.1 - UPGRADE IF you call remember() with text that holds HTML, XML or other runs of tags, or run the Claude Code hooks: eighteen text checks backtracked on ordinary input. remember() could take over 30 s on 4 KB, and a hook could take seconds on tens of kilobytes. Every check now runs in linear time with the same result. No change to the store format, the API or any result.
 
 ### Fixed
