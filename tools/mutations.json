@@ -15983,5 +15983,50 @@
   "tests": [
    "tests/test_3220_inject_once_per_session.py::test_a_subagent_gets_the_decisions_its_parent_was_shown"
   ]
+ },
+ {
+  "name": "3.22 exit guard: a stalled exit reports the run's 0",
+  "file": "tests/_exit_guard.py",
+  "old": "        _exit(status or 1)\n",
+  "new": "        _exit(status)\n",
+  "tests": [
+   "tests/test_3220_a_stalled_run_end_is_bounded.py::test_a_stalled_exit_ends_with_every_stack_and_never_reports_green"
+  ]
+ },
+ {
+  "name": "3.22 exit guard: session finish does not arm the guard",
+  "file": "tests/_exit_guard.py",
+  "old": "        arm(int(session.exitstatus or 0), delay=",
+  "new": "        (lambda *a, **k: None)(int(session.exitstatus or 0), delay=",
+  "tests": [
+   "tests/test_3220_a_stalled_run_end_is_bounded.py::test_a_green_run_that_stalls_at_exit_ends_red"
+  ]
+ },
+ {
+  "name": "3.22 exit guard: a leaked child is left alive",
+  "file": "tests/_exit_guard.py",
+  "old": "        if left:\n",
+  "new": "        if False:\n",
+  "tests": [
+   "tests/test_3220_a_stalled_run_end_is_bounded.py::test_a_run_stops_the_child_a_test_leaked"
+  ]
+ },
+ {
+  "name": "3.22 exit guard: the CI session watchdog is never set",
+  "file": "tests/_exit_guard.py",
+  "old": "        faulthandler.dump_traceback_later(limit, exit=True, file=_fdfile(fd))\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_3220_a_stalled_run_end_is_bounded.py::test_a_stall_that_holds_the_gil_is_ended_on_ci"
+  ]
+ },
+ {
+  "name": "3.22 exit guard: the suite does not register the guard",
+  "file": "tests/conftest.py",
+  "old": "    config.pluginmanager.register(_exit_guard.Plugin(), \"inspeximus-exit-guard\")\n",
+  "new": "    pass\n",
+  "tests": [
+   "tests/test_3220_a_stalled_run_end_is_bounded.py::test_this_suite_runs_with_the_guard"
+  ]
  }
 ]
