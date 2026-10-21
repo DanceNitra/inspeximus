@@ -519,13 +519,19 @@ def _nested_in_a_live_run():
 
 
 def _owner_alive(owner):
-    """True when the pid in a run's owner file is alive and has the start time the run recorded."""
+    """True when the pid in a run's owner file is alive and has the start time the run recorded.
+
+    Where a start time cannot be read (every Mac, DARWIN_START_TIME is off), the live pid decides alone. Reading
+    "unknown" as "dead" made a second run on a Mac delete the first run's root mid-run (AUDIT-A F-6); a reused pid
+    keeps a dead root until the grace period instead, which is the safe direction."""
     from inspeximus import hookd as _hookd
     from inspeximus.claude_code import _pid_alive
     if not _pid_alive(owner.get("pid")):                  # an exited process can still report its start time on Windows
         return False
+    if owner.get("start") is None:
+        return True
     start = _hookd._proc_start(owner.get("pid"))
-    return start is not None and start == owner.get("start")
+    return start is None or start == owner.get("start")
 
 
 #: A run root with no owner file is left alone for this long: a run writes its file right after it creates the root.

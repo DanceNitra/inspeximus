@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 
+import pytest
+
 import conftest
 from inspeximus import hookd
 
@@ -40,6 +42,8 @@ def test_a_root_whose_run_is_dead_is_stale_and_a_live_runs_root_is_kept(tmp_path
 
 def test_a_reused_pid_with_another_start_time_is_stale(tmp_path):
     me = _me()
+    if me["start"] is None:
+        pytest.skip("this platform reports no start time, so a reused pid cannot be told apart (AUDIT-A F-6)")
     reused = _root(tmp_path, "inspeximus-run-reused", dict(me, start=(me["start"] or 0) - 100))
     assert conftest._stale_run_roots(str(tmp_path)) == [reused]
 
@@ -76,3 +80,14 @@ def test_a_run_sweeps_before_it_creates_its_own_root(tmp_path, monkeypatch):
         assert not os.path.exists(dead) and os.path.isdir(cfg._run_tmp)
     finally:
         conftest._restore_temp_root(cfg)
+
+
+def test_a_live_run_is_kept_where_no_start_time_can_be_read(tmp_path, monkeypatch):
+    """AUDIT-A F-6: on a Mac the start time is None, and the sweep read that as a dead run and removed a live root."""
+    recorded_none = _root(tmp_path, "inspeximus-run-mac", dict(_me(), start=None))
+    unreadable_now = _root(tmp_path, "inspeximus-run-later", dict(_me(), start=12345.0))
+    dead = _root(tmp_path, "inspeximus-run-dead", {"token": "t", "pid": _dead_pid(), "start": None})
+    monkeypatch.setattr(hookd, "_proc_start", lambda pid: None)
+    # CONTROL: a dead pid is stale whatever its start time, so the rule did not turn into "keep everything".
+    assert conftest._stale_run_roots(str(tmp_path)) == [dead]
+    assert os.path.isdir(recorded_none) and os.path.isdir(unreadable_now)

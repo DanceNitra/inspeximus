@@ -15828,5 +15828,23 @@
   "tests": [
    "tests/test_3220_a_credit_is_recorded_in_the_action_ledger.py::test_ids_from_a_generator_are_the_ids_the_entry_records"
   ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-6: a run that recorded no start time is read as dead again",
+  "file": "tests/conftest.py",
+  "old": "    if owner.get(\"start\") is None:\n        return True\n",
+  "new": "    if owner.get(\"start\") is None:\n        return False\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_live_run_is_kept_where_no_start_time_can_be_read"
+  ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-6: a start time that cannot be read now is read as a dead run again",
+  "file": "tests/conftest.py",
+  "old": "    return start is None or start == owner.get(\"start\")\n",
+  "new": "    return start is not None and start == owner.get(\"start\")\n",
+  "tests": [
+   "tests/test_3220_a_stopped_runs_temp_root_is_removed_by_the_next_run.py::test_a_live_run_is_kept_where_no_start_time_can_be_read"
+  ]
  }
 ]
