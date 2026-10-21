@@ -21,6 +21,13 @@ import sys
 
 import pytest
 
+#: One worker for the whole file. Every test here writes, or checks for, a venv under the C:\c mirror, and each
+#: fixture teardown removes the mirror's empty directories when the run created them. Run on two workers, one
+#: teardown removed C:\c\Users\runneradmin\AppData while the other test's venv was being created (ci.yml run
+#: 39651825248, windows-latest, 2026-10-21: WinError 3). Off CI the race rarely shows, because C:\c usually
+#: exists already and the teardown then removes nothing.
+pytestmark = pytest.mark.xdist_group("c_drive_mirror")
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGE = os.path.join(REPO, "docs", "install", "index.md")
 sys.path.insert(0, os.path.join(REPO, "tools"))
