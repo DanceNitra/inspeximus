@@ -16065,5 +16065,32 @@
   "tests": [
    "tests/test_install_page_survives_hermes_git_bash.py::test_every_test_in_this_file_runs_in_one_xdist_group"
   ]
+ },
+ {
+  "name": "Git Bash install page tests: the teardown removes a directory whose file id changed",
+  "file": "tests/test_install_page_survives_hermes_git_bash.py",
+  "old": "            if os.stat(d).st_ino != ino:\n                return\n",
+  "new": "            if os.stat(d) is None:\n                return\n",
+  "tests": [
+   "tests/test_install_page_survives_hermes_git_bash.py::test_the_teardown_leaves_a_directory_replaced_under_its_path"
+  ]
+ },
+ {
+  "name": "Git Bash install page tests: the teardown removes a non-empty ancestor with everything in it",
+  "file": "tests/test_install_page_survives_hermes_git_bash.py",
+  "old": "            os.rmdir(d)\n        except OSError:\n            return                                   # not empty: something else lives here, so stop climbing\n",
+  "new": "            shutil.rmtree(d)\n        except OSError:\n            return                                   # not empty: something else lives here, so stop climbing\n",
+  "tests": [
+   "tests/test_install_page_survives_hermes_git_bash.py::test_the_teardown_keeps_what_someone_else_made_beside_its_own"
+  ]
+ },
+ {
+  "name": "Git Bash install page tests: every owned directory is removed with its contents, not only the leaf",
+  "file": "tests/test_install_page_survives_hermes_git_bash.py",
+  "old": "        if n == 0:\n            shutil.rmtree(d, ignore_errors=True)\n",
+  "new": "        if True:\n            shutil.rmtree(d, ignore_errors=True)\n",
+  "tests": [
+   "tests/test_install_page_survives_hermes_git_bash.py::test_the_teardown_keeps_what_someone_else_made_beside_its_own"
+  ]
  }
 ]
