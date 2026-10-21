@@ -8,6 +8,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # A HUNG RUN ENDS IN 45 MIN, NOT AT GITHUB'S 6 H (3.22). test (3.12) stalled after "[ 99%]" in 2 of 3 runs
+    # on 2026-10-21, once for 4 h. The slowest leg measured 24.4 min (3.9, run 39564229511), so 45 leaves room;
+    # tests/_exit_guard.py ends a stalled pytest process with its stacks first, at 2 min past session end or 35 min.
+    timeout-minutes: 45
     strategy:
       matrix:
         python-version: ["3.9", "3.11", "3.12"]

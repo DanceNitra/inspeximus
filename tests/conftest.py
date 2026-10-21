@@ -610,6 +610,9 @@ def _restore_inspeximus_env(config):
 
 
 def pytest_configure(config):
+    import _exit_guard
+    _exit_guard.arm_session(fd=_exit_guard.original_stderr_fd(config))
+    config.pluginmanager.register(_exit_guard.Plugin(), "inspeximus-exit-guard")
     _strip_inspeximus_env(config)
     _own_temp_root(config)
     _redirect_home(config)
