@@ -724,7 +724,7 @@ def _run_main(argv):
     try:
         return run(argv, intent)
     except (UsageError, OSError) as exc:
-        print("inspeximus-saver: %s" % exc, file=sys.stderr)
+        print("inspeximus-saver run: %s" % exc, file=sys.stderr)
         return 2
 
 
