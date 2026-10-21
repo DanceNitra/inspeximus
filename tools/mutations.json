@@ -15891,5 +15891,32 @@
   "tests": [
    "tests/test_the_release_script_refuses_before_each_step.py::test_the_main_workflows_are_read_from_the_push_triggers"
   ]
+ },
+ {
+  "name": "3.22 F-9 perf gate: a seen-set write counts as a store replace",
+  "file": "perf/gate.py",
+  "old": "            if _in_seen_dir(name):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_3220_the_gate_counts_the_seen_set_apart_from_the_store.py"
+  ]
+ },
+ {
+  "name": "3.22 F-9 perf gate: a seen-set listing counts as a store directory listing",
+  "file": "perf/gate.py",
+  "old": "        def listdir(*a, **k):\n            if a and _is_seen_dir(a[0]):\n",
+  "new": "        def listdir(*a, **k):\n            if False:\n",
+  "tests": [
+   "tests/test_3220_the_gate_counts_the_seen_set_apart_from_the_store.py"
+  ]
+ },
+ {
+  "name": "3.22 F-9 perf gate: any directory named seen counts as the seen set",
+  "file": "perf/gate.py",
+  "old": "    return os.path.basename(p) == \"seen\" and os.path.basename(os.path.dirname(p)) == \"inspeximus\"",
+  "new": "    return os.path.basename(p) == \"seen\"",
+  "tests": [
+   "tests/test_3220_the_gate_counts_the_seen_set_apart_from_the_store.py"
+  ]
  }
 ]

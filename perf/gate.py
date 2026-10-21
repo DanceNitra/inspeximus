@@ -93,7 +93,7 @@ class Counters:
     """
 
     def __init__(self):
-        self.replaces = {"store": 0, "tombstones": 0, "receipts": 0, "other": 0}
+        self.replaces = {"store": 0, "tombstones": 0, "receipts": 0, "seen": 0, "other": 0}
         self.receipt_bytes = 0       #: bytes written to the receipt sidecar pair: whole-file replaces and tail appends
         self.dumps = 0
         self.dump_bytes = 0
@@ -125,7 +125,9 @@ class Counters:
 
         def replace(src, dst):
             name = str(dst)
-            if name.endswith(".tombstones.json"):
+            if _in_seen_dir(name):
+                self.replaces["seen"] += 1
+            elif name.endswith(".tombstones.json"):
                 self.replaces["tombstones"] += 1
             elif name.endswith(".receipts.json"):
                 self.replaces["receipts"] += 1
@@ -226,12 +228,23 @@ class Counters:
         self.listings = 0
         self._real_listdir, self._real_scandir = core.os.listdir, core.os.scandir
 
+        # The prompt hook's per-session set (inspeximus/_seen.py) is listed and written under the key home, not the
+        # store. It is counted apart (AUDIT-A 3.22 F-9): folded into dir_listings and replace_store, a baseline raised
+        # for it would let a regression that lists or rewrites the store once per prompt pass unseen.
+        self.seen_listings = 0
+
         def listdir(*a, **k):
-            counter.listings += 1
+            if a and _is_seen_dir(a[0]):
+                counter.seen_listings += 1
+            else:
+                counter.listings += 1
             return self._real_listdir(*a, **k)
 
         def scandir(*a, **k):
-            counter.listings += 1
+            if a and _is_seen_dir(a[0]):
+                counter.seen_listings += 1
+            else:
+                counter.listings += 1
             return self._real_scandir(*a, **k)
 
         core.os.listdir, core.os.scandir = listdir, scandir
@@ -263,6 +276,8 @@ class Counters:
                 "order_updates": self.order_updates,
                 "full_diff_saves": self.full_diff_saves,
                 "dir_listings": self.listings,
+                "replace_seen": self.replaces["seen"],
+                "seen_listings": self.seen_listings,
                 **self.calls}
 
 
@@ -1349,6 +1364,19 @@ def _twin_misses(now):
 
 
 # ── the gate ───────────────────────────────────────────────────────────────────────────────────────
+
+def _is_seen_dir(path) -> bool:
+    """True for `<key home>/inspeximus/seen`, the directory inspeximus/_seen.py keeps its per-session sets in."""
+    try:
+        p = os.path.normpath(os.fspath(path))
+    except TypeError:
+        return False
+    return os.path.basename(p) == "seen" and os.path.basename(os.path.dirname(p)) == "inspeximus"
+
+
+def _in_seen_dir(path) -> bool:
+    return _is_seen_dir(os.path.dirname(os.path.normpath(str(path))))
+
 
 def compare(base, now):
     """Counters are exact and gate the build. Time only alarms past TIME_ALARM_FACTOR, and twin arms with
