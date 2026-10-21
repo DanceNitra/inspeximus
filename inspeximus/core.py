@@ -3480,6 +3480,10 @@ def _decides(save: bool = True):
 
 
 class Inspeximus:
+    # The frame-markup refusal in remember() is for a call whose parameters leaked into one value. The context
+    # saver's throwaway ranking store holds tool output, which may end in any markup, and turns it off (3.22).
+    _frame_guard = True
+
     def __init__(self, path: str | None = None, embed=None, receipts: bool = False,
                  receipt_key: str | None = None, receipt_pubkey: str | None = None,
                  receipt_signer=None,
@@ -4337,7 +4341,7 @@ class Inspeximus:
         # ends in call-frame markup means the caller's OTHER parameters are sitting inside this one,
         # so `key`, `source` and the rest never arrived and the record would land un-keyed and
         # unattributable while the call reported success.
-        _frame = _reject_frame_markup(text)
+        _frame = _reject_frame_markup(text) if self._frame_guard else None
         if _frame is not None:
             raise ValueError(
                 f"refusing to store this text: it {_frame}, which means the tool call was malformed "

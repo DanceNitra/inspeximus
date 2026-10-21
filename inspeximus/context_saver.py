@@ -181,6 +181,9 @@ def _span(c, intent, width):
 def _hybrid_order(chunks, intent, embed, embed_query):
     from .core import Inspeximus
     m = Inspeximus(None, embed=embed, embed_query=embed_query, read_guards=False, events=False)
+    # Tool output is not a tool call: HTML, JUnit XML or a transcript can end in a closing tag, which remember()
+    # refuses as leaked call markup. The text is ranked as it is; wrapping it would change BM25 and the embeddings.
+    m._frame_guard = False
     ids = [m.remember(c, tags=["ctx", "chunk:%d" % i]) for i, c in enumerate(chunks)]
     pos = {rid: i for i, rid in enumerate(ids)}
     hits = m.recall(intent, k=len(chunks), mode="hybrid")

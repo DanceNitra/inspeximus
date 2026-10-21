@@ -15747,5 +15747,23 @@
   "tests": [
    "tests/test_3220_inject_once_per_session.py::test_only_a_sessions_first_write_lists_the_directory"
   ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-1: the saver's ranking store refuses output that ends in markup again",
+  "file": "inspeximus/context_saver.py",
+  "old": "    m._frame_guard = False\n",
+  "new": "    m._frame_guard = True\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_an_output_that_ends_in_markup_gets_a_digest"
+  ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-1: every store skips the leaked-markup refusal",
+  "file": "inspeximus/core.py",
+  "old": "        _frame = _reject_frame_markup(text) if self._frame_guard else None\n",
+  "new": "        _frame = None\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_a_store_still_refuses_leaked_call_markup"
+  ]
  }
 ]
