@@ -71,6 +71,9 @@ def _run(cmd, home, convert, cwd):
 _mirror = _owned_dirs.mirror_of
 
 
+# No site mutant for this fixture, unlike sites A, B and C of tests/_owned_dirs.py: it has no make_*/remove_*
+# pair to run on a fake root, so nothing would observe a broken cleanup here. The helper's own mutants cover what
+# it calls, and its two 3.22.0 controls live in test_3220_c_mirror_cleanup_removes_only_what_it_made.py.
 @pytest.fixture
 def home(tmp_path):
     h = tmp_path / "home"

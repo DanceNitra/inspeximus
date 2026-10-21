@@ -1,5 +1,8 @@
 """Directories a test creates outside tmp_path, and the only way the suite removes them again (3.22).
 
+LIMIT: the replaced-directory check compares st_ino, which holds on NTFS only. ext4 handed the same inode number
+back at once (WSL, 2026-10-21), so a caller on another file system cannot rely on it to spot a replacement.
+
 Several Windows tests exercise the Git Bash misreading of a path: `/c/Users/<you>` read by Windows becomes
 `C:\\c\\Users\\<you>`, so the code under test, or the test itself, writes under the C:\\c mirror. That mirror is
 OUTSIDE tmp_path, on a drive that can hold a person's data: C:\\c exists on the owner's machine. Until 3.22 four
