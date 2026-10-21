@@ -15774,5 +15774,14 @@
   "tests": [
    "tests/test_3220_context_saver.py::test_a_pointer_assesses_the_titles_it_returns"
   ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-7: output of only whitespace reaches the ranking again",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if not chunks:\n        # Only whitespace",
+  "new": "    if False:\n        # Only whitespace",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_an_output_of_only_whitespace_gets_a_pointer"
+  ]
  }
 ]

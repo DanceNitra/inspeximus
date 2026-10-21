@@ -302,6 +302,20 @@ def test_a_pointer_assesses_the_titles_it_returns(home, capsys, tmp_path):
     assert "read guard" in capsys.readouterr().out
 
 
+@pytest.mark.parametrize("blank", [" " * 6000, "\n" * 8000, " \n" * 100_000], ids=["spaces", "newlines", "mixed"])
+@pytest.mark.parametrize("ranker", ["hybrid", "rerank", "no_intent"])
+def test_an_output_of_only_whitespace_gets_a_pointer(home, blank, ranker):
+    """AUDIT-A F-7: no section survives, and the saver said IndexError."""
+    assert cs.chunks_capped(blank) == []          # CONTROL: the case leaves no section
+    if ranker == "no_intent":
+        r = cs.save(blank)
+    else:
+        r = cs.save(blank, "x", embed=embed, without_reranker="hybrid",
+                    reranker=Scorer({}) if ranker == "rerank" else None)
+    assert r["mode"] == "pointer" and r["sections"] == 0 and r["bytes_in"] == len(blank.encode())
+    assert "only whitespace" in r["text"] and r["follow_up"] == ""
+
+
 # ---- the action ledger ----
 def _ledger(home):
     from inspeximus.actions import ActionLedger

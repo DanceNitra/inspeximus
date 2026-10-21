@@ -276,6 +276,11 @@ def _save(output, intent, *, embed, embed_query, store, reranker, without_rerank
         return dict(base, mode="passthrough", text=output, follow_up="", digest_bytes=len(raw), follow_up_bytes=0,
                     ranking=None, read_guard=_guard_flags([output]))
     chunks = chunks_capped(output)
+    if not chunks:
+        # Only whitespace: no section is left to rank or to show (AUDIT-A F-7).
+        text = "Output of %d bytes (sha256 %s), only whitespace, not shown." % (len(raw), base["sha256"][:16])
+        return dict(base, mode="pointer", text=text, follow_up="", digest_bytes=len(text.encode("utf-8")),
+                    follow_up_bytes=0, ranking=None, sections=0, read_guard=[])
     if intent is None:
         if len(raw) <= POINTER_BYTES:
             raise UsageError("an output of %d bytes needs an intent: what to look for in it" % len(raw))
