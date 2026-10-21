@@ -538,8 +538,10 @@ def run(argv, intent=None) -> int:
         raise UsageError("inspeximus-saver run needs a command after --")
     path = new_capture_path()
     with open(path, "wb") as f:
-        # The user's own command, with the environment their shell gives it, as if it ran without the saver.
-        rc = _envpolicy.start(argv, env=_envpolicy.INHERIT, stdout=f, stderr=_envpolicy.STDOUT).returncode
+        # The user's own command, with exactly this process's os.environ, as if it ran without the saver. An explicit
+        # copy, not INHERIT: inheriting passes the C-level environment, and on Linux a library in the calling process
+        # had set COLUMNS and LINES there, which os.environ never held (measured 2026-10-21 under pytest on WSL).
+        rc = _envpolicy.start(argv, env=_envpolicy.child_env(), stdout=f, stderr=_envpolicy.STDOUT).returncode
     print_capture(path, intent or " ".join(argv)[:300])
     sweep_captures()
     return rc

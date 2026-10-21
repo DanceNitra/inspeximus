@@ -16286,7 +16286,7 @@
  {
   "name": "3.23 saver run: the user's command gets one variable the saver added",
   "file": "inspeximus/context_saver.py",
-  "old": "rc = _envpolicy.start(argv, env=_envpolicy.INHERIT, stdout=f, stderr=_envpolicy.STDOUT).returncode",
+  "old": "rc = _envpolicy.start(argv, env=_envpolicy.child_env(), stdout=f, stderr=_envpolicy.STDOUT).returncode",
   "new": "rc = _envpolicy.start(argv, env=dict(_envpolicy.child_env(), ISX_INJECTED=\"1\"), stdout=f, stderr=_envpolicy.STDOUT).returncode",
   "tests": [
    "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_run_gives_the_command_exactly_the_environment_it_was_called_with"

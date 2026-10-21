@@ -487,11 +487,15 @@ def test_another_program_gets_none_of_our_variables(monkeypatch):
 #: Our own processes, which inherit the environment on purpose (`env=_envpolicy.INHERIT`): each is `python -m inspeximus...`
 #: and applies the rule to what it reads.
 OWN_LAUNCHES = {("inspeximus/claude_code.py", "maybe_archive_in_background"),
-                ("inspeximus/claude_code.py", "_start_detached"),
-                # 3.23: `inspeximus-saver run -- <command>` runs the command its user typed, with the environment the
-                # user's shell gives it, so the command behaves as it would without the saver. It is not a program
-                # inspeximus chose: no variable, config or repository file names it.
-                ("inspeximus/context_saver.py", "run")}
+                ("inspeximus/claude_code.py", "_start_detached")}
+#: Every caller of `child_env()` with no `keep`: a full copy of this process's environment, INSPEXIMUS_* names included,
+#: which is INHERIT by another name, so it is listed the same way (3.23).
+FULL_COPY_CALLERS = {
+    # `inspeximus-saver run -- <command>` runs the command its user typed, with exactly the os.environ the user's
+    # shell gave this process. It is not a program inspeximus chose: no variable, config or repository file names it.
+    # tests/test_3230_the_saver_captures_bash_output_in_the_hook.py holds the equality.
+    ("inspeximus/context_saver.py", "run"),
+}
 #: Nothing is exempt by name (3.18, AUDIT-B R-2): `webbrowser` was, for `browse --open`, and on POSIX it runs the command
 #: in $BROWSER with this process's environment. The browser opens through `_envpolicy.open_in_browser` now.
 ALLOWED_OTHER = set()
@@ -746,3 +750,24 @@ def test_the_windows_opener_ignores_systemroot(monkeypatch, tmp_path):
     (args,), = [started]
     assert os.path.isabs(args[0]) and not args[0].lower().startswith(str(fake).lower()), args[0]
     assert args[1:] == ["url.dll,FileProtocolHandler", str(tmp_path / "b.html")]
+
+
+def test_every_full_copy_of_the_environment_is_a_listed_caller():
+    import ast
+    found = set()
+    for f in scan.shipped_files():
+        rel = os.path.relpath(f, ROOT).replace(os.sep, "/")
+        if rel == "inspeximus/_envpolicy.py":
+            continue
+        t = ast.parse(open(f, encoding="utf-8").read())
+        fn = {}
+        for d in ast.walk(t):
+            if isinstance(d, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                for n in ast.walk(d):
+                    fn[id(n)] = d.name
+        for n in ast.walk(t):
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "child_env" \
+                    and not n.args and not any(k.arg == "keep" for k in n.keywords):
+                found.add((rel, fn.get(id(n))))
+    assert found == FULL_COPY_CALLERS, "a full copy of the environment outside the listed callers: %s" % (
+        sorted(found ^ FULL_COPY_CALLERS))

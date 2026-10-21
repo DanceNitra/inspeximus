@@ -378,14 +378,15 @@ def test_the_capture_starts_no_process(home, monkeypatch):
     assert started == []
 
 
-def test_only_run_inherits_the_environment_in_the_saver():
+def test_the_saver_never_inherits_and_only_run_copies_the_environment():
     import ast
-    src = open(cs.__file__, encoding="utf-8").read()
-    t = ast.parse(src)
-    where = set()
+    t = ast.parse(open(cs.__file__, encoding="utf-8").read())
+    inherit, copies = set(), set()
     for d in ast.walk(t):
         if isinstance(d, ast.FunctionDef):
             for n in ast.walk(d):
                 if isinstance(n, ast.Attribute) and n.attr == "INHERIT":
-                    where.add(d.name)
-    assert where == {"run"}, where
+                    inherit.add(d.name)
+                if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "child_env":
+                    copies.add(d.name)
+    assert inherit == set() and copies == {"run"}, (inherit, copies)
