@@ -20,8 +20,8 @@ def _py(code, tmp_path, env=None, timeout=90):
     script.write_text("import sys; sys.path.insert(0, %r)\n" % TESTS + textwrap.dedent(code), encoding="utf-8")
     e = dict(os.environ, **(env or {}))
     t0 = time.time()
-    p = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, timeout=timeout,
-                       cwd=str(tmp_path), env=e, stdin=subprocess.DEVNULL)
+    p = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, encoding="utf-8",
+                       errors="replace", timeout=timeout, cwd=str(tmp_path), env=e, stdin=subprocess.DEVNULL)
     return p, time.time() - t0
 
 
@@ -110,7 +110,8 @@ def _inner_pytest(tmp_path, stall):
     env = dict(os.environ, LEAK_PID_FILE=str(pid_file), EXIT_GUARD_LIMIT_S="3", STALL="1" if stall else "",
                CI="")
     p = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-n", "0", str(d)],
-                       capture_output=True, text=True, timeout=120, cwd=str(d), env=env, stdin=subprocess.DEVNULL)
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
+                       cwd=str(d), env=env, stdin=subprocess.DEVNULL)
     return p, int(pid_file.read_text())
 
 
