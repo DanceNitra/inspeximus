@@ -15801,5 +15801,23 @@
   "tests": [
    "tests/test_3220_context_saver.py::test_short_lines_cost_time_in_proportion_to_the_output"
   ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-4: the command reads stdin in the console code page again",
+  "file": "inspeximus/context_saver.py",
+  "old": "            output = src.read().decode(\"utf-8\") if src is not None else sys.stdin.read()\n",
+  "new": "            output = sys.stdin.read()\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_the_command_reads_stdin_as_utf8_bytes"
+  ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-4: the command prints without replacing what the console cannot show",
+  "file": "inspeximus/context_saver.py",
+  "old": "            stream.reconfigure(errors=\"replace\")\n",
+  "new": "            pass\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_the_command_prints_a_file_the_console_cannot_show"
+  ]
  }
 ]

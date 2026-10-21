@@ -523,6 +523,44 @@ def test_the_command_passes_a_short_output_through(home, tmp_path, capsys):
     assert json.loads(capsys.readouterr().out)["mode"] == "passthrough"
 
 
+def _saver_cmd(args, data, tmp_path):
+    import subprocess
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("INSPEXIMUS_", "PYTHONUTF8"))}
+    # A console code page that is not UTF-8, on every platform: cp1252 is the Windows default for Western Europe.
+    env.update(PYTHONIOENCODING="cp1252", INSPEXIMUS_KEY_HOME=str(tmp_path / "kh"), INSPEXIMUS_NO_UPDATE_CHECK="1")
+    root = os.path.dirname(os.path.dirname(os.path.abspath(cs.__file__)))
+    env["PYTHONPATH"] = root + os.pathsep + env.get("PYTHONPATH", "")
+    return subprocess.run([sys.executable, "-m", "inspeximus.context_saver"] + args, input=data,
+                          capture_output=True, cwd=str(tmp_path), env=env, timeout=120)
+
+
+# U+2018 is E2 80 98 in UTF-8, so its last byte is the 0x98 that cp1250 cannot decode; U+2713 has no cp1252 form.
+UTF8_OUTPUT = "it‘s done: test passed ✓ Ω\r\n".encode("utf-8")
+
+
+def test_the_command_reads_stdin_as_utf8_bytes(tmp_path):
+    """AUDIT-A F-4: the size and the sha256 are those of the bytes piped in."""
+    p = _saver_cmd(["--intent", "x", "--json"], UTF8_OUTPUT, tmp_path)
+    assert p.returncode == 0, p.stderr.decode("utf-8", "replace")
+    r = json.loads(p.stdout.decode("cp1252"))
+    assert r["bytes_in"] == len(UTF8_OUTPUT) and r["sha256"] == hashlib.sha256(UTF8_OUTPUT).hexdigest()
+
+
+def test_the_command_prints_a_file_the_console_cannot_show(tmp_path):
+    """AUDIT-A F-4: a character outside the console's code page is replaced, and the command exits 0."""
+    f = tmp_path / "out.txt"
+    f.write_bytes(UTF8_OUTPUT)
+    p = _saver_cmd(["--file", str(f), "--intent", "x"], b"", tmp_path)
+    assert p.returncode == 0, p.stderr.decode("utf-8", "replace")
+    assert b"test passed" in p.stdout
+
+
+def test_the_command_refuses_input_that_is_not_utf8(tmp_path):
+    """CONTROL: bytes that are not UTF-8 are an input mistake, exit 2 and one line, not a traceback."""
+    p = _saver_cmd(["--intent", "x"], b"caf\xe9 au lait\n", tmp_path)
+    assert p.returncode == 2 and p.stderr.decode("ascii", "replace").startswith("inspeximus-saver:")
+
+
 def test_nothing_in_the_package_calls_the_saver():
     root = os.path.dirname(cs.__file__)
     users = []

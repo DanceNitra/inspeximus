@@ -409,12 +409,21 @@ def main(argv=None):
     ap.add_argument("--json", action="store_true", help="print the whole result as JSON")
     ap.add_argument("--without-reranker", choices=("refuse", "hybrid"), default=None)
     a = ap.parse_args(argv)
+    # The output is read as UTF-8 bytes, never in the console code page: a cp1250 stdin turned UTF-8 into mojibake,
+    # so the size and the sha256 were of text no file holds, and byte 0x98 raised. Printing keeps the console's
+    # encoding and replaces what it cannot show, as the hook does (AUDIT-A F-4).
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     try:
         if a.file:
-            with open(a.file, encoding="utf-8") as f:
-                output = f.read()
+            with open(a.file, "rb") as f:
+                output = f.read().decode("utf-8")
         else:
-            output = sys.stdin.read()
+            src = getattr(sys.stdin, "buffer", None)
+            output = src.read().decode("utf-8") if src is not None else sys.stdin.read()
         doc, query, _id = make_embedders()
         rr = None
         if a.without_reranker != "hybrid" and _config("reranker_model", None):
