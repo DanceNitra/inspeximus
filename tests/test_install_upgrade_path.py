@@ -17,6 +17,7 @@ import re
 
 import pytest
 
+import _owned_dirs
 from inspeximus import __version__
 from inspeximus import claude_code as cc
 from inspeximus import install as I
@@ -101,12 +102,9 @@ def test_a_git_bash_path_read_by_windows_is_refused(home, monkeypatch, what):
     drive, rest = os.path.splitdrive(str(home))
     misread = drive + "\\" + drive[0].lower() + rest                  # C:\c\Users\... for C:\Users\...
     # A VERSION WITHOUT THE REFUSAL WRITES UNDER C:\c (a control run against 3.15.2 left a store there on
-    # PC1, 2026-09-28). Remove the highest folder of that path this test could have created, and nothing
-    # that existed before it: C:\c may hold other files a person has to look at.
-    created = misread
-    while not os.path.exists(os.path.dirname(created)):
-        created = os.path.dirname(created)
-    created = None if os.path.exists(misread) else created
+    # PC1, 2026-09-28). C:\c may hold other files a person has to look at, so the cleanup removes only what
+    # this test created (tests/_owned_dirs.py). The misread home itself stays missing: that is the case tested.
+    owned = make_misread_parent(home)
     try:
         if what == "--store":
             rc, lines = _run(rules="no", only="claude",
@@ -116,11 +114,19 @@ def test_a_git_bash_path_read_by_windows_is_refused(home, monkeypatch, what):
                                 lambda: ("python", misread + "\\.inspeximus\\venv\\Scripts\\python.exe"))
             rc, lines = _run(rules="no", only="claude")
     finally:
-        if created:
-            import shutil
-            shutil.rmtree(created, ignore_errors=True)
+        remove_misread_parent(owned, home)
     assert rc == 2 and "Git Bash path" in "\n".join(lines) and str(home) in "\n".join(lines), lines
     assert not (home / ".claude.json").exists()
+
+
+def make_misread_parent(home, root=None):
+    """The parent of the misread home, created under the mirror root; returns what was created."""
+    root = root or _owned_dirs.mirror_root(home)
+    return _owned_dirs.make_owned_dirs(os.path.dirname(_owned_dirs.mirror_of(home, root)), root)
+
+
+def remove_misread_parent(owned, home, root=None):
+    _owned_dirs.remove_owned(owned, root or _owned_dirs.mirror_root(home))
 
 
 # ── F1: a pin move never switches the store topology ─────────────────────────────────────────────────

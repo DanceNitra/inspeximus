@@ -15,16 +15,17 @@ from __future__ import annotations
 
 import os
 import re
-import shutil
 import subprocess
 import sys
 
 import pytest
 
+import _owned_dirs
+
 #: One worker for the whole file. Every test here writes, or checks for, a venv under the C:\c mirror. Run on two
 #: workers, one teardown removed C:\c\Users\runneradmin\AppData while the other test's venv was being created
 #: (ci.yml run 39651825248, windows-latest, 2026-10-21: WinError 3). The teardown now removes only what its own
-#: fixture created (see _make_owned_dirs), and the group still keeps the tests apart.
+#: fixture created (tests/_owned_dirs.py), and the group still keeps the tests apart.
 pytestmark = pytest.mark.xdist_group("c_drive_mirror")
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -67,60 +68,17 @@ def _run(cmd, home, convert, cwd):
                           encoding="utf-8", errors="replace", timeout=300)
 
 
-def _mirror(path):
-    """Where Windows puts `path` when it receives the Git Bash form unconverted: C:\\c\\<rest>."""
-    drive, rest = os.path.splitdrive(os.path.abspath(str(path)))
-    return drive + "\\" + drive[0].lower() + rest
-
-
-def _make_owned_dirs(path):
-    """Create `path` and each missing ancestor. Returns what THIS call created, deepest first, as (path, file id).
-
-    The C:\\c mirror lies OUTSIDE tmp_path, on a drive that can hold someone's data: C:\\c exists on the owner's
-    machine. So the teardown may remove only directories this call made, identified by path AND file id, and a
-    directory that already existed, or that someone else made in the meantime, is never in the list."""
-    missing, p = [], os.path.abspath(str(path))
-    while not os.path.exists(p):
-        missing.append(p)
-        parent = os.path.dirname(p)
-        if parent == p:
-            break
-        p = parent
-    owned = []
-    for d in reversed(missing):
-        try:
-            os.mkdir(d)
-        except FileExistsError:
-            continue                                 # made by someone else between the check and here: theirs
-        owned.append((d, os.stat(d).st_ino))
-    return owned[::-1]
-
-
-def _remove_owned(owned):
-    """Undo _make_owned_dirs. The deepest directory is the one the test writes into, so its contents go with it;
-    every ancestor is removed only while it is empty. A directory whose file id changed is someone else's."""
-    for n, (d, ino) in enumerate(owned):
-        try:
-            if os.stat(d).st_ino != ino:
-                return
-        except OSError:
-            continue
-        if n == 0:
-            shutil.rmtree(d, ignore_errors=True)
-            continue
-        try:
-            os.rmdir(d)
-        except OSError:
-            return                                   # not empty: something else lives here, so stop climbing
+_mirror = _owned_dirs.mirror_of
 
 
 @pytest.fixture
 def home(tmp_path):
     h = tmp_path / "home"
     h.mkdir()
-    owned = _make_owned_dirs(_mirror(h))             # the defect writes OUTSIDE tmp_path, into this mirror
+    root = _owned_dirs.mirror_root(h)
+    owned = _owned_dirs.make_owned_dirs(_mirror(h), root)   # the defect writes OUTSIDE tmp_path, into this mirror
     yield h
-    _remove_owned(owned)
+    _owned_dirs.remove_owned(owned, root)
 
 
 def _venv_python(root):
@@ -197,59 +155,3 @@ def test_every_test_in_this_file_runs_in_one_xdist_group(request):
     assert all(g == ["c_drive_mirror"] for g in groups.values()), groups
 
 
-def _teardown_of_3_22_0(mirror, top, existed):
-    """The teardown this file had up to 3.22.0, kept as the control for the tests below."""
-    if os.path.isdir(mirror):
-        shutil.rmtree(mirror, ignore_errors=True)
-    if not existed and os.path.isdir(top):
-        for d, _, _ in sorted(os.walk(top), key=lambda t: -len(t[0])):
-            try:
-                os.rmdir(d)
-            except OSError:
-                pass
-
-
-def test_the_teardown_keeps_a_directory_that_existed_before_it(tmp_path):
-    """The file-loss control sits on a pre-existing MIRROR path, not on a pre-existing ancestor, on purpose.
-
-    The 3.22.0 teardown removed ancestors with os.rmdir, which refuses a directory that holds a file, so a file in
-    an ancestor was never at risk and a control built there would pass against the old code. What it did delete
-    was the mirror itself: shutil.rmtree ran on it whether or not it existed before the test. Do not move this
-    control back onto an ancestor."""
-    # A mirror path that already holds a file, as a reused temp path or the owner's C:\\c can.
-    target = tmp_path / "c" / "Users" / "you" / "home"
-    target.mkdir(parents=True)
-    (target / "keep.txt").write_text("not ours", encoding="utf-8")
-    _remove_owned(_make_owned_dirs(target))
-    assert (target / "keep.txt").read_text(encoding="utf-8") == "not ours"
-    # Control: the 3.22.0 teardown deletes it, so this fixture reproduces the defect.
-    _teardown_of_3_22_0(str(target), str(target), True)
-    assert not (target / "keep.txt").exists()
-
-
-def test_the_teardown_keeps_what_someone_else_made_beside_its_own(tmp_path):
-    root = tmp_path / "c"
-    root.mkdir()
-    target = root / "Users" / "you" / "home"
-    owned = _make_owned_dirs(target)
-    assert [d for d, _ in owned] == [str(target), str(target.parent), str(target.parent.parent)]
-    (target / "venv.txt").write_text("the test's own output", encoding="utf-8")
-    other = root / "Users" / "someone-else"
-    other.mkdir()                                    # made after setup, by someone else, and empty
-    _remove_owned(owned)
-    assert not target.exists() and not target.parent.exists()
-    assert other.is_dir() and (root / "Users").is_dir()
-    # Control: the 3.22.0 teardown, which removes every empty directory under the top it found missing.
-    target.mkdir(parents=True)
-    _teardown_of_3_22_0(str(target), str(root / "Users"), False)
-    assert not other.exists()
-
-
-def test_the_teardown_leaves_a_directory_replaced_under_its_path(tmp_path):
-    target = tmp_path / "c" / "Users" / "you" / "home"
-    owned = _make_owned_dirs(target)
-    shutil.rmtree(str(tmp_path / "c" / "Users"))     # someone else replaces the tree under the same paths
-    target.mkdir(parents=True)
-    (target / "theirs.txt").write_text("theirs", encoding="utf-8")
-    _remove_owned(owned)
-    assert (target / "theirs.txt").read_text(encoding="utf-8") == "theirs"

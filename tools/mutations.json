@@ -16067,30 +16067,76 @@
   ]
  },
  {
-  "name": "Git Bash install page tests: the teardown removes a directory whose file id changed",
-  "file": "tests/test_install_page_survives_hermes_git_bash.py",
-  "old": "            if os.stat(d).st_ino != ino:\n                return\n",
-  "new": "            if os.stat(d) is None:\n                return\n",
+  "name": "C:\\c cleanup helper: a directory whose file id changed is removed anyway (Windows only: the killing test skips where inode numbers are reused at once)",
+  "file": "tests/_owned_dirs.py",
+  "old": "            if os.stat(d).st_ino != ino:\n                return",
+  "new": "            if os.stat(d) is None:\n                return",
   "tests": [
-   "tests/test_install_page_survives_hermes_git_bash.py::test_the_teardown_leaves_a_directory_replaced_under_its_path"
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_the_helper_leaves_a_directory_replaced_under_its_path"
+  ],
+  "platform": "win32"
+ },
+ {
+  "name": "C:\\c cleanup helper: a non-empty ancestor is removed with everything in it",
+  "file": "tests/_owned_dirs.py",
+  "old": "            os.rmdir(d)\n        except OSError:\n            return",
+  "new": "            shutil.rmtree(d)\n        except OSError:\n            return",
+  "tests": [
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_the_helper_removes_everything_it_made_and_nothing_else"
   ]
  },
  {
-  "name": "Git Bash install page tests: the teardown removes a non-empty ancestor with everything in it",
-  "file": "tests/test_install_page_survives_hermes_git_bash.py",
-  "old": "            os.rmdir(d)\n        except OSError:\n            return                                   # not empty: something else lives here, so stop climbing\n",
-  "new": "            shutil.rmtree(d)\n        except OSError:\n            return                                   # not empty: something else lives here, so stop climbing\n",
-  "tests": [
-   "tests/test_install_page_survives_hermes_git_bash.py::test_the_teardown_keeps_what_someone_else_made_beside_its_own"
-  ]
- },
- {
-  "name": "Git Bash install page tests: every owned directory is removed with its contents, not only the leaf",
-  "file": "tests/test_install_page_survives_hermes_git_bash.py",
+  "name": "C:\\c cleanup helper: every owned directory is removed with its contents, not only the leaf",
+  "file": "tests/_owned_dirs.py",
   "old": "        if n == 0:\n            shutil.rmtree(d, ignore_errors=True)\n",
   "new": "        if True:\n            shutil.rmtree(d, ignore_errors=True)\n",
   "tests": [
-   "tests/test_install_page_survives_hermes_git_bash.py::test_the_teardown_keeps_what_someone_else_made_beside_its_own"
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_the_helper_removes_everything_it_made_and_nothing_else"
+  ]
+ },
+ {
+  "name": "C:\\c cleanup helper: a path outside the mirror root is created and removed",
+  "file": "tests/_owned_dirs.py",
+  "old": "    if not _under(path, root):\n        raise ValueError(",
+  "new": "    if False:\n        raise ValueError(",
+  "tests": [
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_the_helper_refuses_a_path_outside_its_root"
+  ]
+ },
+ {
+  "name": "C:\\c cleanup helper: a directory that already existed is recorded as the helper's own",
+  "file": "tests/_owned_dirs.py",
+  "old": "    missing = []\n    while not os.path.exists(p):\n        missing.append(p)\n        parent = os.path.dirname(p)\n        if parent == p:\n            break\n        p = parent\n    owned = []\n    for d in reversed(missing):\n        _require_under(d, root)\n        try:\n            os.mkdir(d)\n        except FileExistsError:\n            continue                                 # made by someone else between the check and here: theirs\n",
+  "new": "    missing = [p] if os.path.exists(p) else []\n    while not os.path.exists(p):\n        missing.append(p)\n        parent = os.path.dirname(p)\n        if parent == p:\n            break\n        p = parent\n    owned = []\n    for d in reversed(missing):\n        _require_under(d, root)\n        try:\n            os.mkdir(d)\n        except FileExistsError:\n            pass\n",
+  "tests": [
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_the_helper_owns_nothing_that_already_existed"
+  ]
+ },
+ {
+  "name": "C:\\c cleanup at test_a_missing_store_directory_is_refused_everywhere.py: remove_home_copy removes nothing",
+  "file": "tests/test_a_missing_store_directory_is_refused_everywhere.py",
+  "old": "def remove_home_copy(owned, home, root=None):\n    _owned_dirs.remove_owned(owned, root or _owned_dirs.mirror_root(home))\n",
+  "new": "def remove_home_copy(owned, home, root=None):\n    return\n",
+  "tests": [
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_site_a_keeps_a_copy_of_the_home_that_was_already_there"
+  ]
+ },
+ {
+  "name": "C:\\c cleanup at test_install_upgrade_path.py: remove_misread_parent removes nothing",
+  "file": "tests/test_install_upgrade_path.py",
+  "old": "def remove_misread_parent(owned, home, root=None):\n    _owned_dirs.remove_owned(owned, root or _owned_dirs.mirror_root(home))\n",
+  "new": "def remove_misread_parent(owned, home, root=None):\n    return\n",
+  "tests": [
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_site_b_keeps_what_another_test_wrote_beside_the_misread_home"
+  ]
+ },
+ {
+  "name": "C:\\c cleanup at test_audit_a_a_wrong_path_is_not_a_silent_empty_store.py: remove_tmp_mirror removes nothing",
+  "file": "tests/test_audit_a_a_wrong_path_is_not_a_silent_empty_store.py",
+  "old": "def remove_tmp_mirror(owned, tmp_path, root=None):\n    _owned_dirs.remove_owned(owned, root or _owned_dirs.mirror_root(tmp_path))\n",
+  "new": "def remove_tmp_mirror(owned, tmp_path, root=None):\n    return\n",
+  "tests": [
+   "tests/test_3220_c_mirror_cleanup_removes_only_what_it_made.py::test_site_c_keeps_an_empty_directory_someone_else_made"
   ]
  }
 ]

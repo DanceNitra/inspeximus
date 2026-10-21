@@ -15,12 +15,13 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import subprocess
 import sys
 import time
 
 import pytest
+
+import _owned_dirs
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -220,18 +221,24 @@ def test_check_warns_about_a_git_bash_copy_of_the_home(tmp_path, monkeypatch):
     home.mkdir()
     for k in ("HOME", "USERPROFILE"):
         monkeypatch.setenv(k, str(home))
-    drive, rest = os.path.splitdrive(str(home))
-    copy = drive + "\\" + drive[0].lower() + rest
-    top = copy
-    while not os.path.exists(os.path.dirname(top)):
-        top = os.path.dirname(top)
+    copy = _owned_dirs.mirror_of(home)
     lines = []
     A.check(out=lines.append, only="claude")
     assert not any("copy of your home" in ln for ln in lines), lines                  # control: no copy, no warning
-    os.makedirs(os.path.join(copy, ".inspeximus", "venv"))
+    owned = make_home_copy(home)
     try:
         lines = []
         A.check(out=lines.append, only="claude")
         assert any("copy of your home" in ln and copy in ln and str(home) in ln for ln in lines), lines
     finally:
-        shutil.rmtree(top, ignore_errors=True)
+        remove_home_copy(owned, home)
+
+
+def make_home_copy(home, root=None):
+    """The Git Bash copy of `home` with a venv in it, created under the mirror root; returns what was created."""
+    root = root or _owned_dirs.mirror_root(home)
+    return _owned_dirs.make_owned_dirs(os.path.join(_owned_dirs.mirror_of(home, root), ".inspeximus", "venv"), root)
+
+
+def remove_home_copy(owned, home, root=None):
+    _owned_dirs.remove_owned(owned, root or _owned_dirs.mirror_root(home))

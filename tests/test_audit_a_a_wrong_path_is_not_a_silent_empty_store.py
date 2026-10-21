@@ -19,6 +19,8 @@ import warnings
 
 import pytest
 
+import _owned_dirs
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from inspeximus import _surface
 
@@ -72,13 +74,9 @@ def test_a_git_bash_path_does_not_open_a_different_empty_store(tmp_path, clean_e
     s.flush()
     win = str(real / "memory.json")
     gitbash = "/" + win[0].lower() + win[2:].replace("\\", "/")
-    # The defect writes OUTSIDE tmp_path (under <drive>:\c\...), so remove what this test created
-    # there: empty directories only, bottom-up, from the highest ancestor that did not exist before.
-    mirror = os.path.abspath("/" + win[0].lower() + str(tmp_path)[2:].replace("\\", "/"))
-    top = mirror
-    while not os.path.exists(os.path.dirname(top)) and os.path.dirname(top) != top:
-        top = os.path.dirname(top)
-    existed = os.path.exists(top)
+    # The defect writes OUTSIDE tmp_path (under <drive>:\c\...). The cleanup removes only what this test
+    # created there (tests/_owned_dirs.py); the store's own directory stays missing, which is the case tested.
+    owned = make_tmp_mirror(tmp_path)
     try:
         raised, warned = _open_and_read(gitbash)
         if raised or warned:
@@ -86,9 +84,14 @@ def test_a_git_bash_path_does_not_open_a_different_empty_store(tmp_path, clean_e
         assert len(_surface.open_store(gitbash).items) == 1, \
             f"{gitbash} opened a different, empty store instead of {win}"
     finally:
-        if not existed and os.path.isdir(top):
-            for d, _, _ in sorted(os.walk(top), key=lambda t: -len(t[0])):
-                try:
-                    os.rmdir(d)
-                except OSError:
-                    pass
+        remove_tmp_mirror(owned, tmp_path)
+
+
+def make_tmp_mirror(tmp_path, root=None):
+    """The mirror of tmp_path, created under the mirror root; returns what was created."""
+    root = root or _owned_dirs.mirror_root(tmp_path)
+    return _owned_dirs.make_owned_dirs(_owned_dirs.mirror_of(tmp_path, root), root)
+
+
+def remove_tmp_mirror(owned, tmp_path, root=None):
+    _owned_dirs.remove_owned(owned, root or _owned_dirs.mirror_root(tmp_path))
