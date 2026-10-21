@@ -706,7 +706,7 @@ def user_config(monkeypatch, tmp_path_factory):
 # ---- DIAGNOSTIC, diag/** branches only (2026-10-21): test (3.12) hung at 99% in 2 of 3 CI runs. ----
 # Every pytest process registers SIGUSR1 to dump all its threads. The controller starts a watchdog that, after
 # 20 min, prints the process tree, signals every descendant, dumps itself, and ends the run with exit 99.
-if os.environ.get("GITHUB_ACTIONS") and os.environ.get("GITHUB_REF_NAME", "").startswith("diag/"):
+if os.environ.get("GITHUB_ACTIONS") and os.environ.get("GITHUB_REF_NAME", "").startswith("diag/") and hasattr(__import__("signal"), "SIGUSR1"):
     import faulthandler as _fh
     import signal as _sig
     import sys as _sys
@@ -720,10 +720,10 @@ if os.environ.get("GITHUB_ACTIONS") and os.environ.get("GITHUB_REF_NAME", "").st
             err = _sys.__stderr__
             err.write("\n=== DIAG HUNG after 20 min ===\n")
             err.write(_subprocess.run(["ps", "-eo", "pid,ppid,etimes,stat,wchan:30,args", "--forest"],
-                                      capture_output=True, text=True).stdout)
+                                      capture_output=True, encoding="utf-8").stdout)
             err.flush()
             me = str(os.getpid())
-            kids = _subprocess.run(["pgrep", "-f", "python"], capture_output=True, text=True).stdout.split()
+            kids = _subprocess.run(["pgrep", "-f", "python"], capture_output=True, encoding="utf-8").stdout.split()
             for pid in kids:
                 if pid != me:
                     try:
