@@ -335,3 +335,57 @@ def test_the_capture_embedder_calls_localhost_by_address(home, monkeypatch):
     doc("x")
     assert seen["url"] == "http://127.0.0.1:11434/v1/embeddings"
     assert os.environ["INSPEXIMUS_EMBED_URL"] == "http://localhost:11434/v1/embeddings"   # left as it was
+
+
+# ── the environment: the user's command gets exactly theirs, and the saver starts nothing else ─────────────────
+DUMP = "import json, os, sys; json.dump(dict(os.environ), open(sys.argv[1], 'w', encoding='utf-8'))"
+
+
+def test_run_gives_the_command_exactly_the_environment_it_was_called_with(home, monkeypatch, tmp_path):
+    # Why ("context_saver.py", "run") may inherit: every variable the command sees is one its user's shell gave
+    # this process, so the saver adds, removes and changes nothing. This holds that, and does not trust the comment.
+    monkeypatch.setenv("INSPEXIMUS_EMBED_URL", "http://127.0.0.1:11434/v1/embeddings")
+    monkeypatch.setenv("INSPEXIMUS_EMBED_MODEL", "bge-m3")
+    monkeypatch.setenv("ISX_USERS_OWN", "kept as is")
+    dump = tmp_path / "env.json"
+    assert cs.run([sys.executable, "-c", DUMP, str(dump)]) == 0
+    child = json.loads(dump.read_text(encoding="utf-8"))
+    parent = dict(os.environ)
+    if os.name == "nt":                          # Windows environment names are case-insensitive
+        child = {k.upper(): v for k, v in child.items()}
+        parent = {k.upper(): v for k, v in parent.items()}
+    assert child == parent, {"added": sorted(set(child) - set(parent)), "removed": sorted(set(parent) - set(child)),
+                             "changed": sorted(k for k in set(child) & set(parent) if child[k] != parent[k])}
+
+
+def test_the_capture_starts_no_process(home, monkeypatch):
+    # The saver's own work, the embedder and the ranking, runs in this process (urllib and the in-process
+    # reranker), so no child exists for INSPEXIMUS_EMBED_KEY or INSPEXIMUS_SERVICE_SECRET to reach. The one process
+    # start in the capture path is `run`'s, the user's own command.
+    import subprocess
+    from inspeximus import _envpolicy
+    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "secret-key")
+    monkeypatch.setenv("INSPEXIMUS_SERVICE_SECRET", "secret")
+    started = []
+    monkeypatch.setattr(_envpolicy, "start", lambda *a, **k: started.append(a) or pytest.fail("a process started"))
+    monkeypatch.setattr(subprocess, "Popen", lambda *a, **k: started.append(a) or pytest.fail("a process started"))
+    _config(home, {"saver": {"hook": True, "without_reranker": "hybrid"}})
+    p = cs.new_capture_path()
+    open(p, "w", encoding="utf-8").write(_big())
+    assert cs.print_capture(p, "section 3", out=io.BytesIO(), embedders=(embed, None, "t")) == "digest"
+    cs.hook_rewrite(_ev("git log"))
+    cs.sweep_captures()
+    assert started == []
+
+
+def test_only_run_inherits_the_environment_in_the_saver():
+    import ast
+    src = open(cs.__file__, encoding="utf-8").read()
+    t = ast.parse(src)
+    where = set()
+    for d in ast.walk(t):
+        if isinstance(d, ast.FunctionDef):
+            for n in ast.walk(d):
+                if isinstance(n, ast.Attribute) and n.attr == "INHERIT":
+                    where.add(d.name)
+    assert where == {"run"}, where
