@@ -15783,5 +15783,23 @@
   "tests": [
    "tests/test_3220_context_saver.py::test_an_output_of_only_whitespace_gets_a_pointer"
   ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-10: the running count leaves out the newline between lines",
+  "file": "inspeximus/context_saver.py",
+  "old": "        n += b + 1\n",
+  "new": "        n += b\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_the_running_count_cuts_where_the_round_9_chunker_cut"
+  ]
+ },
+ {
+  "name": "3.22 AUDIT-A F-10: the line chunker rejoins the section on every line again",
+  "file": "inspeximus/context_saver.py",
+  "old": "        n += b + 1\n",
+  "new": "        n = len(\"\n\".join(cur).encode(\"utf-8\"))\n",
+  "tests": [
+   "tests/test_3220_context_saver.py::test_short_lines_cost_time_in_proportion_to_the_output"
+  ]
  }
 ]

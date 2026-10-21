@@ -101,6 +101,56 @@ def test_a_section_limit_below_one_character_is_refused():
         cs.split_capped("abc", 3)
 
 
+def _line_chunks_r9(text, limit):
+    """The round 9 line chunker, which rejoined the section on every line: the reference for the running count."""
+    out, cur = [], []
+
+    def size(xs):
+        return len("\n".join(xs).encode("utf-8"))
+    for ln in text.splitlines():
+        if cur and (cs._HEADING.match(ln) or not ln.strip()) and size(cur) > limit // 4:
+            out.append("\n".join(cur))
+            cur = []
+        cur.append(ln)
+        if size(cur) > limit:
+            out.append("\n".join(cur[:-1]))
+            cur = [ln]
+    if cur:
+        out.append("\n".join(cur))
+    return [c for c in out if c.strip()]
+
+
+def _shapes():
+    import random
+    rnd = random.Random(7)
+    words = ["alpha", "Žluťoučký", "kůň", "β", "x" * 300, "", "## head", "===", "key:", "   "]
+    out = [sections(6), "a\n" * 5000, "\n".join("x" * 5000 for _ in range(3)), "z" * 9000, "", "\n\n\n"]
+    for _ in range(40):
+        out.append("\n".join(" ".join(rnd.choice(words) for _ in range(rnd.randint(0, 30)))
+                             for _ in range(rnd.randint(1, 400))))
+    return out
+
+
+@pytest.mark.parametrize("limit", [4, 64, 1000, cs.CHUNK_BYTES])
+def test_the_running_count_cuts_where_the_round_9_chunker_cut(limit):
+    """AUDIT-A F-10: the same sections, byte for byte, on every shape tried."""
+    for text in _shapes():
+        assert cs._line_chunks(text, limit) == _line_chunks_r9(text, limit)
+
+
+def test_short_lines_cost_time_in_proportion_to_the_output():
+    """AUDIT-A F-10: 100,000 one-character lines took the round 9 chunker about 0.8 s; it is linear now."""
+    import time
+    text = "a\n" * 100_000
+    t = time.perf_counter()
+    cs._line_chunks(text, cs.CHUNK_BYTES)
+    new = time.perf_counter() - t
+    t = time.perf_counter()
+    _line_chunks_r9(text, cs.CHUNK_BYTES)
+    old = time.perf_counter() - t
+    assert new * 4 < old, (new, old)
+
+
 # ---- thresholds ----
 def test_an_output_under_5000_bytes_passes_through_unchanged(home):
     text = "short output\n" * 300

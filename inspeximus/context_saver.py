@@ -65,18 +65,19 @@ _BREAKS = ("\n", '", "', ",", ";", " ")
 def _line_chunks(text, limit):
     """Sections closed between lines: at a heading or a blank line once a section passes a quarter of the limit, and
     before a line that would take it over the limit. One line longer than the limit stays one piece here."""
-    out, cur = [], []
-
-    def size(xs):
-        return len("\n".join(xs).encode("utf-8"))
+    # `n` is the UTF-8 size of "\n".join(cur), kept as a running count: rejoining the section on every line made
+    # an output of short lines cost about 4,000 times its size (AUDIT-A F-10).
+    out, cur, n = [], [], -1
     for ln in text.splitlines():
-        if cur and (_HEADING.match(ln) or not ln.strip()) and size(cur) > limit // 4:
+        if cur and (_HEADING.match(ln) or not ln.strip()) and n > limit // 4:
             out.append("\n".join(cur))
-            cur = []
+            cur, n = [], -1
+        b = len(ln.encode("utf-8"))
         cur.append(ln)
-        if size(cur) > limit:
+        n += b + 1
+        if n > limit:
             out.append("\n".join(cur[:-1]))
-            cur = [ln]
+            cur, n = [ln], b
     if cur:
         out.append("\n".join(cur))
     return [c for c in out if c.strip()]
