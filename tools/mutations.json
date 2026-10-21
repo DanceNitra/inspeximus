@@ -9731,8 +9731,8 @@
  {
   "name": "perf gate: a PreToolUse event takes the fast exit",
   "file": "inspeximus/claude_code.py",
-  "old": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n",
-  "new": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n            _FAST_EXIT[0] = True\n",
+  "old": "        if name == \"PreToolUse\":\n            _pre_tool_use_and_saver(ev)\n",
+  "new": "        if name == \"PreToolUse\":\n            _pre_tool_use_and_saver(ev)\n            _FAST_EXIT[0] = True\n",
   "tests": [
    "tests/test_the_prompt_hook_arm_goes_red.py"
   ]
