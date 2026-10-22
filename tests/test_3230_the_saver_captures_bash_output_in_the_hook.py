@@ -109,6 +109,17 @@ def test_these_calls_are_never_rewritten(home, ev):
     assert cs.hook_rewrite(ev) is None
 
 
+def test_a_call_in_auto_mode_is_never_rewritten_and_every_other_mode_is(home):
+    # "auto" is the value Claude Code sent in permission_mode, read from a live hook event on 2026-10-22. The control
+    # is the same event in every other mode: each is rewritten, so the None is the mode and not a dead fixture.
+    _config(home, {"saver": {"hook": True}})
+    assert cs.hook_rewrite(dict(_ev("git log"), permission_mode="auto")) is None
+    for mode in ("default", "acceptEdits", "plan", "dontAsk", "bypassPermissions", None):
+        ev = _ev("git log") if mode is None else dict(_ev("git log"), permission_mode=mode)
+        new = cs.hook_rewrite(ev)
+        assert new and cs.CAPTURE_MARKER in new["command"], mode
+
+
 # ── the guard decides first, and one envelope leaves ─────────────────────────────────────────────────────
 def test_a_blocked_call_is_never_rewritten_and_the_saver_is_not_consulted(home, monkeypatch):
     _config(home, {"saver": {"hook": True}})
@@ -310,7 +321,7 @@ def test_the_installer_switch_keeps_every_other_key(home):
     cfg = json.loads((home / "inspeximus" / "config.json").read_text(encoding="utf-8"))
     assert cfg["embed"] == {"url": "http://127.0.0.1:11434/v1/embeddings"}
     assert cfg["saver"] == {"device": "cpu", "hook": True, "without_reranker": "hybrid"}
-    assert any("auto permission mode" in ln for ln in lines)
+    assert any("auto permission mode the hook leaves Bash calls unchanged" in ln for ln in lines)
     cs.set_saver_hook(False, out=lines.append)
     cfg = json.loads((home / "inspeximus" / "config.json").read_text(encoding="utf-8"))
     assert cfg["saver"]["hook"] is False and cfg["saver"]["without_reranker"] == "hybrid"

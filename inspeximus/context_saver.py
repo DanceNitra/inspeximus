@@ -576,9 +576,9 @@ def set_saver_hook(on, out=print) -> str:
                      "recall alone. Set saver.reranker_model to rerank.")
     if on:
         lines.append("Bash output over %d bytes now reaches Claude Code as a digest, with the full output kept in %s "
-                     "for 2 days. In auto permission mode a rewritten Bash call is refused: switch the hook off "
-                     "there (inspeximus install --saver-hook off, or INSPEXIMUS_SAVER_HOOK=0 for one session) and "
-                     "use inspeximus-saver run -- <command>." % (PASSTHROUGH_BYTES, capture_dir()))
+                     "for 2 days. In auto permission mode the hook leaves Bash calls unchanged, because that mode "
+                     "refuses a rewritten call: there, use inspeximus-saver run -- <command>. To switch it off, "
+                     "run inspeximus install --saver-hook off, or set INSPEXIMUS_SAVER_HOOK=0 for one session." % (PASSTHROUGH_BYTES, capture_dir()))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     _safewrite.write_atomic(path, json.dumps(cfg, indent=2) + "\n")
     for ln in lines:
@@ -606,11 +606,14 @@ def hook_rewrite(ev, *, python=None):
     prints the capture, through an EXIT trap on the saved stdout. stdout and stderr go to one file in the order
     they were written, and the command's own exit code is the call's exit code.
 
-    KNOWN LIMIT: Claude Code's auto permission mode reviews the command text and refuses a rewritten call, because
-    the text that runs differs from the text reviewed (measured twice, 2026-10-21). Switch the hook off there and
-    use `inspeximus-saver run -- <command>` instead."""
+    AUTO MODE: Claude Code's auto permission mode reviews the command text and refuses a rewritten call, because
+    the text that runs differs from the text reviewed (measured twice, 2026-10-21). So a call whose event carries
+    permission_mode "auto" (the value Claude Code sends, measured 2026-10-22) is never rewritten, and its output
+    reaches the agent whole. There, use `inspeximus-saver run -- <command>` instead."""
     from . import _envpolicy
     if ev.get("tool_name") != "Bash":
+        return None
+    if ev.get("permission_mode") == "auto":
         return None
     if (_envpolicy.raw("INSPEXIMUS_SAVER_HOOK") or "").strip().lower() in ("0", "false", "no", "off"):
         return None

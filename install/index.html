@@ -239,9 +239,9 @@ description, plus the path of the full output, which is kept for 2 days under th
 Without one, the whole output is shown and one line says why. To switch it off, run
 `inspeximus install --saver-hook off`, or set `INSPEXIMUS_SAVER_HOOK=0` for one session.
 
-Known limit: in Claude Code's **auto** permission mode, a Bash call the hook rewrote is refused, because the
-mode reviews the command text and the text that runs is different. Switch the hook off in that mode and run
-`inspeximus-saver run -- &lt;command&gt;` instead, which prints a command's output through the saver without any
+Known limit: in Claude Code's **auto** permission mode, the hook leaves every Bash call unchanged and the whole
+output reaches the agent. That mode reviews the command text and refuses a call whose text was rewritten.
+There, run `inspeximus-saver run -- &lt;command&gt;`, which prints a command's output through the saver without any
 rewrite.
 
 &lt;a id="gemini-cli"&gt;&lt;/a&gt;

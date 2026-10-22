@@ -16300,5 +16300,14 @@
   "tests": [
    "tests/test_the_environment_reads_through_one_accessor.py::test_every_full_copy_of_the_environment_is_a_listed_caller"
   ]
+ },
+ {
+  "name": "3.23 saver hook: a call in auto mode is rewritten, so auto mode refuses it",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if ev.get(\"permission_mode\") == \"auto\":\n        return None\n",
+  "new": "",
+  "tests": [
+   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_call_in_auto_mode_is_never_rewritten_and_every_other_mode_is"
+  ]
  }
 ]
