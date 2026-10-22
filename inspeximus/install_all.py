@@ -108,18 +108,64 @@ def _install_markers(host):
     }[host]
 
 
+#: The mount table, read to find Windows drives inside WSL. A module constant so a test can point it at a file.
+_PROC_MOUNTS = "/proc/mounts"
+
+
+def _drive_mounts():
+    """Mount points of Windows drives inside WSL, from the mount table: fstype drvfs, or 9p with aname=drvfs
+    (WSL 2 on 2026-10-22: `C:\\134 /mnt/c 9p rw,noatime,aname=drvfs;path=C:\\;...`). Empty outside WSL."""
+    try:
+        with open(_PROC_MOUNTS, encoding="utf-8", errors="replace") as f:
+            lines = f.read().splitlines()
+    except OSError:
+        return []
+    out = []
+    for line in lines:
+        parts = line.split()
+        if len(parts) >= 4 and (parts[2] == "drvfs" or "aname=drvfs" in parts[3]):
+            out.append(parts[1].replace("\\040", " ").rstrip("/") or "/")
+    return out
+
+
+def _windows_side(path):
+    """The drive mount a command resolves under, when it is a Windows program reached through WSL interop.
+
+    WSL APPENDS THE WINDOWS PATH (2026-10-22). On a clean Ubuntu 24.04 user in WSL, `claude` resolved to
+    /mnt/c/Users/<user>/AppData/Roaming/npm/claude, so a Windows Claude Code counted as installed and --all
+    planned ~/.claude.json in the Linux home, which that Claude Code never reads: ARMED for an agent that is
+    not wired. The drive comes from the mount table, not a fixed /mnt prefix, because wsl.conf can move it."""
+    mounts = _drive_mounts()
+    if not mounts:
+        return None
+    p = path.replace("\\", "/")
+    if os.name != "nt":
+        p = os.path.realpath(p)
+    for m in sorted(mounts, key=len, reverse=True):
+        if p == m or p.startswith(m.rstrip("/") + "/"):
+            return m
+    return None
+
+
 def detect(host):
-    """(found, why): the host's command on PATH, or an install location that exists."""
+    """(found, why): the host's command on PATH, or an install location that exists. A command that is a
+    Windows program seen from WSL does not count; `why` then names it, so the run can say so."""
     import glob
     cmds, globs = _install_markers(host)
+    windows = ""
     for cmd in cmds:
-        if _which_safe(cmd):
+        hit = _which_safe(cmd)
+        if hit and _windows_side(hit):
+            windows = windows or (f"`{cmd}` on PATH is the Windows program {hit}, which reads its settings "
+                                  f"on the Windows side; install it inside WSL to wire it here")
+            continue
+        if hit:
             return True, f"`{cmd}` on PATH"
     for g in globs:
         hit = glob.glob(g)
         if hit:
             return True, hit[0]
-    return False, ""
+    return False, windows
 
 
 # ── the shared store ─────────────────────────────────────────────────────────────────────────────────
@@ -866,6 +912,8 @@ def run(store=None, dry_run=False, rules="ask", hermes_provider_change="no", pro
     for h in hosts:
         if not found[h][0]:
             rows.append((_i.HOSTS[h]["label"], "no", "-", "-", ""))
+            if found[h][1]:
+                notes.append(f"{_i.HOSTS[h]['label']}: not wired: {found[h][1]}")
             continue
         p = _i.plan(h, env=env)
         if p.get("error"):

@@ -3505,9 +3505,18 @@
   ]
  },
  {
+  "name": "a Windows program seen from WSL counts as an installed agent again",
+  "file": "inspeximus/install_all.py",
+  "old": "        if hit and _windows_side(hit):\n",
+  "new": "        if hit and False:\n",
+  "tests": [
+   "tests/test_install_all_wsl_windows_command_is_not_an_agent.py"
+  ]
+ },
+ {
   "name": "a config folder counts as an install again",
   "file": "inspeximus/install_all.py",
-  "old": "    return False, \"\"\n",
+  "old": "    return False, windows\n",
   "new": "    return True, \"config folder\"\n",
   "tests": [
    "tests/test_install_all_wires_every_agent_to_one_store.py"
