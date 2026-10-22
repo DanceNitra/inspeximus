@@ -1,3 +1,32 @@
+## 3.23.0 - UPGRADE IF you use Claude Code and want large Bash output kept out of the agent's context: the context saver can run inside the Claude Code hook, opt-in
+
+### Added
+
+- **The context saver can capture Bash output inside the Claude Code hook, off by default.** Run `inspeximus install --saver-hook on`, which sets `saver.hook` to true in your config. The PreToolUse hook then runs each Bash call with its output captured to a file, and the agent reads that file through the saver:
+  - Output under 5,000 bytes reaches the agent unchanged.
+  - Larger output reaches it as the saver's digest and follow-up for the call's description, plus the path of the full output.
+  - Output over 500,000 bytes reaches it as a pointer with the path, so the call ends inside Claude Code's 2-minute Bash timeout.
+  - When the saver cannot run (no embedder, or the embedder does not answer), the whole output is shown, with one line that says why.
+  - Captures are kept for 2 days under the key home, in `inspeximus/saver-out`. Nothing is written to a memory store.
+
+  The command runs in the current shell, so `cd` and exported variables carry over to the next call as before. Its exit code is the call's exit code, and an `exit` inside it still prints the capture. Output written to stderr reaches the agent in the order it was written, in one stream with stdout. The read guard line is printed when a shown section looks like an instruction. A background call is never rewritten.
+
+  On PC1, a 445,689-byte `git log -n 300 --stat` reached the agent as 3,130 bytes, with the matching commit ranked first, in 52 s (bge-m3 on the local GPU, hybrid ranking without the reranker). The hook's own time on a short Bash call: 0.208 s median before this change, 0.215 s with the switch off and 0.215 s with it on (40 calls each, same machine).
+
+  `INSPEXIMUS_SAVER_HOOK=0` switches it off for one session, and `inspeximus install --saver-hook off` switches it off.
+- **`inspeximus-saver run -- <command>`** runs a command and prints its output through the saver, with the command's own exit code. It rewrites nothing, so it works in every permission mode.
+
+### Known limit
+
+- **In Claude Code's auto permission mode, the hook leaves every Bash call unchanged**, so the whole output reaches the agent. That mode reviews the command text and refuses a call whose text was rewritten. There, use `inspeximus-saver run -- <command>`. The install page names the limit.
+
+### For contributors
+
+- **The exit guard no longer ends an idle pytest-xdist worker.** After its session a worker waits for the controller until every sibling is done. In two CI runs the guard ended 3 such workers in 4 legs while a fourth still ran tests. The guard now arms on the controller only.
+- **A cited probe test carries a pytest timeout above its own budget**, so a run's flat `--timeout` no longer ends the worker before the probe's budget can fail with its own message.
+- **A child started with the inherited environment gets the C-level environment, which can differ from `os.environ`:** on Linux it carried `COLUMNS` and `LINES` that a library had set and `os.environ` never held, so `inspeximus-saver run` passes an exact copy of `os.environ`, and every full copy of the environment is a listed caller held by a test.
+- **Tests that write under the Git Bash mirror of a Windows path (`C:\c\...`) remove only what they created.** Four tests each cleaned it up their own way, and three of them could delete what they did not make. One helper, `tests/_owned_dirs.py`, records each directory it creates by path and file id and refuses any path outside the mirror root.
+
 ## 3.22.0 - UPGRADE IF you run the Claude Code hooks, or you keep an action ledger: the prompt hook gives a session each memory line once instead of on every prompt, credit() and the new context saver can record themselves in the ledger, and a new opt-in context saver puts a large tool output into context as a digest. ACTION: none; set INSPEXIMUS_HOOK_DEDUPE=0 to keep the old injection on every prompt
 
 ### Changed
