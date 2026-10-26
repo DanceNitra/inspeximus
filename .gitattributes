@@ -18,6 +18,16 @@ transparency/verify.py    -text
 # Receipts are COSE, so they are binary in fact as well as in name.
 transparency/entries/*.cose binary
 
+# A PUBLISHED LEAF IS HASHED AS THE FILE'S BYTES (verify.py: sha256(0x00 || open(leaf,'rb').read())),
+# and the rule above stopped at the directory. Measured on 2026-10-26: today a Windows checkout cannot
+# break it, because each leaf is single-line JSON with zero newline bytes, so there is nothing to
+# translate. That is a property of the current writer, not a guarantee: the day a leaf is written with
+# indent=1, every leaf hash changes on Windows only, verify.py reports FAILED on an honest log, and CI
+# on Linux never sees it. The proof files are parsed rather than hashed, so they are listed for the same
+# reason a reader should not have to know which of the two is which.
+transparency/entries/*.leaf.json -text
+transparency/entries/*.proof.json -text
+
 # The anchor fixtures, for exactly the same reason, found again a month later in a different place.
 # The receipts are stamped in Linux CI over LF bytes; the same head.json checked out on Windows has
 # CRLF, so an untampered file reports MISMATCH and the first person to check concludes tampering.

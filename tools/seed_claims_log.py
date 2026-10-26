@@ -196,7 +196,11 @@ def main(argv=None):
         # makes two honest publishers look like they disagree.
         with open(a.payloads_out, "w", encoding="utf-8", newline="") as fh:
             json.dump(texts, fh, indent=1, sort_keys=True, ensure_ascii=False)
-        print("wrote %s: %d claim texts" % (a.payloads_out, len(texts)))
+        # len(texts) is 2, the number of top-level keys, so it printed "2 claim texts" for
+        # every run regardless of content. Count the payloads that carry a text.
+        print("wrote %s: %d published claim texts, %d superseded digests"
+              % (a.payloads_out, sum(1 for v in by_digest.values() if v is not None),
+                 sum(1 for v in by_digest.values() if v is None)))
 
     head = service.head()
     print("claims in the registry : %d" % len(ca.NUMBER_CLAIMS))
