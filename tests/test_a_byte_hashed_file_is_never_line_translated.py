@@ -41,8 +41,11 @@ def attr(repo, path, name="text"):
     """What git would do to `path` on checkout: 'unset' or 'set' for -text/text, 'unspecified' if no
     rule covers it. Asked of git rather than parsed out of the file, so a pattern that does not match
     the way we think it does is caught instead of assumed."""
+    # encoding= is required, not decoration: text=True alone decodes with the machine's locale
+    # codec, and a path with a non-cp1250 byte then returns stdout=None on Windows.
     out = subprocess.run(["git", "check-attr", name, "--", path], cwd=repo,
-                         capture_output=True, text=True, check=True).stdout
+                         capture_output=True, text=True, encoding="utf-8", errors="replace",
+                         check=True).stdout
     return out.rsplit(":", 1)[-1].strip()
 
 
