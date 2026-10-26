@@ -1,3 +1,27 @@
+## 3.23.1 - UPGRADE IF you opted into the context saver in Claude Code: it now works in every permission mode, auto included, and needs nothing installed
+
+The saver is still opt-in. Nothing switches on by itself, and `saver.hook` in your config keeps its meaning: if you switched it on in 3.23.0, it stays on and works the new way, and you do not have to change anything.
+
+### Changed
+
+- **The saver replaces a Bash result after the call instead of rewriting the command before it.** The command runs as written, so Claude Code's auto permission mode no longer refuses it. Claude Code shows the agent the digest instead of the output (PostToolUse `updatedToolOutput`, measured in auto mode on 2026-10-26).
+- **The saver ranks by keyword (BM25) and needs no embedder.** On our four test sets of 50 real tool outputs, the digest held the answer for 144 of 200, against 49 for a same-size random cut. It took about 0.1 s on a 446 KB output.
+- **About a quarter of the time the part the agent needs is one read away.** Every digest names the file with the whole output: Claude Code's own file past 30,000 characters, else a copy kept 2 days under the key home. On outputs between 5,000 bytes and Claude Code's 30,000-character cut, the saving stays near half (46%), even if every missed answer cost a full re-read. That figure comes from our test sets' mix of output sizes, and a different mix gives a different figure.
+- **Past 30,000 characters the saver costs bytes and buys the right section.** Claude Code itself shows about 2 KB of such an output, so a digest is larger. In the 24 such outputs in our sets, the digest held the answer for 11 and Claude Code's preview for 2. Twenty-four outputs are too few to be a rate: read it as a direction.
+- **If the saver is on and whole Bash outputs keep reaching the agent, the replacement is not taking on that Claude Code version.** `inspeximus-saver stats` then shows digests and no follow-up reads.
+
+### Added
+
+- **`inspeximus-saver stats [--day D | --days N]`** prints the saving per day, from one record line per capture with sizes and seconds only. It is measured against what Claude Code would have shown, follow-up reads are charged, and it is split by band.
+
+### Removed
+
+- **The PreToolUse command rewrite from 3.23.0.** The PostToolUse replacement above does its job. The `saver.hook` setting and `INSPEXIMUS_SAVER_HOOK=0` are unchanged, so no setting needs to be touched.
+
+### For contributors
+
+- **The ReDoS test's confirmation reads its doubling in steps, not as one call.** One call at twice the input once projected to 66 hours and ended a CI run.
+
 ## 3.23.0 - UPGRADE IF you use Claude Code and want large Bash output kept out of the agent's context: the context saver can run inside the Claude Code hook, opt-in
 
 > **CORRECTED 2026-10-26.** That heading claims more than the saver does, and the line is left standing
