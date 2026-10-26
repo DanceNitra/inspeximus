@@ -109,6 +109,43 @@ def test_a_load_spike_on_the_larger_confirmation_calls_is_not_a_verdict(modeled)
     assert spiked.stalled, "the stall was never read, so the confirmation never ran: the test proves nothing"
 
 
+class _Curve:
+    """A modeled callable for `_confirmed` alone: `seconds(chars)`, and every size it was read at, with its time."""
+
+    def __init__(self, seconds):
+        self.seconds, self.reads = seconds, []
+
+    def __call__(self, text):
+        raise AssertionError("a modeled callable is read through ra._best, never called")
+
+    def read(self, n, reps):
+        t = self.seconds(n)
+        self.reads.append((n, t))
+        return t
+
+
+def test_the_confirmation_of_an_exponential_pattern_never_makes_one_unbounded_call(modeled):
+    # CI job 119669956499 (test (3.9), 2026-10-22): the old frame guard reached _confirmed, whose floor stopped at 306
+    # characters (0.140 s), and its one call at 2k sat for 15 minutes until the session watchdog ended the run. Modeled
+    # on the growth measured on PC1: x2.22 per 17-character repeat. The single call at 2k would take 2.4e5 s.
+    unit = "</Aa> <Aa>a</Aa> "
+    frame = _Curve(lambda n: 0.140 * 2.22 ** ((n - 306) / 17.0))
+    assert ra._confirmed(frame, "", unit, "\x00!", 18, [])
+    longest = max(t for _n, t in frame.reads)
+    assert longest < 2.0, "a call of %.3g s at %d characters" % max((t, n) for n, t in frame.reads)
+
+
+def test_a_slow_step_of_the_doubling_is_compared_not_flagged(modeled):
+    # The doubling stops at the first step past SLOW_SECONDS. That stop is not a verdict: a LINEAR call that is slow
+    # already at k (0.45 s at 200 characters) crosses 0.5 s on its first eighth-step and must still be cleared, by the
+    # same exponent the 4x comparison uses, read at that step.
+    linear = _Curve(lambda n: 0.45 * n / 200.0)
+    assert not ra._confirmed(linear, "", "ab", "", 100, [])
+    assert max(t for _n, t in linear.reads) > ra.SLOW_SECONDS, "the doubling never passed SLOW_SECONDS: no proof"
+    # CONTROL: a quadratic call that crosses 0.5 s on the same step is still a verdict.
+    assert ra._confirmed(_Curve(lambda n: 0.45 * (n / 200.0) ** 2), "", "ab", "", 100, [])
+
+
 def test_control_the_collection_reaches_the_patterns_the_first_scan_missed(collected):
     rows, skipped, _failed = collected
     pats = {p for _w, p, _f, _u in rows}
@@ -302,16 +339,23 @@ def test_control_every_pattern_audit_a_planted_is_caught():
         assert ra.attack(rx.search, ra.pumps(pat, re.I)), "not flagged: %s" % pat
 
 
+#: The excluded patterns the attack flags on their own: the same six in three runs before the 3.23.1 confirmation
+#: change and three after it (PC1, 2026-10-26, agora_output/strategy/n322/base_*.json and after_*.json, 428 verdicts
+#: each, identical). A change to the ladder that flags one more or one fewer changed what the attack detects.
+FLAGGED_ON_THEIR_OWN = {"_EX_CHANGE", "_EX_IS", "_EX_MINE", "_EX_OF", "_EX_REL", "_EX_VERB"}
+
+
 def test_derive_key_is_linear_on_the_input_that_blows_each_excluded_pattern_up():
     """For each excluded pattern: find the input that makes it worse than linear on its own (which proves the exclusion
-    is needed at all), then hand exactly that input, and the same with spaces collapsed or not, to derive_key."""
-    blown = 0
+    is needed at all), then hand exactly that input, and the same with spaces collapsed or not, to derive_key. The
+    patterns flagged are exactly FLAGGED_ON_THEIR_OWN."""
+    blown = set()
     for name in EXCLUDED_NAMES:
         rx = getattr(core, name)
         r = ra.attack(rx.search, ra.pumps(rx.pattern, re.I))
         if r is None:
             continue
-        blown += 1
+        blown.add(name)
         pre, unit = r[3]
         tabs = unit.replace(" ", "\t")
         assert ra.attack(core.derive_key, [(pre, unit), (pre, tabs)]) is None, (name, pre, unit)
@@ -319,7 +363,8 @@ def test_derive_key_is_linear_on_the_input_that_blows_each_excluded_pattern_up()
     r = ra.attack(split.search, ra.pumps(CLAUSE_SPLIT))
     assert r, "the clause split no longer backtracks on its own: drop it from the exclusions"
     assert ra.attack(core.derive_key, [r[3], ("a", r[3][1] * 1)]) is None, r[3]
-    assert blown >= 5, "fewer excluded patterns backtrack on their own than when the exclusion was written (%d)" % blown
+    assert blown == FLAGGED_ON_THEIR_OWN, "the attack flags other excluded patterns than it did: %s" % sorted(
+        blown ^ FLAGGED_ON_THEIR_OWN)
 
 
 def test_no_pattern_in_the_package_grows_worse_than_linear(collected):

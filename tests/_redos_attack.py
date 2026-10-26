@@ -408,6 +408,20 @@ def attack(fn, units):
 #: call grows by eighths until it alone takes CONFIRM_FLOOR (up to CONFIRM_CAP characters, where under 50 ms is
 #: linear on its own), and the minimum of 3 is taken over small and large readings that alternate, so a load phase
 #: falls on both sides. A doubling is read first: a pattern that is exponential never reaches the 4x call.
+#:
+#: THE DOUBLING IS READ IN EIGHTHS, AND NO CALL IS MORE THAN ONE EIGHTH-STEP PAST THE LAST (3.23.1, CI job
+#: 119669956499). It used to be one call at 2k. The ladder flags the old frame guard through SLOW_SECONDS only when its
+#: fifth growth point crosses 0.5 s (0.515 s at 340 characters on PC1, a 3% margin), so on a runner where that point
+#: read under 0.5 s the pattern came here. The floor stopped at 306 characters (0.140 s), and the one call at 612
+#: characters projects to 2.4e5 s at the x2.22 per repeat measured there. test (3.9) sat in that call until the 35-minute
+#: session watchdog ended the run. Now each eighth-step is checked before the next one runs. A step that grows faster than
+#: the 16x-for-2x rule allows, scaled to its own size ((m/k)**4), is the exponential verdict, confirmed on that step.
+#: A step past SLOW_SECONDS ends the reading, and the 4x comparison is then made at that step.
+#: MEASURED COST OF ONE EIGHTH-STEP at that growth rate: x4.98 (0.140 s at 306 characters to 0.697 s at 340,
+#: OLD_FRAME, PC1 2026-10-26, agora_output/strategy/n322/redos_frame_probe.out). The first step runs from the floor
+#: reading, which is under CONFIRM_FLOOR times one step, so the longest call this confirmation makes on that pattern is
+#: about 0.05 x 4.98 x 4.98 = 1.2 s. A quadratic step costs x1.27 (1.125 squared). The 4x call runs only when every
+#: step to 2k grew slower than the fourth power and 2k took under SLOW_SECONDS, so it costs at most 16 x 0.5 = 8 s.
 CONFIRM_RATIO = 8.0
 CONFIRM_FLOOR = 0.05
 CONFIRM_CAP = 4000000
@@ -422,18 +436,26 @@ def _confirmed(fn, pre, unit, suf, k, pts):
         t = _best(fn, text(k), reps=1)
     if t < CONFIRM_FLOOR:
         return False                                          # CONFIRM_CAP characters in under 50 ms: linear
-    t2 = _best(fn, text(2 * k), reps=1)
-    if t2 > 16 * t:                                           # 16x for 2x: exponential; confirm it on the doubling
-        t, t2 = min(t, _best(fn, text(k), reps=1)), min(t2, _best(fn, text(2 * k), reps=1))
-        pts.append((len(unit) * 2 * k, t2))
-        return t2 > 16 * t
+    m = k
+    while m < 2 * k:                                          # the doubling, an eighth at a time
+        m = min(2 * k, m + max(1, k // 8))
+        t2 = _best(fn, text(m), reps=1)
+        if t2 > (m / k) ** 4 * t:                             # faster than 16x for 2x: exponential; confirm it here
+            t, t2 = min(t, _best(fn, text(k), reps=1)), min(t2, _best(fn, text(m), reps=1))
+            pts.append((len(unit) * m, t2))
+            return t2 > (m / k) ** 4 * t
+        if t2 > SLOW_SECONDS:
+            break
+    # 4x the input against CONFIRM_RATIO, or, when a step of the doubling already passed SLOW_SECONDS, that step
+    # against the same exponent (4 ** 1.5 == CONFIRM_RATIO), so no call is larger than one already read.
+    top = 4 * k if t2 <= SLOW_SECONDS else m
     small, big = [], []
     for _ in range(3):                                        # interleaved: a load phase falls on both sides
         small.append(_best(fn, text(k), reps=1))
-        big.append(_best(fn, text(4 * k), reps=1))
+        big.append(_best(fn, text(top), reps=1))
     t_small, t_big = min(small), min(big)
-    pts.extend([(len(unit) * k, t_small), (len(unit) * 4 * k, t_big)])
-    return t_big > CONFIRM_RATIO * t_small
+    pts.extend([(len(unit) * k, t_small), (len(unit) * top, t_big)])
+    return t_big > (top / k) ** math.log(CONFIRM_RATIO, 4) * t_small
 
 
 class _FunctionStandIn:

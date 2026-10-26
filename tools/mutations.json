@@ -15191,8 +15191,8 @@
  {
   "name": "3.21.1 stress run 1: the ladder's confirmation compares 4x against the first growth reading, not a fresh one",
   "file": "tests/_redos_attack.py",
-  "old": "    return t_big > CONFIRM_RATIO * t_small",
-  "new": "    return t_big > CONFIRM_RATIO * pts[0][1]",
+  "old": "    return t_big > (top / k) ** math.log(CONFIRM_RATIO, 4) * t_small",
+  "new": "    return t_big > (top / k) ** math.log(CONFIRM_RATIO, 4) * pts[0][1]",
   "tests": [
    "tests/test_3211_no_pattern_in_the_package_backtracks.py::test_a_load_spike_on_the_larger_confirmation_calls_is_not_a_verdict"
   ]
@@ -16317,6 +16317,24 @@
   "new": "",
   "tests": [
    "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_call_in_auto_mode_is_never_rewritten_and_every_other_mode_is"
+  ]
+ },
+ {
+  "name": "3.23.1 CI job 119669956499: the confirmation reads the doubling as one call at 2k",
+  "file": "tests/_redos_attack.py",
+  "old": "    m = k\n    while m < 2 * k:                                          # the doubling, an eighth at a time\n        m = min(2 * k, m + max(1, k // 8))\n",
+  "new": "    m = k\n    while m < 2 * k:\n        m = 2 * k\n",
+  "tests": [
+   "tests/test_3211_no_pattern_in_the_package_backtracks.py::test_the_confirmation_of_an_exponential_pattern_never_makes_one_unbounded_call"
+  ]
+ },
+ {
+  "name": "3.23.1: a slow step of the doubling is a verdict without its exponent",
+  "file": "tests/_redos_attack.py",
+  "old": "        if t2 > SLOW_SECONDS:\n            break\n",
+  "new": "        if t2 > SLOW_SECONDS:\n            return True\n",
+  "tests": [
+   "tests/test_3211_no_pattern_in_the_package_backtracks.py::test_a_slow_step_of_the_doubling_is_compared_not_flagged"
   ]
  }
 ]

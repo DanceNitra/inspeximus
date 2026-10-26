@@ -26,8 +26,10 @@ jobs:
           pip install pytest pytest-xdist pytest-timeout cryptography pyyaml
       # The BASE environment on purpose: the core is zero-dependency and this leg proves it stays that way.
       # It is not the whole suite -- see the `integrations` job.
+      # --durations: the 3.9 leg is the slowest, and until 3.23 it recorded no per-test time, so the list of tests
+      # near a budget had to come from the 3.12 integration shards (CI job 119669956499, 2026-10-22).
       - name: Run tests
-        run: python -m pytest tests/ -q
+        run: python -m pytest tests/ -q --durations=60
       # The mutation set is deselected from the default (it edits source in place, so it cannot
       # share a tree with xdist workers). Run it here explicitly and SERIALLY, or the parallel
       # default silently drops 31 tests from CI while the run stays green.
