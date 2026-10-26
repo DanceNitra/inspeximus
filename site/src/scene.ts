@@ -156,7 +156,9 @@ export function initScene(canvas: HTMLCanvasElement, opts: { reducedMotion: bool
     const glow = new THREE.Sprite(
       new THREE.SpriteMaterial({ map: glowTex, color: color.clone(), transparent: true, blending: THREE.AdditiveBlending, opacity: 0.7, depthWrite: false }),
     );
-    glow.scale.setScalar(4.2);
+    // 2026-10-26: 4.2 put a halo about 2.5x the block's own width over the headline, so the hero read
+    // as a glow with words behind it. The block is the subject; the glow is light around it.
+    glow.scale.setScalar(2.6);
 
     group.add(glow, core, edges);
 
@@ -257,7 +259,9 @@ export function initScene(canvas: HTMLCanvasElement, opts: { reducedMotion: bool
   if (!lowPower) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.62, 0.5, 0.2);
+    // Strength 0.62 spread the ledger's light across the text column; 0.4 keeps the edges lit and
+    // stops the spill (2026-10-26).
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.4, 0.5, 0.2);
     composer.addPass(bloom);
   }
 
@@ -279,6 +283,16 @@ export function initScene(canvas: HTMLCanvasElement, opts: { reducedMotion: bool
   resize();
 
   // Camera key positions per beat (world Z of the block we frame).
+  // The hero beat frames the chain to the RIGHT of the headline by aiming the camera left of the
+  // chain (HERO_LOOK_X), not by moving the camera sideways: a sideways camera swings the far blocks
+  // further INTO the text column, which is how -4.2 and -8.0 both ended up lying across "fact"
+  // (measured on the rendered page, 2026-10-26). The aim returns to x = 0 as the hero beat ends, so
+  // the later beats keep their own framing.
+  // HERO_LEDGER_X slides the whole chain to the right of the headline for the hero beat only, and
+  // slides back to 0 as the beat ends, so every later beat keeps its own framing. Aiming the camera
+  // sideways instead (HERO_LOOK_X, tried at -4.5 and -3.0) clears the text too, but it flattens the
+  // chain towards the viewer and the hash-chain recession is the whole point of the shot.
+  const HERO_LEDGER_X = 4.4;
   const camHero = new THREE.Vector3(0, 1.4, 11);
   const camCorrect = new THREE.Vector3(2.4, 0.8, blocks[CORRECT_IDX].home.z + 6.5);
   const camAttack = new THREE.Vector3(0, 0.4, blocks[CORRECT_IDX].home.z + 8.5);
@@ -303,6 +317,7 @@ export function initScene(canvas: HTMLCanvasElement, opts: { reducedMotion: bool
       const k = smoothstep(0, 0.25, p);
       camPos = camHero.clone().lerp(camCorrect, k);
       look.set(0, 0, lerp(-2, blocks[CORRECT_IDX].home.z, k));
+      ledger.position.x = lerp(HERO_LEDGER_X, 0, k);
     } else if (p < 0.5) {
       const k = smoothstep(0.25, 0.5, p);
       camPos = camCorrect.clone().lerp(camAttack, k);

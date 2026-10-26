@@ -156,7 +156,7 @@ Counts by status:
 | 117 | `erasure.html` | `2` `2` `0` | The dry run names 2 records, both direct, none through lineage | **REPRODUCIBLE** | `python tools/page_runs.py erasure` |
 | 118 | `erasure.html` | `2` `2` | forget-subject erases the 2 records and leaves 2 tombstones | **REPRODUCIBLE** | `python tools/page_runs.py erasure` |
 | 119 | `erasure.html` | `2` | erasure-verify passes every check it ran, pinned to the writer's key, and attests 2 erasures | **REPRODUCIBLE** | `python tools/page_runs.py erasure` |
-| 120 | `index.html` | `14` `0` `14` `14` | Homepage counter: 14 integrations, 14 of 14 verified against current upstream | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 120 | `index.html` | `14` `14` `14` `14` | Homepage counter: 14 integrations, 14 of 14 verified against current upstream | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 121 | `index.html` | `10146` | The same pull request on the storefront card: agno-agi/agno#10146, merged 2026-09-20. | **REPRODUCIBLE-WITH-DEPS** | `gh pr view 10146 --repo agno-agi/agno --json state,mergedAt,files` |
 | 122 | `index.html` | `3.6.0` `3` | compliance_report() carries 3 robustness evidence rows (echo, poison, split_view) since 3.6.0, each with the receipt sha256 | **REPRODUCIBLE** | `python tools/gen_robustness_evidence.py --check` |
 | 123 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
@@ -169,11 +169,11 @@ Counts by status:
 | 130 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 131 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 132 | `index.html` | `14` `14` `0` | 14 of 14 framework adapters verified against current upstream; 0 recorded broken | **REPRODUCIBLE** | `python tools/integration_conformance.py` |
-| 133 | `index.html` | `135` `0` | Homepage counter: 135 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
+| 133 | `index.html` | `135` `135` | Homepage counter: 135 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 134 | `index.html` | `135` | Homepage heading: 135 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 135 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
 | 136 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 137 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 137 | `index.html` | `0.75` `0.75` `0.20` `20` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
 | 138 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 139 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 140 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |

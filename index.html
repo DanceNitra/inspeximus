@@ -64,10 +64,10 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>.seal-mark{display:inline-block;flex:none;width:36px;height:36px;background:currentColor;-webkit-mask:url(docs/brand/inspeximus-seal.svg) center/contain no-repeat;mask:url(docs/brand/inspeximus-seal.svg) center/contain no-repeat}.brand.has-seal{display:inline-flex;align-items:center;gap:10px}</style>
-    <script type="module" crossorigin src="./assets/index-BsD0B5K4.js"></script>
+    <script type="module" crossorigin src="./assets/index-Cl4qPH6k.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/three-Bkb2dqNl.js">
     <link rel="modulepreload" crossorigin href="./assets/motion-B8OfwHgZ.js">
-    <link rel="stylesheet" crossorigin href="./assets/index-CqT4d_L3.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-CiKM3ZWO.css">
   <style>
 /* header: six page links, "More" for the in-page sections, a menu under 860 px */
 .nav__links{display:flex;align-items:center;gap:26px;white-space:nowrap}
@@ -98,9 +98,9 @@
 </style>
 </head>
   <body>
-    <!-- Texture overlays -->
-    <div class="grain" aria-hidden="true"></div>
-    <div class="cursor-glow" aria-hidden="true"></div>
+    <!-- Removed 2026-10-26: a full-viewport grain overlay and a cursor glow. A product whose claim is
+         evidence and restraint cannot decorate the page it makes that claim on; everything decorative
+         removed makes the evidence louder. The cursor glow was already display:none in the stylesheet. -->
 
     <!-- Nav -->
     <header class="nav" id="nav">
@@ -234,9 +234,12 @@
       <!-- Stat strip -->
       <section class="strip" id="stats">
         <ul class="strip__grid">
-          <li><b class="count" data-count="135">0</b><span>MCP tools</span></li>
-          <li><b class="count" data-count="14">0</b><span>integrations, 14 of 14 verified upstream</span></li>
-          <li><b class="count" data-count="0.75" data-decimals="2">0</b><span>revert success (vs 0.20, n=20)</span></li>
+          <!-- The figure is the element's own text, not only its data-count. The counter animates from 0
+               whatever the text says, so JavaScript is unaffected; without it, a reader, a crawler or an
+               answer engine used to read our headline metrics as "0". Changed 2026-10-26. -->
+          <li><b class="count" data-count="135">135</b><span>MCP tools</span></li>
+          <li><b class="count" data-count="14">14</b><span>integrations, 14 of 14 verified upstream</span></li>
+          <li><b class="count" data-count="0.75" data-decimals="2">0.75</b><span>revert success (vs 0.20, n=20)</span></li>
           <li><b>A</b><span>Glama quality</span></li>
           <li><b>v3.23.1</b><span>current release</span></li>
           <li><b>0</b><span>runtime dependencies</span></li>

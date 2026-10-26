@@ -1213,8 +1213,8 @@ NUMBER_CLAIMS = [
        "WITHDRAWN", "python claims_audit.py --numbers"),
 
     # -------------------------------------------------------------- index.html
-    _c("site-mcp-tools-counter", "index.html", ["135", "0"],
-       'data-count="135">0</b><span>MCP tools',
+    _c("site-mcp-tools-counter", "index.html", ["135", "135"],
+       'data-count="135">135</b><span>MCP tools',
        "Homepage counter: 135 MCP tools", "REPRODUCIBLE", "python claims_audit.py --numbers",
        "Was 15. The counter renders data-count, so the figure a reader sees lives in an attribute -- "
        "which is why the scanner hoists data-count out of the tag before stripping tags."),
@@ -1239,8 +1239,8 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE", "python tools/gen_robustness_evidence.py --check",
        note="The rows are read from the probe receipts by tools/gen_robustness_evidence.py, never typed; "
             "tests/test_the_two_partial_rows_close_art_15_evidence_rows_and_the_qms_register.py pins the count and the STALE control."),
-    _c("site-adapters", "index.html", ["14", "0", "14", "14"],
-       'data-count="14">0</b><span>integrations, 14 of 14 verified upstream',
+    _c("site-adapters", "index.html", ["14", "14", "14", "14"],
+       'data-count="14">14</b><span>integrations, 14 of 14 verified upstream',
        "Homepage counter: 14 integrations, 14 of 14 verified against current upstream", "REPRODUCIBLE",
        "python claims_audit.py --numbers",
        "Was 6 while the README said nine and the package ships nine agent-framework adapters "
@@ -1265,8 +1265,8 @@ NUMBER_CLAIMS = [
        "REPRODUCIBLE-WITH-DEPS", "python probes/integrity_bench_revert.py --systems inspeximus --n 20",
        "The inspeximus column runs locally; mem0 needs OPENAI_API_KEY and Graphiti a live neo4j. "
        "Methodology and CIs: probes/INTEGRITY_BENCHMARK.md."),
-    _c("site-revert-counter", "index.html", ["0.75", "0.20", "20", "0"],
-       'data-count="0.75" data-decimals="2">0</b><span>revert success (vs 0.20, n=20)',
+    _c("site-revert-counter", "index.html", ["0.75", "0.75", "0.20", "20"],
+       'data-count="0.75" data-decimals="2">0.75</b><span>revert success (vs 0.20, n=20)',
        "Homepage counter restating the revert cell", "REPRODUCIBLE-WITH-DEPS",
        "python probes/integrity_bench_revert.py --systems inspeximus --n 20"),
     _c("site-bench-inspeximus", "index.html", ["0.75"], ">0.75<",
@@ -1916,7 +1916,7 @@ def _live_consistency(root):
     live = len(re.findall(r"@mcp\.tool\(\)", server.read_text(encoding="utf-8", errors="replace")))
     for fname, pat in (("MCP_LISTINGS.md", r"inspeximus-mcp`, (\d+) tools"),
                        ("MCP_LISTINGS.md", r"\*\*Tools \((\d+)\):\*\*"),
-                       ("index.html", r'data-count="(\d+)">0</b><span>MCP tools'),
+                       ("index.html", r'data-count="(\d+)">\d+</b><span>MCP tools'),
                        ("index.html", r">(\d+) tools any MCP host can call<"),
                        ("docs/DEEP_DIVE.md", r"`inspeximus-mcp`, (\d+) tools")):
         p = root / fname

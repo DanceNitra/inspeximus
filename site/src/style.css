@@ -296,7 +296,8 @@ code.danger {
 }
 .glow-text {
   color: var(--signal);
-  text-shadow: 0 0 40px rgba(56, 242, 214, 0.35);
+  /* glow removed 2026-10-26: the headline is the claim, not a light source */
+  text-shadow: none;
 }
 .hero__sub {
   margin-top: 26px;
