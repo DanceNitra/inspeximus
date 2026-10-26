@@ -16366,8 +16366,8 @@
  },
  {
   "name": "3.23.1 saver record: a follow-up read is recorded as new output",
-  "old": "\"follow_up\": bool(follow_up)}",
-  "new": "\"follow_up\": False}",
+  "old": "\"follow_up\": bool(follow_up),",
+  "new": "\"follow_up\": False,",
   "tests": [
    "tests/test_3231_the_saver_records_each_capture.py::test_a_read_of_an_earlier_capture_is_recorded_as_a_follow_up"
   ],
@@ -16406,6 +16406,33 @@
   "new": "        if m and m.group(1) >= cutoff:\n",
   "tests": [
    "tests/test_3231_the_saver_records_each_capture.py::test_the_sweep_removes_only_day_files_older_than_the_keep"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver record: the baseline past the cut is the whole output, not Claude Code's preview",
+  "old": "    return PLATFORM_PREVIEW_BYTES\n",
+  "new": "    return len(raw)\n",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_the_baseline_is_what_claude_code_would_have_shown"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver stats: the net saving is measured against the whole output",
+  "old": "    net_in = sum(shown(r) for r in new)\n",
+  "new": "    net_in = sum(r.get(\"bytes_in\", 0) for r in new)\n",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_stats_sum_net_and_gross_and_say_when_a_gap_cannot_be_seen"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver record: a section of an output shown whole counts as unseen",
+  "old": "        acc[\"top_unseen\"] = (len(text) > PLATFORM_CUT_CHARS\n                             and ",
+  "new": "        acc[\"top_unseen\"] = (True\n                             and ",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_the_baseline_is_what_claude_code_would_have_shown"
   ],
   "file": "inspeximus/context_saver.py"
  }
