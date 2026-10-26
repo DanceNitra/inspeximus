@@ -39,11 +39,16 @@ That is a cost difference, not a quality one, and it is the only claim this run 
 
 ## Reproducing
 
-The dataset IS redistributed here, in `data/` (evidence conversations) and `data_lc/` (long-context
-scenarios). Both are copied from [MemTensor/MemOps](https://github.com/MemTensor/MemOps), where they
-sit under `generated_result/`, and are MIT licensed, Copyright (c) 2026 MemTensor. The license text is
-in [`LICENSE-MemOps`](LICENSE-MemOps). The names and email addresses in those files come from
-MemOps's generated scenarios, not from us.
+The dataset is NOT in this repository. It is MemTensor's, MIT licensed, Copyright (c) 2026 MemTensor,
+and [`DATA.md`](DATA.md) says how to fetch it from [MemTensor/MemOps](https://github.com/MemTensor/MemOps)
+at the pinned commit the numbers below were measured on, and how to verify your copy against
+[`DATA_MANIFEST.sha256`](DATA_MANIFEST.sha256), which holds the sha256 of each of the 806 files. The
+license text is in [`LICENSE-MemOps`](LICENSE-MemOps). The names and email addresses in those files come
+from MemOps's generated scenarios, not from us.
+
+Until 2026-10-26 the 193.6 MiB sat in `data/` and `data_lc/` here. A copy proves nothing: with the
+manifest, anyone can show their data is the data these numbers came from, which a redistributed folder
+could never do.
 
 ```bash
 pip install inspeximus mem0ai rank-bm25

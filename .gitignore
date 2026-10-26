@@ -47,3 +47,7 @@ tmp/
 
 # coverage.py data files are machine-local and carry absolute paths
 .coverage*
+
+# MemOps data: fetched, not redistributed (benchmarks/memops/DATA.md)
+benchmarks/memops/data/
+benchmarks/memops/data_lc/

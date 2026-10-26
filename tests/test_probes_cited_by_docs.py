@@ -62,6 +62,15 @@ NOT_STANDALONE = {
     "the_headers_the_browser_is_told_to_obey.py": "measured the retired public front end of the hosted "
                                                   "log; the host serves nothing to the internet since "
                                                   "2026-09-23, and the result file is the record",
+    # Its 7.4 MB embedding cache was removed on 2026-10-26, because the plugin directory refuses a
+    # repository holding a file over 5 MiB. The commit that removed it said the probe rebuilds the
+    # cache, which is true where an embedder answers and false on a runner: CI has none, so the probe
+    # exits 1 on a connection refused. The claim was measured on one machine and asserted for every
+    # machine. Until the cache is published as a fetchable artifact with a hash, this probe runs where
+    # an embedder runs, and the result file beside it is the record of what it measured.
+    "oracle_separation_density.py": "rebuilds its embedding cache through a local embedder at "
+                                    "127.0.0.1:11434, which a CI runner does not have; run it by hand "
+                                    "with that embedder, or set ROD_CACHE to a prebuilt cache",
     "interop_with_litewitness.py": "drives litewitness, a Go tlog-witness the suite does not build; "
                                    "it runs in .github/workflows/tlog-witness-interop.yml against a witness "
                                    "that job compiles and configures",
