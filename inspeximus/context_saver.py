@@ -961,7 +961,6 @@ def post_tool_use_replacement(ev):
             sweep_stats()
         except Exception:                            # noqa: BLE001 -- a sweep never costs the output
             pass
-            sweep_stats()
 
 
 # ---- the command ----

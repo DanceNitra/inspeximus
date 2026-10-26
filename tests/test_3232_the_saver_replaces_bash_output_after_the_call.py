@@ -177,9 +177,13 @@ def test_a_passthrough_call_sweeps_old_captures_and_keeps_one_a_follow_up_can_re
     assert open(target, "rb").read() == b"the whole output a follow-up read asks for"
 
 
-def test_a_sweep_that_fails_never_costs_the_output(home, tmp_path, monkeypatch):
+@pytest.mark.parametrize("which", ["sweep_captures", "sweep_stats"])
+def test_a_sweep_that_fails_never_costs_the_output(home, tmp_path, monkeypatch, which):
+    """Each sweep raises in turn, and each case fails when the hook's try/except around the sweeps is removed. The
+    sweep_stats case also fails on f270af09, where a stray unguarded sweep_stats() sat inside the except block and
+    ran only after the guarded pair had raised."""
     _config(home, {"saver": {"hook": True}})
-    monkeypatch.setattr(cs, "sweep_captures", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
+    monkeypatch.setattr(cs, which, lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
     assert cs.post_tool_use_replacement(_ev("x" * (cs.PASSTHROUGH_BYTES - 1))) is None
     rep = cs.post_tool_use_replacement(_ev(_big("the answer is here: zebra-quartz")[:20000]))
     assert "zebra-quartz" in rep["hookSpecificOutput"]["updatedToolOutput"]["stdout"]
