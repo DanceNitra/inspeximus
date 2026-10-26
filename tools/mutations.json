@@ -16336,5 +16336,77 @@
   "tests": [
    "tests/test_3211_no_pattern_in_the_package_backtracks.py::test_a_slow_step_of_the_doubling_is_compared_not_flagged"
   ]
+ },
+ {
+  "name": "3.23.1 saver record: bytes_out does not count what the agent received",
+  "old": "        acc[\"bytes_out\"] += len(data)\n",
+  "new": "        pass\n",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_every_mode_writes_one_record_with_what_the_agent_received"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver record: the line carries the intent text",
+  "old": "\"intent_chars\": len(intent or \"\")",
+  "new": "\"intent_chars\": intent",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_a_record_holds_no_command_output_intent_or_path"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver record: a failed record write reaches the caller",
+  "old": "    except Exception:                                # noqa: BLE001 -- a record never costs the output\n        return False\n",
+  "new": "    except ImportError:\n        return False\n",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_a_record_that_cannot_be_written_leaves_the_output_byte_identical"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver record: a follow-up read is recorded as new output",
+  "old": "\"follow_up\": bool(follow_up)}",
+  "new": "\"follow_up\": False}",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_a_read_of_an_earlier_capture_is_recorded_as_a_follow_up"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver record: the hook never marks a read of a capture as a follow-up",
+  "old": "\" --follow-up\" if targets_captures(cmd) else \"\"",
+  "new": "\"\"",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_a_read_of_an_earlier_capture_is_recorded_as_a_follow_up"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver stats: the net saving counts follow-up reads as new output",
+  "old": "    new = [r for r in lines if not r.get(\"follow_up\")]\n",
+  "new": "    new = lines\n",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_stats_sum_net_and_gross_and_say_when_a_gap_cannot_be_seen"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver stats: a day whose captures are swept reports no gap instead of unknown",
+  "old": "None if day <= swept_before else ",
+  "new": "",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_stats_sum_net_and_gross_and_say_when_a_gap_cannot_be_seen"
+  ],
+  "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver stats: the sweep removes a file whose name it did not write",
+  "old": "        if not m or m.group(1) >= cutoff:\n",
+  "new": "        if m and m.group(1) >= cutoff:\n",
+  "tests": [
+   "tests/test_3231_the_saver_records_each_capture.py::test_the_sweep_removes_only_day_files_older_than_the_keep"
+  ],
+  "file": "inspeximus/context_saver.py"
  }
 ]

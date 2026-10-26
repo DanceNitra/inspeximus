@@ -198,6 +198,9 @@ description, plus the path of the full output, which is kept for 2 days under th
 `inspeximus/saver-out`. The ranking needs an embedder: `INSPEXIMUS_EMBED_URL`, or `embed.url` in your config.
 Without one, the whole output is shown and one line says why. To switch it off, run
 `inspeximus install --saver-hook off`, or set `INSPEXIMUS_SAVER_HOOK=0` for one session.
+Each capture adds one line of sizes and seconds, never its command or output, to
+`inspeximus/saver-stats/<date>.jsonl` under the key home. `inspeximus-saver stats` sums a day into the bytes kept
+out of the agent's context, with reads of earlier captures charged as a cost.
 
 Known limit: in Claude Code's **auto** permission mode, the hook leaves every Bash call unchanged and the whole
 output reaches the agent. That mode reviews the command text and refuses a call whose text was rewritten.
