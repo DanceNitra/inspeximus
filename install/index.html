@@ -237,7 +237,9 @@ finishes, the hook replaces its result before Claude Code sends it to the agent,
 mode, auto included. An output under 5,000 bytes is unchanged. A larger one reaches the agent as a digest of the
 sections that match the call's description, ranked by keyword (BM25) with nothing else installed, plus the path of
 the whole output: Claude Code's own file past 30,000 characters, else a copy kept for 2 days under the key home in
-`inspeximus/saver-out`. About a quarter of the time the part the agent needs is one read away. To switch it off, run
+`inspeximus/saver-out`. About a quarter of the time the part the agent needs is one read away. If whole Bash
+outputs keep reaching the agent while the saver is on, the replacement is not taking on that Claude Code version,
+and `inspeximus-saver stats` shows digests with no follow-up reads. To switch it off, run
 `inspeximus install --saver-hook off`, or set `INSPEXIMUS_SAVER_HOOK=0` for one session.
 Each capture adds one line of sizes and seconds, never its command or output, to
 `inspeximus/saver-stats/&lt;date&gt;.jsonl` under the key home. `inspeximus-saver stats` sums a day into the bytes kept
