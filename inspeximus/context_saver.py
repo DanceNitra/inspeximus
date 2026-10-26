@@ -564,7 +564,9 @@ def stats(days, now=None) -> dict:
     cut, where the agent would have seen a PLATFORM_PREVIEW_BYTES block and a digest can cost more than it.
     `top_unseen` counts the digests whose first section the platform's preview would not have shown: a capability,
     never folded into the saving. The GAP is the captures still in saver-out for a day minus its records; for a day whose captures are
-    already swept (older than CAPTURE_KEEP_S) it is None: unknown, not zero."""
+    already swept (older than CAPTURE_KEEP_S) it is None: unknown, not zero. Both sides count only captures that held
+    output: new_capture_path creates the file empty before any output arrives, a file left at zero bytes never had an
+    output to record and read as a false gap, and a zero-byte record is left out to match."""
     import os
     import time
     rows, bad = [], 0
@@ -588,6 +590,8 @@ def stats(days, now=None) -> dict:
         p = os.path.join(capture_dir(), name)
         if name.startswith(_CAPTURE_PREFIX) and name.endswith(".txt"):
             try:
+                if not os.path.getsize(p):
+                    continue
                 day = time.strftime("%Y-%m-%d", time.gmtime(os.path.getmtime(p)))
             except OSError:
                 continue
@@ -595,7 +599,7 @@ def stats(days, now=None) -> dict:
     swept_before = time.strftime("%Y-%m-%d", time.gmtime(now - CAPTURE_KEEP_S))
     gaps = {}
     for day in days:
-        n = sum(1 for d, _r in rows if d == day)
+        n = sum(1 for d, r in rows if d == day and r.get("bytes_in", 0))
         gaps[day] = None if day <= swept_before else max(0, per_day.get(day, 0) - n)
     lines = [r for _d, r in rows]
     new = [r for r in lines if not r.get("follow_up")]

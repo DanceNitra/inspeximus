@@ -130,6 +130,20 @@ def test_stats_sum_net_and_gross_and_say_when_a_gap_cannot_be_seen(home):
     assert "gap unknown: captures for this day are already swept" in text and "GAP: 1 captures" in text
 
 
+def test_a_zero_byte_capture_is_no_gap_and_a_capture_with_output_still_is(home):
+    # Measured 2026-10-26: 328 of 333 files in saver-out were zero bytes, every one with no record, and `stats`
+    # reported "GAP: 149 captures have no record" while nothing was missing. An empty file never held an output.
+    now = time.time()
+    today = time.strftime("%Y-%m-%d", time.gmtime(now))
+    for _ in range(7):
+        cs.new_capture_path()                        # created empty, never written
+    assert cs.stats([today], now=now)["gap"] == {today: 0}
+    _capture("output with no record")                # the control: a real capture with no record is still a gap
+    assert cs.stats([today], now=now)["gap"] == {today: 1}
+    _write_day(today, [{"mode": "raw", "bytes_in": 0, "why": "NotAPlatformFile"}])
+    assert cs.stats([today], now=now)["gap"] == {today: 1}, "a zero-byte record hid a real gap"
+
+
 def test_the_stats_command_leads_with_the_day_and_its_saving(home, capsys):
     today = time.strftime("%Y-%m-%d", time.gmtime())
     _write_day(today, [{"mode": "digest", "ranking": "hybrid", "bytes_in": 1000, "platform_shown": 1000,
