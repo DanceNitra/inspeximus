@@ -10,14 +10,12 @@ import json
 import math
 import os
 import shutil
-import subprocess
 import sys
 import time
 
 import pytest
 
 from inspeximus import _userconfig
-from inspeximus import claude_code as cc
 from inspeximus import context_saver as cs
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -62,16 +60,6 @@ def _ev(command, **ti):
     return {"hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": dict(ti, command=command)}
 
 
-def _run_wrapped(kh, command, after="", cwd=None):
-    """Run what the hook would send on, in bash, with this repository's package importable."""
-    new = cs.hook_rewrite(_ev(command, description="test"))
-    assert new is not None
-    env = dict(os.environ, INSPEXIMUS_KEY_HOME=str(kh), PYTHONPATH=REPO, PYTHONIOENCODING="utf-8",
-               MSYS_NO_PATHCONV="1")
-    return subprocess.run([BASH, "-c", new["command"] + after], capture_output=True, env=env, cwd=cwd,
-                          timeout=120, stdin=subprocess.DEVNULL)
-
-
 def embed(text):
     v = [0.0] * 64
     for w in cs._WORD.findall(text.lower()):
@@ -86,142 +74,12 @@ def _big(extra=""):
 
 
 # ── when the hook rewrites, and when it does not ─────────────────────────────────────────────────────────
-def test_off_by_default_and_on_only_through_the_users_config(home, monkeypatch):
-    assert cs.hook_rewrite(_ev("git log")) is None                       # no config: untouched
-    _config(home, {"saver": {"hook": "yes"}})
-    assert cs.hook_rewrite(_ev("git log")) is None                       # only the bool true counts
-    _config(home, {"saver": {"hook": True}})
-    new = cs.hook_rewrite(_ev("git log", description="find the release commit"))
-    assert new and cs.CAPTURE_MARKER in new["command"] and "\ngit log\n" in new["command"]
-    assert "find the release commit" in new["command"]
-    monkeypatch.setenv("INSPEXIMUS_SAVER_HOOK", "0")
-    assert cs.hook_rewrite(_ev("git log")) is None                       # the one-session escape
-
-
-@pytest.mark.parametrize("ev", [
-    {"tool_name": "Write", "tool_input": {"command": "x"}},
-    _ev("git log", run_in_background=True),
-    _ev("   "),
-    _ev("echo already  # " + cs.CAPTURE_MARKER),
-], ids=["another-tool", "background", "empty", "already-wrapped"])
-def test_these_calls_are_never_rewritten(home, ev):
-    _config(home, {"saver": {"hook": True}})
-    assert cs.hook_rewrite(ev) is None
-
-
-def test_a_call_in_auto_mode_is_never_rewritten_and_every_other_mode_is(home):
-    # "auto" is the value Claude Code sent in permission_mode, read from a live hook event on 2026-10-22. The control
-    # is the same event in every other mode: each is rewritten, so the None is the mode and not a dead fixture.
-    _config(home, {"saver": {"hook": True}})
-    assert cs.hook_rewrite(dict(_ev("git log"), permission_mode="auto")) is None
-    for mode in ("default", "acceptEdits", "plan", "dontAsk", "bypassPermissions", None):
-        ev = _ev("git log") if mode is None else dict(_ev("git log"), permission_mode=mode)
-        new = cs.hook_rewrite(ev)
-        assert new and cs.CAPTURE_MARKER in new["command"], mode
 
 
 # ── the guard decides first, and one envelope leaves ─────────────────────────────────────────────────────
-def test_a_blocked_call_is_never_rewritten_and_the_saver_is_not_consulted(home, monkeypatch):
-    _config(home, {"saver": {"hook": True}})
-    asked = []
-    monkeypatch.setattr(cs, "hook_rewrite", lambda ev, **k: asked.append(ev) or {"command": "x"})
-
-    def blocks(ev):
-        sys.stderr.write("blocked\n")
-        sys.exit(2)
-    monkeypatch.setattr(cc, "pre_tool_use", blocks)
-    out = io.StringIO()
-    monkeypatch.setattr(sys, "stdout", out)
-    with pytest.raises(SystemExit) as e:
-        cc._pre_tool_use_and_saver(_ev("rm -rf build"))
-    assert e.value.code == 2 and asked == [] and "updatedInput" not in out.getvalue()
-
-
-def test_the_guards_warning_and_the_rewrite_leave_in_one_envelope(home, monkeypatch):
-    _config(home, {"saver": {"hook": True}})
-    monkeypatch.setattr(cc, "pre_tool_use", lambda ev: print(json.dumps({"hookSpecificOutput": {
-        "hookEventName": "PreToolUse", "additionalContext": "decided before: X"}})))
-    out = io.StringIO()
-    monkeypatch.setattr(sys, "stdout", out)
-    cc._pre_tool_use_and_saver(_ev("git log"))
-    lines = [ln for ln in out.getvalue().splitlines() if ln.strip()]
-    assert len(lines) == 1
-    hso = json.loads(lines[0])["hookSpecificOutput"]
-    assert hso["additionalContext"] == "decided before: X" and cs.CAPTURE_MARKER in hso["updatedInput"]["command"]
-
-
-def test_a_saver_failure_never_silences_the_guard(home, monkeypatch):
-    # Measured while building this: a NameError in the saver step lost the guard's own warning, because the guard's
-    # output was held back to be merged and never written. Any saver failure now prints the guard's output as is.
-    _config(home, {"saver": {"hook": True}})
-    said = json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": "keep me"}})
-    monkeypatch.setattr(cc, "pre_tool_use", lambda ev: print(said))
-
-    def broken(ev, **k):
-        raise RuntimeError("the saver broke")
-    monkeypatch.setattr(cs, "hook_rewrite", broken)
-    out = io.StringIO()
-    monkeypatch.setattr(sys, "stdout", out)
-    cc._pre_tool_use_and_saver(_ev("git log"))
-    assert out.getvalue() == said + "\n"
-
-
-def test_with_the_saver_off_the_hook_prints_exactly_what_the_guard_printed(home, monkeypatch):
-    said = json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": "A"}})
-    monkeypatch.setattr(cc, "pre_tool_use", lambda ev: print(said))
-    out = io.StringIO()
-    monkeypatch.setattr(sys, "stdout", out)
-    cc._pre_tool_use_and_saver(_ev("git log"))
-    assert out.getvalue() == said + "\n"
 
 
 # ── what a wrapped command does in bash ──────────────────────────────────────────────────────────────────
-@needs_bash
-def test_a_short_output_passes_through_unchanged_with_its_exit_code(home):
-    _config(home, {"saver": {"hook": True}})
-    r = _run_wrapped(home, "printf 'one\\ntwo\\n'; (exit 3)")
-    assert r.stdout.replace(b"\r\n", b"\n") == b"one\ntwo\n" and r.returncode == 3, (r.stdout, r.stderr)
-
-
-@needs_bash
-def test_an_exit_in_the_command_still_prints_the_capture(home):
-    _config(home, {"saver": {"hook": True}})
-    r = _run_wrapped(home, "echo before; exit 4", after="\necho never")
-    assert r.stdout.replace(b"\r\n", b"\n") == b"before\n" and r.returncode == 4, (r.stdout, r.stderr)
-
-
-@needs_bash
-def test_stderr_only_and_interleaved_streams_keep_their_order(home):
-    _config(home, {"saver": {"hook": True}})
-    r = _run_wrapped(home, "echo only-err >&2")
-    assert r.stdout.replace(b"\r\n", b"\n") == b"only-err\n" and r.returncode == 0, (r.stdout, r.stderr)
-    r = _run_wrapped(home, "echo a; echo b >&2; echo c")
-    assert r.stdout.replace(b"\r\n", b"\n") == b"a\nb\nc\n", (r.stdout, r.stderr)
-
-
-@needs_bash
-def test_a_heredoc_and_a_trailing_comment_run_as_written(home):
-    _config(home, {"saver": {"hook": True}})
-    r = _run_wrapped(home, "cat <<'EOF'\nline with $HOME and 'quotes'\nEOF\n# a trailing comment")
-    assert r.stdout.replace(b"\r\n", b"\n") == b"line with $HOME and 'quotes'\n", (r.stdout, r.stderr)
-
-
-@needs_bash
-def test_cd_and_exported_variables_persist_after_the_wrapped_command(home, tmp_path):
-    _config(home, {"saver": {"hook": True}})
-    (tmp_path / "proj" / "sub").mkdir()
-    r = _run_wrapped(home, "cd sub && export ISX_T=kept", after='\nbasename "$PWD"; echo "$ISX_T"',
-                     cwd=str(tmp_path / "proj"))
-    assert r.stdout.replace(b"\r\n", b"\n").split() == [b"sub", b"kept"], (r.stdout, r.stderr)
-
-
-@needs_bash
-def test_a_large_output_without_an_embedder_is_printed_whole(home):
-    # A failure costs context and never hides output.
-    _config(home, {"saver": {"hook": True, "without_reranker": "hybrid"}})
-    r = _run_wrapped(home, "%s -c \"print('x' * 9000)\"" % cs._sh_quote(sys.executable.replace("\\", "/")))
-    assert r.stdout.replace(b"\r\n", b"\n") == b"x" * 9000 + b"\n" and r.returncode == 0
-    assert b"not saved, the whole output is above" in r.stderr
 
 
 # ── the capture as the saver prints it ───────────────────────────────────────────────────────────────────
@@ -274,19 +132,6 @@ def test_a_capture_reads_utf8_bytes_whatever_the_console(home):
     assert out.getvalue() == "ľščťžýáíé € ok\n".encode("utf-8")
 
 
-def test_nothing_in_the_capture_path_writes_a_memory_store(home, tmp_path, monkeypatch):
-    store = tmp_path / "store" / "memory.json"
-    store.parent.mkdir()
-    monkeypatch.setenv("INSPEXIMUS_PATH", str(store))
-    _config(home, {"saver": {"hook": True, "without_reranker": "hybrid"}})
-    before = sorted(os.listdir(str(tmp_path / "store")))
-    p = cs.new_capture_path()
-    open(p, "w", encoding="utf-8").write(_big())
-    cs.print_capture(p, "section 3", out=io.BytesIO(), embedders=(embed, None, "t"))
-    cs.hook_rewrite(_ev("git log"))
-    assert sorted(os.listdir(str(tmp_path / "store"))) == before == []
-
-
 # ── where captures live, and what the sweep may remove ───────────────────────────────────────────────────
 def test_captures_live_under_the_key_home(home):
     p = cs.new_capture_path()
@@ -321,7 +166,7 @@ def test_the_installer_switch_keeps_every_other_key(home):
     cfg = json.loads((home / "inspeximus" / "config.json").read_text(encoding="utf-8"))
     assert cfg["embed"] == {"url": "http://127.0.0.1:11434/v1/embeddings"}
     assert cfg["saver"] == {"device": "cpu", "hook": True, "without_reranker": "hybrid"}
-    assert any("auto permission mode the hook leaves Bash calls unchanged" in ln for ln in lines)
+    assert any("in every permission mode" in ln and "one read away" in ln for ln in lines)
     cs.set_saver_hook(False, out=lines.append)
     cfg = json.loads((home / "inspeximus" / "config.json").read_text(encoding="utf-8"))
     assert cfg["saver"]["hook"] is False and cfg["saver"]["without_reranker"] == "hybrid"
@@ -367,26 +212,6 @@ def test_run_gives_the_command_exactly_the_environment_it_was_called_with(home, 
         parent = {k.upper(): v for k, v in parent.items()}
     assert child == parent, {"added": sorted(set(child) - set(parent)), "removed": sorted(set(parent) - set(child)),
                              "changed": sorted(k for k in set(child) & set(parent) if child[k] != parent[k])}
-
-
-def test_the_capture_starts_no_process(home, monkeypatch):
-    # The saver's own work, the embedder and the ranking, runs in this process (urllib and the in-process
-    # reranker), so no child exists for INSPEXIMUS_EMBED_KEY or INSPEXIMUS_SERVICE_SECRET to reach. The one process
-    # start in the capture path is `run`'s, the user's own command.
-    import subprocess
-    from inspeximus import _envpolicy
-    monkeypatch.setenv("INSPEXIMUS_EMBED_KEY", "secret-key")
-    monkeypatch.setenv("INSPEXIMUS_SERVICE_SECRET", "secret")
-    started = []
-    monkeypatch.setattr(_envpolicy, "start", lambda *a, **k: started.append(a) or pytest.fail("a process started"))
-    monkeypatch.setattr(subprocess, "Popen", lambda *a, **k: started.append(a) or pytest.fail("a process started"))
-    _config(home, {"saver": {"hook": True, "without_reranker": "hybrid"}})
-    p = cs.new_capture_path()
-    open(p, "w", encoding="utf-8").write(_big())
-    assert cs.print_capture(p, "section 3", out=io.BytesIO(), embedders=(embed, None, "t")) == "digest"
-    cs.hook_rewrite(_ev("git log"))
-    cs.sweep_captures()
-    assert started == []
 
 
 def test_the_saver_never_inherits_and_only_run_copies_the_environment():

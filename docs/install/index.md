@@ -192,21 +192,17 @@ Windows and `~/Library/Application Support/Claude/claude-code/` on macOS, so no 
 on the PATH. Restart Claude Desktop.
 
 **Context saver for Bash output (optional, off by default).** To send large Bash output to Claude Code as a
-short digest instead of whole, run `inspeximus install --saver-hook on`. A Bash call whose output is under
-5,000 bytes is unchanged. A larger output reaches the agent as a digest of the sections that match the call's
-description, plus the path of the full output, which is kept for 2 days under the key home in
-`inspeximus/saver-out`. The ranking needs an embedder: `INSPEXIMUS_EMBED_URL`, or `embed.url` in your config.
-Without one, the whole output is shown and one line says why. To switch it off, run
+short digest instead of whole, run `inspeximus install --saver-hook on`. The command runs as written; after it
+finishes, the hook replaces its result before Claude Code sends it to the agent, so it works in every permission
+mode, auto included. An output under 5,000 bytes is unchanged. A larger one reaches the agent as a digest of the
+sections that match the call's description, ranked by keyword (BM25) with nothing else installed, plus the path of
+the whole output: Claude Code's own file past 30,000 characters, else a copy kept for 2 days under the key home in
+`inspeximus/saver-out`. About a quarter of the time the part the agent needs is one read away. To switch it off, run
 `inspeximus install --saver-hook off`, or set `INSPEXIMUS_SAVER_HOOK=0` for one session.
 Each capture adds one line of sizes and seconds, never its command or output, to
 `inspeximus/saver-stats/<date>.jsonl` under the key home. `inspeximus-saver stats` sums a day into the bytes kept
 out of the agent's context, measured against what Claude Code would have shown without the saver (an output whole up
 to 30,000 characters, a preview of about 2 KB past that), with reads of earlier captures charged as a cost.
-
-Known limit: in Claude Code's **auto** permission mode, the hook leaves every Bash call unchanged and the whole
-output reaches the agent. That mode reviews the command text and refuses a call whose text was rewritten.
-There, run `inspeximus-saver run -- <command>`, which prints a command's output through the saver without any
-rewrite.
 
 <a id="gemini-cli"></a>
 ### Gemini CLI

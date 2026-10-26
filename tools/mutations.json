@@ -9740,8 +9740,8 @@
  {
   "name": "perf gate: a PreToolUse event takes the fast exit",
   "file": "inspeximus/claude_code.py",
-  "old": "        if name == \"PreToolUse\":\n            _pre_tool_use_and_saver(ev)\n",
-  "new": "        if name == \"PreToolUse\":\n            _pre_tool_use_and_saver(ev)\n            _FAST_EXIT[0] = True\n",
+  "old": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n",
+  "new": "        if name == \"PreToolUse\":\n            pre_tool_use(ev)\n            _FAST_EXIT[0] = True\n",
   "tests": [
    "tests/test_the_prompt_hook_arm_goes_red.py"
   ]
@@ -16149,93 +16149,12 @@
   ]
  },
  {
-  "name": "3.23 saver hook: a blocked call is swallowed and the saver runs",
-  "file": "inspeximus/claude_code.py",
-  "old": "        pre_tool_use(ev)                                 # may sys.exit(2): a block, and then nothing below runs\n",
-  "new": "        try:\n            pre_tool_use(ev)\n        except SystemExit:\n            pass\n",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_blocked_call_is_never_rewritten_and_the_saver_is_not_consulted"
-  ]
- },
- {
-  "name": "3.23 saver hook: a saver failure drops the guard's output",
-  "file": "inspeximus/claude_code.py",
-  "old": "    except Exception:                                    # noqa: BLE001 -- a saver failure never silences the guard\n        out = printed\n",
-  "new": "    except Exception:                                    # noqa: BLE001 -- a saver failure never silences the guard\n        out = \"\"\n",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_saver_failure_never_silences_the_guard"
-  ]
- },
- {
-  "name": "3.23 saver hook: the rewrite is not merged into the envelope",
-  "file": "inspeximus/claude_code.py",
-  "old": "    env[\"hookSpecificOutput\"][\"updatedInput\"] = new_input\n",
-  "new": "    pass\n",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_the_guards_warning_and_the_rewrite_leave_in_one_envelope"
-  ]
- },
- {
-  "name": "3.23 saver hook: any truthy config value switches it on",
-  "file": "inspeximus/context_saver.py",
-  "old": "    if _userconfig.get(\"saver\", \"hook\") is not True:\n        return None\n",
-  "new": "    if not _userconfig.get(\"saver\", \"hook\"):\n        return None\n",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_off_by_default_and_on_only_through_the_users_config"
-  ]
- },
- {
-  "name": "3.23 saver hook: the one-session escape is ignored",
-  "file": "inspeximus/context_saver.py",
-  "old": "in (\"0\", \"false\", \"no\", \"off\"):\n        return None\n",
-  "new": "in ():\n        return None\n",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_off_by_default_and_on_only_through_the_users_config"
-  ]
- },
- {
-  "name": "3.23 saver hook: a background command is wrapped",
-  "file": "inspeximus/context_saver.py",
-  "old": " or ti.get(\"run_in_background\") or CAPTURE_MARKER in cmd:",
-  "new": " or CAPTURE_MARKER in cmd:",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_these_calls_are_never_rewritten"
-  ]
- },
- {
-  "name": "3.23 saver hook: a wrapped command is wrapped again",
-  "file": "inspeximus/context_saver.py",
-  "old": " or ti.get(\"run_in_background\") or CAPTURE_MARKER in cmd:",
-  "new": " or ti.get(\"run_in_background\"):",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_these_calls_are_never_rewritten"
-  ]
- },
- {
-  "name": "3.23 saver hook: an exit in the command loses the capture",
-  "file": "inspeximus/context_saver.py",
-  "old": "exit $__isx_rc' EXIT\\n\"",
-  "new": "exit $__isx_rc' USR2\\n\"",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_an_exit_in_the_command_still_prints_the_capture"
-  ]
- },
- {
-  "name": "3.23 saver hook: the call reports success whatever the command returned",
-  "file": "inspeximus/context_saver.py",
-  "old": "        \"(exit $__isx_rc)\"\n",
-  "new": "        \"(exit 0)\"\n",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_short_output_passes_through_unchanged_with_its_exit_code"
-  ]
- },
- {
   "name": "3.23 saver hook: a saver failure hides the output",
   "file": "inspeximus/context_saver.py",
   "old": "        put(raw)\n        err.write(\"[inspeximus-saver] not saved",
   "new": "        pass\n        err.write(\"[inspeximus-saver] not saved",
   "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_large_output_without_an_embedder_is_printed_whole"
+   "tests/test_3231_the_saver_records_each_capture.py::test_a_capture_the_saver_cannot_rank_is_printed_whole"
   ]
  },
  {
@@ -16311,15 +16230,6 @@
   ]
  },
  {
-  "name": "3.23 saver hook: a call in auto mode is rewritten, so auto mode refuses it",
-  "file": "inspeximus/context_saver.py",
-  "old": "    if ev.get(\"permission_mode\") == \"auto\":\n        return None\n",
-  "new": "",
-  "tests": [
-   "tests/test_3230_the_saver_captures_bash_output_in_the_hook.py::test_a_call_in_auto_mode_is_never_rewritten_and_every_other_mode_is"
-  ]
- },
- {
   "name": "3.23.1 CI job 119669956499: the confirmation reads the doubling as one call at 2k",
   "file": "tests/_redos_attack.py",
   "old": "    m = k\n    while m < 2 * k:                                          # the doubling, an eighth at a time\n        m = min(2 * k, m + max(1, k // 8))\n",
@@ -16369,16 +16279,7 @@
   "old": "\"follow_up\": bool(follow_up),",
   "new": "\"follow_up\": False,",
   "tests": [
-   "tests/test_3231_the_saver_records_each_capture.py::test_a_read_of_an_earlier_capture_is_recorded_as_a_follow_up"
-  ],
-  "file": "inspeximus/context_saver.py"
- },
- {
-  "name": "3.23.1 saver record: the hook never marks a read of a capture as a follow-up",
-  "old": "\" --follow-up\" if targets_captures(cmd) else \"\"",
-  "new": "\"\"",
-  "tests": [
-   "tests/test_3231_the_saver_records_each_capture.py::test_a_read_of_an_earlier_capture_is_recorded_as_a_follow_up"
+   "tests/test_3231_the_saver_records_each_capture.py::test_print_capture_records_whether_it_was_a_follow_up"
   ],
   "file": "inspeximus/context_saver.py"
  },
@@ -16435,5 +16336,104 @@
    "tests/test_3231_the_saver_records_each_capture.py::test_the_baseline_is_what_claude_code_would_have_shown"
   ],
   "file": "inspeximus/context_saver.py"
+ },
+ {
+  "name": "3.23.1 saver: the replacement leaves out a key of the Bash result, which Claude Code would ignore",
+  "file": "inspeximus/context_saver.py",
+  "old": "\"stdout\": stdout, \"stderr\": stderr, \"interrupted\": False, \"isImage\": False}}}",
+  "new": "\"stdout\": stdout, \"stderr\": stderr, \"interrupted\": False}}}",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_the_replacement_has_exactly_the_bash_result_shape"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: a persisted output is copied instead of read where the platform keeps it",
+  "file": "inspeximus/context_saver.py",
+  "old": "        where = persisted\n",
+  "new": "        where = None\n",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_a_persisted_output_is_read_from_the_platforms_file_and_never_written"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: a persisted output is ranked from the truncated stdout",
+  "file": "inspeximus/context_saver.py",
+  "old": "            with open(persisted, \"rb\") as f:\n                raw = f.read()\n",
+  "new": "            if True:\n                raw = resp[\"stdout\"].encode(\"utf-8\")\n",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_a_persisted_output_is_read_from_the_platforms_file_and_never_written"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: a persisted output's baseline is the whole output, not the platform's preview",
+  "file": "inspeximus/context_saver.py",
+  "old": "            line[\"platform_shown\"] = PLATFORM_PREVIEW_BYTES\n",
+  "new": "            line[\"platform_shown\"] = len(raw)\n",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_a_persisted_output_is_read_from_the_platforms_file_and_never_written"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: a persisted path outside tool-results is read",
+  "file": "inspeximus/context_saver.py",
+  "old": "            if not _platform_file(persisted):\n",
+  "new": "            if False:\n",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_these_results_are_left_to_the_platform[not-a-platform-file]"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: the sweep removes files in a tool-results directory",
+  "file": "inspeximus/context_saver.py",
+  "old": "        return gone                                  # Claude Code's own files: read by the saver, never removed",
+  "new": "        pass",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_the_sweep_never_removes_a_file_in_a_tool_results_directory"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: a read of a platform file is recorded as new output",
+  "file": "inspeximus/context_saver.py",
+  "old": "    return \"saver-out\" in c or \"tool-results\" in c",
+  "new": "    return \"saver-out\" in c",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_a_read_of_a_capture_or_a_platform_file_is_recorded_as_a_follow_up"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: an output under the passthrough bound is replaced",
+  "file": "inspeximus/context_saver.py",
+  "old": "        if PASSTHROUGH_BYTES > len(raw):\n            line[\"mode\"] = \"passthrough\"\n",
+  "new": "        if False:\n            line[\"mode\"] = \"passthrough\"\n",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_these_results_are_left_to_the_platform[short]"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: the PostToolUse escape INSPEXIMUS_SAVER_HOOK=0 is ignored",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if (_envpolicy.raw(\"INSPEXIMUS_SAVER_HOOK\") or \"\").strip().lower() in (\"0\", \"false\", \"no\", \"off\"):\n        return None\n    if _userconfig.get(\"saver\", \"hook\") is not True:\n        return None\n    resp = ev.get(\"tool_response\")",
+  "new": "    if _userconfig.get(\"saver\", \"hook\") is not True:\n        return None\n    resp = ev.get(\"tool_response\")",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_these_results_are_left_to_the_platform[escape]"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: any truthy config value switches the PostToolUse replacement on",
+  "file": "inspeximus/context_saver.py",
+  "old": "        return None\n    if _userconfig.get(\"saver\", \"hook\") is not True:\n        return None\n    resp = ev.get(\"tool_response\")",
+  "new": "        return None\n    if not _userconfig.get(\"saver\", \"hook\"):\n        return None\n    resp = ev.get(\"tool_response\")",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_these_results_are_left_to_the_platform[truthy]"
+  ]
+ },
+ {
+  "name": "3.23.1 saver: the replacement's record carries the intent text",
+  "file": "inspeximus/context_saver.py",
+  "old": "elapsed_s=round(time.perf_counter() - t0, 3), intent_chars=len(intent),",
+  "new": "elapsed_s=round(time.perf_counter() - t0, 3), intent_chars=intent,",
+  "tests": [
+   "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_a_record_of_the_replacement_holds_no_command_output_intent_or_path"
+  ]
  }
 ]

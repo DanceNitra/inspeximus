@@ -7,15 +7,12 @@ a net saving (follow-up reads charged as a cost) and a gross one, and says when 
 import io
 import json
 import os
-import subprocess
 import sys
 import time
 
-import pytest
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from test_3230_the_saver_captures_bash_output_in_the_hook import (  # noqa: E402,F401
-    BASH, REPO, _big, _config, _ev, _run_wrapped, embed, home, needs_bash)
+    _big, _config, embed, home)
 
 from inspeximus import context_saver as cs  # noqa: E402
 
@@ -60,34 +57,6 @@ def test_every_mode_writes_one_record_with_what_the_agent_received(home):
     assert rec[1]["bytes_out"] < rec[1]["bytes_in"] / 2, "the digest record does not show a saving: no proof"
 
 
-@needs_bash
-def test_a_record_holds_no_command_output_intent_or_path(home):
-    _config(home, {"saver": {"hook": True}})
-    mark = "ISXMARK%d" % os.getpid()
-    new = cs.hook_rewrite(_ev("echo %s-output; true %s-command" % (mark, mark), description=mark + "-intent"))
-    assert mark + "-intent" in new["command"], "the intent never reached the capture: no proof"
-    env = dict(os.environ, INSPEXIMUS_KEY_HOME=str(home), PYTHONPATH=REPO, PYTHONIOENCODING="utf-8",
-               MSYS_NO_PATHCONV="1")
-    r = subprocess.run([BASH, "-c", new["command"]], capture_output=True, env=env, timeout=120,
-                       stdin=subprocess.DEVNULL)
-    assert (mark + "-output").encode() in r.stdout, (r.stdout, r.stderr)
-    assert _records()[0]["intent_chars"] == len(mark + "-intent"), "the record never saw this intent: no proof"
-    cap = [n for n in os.listdir(cs.capture_dir()) if n.startswith("capture-")]
-    assert cap, "no capture file: no proof"
-    raw = "".join(open(os.path.join(cs.stats_dir(), n), encoding="utf-8").read() for n in os.listdir(cs.stats_dir()))
-    assert raw.count("\n") == 1
-    for leak in [mark] + cap + ["saver-out"]:
-        assert leak not in raw, leak
-
-
-@needs_bash
-def test_bytes_out_is_the_byte_count_the_agent_received_from_bash(home):
-    _config(home, {"saver": {"hook": True, "without_reranker": "hybrid"}})
-    r = _run_wrapped(home, "%s -c \"print('x' * 9000)\"" % cs._sh_quote(sys.executable.replace("\\", "/")))
-    (rec,) = _records()
-    assert rec["mode"] == "raw" and rec["bytes_out"] == len(r.stdout) == rec["bytes_in"], (rec, len(r.stdout))
-
-
 def test_a_record_that_cannot_be_written_leaves_the_output_byte_identical(home):
     _config(home, {"saver": {"without_reranker": "hybrid"}})
     text = _big()
@@ -104,16 +73,6 @@ def test_a_record_that_cannot_be_written_leaves_the_output_byte_identical(home):
     assert second.getvalue() == first.getvalue().replace(first.getvalue().split(b"full output: ")[-1],
                                                          (p + "\n").encode())
     assert cs.record_capture({"x": 1}) is False
-
-
-def test_a_read_of_an_earlier_capture_is_recorded_as_a_follow_up(home):
-    _config(home, {"saver": {"hook": True}})
-    plain = cs.hook_rewrite(_ev("git log"))["command"]
-    again = cs.hook_rewrite(_ev("sed -n 1,40p ~/.inspeximus/inspeximus/saver-out/capture-abc.txt"))["command"]
-    assert "--follow-up" in again and "--follow-up" not in plain
-    cs.print_capture(_capture("short\n"), "x", out=io.BytesIO(), follow_up=True)
-    cs.print_capture(_capture("short\n"), "x", out=io.BytesIO())
-    assert [r["follow_up"] for r in _records()] == [True, False]
 
 
 def test_the_sweep_removes_only_day_files_older_than_the_keep(home):
@@ -195,3 +154,31 @@ def test_the_baseline_is_what_claude_code_would_have_shown(home):
     big_rec, small_rec = _records()
     assert big_rec["platform_shown"] == cs.PLATFORM_PREVIEW_BYTES and big_rec["top_unseen"] is True
     assert small_rec["platform_shown"] == small_rec["bytes_in"] and small_rec["top_unseen"] is False
+
+
+def test_a_capture_the_saver_cannot_rank_is_printed_whole(home):
+    # No embedder: the saver cannot rank, and a failure costs context, never output.
+    _config(home, {"saver": {"without_reranker": "hybrid"}})
+    text = _big()
+    out = io.BytesIO()
+    assert cs.print_capture(_capture(text), "section 3", out=out, err=io.StringIO(),
+                            embedders=(None, None, None)) == "raw"
+    assert out.getvalue() == text.encode("utf-8")
+
+
+def test_print_capture_records_whether_it_was_a_follow_up(home):
+    cs.print_capture(_capture("short\n"), "x", out=io.BytesIO(), follow_up=True)
+    cs.print_capture(_capture("short\n"), "x", out=io.BytesIO())
+    assert [r["follow_up"] for r in _records()] == [True, False]
+
+
+def test_a_record_holds_no_command_output_intent_or_path(home):
+    _config(home, {"saver": {"without_reranker": "hybrid"}})
+    mark = "ISXMARK%d" % os.getpid()
+    p = _capture(_big("%s-output" % mark))
+    cs.print_capture(p, mark + "-intent", out=io.BytesIO(), embedders=(embed, None, "t"))
+    (rec,) = _records()
+    assert rec["intent_chars"] == len(mark + "-intent") and rec["mode"] == "digest", "no proof the record saw it"
+    raw = "".join(open(os.path.join(cs.stats_dir(), n), encoding="utf-8").read() for n in os.listdir(cs.stats_dir()))
+    for leak in (mark, os.path.basename(p), "saver-out"):
+        assert leak not in raw, leak
