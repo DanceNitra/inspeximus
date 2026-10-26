@@ -453,6 +453,22 @@ def _in_capture_dir(path) -> bool:
     return os.path.dirname(p) == d and os.path.basename(p).startswith(_CAPTURE_PREFIX)
 
 
+def _names_older_than(d, cutoff) -> list:
+    """The names in `d` whose own mtime (a link's, never its target's) is before `cutoff`, from one directory read.
+    The sweep's checks resolve each path, about 0.85 ms a file on Windows (257 ms for 300 captures, measured
+    2026-10-26), so only a name old enough to remove reaches them, and a sweep on every call costs one read."""
+    import os
+    out = []
+    with os.scandir(d) as it:
+        for e in it:
+            try:
+                if e.stat(follow_symlinks=False).st_mtime < cutoff:
+                    out.append(e.name)
+            except OSError:
+                pass
+    return out
+
+
 def sweep_captures(now=None) -> list:
     """Remove captures older than CAPTURE_KEEP_S. Only files this module named (capture-*.txt) directly in
     capture_dir() are candidates, each removed by its exact path; a directory, a link, or any other name is left."""
@@ -464,7 +480,7 @@ def sweep_captures(now=None) -> list:
     if os.path.basename(os.path.realpath(d)) == "tool-results":
         return gone                                  # Claude Code's own files: read by the saver, never removed
     try:
-        names = os.listdir(d)
+        names = _names_older_than(d, cutoff)
     except OSError:
         return gone
     for name in names:
@@ -866,7 +882,8 @@ def post_tool_use_replacement(ev):
     saving and never the output. Ranking is lexical: it needs nothing installed and takes about 0.1 s on 446 KB, where
     hybrid took 40 s (2026-10-26). Every call past the passthrough bound leaves one record line, as print_capture does.
     An output shown whole by the platform is also kept in saver-out for CAPTURE_KEEP_S, so the follow-up read the
-    digest offers has a file to read."""
+    digest offers has a file to read. Every Bash call it examines, whatever the outcome, sweeps the captures and day
+    files past their keep, silently."""
     from . import _envpolicy, _userconfig
     if ev.get("tool_name") != "Bash":
         return None
@@ -939,8 +956,11 @@ def post_tool_use_replacement(ev):
                     follow_up=targets_captures(cmd))
         if line["bytes_in"] or line["why"]:
             record_capture(line)
-        if result is not None:
-            sweep_captures()
+        try:                                         # every call, passthrough included: a machine whose outputs
+            sweep_captures()                         # all pass through still sweeps (1.5 ms on 300 captures)
+            sweep_stats()
+        except Exception:                            # noqa: BLE001 -- a sweep never costs the output
+            pass
             sweep_stats()
 
 

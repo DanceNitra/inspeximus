@@ -159,6 +159,32 @@ def test_the_sweep_never_removes_a_file_in_a_tool_results_directory(home, tmp_pa
     assert cs.sweep_captures() == [] and old.exists() and pf.exists()
 
 
+def test_a_passthrough_call_sweeps_old_captures_and_keeps_one_a_follow_up_can_read(home, tmp_path):
+    # Until this fix the hook swept only after a replacement, so a machine whose outputs all passed through never
+    # swept: 328 zero-byte leftovers sat in saver-out on PC1 (2026-10-26) and read as a false gap.
+    _config(home, {"saver": {"hook": True}})
+    now = time.time()
+    stale = cs.new_capture_path()                          # a leftover, past the keep
+    os.utime(stale, (now - cs.CAPTURE_KEEP_S - 60,) * 2)
+    target = cs.new_capture_path()                         # a digest's file, an hour inside the keep
+    with open(target, "wb") as f:
+        f.write(b"the whole output a follow-up read asks for")
+    os.utime(target, (now - cs.CAPTURE_KEEP_S + 3600,) * 2)
+    assert cs.post_tool_use_replacement(_ev("x" * (cs.PASSTHROUGH_BYTES - 1))) is None
+    # Defends the fix: a passthrough call sweeps. Fails on the code that swept only after a replacement.
+    assert not os.path.exists(stale), "a passthrough call left a capture past the keep"
+    # Defends against widening it: a capture inside the keep is a follow-up read's target and must survive.
+    assert open(target, "rb").read() == b"the whole output a follow-up read asks for"
+
+
+def test_a_sweep_that_fails_never_costs_the_output(home, tmp_path, monkeypatch):
+    _config(home, {"saver": {"hook": True}})
+    monkeypatch.setattr(cs, "sweep_captures", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
+    assert cs.post_tool_use_replacement(_ev("x" * (cs.PASSTHROUGH_BYTES - 1))) is None
+    rep = cs.post_tool_use_replacement(_ev(_big("the answer is here: zebra-quartz")[:20000]))
+    assert "zebra-quartz" in rep["hookSpecificOutput"]["updatedToolOutput"]["stdout"]
+
+
 def test_a_read_of_a_capture_or_a_platform_file_is_recorded_as_a_follow_up(home, tmp_path):
     _config(home, {"saver": {"hook": True}})
     text = _big("zebra-quartz")[:20000]
