@@ -1,5 +1,13 @@
 ## 3.23.0 - UPGRADE IF you use Claude Code and want large Bash output kept out of the agent's context: the context saver can run inside the Claude Code hook, opt-in
 
+> **CORRECTED 2026-10-26.** That heading claims more than the saver does, and the line is left standing
+> so the correction has something to correct. Claude Code already keeps a large Bash output out of the
+> agent's context on its own: past about 30,000 characters it sends a file path and a preview of about
+> 2 KB, measured on a 30,010-character output. Our digest of such an output is larger than that preview,
+> so above the cut the saver spends context rather than saving it, and what it buys is the section the
+> call asked about instead of the first 2 KB. Bytes fall only between 5,000 characters and that cut.
+> The figures and the bands are in 3.23.1.
+
 ### Added
 
 - **The context saver can capture Bash output inside the Claude Code hook, off by default.** Run `inspeximus install --saver-hook on`, which sets `saver.hook` to true in your config. The PreToolUse hook then runs each Bash call with its output captured to a file, and the agent reads that file through the saver:
