@@ -12,6 +12,13 @@ this file exists to make visible.
 
 The controls are the point: no report when there is no second store, and no report when the file at
 a sibling location IS the store in use.
+
+AND THE FIXTURES HERE ARE JSON, WHICH WAS THE HOLE. A new store is written as ROWS, so the store this
+feature was built for is a row store, and `_store_record_count` could not read one: it returned 0 and
+the detector dropped the file as empty. Every test below passed while the feature was blind on the
+machine that had the defect. The row-store fixtures, written by the library rather than by hand, are
+in `test_the_second_store_detector_counts_a_row_store.py` (3.26.0). These stay, because the JSON path
+is still a store format a user can pin.
 """
 from __future__ import annotations
 

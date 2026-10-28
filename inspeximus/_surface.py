@@ -140,6 +140,47 @@ def store_location_problem(path):
             f"the path.")
 
 
+def hermes_home(env=None, home=None):
+    """The Hermes profile directory: `$HERMES_HOME`, else `~/.hermes`.
+
+    HERMES_HOME is another program's variable, and it still reads through the one accessor like every
+    other environment read in shipped code (3.18, AUDIT-A EC-5).
+    """
+    from . import _envpolicy
+    base = os.path.expanduser("~") if home is None else home
+    return (_envpolicy.raw("HERMES_HOME", env=env) or "").strip() or os.path.join(base, ".hermes")
+
+
+def hermes_store_path(env=None, home=None):
+    """The store the Hermes memory PROVIDER opens, so anything else under Hermes can open the same one.
+
+    THE DEFECT THIS CLOSES, measured 2026-10-28 on the owner's own Hermes 0.22.5. The MCP catalog
+    manifest named a path, `~/.hermes/inspeximus_memory.json`, and Hermes copies a manifest's
+    `transport.env` verbatim -- it substitutes nothing. On that machine HERMES_HOME was
+    `AppData/Local/hermes`, so the server opened an empty file in a directory Hermes does not use
+    while every memory sat in the provider's store one path away. Writes succeeded and recalls came
+    back empty, which is the failure mode this library exists to refuse.
+
+    A manifest therefore names `INSPEXIMUS_SCOPE=hermes` and never a path, and the rule that resolves
+    it lives HERE so the provider and the scope cannot drift: the provider calls this function too.
+
+    PRECEDENCE matches the provider's: a path a program recorded in
+    `<hermes_home>/inspeximus/config.json` (the dashboard's Store file field, or
+    `inspeximus install --all`) wins, because a user who moved their store meant it. Otherwise
+    `<hermes_home>/inspeximus/memory.json`.
+    """
+    import json
+    home_dir = hermes_home(env=env, home=home)
+    try:
+        with open(os.path.join(home_dir, "inspeximus", "config.json"), encoding="utf-8") as fh:
+            recorded = (json.load(fh) or {}).get("path")
+        if isinstance(recorded, str) and recorded.strip():
+            return recorded.strip()
+    except Exception:                                       # noqa: BLE001 - no config is the normal case
+        pass
+    return os.path.join(home_dir, "inspeximus", "memory.json")
+
+
 def other_stores(path_in_use, env=None, home=None):
     """Stores at well-known inspeximus locations that are NOT the one in use, newest first.
 
@@ -153,21 +194,19 @@ def other_stores(path_in_use, env=None, home=None):
     itself. Each entry is {path, memories, why}. An empty or unreadable file is left out, because a
     file with no records is not a memory anyone is missing.
     """
-    from . import _envpolicy
     home = os.path.expanduser("~") if home is None else home
     try:
         in_use = os.path.realpath(os.path.abspath(os.path.expanduser(str(path_in_use or ""))))
     except (OSError, ValueError):
         in_use = ""
 
-    # HERMES_HOME is another program's variable, and it still reads through the one accessor like
-    # every other environment read in shipped code (3.18, AUDIT-A EC-5). Touching os.environ
-    # directly here is what CI refused.
-    hermes_home = (_envpolicy.raw("HERMES_HOME", env=env) or "").strip() or os.path.join(home, ".hermes")
+    # The provider's store is asked for by the ONE rule that resolves it, so a user who moved it
+    # with `install --all` or the dashboard is still told about the file they actually use.
+    hermes_dir = hermes_home(env=env, home=home)
     known = [
-        (os.path.join(hermes_home, "inspeximus", "memory.json"),
+        (hermes_store_path(env=env, home=home),
          "the Hermes memory provider's store, under the Hermes home"),
-        (os.path.join(hermes_home, "inspeximus_memory.json"),
+        (os.path.join(hermes_dir, "inspeximus_memory.json"),
          "the Hermes MCP catalog entry's store, under the Hermes home"),
         (os.path.join(home, ".inspeximus_memory.json"), "a store in your home directory"),
         (os.path.join(home, ".inspeximus", "memory.json"), "a store under ~/.inspeximus"),
@@ -194,8 +233,31 @@ def _store_record_count(path):
 
     Reads the file rather than opening a Store: this runs on a startup path, and opening a second
     store would build an index and could write to it.
+
+    A ROW STORE IS COUNTED BY A READ-ONLY CONNECTION, and the reason is the whole point of this
+    function. Measured 2026-10-28 on the machine that HAD the two-store defect: the other store was
+    a row store named `memory.json`, the JSON read below raised `UnicodeDecodeError` on the SQLite
+    header, the count came back 0, and `other_stores` dropped it as empty. The detector built to
+    report two stores reported none, on the one case it existed for. A store's name says nothing
+    about its format, so the header is read first.
+
+    `sqlite_store._connect` is NOT used: it creates the schema and stamps `meta` on a file it finds
+    fresh, and this function reads a store that belongs to another program.
     """
     import json
+    from .sqlite_store import looks_like_sqlite
+    if looks_like_sqlite(path):
+        import sqlite3
+        from urllib.request import pathname2url
+        try:
+            con = sqlite3.connect("file:" + pathname2url(os.path.abspath(str(path))) + "?mode=ro",
+                                  uri=True, timeout=1.0)
+            try:
+                return int(con.execute("SELECT count(*) FROM records").fetchone()[0])
+            finally:
+                con.close()
+        except Exception:                                   # noqa: BLE001 - a locked or foreign db counts 0
+            return 0
     try:
         with open(path, encoding="utf-8") as fh:
             data = json.load(fh)
@@ -378,6 +440,9 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
         user     — today's behaviour, stated explicitly (the cwd-relative default filename).
         project  — `<git-root>/.inspeximus/memory.json`, an ABSOLUTE path. Identical from every directory
                    inside the repo; different between repos.
+        hermes   — the store the Hermes memory provider opens, `<hermes_home>/inspeximus/memory.json`,
+                   or the path a program recorded for it. An MCP server under Hermes then shares one
+                   memory with the provider instead of running a second, silent store beside it.
         claude-code — the Claude Code hook's store, `<git-root or cwd>/.inspeximus/coding_memory.json`.
                    The plugin and `inspeximus install --ide claude` set it, so a decision written through
                    MCP is the one the next session's SessionStart hook reads.
@@ -418,12 +483,29 @@ def resolve_path(path=None, *, env=None, cwd=None) -> str:
                 f"Either run inside a repository, or set INSPEXIMUS_PATH to an absolute file.")
         from ._storelink import vet                         # a link the project ships is judged as for claude-code (3.16.5, F-33)
         return vet(os.path.join(root, ".inspeximus"), "memory.json", cwd)[1]
+    if scope == "hermes":
+        # NOT a path in the manifest: Hermes copies a catalog entry's `transport.env` verbatim, so a
+        # path there cannot follow HERMES_HOME, and a `~` in it means the user home, never the
+        # profile. The rule lives in `hermes_store_path`, which the memory provider calls too.
+        resolved = hermes_store_path(env=env)
+        # THE FOLDER IS CREATED HERE, and this is the one scope where that is right. A missing
+        # directory is otherwise refused, because a mistyped path would become a new empty memory --
+        # but nobody typed this path, we computed it from the Hermes home, so there is no typo to
+        # catch. The memory provider has always created the same folder itself; the server did not,
+        # and measured 2026-10-28 on a profile whose `inspeximus/` did not exist yet, the scope
+        # resolved and then every write was refused with "no such directory". That is a new user's
+        # first session, before any provider write has made the folder.
+        try:
+            os.makedirs(os.path.dirname(resolved), exist_ok=True)
+        except OSError:
+            pass                                           # the refusal below reports it properly
+        return resolved
     if scope == "claude-code":
         # The Claude Code hook's store, resolved by the hook's own rule. No repository is not an error
         # here, because the hook falls back to the working directory and this must land beside it.
         return coding_store_path(cwd, env)
     raise StoreScopeError(f"INSPEXIMUS_SCOPE={scope!r} is not a known scope; "
-                          f"use 'user', 'project' or 'claude-code'")
+                          f"use 'user', 'project', 'hermes' or 'claude-code'")
 
 
 def _vet_path_link(path, cwd=None) -> str:
@@ -464,11 +546,13 @@ def resolved_path_source(path=None, env=None) -> str:
     if path:
         return "--path"
     if _envpolicy.raw("INSPEXIMUS_PATH", env=env):
-        if scope in ("project", "claude-code"):
+        if scope in ("project", "hermes", "claude-code"):
             return f"INSPEXIMUS_PATH (explicit path OUTRANKS INSPEXIMUS_SCOPE={scope})"
         return "INSPEXIMUS_PATH"
     if scope == "project":
         return "INSPEXIMUS_SCOPE=project (git root)"
+    if scope == "hermes":
+        return "INSPEXIMUS_SCOPE=hermes (the Hermes memory provider's store)"
     if scope == "claude-code":
         return "INSPEXIMUS_SCOPE=claude-code (the Claude Code hook's store)"
     if scope == "" and shared_store_path():

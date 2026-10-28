@@ -1,3 +1,21 @@
+## 3.26.0 - UPGRADE IF you run inspeximus inside Hermes Agent, or installed the Hermes MCP catalog entry
+
+The 3.25.0 fix for two stores did not fire on the machine that had two stores. Installing the catalog entry fresh on 2026-10-28 is what found it.
+
+### Fixed
+
+- **The two-store report now counts a ROW store, which is the store almost everyone has.** A new store is written as rows, and nobody chooses that, so the file the provider writes is a row store even though it is named `memory.json`. The counter read every candidate as JSON, raised on the SQLite header, returned 0, and `other_stores` dropped the file as empty. The detector built to report two stores reported none, on the real case. The 3.25.0 tests passed because their fixtures wrote JSON by hand: a fixture that does not reproduce the real format is a control that cannot fail. The counting path opens a read-only connection, because the file belongs to another program.
+
+### Added
+
+- **`INSPEXIMUS_SCOPE=hermes` resolves to the store the Hermes memory provider opens.** Hermes copies a catalog entry's `transport.env` verbatim, substituting only `${INSTALL_DIR}` and only in `command` and `args`, so a manifest cannot follow `HERMES_HOME` and a `~` in a manifest path means the user home rather than the profile. Measured on a machine whose `HERMES_HOME` was `AppData/Local/hermes`: the server opened an empty file under `~/.hermes` while every memory sat in the provider's store, writes succeeded, and recalls came back empty. A manifest now names the scope and never a path.
+
+  The rule lives in one function, `_surface.hermes_store_path`, and the memory provider calls it too, so the server's path and the provider's cannot drift apart. A path recorded in `<hermes_home>/inspeximus/config.json` by `install --all` or the dashboard still wins, because a user who moved their store meant it. An explicit `INSPEXIMUS_PATH` still outranks the scope, and `where_am_i` reports which rule applied.
+
+  This scope creates `<hermes_home>/inspeximus/` if it is missing, and it is the only one that does. A missing store directory is refused everywhere else, because a mistyped path would otherwise become a new empty memory, but nobody types this path: it is computed from the Hermes home. Without that, a new user whose server starts before the provider has ever run got a resolved path and then "no such directory" on every write. A typed `INSPEXIMUS_PATH` keeps the refusal.
+
+Tests: `tests/test_the_second_store_detector_counts_a_row_store.py` and `tests/test_a_server_under_hermes_shares_the_providers_store.py`. Every fixture is written by the library rather than by hand, and the last test fails if the provider stops calling the shared rule.
+
 ## 3.25.0 - UPGRADE IF you run inspeximus inside Hermes Agent, or run both the memory provider and the MCP server
 
 Both items came out of someone running inspeximus inside Hermes on 2026-10-28 and reporting what they saw.

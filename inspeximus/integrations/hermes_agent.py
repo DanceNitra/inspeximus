@@ -39,7 +39,7 @@ import json
 import os
 from typing import Any, Dict, List, Optional
 
-from .._surface import open_store
+from .._surface import hermes_store_path, open_store
 
 #: The name a user selects in `memory.provider`, and the entry-point name in pyproject.toml. The two
 #: MUST agree: Hermes activates a provider BY NAME, so a mismatch is a provider that can be
@@ -183,8 +183,12 @@ def _make_class(base):
             if self._store is None:
                 path = self._explicit_path or self._configured_path(kwargs.get("hermes_home"))
                 if not path:
-                    home = kwargs.get("hermes_home") or os.path.expanduser("~/.hermes")
-                    path = os.path.join(home, "inspeximus", "memory.json")
+                    # ONE RULE, SHARED WITH `INSPEXIMUS_SCOPE=hermes` (3.26.0). It used to be
+                    # computed here, and an MCP server under the same Hermes had no way to ask for
+                    # it: the catalog manifest named a path instead, landed on a different file, and
+                    # the machine ran two stores whose tools reported nothing wrong.
+                    path = hermes_store_path(env={"HERMES_HOME": self._hermes_home}
+                                             if self._hermes_home else None)
                     os.makedirs(os.path.dirname(path), exist_ok=True)
                 # The configured path is one a program wrote (`install --all`, which now creates the folder,
                 # or the dashboard), so it opens like an adapter's: its folder appears with the first write.
