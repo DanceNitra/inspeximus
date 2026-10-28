@@ -497,6 +497,26 @@ if _EMB_DOC is not None and not isinstance(_MEM, _RefusedStore):
     _VP = _vector_posture()
     if _VP.get("problem"):
         print("[inspeximus-mcp] %s" % _VP["problem"], file=sys.stderr)
+def _other_stores():
+    """Well-known inspeximus stores that are NOT this server's, newest first. Never raises."""
+    try:
+        from ._surface import other_stores
+        return other_stores(_PATH)
+    except Exception:                                    # noqa: BLE001 - a read must not fail here
+        return []
+
+
+
+
+# ONE LINE AT START for each well-known store this server is NOT reading (3.25.0). Measured
+# 2026-10-28 inside Hermes: the memory provider writes under the Hermes home, this server's
+# default path is a relative filename, and the same-named tools served two different memories
+# with nothing saying so. Reported, never redirected: choosing one is the same failure.
+for _other in _other_stores():
+    print(
+        "[inspeximus-mcp] NOTE: another inspeximus store holds %d memories and this server is "
+        "not reading it: %s (%s). Set INSPEXIMUS_PATH to the one you mean."
+        % (_other["memories"], _other["path"], _other["why"]), file=sys.stderr)
 
 
 def _recover_from_concurrent_writes(store, methods=(
@@ -1208,6 +1228,11 @@ def where_am_i() -> dict:
                                "unscoped — this server sees every project in the store"),
             "cwd": os.getcwd(),
             "memories": len(getattr(_MEM, "items", [])),
+            # STORES THIS SERVER IS NOT TALKING TO, at the well-known locations. Measured 2026-10-28
+            # inside Hermes: the memory provider writes under the Hermes home, this server's default
+            # path is a relative filename, and the same-named tools saw two different memories with
+            # nothing saying so. Reported, never redirected: picking one would be the same failure.
+            "other_stores": _other_stores(),
             # What the STORE keeps, not what the environment asked for: open_store() keeps receipts on
             # for a store that already has a .receipts.json sidecar (mcp-tools-review R4).
             "receipts": bool(getattr(_MEM, "receipts_enabled", _RECEIPTS)),

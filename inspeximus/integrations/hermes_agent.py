@@ -223,7 +223,19 @@ def _make_class(base):
                 hits = self._store.recall(query, k=self._k)
             except Exception:                                # noqa: BLE001 - never break a turn
                 return []
-            return [str(h.get("text", "")).strip() for h in hits if str(h.get("text", "")).strip()]
+            lines = []
+            for h in hits:
+                text = str(h.get("text", "")).strip()
+                if not text:
+                    continue
+                # THE KEY TRAVELS WITH THE TEXT. Every correction tool here takes a key and will not
+                # guess one, so a context line without it leaves the agent able to read a fact and
+                # unable to correct it. Measured 2026-10-28 in Hermes: the store held
+                # `deploy::target`, the context said `- The deploy target is prod-7`, and the agent
+                # reported it could not name the key. A key-less record keeps the bare text.
+                key = str(h.get("key", "") or "").strip()
+                lines.append("[%s] %s" % (key, text) if key else text)
+            return lines
 
         def queue_prefetch(self, query: str, *, session_id: str = "") -> None:
             """Records the query and recalls NOTHING. Speculating here was measured, and it lost.

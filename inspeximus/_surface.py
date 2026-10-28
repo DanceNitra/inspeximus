@@ -140,6 +140,72 @@ def store_location_problem(path):
             f"the path.")
 
 
+def other_stores(path_in_use, env=None, home=None):
+    """Stores at well-known inspeximus locations that are NOT the one in use, newest first.
+
+    MEASURED 2026-10-28 inside Hermes. The memory provider writes to
+    `<hermes_home>/inspeximus/memory.json` and the MCP server's default path is a relative filename,
+    so one machine ran two stores and the same-named tools saw two different memories. Nothing on
+    any surface said so: the writes succeeded and the recalls came back thin.
+
+    This REPORTS, and never redirects. Moving a default would take an existing store out from under
+    whoever already uses it, and choosing between two stores on the user's behalf is the failure
+    itself. Each entry is {path, memories, why}. An empty or unreadable file is left out, because a
+    file with no records is not a memory anyone is missing.
+    """
+    env = os.environ if env is None else env
+    home = os.path.expanduser("~") if home is None else home
+    try:
+        in_use = os.path.realpath(os.path.abspath(os.path.expanduser(str(path_in_use or ""))))
+    except (OSError, ValueError):
+        in_use = ""
+
+    hermes_home = (env.get("HERMES_HOME") or "").strip() or os.path.join(home, ".hermes")
+    known = [
+        (os.path.join(hermes_home, "inspeximus", "memory.json"),
+         "the Hermes memory provider's store, under the Hermes home"),
+        (os.path.join(hermes_home, "inspeximus_memory.json"),
+         "the Hermes MCP catalog entry's store, under the Hermes home"),
+        (os.path.join(home, ".inspeximus_memory.json"), "a store in your home directory"),
+        (os.path.join(home, ".inspeximus", "memory.json"), "a store under ~/.inspeximus"),
+    ]
+
+    out, seen = [], {in_use}
+    for path, why in known:
+        try:
+            resolved = os.path.realpath(os.path.abspath(path))
+        except (OSError, ValueError):
+            continue
+        if resolved in seen or not os.path.isfile(resolved):
+            continue
+        seen.add(resolved)
+        records = _store_record_count(resolved)
+        if records > 0:
+            out.append({"path": resolved, "memories": records, "why": why})
+    out.sort(key=lambda d: -d["memories"])
+    return out
+
+
+def _store_record_count(path):
+    """How many records a store file holds, or 0 for anything unreadable. Never raises.
+
+    Reads the file rather than opening a Store: this runs on a startup path, and opening a second
+    store would build an index and could write to it.
+    """
+    import json
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError, UnicodeDecodeError):
+        return 0
+    # The store file is a JSON LIST of records. A dict with an "items" list is read too, because
+    # that is the wrapper the core refuses on open and a reader here must not crash on it.
+    if isinstance(data, list):
+        return len(data)
+    items = data.get("items") if isinstance(data, dict) else None
+    return len(items) if isinstance(items, list) else 0
+
+
 def find_project_root(cwd=None):
     """The nearest enclosing git repository root, or None. Zero dependencies: walks up looking for `.git`.
 

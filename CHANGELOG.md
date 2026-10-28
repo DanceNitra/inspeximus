@@ -1,3 +1,23 @@
+## 3.25.0 - UPGRADE IF you run inspeximus inside Hermes Agent, or run both the memory provider and the MCP server
+
+Both items came out of someone running inspeximus inside Hermes on 2026-10-28 and reporting what they saw.
+
+### Fixed
+
+- **A recalled line now names its key, so the agent can correct what it just read.** Every correction tool takes a key and will not guess one: `inspeximus_correct` and `inspeximus_revert` need `deploy::target`, not the sentence. The provider's context line carried the text alone, so an agent could read a fact and had no way to name it. A line now reads `- [deploy::target] The deploy target is prod-7`, and a record stored without a key keeps the bare text.
+
+### Added
+
+- **A store you are NOT talking to is named at startup and in `where_am_i`.** The memory provider writes to `<hermes_home>/inspeximus/memory.json` and the MCP server's default path is a relative filename, so one machine ran two stores and the same-named tools served two different memories, with nothing on any surface saying so. The MCP server now prints one stderr line for each well-known store it is not reading, with that store's record count, and `where_am_i` returns the same list under `other_stores`.
+
+  This reports and never redirects. Moving a default would take an existing store out from under whoever already uses it, and choosing between two stores for you is the failure itself. An empty file is left out: a store with no records is not a memory anyone is missing.
+
+### Known limit, unchanged
+
+- **The `mcp` extra pins `mcp[cli]>=1.28,<2`, and Hermes pins `mcp==2.3.0`.** Installing `inspeximus[mcp]` into Hermes' own virtual environment therefore downgrades the host's `mcp`. Install the bare `inspeximus` for the memory provider, which needs no `mcp` at all, and run the MCP server out of process with `uvx --from "inspeximus[mcp]==3.25.0" inspeximus-mcp`, which is what the Hermes catalog entry does. Supporting mcp 2.x is a port of the server module, not a version bump, and it is not done.
+
+Tests: `tests/test_prefetch_names_the_key_a_correction_needs.py` and `tests/test_a_second_store_beside_the_one_in_use_is_named.py`. Each carries controls that pass before and after, so a run that stops reproducing either defect is visible.
+
 ## 3.24.0 - UPGRADE IF you set `INSPEXIMUS_PATH` to a path that starts with `~`
 
 Your memories were never at risk. The store opened in the right place and every write and read landed there, because `Store` expanded the `~` itself. What was wrong is everything that REPORTS the path, which is what you read when you are trying to find out where your memories are.
