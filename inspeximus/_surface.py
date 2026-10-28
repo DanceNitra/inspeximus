@@ -367,6 +367,14 @@ def _vet_path_link(path, cwd=None) -> str:
     make a link the user's; its location does."""
     from ._storelink import _inside, has_dotdot, link_chain, vet
     root = find_project_root(cwd) or os.path.abspath(cwd or os.getcwd())
+    # A LEADING ~ IS EXPANDED HERE, ONCE, BEFORE ANYTHING ELSE READS THIS PATH. `Store.__init__`
+    # expanded it on its own, so the file opened in the right place while every surface that
+    # REPORTS the path described `<cwd>/~/...`: `where_am_i` named a path that cannot exist, the
+    # startup line on stderr said the same, and `recall`'s "no store yet" branch tested
+    # os.path.exists on the literal tilde and so fired over a store that held memories. The
+    # vetting below ran on that path too, which means a ~-prefixed store was never vetted: the
+    # join lands nowhere, no link chain is found, and the path comes back as the user's own.
+    path = os.path.expanduser(str(path))
     raw = str(path)
     if not os.path.isabs(raw):
         raw = os.path.join(os.getcwd(), raw)                                # NOT abspath: it collapses `evil/..` before the kernel sees it
