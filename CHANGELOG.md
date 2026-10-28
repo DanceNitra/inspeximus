@@ -1,3 +1,16 @@
+## 3.24.0 - UPGRADE IF you set `INSPEXIMUS_PATH` to a path that starts with `~`
+
+Your memories were never at risk. The store opened in the right place and every write and read landed there, because `Store` expanded the `~` itself. What was wrong is everything that REPORTS the path, which is what you read when you are trying to find out where your memories are.
+
+### Fixed
+
+- **A leading `~` in `INSPEXIMUS_PATH` is expanded where the variable is read, once.** Before this release the expansion happened later, inside `Store`, so each surface that only reports the path described a location that cannot exist. Measured on 2026-10-28 with `INSPEXIMUS_PATH="~/.hermes/inspeximus_memory.json"`: `where_am_i` returned `<cwd>\~\.hermes\inspeximus_memory.json` and `store_exists: false` over a store holding memories, the startup line on stderr named the same path, and `recall` with no match answered `no_store_yet` instead of "no match". An operator reading those three answers concludes the memories are gone.
+- **A `~`-prefixed store path is now vetted like any other.** The link vetting in `_surface.resolve_path` ran on the unexpanded string, where the join lands nowhere and no link chain is found, so the path came back accepted without being examined. The expansion now happens before the vetting.
+
+This is a minor release rather than a patch because the reported path changes: a caller that parsed `where_am_i` output and expected the literal `~` sees the expanded path.
+
+Tests: `tests/test_a_home_relative_store_path_is_expanded_once.py`. Two of its four cases fail on 3.23.1 and pass here; the other two are controls that pass on both, so a run that stops reproducing the defect is visible.
+
 ## 3.23.1 - UPGRADE IF you opted into the context saver in Claude Code: it now works in every permission mode, auto included, and needs nothing installed
 
 The saver is still opt-in. Nothing switches on by itself, and `saver.hook` in your config keeps its meaning: if you switched it on in 3.23.0, it stays on and works the new way, and you do not have to change anything.
