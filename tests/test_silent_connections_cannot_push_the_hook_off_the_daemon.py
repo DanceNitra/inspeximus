@@ -64,9 +64,26 @@ def _ev(proj):
 
 
 def _silent(d, n):
+    """`n` connected-but-silent clients, and the daemon has TAKEN a slot for each before this returns.
+
+    A FIXED SLEEP IS NOT A WAIT FOR THE SERVER. `_connect` returning means the client side connected;
+    the daemon takes its slot on a different thread, at `self.conns.acquire`. Two CI runs of the same
+    commit failed here on a `time.sleep(0.05)`, on a different Python each time and with a different
+    count -- `assert 8 == 0`, then `assert 1 == 0` -- which is a loaded runner, not a defect in the
+    daemon. The wait is bounded and its timeout still fails the test, so the control keeps its teeth:
+    if the daemon never takes the slots, this raises rather than passing quietly.
+    """
     out = [hookd._connect(d.addr, time.monotonic() + 1.0) for _ in range(n)]
     assert all(c is not None for c in out), "CONTROL: every silent connection was accepted"
-    return out
+    want = max(0, hookd.MAX_CONNECTIONS - n)
+    deadline = time.monotonic() + 10.0
+    while time.monotonic() < deadline:
+        if d.conns._value <= want:
+            return out
+        time.sleep(0.01)
+    raise AssertionError(
+        "CONTROL: the daemon did not take a slot for each of the %d silent connections within 10 s "
+        "(free slots %d, wanted at most %d)" % (n, d.conns._value, want))
 
 
 def _close(conns):
@@ -84,7 +101,6 @@ def test_sixteen_silent_connections_do_not_refuse_the_hook(project, daemon):
     hookd.ask(_ev(proj), sp, timeout=2.0)                       # warm
     silent = _silent(daemon, hookd.MAX_CONNECTIONS)
     try:
-        time.sleep(0.05)
         got = []
         for _ in range(3):
             hookd.ask(_ev(proj), sp)
@@ -201,7 +217,6 @@ def test_eviction_alone_frees_a_slot(project, daemon, monkeypatch):
     monkeypatch.setattr(hookd, "SERVER_READ_TIMEOUT_S", 2.0)
     silent = _silent(daemon, hookd.MAX_CONNECTIONS)
     try:
-        time.sleep(0.05)
         assert daemon.conns._value == 0, "CONTROL: every slot is held by a silent connection"
         got = hookd.ask(_ev(proj), sp, timeout=1.0)
         assert got is not None and hookd.LAST["outcome"] == "served", "no slot was freed for the hook: %r" % hookd.LAST
