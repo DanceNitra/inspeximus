@@ -173,6 +173,12 @@ def _raw_callers():
             a = n.args[0]
             if scan._is_envpolicy_call(n) and n.func.attr == "raw":
                 if isinstance(a, ast.Constant):
+                    # A name that is not ours carries no POLICY entry, and `raw` treats it as
+                    # ENV_SAFE. This read the POLICY dict unconditionally and raised KeyError on the
+                    # first such read (HERMES_HOME, 3.25.0), so the guard's model of the accessor had
+                    # drifted from the accessor. Mirror the rule `raw` applies.
+                    if not str(a.value).startswith("INSPEXIMUS_"):
+                        continue
                     if _envpolicy.POLICY[a.value][0] == _envpolicy.ENV_SAFE:
                         continue
                     var = a.value

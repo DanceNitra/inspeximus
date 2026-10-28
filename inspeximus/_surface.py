@@ -153,14 +153,17 @@ def other_stores(path_in_use, env=None, home=None):
     itself. Each entry is {path, memories, why}. An empty or unreadable file is left out, because a
     file with no records is not a memory anyone is missing.
     """
-    env = os.environ if env is None else env
+    from . import _envpolicy
     home = os.path.expanduser("~") if home is None else home
     try:
         in_use = os.path.realpath(os.path.abspath(os.path.expanduser(str(path_in_use or ""))))
     except (OSError, ValueError):
         in_use = ""
 
-    hermes_home = (env.get("HERMES_HOME") or "").strip() or os.path.join(home, ".hermes")
+    # HERMES_HOME is another program's variable, and it still reads through the one accessor like
+    # every other environment read in shipped code (3.18, AUDIT-A EC-5). Touching os.environ
+    # directly here is what CI refused.
+    hermes_home = (_envpolicy.raw("HERMES_HOME", env=env) or "").strip() or os.path.join(home, ".hermes")
     known = [
         (os.path.join(hermes_home, "inspeximus", "memory.json"),
          "the Hermes memory provider's store, under the Hermes home"),
