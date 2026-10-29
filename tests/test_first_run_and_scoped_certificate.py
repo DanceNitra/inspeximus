@@ -166,7 +166,7 @@ def test_the_mcp_server_reports_its_own_version():
     os.environ["INSPEXIMUS_PATH"] = os.path.join(tempfile.mkdtemp(), "m.json")
     mod = importlib.reload(importlib.import_module("inspeximus.mcp_server"))
     import inspeximus
-    assert mod.mcp._mcp_server.version == inspeximus.__version__
+    assert mod._lowlevel(mod.mcp).version == inspeximus.__version__
 
 
 def test_the_llamaindex_adapter_names_the_right_missing_package():

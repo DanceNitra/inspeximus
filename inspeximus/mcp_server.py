@@ -81,31 +81,45 @@ from pathlib import Path
 from inspeximus import Inspeximus  # noqa: E402
 from inspeximus._surface import StoreLocationError, open_store, recommit_named, resolve_path  # noqa: E402   one surface posture; see _surface.py
 
+# THE ONE PLACE THE SDK MAJOR VERSION IS RESOLVED. mcp 2.0 renamed `mcp.server.fastmcp.FastMCP` to
+# `mcp.server.mcpserver.MCPServer`, moved FuncMetadata with it, and renamed the inner low-level server
+# from `_mcp_server` to `_lowlevel_server`. Everything below uses the names bound here, so the rest of
+# this file reads the same under both majors. Supporting both is not courtesy: Hermes Agent pins
+# mcp==2.3.0, and an extra capped at <2 made `pip install inspeximus[mcp]` into Hermes' venv downgrade
+# the host's SDK to 1.30.0 (measured 2026-10-28). Tested on 1.28.1, 1.29.0 and 2.3.0.
 try:
-    from mcp.server.fastmcp import FastMCP
-except ImportError as e:  # pragma: no cover
-    # Raise, do not print. This module is optional and anything that walks the package's submodules
-    # imports it; writing to stderr here put "needs the MCP SDK" on every line of unrelated output.
-    # The message belongs in the exception, where whoever actually tried to start the server sees it.
-    #
-    # TWO DIFFERENT FAILURES, and they need different advice. The message used to say
-    # `pip install "mcp[cli]"` for both -- which, on a fresh install today, is the command that CAUSES
-    # the second one. Measured in a clean venv: `pip install "mcp[cli]"` resolves to mcp 2.0.0, where
-    # `mcp.server.fastmcp` no longer exists (the package is there and `import mcp` succeeds; the module
-    # was reorganised, `mcp.server` now carries `mcpserver` and friends). So the SDK was present, the
-    # server would not start, and the remedy printed reproduced the fault. An error message that names a
-    # remedy nobody tested is worse than one that says less.
-    _sdk_present = True
+    from mcp.server.mcpserver import MCPServer as FastMCP                       # mcp 2.x
+    from mcp.server.mcpserver.utilities.func_metadata import FuncMetadata as _FuncMetadata
+    _LOWLEVEL_ATTR = "_lowlevel_server"
+except ImportError:
     try:
-        import mcp  # noqa: F401
-    except Exception:
-        _sdk_present = False
-    raise ImportError(
-        'the inspeximus MCP server needs mcp 1.x: the installed SDK has no "mcp.server.fastmcp" '
-        '(mcp 2.0 reorganised it). Install a supported one: pip install "mcp[cli]<2"'
-        if _sdk_present else
-        'the inspeximus MCP server needs the MCP SDK: pip install "mcp[cli]<2"'
-    ) from e
+        from mcp.server.fastmcp import FastMCP                                  # mcp 1.28+
+        from mcp.server.fastmcp.utilities.func_metadata import FuncMetadata as _FuncMetadata
+        _LOWLEVEL_ATTR = "_mcp_server"
+    except ImportError as e:  # pragma: no cover
+        # Raise, do not print. This module is optional and anything that walks the package's submodules
+        # imports it; writing to stderr here put "needs the MCP SDK" on every line of unrelated output.
+        # The message belongs in the exception, where whoever actually tried to start the server sees it.
+        # TWO DIFFERENT FAILURES, and they need different advice: an SDK that is absent, and one that is
+        # present but has neither layout (older than 1.28 or a future major). The remedy printed for the
+        # second used to reproduce the fault, so each message names the range this code was tested on.
+        _sdk_present = True
+        try:
+            import mcp  # noqa: F401
+        except Exception:
+            _sdk_present = False
+        raise ImportError(
+            'the inspeximus MCP server needs mcp 1.28+ or 2.x: the installed SDK has neither '
+            '"mcp.server.fastmcp" nor "mcp.server.mcpserver". Install a supported one: '
+            'pip install "mcp[cli]>=1.28,<3"'
+            if _sdk_present else
+            'the inspeximus MCP server needs the MCP SDK: pip install "mcp[cli]>=1.28,<3"'
+        ) from e
+
+
+def _lowlevel(server):
+    """The SDK's inner low-level Server under either major, or None."""
+    return getattr(server, _LOWLEVEL_ATTR, None)
 
 
 def _make_embedders():
@@ -632,12 +646,6 @@ def _keep_text_arguments(server, name: str) -> None:
     tool.fn_metadata = _TextKeepingFuncMetadata.from_meta(meta, text_fields)
 
 
-try:
-    from mcp.server.fastmcp.utilities.func_metadata import FuncMetadata as _FuncMetadata
-except ImportError:  # pragma: no cover - the import at the top of this module already requires mcp 1.x
-    _FuncMetadata = object
-
-
 class _TextKeepingFuncMetadata(_FuncMetadata):
     """FuncMetadata whose JSON pre-parse leaves alone the parameters that accept a string."""
 
@@ -749,7 +757,7 @@ mcp = _FreshFastMCP("inspeximus", instructions=_instructions())
 # FastMCP takes no version= argument, and without one it reports the MCP SDK's own version as
 # serverInfo.version — so a client asking which inspeximus it was talking to got "1.28.1", the SDK. Set it on
 # the inner Server, which is what the handshake actually reads.
-_inner = getattr(mcp, "_mcp_server", None)
+_inner = _lowlevel(mcp)
 if _inner is not None:
     _inner.version = _INSPEXIMUS_VERSION
 

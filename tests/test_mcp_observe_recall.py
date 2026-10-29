@@ -20,10 +20,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     import pytest
-    pytest.importorskip("mcp.server.fastmcp")
+    pytest.importorskip("mcp")
 except ImportError:                         # standalone, without pytest
     try:
-        import mcp.server.fastmcp  # noqa: F401
+        import mcp  # noqa: F401
     except Exception:
         print("SKIP: MCP SDK not installed"); sys.exit(0)
 

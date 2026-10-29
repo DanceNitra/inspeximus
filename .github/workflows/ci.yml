@@ -211,11 +211,40 @@ jobs:
         with:
           python-version: "3.12"
       # The MCP SDK, within the package's own bound, for mcp_lookup_n2000: that arm calls the MCP server's lookups.
-      - run: python -m pip install --upgrade pip && pip install pytest pytest-xdist pytest-timeout "mcp[cli]>=1.28,<2"
+      - run: python -m pip install --upgrade pip && pip install pytest pytest-xdist pytest-timeout "mcp[cli]>=1.28,<3"
       - name: compare against the recorded baseline
         run: python perf/gate.py check
       - name: the gate must be able to go red
         run: python -m pytest tests/test_perf_gate_can_fail.py -q
+
+  # BOTH MCP SDK MAJORS, because the server resolves the SDK's layout at import (inspeximus/mcp_server.py, "THE ONE
+  # PLACE THE SDK MAJOR VERSION IS RESOLVED") and every other job installs whichever mcp the resolver picks, so one
+  # layout would go untested. One leg is the declared floor, one is the 2.x that hosts pin (Hermes: mcp==2.3.0).
+  # tools/mcp_sdk_check.py fails the leg when the installed SDK is not the matrix version, when the tools
+  # registered or listed to a client differ from the `@mcp.tool()` count in the source, or when a decision
+  # written through a client is not recalled. Measured locally 2026-10-28: 135 tools on 1.28.1, 1.29.0 and 2.3.0.
+  mcp-sdk:
+    name: MCP server on mcp ${{ matrix.mcp }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        mcp: ["1.28.1", "2.3.0"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-xdist pytest-timeout cryptography
+          pip install -e ".[mcp]" "mcp[cli]==${{ matrix.mcp }}"
+      - name: the server imports, registers every tool, and answers a write and a recall
+        run: python tools/mcp_sdk_check.py ${{ matrix.mcp }}
+      - name: every test that drives the MCP server
+        run: python -m pytest $(grep -l -E 'mcp_server|_mcp_review|importorskip\("mcp"\)' tests/*.py) -q -rfE
 
   # THE BROWSER VERIFIER (docs/verify/) is a JavaScript copy of verify_erasure_certificate and
   # verify_bundle, and a second copy of a decision is how this repository has drifted before. Its

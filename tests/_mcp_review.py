@@ -82,20 +82,30 @@ def call(mod, tool: str, /, **arguments) -> ToolResult:
 
     `mod` and `tool` are positional-only, so a tool argument called `name` (open_partition,
     symbol_status) passes straight through as a keyword."""
-    from mcp.shared.memory import create_connected_server_and_client_session
-
     async def _run():
-        async with create_connected_server_and_client_session(mod.mcp._mcp_server) as client:
+        async with _client(mod) as client:
             return await client.call_tool(tool, arguments)
 
     res = anyio.run(_run)
     text = "\n".join(getattr(c, "text", "") for c in (res.content or []))
-    data = res.structuredContent
+    # mcp 2.x names the result fields in snake_case; 1.x in camelCase.
+    data = getattr(res, "structured_content", getattr(res, "structuredContent", None))
+    is_error = bool(getattr(res, "is_error", getattr(res, "isError", False)))
     if isinstance(data, dict) and set(data) == {"result"}:
         data = data["result"]
-    if data is None and not res.isError and text:
+    if data is None and not is_error and text:
         try:
             data = json.loads(text)
         except ValueError:
             data = text
-    return ToolResult(is_error=bool(res.isError), data=data, text=text)
+    return ToolResult(is_error=is_error, data=data, text=text)
+
+
+def _client(mod):
+    """An in-memory client session on the module's server, under either SDK major."""
+    try:
+        from mcp import Client                                   # mcp 2.x: connects to an MCPServer in-process
+    except ImportError:
+        from mcp.shared.memory import create_connected_server_and_client_session
+        return create_connected_server_and_client_session(mod._lowlevel(mod.mcp))
+    return Client(mod.mcp)

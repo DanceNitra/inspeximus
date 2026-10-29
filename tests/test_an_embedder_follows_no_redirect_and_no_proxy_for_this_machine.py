@@ -150,7 +150,7 @@ def test_the_cli_embedder_and_the_default_distiller_refuse_the_redirect(pair, mo
 
 
 def test_the_mcp_server_embedder_refuses_the_redirect(pair, monkeypatch):
-    pytest.importorskip("mcp.server.fastmcp")
+    pytest.importorskip("mcp")
     first, second = pair
     from inspeximus import mcp_server
     monkeypatch.setenv("INSPEXIMUS_EMBED_URL", first.url)
