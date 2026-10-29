@@ -134,10 +134,18 @@ def test_reset_is_scoped(filled):
     assert filled.count() == 1
 
 
-@pytest.mark.asyncio
-async def test_async_variants_do_the_same_thing(tmp_path):
-    b = InspeximusMemoryBackend(path=str(tmp_path / "a.json"))
-    await b.asave([_rec(9, "/x", ["c"], [1.0, 0.0])])
-    assert [r.id for r, _ in await b.asearch([1.0, 0.0])] == ["r9"]
-    assert await b.adelete(record_ids=["r9"]) == 1
-    assert b.count() == 0
+def test_async_variants_do_the_same_thing(tmp_path):
+    # asyncio.run, not @pytest.mark.asyncio: no CI job installs pytest-asyncio, so the mark made this an
+    # error ("async def functions are not natively supported") the first time the integrations job resolved
+    # a crewai that has `crewai.memory.storage.backend` (1.15.28, CI run 40920424956). Under crewai 1.6.1 the
+    # module skipped whole, so the test had never run there.
+    import asyncio
+
+    async def run():
+        b = InspeximusMemoryBackend(path=str(tmp_path / "a.json"))
+        await b.asave([_rec(9, "/x", ["c"], [1.0, 0.0])])
+        assert [r.id for r, _ in await b.asearch([1.0, 0.0])] == ["r9"]
+        assert await b.adelete(record_ids=["r9"]) == 1
+        assert b.count() == 0
+
+    asyncio.run(run())

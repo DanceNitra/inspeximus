@@ -91,8 +91,10 @@ crypto = ["cryptography>=41"]
 # this replaces cost twice: it once pushed a nine-extra install to google-adk ten majors back, and it made
 # installing inspeximus into a host that pins mcp 2.x (Hermes: mcp==2.3.0) downgrade the host's SDK to 1.30.0.
 # A future major with neither layout gets a clean ImportError that names the tested range.
-# What dropping the cap changes, measured 2026-10-28 on the nine-extra CI install with pip: only mcp, 1.30.0 to
-# 2.3.0 (crewai is 1.6.1 either way, because crewai 1.15.x pins mcp<1.29).
+# What dropping the cap changes, measured 2026-10-29 with pip 26.2.2 and in CI run 40920424956: `inspeximus[mcp]`
+# alone resolves mcp 2.3.0 (was 1.30.0). The nine-extra CI install resolves mcp 1.28.1 with crewai 1.15.28 (was
+# mcp 1.30.0 with crewai 1.6.1, because crewai 1.15.x pins mcp<1.29); every other extra is unchanged except
+# haystack-ai 3.4.0 to 3.4.1. So the integrations job runs on 1.x, and the mcp-sdk job's 2.3.0 leg covers 2.x.
 # What the FLOOR is for: mcp 1.0 to 1.27 have `mcp.server.fastmcp`, so the server would import on them, but the
 # surrounding API this code calls was never tested there. Measured 2026-10-29: on mcp 1.27.1 the server imports,
 # and tests/test_mcp_sdk_version_bound.py fails because the installed SDK is below the declared floor.

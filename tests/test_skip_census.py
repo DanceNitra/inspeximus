@@ -117,7 +117,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #: Exactly +4, no slack: 265 + 4 = 269.
 #: +3 in 3.20 in the same file (AUDIT-A section 9): the row index under threads, an id it cannot find, and a duplicate
 #: id. Exactly +3, no slack: 269 + 3 = 272.
-MAX_HIDDEN_IN_BASE_ENV = 272
+#: +3 for test_a_tool_error_reaches_a_2x_client_with_its_reason.py: a tool's error text reaches an MCP client on
+#: both SDK majors. It drives the request path through a real client, so it needs the SDK, and the mcp-sdk job runs
+#: it on 1.28.1 and 2.3.0. Exactly +3, no slack: 272 + 3 = 275.
+MAX_HIDDEN_IN_BASE_ENV = 275
 
 
 def _base_env_census():
