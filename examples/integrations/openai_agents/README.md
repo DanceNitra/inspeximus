@@ -15,10 +15,11 @@ python verify_ledger.py                  # OK, exit 0
 ```
 
 **If the same environment runs inspeximus's MCP server**, install the two together:
-`pip install "inspeximus[crypto,mcp]" "openai-agents==0.22.3"`. The SDK accepts `mcp>=1.19,<3`, and on
-its own pip gives it mcp 2.2.0, where `mcp.server.fastmcp` no longer exists, so `inspeximus-mcp` fails
-to import. Installed together, pip settles on mcp 1.30.0, which both accept (measured 2026-09-24). This
-example does not use MCP itself.
+`pip install "inspeximus[crypto,mcp]" "openai-agents==0.22.3"`. The SDK accepts `mcp>=1.19,<3` and
+inspeximus accepts `mcp>=1.28`; pip 26.2.2 on Python 3.12 resolves this command to mcp 2.3.0
+(measured 2026-10-29). `inspeximus-mcp` imports on both majors: the server uses
+`mcp.server.mcpserver.MCPServer` on 2.x and `mcp.server.fastmcp.FastMCP` on 1.x, and CI runs it on mcp
+1.28.1 and 2.3.0 (job `mcp-sdk`). This example does not use MCP itself.
 
 The agent runs three turns: it sends Ana invoice INV-1001, it records that her billing email changed, and
 it sends INV-1002. The output ends with one line per ledger entry:

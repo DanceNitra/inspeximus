@@ -90,14 +90,13 @@ from inspeximus._surface import StoreLocationError, open_store, recommit_named, 
 try:
     from mcp.server.mcpserver import MCPServer as FastMCP                       # mcp 2.x
     from mcp.server.mcpserver.utilities.func_metadata import FuncMetadata as _FuncMetadata
-    from mcp.server.mcpserver.exceptions import ToolError as _ToolError
+    from mcp.server.mcpserver.exceptions import ToolError as _ToolError, UnexpectedToolError as _Unexpected
     from mcp.shared.exceptions import MCPError as _MCPError
     _LOWLEVEL_ATTR = "_lowlevel_server"
     # 2.x shows the client the text of a ToolError only; any other exception reaches it as the bare
     # "Error executing tool <name>". Our tools raise on purpose with the reason and the fix in the text
     # ("no such directory", "not persisted", "Refusing to append"), and 1.x passed that text through.
-    # The tool boundary below re-raises those as ToolError, so both majors send the same message.
-    _PASS_THROUGH = (_ToolError, _MCPError)
+    # `_FreshFastMCP.call_tool` restores it on 2.x, so both majors send the same message.
 except ImportError:
     try:
         from mcp.server.fastmcp import FastMCP                                  # mcp 1.28+
@@ -603,22 +602,24 @@ class _FreshFastMCP(FastMCP):
     to them as a server with no tools.
     """
 
+    if _ToolError is not None:                                                  # mcp 2.x
+        async def call_tool(self, name, arguments, *a, **k):
+            # Here and not in the tool's body: the SDK's request handler calls this method, while a test or
+            # a library caller that calls the tool function directly still gets the exception it raised.
+            try:
+                return await super().call_tool(name, arguments, *a, **k)
+            except _Unexpected as e:
+                cause = e.__cause__
+                if cause is None or isinstance(cause, (_ToolError, _MCPError)):
+                    raise
+                raise _ToolError(f"Error executing tool {name}: {cause}") from cause
+
     def tool(self, *a, **k):
         register = super().tool(*a, **k)
 
         def deco(fn):
             @functools.wraps(fn)
             def fresh(*fa, **fk):
-                if _ToolError is None:
-                    return body(*fa, **fk)
-                try:
-                    return body(*fa, **fk)
-                except _PASS_THROUGH:
-                    raise
-                except Exception as e:
-                    raise _ToolError(str(e)) from e
-
-            def body(*fa, **fk):
                 _MEM.refresh()
                 led = _action_ledger()
                 if led is None:

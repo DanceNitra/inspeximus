@@ -4,9 +4,9 @@ History. `pyproject.toml` once declared `mcp = ["mcp[cli]>=1.0"]` with no upper 
 `mcp.server.fastmcp`, so a fresh install on 2026-07-30 resolved to 2.0.0 and the server raised ImportError on
 import. The fix then was a `<2` cap. The cap later cost hosts that pin mcp 2.x: installing into Hermes Agent
 (mcp==2.3.0) downgraded its SDK to 1.30.0 (measured 2026-10-28). The server now resolves either layout in one
-place (inspeximus/mcp_server.py), and the cap is `<3`.
+place (inspeximus/mcp_server.py), and the extra is a floor, `>=1.28`, with no ceiling.
 
-What these tests hold: the declared range has the measured floor and stops before a major nobody has run;
+What these tests hold: the declared requirement is the measured floor; an installed SDK below it is refused;
 the server imports under whichever supported SDK is installed; an SDK that is present but has neither layout
 is reported as a version problem; and an absent SDK gets install advice that carries the tested range. The
 full two-major check (every tool registered, a write and a recall through a client) is tools/mcp_sdk_check.py,
@@ -51,7 +51,7 @@ def _run_with_blocked(blocked):
                           encoding="utf-8", errors="replace")
 
 
-def test_the_declared_extra_has_the_tested_floor_and_stops_before_an_untested_major():
+def test_the_declared_extra_is_the_tested_floor():
     # Parsed, not regexed: the value contains "mcp[cli]", whose "]" ends a naive [^\]]* capture before the
     # version bound is ever seen -- an earlier version of this test passed on a spec it had not read.
     try:
@@ -60,9 +60,43 @@ def test_the_declared_extra_has_the_tested_floor_and_stops_before_an_untested_ma
         tomllib = pytest.importorskip("tomli", reason="needs tomllib/tomli to parse pyproject")
     with open(PYPROJECT, "rb") as f:
         spec = tomllib.load(f)["project"]["optional-dependencies"]["mcp"]
-    assert spec == ["mcp[cli]>=1.28,<3"], (
-        f"the mcp extra is {spec}: the server is tested on 1.28.1, 1.29.0 and 2.3.0, so the range is >=1.28 "
-        f"(1.0 has FastMCP but not the API around it) and <3 (a major nobody has run)")
+    assert spec == ["mcp[cli]>=1.28"], (
+        f"the mcp extra is {spec}: the server is tested on 1.28.1, 1.29.0 and 2.3.0, so the floor is >=1.28 "
+        f"(1.0 has FastMCP but not the API around it). A ceiling needs a breakage observed on 2.x, written "
+        f"beside the pin in pyproject.toml.")
+
+
+def _declared_spec():
+    try:
+        import tomllib
+    except ImportError:                                   # 3.8-3.10
+        tomllib = pytest.importorskip("tomli", reason="needs tomllib/tomli to parse pyproject")
+    with open(PYPROJECT, "rb") as f:
+        (req,) = tomllib.load(f)["project"]["optional-dependencies"]["mcp"]
+    from packaging.requirements import Requirement
+    return Requirement(req).specifier
+
+
+@pytest.mark.parametrize("version, inside", [("1.27.1", False), ("1.0.0", False), ("1.28.0", True),
+                                             ("1.29.0", True), ("2.3.0", True)])
+def test_the_range_check_refuses_below_the_floor(version, inside):
+    # The control for the test after it: the same check, on versions on each side of the floor. There is no
+    # ceiling, so this file guarantees the floor only; the top end is the import-time layout check below.
+    assert _declared_spec().contains(version, prereleases=True) is inside
+
+
+def test_the_installed_sdk_is_inside_the_declared_range():
+    """Without this the file passes on an SDK below the floor, because it still has a known layout.
+
+    mcp 1.27 has `mcp.server.fastmcp`, so the server imports and every other test here passes. The layout
+    check cannot see a version, so this reads it. Measured 2026-10-29: fails on mcp 1.27.1, passes on 1.28.1
+    and 2.3.0. It cannot fail above the floor: with no ceiling declared, no newer version is outside it.
+    """
+    pytest.importorskip("mcp", reason="needs the MCP SDK")
+    import importlib.metadata
+    have = importlib.metadata.version("mcp")
+    assert _declared_spec().contains(have, prereleases=True), (
+        f"mcp {have} is installed, below the declared {_declared_spec()}: this code was not run on it")
 
 
 def test_control_the_server_imports_when_the_sdk_is_present():

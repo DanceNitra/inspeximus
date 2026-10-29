@@ -16,6 +16,13 @@ The 3.25.0 fix for two stores did not fire on the machine that had two stores. I
 
 Tests: `tests/test_the_second_store_detector_counts_a_row_store.py` and `tests/test_a_server_under_hermes_shares_the_providers_store.py`. Every fixture is written by the library rather than by hand, and the last test fails if the provider stops calling the shared rule.
 
+### Changed
+
+- **The `mcp` extra accepts MCP SDK 2.x: `mcp[cli]>=1.28`, with the `<2` ceiling removed.** The floor is unchanged, and no ceiling replaces the old one, because no breakage has been observed on 2.x. A fresh `pip install "inspeximus[mcp]"` now resolves mcp 2.3.0 where it resolved 1.30.0, and a host that pins mcp 2.x, such as Hermes Agent (`mcp==2.3.0`), no longer has its SDK downgraded when inspeximus is installed into it. The server finds the SDK's layout in one place: `mcp.server.mcpserver.MCPServer` on 2.x, `mcp.server.fastmcp.FastMCP` on 1.x. It registers 135 tools on mcp 1.28.1, 1.29.0 and 2.3.0, and CI runs it on 1.28.1 and 2.3.0 (job `mcp-sdk`).
+- **A tool's own error reaches the client with its reason on both majors.** mcp 2.x sends the text of a `ToolError` only, so a refusal such as "no such directory" or "not persisted" arrived as a bare `Error executing tool <name>`. The tool boundary re-raises such errors as `ToolError` on 2.x, so both majors send `Error executing tool <name>: <reason>`.
+
+Tests: `tools/mcp_sdk_check.py` (the tool count is read from the source and compared with what a client lists) `tests/test_mcp_sdk_version_bound.py`, which fails when the installed SDK is below the floor (shown on mcp 1.27.1), and `tests/test_a_tool_error_reaches_a_2x_client_with_its_reason.py`, which drives a call through a client on 2.x.
+
 ## 3.25.0 - UPGRADE IF you run inspeximus inside Hermes Agent, or run both the memory provider and the MCP server
 
 Both items came out of someone running inspeximus inside Hermes on 2026-10-28 and reporting what they saw.

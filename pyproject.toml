@@ -83,18 +83,20 @@ Research = "https://dancenitra.github.io/agora/"
 # dependencies, so this is the extra a reader is told to install -- and `inspeximus[crypto]`
 # is the form everyone guesses first, which until 2.0.2 silently installed nothing.
 crypto = ["cryptography>=41"]
-# Both SDK majors are supported. mcp 2.0 moved `mcp.server.fastmcp.FastMCP` to `mcp.server.mcpserver.MCPServer`;
-# inspeximus/mcp_server.py resolves the layout in one place, and the server imports, registers every tool, and
-# answers a write and a recall on 1.28.1, 1.29.0 and 2.3.0 (tools/mcp_sdk_check.py; CI job mcp-sdk runs the floor
-# and 2.3.0). The cap stays below 3: a major this code has not been run against is not a supported one.
-# Why 2.x matters: hosts such as Hermes pin mcp==2.3.0, and the old <2 cap made installing inspeximus into them
-# downgrade their SDK to 1.30.0.
-# What widening the cap changes, measured 2026-10-28 on the nine-extra CI install with pip: only mcp, 1.30.0 to
-# 2.3.0. Every other extra resolves to the same version under both caps (crewai 1.6.1 under both, because crewai
-# 1.15.x pins mcp<1.29). uv prefers the newest mcp and so moves crewai to 1.6.1 and openai-agents to 0.24.
-# The FLOOR is measured, not inherited. ">=1.0" was never a tested claim; mcp 1.0.0 has FastMCP but not the
-# surrounding API this code calls, a subtler failure than a clean ImportError.
-mcp = ["mcp[cli]>=1.28,<3"]
+# A FLOOR, NO CEILING. Both SDK majors are supported: mcp 2.0 moved `mcp.server.fastmcp.FastMCP` to
+# `mcp.server.mcpserver.MCPServer`, and inspeximus/mcp_server.py resolves the layout in one place. The server
+# imports, registers every tool, and answers a write and a recall on 1.28.1, 1.29.0 and 2.3.0
+# (tools/mcp_sdk_check.py; CI job mcp-sdk runs 1.28.1 and 2.3.0).
+# Why no ceiling: a cap is carried only for breakage actually observed, and none is observed on 2.x. The <2 cap
+# this replaces cost twice: it once pushed a nine-extra install to google-adk ten majors back, and it made
+# installing inspeximus into a host that pins mcp 2.x (Hermes: mcp==2.3.0) downgrade the host's SDK to 1.30.0.
+# A future major with neither layout gets a clean ImportError that names the tested range.
+# What dropping the cap changes, measured 2026-10-28 on the nine-extra CI install with pip: only mcp, 1.30.0 to
+# 2.3.0 (crewai is 1.6.1 either way, because crewai 1.15.x pins mcp<1.29).
+# What the FLOOR is for: mcp 1.0 to 1.27 have `mcp.server.fastmcp`, so the server would import on them, but the
+# surrounding API this code calls was never tested there. Measured 2026-10-29: on mcp 1.27.1 the server imports,
+# and tests/test_mcp_sdk_version_bound.py fails because the installed SDK is below the declared floor.
+mcp = ["mcp[cli]>=1.28"]
 # Agent-framework integrations (inspeximus.integrations.*) — opt-in; the core library stays zero-dependency.
 langchain = ["langchain-core"]
 langgraph = ["langgraph"]
