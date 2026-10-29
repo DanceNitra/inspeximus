@@ -73,6 +73,9 @@ REQUIRED_CARRIERS = (
     # copies that version into the entry a Hermes user reads before installing. Both fields move with
     # the release: the version the catalog shows, and the floor pip resolves.
     "integrations/hermes-plugin-inspeximus/plugin.yaml",
+    # The context engine's manifest, added with the engine itself on 2026-10-29: same two fields,
+    # same catalog, same way to drift.
+    "integrations/hermes-context-engine-inspeximus/plugin.yaml",
 )
 
 
@@ -171,7 +174,8 @@ def _read_carrier(root, rel):
             if not pins:
                 return [], "launches inspeximus without a pinned version"
             return [("pin[%d]" % i, v) for i, v in enumerate(pins)], None
-        if rel == "integrations/hermes-plugin-inspeximus/plugin.yaml":
+        if rel in ("integrations/hermes-plugin-inspeximus/plugin.yaml",
+                   "integrations/hermes-context-engine-inspeximus/plugin.yaml"):
             text = path.read_text(encoding="utf-8")
             out = []
             m = re.search(r'^version:\s*["\']?([^"\'\s]+)["\']?\s*$', text, re.M)

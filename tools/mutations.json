@@ -16444,5 +16444,23 @@
   "tests": [
    "tests/test_the_hermes_plugin_manifest_carries_this_version.py::test_the_manifest_is_a_version_carrier"
   ]
+ },
+ {
+ "name": "the context engine manifest is not a version carrier",
+ "file": "tools/release_check.py",
+ "old": "    \"integrations/hermes-context-engine-inspeximus/plugin.yaml\",\n",
+ "new": "",
+ "tests": [
+  "tests/test_the_hermes_plugin_manifest_carries_this_version.py::test_the_manifest_is_a_version_carrier"
+ ]
+ },
+ {
+ "name": "the hermes context engine lets Hermes demote its own digest",
+ "file": "integrations/hermes-context-engine-inspeximus/__init__.py",
+ "old": "        if protected_skills is not None and isinstance(content, str) and content.startswith(MARKER):\n            return False\n",
+ "new": "",
+ "tests": [
+  "tests/test_the_hermes_context_engine_digests_and_is_spared.py::test_a_digest_is_spared_on_the_proactive_pass_and_demoted_under_pressure"
+ ]
  }
 ]

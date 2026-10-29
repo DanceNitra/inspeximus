@@ -1,0 +1,6 @@
+name: inspeximus
+version: "3.26.0"
+description: "Context engine that digests an oversized tool result into an intent-ranked summary plus the path of the file holding all of it, instead of replacing it with a byte count."
+requires_hermes: ">=0.21"
+pip_dependencies:
+  - inspeximus>=3.26.0,<4
