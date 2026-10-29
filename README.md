@@ -168,7 +168,9 @@ characters:
 
 Scope: inspeximus 3.26.0, measured 2026-10-29, one operator's sessions on one machine, lexical
 ranking with no embedder, and a mid-output question term is a word of the tool call's own arguments
-present in the output but absent from its first and last 400 bytes. Hermes replaces a tool result
+present in the output but absent from its first and last 400 bytes. The probe behind the table runs
+against one operator's own session store and is not shipped here, so read the figures as reported
+rather than as reproducible from this package. Hermes replaces a tool result
 it has no summarizer for with a byte count, which carries no term from the output at any setting of
 that window, and the agent re-runs the tool to get the content back.
 

@@ -451,6 +451,10 @@ def _c(id, file, tokens, pin, claim, status, command="", note=""):
 #: The one command behind every echo-resistance figure. Named once so eleven rows cannot drift.
 CMD = "python ramr_echo_resistance_backends.py  # RAMR repo"
 
+#: The provenance every context-saver row shares. Named once so six rows cannot drift apart.
+SRC = ("Measured 2026-10-29 with inspeximus 3.26.0 by a probe in the agora repo, which is private "
+       "and whose session store belongs to one operator. Lexical ranking, no embedder. ")
+
 
 NUMBER_CLAIMS = [
     # ---------------------------------------------------------------- README.md
@@ -480,6 +484,49 @@ NUMBER_CLAIMS = [
        note="Needs the Commission's servers and 30 member-state endpoints, so it cannot run offline. "
             "One territory (HU) served a certificate its own chain did not validate on the day of "
             "measurement and is reported unreachable rather than dropped."),
+
+    # ---- README.md "Keep the big tool result out of the context window" (added 2026-10-29) ----
+    # ONE ROW PER LINE, as the header above says. EXTERNAL because the probe lives in a private
+    # repo: the README says so on the same line rather than implying a command a reader can run.
+    _c("readme-saver-corpus-size", "README.md", ["3,233", "11"],
+       "Measured on one Hermes session store, 3,233 messages across 11 sessions",
+       "%sBoth figures are counted directly from the messages table of "
+       "AppData/Local/hermes/state.db: its row count, and its distinct session_id values." % SRC,
+       "EXTERNAL"),
+
+    _c("readme-saver-corpus-share", "README.md", ["84.4", "264", "2,000"],
+       "tool results are 84.4% of the message bytes, over the 264 results longer than 2,000",
+       "%sThe share is the summed length of the rows whose role is tool over the summed length of "
+       "every message row, and the count is how many of those tool rows exceed the character "
+       "threshold in the same sentence." % SRC,
+       "EXTERNAL"),
+
+    _c("readme-saver-hermes-prune-row", "README.md", ["0.5", "0.0"],
+       "| Hermes's own prune | 0.5% | 0.0% |",
+       "%sHermes's own summarizer pass over the same results, as a share of the baseline bytes and of "
+       "the sampled mid-output question terms. It keeps none of those terms because it replaces "
+       "the result with a byte count." % SRC,
+       "EXTERNAL"),
+
+    _c("readme-saver-digest-row", "README.md", ["27.3", "61.5"],
+       "| the saver's digest | 27.3% | 61.5% |",
+       "%sThe engine's digest over the same results, as a share of the baseline bytes and of the same "
+       "sampled mid-output question terms, from the strategies block of the probe's result file." % SRC,
+       "EXTERNAL"),
+
+    _c("readme-saver-scope-date", "README.md", ["2026"],
+       "Scope: inspeximus 3.26.0, measured 2026-10-29, one operator's sessions on one machine, lexical",
+       "The date the two figures above were measured. Declared because the audit reads the year of "
+       "a date as a number claim.",
+       "EXTERNAL"),
+
+    _c("readme-saver-burial-window", "README.md", ["400"],
+       "present in the output but absent from its first and last 400 bytes",
+       "%sThe window that defines a mid-output term. It is a free parameter, and a companion probe in "
+       "the same private repo sweeps it across five sizes and records them all. The row this README publishes is against Hermes's own prune, which emits "
+       "a byte count and therefore keeps no term at any window. A withdrawn row against head-and-tail "
+       "truncation did depend on the window, and is retracted in the engine's own README." % SRC,
+       "EXTERNAL"),
 
     # ---- README.md "agno is the one that is not ours" (added 2026-09-21) ----
     # The merge DATE on the same line reads as the year token 2026 to this audit, so it is declared
