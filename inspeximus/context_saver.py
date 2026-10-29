@@ -137,10 +137,36 @@ def _terms(chunks, n=10):
 
 
 def _digest(chunks, order, terms):
-    lines = ["%d sections indexed. Top %d for the intent:" % (len(chunks), min(TOP, len(order)))]
+    """The digest, and a line saying how little of the output it is.
+
+    The header used to read "48 sections indexed. Top 5 for the intent", which says how many
+    sections exist and how many are listed, and nothing about how much TEXT the agent is holding.
+    Measured 2026-10-29 on real command output: a 12,933-byte result came back as a 666-byte
+    digest, 5.1 percent, with no statement of that anywhere. A preview is `chunk[:PREVIEW]` of each
+    listed section, so the share of bytes shown is far smaller than "5 of 48 sections" suggests,
+    and an agent that reads the header as a summary of the whole output acts on 5 percent of it
+    believing it saw all of it. A digest leaves no visible cut the way a truncation does, so
+    nothing else in the text carries the warning.
+
+    This is not a recall fix and does not pretend to be one. Measured the same day: at a matched
+    byte count, head-and-tail truncation keeps a specific mid-output line more often than the
+    digest at every budget above 5 percent, and spending 2.4 times the bytes on more and finer
+    sections reaches 43.5 percent against truncation's 47.8. So the honest change is to say what
+    the digest does NOT hold, so the caller reads the capture file when the answer is not here.
+    """
+    shown = min(TOP, len(order))
+    lines = ["%d sections indexed. Top %d for the intent:" % (len(chunks), shown)]
     for i in order[:TOP]:
         c = chunks[i]
         lines.append("- %s | %s" % (_title(c), c[:PREVIEW].replace("\n", " ")))
+    kept = sum(len(_title(chunks[i])) + len(chunks[i][:PREVIEW]) for i in order[:TOP])
+    whole = sum(len(c) for c in chunks)
+    if whole and kept < whole:
+        lines.append(
+            "This digest holds about %d%% of the output (%d of %d characters, the opening of each "
+            "section listed above). Anything not quoted here is only in the file named below; read "
+            "it rather than concluding the output does not contain what you asked for."
+            % (max(1, round(100.0 * kept / whole)), kept, whole))
     lines.append("Searchable terms: " + ", ".join(terms))
     return "\n".join(lines)
 

@@ -16490,5 +16490,23 @@
    "tests/test_a_tool_error_reaches_a_2x_client_with_its_reason.py"
   ],
   "requires_mcp": 2
+ },
+ {
+  "name": "the digest does not say how little of the output it holds",
+  "file": "inspeximus/context_saver.py",
+  "old": "    if whole and kept < whole:\n",
+  "new": "    if False:\n",
+  "tests": [
+   "tests/test_the_digest_says_how_little_of_the_output_it_holds.py"
+  ]
+ },
+ {
+  "name": "the digest's coverage line states a count that is not what it quoted",
+  "file": "inspeximus/context_saver.py",
+  "old": "    kept = sum(len(_title(chunks[i])) + len(chunks[i][:PREVIEW]) for i in order[:TOP])\n",
+  "new": "    kept = sum(len(_title(chunks[i])) for i in order[:TOP])\n",
+  "tests": [
+   "tests/test_the_digest_says_how_little_of_the_output_it_holds.py"
+  ]
  }
 ]
