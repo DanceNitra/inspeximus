@@ -16480,5 +16480,15 @@
   "tests": [
    "tests/test_integration_conformance.py::test_no_upper_bound_is_added_without_a_recorded_reason"
   ]
+ },
+ {
+  "name": "the 2.x request path drops the reason from a tool's error",
+  "file": "inspeximus/mcp_server.py",
+  "old": "                raise _ToolError(f\"Error executing tool {name}: {cause}\") from cause\n",
+  "new": "                raise\n",
+  "tests": [
+   "tests/test_a_tool_error_reaches_a_2x_client_with_its_reason.py"
+  ],
+  "requires_mcp": 2
  }
 ]

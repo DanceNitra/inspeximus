@@ -383,9 +383,44 @@ def split_by_platform(mutations: list[dict], plat: str | None = None, osname: st
     return here, elsewhere
 
 
+def _installed_mcp_major() -> int | None:
+    """The MAJOR version of the installed MCP SDK, or None when it is not installed."""
+    try:
+        from importlib.metadata import version
+        return int(version("mcp").split(".")[0])
+    except Exception:                                                  # noqa: BLE001
+        return None
+
+
+def split_by_requires_mcp(mutations: list[dict], major: int | None = None):
+    """(entries that run against the installed MCP SDK, entries that name another major).
+
+    Same shape and same reason as `platform`, for a different axis. The 2.x request-path wrapper
+    (`_FreshFastMCP.call_tool`) is only DEFINED on mcp 2.x, so its mutant cannot be killed on 1.x:
+    unregistered, the guarantee has no gate at all; registered without a field, it fails this gate
+    on every 1.x machine, which is what the release machine has. With `requires_mcp` it is
+    registered, runs where its line exists, and is NAMED as not run elsewhere.
+    """
+    major = major if major is not None else _installed_mcp_major()
+    here, elsewhere = [], []
+    for m in mutations:
+        want = m.get("requires_mcp")
+        if want is None:
+            here.append(m)
+            continue
+        if not isinstance(want, int) or want < 1:
+            raise ValueError(f"{m.get('name')!r}: requires_mcp {want!r} is not a major version")
+        (here if major == want else elsewhere).append(m)
+    return here, elsewhere
+
+
 def report_elsewhere(elsewhere: list[dict], plat: str | None = None) -> None:
     for m in elsewhere:
-        print(f"  NOT RUN ON {plat or sys.platform}: {m['name']} (platform {m['platform']})")
+        if "requires_mcp" in m and "platform" not in m:
+            print(f"  NOT RUN ON mcp {_installed_mcp_major()}: {m['name']} "
+                  f"(requires_mcp {m['requires_mcp']})")
+        else:
+            print(f"  NOT RUN ON {plat or sys.platform}: {m['name']} (platform {m['platform']})")
 
 
 def run(mutations: list[dict], verbose: bool = True) -> int:
@@ -562,11 +597,13 @@ def main() -> int:
         print("the spec is empty: a run over zero mutations is a green result over nothing")
         return 1
     mutations, elsewhere = split_by_platform(mutations)
+    mutations, other_sdk = split_by_requires_mcp(mutations)
+    elsewhere = elsewhere + other_sdk
     print(f"{len(mutations)} mutations from {_shown(path)}"
-          + (f", {len(elsewhere)} more for another platform" if elsewhere else "") + "\n")
+          + (f", {len(elsewhere)} more for another platform or SDK" if elsewhere else "") + "\n")
     report_elsewhere(elsewhere)
     if not mutations:
-        print("every entry names another platform: nothing runs here")
+        print("every entry names another platform or SDK: nothing runs here")
         return 0
     return run(mutations)
 
