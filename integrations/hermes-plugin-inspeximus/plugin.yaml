@@ -1,6 +1,6 @@
 name: inspeximus
-version: "3.23.1"
+version: "3.26.0"
 description: "Memory provider with keyed corrections you can undo: a corrected fact stops being recalled, and revert(key) puts the previous value back from the key alone."
 requires_hermes: ">=0.21"
 pip_dependencies:
-  - inspeximus>=3.23.1,<4
+  - inspeximus>=3.26.0,<4

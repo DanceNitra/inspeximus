@@ -68,6 +68,11 @@ REQUIRED_CARRIERS = (
     # installs the previous one. The generated HTML carries the same lines.
     "docs/install/index.md",
     "install/index.html",
+    # THE HERMES PLUGIN'S MANIFEST, ADDED 2026-10-29 BECAUSE IT WAS NOT ON THIS LIST AND DRIFTED. It
+    # was written at 3.23.1 and three releases later still said 3.23.1, while the Nous plugin catalog
+    # copies that version into the entry a Hermes user reads before installing. Both fields move with
+    # the release: the version the catalog shows, and the floor pip resolves.
+    "integrations/hermes-plugin-inspeximus/plugin.yaml",
 )
 
 
@@ -166,6 +171,17 @@ def _read_carrier(root, rel):
             if not pins:
                 return [], "launches inspeximus without a pinned version"
             return [("pin[%d]" % i, v) for i, v in enumerate(pins)], None
+        if rel == "integrations/hermes-plugin-inspeximus/plugin.yaml":
+            text = path.read_text(encoding="utf-8")
+            out = []
+            m = re.search(r'^version:\s*["\']?([^"\'\s]+)["\']?\s*$', text, re.M)
+            if m:
+                out.append(("version", m.group(1)))
+            out += [("floor[%d]" % i, v) for i, v in
+                    enumerate(re.findall(r'inspeximus>=([0-9][0-9A-Za-z.+-]*)', text))]
+            if len(out) != 2:
+                return [], "carries %d of its 2 version fields (version, pip floor)" % len(out)
+            return out, None
         if rel == "glama.json":
             # It declares no version today. That is fine and it is REPORTED rather than passed over in
             # silence: a check that reads an absent field and says nothing has measured nothing. The

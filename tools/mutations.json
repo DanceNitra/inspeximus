@@ -6358,8 +6358,8 @@
  {
   "name": "the install page is not a version carrier",
   "file": "tools/release_check.py",
-  "old": "    \"docs/install/index.md\",\n    \"install/index.html\",\n)\n",
-  "new": ")\n",
+  "old": "    \"docs/install/index.md\",\n    \"install/index.html\",\n",
+  "new": "",
   "tests": [
    "tests/test_the_install_page_names_a_version_floor.py"
   ]
@@ -16434,6 +16434,15 @@
   "new": "elapsed_s=round(time.perf_counter() - t0, 3), intent_chars=intent,",
   "tests": [
    "tests/test_3232_the_saver_replaces_bash_output_after_the_call.py::test_a_record_of_the_replacement_holds_no_command_output_intent_or_path"
+  ]
+ },
+ {
+  "name": "the hermes plugin manifest is not a version carrier",
+  "file": "tools/release_check.py",
+  "old": "    \"integrations/hermes-plugin-inspeximus/plugin.yaml\",\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hermes_plugin_manifest_carries_this_version.py::test_the_manifest_is_a_version_carrier"
   ]
  }
 ]
