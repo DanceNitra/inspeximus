@@ -11,14 +11,21 @@ and which never touches the stored transcript. prune_tool_results_only is overri
 but it is not the main path: Hermes calls it only when the context is over threshold AND
 compaction is blocked, so an engine that works there alone does nothing on an ordinary turn.
 
-Measured on the owner's own Hermes transcript, 264 tool results over 2,000 characters
-(probes/hermes_prune_vs_our_saver_on_his_transcript.py in the agora repo, 2026-10-29). Of the
-question's terms that appear only in the middle of the output, where neither the command echo
-nor the exit status can carry them:
+Measured on one Hermes session store, 3,233 messages across 11 sessions, 264 tool results over
+2,000 characters (probes/hermes_prune_vs_our_saver_on_his_transcript.py in the agora repo,
+2026-10-29, inspeximus 3.26.0). Of the question's terms that appear only in the middle of the
+output, where neither the command echo nor the exit status can carry them:
 
   Hermes's prune        0.5% of the bytes,  0.0% of those terms
   this engine          27.3% of the bytes, 61.5% of those terms
-  truncation, same budget           27.4%, 54.9%
+
+Hermes's prune emits a byte count, so it carries no term from the output at any setting of the
+window that defines "the middle". That is the comparison this engine rests on. A third row
+comparing the engine with head-and-tail truncation at the same budget, at 54.9%, is WITHDRAWN:
+probes/the_digest_win_survives_its_own_kill_tests.py showed the window size decides the direction,
+that the digest's own "Searchable terms:" footer is worth several points to a substring scorer,
+and that an unranked evenly spaced sampler ties the footerless digest on this corpus. See the
+README beside this file.
 
 Two findings shaped the code. Hermes's pass demotes a digest as readily as raw output, which
 took the figure back to 0.0%, so _demote_tool_result_at spares a digest during the proactive
