@@ -3434,8 +3434,10 @@ def _build_parser():
         # "show me the flags" into a traceback.
         description="inspeximus MCP server - deterministic, zero-LLM agent memory over stdio.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="Environment: INSPEXIMUS_PATH (store file); INSPEXIMUS_SCOPE=user|project (where the store "
-               "lives; 'project' = <git-root>/.inspeximus/memory.json); INSPEXIMUS_PROJECT (scope inside "
+        epilog="Environment: INSPEXIMUS_PATH (store file); INSPEXIMUS_SCOPE=user|project|hermes|claude-code "
+               "(where the store lives; 'project' = <git-root>/.inspeximus/memory.json, 'hermes' = the "
+               "Hermes memory provider's store, 'claude-code' = the Claude Code hook's store); "
+               "INSPEXIMUS_PROJECT (scope inside "
                "the store); INSPEXIMUS_RECEIPTS=1; INSPEXIMUS_EMBED_URL/_MODEL/_KEY.\n"
                "With no flags and no environment, behaviour is unchanged: one shared store, no filtering.")
     p.add_argument("--project", metavar="NAME", default=None,

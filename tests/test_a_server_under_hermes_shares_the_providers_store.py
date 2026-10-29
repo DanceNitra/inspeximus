@@ -112,3 +112,32 @@ def test_control_the_other_scopes_still_refuse_a_missing_directory(tmp_path):
     assert store_location_problem(typed), (
         "a mistyped INSPEXIMUS_PATH was accepted, which turns a typo into a new empty memory")
     assert not os.path.exists(str(tmp_path / "typpo")), "resolving a typed path created its directory"
+
+
+def test_every_scope_the_resolver_accepts_is_named_in_the_help():
+    """`--help` is where a user looks for the scope the catalog manifest sets.
+
+    MEASURED 2026-10-29 against the published 3.26.0: the server resolved
+    `INSPEXIMUS_SCOPE=hermes` correctly and its `--help` offered only `user|project`, so the scope
+    worked and could not be found. The accepted names are read out of the resolver here, not typed,
+    so a fifth scope fails this test instead of shipping undocumented.
+    """
+    import re
+
+    import pytest
+
+    pytest.importorskip("mcp")                             # CI omits the extra; see test_a_test_that_needs_an_extra_must_guard_it
+
+    from inspeximus import _surface
+    from inspeximus.mcp_server import _build_parser
+
+    source = open(_surface.__file__, encoding="utf-8").read()
+    accepted = set(re.findall(r'scope == "([a-z-]+)"', source))
+    assert {"hermes", "claude-code"} <= accepted, (
+        "CONTROL: the resolver's scope comparisons were not found, so this test reads nothing: %r" % accepted)
+
+    epilog = _build_parser().epilog
+    missing = sorted(s for s in accepted if s not in epilog)
+    assert not missing, "--help does not name these scopes: %s" % ", ".join(missing)
+    assert "user" in epilog, "--help does not name the default scope"
+    assert "nosuchscope" not in epilog, "CONTROL: the epilog matches any name, so the check above is empty"
