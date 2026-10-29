@@ -16446,21 +16446,39 @@
   ]
  },
  {
- "name": "the context engine manifest is not a version carrier",
- "file": "tools/release_check.py",
- "old": "    \"integrations/hermes-context-engine-inspeximus/plugin.yaml\",\n",
- "new": "",
- "tests": [
-  "tests/test_the_hermes_plugin_manifest_carries_this_version.py::test_the_manifest_is_a_version_carrier"
- ]
+  "name": "the context engine manifest is not a version carrier",
+  "file": "tools/release_check.py",
+  "old": "    \"integrations/hermes-context-engine-inspeximus/plugin.yaml\",\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hermes_plugin_manifest_carries_this_version.py::test_the_manifest_is_a_version_carrier"
+  ]
  },
  {
- "name": "the hermes context engine lets Hermes demote its own digest",
- "file": "integrations/hermes-context-engine-inspeximus/__init__.py",
- "old": "        if protected_skills is not None and isinstance(content, str) and content.startswith(MARKER):\n            return False\n",
- "new": "",
- "tests": [
-  "tests/test_the_hermes_context_engine_digests_and_is_spared.py::test_a_digest_is_spared_on_the_proactive_pass_and_demoted_under_pressure"
- ]
+  "name": "the hermes context engine lets Hermes demote its own digest",
+  "file": "integrations/hermes-context-engine-inspeximus/__init__.py",
+  "old": "        if protected_skills is not None and isinstance(content, str) and content.startswith(MARKER):\n            return False\n",
+  "new": "",
+  "tests": [
+   "tests/test_the_hermes_context_engine_digests_and_is_spared.py::test_a_digest_is_spared_on_the_proactive_pass_and_demoted_under_pressure"
+  ]
+ },
+ {
+  "name": "the cap check accepts an undocumented upper bound",
+  "file": "tests/test_integration_conformance.py",
+  "old": "        if len(text) < min_reason_chars:\n            out.append((ln.strip(), \"no comment block above it, or too short to be a reason\"))\n        elif",
+  "new": "        if False:\n            out.append((ln.strip(), \"no comment block above it, or too short to be a reason\"))\n        elif",
+  "tests": [
+   "tests/test_integration_conformance.py::test_no_upper_bound_is_added_without_a_recorded_reason"
+  ]
+ },
+ {
+  "name": "the cap check accepts a long comment that never says what broke",
+  "file": "tests/test_integration_conformance.py",
+  "old": "        elif not any(w in text.lower() for w in _REASON_WORDS):\n            out.append((ln.strip(), \"the comment above it never says what broke\"))\n",
+  "new": "",
+  "tests": [
+   "tests/test_integration_conformance.py::test_no_upper_bound_is_added_without_a_recorded_reason"
+  ]
  }
 ]

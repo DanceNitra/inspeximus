@@ -271,14 +271,67 @@ def test_every_framework_is_an_optional_extra_in_pyproject():
             f"there is no supported way to install it")
 
 
+#: Words that make a comment a RECORDED REASON rather than a label. A reason says what broke.
+_REASON_WORDS = ("because", "breaks", "broke", "fails", "failed", "measured", "does not",
+                 "no longer", "incompatible", "regress")
+
+
+def _unexplained_caps(extras, min_reason_chars=80):
+    """Capped requirement lines whose comment block above them does not record a reason.
+
+    Returned as (line, why it is unexplained), so a failure names the defect rather than a diff.
+    """
+    lines = extras.splitlines()
+    out = []
+    for i, ln in enumerate(lines):
+        if "<" not in ln or ln.strip().startswith("#") or "=" not in ln:
+            continue
+        reason, j = [], i - 1
+        while j >= 0 and lines[j].strip().startswith("#"):
+            reason.insert(0, lines[j].strip().lstrip("#").strip())
+            j -= 1
+        text = " ".join(reason)
+        if len(text) < min_reason_chars:
+            out.append((ln.strip(), "no comment block above it, or too short to be a reason"))
+        elif not any(w in text.lower() for w in _REASON_WORDS):
+            out.append((ln.strip(), "the comment above it never says what broke"))
+    return out
+
+
 def test_no_upper_bound_is_added_without_a_recorded_reason():
     """A library upper bound has a MEASURED cost here: the `mcp<2` cap changed pip's search order and a
     nine-extra install resolved google-adk ten majors back. So a cap is allowed only alongside the
-    breakage that justifies it, written down next to it."""
+    breakage that justifies it, written down next to it.
+
+    This used to assert that the capped set equalled one literal string, `mcp = ["mcp[cli]>=1.28,<2"]`.
+    That detects CHANGE, not the rule: widening the cap to `<3` fails it, and so does REMOVING the cap,
+    which is what the docstring actually asks for. A test that encodes today's answer cannot tell a
+    justified cap from an unjustified one, and it blocked the mcp 2.x port for the wrong reason. The
+    rule is now enforced as stated, and the controls below make the check able to fail.
+    """
     src = pathlib.Path(ROOT, "pyproject.toml").read_text(encoding="utf-8")
     extras = src.split("[project.optional-dependencies]")[1].split("[project.scripts]")[0]
-    capped = [ln.strip() for ln in extras.splitlines()
-              if "<" in ln and not ln.strip().startswith("#")]
-    assert capped == ['mcp = ["mcp[cli]>=1.28,<2"]'], (
-        f"a new upper bound appeared: {capped}. Caps are carried only on breakage actually observed, "
-        f"and the observation is written beside the pin. Prefer a floor.")
+
+    # CONTROLS, in both directions: the check must flag a bare cap, accept a documented one, and
+    # refuse a comment that is merely long. Without these it could pass by never matching anything.
+    assert _unexplained_caps('other = ["other<9"]\n'), (
+        "CONTROL: a cap with no comment above it must be flagged")
+    assert not _unexplained_caps(
+        "# other 9 broke the import: the surrounding API moved and the server does not start at\n"
+        "# all. Measured on 9.0.0 and 9.1.0, both of which fail at import time.\n"
+        'other = ["other<9"]\n'), "CONTROL: a documented cap must be accepted"
+    assert _unexplained_caps(
+        "# the upper bound for other, carried since the beginning of this project and kept here\n"
+        "# so that the extra keeps resolving the way it always has done up to this point.\n"
+        'other = ["other<9"]\n'), (
+        "CONTROL: a comment that is long but never says what broke is a label, not a reason")
+    # And the two conditions must be independent. A three-word note that happens to contain a reason
+    # word is still not a reason, and without this control the length condition can be deleted and
+    # every test here keeps passing: measured, the mutation survived the whole suite.
+    assert _unexplained_caps("# broke\n" 'other = ["other<9"]\n'), (
+        "CONTROL: a reason word alone is not a recorded reason")
+
+    unexplained = _unexplained_caps(extras)
+    assert not unexplained, (
+        "an upper bound carries no recorded reason: %s. Caps are carried only on breakage actually "
+        "observed, and the observation is written beside the pin. Prefer a floor." % unexplained)
