@@ -245,6 +245,10 @@ jobs:
         run: python tools/mcp_sdk_check.py ${{ matrix.mcp }}
       - name: every test that drives the MCP server
         run: python -m pytest $(grep -l -E 'mcp_server|_mcp_review|importorskip\("mcp"\)' tests/*.py) -q -rfE
+      # The one probe that lists the server's tools, resources, templates and prompts. It read a 1.x-only field
+      # name (uriTemplate) and only the integrations job, which resolves 2.x, ran it.
+      - name: the MCP probe cited by the docs
+        run: python -m pytest tests/test_probes_cited_by_docs.py -k rich_mcp -q -rfE -o addopts=""
 
   # THE BROWSER VERIFIER (docs/verify/) is a JavaScript copy of verify_erasure_certificate and
   # verify_bundle, and a second copy of a decision is how this repository has drifted before. Its

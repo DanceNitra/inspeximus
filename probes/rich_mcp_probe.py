@@ -30,7 +30,8 @@ M._MEM.remember("Paris has an airport at Charles de Gaulle.", key="b")
 async def names():
     tools = {t.name for t in await M.mcp.list_tools()}
     res = {str(r.uri) for r in await M.mcp.list_resources()}
-    tmpl = {t.uriTemplate for t in await M.mcp.list_resource_templates()}
+    tmpl = {getattr(t, "uri_template", None) or t.uriTemplate          # mcp 2.x | 1.x
+            for t in await M.mcp.list_resource_templates()}
     prompts = {p.name for p in await M.mcp.list_prompts()}
     return tools, res, tmpl, prompts
 
