@@ -150,6 +150,37 @@ not the benchmark being kind to us.
 
 ---
 
+## Keep the big tool result out of the context window
+
+The context saver replaces an oversized tool result with a ranked digest and the path of a file
+holding the whole output. The agent reads the digest, and reads the file when it needs the rest.
+It ships two ways, and neither needs a code change in your agent. In Claude Code it is part of the
+`PostToolUse` hook that `inspeximus install --all` or `inspeximus install --ide claude` wires up.
+For Hermes, `integrations/hermes-context-engine-inspeximus/` is a context engine that runs before
+every provider request. Measured on one Hermes session store, 3,233 messages across 11 sessions,
+where tool results are 84.4% of the message bytes, over the 264 results longer than 2,000
+characters:
+
+| strategy | bytes kept | mid-output question terms kept |
+|---|---|---|
+| Hermes's own prune | 0.5% | 0.0% |
+| the saver's digest | 27.3% | 61.5% |
+
+Scope: inspeximus 3.26.0, measured 2026-10-29, one operator's sessions on one machine, lexical
+ranking with no embedder, and a mid-output question term is a word of the tool call's own arguments
+present in the output but absent from its first and last 400 bytes. Hermes replaces a tool result
+it has no summarizer for with a byte count, which carries no term from the output at any setting of
+that window, and the agent re-runs the tool to get the content back.
+
+**What we could not show.** An earlier version of the engine's page compared the digest with
+head-and-tail truncation at the same byte budget. That row is withdrawn: the window size decides
+the direction, the digest's own `Searchable terms:` footer is worth several points to a
+substring scorer, and on the Hermes corpus an unranked evenly spaced sampler matches the footerless
+digest. The honest reason to use the saver is what Hermes's prune does without it, not a win over
+truncation. [The whole retraction, with the numbers](integrations/hermes-context-engine-inspeximus/README.md#what-we-tested-and-could-not-show).
+
+---
+
 ## EU AI Act and GDPR evidence, built in
 
 Every write, correction, erasure and agent action leaves a signed, hash-chained record. A third
