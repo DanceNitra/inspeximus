@@ -199,6 +199,60 @@ def test_a_read_of_a_capture_or_a_platform_file_is_recorded_as_a_follow_up(home,
     assert [r["follow_up"] for r in recs] == [True, False]
 
 
+def test_a_digest_and_the_read_of_its_file_pair_from_the_records_alone(home, tmp_path):
+    """The figure "one read away" rests on pairing a digest with the read that followed it. Each record carries the id
+    of the file it named (`capture`), and each follow-up the ids of the files its command read (`reads`), so `stats`
+    pairs them without the aggregates. Fails on the code before the link: no record carries either field."""
+    _config(home, {"saver": {"hook": True}})
+    rep = cs.post_tool_use_replacement(_ev(_big("the answer is here: zebra-quartz")[:20000]))
+    path = rep["hookSpecificOutput"]["updatedToolOutput"]["stdout"].rsplit("full output: ", 1)[1].strip()
+    text = _big("zebra-quartz") * 2                          # a second digest, from the platform's file, never read
+    pf = _platform_file(tmp_path, text)
+    cs.post_tool_use_replacement(_ev(text[:cs.PLATFORM_CUT_CHARS], persistedOutputPath=str(pf),
+                                     persistedOutputSize=len(text.encode())))
+    # The follow-up names the file in another path style than the digest printed, as a Bash call on Windows does.
+    cs.post_tool_use_replacement(_ev("x" * (cs.PASSTHROUGH_BYTES - 1),
+                                     command="sed -n 1,80p '%s'" % path.replace("\\", "/")))
+    s = cs.stats([time.strftime("%Y-%m-%d", time.gmtime())])
+    assert (s["linked"], s["read_again"]) == (2, 1), s
+    # The control: a read of a capture no digest named pairs with nothing, so the count does not just follow reads.
+    cs.post_tool_use_replacement(_ev("x" * (cs.PASSTHROUGH_BYTES - 1),
+                                     command="cat /c/x/saver-out/capture-nobodynamedme.txt"))
+    s = cs.stats([time.strftime("%Y-%m-%d", time.gmtime())])
+    assert (s["linked"], s["read_again"], s["follow_ups"]) == (2, 1, 2), s
+    assert "1 of 2 captures that named the file with the whole output were followed by a read" in cs.stats_text(s)
+
+
+def test_a_capture_id_ignores_the_path_style_and_holds_no_name():
+    name = "capture-k2j4x9.txt"
+    ids = {cs.capture_id(p) for p in ("C:\\Users\\u\\AppData\\Roaming\\inspeximus\\saver-out\\" + name,
+                                      "C:/Users/u/AppData/Roaming/inspeximus/saver-out/" + name.upper(),
+                                      "/c/Users/u/AppData/Roaming/inspeximus/saver-out/" + name)}
+    assert len(ids) == 1 and "k2j4x9" not in ids.pop()
+    assert cs.captures_read('head -c 900 "/c/u/saver-out/%s" && cat x/tool-results/b40.txt' % name) == \
+        [cs.capture_id(name), cs.capture_id("b40.txt")]
+    assert cs.captures_read("git log --stat") == []
+
+
+@pytest.mark.parametrize("case", ["tool_input-list", "tool_input-text", "description-number", "description-list"])
+def test_a_payload_of_another_shape_is_no_replacement(home, tmp_path, case):
+    """Claude Code writes the payload outside this process and may change its shape. Each case raised inside
+    post_tool_use_replacement before the guard, and only the caller's try kept the output; the guard now sits in
+    the function, so every entry point gets it."""
+    _config(home, {"saver": {"hook": True}})
+    text = _big("the answer is here: zebra-quartz")[:20000]
+    ev = _ev(text)
+    field, kind = case.split("-")
+    bad = {"list": ["git", "log"], "text": "git log", "number": 7}[kind]
+    if field == "tool_input":
+        ev["tool_input"] = bad
+    else:
+        ev["tool_input"]["description"] = bad if kind != "list" else ["find", "zebra-quartz"]
+    assert cs.post_tool_use_replacement(ev) is None
+    # The control: the same output in a well-formed payload is still replaced, so the guard did not widen to all.
+    assert "zebra-quartz" in cs.post_tool_use_replacement(_ev(text))["hookSpecificOutput"]["updatedToolOutput"]["stdout"]
+
+
 def test_the_pre_tool_use_hook_no_longer_rewrites_a_bash_call(home, tmp_path):
     _config(home, {"saver": {"hook": True}})
     ev = {"hook_event_name": "PreToolUse", "tool_name": "Bash", "permission_mode": "default",

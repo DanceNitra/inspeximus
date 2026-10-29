@@ -17,7 +17,7 @@ from test_3230_the_saver_captures_bash_output_in_the_hook import (  # noqa: E402
 from inspeximus import context_saver as cs  # noqa: E402
 
 FIELDS = {"ts", "v", "mode", "ranking", "bytes_in", "platform_shown", "bytes_out", "elapsed_s", "intent_chars", "why",
-          "follow_up", "top_unseen"}
+          "follow_up", "top_unseen", "capture", "reads"}
 
 
 def _records():
@@ -54,6 +54,9 @@ def test_every_mode_writes_one_record_with_what_the_agent_received(home):
         assert r["intent_chars"] == len("section 3") and r["follow_up"] is False and r["elapsed_s"] >= 0
     assert rec[1]["ranking"] == "hybrid" and rec[0]["ranking"] is None
     assert rec[3]["why"] and rec[1]["why"] is None
+    # The link: a record names its file's id exactly when the agent was told the file holds the whole output.
+    assert [r["capture"] is not None for r in rec] == [False, True, True, False]
+    assert all(r["reads"] == [] for r in rec)
     assert rec[1]["bytes_out"] < rec[1]["bytes_in"] / 2, "the digest record does not show a saving: no proof"
 
 

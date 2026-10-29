@@ -518,6 +518,31 @@ def targets_captures(command) -> bool:
     return "saver-out" in c or "tool-results" in c
 
 
+_CAPTURE_NAMED = re.compile(r"(?:saver-out|tool-results)[\\/]+([^\s\"'`\\/<>|;&()]+)")
+
+
+def capture_id(path) -> str:
+    """The link from a capture's record to the file that holds its whole output: 16 hex digits of the SHA-256 of the
+    file's base name, case-folded. A digest of a name, never a path, so the record still holds no path; and the base
+    name alone, so a follow-up command that names the file in any path style (C:\\..., /c/..., forward slashes)
+    yields the same id. Both names it covers are unique by construction: mkstemp's for a capture, the tool call's id
+    for Claude Code's persisted file."""
+    import hashlib
+    import os
+    name = os.path.basename(str(path).replace("\\", "/")).casefold()
+    return hashlib.sha256(name.encode("utf-8")).hexdigest()[:16]
+
+
+def captures_read(command) -> list:
+    """The capture ids of the files under saver-out or tool-results that `command` names, in order, each once."""
+    out = []
+    for name in _CAPTURE_NAMED.findall(command or ""):
+        i = capture_id(name)
+        if i not in out:
+            out.append(i)
+    return out
+
+
 def record_capture(line, now=None) -> bool:
     """Append one capture's record to today's file, as one write of one line. The record holds sizes, seconds and
     modes only: no command, no output, no intent and no path. Never raises and never prints: a failed write costs a
@@ -634,7 +659,12 @@ def stats(days, now=None) -> dict:
     for r in lines:
         key = "%s/%s" % (r.get("mode"), r.get("ranking") or "-")
         by[key] = by.get(key, 0) + 1
+    # THE PAIRING, from the records alone: a record that named a file carries its `capture` id, and a follow-up record
+    # carries the ids of the files its command read (`reads`). A record written before the link existed carries neither.
+    read_ids = {i for r in lines if isinstance(r.get("reads"), list) for i in r["reads"]}
+    linked = [r for r in lines if r.get("capture")]
     return {"days": list(days), "captures": len(lines), "follow_ups": len(lines) - len(new), "unreadable_lines": bad,
+            "linked": len(linked), "read_again": sum(1 for r in linked if r["capture"] in read_ids),
             "gross_in": gross_in, "net_in": net_in, "bytes_out": out_all,
             "gross_saved": gross_in - out_all, "net_saved": net_in - out_all,
             "digests": len(digests), "top_unseen": sum(1 for r in digests if r["top_unseen"]),
@@ -656,6 +686,8 @@ def stats_text(s) -> str:
               PLATFORM_PREVIEW_BYTES, s["bands"]["preview"]["captures"], s["bands"]["preview"]["saved"]),
            "%d of %d digests led with a section the agent would not have seen in Claude Code's own preview"
            % (s["top_unseen"], s["digests"]),
+           "%d of %d captures that named the file with the whole output were followed by a read of that file"
+           % (s["read_again"], s["linked"]),
            "against the whole outputs, follow-up reads counted as new output: %d of %d bytes, %s"
            % (s["gross_saved"], s["gross_in"], pct(s["gross_saved"], s["gross_in"])),
            "%d captures, %d of them follow-up reads; %d bytes reached the agent; %.1f s spent in the saver"
@@ -688,7 +720,8 @@ def _embedders_for_capture():
     return make_embedders(url=url, config_model=model)
 
 
-def print_capture(path, intent=None, *, out=None, err=None, embedders=None, reranker=None, follow_up=False) -> str:
+def print_capture(path, intent=None, *, out=None, err=None, embedders=None, reranker=None, follow_up=False,
+                  reads=None) -> str:
     """Print a captured output the way it should reach the agent, and return the mode used.
 
     Under PASSTHROUGH_BYTES: the output, unchanged. Otherwise the saver's digest and follow-up, the read guard line
@@ -701,11 +734,14 @@ def print_capture(path, intent=None, *, out=None, err=None, embedders=None, rera
     Claude Code would have shown without the saver (`platform_shown`), the bytes the agent received, the seconds
     spent, the mode and ranking, whether the digest's first section lies outside what Claude Code would have shown
     (`top_unseen`: past its preview, for an output past its cut; never, for an output it shows whole), and
-    `follow_up` when the command read an earlier capture (`targets_captures`)."""
+    `follow_up` when the command read an earlier capture (`targets_captures`). `capture` is the `capture_id` of the
+    file the agent was told holds the whole output (None when no file was named), and `reads` the ids of the
+    captures the command read (`captures_read`), so a digest pairs with its follow-up read from the records alone."""
     import time
     from . import __version__
     t0 = time.perf_counter()
-    acc = {"bytes_in": 0, "platform_shown": 0, "bytes_out": 0, "ranking": None, "why": None, "top_unseen": None}
+    acc = {"bytes_in": 0, "platform_shown": 0, "bytes_out": 0, "ranking": None, "why": None, "top_unseen": None,
+           "capture": None}
     mode = "raw"
     try:
         mode = _print_capture(path, intent, out, err, embedders, reranker, acc)
@@ -714,7 +750,8 @@ def print_capture(path, intent=None, *, out=None, err=None, embedders=None, rera
                         "ranking": acc["ranking"], "bytes_in": acc["bytes_in"],
                         "platform_shown": acc["platform_shown"], "bytes_out": acc["bytes_out"],
                         "elapsed_s": round(time.perf_counter() - t0, 3), "intent_chars": len(intent or ""),
-                        "why": acc["why"], "follow_up": bool(follow_up), "top_unseen": acc["top_unseen"]})
+                        "why": acc["why"], "follow_up": bool(follow_up), "top_unseen": acc["top_unseen"],
+                        "capture": acc["capture"], "reads": list(reads or [])})
     return mode
 
 
@@ -751,6 +788,7 @@ def _print_capture(path, intent, out, err, embedders, reranker, acc) -> str:
         text = raw.decode("utf-8")
         if intent is None and len(raw) > POINTER_BYTES:
             r = save(text, None)
+            acc["capture"] = capture_id(path)
             put(("%s\n[inspeximus-saver] %d bytes in, pointer; full output: %s\nTo search it: inspeximus-saver "
                  "--file \"%s\" --intent \"<what to look for>\"\n" % (r["text"], r["bytes_in"], path, path)).encode("utf-8"))
             return "pointer"
@@ -777,6 +815,7 @@ def _print_capture(path, intent, out, err, embedders, reranker, acc) -> str:
     if r["follow_up"]:
         lines += [SEPARATOR.strip(), r["follow_up"]]
     if r["mode"] != "passthrough":
+        acc["capture"] = capture_id(path)
         lines.append("[inspeximus-saver] %d bytes in, %s; full output: %s" % (r["bytes_in"], r["mode"], path))
     put(("\n".join(lines) + "\n").encode("utf-8"))
     return r["mode"]
@@ -795,7 +834,8 @@ def run(argv, intent=None) -> int:
         # copy, not INHERIT: inheriting passes the C-level environment, and on Linux a library in the calling process
         # had set COLUMNS and LINES there, which os.environ never held (measured 2026-10-21 under pytest on WSL).
         rc = _envpolicy.start(argv, env=_envpolicy.child_env(), stdout=f, stderr=_envpolicy.STDOUT).returncode
-    print_capture(path, intent or " ".join(argv)[:300], follow_up=targets_captures(" ".join(argv)))
+    print_capture(path, intent or " ".join(argv)[:300], follow_up=targets_captures(" ".join(argv)),
+                  reads=captures_read(" ".join(argv)))
     sweep_captures()
     sweep_stats()
     return rc
@@ -877,7 +917,8 @@ def post_tool_use_replacement(ev):
     file the platform persisted the whole output to (`persistedOutputPath`): the saver reads that file and never
     writes it. Which case applies is read from the response, never assumed from the constant.
 
-    Untouched (None): another tool, the saver switched off, an output under PASSTHROUGH_BYTES, a result that is an
+    Untouched (None): another tool, a tool_input that is not an object or a description that is not text, the saver
+    switched off, an output under PASSTHROUGH_BYTES, a result that is an
     image or was interrupted, a persisted path that is not a platform file, and any failure, so a failure costs the
     saving and never the output. Ranking is lexical: it needs nothing installed and takes about 0.1 s on 446 KB, where
     hybrid took 40 s (2026-10-26). Every call past the passthrough bound leaves one record line, as print_capture does.
@@ -885,7 +926,15 @@ def post_tool_use_replacement(ev):
     digest offers has a file to read. Every Bash call it examines, whatever the outcome, sweeps the captures and day
     files past their keep, silently."""
     from . import _envpolicy, _userconfig
-    if ev.get("tool_name") != "Bash":
+    # THE PAYLOAD'S SHAPE IS CHECKED HERE, NOT BY A CALLER. Claude Code writes it, outside this process, and is free
+    # to change it; a guard in one caller protects that caller, and the next entry point inherits the exception. A
+    # tool_input that is not an object, or a description that is not text, is no replacement.
+    if not isinstance(ev, dict) or ev.get("tool_name") != "Bash":
+        return None
+    ti = ev.get("tool_input")
+    if ti is None:
+        ti = {}
+    if not isinstance(ti, dict) or not isinstance(ti.get("description"), (str, type(None))):
         return None
     if (_envpolicy.raw("INSPEXIMUS_SAVER_HOOK") or "").strip().lower() in ("0", "false", "no", "off"):
         return None
@@ -898,12 +947,11 @@ def post_tool_use_replacement(ev):
     import time
     from . import __version__
     t0 = time.perf_counter()
-    ti = ev.get("tool_input") or {}
     cmd = ti.get("command") if isinstance(ti.get("command"), str) else ""
     intent = (ti.get("description") or "").strip() or cmd.strip()[:300]
     persisted = resp.get("persistedOutputPath")
     line = {"mode": "raw", "ranking": None, "bytes_in": 0, "platform_shown": 0, "bytes_out": 0, "why": None,
-            "top_unseen": None, "source": "persisted" if persisted else "stdout",
+            "top_unseen": None, "capture": None, "source": "persisted" if persisted else "stdout",
             "persisted_size": resp.get("persistedOutputSize"), "stdout_chars": len(resp["stdout"])}
     result = None
     try:
@@ -938,7 +986,8 @@ def post_tool_use_replacement(ev):
             parts += [SEPARATOR.strip(), r["follow_up"]]
         parts.append("[inspeximus-saver] %d bytes in, %s; full output: %s" % (r["bytes_in"], r["mode"], where))
         stdout = "\n".join(parts) + "\n"
-        line.update(mode=r["mode"], ranking=r.get("ranking"), bytes_out=len(stdout.encode("utf-8")))
+        line.update(mode=r["mode"], ranking=r.get("ranking"), bytes_out=len(stdout.encode("utf-8")),
+                    capture=capture_id(where))
         if r.get("order"):
             chunks = chunks_capped(text)
             line["top_unseen"] = bool(persisted) and sum(len(c) for c in chunks[:r["order"][0]]) >= \
@@ -953,7 +1002,7 @@ def post_tool_use_replacement(ev):
     finally:
         line.update(ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), v=__version__,
                     elapsed_s=round(time.perf_counter() - t0, 3), intent_chars=len(intent),
-                    follow_up=targets_captures(cmd))
+                    follow_up=targets_captures(cmd), reads=captures_read(cmd))
         if line["bytes_in"] or line["why"]:
             record_capture(line)
         try:                                         # every call, passthrough included: a machine whose outputs
