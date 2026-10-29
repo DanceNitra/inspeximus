@@ -927,6 +927,108 @@ def _platform_file(path) -> bool:
         return False
 
 
+#: Codex's ceiling on a replacement, from Marcus-Rise's branch (MAX_UPDATED_TOOL_OUTPUT_BYTES).
+CODEX_MAX_REPLACEMENT_BYTES = 32 * 1024
+
+
+def _codex_text_and_rebuild(tool_name, resp):
+    """(the output's text, a function that puts a digest back in the SAME JSON kind), or (None, None).
+
+    Codex checks the replacement's JSON kind against the original `tool_response` and ignores a
+    mismatch, so a digest cannot be handed back as a bare string when the tool returned an object.
+    Both shapes below were measured from a live Codex 0.154.0 hook payload on 2026-10-29, not read
+    from documentation: a shell call's `tool_response` is a plain string, and an MCP call's is
+    `{"content": [{"type": "text", "text": ...}]}`.
+    """
+    if isinstance(resp, str):
+        return resp, (lambda digest: digest)
+    if tool_name.startswith("mcp__") and isinstance(resp, dict):
+        blocks = resp.get("content")
+        if not isinstance(blocks, list):
+            return None, None
+        texts = [b for b in blocks if isinstance(b, dict) and b.get("type") == "text"
+                 and isinstance(b.get("text"), str)]
+        if not texts:
+            return None, None
+
+        def rebuild(digest, _resp=resp, _blocks=blocks, _first=texts[0]):
+            out = dict(_resp)
+            out["content"] = [dict(b, text=digest) if b is _first else b for b in _blocks]
+            return out
+
+        return "\n".join(b["text"] for b in texts), rebuild
+    return None, None
+
+
+def codex_post_tool_use_replacement(ev):
+    """What a Codex PostToolUse hook would return: `{"hookSpecificOutput": {..., "updatedToolOutput": ...}}`.
+
+    INERT UNTIL CODEX ACCEPTS THE FIELD, and that is the point of writing it now rather than later.
+    Measured live on 2026-10-29 against Codex 0.154.0: the hook ran, was handed the real result for
+    a `Bash` call and for `mcp__inspeximus__where_am_i`, printed `updatedMCPToolOutput` carrying a
+    marker, and the model answered with the RAW output both times. The binary carries the message
+    `PostToolUse hook returned unsupported updatedMCPToolOutput` and no `updatedToolOutput` at all,
+    so today there is nowhere to put a digest. Nothing installs this function; it exists so that the
+    integration is a configuration change rather than a design exercise if the field lands.
+
+    WHAT THE SHAPE HAS TO SATISFY, read from Marcus-Rise's implementation (openai/codex#34895, his
+    branch at 697db0b1), which audits and replaces the closed PR #20703:
+
+    - The generic `updatedToolOutput` is the field to send. `updatedMCPToolOutput` survives only as
+      compatibility FOR MCP TOOLS: on anything else that branch logs "ignored updatedMCPToolOutput
+      for non-MCP tool" and drops it. Our live probe sent exactly that combination, so it would be
+      ignored by the fix as well as by today's build.
+    - A replacement must preserve the JSON KIND of `tool_response`. A shell result is a string and a
+      digest can replace it directly; an MCP result is an object, so the digest goes back inside the
+      same object or the branch logs "expected object, got string" and drops it.
+    - A replacement over 32 KB is dropped. A digest is about a kilobyte, so this never binds, and it
+      is checked rather than assumed.
+
+    Returns None, leaving the result untouched, for: another tool, the saver switched off, an output
+    under PASSTHROUGH_BYTES, a payload whose shape is not one of the two measured ones, a
+    replacement over the ceiling, and any failure.
+    """
+    from . import _envpolicy, _userconfig
+    if not isinstance(ev, dict):
+        return None
+    tool_name = ev.get("tool_name")
+    if not isinstance(tool_name, str) or not (tool_name == "Bash" or tool_name.startswith("mcp__")):
+        return None
+    if (_envpolicy.raw("INSPEXIMUS_SAVER_HOOK") or "").strip().lower() in ("0", "false", "no", "off"):
+        return None
+    if _userconfig.get("saver", "hook") is not True:
+        return None
+    text, rebuild = _codex_text_and_rebuild(tool_name, ev.get("tool_response"))
+    if text is None or len(text.encode("utf-8")) < PASSTHROUGH_BYTES:
+        return None
+    ti = ev.get("tool_input") if isinstance(ev.get("tool_input"), dict) else {}
+    intent = ""
+    for key in ("description", "command", "query", "path", "file_path", "pattern"):
+        value = ti.get(key)
+        if isinstance(value, str) and value.strip():
+            intent = value.strip()[:300]
+            break
+    try:
+        r = save(text, intent or tool_name, ranking="lexical")
+        where = new_capture_path()
+        with open(where, "w", encoding="utf-8") as f:
+            f.write(text)
+        parts = [r["text"]]
+        if r["follow_up"]:
+            parts += [SEPARATOR.strip(), r["follow_up"]]
+        parts.append("[inspeximus-saver] %d bytes in, %s; full output: %s"
+                     % (r["bytes_in"], r["mode"], where))
+        digest = "\n".join(parts) + "\n"
+        replacement = rebuild(digest)
+        sized = replacement if isinstance(replacement, str) else json.dumps(replacement)
+        if len(sized.encode("utf-8")) > CODEX_MAX_REPLACEMENT_BYTES:
+            return None                              # Codex would drop it; do not pretend otherwise
+        return {"hookSpecificOutput": {"hookEventName": "PostToolUse",
+                                       "updatedToolOutput": replacement}}
+    except Exception:                                # noqa: BLE001 -- a failure costs the saving, never the output
+        return None
+
+
 def post_tool_use_replacement(ev):
     """What Claude Code's PostToolUse hook returns for a Bash call: {"hookSpecificOutput": {..., "updatedToolOutput":
     {...}}} with the saver's digest as the result's stdout, or None to leave the platform's result untouched.

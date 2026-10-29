@@ -16508,5 +16508,23 @@
   "tests": [
    "tests/test_the_digest_says_how_little_of_the_output_it_holds.py"
   ]
+ },
+ {
+  "name": "the codex reply offers a replacement Codex would drop for its size",
+  "file": "inspeximus/context_saver.py",
+  "old": "        if len(sized.encode(\"utf-8\")) > CODEX_MAX_REPLACEMENT_BYTES:\n            return None                              # Codex would drop it; do not pretend otherwise\n",
+  "new": "        if False:\n            return None                              # Codex would drop it; do not pretend otherwise\n",
+  "tests": [
+   "tests/test_the_saver_can_answer_a_codex_hook.py"
+  ]
+ },
+ {
+  "name": "the codex reply hands an MCP result a bare string",
+  "file": "inspeximus/context_saver.py",
+  "old": "        replacement = rebuild(digest)",
+  "new": "        replacement = digest",
+  "tests": [
+   "tests/test_the_saver_can_answer_a_codex_hook.py"
+  ]
  }
 ]
