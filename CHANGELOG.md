@@ -1,3 +1,40 @@
+## 3.27.0 - UPGRADE IF you run more than one agent session against one store
+
+### Changed
+
+- **A decoded vector is an `array("f")` and no longer a list of Python floats.** Each value in a list is a separate object of about 32 bytes, so a 1,024-dimension vector cost about 32 KB to hold numbers that occupy 4 KB. Measured on a 17,289-vector store: the decoded vectors took 541 MB of heap, and opening the store took 886 MB in all. The same open now takes 414 MB, a drop of 472 MB per process.
+
+  The number that makes this worth a release is the process count. One MCP server runs per open agent session, each with its own copy of the store, so fourteen sessions on one machine held about 16 GB of decoded vectors and 6.6 GB of that was the list representation alone. Nothing warns you: the working set stays small because the pages are swapped out, and the cost shows up as a machine that pages rather than as a memory error.
+
+  A full semantic scan over those 17,289 vectors goes from 1.838 s to 1.933 s, 5 percent slower, because `map(mul, ...)` boxes each value as it reads it. The top-ranked score is identical to four decimal places, and float32 holds every float16 that was stored, so no ranking changes. On a machine that was paging, the smaller store is the faster one.
+
+  A JSON store still keeps its vectors as lists, because that is what it serialises, and an embedder's answer is still a list until the row is written and read back.
+
+- **The save baseline keeps a digest of each row, not the row's text, and a store is read one row at a time.** `_row_snapshot` held every row's serialised JSON, which is the file's whole content a second time: 180 MB of heap on a 17,290-record store, in every process. It now holds `sha256` of each row, 2.4 MB for the same store.
+
+  The baseline only ever answered one question, "does the file already hold this row", and a digest answers it. Two paths needed the text itself and both now read it back from the database, which is where that text lives: `_same`, when a digest mismatch has to be settled by a normalising comparison for a row another writer stored with different key order, and the `record.removed` event, which carries the fields of the record going away. Both are per-row lookups on rows that are being written or deleted anyway. A removed row is read BEFORE the delete, because `save` deletes inside the transaction that later builds the events.
+
+  **Keeping only the digest was not enough on its own, and the reason is worth writing down.** The heap fell by 178 MB and the process did not move: 471 MB before, 471 MB after. `load_with_docs` called `fetchall()`, so every row's JSON was alive at once, and an allocator does not hand an emptied arena back to the operating system. The machine still paid for the peak. Reading the cursor row by row and digesting each string before the next one is read means that peak never exists. Measured per process on the 17,292-record store, with `GetProcessMemoryInfo`, not heap:
+
+  | | 3.26.0 | 3.27.0 |
+  |---|---|---|
+  | after opening the store | 1,087 MB | 282 MB |
+  | a running MCP server, whole process tree | 1,161 MB | 494 MB |
+
+  Fourteen open agent sessions on one machine therefore hold about 6.9 GB where they held 16.3 GB.
+
+  `load_with_docs` is now `load_with_digests` and `snapshot_from_docs` is `snapshot_from_digests`. The rename is deliberate: a caller passing texts to a function that now wants digests should fail loudly rather than build a baseline that matches nothing and rewrite the store.
+
+### Fixed
+
+- **Every check that asks "is this a vector" now names one tuple, `sqlite_store.VEC_SEQ`, instead of spelling `isinstance(v, list)` in three places.** This is what made the change above dangerous rather than mechanical. The row serialiser's check was one of the three: with an array failing it, `encode_vec` was never reached, the row kept its `vec` key, and `json.dumps(..., default=str)` wrote `"vec": "array('f', [0.0670166015625, ...])"` into the store. No exception, no warning, and the next read finds a vector that is a string. The F-40 length cap and the recipe check were the other two, and each would have stopped seeing the vectors it exists to examine.
+
+  The first version of the test for this passed against the broken check, because a save serialises only the ids that changed and the fixture remembered a NEW fact, whose vector is the embedder's list. The rewritten fixture supersedes an existing key, so the row that holds the array is the row that gets written, and the test then failed against the broken check exactly as it should.
+
+Tests: `tests/test_a_decoded_vector_is_an_array_and_survives_a_rewrite.py`, whose every test carries a control that fails if the fixture stops reproducing its case, and `tests/test_audit_b_opening_a_store_does_not_reserialise_every_row.py`, whose control now compares the baseline against `_digest(_doc(record))` computed independently for every row.
+
+Both new paths were proved covered by mutation rather than asserted. Removing `_same`'s stored-text lookup fails the foreign-writer test; removing the read of a removed row's text before the delete fails four tests across the event journal and the erasure path. Both mutations are registered in `tools/mutations.json`, so the gate keeps watching them.
+
 ## 3.26.0 - UPGRADE IF you run inspeximus inside Hermes Agent, or installed the Hermes MCP catalog entry
 
 The 3.25.0 fix for two stores did not fire on the machine that had two stores. Installing the catalog entry fresh on 2026-10-28 is what found it.
