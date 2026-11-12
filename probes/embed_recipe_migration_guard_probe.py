@@ -55,12 +55,14 @@ check("3b index_coherence() counts it", m2.index_coherence()["foreign_recipe_vec
 r4 = m2.reembed()
 check("4 reembed() realigns the space", r4["reembedded"] == 1 and r4["remaining"] == 0)
 m2b = Inspeximus(path=p, embed=embB, persist_vectors=True, embed_id="B")
-check("4b the realigned vector is on disk", [r["vec"] for r in m2b.items if r.get("key") == "k"][0] == [0.0, 1.0, 0.0])
+check("4b the realigned vector is on disk",
+      list([r["vec"] for r in m2b.items if r.get("key") == "k"][0]) == [0.0, 1.0, 0.0])
 check("4c the sidecar names the new recipe", open(p + ".embedid").read() == "B")
 
 # same recipe B stored; pass embed=embA but embed_id="B" -> must NOT re-embed (vec stays B)
 m3 = Inspeximus(path=p, embed=embA, persist_vectors=True, embed_id="B")
-v3 = [r["vec"] for r in m3.items if r.get("key") == "k"][0]
+# `list(...)`: a decoded vector is an array("f") since 3.27, and an array never equals a list.
+v3 = list([r["vec"] for r in m3.items if r.get("key") == "k"][0])
 check("5 same recipe = no re-embed (idempotent)", v3 == [0.0, 1.0, 0.0])
 
 p2 = os.path.join(d, "ram.json")
@@ -83,7 +85,7 @@ check("7 the variable that used to cap the realign has no effect: nothing embedd
 r8 = m8.reembed()
 check("7b reembed() is the deliberate way to rebuild them", r8["reembedded"] == 12 and r8["remaining"] == 0)
 m9 = Inspeximus(path=p4, embed=embC, persist_vectors=True, embed_id="C")
-check("7c the rebuilt vectors are persisted", all(r.get("vec") == [0.0, 0.0, 1.0] for r in m9.items))
+check("7c the rebuilt vectors are persisted", all(list(r.get("vec") or ()) == [0.0, 0.0, 1.0] for r in m9.items))
 os.environ.pop("INSPEXIMUS_REALIGN_MAX", None)
 
 # 8: a LEXICAL open of a semantic store must be a pure bystander. The Claude Code hooks default to
@@ -96,7 +98,7 @@ mL.remember("captured lexically", key="lex1")
 mL._save(force=True)
 mM = Inspeximus(path=p4, embed=embC, persist_vectors=True, embed_id="C")
 check("8 lexical open+save preserves the persisted vectors",
-      all(r.get("vec") == [0.0, 0.0, 1.0] for r in mM.items if r.get("key") != "lex1"))
+      all(list(r.get("vec") or ()) == [0.0, 0.0, 1.0] for r in mM.items if r.get("key") != "lex1"))
 check("8b lexical save leaves the embedid sidecar untouched",
       open(p4 + ".embedid").read().strip() == sidecar_before == "C")
 

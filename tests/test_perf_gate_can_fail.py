@@ -460,15 +460,15 @@ def test_it_fails_when_opening_a_store_serialises_every_row_again():
     assert good["store_loads"] == 1 and good["row_serializations"] == 0, (
         "fixture error: a fresh open already serialises rows", good)
 
-    real = core._rows.snapshot_from_docs
-    core._rows.snapshot_from_docs = lambda items, docs, reuse, keep_vec=True: core._rows.snapshot(items, keep_vec)
+    real = core._rows.snapshot_from_digests
+    core._rows.snapshot_from_digests = lambda items, digests, reuse, keep_vec=True: core._rows.snapshot(items, keep_vec)
     try:
         run = gate.w_prompt(200)
         with gate.Counters() as c:
             run()
         bad = c.as_dict()
     finally:
-        core._rows.snapshot_from_docs = real
+        core._rows.snapshot_from_digests = real
     assert bad["row_serializations"] >= 200, f"serialising every row did not move the counter: {bad}"
 
     fail, _ = gate.compare({"p": {"counters": good, "seconds_median": 0.1}},

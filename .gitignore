@@ -51,3 +51,6 @@ tmp/
 # MemOps data: fetched, not redistributed (benchmarks/memops/DATA.md)
 benchmarks/memops/data/
 benchmarks/memops/data_lc/
+
+# the mutation worktree tools/release_check.py builds and tears down
+.mutwt/

@@ -9776,8 +9776,8 @@
  {
   "name": "perf gate: a row is parsed twice when a store opens",
   "file": "inspeximus/sqlite_store.py",
-  "old": "            rec = json.loads(doc)\n            if isinstance(rec, dict) and VEC_KEY in rec:",
-  "new": "            json.loads(doc); rec = json.loads(doc)\n            if isinstance(rec, dict) and VEC_KEY in rec:",
+  "old": "                rec = json.loads(doc)\n                if isinstance(rec, dict) and VEC_KEY in rec:",
+  "new": "                json.loads(doc); rec = json.loads(doc)\n                if isinstance(rec, dict) and VEC_KEY in rec:",
   "tests": [
    "tests/test_the_prompt_hook_arm_goes_red.py"
   ]
@@ -9912,9 +9912,9 @@
   ]
  },
  {
-  "name": "3.17 F-40: a JSON-list vector over the cap is kept for ranking",
+  "name": "3.17 F-40: a vector over the cap is kept for ranking",
   "file": "inspeximus/core.py",
-  "old": "        if isinstance(_vv, list) and len(_vv) > _MAX_VEC_LEN:\n",
+  "old": "        if isinstance(_vv, _VEC_SEQ) and len(_vv) > _MAX_VEC_LEN:\n",
   "new": "        if False:\n",
   "tests": [
    "tests/test_a_stored_vector_carries_its_recipe_and_a_cap.py"
@@ -16525,6 +16525,43 @@
   "new": "        replacement = digest",
   "tests": [
    "tests/test_the_saver_can_answer_a_codex_hook.py"
+  ]
+ },
+ {
+  "name": "3.27: the row serialiser names only `list`, so an array vector is written as its repr",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "        if isinstance(_v, VEC_SEQ) and _v:\n",
+  "new": "        if isinstance(_v, list) and _v:\n",
+  "tests": [
+   "tests/test_a_decoded_vector_is_an_array_and_survives_a_rewrite.py"
+  ]
+ },
+ {
+  "name": "3.27: _same cannot read the stored text, so a foreign writer's row is rewritten every save",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    if not stored:\n        return False\n",
+  "new": "    if True:\n        return False\n",
+  "tests": [
+   "tests/test_audit_b_opening_a_store_does_not_reserialise_every_row.py"
+  ]
+ },
+ {
+  "name": "3.27: a removed row's text is not read before the delete, so its event is empty",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    _stored = _stored_docs(path, list(removed) + [i for i in dirty if i in before])\n",
+  "new": "    _stored = {}\n",
+  "tests": [
+   "tests/test_memory_events_land_in_the_same_transaction_as_the_rows.py",
+   "tests/test_an_erasure_takes_the_records_key_out_of_the_event_journal.py"
+  ]
+ },
+ {
+  "name": "3.27: the digest cannot encode a lone surrogate, so a hand-edited store silences the hook",
+  "file": "inspeximus/sqlite_store.py",
+  "old": "    return hashlib.sha256(doc.encode(\"utf-8\", \"surrogatepass\")).digest()\n",
+  "new": "    return hashlib.sha256(doc.encode(\"utf-8\")).digest()\n",
+  "tests": [
+   "tests/test_a_hand_edited_store_fuzz_never_silences_the_prompt_hook.py"
   ]
  }
 ]

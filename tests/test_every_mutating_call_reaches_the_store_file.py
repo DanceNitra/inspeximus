@@ -159,11 +159,12 @@ def test_a_recipe_change_persists_the_vectors_reembed_rebuilds(monkeypatch):
     a.remember("a record that carries a vector", key="k")
     a.flush()
     assert ss.looks_like_sqlite(p), "the fixture is not a row store"
-    assert [r for r in ss.load(p) if r.get("vec") == [1.0, 0.0, 0.0]],         "the control failed: the first recipe's vector is not on disk"
+    assert [r for r in ss.load(p) if list(r.get("vec") or ()) == [1.0, 0.0, 0.0]],         "the control failed: the first recipe's vector is not on disk"
 
     b = Inspeximus(path=p, embed=lambda t: [0.0, 1.0, 0.0], persist_vectors=True, embed_id="B")
-    assert [r.get("vec") for r in ss.load(p)] == [[1.0, 0.0, 0.0]], "opening under another recipe changed the disk"
+    assert [list(r.get("vec") or ()) for r in ss.load(p)] == [[1.0, 0.0, 0.0]], "opening under another recipe changed the disk"
     b.reembed(only_missing=False)
-    on_disk = [r.get("vec") for r in ss.load(p)]
+    # `list(...)`: a decoded vector is an array("f") since 3.27, and an array never equals a list.
+    on_disk = [list(r.get("vec") or ()) for r in ss.load(p)]
     assert on_disk == [[0.0, 1.0, 0.0]], (
         "the rebuilt vector never reached disk: %r" % on_disk)

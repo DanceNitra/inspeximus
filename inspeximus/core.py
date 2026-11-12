@@ -117,6 +117,8 @@ except Exception:
 _INSPEXIMUS_ENC_MAGIC = b"INSP\x01"        # versioned so the on-disk format can migrate
 
 
+from array import array as _array_type
+
 try:
     from . import sqlite_store as _rows
     _rows_mod_doc = _rows._doc
@@ -127,6 +129,12 @@ except Exception:                                  # a partial install must not 
 #: The most numbers a stored vector may hold; the same cap as an embedder's answer (F-17) and as
 #: `sqlite_store.MAX_VEC_LEN`, kept here so the JSON path has it without the row module (AUDIT-A F-40).
 _MAX_VEC_LEN = 16384
+
+#: `sqlite_store.VEC_SEQ`, read from there so the two cannot drift, with a fallback for a partial install
+#: that has no row module. A row store's vectors are `array("f")` since 3.27; a JSON store's and a fresh
+#: embedder answer's are lists. Any check that asks "is this a vector" uses this and never `list` alone:
+#: a guard that names one of the two types stops seeing the other and then reports nothing to fix.
+_VEC_SEQ = getattr(_rows, "VEC_SEQ", None) or (list, tuple, _array_type)
 
 def new_encryption_key() -> bytes:
     """A fresh random 32-byte (AES-256) key for Inspeximus(encrypt_key=...). Store it yourself (a secrets manager /
@@ -1939,7 +1947,7 @@ def verify_erasure_certificate(cert: dict, store_path: str | None = None,
             "count": len(erased), "authorship": authorship}
 
 
-__version__ = "3.26.0"
+__version__ = "3.27.0"
 
 # Internal sentinel: marks a reaffirm write already authorized by submit_revert() (which verified the
 # signed INTENT). Object identity — no text/content path can ever produce it.
@@ -5073,7 +5081,7 @@ class Inspeximus:
         if _rows is not None and _rows.VEC_KEY in r:
             _rows._decode_row(r)                   # vec16 outside a row store: a shelved vector (3.17)
         _vv = r.get("vec")
-        if isinstance(_vv, list) and len(_vv) > _MAX_VEC_LEN:
+        if isinstance(_vv, _VEC_SEQ) and len(_vv) > _MAX_VEC_LEN:
             r["vec"] = None
             r.pop("vec_recipe", None)
         r.setdefault("status", "active")
@@ -11706,7 +11714,7 @@ class Inspeximus:
             # A ROW STORE, detected by its 16-byte header rather than its name, because a store
             # migrated in place keeps whatever filename it had.
             try:
-                self._items, _docs = _rows.load_with_docs(self.path)
+                self._items, _digests = _rows.load_with_digests(self.path)
                 # A store written by an older row writer holds bytes this version would not write.
                 # The rows only change when something rewrites them, so ask for one full reconcile
                 # rather than leaving a subset of the store in the old encoding indefinitely.
@@ -11739,7 +11747,7 @@ class Inspeximus:
                     _reuse.append(False)
             self._track_all()
             self._row_snapshot = (_rows.snapshot(self._items, self._persist_vectors) if _behind else
-                                  _rows.snapshot_from_docs(self._items, _docs, _reuse, self._persist_vectors))
+                                  _rows.snapshot_from_digests(self._items, _digests, _reuse, self._persist_vectors))
             if _behind:
                 # ASK FOR A REWRITE, DO NOT EMPTY THE BASELINE. The snapshot above is built from the
                 # PARSED records, so it already holds what this version would write and an ordinary
@@ -20418,7 +20426,7 @@ class Inspeximus:
             return None
         tag = dict.get(rec, "vec_recipe")
         vec = dict.get(rec, "vec")
-        if not tag or not isinstance(vec, list) or not vec:
+        if not tag or not isinstance(vec, _VEC_SEQ) or not vec:
             return None
         cache = self.__dict__.setdefault("_recipe_tags", {})
         want = cache.get(len(vec))
@@ -20569,9 +20577,14 @@ class Inspeximus:
         if _rows is None or not isinstance(snap, dict) or not self._rows_available():
             return {"compacted": 0, "kept_as_list": 0,
                     "note": "not a row store: a JSON store keeps its vectors as lists"}
-        # The stored text is the only place the encoding shows: in memory both forms are the same list.
+        # The stored text is the only place the encoding shows: in memory both forms rank the same.
         # `"vec": [` with unescaped quotes is a key; inside a string value the quotes are escaped.
-        listed = {k for k, d in snap.items() if isinstance(d, str) and '"vec": [' in d}
+        # READ THAT TEXT FROM THE STORE, NOT FROM THE BASELINE. Since 3.27 the baseline holds a
+        # digest of each row rather than its text (see `sqlite_store._digest`), so scanning it finds
+        # nothing and this would report every store as already compact -- a check that cannot see its
+        # subject reporting SAFE. The store is where the text lives.
+        listed = {k for k, d in _rows._stored_docs(self.path, list(snap)).items()
+                  if isinstance(d, str) and '"vec": [' in d}
         n = kept = 0
         for r in self._items:
             rid = r.get("id") if isinstance(r, dict) else None

@@ -1,5 +1,10 @@
 """A row store keeps a persisted vector as base64 float16 under `vec16` (3.17).
 
+SINCE 3.27 A DECODED VECTOR IS AN `array("f")`, NOT A LIST, so the assertions here compare VALUES and
+ask `isinstance(v, rows.VEC_SEQ)` rather than `isinstance(v, list)`. A list of 1,024 Python floats cost
+about 32 KB against the array's 4 KB, and one MCP server runs per open agent session. A row written
+before 3.17 keeps its JSON list and is still compared as one.
+
 Measured on a 13,498-record store with 1,024-dimension vectors: JSON lists of float32 took 186 MB, this
 encoding 37 MB, and on 8 real queries the top 10 matched float32's on all 8. These tests pin the
 format: what is written, what is read back, what an older row reads as, and what a malformed one does.
@@ -69,7 +74,7 @@ def test_reopening_reads_the_float16_values_back(tmp_path):
     p, ids = _seed(tmp_path)
     m = _open(p)
     for r in m.items:
-        assert r["vec"] == _f16(_emb(r["text"])), "a vector read back is not the float16 of what was embedded"
+        assert list(r["vec"]) == _f16(_emb(r["text"])), "a vector read back is not the float16 of what was embedded"
         assert rows.VEC_KEY not in r, "the encoded text stayed on the record in memory"
 
 
@@ -170,7 +175,7 @@ def test_a_value_that_is_not_finite_anywhere_in_the_vector_is_refused():
         text = base64.b64encode(struct.pack("<%de" % len(vals), *vals)).decode("ascii")
         assert rows.decode_vec(text) is None, vals[:3]
     ok = base64.b64encode(struct.pack("<3e", 65504.0, 65504.0, -65504.0)).decode("ascii")
-    assert rows.decode_vec(ok) == [65504.0, 65504.0, -65504.0], "control: the largest finite halves still decode"
+    assert list(rows.decode_vec(ok)) == [65504.0, 65504.0, -65504.0], "control: the largest finite halves still decode"
 
 
 def test_the_row_loader_itself_decodes_vec16(tmp_path):
@@ -179,4 +184,5 @@ def test_the_row_loader_itself_decodes_vec16(tmp_path):
     p, ids = _seed(tmp_path)
     assert all(rows.VEC_KEY in d for d in _docs(p).values()), "CONTROL: the rows on disk hold vec16"
     for r in rows.load(str(p)):
-        assert rows.VEC_KEY not in r and isinstance(r.get("vec"), list) and len(r["vec"]) == DIM, r.keys()
+        assert (rows.VEC_KEY not in r and isinstance(r.get("vec"), rows.VEC_SEQ)
+                and len(r["vec"]) == DIM), r.keys()

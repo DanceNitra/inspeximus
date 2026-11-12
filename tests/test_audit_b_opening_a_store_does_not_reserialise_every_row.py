@@ -1,6 +1,7 @@
 """AUDIT-B B-08: opening a row store must not serialise every record back to JSON.
 
-A row store keeps `_row_snapshot`, id -> the row text as stored, so a later save can tell what changed.
+A row store keeps `_row_snapshot`, id -> the DIGEST of the row text as stored (the text itself since
+3.27, see `sqlite_store._digest`), so a later save can tell what changed.
 It was built at open by `_doc(r)` for every record: a `json.dumps` of the whole store on every open,
 including the opens that never save (every UserPromptSubmit hook, every read-only CLI call). Measured
 2026-09-27 on a copy of a 67,165-record hook store: 1.27 s of a 5.51 s open.
@@ -59,11 +60,15 @@ def test_opening_serialises_only_the_rows_normalisation_changed(tmp_path, monkey
     opened = calls[0]
     monkeypatch.setattr(ss, "_doc", real)
 
-    # CONTROL: the baseline is exactly what serialising every loaded record gives.
-    want = {r["id"]: real(r, h._persist_vectors) for r in h._items}
+    # CONTROL: the baseline is exactly the DIGEST of what serialising every loaded record gives.
+    # Since 3.27 the baseline keeps `_digest(doc)` and not `doc`, because the text was the file's
+    # whole content held a second time in every process. The control is unchanged in strength: every
+    # entry must still equal the independent serialisation of that record, through the digest.
+    want = {r["id"]: ss._digest(real(r, h._persist_vectors)) for r in h._items}
     if h._row_snapshot != want:
         bad = [k for k in want if h._row_snapshot.get(k) != want[k]]
-        pytest.fail(f"control: {len(bad)} baseline entries differ from _doc(record), first {bad[:3]}")
+        pytest.fail(f"control: {len(bad)} baseline entries differ from _digest(_doc(record)), first {bad[:3]}")
+    assert all(isinstance(v, bytes) for v in h._row_snapshot.values()),         "the baseline must hold digests, not the stored text"
     if len(want) != N:
         pytest.fail(f"control: {len(want)} records loaded, expected {N}")
 
@@ -71,7 +76,7 @@ def test_opening_serialises_only_the_rows_normalisation_changed(tmp_path, monkey
 
 
 def test_a_row_another_writer_encoded_differently_is_not_a_change(tmp_path, monkeypatch):
-    """The baseline now holds a row's stored text. A row another writer stored with different key order
+    """The baseline holds the digest of a row's stored text. A row another writer stored with different key order
     and escapes is the same record, and a full reconcile must neither rewrite it nor emit an event for
     it, as it did not before. Byte comparison alone would do both (measured: 5 rewrites and 5 events for
     5 such rows); `sqlite_store._same` settles a byte mismatch the way the old baseline did."""

@@ -25,6 +25,7 @@ THE WRITE IS A DIFF, WHICH IS THE ENTIRE POINT. `snapshot()` records what was on
 appends one record performs one INSERT rather than serialising the whole store.
 """
 import base64
+from array import array
 import hashlib
 import hmac
 import json
@@ -100,6 +101,13 @@ DOC_FORMAT = 2
 #: writing a list under the new model, and would then mislabel it. Base64 has no `:`, so the split is exact.
 VEC_KEY = "vec16"
 
+#: EVERY TYPE A VECTOR MAY HAVE IN MEMORY. `decode_vec` returns `array("f")`, a JSON store and a fresh
+#: embedder answer return a list, and an importer may hand in a tuple. One tuple, used by every check
+#: that asks "is this a vector", because the checks used to spell `isinstance(v, list)` in three files
+#: and an array would have failed all three at once: the serialiser would then have written
+#: `str(array(...))` into the row, through `json.dumps(default=str)`, with no error raised.
+VEC_SEQ = (list, tuple, array)
+
 #: The most numbers a stored vector may hold, the cap an embedder's answer already has (F-17, 3.16.4).
 #: AUDIT-A F-40: a `vec16` of 5,000,000 half floats (a 10 MB string) decoded to a 160 MB list, and 40 such
 #: rows made a store take 72 s to open, before the hook's per-record isolation could act. The length of
@@ -138,7 +146,13 @@ def decode_vec(text):
     # replaces cost about a second on every open of a 13,494-vector store, more than the decode itself.
     if not math.isfinite(sum(vals)):
         return None
-    return list(vals)
+    # AN `array("f")`, NOT A LIST (3.27). A list of 1,024 Python floats costs about 32 KB, because each
+    # value is a separate object; the same numbers in an array("f") cost 4 KB. Measured on this project's
+    # 17,289-vector store: 541 MB of heap per process became 69 MB, and with one server process per open
+    # agent session the machine held 16 GB of decoded vectors. A full-scan dot product goes from 0.636 s
+    # to 0.876 s, because `map(mul, ...)` boxes each value as it reads it. That is the trade: 7.8x the
+    # memory for 1.4x the scan. Float32 holds every float16 that was stored, so the round trip is exact.
+    return array("f", vals)
 
 
 def _decode_row(rec) -> None:
@@ -292,35 +306,44 @@ def _connect(path):
 
 def load(path):
     """Every record, in the order it was written. Returns [] for a store that does not exist yet."""
-    return load_with_docs(path)[0]
+    return load_with_digests(path)[0]
 
 
-def load_with_docs(path):
-    """`load`, plus the stored text of each returned record, in the same order: ([records], [texts]).
+def load_with_digests(path):
+    """`load`, plus the DIGEST of each returned record's stored text, in the same order:
+    ([records], [digests]).
 
-    The texts are what `snapshot_from_docs` reuses as the save baseline, so opening a store does not
-    serialise every record again (AUDIT-B B-08)."""
+    The digests are what `snapshot_from_digests` uses as the save baseline, so opening a store does
+    not serialise every record again (AUDIT-B B-08).
+
+    IT RETURNS DIGESTS AND READS THE CURSOR ROW BY ROW, and both halves of that matter (3.27). This
+    used to `fetchall()` and return the texts, so every row's JSON was alive at once: on a 125 MB
+    store that is 125 MB of strings held through the whole of normalisation, next to the 234 MB of
+    records being built from them. Keeping only the digests freed the heap but not the process:
+    measured, 471 MB before and 471 MB after, because an allocator does not hand an emptied arena
+    back to the operating system. The machine still paid for the peak. A string that is digested and
+    dropped before the next row is read never makes one.
+    """
     if not os.path.exists(str(path)):
         return [], []
+    out, digests = [], []
     con = _connect(path)
     try:
-        rows = con.execute("SELECT doc FROM records ORDER BY ord").fetchall()
+        for (doc,) in con.execute("SELECT doc FROM records ORDER BY ord"):
+            try:
+                rec = json.loads(doc)
+                if isinstance(rec, dict) and VEC_KEY in rec:
+                    _decode_row(rec)
+                out.append(rec)
+            except Exception:
+                # ONE UNREADABLE ROW MUST NOT COST THE STORE. The JSON path fails whole-file: a
+                # single bad byte makes every record unreachable, and this project lost its coding
+                # store to exactly that three times in ten days. Here the blast radius is one record.
+                continue
+            digests.append(_digest(doc))
     finally:
         con.close()
-    out, docs = [], []
-    for (doc,) in rows:
-        try:
-            rec = json.loads(doc)
-            if isinstance(rec, dict) and VEC_KEY in rec:
-                _decode_row(rec)
-            out.append(rec)
-        except Exception:
-            # ONE UNREADABLE ROW MUST NOT COST THE STORE. The JSON path fails whole-file: a single
-            # bad byte makes every record unreachable, and this project lost its coding store to
-            # exactly that three times in ten days. Here the blast radius is one record.
-            continue
-        docs.append(doc)
-    return out, docs
+    return out, digests
 
 
 def _doc(rec, keep_vec: bool = True) -> str:
@@ -358,7 +381,7 @@ def _doc(rec, keep_vec: bool = True) -> str:
     _enc = None
     if keep_vec:
         _v = _field(rec, "vec")          # dict.get: a tracked record counts every `get` it serves
-        if isinstance(_v, list) and _v:
+        if isinstance(_v, VEC_SEQ) and _v:
             _enc = encode_vec(_v)
     if _enc is not None:
         _tag = _field(rec, "vec_recipe")
@@ -436,36 +459,94 @@ _field = dict.get
 
 
 def snapshot(items, keep_vec: bool = True) -> dict:
-    """id -> serialised row, as it stands. The baseline `save` diffs against.
+    """id -> the digest of the serialised row, as it stands. The baseline `save` diffs against.
+
+    See `_digest`: the text itself is not kept, because every process keeps a copy of it.
 
     `keep_vec` must match what the writer does, or every record with an embedding looks changed on
     every comparison and the diff degenerates into a full rewrite.
     """
-    return {_field(r, "id"): _doc(r, keep_vec)
+    return {_field(r, "id"): _digest(_doc(r, keep_vec))
             for r in items if isinstance(r, dict) and _field(r, "id")}
 
 
-def _same(now_doc, before_doc) -> bool:
+#: THE BASELINE HOLDS A DIGEST, NOT THE STORED TEXT (3.27). It used to hold every row's serialised
+#: JSON, which is the file's whole content a second time: 180 MB of heap on a 17,290-record store,
+#: in EVERY process, and one MCP server runs per open agent session. The digest of the same rows is
+#: 2.4 MB.
+#:
+#: The baseline only ever answered one question -- "does the file already hold this row" -- and a
+#: digest answers it. Two paths needed the text itself, and both now read it back from the database,
+#: which is where that text actually lives: the baseline was a cache of it, never the source.
+#:   * `_same` falls back to a normalising comparison when the bytes differ, for a row some other
+#:     writer stored with different key order or escapes (AUDIT-B B-08). Without that fallback an
+#:     unchanged foreign row is rewritten on every save and emits an event each time.
+#:   * a `record.removed` event carries the fields of the record that is going away.
+#: Both are per-row lookups on rows that are being written or deleted anyway. Reading all 17,290
+#: rows takes 0.63 s; one row is nothing.
+#:
+#: A REMOVED ROW IS READ BEFORE THE DELETE, never after. `save` deletes inside the same transaction
+#: that later builds the events, so a lookup after the DELETE finds nothing and the event would
+#: carry an empty record.
+def _digest(doc) -> bytes:
+    """The baseline's value for one serialised row. It never raises, whatever the row holds.
+
+    `surrogatepass`, because a plain `encode("utf-8")` raises on a lone surrogate and a store can
+    hold one: a hand-edited row, or any field a person typed into the file. The fuzz over
+    hand-edited stores caught exactly this, on three of its 437 cases: a lone surrogate in `ts`,
+    `last_access` or `valid_from` made the prompt hook answer nothing at all, where before it
+    answered. A digest is only required to be a stable function of the string, and this is one for
+    every string a store can contain."""
+    if not isinstance(doc, str):
+        return b""
+    return hashlib.sha256(doc.encode("utf-8", "surrogatepass")).digest()
+
+
+def _stored_docs(path, ids) -> dict:
+    """id -> the row's stored text, read from the store. Empty for ids it no longer holds."""
+    out = {}
+    ids = [i for i in ids if i]
+    if not ids:
+        return out
+    con = _connect(path)
+    try:
+        for i in range(0, len(ids), 500):
+            chunk = ids[i:i + 500]
+            q = "SELECT id, doc FROM records WHERE id IN (%s)" % ",".join("?" * len(chunk))
+            out.update(dict(con.execute(q, chunk).fetchall()))
+    finally:
+        con.close()
+    return out
+
+
+def _same(now_doc, before_digest, stored=None) -> bool:
     """Does the baseline already hold `now_doc`?
 
-    The baseline holds a row's STORED text when `snapshot_from_docs` reused it, where it used to hold
-    this writer's serialisation of the loaded record. For every row this writer stored the two are the
-    same bytes. For a row another writer stored with different key order or escapes they are not, and
-    comparing bytes would call an unchanged record changed, rewrite it and emit an event for it. So a
-    byte mismatch is settled by serialising the stored text the way the old baseline was built: same
-    answer as before, and the cost falls only on rows whose bytes differ (AUDIT-B B-08)."""
-    if now_doc == before_doc:
+    `before_digest` is `_digest` of the row's stored text. For every row this writer stored, the
+    digest of what it would write now matches and the answer is settled without touching the store.
+
+    For a row another writer stored with different key order or escapes the digests differ although
+    the record is unchanged, and calling it changed would rewrite it and emit an event for it. So a
+    digest mismatch is settled the way it always was, by serialising the stored text the way the
+    baseline was built -- `stored` is that text, read back from the database (AUDIT-B B-08).
+
+    WITHOUT `stored` A MISMATCH IS A CHANGE. That is the safe direction, a needless rewrite rather
+    than a lost one, but it is not free: it is exactly the foreign-row rewrite storm above, so every
+    caller in this module passes it."""
+    if before_digest is None:
+        return False
+    if _digest(now_doc) == before_digest:
         return True
-    if before_doc is None:
+    if not stored:
         return False
     try:
-        return _doc(json.loads(before_doc)) == now_doc
+        return _doc(json.loads(stored)) == now_doc
     except Exception:
         return False
 
 
-def snapshot_from_docs(items, docs, reuse, keep_vec: bool = True) -> dict:
-    """`snapshot`, reusing the stored text of every record whose `reuse` flag is set.
+def snapshot_from_digests(items, digests, reuse, keep_vec: bool = True) -> dict:
+    """`snapshot`, taking the digest of the STORED text for every record whose `reuse` flag is set.
 
     `snapshot` serialised every record at every open: 1.27 s of a 5.51 s open on a 67,165-record
     store, measured 2026-09-27, paid by opens that never save. A record that normalisation did not
@@ -475,16 +556,16 @@ def snapshot_from_docs(items, docs, reuse, keep_vec: bool = True) -> dict:
     is serialised as before (AUDIT-B B-08).
     """
     out = {}
-    for r, doc, ok in zip(items, docs, reuse):
+    for r, dig, ok in zip(items, digests, reuse):
         if not isinstance(r, dict):
             continue
         rid = _field(r, "id")
         if not rid:
             continue
         if ok and (keep_vec or "vec" not in r) and not any(k[:1] == "_" for k in r):
-            out[rid] = doc
+            out[rid] = dig
         else:
-            out[rid] = _doc(r, keep_vec)
+            out[rid] = _digest(_doc(r, keep_vec))
     return out
 
 
@@ -682,14 +763,27 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
     """
     if dirty is not None and not rewrite_all:
         return _save_known(path, items, before, set(dirty), keep_vec, events, auto_events)
-    now = snapshot(items, keep_vec)
+    # THE TEXT TO WRITE AND THE BASELINE ARE NOW TWO THINGS. `now` is what the caller keeps (digests);
+    # `_docs_now` is this save's serialisation, used for the INSERT and then dropped.
+    _docs_now = {_field(r, "id"): _doc(r, keep_vec)
+                 for r in items if isinstance(r, dict) and _field(r, "id")}
+    now = {k: _digest(v) for k, v in _docs_now.items()}
     order = {_field(r, "id"): i for i, r in enumerate(items)
              if isinstance(r, dict) and _field(r, "id")}
     added = [k for k in now if k not in before]
+    # THE STORED TEXT OF EVERY ROW THAT COULD NEED IT, READ BEFORE THE TRANSACTION TOUCHES ANYTHING.
+    # `removed` rows are deleted below in the same transaction, so a later read finds nothing and the
+    # removal event would carry an empty record. The candidates for the `_same` fallback are the rows
+    # whose digest moved; on a store this writer owns that is only the rows it really changed.
+    # ONLY THE ROWS THAT COULD NEED IT, never the whole store: reading every row back would copy the
+    # file's content into memory, which is the cost this change exists to remove.
+    _stored = _stored_docs(path, [k for k in before if k not in now]
+                           + [k for k in now if k in before and now[k] != before[k]])
     # `rewrite_all` re-writes every row that already exists, which is how a store moves to a new
     # encoding. It deliberately does NOT touch `before`: `removed` is computed from it, and emptying
     # the baseline to force the rewrite is what made deletions vanish.
-    changed = [k for k in now if k in before and (rewrite_all or not _same(now[k], before[k]))]
+    changed = [k for k in now if k in before
+               and (rewrite_all or not _same(_docs_now[k], before[k], _stored.get(k)))]
     removed = [k for k in before if k not in now]
 
     con = _connect(path)
@@ -700,7 +794,7 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
         if added or changed:
             con.executemany("INSERT INTO records(id, ord, doc) VALUES(?,?,?) "
                             "ON CONFLICT(id) DO UPDATE SET ord=excluded.ord, doc=excluded.doc",
-                            [(k, order.get(k, 0), now[k]) for k in added + changed])
+                            [(k, order.get(k, 0), _docs_now[k]) for k in added + changed])
         # Reordering without a content change still has to land, or a store reopened after a
         # consolidation comes back in the wrong order and `history()` reads backwards.
         # SETS for the membership test. `added` and `changed` are lists, and asking a list is a scan,
@@ -735,8 +829,8 @@ def save(path, items, before: dict, dirty=None, rewrite_all: bool = False,
             _by = {_field(r, "id"): r for r in items if isinstance(r, dict) and _field(r, "id")}
             _ev += [_event_row("record.added", _by.get(k), _ts) for k in added]
             _ev += [_event_row("record.changed", _by.get(k), _ts) for k in changed
-                    if not rewrite_all or not _same(now[k], before.get(k))]
-            _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
+                    if not rewrite_all or not _same(_docs_now[k], before.get(k), _stored.get(k))]
+            _ev += [_event_row("record.removed", _parse(_stored.get(k)), _ts) for k in removed]
         seqs = _insert_events(con, _ev) if _ev else []
         if removed:
             _redact_removed_keys(con, removed, path)       # whatever wrote the earlier rows, and even with events off
@@ -795,22 +889,26 @@ def _save_known(path, items, before: dict, dirty: set, keep_vec: bool = True,
     for k in removed:
         now.pop(k, None)
 
+    # THE STORED TEXT, BEFORE ANYTHING IS DELETED (see `_digest`). Only the rows this caller named and
+    # the ones that vanished: a dirty set is normally one row, so this is normally one lookup.
+    _stored = _stored_docs(path, list(removed) + [i for i in dirty if i in before])
+
     touched, touched_recs = [], []
     for r in items:
         rid = _field(r, "id") if isinstance(r, dict) else None
         if rid in dirty:
             doc = _doc(r, keep_vec)
-            if not _same(doc, before.get(rid)):
+            if not _same(doc, before.get(rid), _stored.get(rid)):
                 touched.append((rid, order[rid], doc))
                 touched_recs.append(r)
-                now[rid] = doc
+                now[rid] = _digest(doc)
 
     _ev = list(events or ())
     if auto_events and (touched or removed):
         _ts = time.time()
         _ev += [_event_row("record.added" if _field(r, "id") not in before else "record.changed",
                            r, _ts) for r in touched_recs]
-        _ev += [_event_row("record.removed", _parse(before.get(k)), _ts) for k in removed]
+        _ev += [_event_row("record.removed", _parse(_stored.get(k)), _ts) for k in removed]
     if not touched and not removed and not _ev:
         return {"snapshot": now, "added": 0, "changed": 0, "removed": 0, "event_seqs": []}
     con = _connect(path)
