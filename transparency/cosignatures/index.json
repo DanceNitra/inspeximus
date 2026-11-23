@@ -1,0 +1,11 @@
+[
+  {
+    "current": true,
+    "file": "ee9a12ff79d4ebc9.json",
+    "n_writes": 308,
+    "observed_utc": "2026-11-23T20:37:30Z",
+    "valid": true,
+    "witness_name": "agora CI (SAME OWNER as the log, not an independent witness)",
+    "witness_pubkey": "ee9a12ff79d4ebc999c83857b9b8316fa5ccd104a30a94c3d8f262f69e4f3aac"
+  }
+]

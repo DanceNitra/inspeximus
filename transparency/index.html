@@ -60,7 +60,7 @@ the head's own fields. A root that does not follow from the leaves is what it ca
 serve in two versions, and only an independent WITNESS that remembers a previous head can catch that.</p>
 
 <h2>Witnesses</h2>
-<p>No witness has co-signed this log yet, so nothing here is evidence against that. Running one is the most useful thing an outsider can do.</p>
+<p>Each of these signed the head it saw, and each is checked here against the public key it names. A co-signature says that this witness saw this exact head and that it extends what the same witness saw before. Whether a witness is independent of us is not something this page can establish: read the name. A witness we operate catches a mistake in our own publishing, and nothing more.</p><table><tr><th>witness</th><th>name</th><th>entries seen</th><th>covers</th></tr><tr><td><code>ee9a12ff79d4ebc9</code></td><td>agora CI (SAME OWNER as the log, not an independent witness)</td><td>308</td><td>current head</td></tr></table><p><a href="cosignatures/index.json">cosignatures/index.json</a> lists them, and each signature file sits beside it.</p>
 <p>To become one, run this against this log from a machine we do not control. It remembers the head it
 last accepted and refuses to sign if the history it already saw has changed:</p>
 <pre>curl -sSfO https://raw.githubusercontent.com/DanceNitra/inspeximus/main/tools/witness_static_log.py

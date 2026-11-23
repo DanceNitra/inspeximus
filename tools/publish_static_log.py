@@ -507,8 +507,15 @@ def _witness_table(cosigs, note):
         rows.append("<tr><td><code>%s</code></td><td>%s</td><td>%s</td><td>%s</td></tr>" % (
             html.escape(c["witness_pubkey"][:16]), html.escape(c["witness_name"] or "-"),
             c["n_writes"], "current head" if c["current"] else "an earlier head"))
-    return ("<p>These are independent observers. Each signed the head it saw, and each is checked "
-            "here against the public key it names.</p>"
+    # NEVER call these observers independent. The page cannot know who runs a key, and the first
+    # co-signature this log ever carried was our own CI, whose name says so: a heading that
+    # asserted independence put an overclaim above a row that contradicted it. The reader is
+    # told what a co-signature establishes and pointed at the name to judge independence.
+    return ("<p>Each of these signed the head it saw, and each is checked here against the "
+            "public key it names. A co-signature says that this witness saw this exact head "
+            "and that it extends what the same witness saw before. Whether a witness is "
+            "independent of us is not something this page can establish: read the name. A "
+            "witness we operate catches a mistake in our own publishing, and nothing more.</p>"
             "<table><tr><th>witness</th><th>name</th><th>entries seen</th><th>covers</th></tr>"
             + "".join(rows) + "</table>"
             "<p><a href=\"cosignatures/index.json\">cosignatures/index.json</a> lists them, and "
