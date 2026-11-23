@@ -27,8 +27,8 @@ jobs:
           - python-version: "3.12"
             runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install
@@ -102,8 +102,8 @@ jobs:
     name: install and hook tests (windows-latest)
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install
@@ -121,8 +121,8 @@ jobs:
     name: time to first success (pip install + inspeximus demo, 60 s budget)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: clean venv, pip install, inspeximus demo
@@ -130,7 +130,7 @@ jobs:
       - name: seconds, in the job summary
         if: always()
         run: python tools/time_to_demo.py --summary time-to-first-success.json >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: time-to-first-success
@@ -157,8 +157,8 @@ jobs:
           - leg: pip install inspeximus[crypto]
             spec: ".[crypto]"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: the test runner, outside the venv under test
@@ -185,8 +185,8 @@ jobs:
     name: CrewAI example (crewai==1.15.22)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install the pinned framework and this checkout
@@ -206,8 +206,8 @@ jobs:
     name: work counters must not grow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # The MCP SDK, within the package's own bound, for mcp_lookup_n2000: that arm calls the MCP server's lookups.
@@ -232,8 +232,8 @@ jobs:
       matrix:
         mcp: ["1.28.1", "2.3.0"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install
@@ -260,8 +260,8 @@ jobs:
     name: browser verifier agrees with the CLI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install
@@ -287,8 +287,8 @@ jobs:
     name: agno example (agno==3.0.11)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install the pinned framework and this checkout
@@ -307,8 +307,8 @@ jobs:
       matrix:
         shard: [0, 1, 2, 3]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install with every optional dependency
@@ -332,14 +332,14 @@ jobs:
           SHARD_REPORT: shard-${{ matrix.shard }}.json
           SHARD_TIMES: times-${{ matrix.shard }}.json
         run: python -m pytest tests/ -q -rs --shard ${{ matrix.shard }}/4
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: shard-report-${{ matrix.shard }}
           path: shard-${{ matrix.shard }}.json
       # Measured seconds per test on this runner: the input tools/shard_durations.py turns into the
       # committed durations file the shards are balanced on.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: shard-times-${{ matrix.shard }}
@@ -351,7 +351,7 @@ jobs:
         env:
           SHARD_TIMES: mutation-times.json
         run: python -m pytest tests/ -n 0 -m mutation -q
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always() && matrix.shard == 0
         with:
           name: mutation-times
@@ -375,11 +375,11 @@ jobs:
     needs: integrations
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: shard-report-*
           path: shard-reports

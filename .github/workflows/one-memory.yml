@@ -45,19 +45,19 @@ jobs:
           - os: windows-latest
             case: {name: "Git Bash page without path conversion, as in Hermes (must pass)", flags: "--find-links dist --shell gitbash --no-pathconv", uv: false}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - if: matrix.case.uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
       - name: build a wheel from this checkout
         run: python -m pip wheel . --no-deps -w dist
       - name: run the install page
         run: python tools/run_install_page.py "${{ runner.temp }}/page" ${{ matrix.case.flags }}
       - name: keep the verdict
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: one-memory-${{ matrix.os }}-${{ strategy.job-index }}
           path: ${{ runner.temp }}/page/one_memory.json

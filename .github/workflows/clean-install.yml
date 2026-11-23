@@ -37,17 +37,17 @@ jobs:
           - {name: "latest from PyPI, with uv (must pass)", version: latest, flag: "", uv: true}
           - {name: "control 3.9.5, no uv (must fail)", version: "3.9.5", flag: "--expect-fail", uv: false}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - if: matrix.case.uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
       - name: clean-install check
         run: python tools/clean_install_check.py ${{ matrix.case.version }} "${{ runner.temp }}/route" ${{ matrix.case.flag }}
       - name: keep the verdict
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: clean-install-${{ matrix.os }}-${{ matrix.case.version }}-uv${{ matrix.case.uv }}
           path: ${{ runner.temp }}/route/result.json

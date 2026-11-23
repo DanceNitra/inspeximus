@@ -43,8 +43,8 @@ jobs:
     if: ${{ !inputs.package && !inputs.mcp_registry && (github.ref_type != 'tag' || startsWith(github.ref_name, 'v')) }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python claims_audit.py --local
@@ -78,8 +78,8 @@ jobs:
       matrix:
         shard: [0, 1, 2, 3]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install with every optional dependency
@@ -102,7 +102,7 @@ jobs:
         env:
           SHARD_REPORT: shard-${{ matrix.shard }}.json
         run: python -m pytest tests/ -q --shard ${{ matrix.shard }}/4
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: release-shard-report-${{ matrix.shard }}
           path: shard-${{ matrix.shard }}.json
@@ -120,17 +120,17 @@ jobs:
     needs: [audit, tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Nothing is built until the four test shards are shown to have run every collected test
       # exactly once: green shards alone cannot say that.
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: release-shard-report-*
           path: shard-reports
           merge-multiple: true
       - name: every collected test ran exactly once
         run: python tools/shard_total.py "shard-reports/*.json" --expect 4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade build
@@ -142,7 +142,7 @@ jobs:
           FOUND=$(ls dist/*.whl | sed -E 's/.*inspeximus-([0-9.]+)-.*/\1/')
           echo "tag=$TAG wheel=$FOUND"
           test "$TAG" = "$FOUND"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
@@ -160,7 +160,7 @@ jobs:
       attestations: write
       contents: read
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist/
@@ -179,8 +179,8 @@ jobs:
       attestations: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: work out which package, from the tag or the dispatch input
@@ -237,8 +237,8 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: server.json must name the version we just released
@@ -312,10 +312,10 @@ jobs:
     permissions:
       contents: write          # the only job here that needs it
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0       # release_notes.py reads the CHANGELOG and the tag history
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: the tag and the package must be the same version

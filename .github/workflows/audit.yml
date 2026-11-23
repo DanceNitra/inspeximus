@@ -22,8 +22,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python: ["3.10", "3.12"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
       - name: claims_audit
@@ -51,8 +51,8 @@ jobs:
     name: the audit can actually fail
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # An audit that cannot fail proves nothing. Disable the erasure and require the governance audit
@@ -75,8 +75,8 @@ jobs:
     name: the documented guarantees, through the surface a user has
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install with the MCP extra
@@ -131,8 +131,8 @@ jobs:
     name: InspeximusStore vs LangGraph's own store
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade langgraph langgraph-checkpoint-conformance pytest pytest-xdist pytest-timeout
@@ -154,8 +154,8 @@ jobs:
     name: InspeximusMemoryService vs ADK's own memory service
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade google-adk pytest pytest-xdist pytest-timeout
@@ -174,8 +174,8 @@ jobs:
     name: InspeximusSession vs the Agents SDK's own session
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade openai-agents pytest pytest-xdist pytest-timeout
@@ -195,8 +195,8 @@ jobs:
     # installed either — so those skips were permanent and the adapters were covered nowhere. A skip that is
     # never un-skipped is an untested code path with a green tick next to it.
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pytest pytest-xdist crewai llama-index-core
@@ -206,8 +206,8 @@ jobs:
     name: InspeximusDocumentStore vs Haystack's own document store
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade haystack-ai pytest pytest-xdist pytest-timeout
@@ -227,8 +227,8 @@ jobs:
     name: the PUBLISHED wheel from PyPI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # Audits the artifact users actually install, not the source in this repo.
@@ -236,7 +236,7 @@ jobs:
         run: python claims_audit.py | tee claims_report.txt
       - name: governance_audit against PyPI
         run: python governance_audit.py | tee governance_report.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: audit-reports
           path: |
